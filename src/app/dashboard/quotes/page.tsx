@@ -35,6 +35,7 @@ export default function QuotationGenerator() {
     ])
     const [discountPercent, setDiscountPercent] = useState(0)
     const [productImage, setProductImage] = useState<string | null>(null)
+    const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 })
     const [products, setProducts] = useState<Product[]>([])
     const [showProductList, setShowProductList] = useState<string | null>(null)
     const fileInputRef = useRef<HTMLInputElement>(null)
@@ -107,7 +108,15 @@ export default function QuotationGenerator() {
         if (file) {
             const reader = new FileReader()
             reader.onloadend = () => {
-                setProductImage(reader.result as string)
+                const imgData = reader.result as string
+                setProductImage(imgData)
+
+                // Get original dimensions to prevent PDF distortion
+                const img = new Image()
+                img.onload = () => {
+                    setImageDimensions({ width: img.width, height: img.height })
+                }
+                img.src = imgData
             }
             reader.readAsDataURL(file)
         }
@@ -250,7 +259,7 @@ export default function QuotationGenerator() {
             finalY += 35
         }
 
-        // --- Image Section (Separated/Spaced) ---
+        // --- Image Section (Separated/Spaced/Proportional) ---
         if (productImage) {
             if (finalY + 90 > 280) {
                 doc.addPage()
@@ -263,8 +272,30 @@ export default function QuotationGenerator() {
             doc.setFont("helvetica", "bold")
             doc.setTextColor(0)
             doc.text("DOCUMENTACIÓN VISUAL / FOTO REFERENCIAL:", 14, finalY)
-            doc.addImage(productImage, 'JPEG', 14, finalY + 5, 80, 55)
-            finalY += 65
+
+            // Calculate proportional dimensions to avoid distortion
+            const maxWidth = 100
+            const maxHeight = 70
+            let printW = maxWidth
+            let printH = maxHeight
+
+            if (imageDimensions.width > 0 && imageDimensions.height > 0) {
+                const ratio = imageDimensions.width / imageDimensions.height
+                if (maxWidth / ratio <= maxHeight) {
+                    printW = maxWidth
+                    printH = maxWidth / ratio
+                } else {
+                    printH = maxHeight
+                    printW = maxHeight * ratio
+                }
+            }
+
+            // Optional: indent image slightly for aesthetics
+            const xPos = 14;
+
+            // Format fallback to prevent crashes if not JPEG (jsPDF usually handles base64 directly)
+            doc.addImage(productImage, 'JPEG', xPos, finalY + 5, printW, printH)
+            finalY += (printH + 15)
         }
 
         // --- Warranty & Comments ---
@@ -585,10 +616,10 @@ export default function QuotationGenerator() {
                         </h3>
                         <div
                             onClick={() => fileInputRef.current?.click()}
-                            className="w-full h-48 border-2 border-dashed border-neutral-100 flex flex-col items-center justify-center cursor-pointer hover:border-orange-400 hover:bg-orange-50/10 transition-all overflow-hidden"
+                            className="w-full h-64 border-2 border-dashed border-neutral-200 bg-neutral-50 flex flex-col items-center justify-center cursor-pointer hover:border-orange-500 hover:bg-orange-50/20 transition-all overflow-hidden p-2 rounded"
                         >
                             {productImage ? (
-                                <img src={productImage} alt="Preview" className="w-full h-full object-contain" />
+                                <img src={productImage} alt="Preview" className="max-w-full max-h-full object-contain rounded shadow-sm" />
                             ) : (
                                 <>
                                     <Plus size={32} className="text-neutral-200 mb-3" />
