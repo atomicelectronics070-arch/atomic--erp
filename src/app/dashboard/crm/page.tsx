@@ -43,7 +43,10 @@ export default function AdvancedCRMPage() {
     })
 
     const handleSaveClient = async () => {
-        if (!formData.firstName || !formData.email || !formData.phone) return
+        if (!formData.firstName || !formData.email || !formData.phone) {
+            alert("Por favor llena los campos obligatorios: Nombres, Correo y Teléfono.");
+            return;
+        }
 
         const method = editingId ? "PUT" : "POST"
         const endpoint = editingId ? `/api/crm/${editingId}` : "/api/crm"
@@ -54,12 +57,18 @@ export default function AdvancedCRMPage() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData)
             })
+
             if (res.ok) {
                 fetchClients()
                 closePanel()
+            } else {
+                const data = await res.json();
+                alert(data.error || "Error al intentar guardar el registro.");
+                console.error("Server Error:", data);
             }
         } catch (e) {
             console.error("Error saving client", e)
+            alert("Error de conexión con el servidor.");
         }
     }
 
