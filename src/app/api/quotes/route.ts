@@ -1,52 +1,96 @@
 import { NextResponse } from "next/server"
 import { PrismaClient } from "@prisma/client"
+import { getServerSession } from "next-auth/next"
+import { authOptions } from "@/lib/auth"
 
 const prisma = new PrismaClient()
 
-export async function GET() {
+export async function GET(req: Request) {
     try {
+        const session = await getServerSession(authOptions)
+        if (!session || !session.user?.email) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+        }
+
+        const user = await prisma.user.findUnique({
+            where: { email: session.user.email.toLowerCase() }
+        })
+
+        if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 })
+
         const quotes = await prisma.quote.findMany({
-            include: { client: true, salesperson: true },
+            where: {
+                salespersonId: user.id
+            },
             orderBy: { createdAt: 'desc' }
         })
+
         return NextResponse.json(quotes)
     } catch (error) {
+        console.error("Fetch Quotes Error:", error)
         return NextResponse.json({ error: "Failed to fetch quotes" }, { status: 500 })
     }
 }
 
 export async function POST(req: Request) {
     try {
-        const body = await req.json()
+        const session = await getServerSession(authOptions)
+        if (!session || !session.user?.email) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+        }
 
-        // Find or create a generic client if needed (for simplicity in this step)
-        let client = await prisma.client.findFirst({ where: { name: "CLIENTE GENÉRICO" } })
+        const salesperson = await prisma.user.findUnique({
+            where: { email: session.user.email.toLowerCase() }
+        })
+
+        if (!salesperson) {
+            return NextResponse.json({ error: "Salesperson not found in DB" }, { status: 404 })
+        }
+
+        const body = await req.json()
+        const { quoteNumber, clientName, clientEmail, subtotal, tax, discountPercent, total, items, deliveryAddress, warrantyComments } = body
+
+        // Find or create a client record to satisfy database relations
+        let client = await prisma.client.findFirst({
+            where: { email: clientEmail }
+        })
+
         if (!client) {
             client = await prisma.client.create({
                 data: {
-                    name: "CLIENTE GENÉRICO",
-                    salespersonId: "system",
+                    name: clientName || "Cliente Generador",
+                    email: clientEmail,
+                    salespersonId: salesperson.id,
+                    source: "COTIZADOR_AUTO"
                 }
             })
         }
 
+        // Save Quote to database
         const quote = await prisma.quote.create({
             data: {
-                quoteNumber: body.quoteNumber,
+                quoteNumber,
                 clientId: client.id,
-                salespersonId: "system",
-                subtotal: parseFloat(body.subtotal),
-                tax: parseFloat(body.tax),
-                discount: parseFloat(body.discount || 0),
-                total: parseFloat(body.total),
-                warrantyComments: body.warrantyComments,
-                deliveryAddress: body.deliveryAddress,
-                status: "APPROVED"
+                salespersonId: salesperson.id,
+                subtotal,
+                tax,
+                discount: discountPercent > 0 ? (subtotal * (discountPercent / 100)) : 0,
+                total,
+
+                // UI Preservation
+                clientName,
+                discountPercent,
+                deliveryAddress,
+                warrantyComments,
+                itemsData: JSON.stringify(items),
+
+                status: "SAVED"
             }
         })
-        return NextResponse.json(quote)
-    } catch (error) {
-        console.error(error)
-        return NextResponse.json({ error: "Failed to create quote" }, { status: 500 })
+
+        return NextResponse.json({ success: true, quote })
+    } catch (error: any) {
+        console.error("Save Quote Error:", error)
+        return NextResponse.json({ error: "Failed to save quote", details: error.message }, { status: 500 })
     }
 }

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { Plus, Trash2, FileOutput, Calculator, Image as ImageIcon, User, ShieldCheck, Mail, Phone, Search, MapPin, MessageSquare } from "lucide-react"
+import { Plus, Trash2, FileOutput, Calculator, Image as ImageIcon, User, ShieldCheck, Mail, Phone, Search, MapPin, MessageSquare, History, Copy, X, Clock } from "lucide-react"
 import jsPDF from "jspdf"
 import autoTable from "jspdf-autotable"
 
@@ -40,12 +40,29 @@ export default function QuotationGenerator() {
     const [showProductList, setShowProductList] = useState<string | null>(null)
     const fileInputRef = useRef<HTMLInputElement>(null)
 
+    // History State
+    const [quoteHistory, setQuoteHistory] = useState<any[]>([])
+    const [isHistoryOpen, setIsHistoryOpen] = useState(false)
+
     const taxRate = 0.15 // 15% IVA
 
     useEffect(() => {
         fetchNextNumber()
         fetchProducts()
+        fetchHistory()
     }, [])
+
+    const fetchHistory = async () => {
+        try {
+            const res = await fetch("/api/quotes")
+            if (res.ok) {
+                const data = await res.json()
+                setQuoteHistory(data)
+            }
+        } catch (e) {
+            console.error("Failed to load history")
+        }
+    }
 
     const fetchNextNumber = async () => {
         const res = await fetch("/api/quotes/next-number")
@@ -122,10 +139,40 @@ export default function QuotationGenerator() {
         }
     }
 
-    const handleGeneratePDF = () => {
+    const handleGeneratePDF = async () => {
         if (!clientName.trim() || !clientEmail.trim() || !clientPhone.trim()) {
             alert("⚠️ Error: El Nombre, Email y Teléfono del cliente son OBLIGATORIOS.")
             return
+        }
+
+        // --- BACKGROUND SAVE TO DATABASE ---
+        try {
+            const quoteData = {
+                quoteNumber,
+                clientName,
+                clientEmail,
+                clientPhone,
+                deliveryAddress,
+                warrantyComments,
+                discountPercent,
+                subtotal,
+                tax: taxAmount,
+                total,
+                items: items.filter(i => i.description.trim() !== "")
+            };
+
+            await fetch("/api/quotes", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(quoteData)
+            });
+
+            // Refresh history and get next number for the future
+            fetchHistory()
+            fetchNextNumber()
+
+        } catch (e) {
+            console.error("⚠️ Background Save Error:", e)
         }
 
         const doc = new jsPDF()
@@ -339,6 +386,36 @@ export default function QuotationGenerator() {
         doc.save(`${quoteNumber}_${clientName.replace(/\s+/g, "_")}.pdf`)
     }
 
+    const handleDuplicateQuote = (quote: any) => {
+        setClientName(quote.clientName || "")
+        // Attempt to extract email via the API later, for now leave blank if not saved in UI fields
+        setClientEmail("")
+        setClientPhone("")
+        setDeliveryAddress(quote.deliveryAddress || "")
+        setWarrantyComments(quote.warrantyComments || "")
+        setDiscountPercent(quote.discountPercent || 0)
+
+        try {
+            if (quote.itemsData) {
+                const parsedItems = JSON.parse(quote.itemsData)
+                if (Array.isArray(parsedItems) && parsedItems.length > 0) {
+                    // Generate new IDs for the cloned items so React keys don't clash
+                    const clonedItems = parsedItems.map((item: any, i: number) => ({
+                        ...item,
+                        id: Date.now().toString() + i
+                    }))
+                    setItems(clonedItems)
+                }
+            }
+        } catch (e) {
+            console.error("Failed to parse quote items", e)
+        }
+
+        setIsHistoryOpen(false)
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+        alert("✅ Cotización base cargada exitosamente.")
+    }
+
     return (
         <div className="space-y-12 pb-24">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
@@ -348,13 +425,22 @@ export default function QuotationGenerator() {
                     </h1>
                     <p className="text-neutral-400 font-medium text-sm mt-1">Generación automática de propuestas PROP-MM-NNN con integración de inventario.</p>
                 </div>
-                <button
-                    onClick={handleGeneratePDF}
-                    className="bg-neutral-900 text-white px-10 py-5 font-bold uppercase tracking-[0.3em] text-[10px] flex items-center space-x-3 hover:bg-orange-600 transition-all shadow-2xl shadow-neutral-200"
-                >
-                    <FileOutput size={18} />
-                    <span>Emitir Propuesta Final</span>
-                </button>
+                <div className="flex gap-4">
+                    <button
+                        onClick={() => setIsHistoryOpen(true)}
+                        className="bg-white border border-neutral-300 text-neutral-600 px-6 py-5 font-bold uppercase tracking-widest text-[10px] flex items-center space-x-2 hover:bg-neutral-50 transition-all shadow-sm"
+                    >
+                        <History size={16} />
+                        <span>Historial ({quoteHistory.length})</span>
+                    </button>
+                    <button
+                        onClick={handleGeneratePDF}
+                        className="bg-neutral-900 text-white px-10 py-5 font-bold uppercase tracking-[0.3em] text-[10px] flex items-center space-x-3 hover:bg-orange-600 transition-all shadow-2xl shadow-neutral-200"
+                    >
+                        <FileOutput size={18} />
+                        <span>Emitir Propuesta Final</span>
+                    </button>
+                </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
@@ -635,6 +721,66 @@ export default function QuotationGenerator() {
                 </div>
 
             </div>
+
+            {/* SIDE PANEL: HISTORIAL DE COTIZACIONES */}
+            {isHistoryOpen && (
+                <>
+                    <div className="fixed inset-0 bg-neutral-900/60 backdrop-blur-sm z-40 transition-opacity" onClick={() => setIsHistoryOpen(false)} />
+
+                    <div className={`fixed inset-y-0 right-0 w-full md:w-[600px] bg-neutral-50 shadow-2xl z-50 transform transition-transform duration-300 ease-in-out flex flex-col border-l border-neutral-200 ${isHistoryOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+                        <div className="flex items-center justify-between p-6 border-b border-neutral-200 bg-white">
+                            <div className="flex items-center gap-3">
+                                <div className="bg-orange-100 p-2 text-orange-600 rounded"><History size={20} /></div>
+                                <div>
+                                    <h2 className="text-sm font-black uppercase tracking-widest text-neutral-900">Historial de Propuestas</h2>
+                                    <p className="text-[10px] text-neutral-500 font-bold uppercase mt-1">Archivo histórico y duplicación</p>
+                                </div>
+                            </div>
+                            <button onClick={() => setIsHistoryOpen(false)} className="text-neutral-400 hover:text-neutral-900 transition-colors p-2 bg-neutral-100 rounded-full">
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                            {quoteHistory.length === 0 ? (
+                                <div className="text-center py-20 text-neutral-400 flex flex-col items-center">
+                                    <Clock size={48} className="mb-4 opacity-50" />
+                                    <p className="text-sm font-bold uppercase tracking-widest">No hay cotizaciones históricas.</p>
+                                </div>
+                            ) : (
+                                quoteHistory.map((quote) => (
+                                    <div key={quote.id} className="bg-white p-5 border border-neutral-200 shadow-sm hover:border-orange-300 transition-all group flex flex-col">
+                                        <div className="flex justify-between items-start mb-4">
+                                            <div>
+                                                <span className="text-xs font-black text-orange-600 uppercase tracking-widest bg-orange-50 px-2 py-1">{quote.quoteNumber}</span>
+                                                <h3 className="text-sm font-bold text-neutral-900 mt-2 uppercase">{quote.clientName || 'CLIENTE NO ESPECIFICADO'}</h3>
+                                                <span className="text-[10px] font-mono text-neutral-400 uppercase mt-1 block">
+                                                    Emitida: {new Date(quote.createdAt).toLocaleDateString()} a las {new Date(quote.createdAt).toLocaleTimeString()}
+                                                </span>
+                                            </div>
+                                            <div className="text-right">
+                                                <p className="text-lg font-black text-neutral-900">${quote.total ? quote.total.toFixed(2) : "0.00"}</p>
+                                                <span className={`text-[9px] uppercase font-bold px-2 py-0.5 mt-1 border inline-block ${quote.status === 'SAVED' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-neutral-100 text-neutral-500 border-neutral-200'}`}>
+                                                    {quote.status}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div className="pt-4 border-t border-neutral-100 flex justify-end">
+                                            <button
+                                                onClick={() => handleDuplicateQuote(quote)}
+                                                className="flex items-center text-[10px] font-bold uppercase tracking-widest text-neutral-600 hover:text-orange-600 bg-neutral-50 hover:bg-orange-50 px-4 py-2 border border-neutral-200 transition-all"
+                                            >
+                                                <Copy size={12} className="mr-2" /> Clonar Cotización
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </div>
+                </>
+            )}
         </div>
     )
 }

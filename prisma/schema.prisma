@@ -150,6 +150,11 @@ model Quote {
   // New professional fields
   warrantyComments String?
   deliveryAddress  String?
+  
+  // Historical UI persistence fields
+  clientName      String?   // Allows quotes without forced CRM client
+  discountPercent Float     @default(0)
+  itemsData       String?   // JSON string of quote items array
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
