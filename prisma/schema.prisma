@@ -1,0 +1,440 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String  @id @default(cuid())
+  email        String  @unique
+  passwordHash String
+  name         String?
+  role         String  @default("SALESPERSON")
+  status       String  @default("PENDING")
+
+  // Registration specific fields
+  profileData  String?
+  aspirations  String?
+  availability String?
+
+  teamId String?
+  team   Team?   @relation(fields: [teamId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  conversations Quote[]
+  clients       Client[]
+  evaluations   Evaluation[] @relation("Evaluator")
+  receivedEvals Evaluation[] @relation("Evaluatee")
+
+  waOwnedChats WAConversation[] @relation("ConversationOwner")
+  StorageFile  StorageFile[]
+
+  // Internal Messaging Relations
+  sentMessages     InternalMessage[] @relation("MessageSender")
+  receivedMessages InternalMessage[] @relation("MessageReceiver")
+
+  // Productivity
+  notes            Note[]  @relation("UserNotes")
+  events           Event[] @relation("UserEvents")
+
+  // Notifications & Finance
+  notifications    Notification[]
+  receivedTickets  PaymentTicket[] @relation("TicketReceiver")
+  issuedTickets    PaymentTicket[] @relation("TicketIssuer")
+
+  // Cognitive Prompts
+  promptConfigs    UserPromptConfig[]
+}
+
+model Team {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  members     User[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Client {
+  id               String   @id @default(cuid())
+  name             String   // Can be full name or company name
+  firstName        String?  // Nombres
+  lastName         String?  // Apellidos
+  email            String?
+  phone            String?
+  requirement      String?  // Requerimiento de ingreso
+  city             String?  // Ciudad
+  status           String   @default("PROSPECTO") // Estado de atencion
+  source           String   @default("MANUAL")
+  lastContact      DateTime @default(now())
+  retargetingCount Int      @default(0)
+  campaignsSent    Int      @default(0) // Campañas enviadas
+  purchaseCount    Int      @default(0) // Veces que compro
+
+  salespersonId String
+  salesperson   User   @relation(fields: [salespersonId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  quotes Quote[]
+}
+
+model Product {
+  id             String  @id @default(cuid())
+  name           String
+  description    String?
+  price          Float
+  compareAtPrice Float?
+  sku            String? @unique
+
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id])
+
+  collectionId String?
+  collection   Collection? @relation(fields: [collectionId], references: [id])
+
+  images       String? // Store as JSON array string
+  specSheetUrl String?
+  keywords     String? // Comma separated
+  stock        Int     @default(0)
+  isActive     Boolean @default(true)
+  featured     Boolean @default(false)
+  specs        String? // JSON string for technical specs
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  slug        String    @unique
+  description String?
+  products    Product[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Collection {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  slug        String    @unique
+  description String?
+  products    Product[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Quote {
+  id            String @id @default(cuid())
+  quoteNumber   String @unique // Format: PROP-MM-NNN
+  clientId      String
+  client        Client @relation(fields: [clientId], references: [id])
+  salespersonId String
+  salesperson   User   @relation(fields: [salespersonId], references: [id])
+
+  subtotal Float
+  tax      Float
+  discount Float @default(0)
+  total    Float
+
+  pdfUrl String?
+  status String  @default("DRAFT")
+
+  // New professional fields
+  warrantyComments String?
+  deliveryAddress  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Transaction {
+  id         String   @id @default(cuid())
+  trxId      String   @unique // Format: TRX-000
+  client     String
+  date       DateTime @default(now())
+  amount     Float
+  cost       Float
+  profit     Float
+  commission Float
+  status     String   @default("PENDIENTE") // PAGADO, PENDIENTE
+  type       String   @default("Venta Directa")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Evaluation {
+  id          String @id @default(cuid())
+  evaluatorId String
+  evaluator   User   @relation("Evaluator", fields: [evaluatorId], references: [id])
+  evaluateeId String
+  evaluatee   User   @relation("Evaluatee", fields: [evaluateeId], references: [id])
+
+  score        Float
+  rubricData   String // JSON string with detailed scores
+  observations String?
+  cycleDay     Int     @default(1)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ExtractionTemplate {
+  id        String   @id @default(cuid())
+  domain    String   @unique
+  name      String?
+  selectors String // JSON string with title, price, images, etc.
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ExtractionHistory {
+  id           String   @id @default(cuid())
+  url          String
+  domain       String
+  status       String   @default("PENDING") // PENDING, PROCESSING, COMPLETED, ERROR
+  itemCount    Int      @default(0)
+  errorMessage String?
+  exportUrl    String?
+  createdAt    DateTime @default(now())
+}
+
+// --- WHATSAPP CRM MODELS ---
+
+model WAContact {
+  id            String           @id @default(cuid())
+  whatsappId    String           @unique // The phone number or WhatsApp ID
+  name          String?
+  profilePic    String?
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  conversations WAConversation[]
+}
+
+model WAConversation {
+  id        String    @id @default(cuid())
+  contactId String
+  contact   WAContact @relation(fields: [contactId], references: [id])
+  status    String    @default("NEW") // NEW, OPEN, PENDING, RESOLVED, CLOSED
+  priority  String    @default("MEDIUM") // LOW, MEDIUM, HIGH, URGENT
+
+  ownerId String?
+  owner   User?   @relation("ConversationOwner", fields: [ownerId], references: [id])
+
+  lastMessageAt DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  messages    WAMessage[]
+  notes       WANote[]
+  tags        WATag[]
+  assignments WAAssignment[]
+}
+
+model WAMessage {
+  id             String         @id @default(cuid())
+  conversationId String
+  conversation   WAConversation @relation(fields: [conversationId], references: [id])
+
+  whatsappMessageId String? @unique // ID from WhatsApp Cloud API
+  direction         String // INBOUND, OUTBOUND
+  type              String  @default("text") // text, image, audio, document, template
+  body              String? @default("")
+  mediaUrl          String?
+
+  status       String  @default("SENT") // SENT, DELIVERED, READ, FAILED
+  errorMessage String?
+
+  senderId String? // User ID if OUTBOUND
+
+  createdAt DateTime @default(now())
+}
+
+model WATag {
+  id            String           @id @default(cuid())
+  name          String           @unique
+  color         String?          @default("#FF5733")
+  conversations WAConversation[]
+}
+
+model WANote {
+  id             String         @id @default(cuid())
+  conversationId String
+  conversation   WAConversation @relation(fields: [conversationId], references: [id])
+  authorId       String
+  content        String
+  createdAt      DateTime       @default(now())
+}
+
+model WAAssignment {
+  id              String         @id @default(cuid())
+  conversationId  String
+  conversation    WAConversation @relation(fields: [conversationId], references: [id])
+  assignerId      String?
+  assigneeId      String
+  previousOwnerId String?
+  createdAt       DateTime       @default(now())
+}
+
+model WATemplate {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  category  String?
+  language  String   @default("es")
+  content   String // The text with variables like {{1}}
+  status    String   @default("APPROVED")
+  createdAt DateTime @default(now())
+}
+
+// --- STORAGE MODULE ---
+
+model StorageFolder {
+  id         String          @id @default(cuid())
+  name       String
+  parentId   String?
+  parent     StorageFolder?  @relation("FolderHierarchy", fields: [parentId], references: [id])
+  subfolders StorageFolder[] @relation("FolderHierarchy")
+  files      StorageFile[]
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+}
+
+model StorageFile {
+  id   String @id @default(cuid())
+  name String
+  url  String
+  size Int    @default(0) // in bytes
+
+  folderId String?
+  folder   StorageFolder? @relation(fields: [folderId], references: [id])
+
+  uploaderId String
+  uploader   User   @relation(fields: [uploaderId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// --- SYSTEM CONFIG ---
+
+model SystemSetting {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       String // Text content, like prompts or JSON
+  description String?
+  updatedAt   DateTime @updatedAt
+}
+
+// --- INTERNAL MESSAGING MODULE ---
+
+model InternalMessage {
+  id          String   @id @default(cuid())
+  subject     String
+  type        String   @default("Mensaje Simple") // Notificacion, Tarea, Mensaje Simple, URGENTE
+  content     String
+  status      String   @default("Recibido") // Recibido, En proceso, Completado
+  isRead      Boolean  @default(false)
+
+  senderId    String
+  sender      User     @relation("MessageSender", fields: [senderId], references: [id])
+
+  receiverId  String
+  receiver    User     @relation("MessageReceiver", fields: [receiverId], references: [id])
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// --- PRODUCTIVITY MODULE ---
+
+model Note {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  color     String?
+  pinned    Boolean  @default(false)
+  userId    String
+  user      User     @relation("UserNotes", fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  start       DateTime
+  end         DateTime
+  color       String?
+  allDay      Boolean  @default(false)
+  userId      String
+  user        User     @relation("UserEvents", fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// --- NOTIFICATIONS MODULE ---
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  title     String
+  message   String
+  type      String   // MESSAGE, GOAL, TICKET, SYSTEM
+  relatedId String?  // ID of the related entity (e.g. ticket id, message id)
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+// --- FINANCE MODULE ---
+
+model PaymentTicket {
+  id         String   @id @default(cuid())
+  issueDate  DateTime @default(now())
+  dueDate    DateTime
+  amount     Float
+  concept    String
+  status     String   @default("PENDING") // PENDING, PAID, CANCELLED
+
+  adminId    String
+  admin      User     @relation("TicketIssuer", fields: [adminId], references: [id])
+
+  advisorId  String
+  advisor    User     @relation("TicketReceiver", fields: [advisorId], references: [id])
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+// --- COGNITIVE CONFIG (AI PROMPTS) ---
+
+model UserPromptConfig {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  type      String   // CAPACITADOR, TUTOR
+  prompt    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, type])
+}
+
+model SavedPrompt {
+  id        String   @id @default(cuid())
+  name      String   // "Prompt de Ventas Agresivo"
+  type      String   // CAPACITADOR, TUTOR
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
