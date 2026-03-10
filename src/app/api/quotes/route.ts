@@ -18,10 +18,11 @@ export async function GET(req: Request) {
 
         if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 })
 
+        const isAdmin = user.role === "ADMIN" || user.role === "MANAGEMENT"
+
         const quotes = await prisma.quote.findMany({
-            where: {
-                salespersonId: user.id
-            },
+            where: isAdmin ? {} : { salespersonId: user.id },
+            include: isAdmin ? { salesperson: { select: { name: true, email: true } } } : undefined,
             orderBy: { createdAt: 'desc' }
         })
 
@@ -48,7 +49,7 @@ export async function POST(req: Request) {
         }
 
         const body = await req.json()
-        const { quoteNumber, clientName, clientEmail, subtotal, tax, discountPercent, total, items, deliveryAddress, warrantyComments } = body
+        const { quoteNumber, globalQuoteNumber, clientName, clientEmail, subtotal, tax, discountPercent, total, items, deliveryAddress, warrantyComments } = body
 
         // Find or create a client record to satisfy database relations
         let client = await prisma.client.findFirst({
@@ -70,6 +71,7 @@ export async function POST(req: Request) {
         const quote = await prisma.quote.create({
             data: {
                 quoteNumber,
+                globalQuoteNumber,
                 clientId: client.id,
                 salespersonId: salesperson.id,
                 subtotal,

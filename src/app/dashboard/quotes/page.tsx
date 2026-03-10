@@ -27,6 +27,7 @@ export default function QuotationGenerator() {
     const [clientPhone, setClientPhone] = useState("")
     const [deliveryAddress, setDeliveryAddress] = useState("")
     const [quoteNumber, setQuoteNumber] = useState("Cargando...")
+    const [globalQuoteNumber, setGlobalQuoteNumber] = useState("")
     const [advisorName, setAdvisorName] = useState("JUAN PABLO GUZMAN")
     const [warrantyNote, setWarrantyNote] = useState("Garantía de 12 meses contra defectos de fábrica. No cubre daños por mal uso or variaciones de voltaje.")
     const [warrantyComments, setWarrantyComments] = useState("")
@@ -66,8 +67,11 @@ export default function QuotationGenerator() {
 
     const fetchNextNumber = async () => {
         const res = await fetch("/api/quotes/next-number")
-        const data = await res.json()
-        setQuoteNumber(data.quoteNumber)
+        if (res.ok) {
+            const data = await res.json()
+            setQuoteNumber(data.quoteNumber)
+            setGlobalQuoteNumber(data.globalQuoteNumber)
+        }
     }
 
     const fetchProducts = async () => {
@@ -149,6 +153,7 @@ export default function QuotationGenerator() {
         try {
             const quoteData = {
                 quoteNumber,
+                globalQuoteNumber,
                 clientName,
                 clientEmail,
                 clientPhone,
@@ -752,9 +757,19 @@ export default function QuotationGenerator() {
                                     <div key={quote.id} className="bg-white p-5 border border-neutral-200 shadow-sm hover:border-orange-300 transition-all group flex flex-col">
                                         <div className="flex justify-between items-start mb-4">
                                             <div>
-                                                <span className="text-xs font-black text-orange-600 uppercase tracking-widest bg-orange-50 px-2 py-1">{quote.quoteNumber}</span>
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-xs font-black text-orange-600 uppercase tracking-widest bg-orange-50 px-2 py-1">{quote.quoteNumber}</span>
+                                                    {quote.globalQuoteNumber && (
+                                                        <span className="text-[9px] font-bold text-neutral-400 border border-neutral-200 uppercase tracking-widest px-1.5 py-0.5" title="Numeración Global de la Empresa">
+                                                            {quote.globalQuoteNumber}
+                                                        </span>
+                                                    )}
+                                                </div>
                                                 <h3 className="text-sm font-bold text-neutral-900 mt-2 uppercase">{quote.clientName || 'CLIENTE NO ESPECIFICADO'}</h3>
-                                                <span className="text-[10px] font-mono text-neutral-400 uppercase mt-1 block">
+                                                <span className="text-[9px] font-bold text-neutral-500 uppercase mt-1 block">
+                                                    Asesor: <span className="text-neutral-800">{quote.salesperson?.name || "USUARIO"}</span>
+                                                </span>
+                                                <span className="text-[9px] font-mono text-neutral-400 uppercase mt-0.5 block">
                                                     Emitida: {new Date(quote.createdAt).toLocaleDateString()} a las {new Date(quote.createdAt).toLocaleTimeString()}
                                                 </span>
                                             </div>
