@@ -8,6 +8,10 @@ export default function PublicWebPage() {
     const [products, setProducts] = useState<any[]>([])
     const [metadata, setMetadata] = useState<any>({ categories: [], collections: [] })
     const [loading, setLoading] = useState(true)
+    const [showFullCatalog, setShowFullCatalog] = useState(false)
+    const [searchQuery, setSearchQuery] = useState("")
+    const [currentPage, setCurrentPage] = useState(1)
+    const itemsPerPage = 24
 
     useEffect(() => {
         const load = async () => {
@@ -18,6 +22,16 @@ export default function PublicWebPage() {
         }
         load()
     }, [])
+
+    const filteredProducts = products.filter(p => 
+        p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        (p.category?.name && p.category.name.toLowerCase().includes(searchQuery.toLowerCase()))
+    )
+
+    const totalPages = Math.ceil(filteredProducts.length / itemsPerPage)
+    const paginatedProducts = showFullCatalog 
+        ? filteredProducts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage) 
+        : products.slice(0, itemsPerPage)
 
     const featuredProducts = products.filter(p => p.featured).slice(0, 4)
 
@@ -131,10 +145,28 @@ export default function PublicWebPage() {
             {/* Featured Products */}
             <section id="productos" className="bg-neutral-50 py-24">
                 <div className="max-w-7xl mx-auto px-6">
-                    <div className="text-center space-y-4 mb-20">
+                    <div className="text-center space-y-4 mb-16">
                         <p className="text-orange-600 text-[10px] font-black uppercase tracking-[0.3em]">Catálogo Real</p>
                         <h2 className="text-5xl font-light text-neutral-800">Equipos <span className="font-black text-neutral-900">Disponibles</span></h2>
                     </div>
+
+                    {!loading && showFullCatalog && (
+                        <div className="mb-12 max-w-2xl mx-auto relative group">
+                            <div className="absolute inset-y-0 left-6 flex items-center pointer-events-none text-neutral-400 group-focus-within:text-orange-600 transition-colors">
+                                <Search size={20} />
+                            </div>
+                            <input
+                                type="text"
+                                placeholder="BUSCAR POR NOMBRE O CATEGORÍA..."
+                                value={searchQuery}
+                                onChange={(e) => {
+                                    setSearchQuery(e.target.value)
+                                    setCurrentPage(1)
+                                }}
+                                className="w-full bg-white border-2 border-neutral-100 px-16 py-6 text-sm font-bold uppercase tracking-widest focus:outline-none focus:border-orange-600 transition-all shadow-xl shadow-neutral-100/50"
+                            />
+                        </div>
+                    )}
 
                     {loading ? (
                         <div className="py-20 text-center animate-pulse">
@@ -142,7 +174,7 @@ export default function PublicWebPage() {
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                            {products.map((p) => (
+                            {paginatedProducts.map((p) => (
                                 <div key={p.id} className="bg-white group cursor-pointer border border-neutral-100 hover:border-orange-500/20 transition-all flex flex-col h-full">
                                     <div className="aspect-square bg-neutral-50 relative overflow-hidden flex items-center justify-center p-8 border-b border-neutral-50">
                                         {(() => {
@@ -183,11 +215,76 @@ export default function PublicWebPage() {
                                     </div>
                                 </div>
                             ))}
-                            {products.length === 0 && (
+                            {filteredProducts.length === 0 && (
                                 <div className="col-span-4 py-20 text-center border-2 border-dashed border-neutral-100">
-                                    <p className="font-black text-neutral-300 uppercase tracking-widest">No hay productos visibles</p>
+                                    <p className="font-black text-neutral-300 uppercase tracking-widest">No se encontraron productos</p>
                                 </div>
                             )}
+                        </div>
+                    )}
+
+                    {!loading && !showFullCatalog && products.length > itemsPerPage && (
+                        <div className="mt-20 text-center">
+                            <button 
+                                onClick={() => setShowFullCatalog(true)}
+                                className="inline-flex items-center space-x-3 bg-white border-2 border-neutral-900 text-neutral-900 px-12 py-5 text-xs font-black uppercase tracking-[0.2em] hover:bg-neutral-900 hover:text-white transition-all shadow-xl shadow-neutral-100"
+                            >
+                                <span>Ver Catálogo Completo</span>
+                                <ArrowRight size={14} />
+                            </button>
+                            <p className="mt-4 text-[10px] font-black text-neutral-300 uppercase tracking-widest">
+                                Mostrando 24 de {products.length} productos
+                            </p>
+                        </div>
+                    )}
+
+                    {!loading && showFullCatalog && totalPages > 1 && (
+                        <div className="mt-24 flex flex-col items-center space-y-8">
+                            <div className="flex items-center space-x-2">
+                                <button
+                                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                                    disabled={currentPage === 1}
+                                    className="w-12 h-12 flex items-center justify-center border-2 border-neutral-100 text-neutral-400 hover:border-orange-600 hover:text-orange-600 disabled:opacity-30 disabled:hover:border-neutral-100 disabled:hover:text-neutral-400 transition-all font-black"
+                                >
+                                    &lt;
+                                </button>
+                                
+                                {[...Array(totalPages)].map((_, i) => {
+                                    const page = i + 1;
+                                    // Lógica simple para no mostrar demasiados números si hay muchas páginas
+                                    if (totalPages > 7) {
+                                        if (page !== 1 && page !== totalPages && Math.abs(page - currentPage) > 1) {
+                                            if (page === 2 || page === totalPages - 1) return <span key={page} className="text-neutral-300">...</span>;
+                                            return null;
+                                        }
+                                    }
+
+                                    return (
+                                        <button
+                                            key={page}
+                                            onClick={() => setCurrentPage(page)}
+                                            className={`w-12 h-12 flex items-center justify-center border-2 font-black text-xs transition-all ${
+                                                currentPage === page 
+                                                ? "bg-neutral-900 border-neutral-900 text-white shadow-lg shadow-neutral-200" 
+                                                : "bg-white border-neutral-100 text-neutral-400 hover:border-orange-600 hover:text-orange-600"
+                                            }`}
+                                        >
+                                            {page}
+                                        </button>
+                                    );
+                                })}
+
+                                <button
+                                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                                    disabled={currentPage === totalPages}
+                                    className="w-12 h-12 flex items-center justify-center border-2 border-neutral-100 text-neutral-400 hover:border-orange-600 hover:text-orange-600 disabled:opacity-30 disabled:hover:border-neutral-100 disabled:hover:text-neutral-400 transition-all font-black"
+                                >
+                                    &gt;
+                                </button>
+                            </div>
+                            <p className="text-[10px] font-black text-neutral-300 uppercase tracking-widest">
+                                Página {currentPage} de {totalPages} — {filteredProducts.length} resultados
+                            </p>
                         </div>
                     )}
                 </div>
