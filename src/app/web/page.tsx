@@ -8,7 +8,6 @@ export default function PublicWebPage() {
     const [products, setProducts] = useState<any[]>([])
     const [metadata, setMetadata] = useState<any>({ categories: [], collections: [] })
     const [loading, setLoading] = useState(true)
-    const [showFullCatalog, setShowFullCatalog] = useState(false)
     const [searchQuery, setSearchQuery] = useState("")
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 24
@@ -29,9 +28,7 @@ export default function PublicWebPage() {
     )
 
     const totalPages = Math.ceil(filteredProducts.length / itemsPerPage)
-    const paginatedProducts = showFullCatalog 
-        ? filteredProducts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage) 
-        : products.slice(0, itemsPerPage)
+    const paginatedProducts = filteredProducts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
 
     const featuredProducts = products.filter(p => p.featured).slice(0, 4)
 
@@ -150,7 +147,7 @@ export default function PublicWebPage() {
                         <h2 className="text-5xl font-light text-neutral-800">Equipos <span className="font-black text-neutral-900">Disponibles</span></h2>
                     </div>
 
-                    {!loading && showFullCatalog && (
+                    {!loading && (
                         <div className="mb-12 max-w-2xl mx-auto relative group">
                             <div className="absolute inset-y-0 left-6 flex items-center pointer-events-none text-neutral-400 group-focus-within:text-orange-600 transition-colors">
                                 <Search size={20} />
@@ -223,22 +220,9 @@ export default function PublicWebPage() {
                         </div>
                     )}
 
-                    {!loading && !showFullCatalog && products.length > itemsPerPage && (
-                        <div className="mt-20 text-center">
-                            <button 
-                                onClick={() => setShowFullCatalog(true)}
-                                className="inline-flex items-center space-x-3 bg-white border-2 border-neutral-900 text-neutral-900 px-12 py-5 text-xs font-black uppercase tracking-[0.2em] hover:bg-neutral-900 hover:text-white transition-all shadow-xl shadow-neutral-100"
-                            >
-                                <span>Ver Catálogo Completo</span>
-                                <ArrowRight size={14} />
-                            </button>
-                            <p className="mt-4 text-[10px] font-black text-neutral-300 uppercase tracking-widest">
-                                Mostrando 24 de {products.length} productos
-                            </p>
-                        </div>
-                    )}
 
-                    {!loading && showFullCatalog && totalPages > 1 && (
+
+                    {!loading && totalPages > 1 && (
                         <div className="mt-24 flex flex-col items-center space-y-8">
                             <div className="flex items-center space-x-2">
                                 <button
