@@ -222,7 +222,7 @@ export default function PublicWebPage() {
 
 
 
-                    {!loading && totalPages > 1 && (
+                    {!loading && filteredProducts.length > 0 && (
                         <div className="mt-24 flex flex-col items-center space-y-8">
                             <div className="flex items-center space-x-2">
                                 <button
