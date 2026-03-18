@@ -33,7 +33,19 @@ export async function getProducts() {
     noStore(); // Desactiva la caché agresiva de Next.js
     try {
         const products = await prisma.product.findMany({
-            include: {
+            select: {
+                id: true,
+                name: true,
+                price: true,
+                compareAtPrice: true,
+                images: true,
+                categoryId: true,
+                collectionId: true,
+                isActive: true,
+                featured: true,
+                stock: true,
+                sku: true,
+                createdAt: true,
                 category: true,
                 collection: true
             },
@@ -45,6 +57,9 @@ export async function getProducts() {
         // Fallback to minimal products if include fails
         try {
             return await prisma.product.findMany({
+                select: {
+                    id: true, name: true, price: true, images: true, categoryId: true, isActive: true, featured: true, createdAt: true
+                },
                 orderBy: { createdAt: 'desc' }
             })
         } catch (e) {
