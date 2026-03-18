@@ -11,7 +11,13 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
                 name: data.name,
                 description: data.description,
                 price: parseFloat(data.price),
-                sku: data.sku
+                sku: data.sku,
+                images: data.images || null,
+                isActive: data.isActive ?? true,
+                featured: data.featured ?? false,
+                stock: data.stock ?? 0,
+                keywords: data.keywords || null,
+                specs: data.specs || null,
             }
         })
         return NextResponse.json(product)
