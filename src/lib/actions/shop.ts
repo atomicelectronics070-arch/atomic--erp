@@ -1,7 +1,7 @@
 "use server"
 
 import { prisma } from "@/lib/prisma"
-import { revalidatePath } from "next/cache"
+import { revalidatePath, unstable_noStore as noStore } from "next/cache"
 
 // CATEGORIES & COLLECTIONS
 export async function getShopMetadata() {
@@ -30,6 +30,7 @@ export async function createCollection(name: string) {
 
 // PRODUCTS
 export async function getProducts() {
+    noStore(); // Desactiva la caché agresiva de Next.js
     try {
         const products = await prisma.product.findMany({
             include: {
