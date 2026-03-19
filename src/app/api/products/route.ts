@@ -15,6 +15,28 @@ export async function GET() {
 export async function POST(req: Request) {
     try {
         const data = await req.json()
+        
+        // Soporte para creación masiva (Bulk)
+        if (Array.isArray(data)) {
+            const products = await prisma.product.createMany({
+                data: data.map(p => ({
+                    name: p.name,
+                    description: p.description || '',
+                    price: parseFloat(p.price) || 0,
+                    sku: p.sku || null,
+                    images: p.images || null,
+                    isActive: p.isActive ?? true,
+                    featured: p.featured ?? false,
+                    stock: p.stock ?? 0,
+                    keywords: p.keywords || null,
+                    specs: p.specs || null,
+                })),
+                skipDuplicates: true // Muy importante para evitar errores
+            })
+            return NextResponse.json({ success: true, count: products.count })
+        }
+
+        // Creación individual original
         const product = await prisma.product.create({
             data: {
                 name: data.name,
