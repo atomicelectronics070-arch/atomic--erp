@@ -28,44 +28,114 @@ export async function createCollection(name: string) {
     return col
 }
 
+export async function deleteCollection(id: string) {
+    await prisma.collection.delete({ where: { id } })
+    revalidatePath('/dashboard/shop')
+    return { success: true }
+}
+
+export async function deleteManyCollections(ids: string[]) {
+    await prisma.collection.deleteMany({
+        where: { id: { in: ids } }
+    })
+    revalidatePath('/dashboard/shop')
+    return { success: true }
+}
+
+export async function updateCollection(id: string, name: string) {
+    const slug = name.toLowerCase().replace(/ /g, '-')
+    await prisma.collection.update({
+        where: { id },
+        data: { name, slug }
+    })
+    revalidatePath('/dashboard/shop')
+    return { success: true }
+}
+
 // PRODUCTS
-export async function getProducts() {
-    noStore(); // Desactiva la caché agresiva de Next.js
+export async function getProducts(options: { page?: number, pageSize?: number, search?: string, categoryId?: string, collectionId?: string } = {}) {
+    noStore(); 
+    const { page = 1, pageSize = 50, search = "", categoryId, collectionId } = options;
+    const skip = (page - 1) * pageSize;
+
+    const where: any = {};
+    if (search) {
+        where.OR = [
+            { name: { contains: search, mode: 'insensitive' } },
+            { sku: { contains: search, mode: 'insensitive' } },
+            { description: { contains: search, mode: 'insensitive' } }
+        ];
+    }
+    if (categoryId && categoryId !== 'all') where.categoryId = categoryId;
+    if (collectionId && collectionId !== 'all') where.collectionId = collectionId;
+
     try {
-        const products = await prisma.product.findMany({
-            select: {
-                id: true,
-                name: true,
-                price: true,
-                compareAtPrice: true,
-                images: true,
-                categoryId: true,
-                collectionId: true,
-                isActive: true,
-                featured: true,
-                stock: true,
-                sku: true,
-                createdAt: true,
+        const [products, total] = await Promise.all([
+            prisma.product.findMany({
+                where,
+                select: {
+                    id: true,
+                    name: true,
+                    price: true,
+                    compareAtPrice: true,
+                    images: true,
+                    categoryId: true,
+                    collectionId: true,
+                    isActive: true,
+                    featured: true,
+                    stock: true,
+                    sku: true,
+                    createdAt: true,
+                    category: true,
+                    collection: true
+                },
+                orderBy: { createdAt: 'desc' },
+                take: pageSize,
+                skip: skip
+            }),
+            prisma.product.count({ where })
+        ]);
+        return { products, total, page, pageSize };
+    } catch (error) {
+        console.error("Error fetching products:", error);
+        return { products: [], total: 0, page, pageSize };
+    }
+}
+
+export async function getProductById(id: string) {
+    noStore();
+    try {
+        const product = await prisma.product.findUnique({
+            where: { id },
+            include: {
                 category: true,
                 collection: true
-            },
-            orderBy: { createdAt: 'desc' }
-        })
-        return products
+            }
+        });
+        return product;
     } catch (error) {
-        console.error("Error fetching products:", error)
-        // Fallback to minimal products if include fails
-        try {
-            return await prisma.product.findMany({
-                select: {
-                    id: true, name: true, price: true, images: true, categoryId: true, isActive: true, featured: true, createdAt: true
-                },
-                orderBy: { createdAt: 'desc' }
-            })
-        } catch (e) {
-            console.error("Critical error in getProducts:", e)
-            return []
-        }
+        console.error("Error fetching product by id:", error);
+        return null;
+    }
+}
+
+export async function getRelatedProducts(categoryId: string | null, currentProductId: string) {
+    noStore();
+    if (!categoryId) return [];
+    try {
+        const products = await prisma.product.findMany({
+            where: {
+                categoryId,
+                id: { not: currentProductId },
+                isActive: true
+            },
+            take: 4,
+            orderBy: { createdAt: 'desc' }
+        });
+        return products;
+    } catch (error) {
+        console.error("Error fetching related products:", error);
+        return [];
     }
 }
 
@@ -98,6 +168,25 @@ export async function saveProduct(data: any) {
 
 export async function deleteProduct(id: string) {
     await prisma.product.delete({ where: { id } })
+    revalidatePath('/dashboard/shop')
+    revalidatePath('/web')
+    return { success: true }
+}
+
+export async function deleteManyProducts(ids: string[]) {
+    await prisma.product.deleteMany({
+        where: { id: { in: ids } }
+    })
+    revalidatePath('/dashboard/shop')
+    revalidatePath('/web')
+    return { success: true }
+}
+
+export async function updateProductsCollection(productIds: string[], collectionId: string | null) {
+    await prisma.product.updateMany({
+        where: { id: { in: productIds } },
+        data: { collectionId }
+    })
     revalidatePath('/dashboard/shop')
     revalidatePath('/web')
     return { success: true }

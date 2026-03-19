@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { ShoppingBag, ChevronRight, Star, ArrowRight, Shield, Zap, Truck, Search, ShoppingCart, User, Download, ExternalLink, Power } from "lucide-react"
 import { getProducts, getShopMetadata } from "@/lib/actions/shop"
+import Link from "next/link"
 
 export default function PublicWebPage() {
     const [products, setProducts] = useState<any[]>([])
@@ -10,25 +11,26 @@ export default function PublicWebPage() {
     const [loading, setLoading] = useState(true)
     const [searchQuery, setSearchQuery] = useState("")
     const [currentPage, setCurrentPage] = useState(1)
+    const [totalProducts, setTotalProducts] = useState(0)
     const itemsPerPage = 24
 
     useEffect(() => {
         const load = async () => {
-            const [p, m] = await Promise.all([getProducts(), getShopMetadata()])
-            setProducts(p.filter(prod => prod.isActive))
+            setLoading(true)
+            const [productRes, m] = await Promise.all([
+                getProducts({ page: currentPage, pageSize: itemsPerPage, search: searchQuery }),
+                getShopMetadata()
+            ])
+            setProducts(productRes.products)
+            setTotalProducts(productRes.total)
             setMetadata(m)
             setLoading(false)
         }
         load()
-    }, [])
+    }, [currentPage, searchQuery])
 
-    const filteredProducts = products.filter(p => 
-        p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-        (p.category?.name && p.category.name.toLowerCase().includes(searchQuery.toLowerCase()))
-    )
-
-    const totalPages = Math.ceil(filteredProducts.length / itemsPerPage)
-    const paginatedProducts = filteredProducts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+    const totalPages = Math.ceil(totalProducts / itemsPerPage)
+    const paginatedProducts = products // Now coming paginated from server
 
     const featuredProducts = products.filter(p => p.featured).slice(0, 4)
 
@@ -38,9 +40,9 @@ export default function PublicWebPage() {
             <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-neutral-100">
                 <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
                     <div className="flex items-center space-x-12">
-                        <span className="text-2xl font-black tracking-tighter uppercase italic">
+                        <Link href="/web" className="text-2xl font-black tracking-tighter uppercase italic">
                             ATOMIC<span className="text-orange-600">.</span>
-                        </span>
+                        </Link>
                         <div className="hidden md:flex space-x-8 text-[11px] font-bold uppercase tracking-widest text-neutral-500">
                             <a href="#" className="text-orange-600 border-b-2 border-orange-600 pb-1">Inicio</a>
                             <a href="#productos" className="hover:text-neutral-800 transition-colors">Productos</a>
@@ -172,7 +174,11 @@ export default function PublicWebPage() {
                     ) : (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                             {paginatedProducts.map((p) => (
-                                <div key={p.id} className="bg-white group cursor-pointer border border-neutral-100 hover:border-orange-500/20 transition-all flex flex-col h-full">
+                                <Link 
+                                    key={p.id} 
+                                    href={`/web/product/${p.id}`}
+                                    className="bg-white group cursor-pointer border border-neutral-100 hover:border-orange-500/20 transition-all flex flex-col h-full hover:shadow-2xl shadow-neutral-100/50 hover:shadow-orange-100/20"
+                                >
                                     <div className="aspect-square bg-neutral-50 relative overflow-hidden flex items-center justify-center p-8 border-b border-neutral-50">
                                         {(() => {
                                             try {
@@ -181,7 +187,7 @@ export default function PublicWebPage() {
                                                     <img
                                                         src={imageUrls[0]}
                                                         alt={p.name}
-                                                        className="w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-500"
+                                                        className="w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-700 ease-out"
                                                     />
                                                 ) : (
                                                     <div className="text-neutral-200 uppercase font-black text-[10px] text-center">Sin imagen</div>
@@ -191,28 +197,28 @@ export default function PublicWebPage() {
                                             }
                                         })()}
                                         {p.featured && (
-                                            <div className="absolute top-4 right-4 bg-orange-600 text-white text-[8px] font-black uppercase px-2 py-1">Destacado</div>
+                                            <div className="absolute top-4 right-4 bg-orange-600 text-white text-[8px] font-black uppercase px-2 py-1 shadow-lg">Destacado</div>
                                         )}
-                                        <button className="absolute inset-x-0 bottom-0 bg-neutral-900 text-white py-4 text-[9px] font-black uppercase tracking-widest translate-y-full group-hover:translate-y-0 transition-transform flex items-center justify-center space-x-2">
-                                            <ShoppingCart size={12} /> <span>Añadir al Carrito</span>
-                                        </button>
+                                        <div className="absolute inset-x-0 bottom-0 bg-neutral-900 text-white py-4 text-[9px] font-black uppercase tracking-[0.3em] translate-y-full group-hover:translate-y-0 transition-transform flex items-center justify-center space-x-2">
+                                            <span>Ver detalles pro</span> <ChevronRight size={12} />
+                                        </div>
                                     </div>
-                                    <div className="p-6 space-y-3 flex-1 flex flex-col">
+                                    <div className="p-6 space-y-3 flex-1 flex flex-col group-hover:bg-neutral-50/50 transition-colors">
                                         <div className="flex items-center justify-between">
-                                            <span className="text-[10px] font-black text-orange-600 uppercase tracking-widest">{p.category?.name || 'Varios'}</span>
+                                            <span className="text-[10px] font-black text-orange-600 uppercase tracking-[0.2em]">{p.category?.name || 'Varios'}</span>
                                             {p.specSheetUrl && <Download size={12} className="text-neutral-300" />}
                                         </div>
-                                        <h4 className="text-xs font-black uppercase tracking-wide text-neutral-800 line-clamp-2 leading-tight flex-1">{p.name}</h4>
-                                        <div className="pt-2 flex items-center justify-between">
-                                            <p className="text-lg font-black text-neutral-900 font-mono">${p.price.toFixed(2)}</p>
+                                        <h4 className="text-xs font-black uppercase tracking-wide text-neutral-800 line-clamp-2 leading-[1.1] flex-1 group-hover:text-orange-600 transition-colors uppercase italic">{p.name}</h4>
+                                        <div className="pt-4 border-t border-neutral-50 flex items-center justify-between">
+                                            <p className="text-lg font-black text-neutral-900 font-mono tracking-tighter">${p.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                                             {p.compareAtPrice && (
-                                                <p className="text-[10px] text-neutral-400 line-through font-bold">${p.compareAtPrice.toFixed(2)}</p>
+                                                <p className="text-[10px] text-neutral-300 line-through font-bold">${p.compareAtPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                                             )}
                                         </div>
                                     </div>
-                                </div>
+                                </Link>
                             ))}
-                            {filteredProducts.length === 0 && (
+                            {totalProducts === 0 && (
                                 <div className="col-span-4 py-20 text-center border-2 border-dashed border-neutral-100">
                                     <p className="font-black text-neutral-300 uppercase tracking-widest">No se encontraron productos</p>
                                 </div>
@@ -222,7 +228,7 @@ export default function PublicWebPage() {
 
 
 
-                    {!loading && filteredProducts.length > 0 && (
+                    {!loading && totalProducts > 0 && (
                         <div className="mt-24 flex flex-col items-center space-y-8">
                             <div className="flex items-center space-x-2">
                                 <button
@@ -235,7 +241,6 @@ export default function PublicWebPage() {
                                 
                                 {[...Array(totalPages)].map((_, i) => {
                                     const page = i + 1;
-                                    // Lógica simple para no mostrar demasiados números si hay muchas páginas
                                     if (totalPages > 7) {
                                         if (page !== 1 && page !== totalPages && Math.abs(page - currentPage) > 1) {
                                             if (page === 2 || page === totalPages - 1) return <span key={page} className="text-neutral-300">...</span>;
@@ -267,7 +272,7 @@ export default function PublicWebPage() {
                                 </button>
                             </div>
                             <p className="text-[10px] font-black text-neutral-300 uppercase tracking-widest">
-                                Página {currentPage} de {totalPages} — {filteredProducts.length} resultados
+                                Página {currentPage} de {totalPages} — {totalProducts} resultados
                             </p>
                         </div>
                     )}

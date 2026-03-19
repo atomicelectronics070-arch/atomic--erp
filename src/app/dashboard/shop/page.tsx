@@ -1,8 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ShoppingBag, Plus, Save, Image as ImageIcon, FileText, Trash2, X, PlusCircle, Globe, LayoutGrid, List, Layers, Tag as TagIcon, Edit, Power, Star, Settings, CreditCard, Box } from "lucide-react"
-import { saveProduct, getProducts, deleteProduct, getShopMetadata, createCategory, createCollection } from "@/lib/actions/shop"
+import { ShoppingBag, Plus, Save, Image as ImageIcon, FileText, Trash2, X, PlusCircle, Globe, LayoutGrid, List, Layers, Tag as TagIcon, Edit, Power, Star, Settings, CreditCard, Box, CheckSquare, Square, ChevronRight, Search } from "lucide-react"
+import { saveProduct, getProducts, deleteProduct, getShopMetadata, createCategory, createCollection, deleteCollection, deleteManyCollections, updateCollection, deleteManyProducts, updateProductsCollection } from "@/lib/actions/shop"
 
 const safeParseArray = (str: any, fallback: any = []) => {
     if (!str || str === 'null') return fallback;
@@ -18,9 +18,16 @@ export default function ShopConfigPage() {
     const [view, setView] = useState<'list' | 'add' | 'edit'>('list')
     const [activeTab, setActiveTab] = useState<'products' | 'catalogs' | 'settings'>('products')
     const [products, setProducts] = useState<any[]>([])
+    const [totalProducts, setTotalProducts] = useState(0)
+    const [currentPage, setCurrentPage] = useState(1)
+    const [pageSize, setPageSize] = useState(50)
+    const [dashboardSearch, setDashboardSearch] = useState("")
     const [metadata, setMetadata] = useState<{ categories: any[], collections: any[] }>({ categories: [], collections: [] })
     const [editingProduct, setEditingProduct] = useState<any>(null)
     const [loading, setLoading] = useState(true)
+    const [selectedProducts, setSelectedProducts] = useState<string[]>([])
+    const [selectedCollections, setSelectedCollections] = useState<string[]>([])
+    const [showBulkActions, setShowBulkActions] = useState(false)
 
     // Store Settings State
     const [storeSettings, setStoreSettings] = useState({
@@ -38,21 +45,24 @@ export default function ShopConfigPage() {
 
     useEffect(() => {
         refreshData()
-    }, [])
+    }, [currentPage, dashboardSearch])
 
     const refreshData = async () => {
         setLoading(true)
         try {
-            const [p, m, s] = await Promise.all([
-                getProducts(),
+            const [productRes, m, s] = await Promise.all([
+                getProducts({ page: currentPage, pageSize, search: dashboardSearch }),
                 getShopMetadata(),
                 fetch("/api/shop/settings").then(res => res.json()).catch(() => ({}))
             ])
-            setProducts(p)
+            setProducts(productRes.products)
+            setTotalProducts(productRes.total)
             setMetadata(m)
             if (s && s.settings) {
                 setStoreSettings(s.settings)
             }
+            setSelectedProducts([])
+            setSelectedCollections([])
         } catch (error) {
             console.error(error)
         } finally {
@@ -84,6 +94,46 @@ export default function ShopConfigPage() {
     const handleDelete = async (id: string) => {
         if (confirm("¿Estás seguro de eliminar este producto?")) {
             await deleteProduct(id)
+            refreshData()
+        }
+    }
+
+    const handleBulkDeleteProducts = async () => {
+        if (confirm(`¿Estás seguro de eliminar ${selectedProducts.length} productos?`)) {
+            await deleteManyProducts(selectedProducts)
+            refreshData()
+        }
+    }
+
+    const handleBulkUpdateCollection = async (collectionId: string | null) => {
+        await updateProductsCollection(selectedProducts, collectionId)
+        refreshData()
+    }
+
+    const toggleProductSelection = (id: string) => {
+        setSelectedProducts(prev => 
+            prev.includes(id) ? prev.filter(pId => pId !== id) : [...prev, id]
+        )
+    }
+
+    const toggleAllProducts = () => {
+        if (selectedProducts.length === products.length) {
+            setSelectedProducts([])
+        } else {
+            setSelectedProducts(products.map(p => p.id))
+        }
+    }
+
+    const handleDeleteCollection = async (id: string) => {
+        if (confirm("¿Estás seguro de eliminar esta colección? Los productos no serán eliminados.")) {
+            await deleteCollection(id)
+            refreshData()
+        }
+    }
+
+    const handleBulkDeleteCollections = async () => {
+        if (confirm(`¿Estás seguro de eliminar ${selectedCollections.length} colecciones?`)) {
+            await deleteManyCollections(selectedCollections)
             refreshData()
         }
     }
@@ -144,16 +194,34 @@ export default function ShopConfigPage() {
                         <div className="space-y-6">
                             {/* Stats & Tools */}
                             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                                <StatCard label="Total Productos" value={products.length} icon={<ShoppingBag size={14} />} />
+                                <StatCard label="Total Productos" value={totalProducts} icon={<ShoppingBag size={14} />} />
                                 <StatCard label="Categorías" value={metadata.categories.length} icon={<TagIcon size={14} />} />
                                 <StatCard label="Colecciones" value={metadata.collections.length} icon={<Layers size={14} />} />
                                 <StatCard label="Visibles en Web" value={products.filter(p => p.isActive).length} icon={<Globe size={14} />} />
+                            </div>
+
+                            <div className="flex flex-col md:flex-row gap-4 mb-4">
+                                <div className="flex-1 relative">
+                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" size={16} />
+                                    <input 
+                                        type="text"
+                                        placeholder="Buscar por nombre, SKU o descripción..."
+                                        value={dashboardSearch}
+                                        onChange={(e) => { setDashboardSearch(e.target.value); setCurrentPage(1); }}
+                                        className="w-full bg-white border border-neutral-200 pl-10 pr-4 py-2.5 text-sm outline-none focus:border-orange-600 transition-colors"
+                                    />
+                                </div>
                             </div>
 
                             <div className="bg-white border border-neutral-100 overflow-hidden">
                                 <table className="w-full text-left border-collapse">
                                     <thead>
                                         <tr className="bg-neutral-50 text-[10px] font-black uppercase tracking-widest text-neutral-400 border-b border-neutral-100">
+                                            <th className="px-6 py-4 w-10">
+                                                <button onClick={toggleAllProducts} className="text-neutral-400 hover:text-orange-600 transition-colors">
+                                                    {selectedProducts.length === products.length && products.length > 0 ? <CheckSquare size={16} /> : <Square size={16} />}
+                                                </button>
+                                            </th>
                                             <th className="px-6 py-4 font-black">Producto</th>
                                             <th className="px-6 py-4 font-black">Categoría</th>
                                             <th className="px-6 py-4 font-black">Stock</th>
@@ -170,7 +238,12 @@ export default function ShopConfigPage() {
                                             </tr>
                                         ) : (
                                             products.map((p) => (
-                                                <tr key={p.id} className="hover:bg-neutral-50/50 transition-colors group">
+                                                <tr key={p.id} className={`hover:bg-neutral-50/50 transition-colors group ${selectedProducts.includes(p.id) ? 'bg-orange-50/30' : ''}`}>
+                                                    <td className="px-6 py-5">
+                                                        <button onClick={() => toggleProductSelection(p.id)} className={`${selectedProducts.includes(p.id) ? 'text-orange-600' : 'text-neutral-200 group-hover:text-neutral-400'} transition-colors`}>
+                                                            {selectedProducts.includes(p.id) ? <CheckSquare size={16} /> : <Square size={16} />}
+                                                        </button>
+                                                    </td>
                                                     <td className="px-6 py-5">
                                                         <div className="flex items-center space-x-3">
                                                             <div className="w-10 h-10 bg-neutral-100 rounded-none overflow-hidden flex items-center justify-center">
@@ -214,7 +287,67 @@ export default function ShopConfigPage() {
                                         )}
                                     </tbody>
                                 </table>
+                                {/* Pagination Controls */}
+                                <div className="p-6 border-t border-neutral-100 flex items-center justify-between bg-white text-xs">
+                                    <p className="text-neutral-500 font-medium">Mostrando <span className="text-neutral-900 font-bold">{products.length}</span> de <span className="text-neutral-900 font-bold">{totalProducts}</span> productos</p>
+                                    <div className="flex items-center space-x-2">
+                                        <button 
+                                            disabled={currentPage <= 1}
+                                            onClick={() => setCurrentPage(prev => prev - 1)}
+                                            className="px-4 py-2 border border-neutral-200 text-neutral-400 hover:text-orange-600 hover:border-orange-600 disabled:opacity-30 disabled:hover:text-neutral-400 disabled:hover:border-neutral-200 transition-all font-bold uppercase tracking-widest text-[9px]"
+                                        >
+                                            Anterior
+                                        </button>
+                                        <div className="flex items-center justify-center px-4 font-black text-neutral-800">
+                                            {currentPage} / {Math.ceil(totalProducts / pageSize) || 1}
+                                        </div>
+                                        <button 
+                                            disabled={currentPage >= Math.ceil(totalProducts / pageSize)}
+                                            onClick={() => setCurrentPage(prev => prev + 1)}
+                                            className="px-4 py-2 border border-neutral-200 text-neutral-400 hover:text-orange-600 hover:border-orange-600 disabled:opacity-30 disabled:hover:text-neutral-400 disabled:hover:border-neutral-200 transition-all font-bold uppercase tracking-widest text-[9px]"
+                                        >
+                                            Siguiente
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
+                            {/* Bulk Actions Bar */}
+                            {selectedProducts.length > 0 && (
+                                <div className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-neutral-900 text-white px-8 py-4 flex items-center space-x-8 shadow-2xl z-50 animate-in slide-in-from-bottom-4 duration-300">
+                                    <div className="flex items-center space-x-2 border-r border-neutral-700 pr-8">
+                                        <span className="text-orange-500 font-bold">{selectedProducts.length}</span>
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-neutral-400">Seleccionados</span>
+                                    </div>
+                                    <div className="flex items-center space-x-4">
+                                        <div className="flex items-center space-x-2">
+                                            <span className="text-[10px] font-black uppercase tracking-widest text-neutral-400">Colección:</span>
+                                            <select 
+                                                onChange={(e) => handleBulkUpdateCollection(e.target.value || null)}
+                                                className="bg-neutral-800 border-none text-[10px] font-bold uppercase tracking-widest px-4 py-2 outline-none cursor-pointer hover:bg-neutral-700 transition-colors"
+                                            >
+                                                <option value="">Cambiar a...</option>
+                                                <option value="none">Sin Colección</option>
+                                                {metadata.collections.map(c => (
+                                                    <option key={c.id} value={c.id}>{c.name}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <button 
+                                            onClick={handleBulkDeleteProducts}
+                                            className="flex items-center space-x-2 bg-red-600/10 text-red-500 hover:bg-red-600 hover:text-white px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all"
+                                        >
+                                            <Trash2 size={14} />
+                                            <span>Eliminar Selección</span>
+                                        </button>
+                                        <button 
+                                            onClick={() => setSelectedProducts([])}
+                                            className="text-neutral-400 hover:text-white transition-colors"
+                                        >
+                                            <X size={18} />
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     )}
 
@@ -247,14 +380,63 @@ export default function ShopConfigPage() {
                                     </ul>
                                 </div>
                                 <div className="bg-white border text-sm border-neutral-100 p-6">
-                                    <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-800 mb-4 border-b pb-4">Colecciones Especiales</h3>
+                                    <div className="flex justify-between items-center mb-4 border-b pb-4">
+                                        <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-800">Colecciones Especiales</h3>
+                                        {selectedCollections.length > 0 && (
+                                            <button 
+                                                onClick={handleBulkDeleteCollections}
+                                                className="flex items-center space-x-2 text-red-500 hover:text-red-700 text-[10px] font-black uppercase tracking-widest transition-colors"
+                                            >
+                                                <Trash2 size={12} />
+                                                <span>Eliminar ({selectedCollections.length})</span>
+                                            </button>
+                                        )}
+                                    </div>
                                     <ul className="space-y-2">
-                                        {metadata.collections.map(c => (
-                                            <li key={c.id} className="flex justify-between items-center py-2 px-3 bg-neutral-50 hover:bg-neutral-100 transition-colors">
-                                                <span className="font-medium text-neutral-700">{c.name}</span>
-                                                <span className="text-[10px] text-neutral-400 font-bold uppercase">/{c.slug}</span>
-                                            </li>
-                                        ))}
+                                        {metadata.collections.length === 0 ? (
+                                            <p className="text-center py-8 text-neutral-300 text-[10px] font-bold uppercase tracking-widest">No hay colecciones creadas</p>
+                                        ) : (
+                                            metadata.collections.map(c => {
+                                                const productCount = products.filter(p => p.collectionId === c.id).length;
+                                                const isSelected = selectedCollections.includes(c.id);
+                                                return (
+                                                    <li key={c.id} className={`flex justify-between items-center py-3 px-4 transition-colors group ${isSelected ? 'bg-orange-50 border border-orange-100' : 'bg-neutral-50 hover:bg-neutral-100'}`}>
+                                                        <div className="flex items-center space-x-3">
+                                                            <button 
+                                                                onClick={() => setSelectedCollections(prev => isSelected ? prev.filter(id => id !== c.id) : [...prev, c.id])}
+                                                                className={`${isSelected ? 'text-orange-600' : 'text-neutral-200 group-hover:text-neutral-400'}`}
+                                                            >
+                                                                {isSelected ? <CheckSquare size={16} /> : <Square size={16} />}
+                                                            </button>
+                                                            <div>
+                                                                <span className="font-bold text-neutral-800">{c.name}</span>
+                                                                <div className="flex items-center space-x-2 mt-0.5">
+                                                                    <span className="text-[9px] text-neutral-400 font-bold uppercase tracking-widest">/{c.slug}</span>
+                                                                    <span className="text-[9px] text-orange-600 font-black uppercase tracking-widest">• {productCount} productos</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                            <button 
+                                                                onClick={() => {
+                                                                    const newName = prompt("Nuevo nombre para la colección:", c.name);
+                                                                    if (newName && newName !== c.name) updateCollection(c.id, newName).then(refreshData);
+                                                                }}
+                                                                className="p-1.5 text-neutral-400 hover:text-orange-600 transition-colors"
+                                                            >
+                                                                <Edit size={14} />
+                                                            </button>
+                                                            <button 
+                                                                onClick={() => handleDeleteCollection(c.id)}
+                                                                className="p-1.5 text-neutral-400 hover:text-red-600 transition-colors"
+                                                            >
+                                                                <Trash2 size={14} />
+                                                            </button>
+                                                        </div>
+                                                    </li>
+                                                );
+                                            })
+                                        )}
                                     </ul>
                                 </div>
                             </div>

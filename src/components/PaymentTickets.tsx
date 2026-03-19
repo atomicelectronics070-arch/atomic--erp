@@ -21,7 +21,7 @@ export default function PaymentTickets() {
     const [tickets, setTickets] = useState<Ticket[]>([])
     const [loading, setLoading] = useState(true)
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const [advisors, setAdvisors] = useState<{ id: string, name: string }[]>([])
+    const [advisors, setAdvisors] = useState<{ id: string, name: string, role?: string }[]>([])
 
     const role = session?.user?.role
     const isAdmin = role === "ADMIN" || role === "MANAGEMENT"
@@ -39,7 +39,7 @@ export default function PaymentTickets() {
         if (isAdmin) {
             fetchAdvisors()
         }
-    }, [isAdmin])
+    }, [isAdmin, session])
 
     const fetchTickets = async () => {
         setLoading(true)
@@ -58,14 +58,23 @@ export default function PaymentTickets() {
 
     const fetchAdvisors = async () => {
         try {
-            const res = await fetch("/api/crm/users") // Assuming this endpoint exists, or similar
+            const res = await fetch("/api/crm/users", { cache: 'no-store' })
             if (res.ok) {
                 const data = await res.json()
-                const filtered = data.filter((u: any) => u.role !== "ADMIN" && u.status === "ACTIVE")
+                console.log("[PaymentTickets] Raw users from API:", data.length, data)
+                // Show all users that have APPROVED or ACTIVE status
+                const filtered = data.filter((u: any) => {
+                    const status = (u.status || "").toUpperCase()
+                    return status === "APPROVED" || status === "ACTIVE"
+                })
+                console.log("[PaymentTickets] Filtered advisors:", filtered.length)
                 setAdvisors(filtered)
+            } else {
+                const errText = await res.text()
+                console.error("[PaymentTickets] Failed to fetch advisors:", res.status, errText)
             }
         } catch (error) {
-            console.error(error)
+            console.error("[PaymentTickets] Error fetching advisors:", error)
         }
     }
 
@@ -198,12 +207,10 @@ export default function PaymentTickets() {
                                         onChange={e => setFormData({ ...formData, advisorId: e.target.value })}
                                         className="w-full bg-neutral-50 border border-neutral-200 p-3 text-sm font-medium focus:ring-2 focus:ring-orange-500 outline-none"
                                     >
-                                        <option value="">Seleccione un asesor...</option>
+                                            <option value="">Seleccionar un asesor</option>
                                         {advisors.map(adv => (
-                                            <option key={adv.id} value={adv.id}>{adv.name}</option>
+                                            <option key={adv.id} value={adv.id}>{adv.name} ({adv.role})</option>
                                         ))}
-                                        {/* Fallback option if API fails to load advisors */}
-                                        {advisors.length === 0 && <option value="clt3z8v9o0000a6p4qwert123">Asesor Prueba (ID Demo)</option>}
                                     </select>
                                 </div>
 
