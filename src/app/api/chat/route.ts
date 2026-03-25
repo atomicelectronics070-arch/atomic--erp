@@ -63,7 +63,7 @@ export async function POST(req: Request) {
 
         const payload = {
             system_instruction: {
-                parts: { text: systemPrompt }
+                parts: [{ text: systemPrompt }]
             },
             contents: messages.map(msg => ({
                 role: msg.role === 'user' ? 'user' : 'model',

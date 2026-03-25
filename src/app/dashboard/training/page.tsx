@@ -8,8 +8,8 @@ export default function TrainingChatPage() {
         <div className="flex flex-col h-[calc(100vh-140px)] w-full mx-auto relative overflow-hidden">
             {/* Header Global */}
             <div className="mb-4">
-                <h1 className="text-2xl font-bold text-neutral-900 uppercase tracking-tight">Desarrollo Profesional</h1>
-                <p className="text-xs text-neutral-500 font-medium">Interactúa con tus instructores con Inteligencia Artificial.</p>
+                <h1 className="text-2xl font-bold text-neutral-900 uppercase tracking-tight">Tutoría Cognitiva</h1>
+                <p className="text-xs text-neutral-500 font-medium">Recibe guía y capacitación personalizada con Inteligencia Artificial.</p>
             </div>
 
             {/* Split Screen Container */}

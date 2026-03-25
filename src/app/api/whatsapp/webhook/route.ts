@@ -72,7 +72,15 @@ export async function POST(req: Request) {
                 }
             });
 
-            // 4. Update conversation timestamp
+            /* 
+            // AI AUTOMATION: Check for assigned advisor and cognitive prompt
+            // DISABLED: Focusing on internal Tutor IA per user request
+            if (conversation.ownerId && text) {
+                ...
+            }
+            */
+
+            // 5. Update conversation timestamp
             await prisma.wAConversation.update({
                 where: { id: conversation.id },
                 data: { updatedAt: new Date(), lastMessageAt: new Date() }

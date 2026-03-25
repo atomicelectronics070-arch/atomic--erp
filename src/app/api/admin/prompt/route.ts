@@ -89,6 +89,17 @@ export async function POST(req: Request) {
             })
         }
 
+        // Create a notification for the advisor
+        await prisma.notification.create({
+            data: {
+                userId,
+                title: "🤖 Nueva Programación de IA",
+                message: `Tu configuración cognitiva tipo ${type} ha sido actualizada por el administrador.`,
+                type: "SYSTEM",
+                relatedId: config.id
+            }
+        })
+
         return NextResponse.json({ message: "Prompt updated successfully", config, newTemplate })
     } catch (error) {
         console.error("Admin prompt POST error:", error)

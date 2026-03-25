@@ -278,16 +278,88 @@ export default function AdminPromptPage() {
                     </div>
                 </div>
 
+                {/* TABLA HORIZONTAL: Prompts Activos */}
+                <div className="mt-16 bg-white border border-neutral-200 rounded-lg shadow-sm overflow-hidden">
+                    <div className="p-6 border-b border-neutral-100 flex items-center justify-between bg-neutral-900 text-white">
+                        <h3 className="text-xs font-black uppercase tracking-widest flex items-center gap-3">
+                            <Layout size={16} className="text-orange-500" /> Historial de Asignaciones <span className="text-neutral-500">(Configuraciones en Curso)</span>
+                        </h3>
+                    </div>
+                    
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left border-collapse">
+                            <thead>
+                                <tr className="bg-neutral-50 text-[10px] font-black uppercase tracking-widest text-neutral-400 border-b border-neutral-100">
+                                    <th className="px-6 py-4">Asesor Asignado (No editable)</th>
+                                    <th className="px-6 py-4">Tipo</th>
+                                    <th className="px-6 py-4">Prompt en Curso (Editable)</th>
+                                    <th className="px-6 py-4 text-right">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-neutral-100">
+                                {activeConfigs.length === 0 ? (
+                                    <tr>
+                                        <td colSpan={4} className="p-10 text-center text-neutral-300 text-[10px] font-bold uppercase tracking-widest">
+                                            No hay configuraciones cognitivas activas
+                                        </td>
+                                    </tr>
+                                ) : (
+                                    activeConfigs.map(config => (
+                                        <tr key={config.id} className="hover:bg-neutral-50 transition-all group">
+                                            <td className="px-6 py-4">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="relative">
+                                                        <div className="w-8 h-8 rounded bg-neutral-100 text-neutral-400 flex items-center justify-center text-[10px] font-black">
+                                                            {config.user?.name?.[0] || 'U'}
+                                                        </div>
+                                                        <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-white rounded-full animate-pulse"></div>
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-[11px] font-bold text-neutral-900 uppercase">{config.user?.name || 'Asesor'}</p>
+                                                        <p className="text-[9px] text-neutral-400">{config.user?.email}</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <span className={`text-[9px] font-black px-2 py-1 rounded-full uppercase ${config.type === 'CAPACITADOR' ? 'bg-blue-50 text-blue-600' : 'bg-purple-50 text-purple-600'}`}>
+                                                    {config.type}
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <p className="text-[11px] text-neutral-600 font-mono line-clamp-1 italic max-w-sm">
+                                                    {config.prompt}
+                                                </p>
+                                            </td>
+                                            <td className="px-6 py-4 text-right">
+                                                <button 
+                                                    onClick={() => {
+                                                        setSelectedUser(config.userId)
+                                                        setSelectedType(config.type)
+                                                        window.scrollTo({ top: 0, behavior: 'smooth' })
+                                                    }}
+                                                    className="inline-flex items-center gap-2 bg-neutral-900 text-white px-4 py-2 text-[10px] font-black uppercase tracking-widest hover:bg-orange-600 transition-all rounded shadow-sm"
+                                                >
+                                                    <Edit size={12} className="lucide lucide-edit" /> Editar
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
                 {/* HISTORIAL: Bottom of Center Column */}
                 <div className="mt-16 space-y-6">
                     <div className="flex items-center gap-3">
                         <History className="text-neutral-400" size={18} />
-                        <h2 className="text-xs font-black uppercase tracking-widest text-neutral-500">Plantillas Históricas</h2>
+                        <h2 className="text-xs font-black uppercase tracking-widest text-neutral-500">Biblioteca de Plantillas Cognitivas</h2>
                     </div>
                     {savedPrompts.length === 0 ? (
                         <div className="p-10 border border-dashed border-neutral-200 rounded-lg text-center text-neutral-400 text-xs">No hay plantillas guardadas.</div>
                     ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             {savedPrompts.map(sp => (
                                 <div key={sp.id} className="bg-white p-6 border border-neutral-200 rounded-lg hover:border-orange-500 transition-all group shadow-sm flex flex-col justify-between">
                                     <div>
@@ -312,46 +384,26 @@ export default function AdminPromptPage() {
                 </div>
             </div>
 
-            {/* RIGHT SIDEBAR: Live Dashboard */}
-            <div className="w-full lg:w-96 bg-white border-l border-neutral-200 p-8 overflow-y-auto">
-                <h3 className="text-sm font-black uppercase tracking-widest text-neutral-900 mb-8 border-b border-neutral-100 pb-4 flex items-center gap-3">
-                    <Layout size={18} className="text-orange-600" /> Prompts <span className="text-neutral-400">Activos</span>
-                </h3>
-
-                <div className="space-y-4">
-                    {activeConfigs.length === 0 ? (
-                        <p className="text-[10px] text-neutral-400 uppercase font-bold text-center p-10 bg-neutral-50 border border-dashed border-neutral-200 rounded-lg">Ninguno asignado aún.</p>
-                    ) : (
-                        activeConfigs.map(config => (
-                            <div key={config.id} className="p-5 bg-neutral-50/50 border border-neutral-100 rounded-xl hover:bg-white hover:shadow-xl hover:shadow-neutral-200/50 transition-all cursor-pointer group" onClick={() => {
-                                setSelectedUser(config.userId)
-                                setSelectedType(config.type)
-                                window.scrollTo({ top: 0, behavior: 'smooth' })
-                            }}>
-                                <div className="flex items-start justify-between mb-4">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded bg-neutral-900 text-white flex items-center justify-center text-[10px] font-bold">
-                                            {config.user?.name?.[0] || 'U'}
-                                        </div>
-                                        <div>
-                                            <p className="text-xs font-black uppercase tracking-tight text-neutral-900 truncate max-w-[120px]">{config.user?.name || 'Asesor'}</p>
-                                            <p className={`text-[8px] font-bold uppercase tracking-widest ${config.type === 'CAPACITADOR' ? 'text-blue-500' : 'text-purple-500'}`}>{config.type}</p>
-                                        </div>
-                                    </div>
-                                    <ChevronRight size={14} className="text-neutral-300 group-hover:text-orange-600 transition-colors" />
-                                </div>
-                                <div className="p-4 bg-white border border-neutral-100 rounded-lg">
-                                    <p className="text-[10px] text-neutral-500 font-mono line-clamp-2 leading-relaxed italic">"{config.prompt}"</p>
-                                </div>
-                                <div className="mt-3 flex items-center justify-end gap-2 text-[8px] font-black uppercase text-neutral-300">
-                                    <span>Ver más</span>
-                                </div>
-                            </div>
-                        ))
-                    )}
-                </div>
-            </div>
-
         </div>
+    )
+}
+
+function Edit({ size, ...props }: any) {
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width={size}
+            height={size}
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            {...props}
+        >
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+        </svg>
     )
 }

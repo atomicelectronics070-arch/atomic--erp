@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
+import { useSession } from "next-auth/react"
 import { Plus, Trash2, FileOutput, Calculator, Image as ImageIcon, User, ShieldCheck, Mail, Phone, Search, MapPin, MessageSquare, History, Copy, X, Clock } from "lucide-react"
 import jsPDF from "jspdf"
 import autoTable from "jspdf-autotable"
@@ -22,13 +23,20 @@ interface Product {
 }
 
 export default function QuotationGenerator() {
+    const { data: session } = useSession()
     const [clientName, setClientName] = useState("")
     const [clientEmail, setClientEmail] = useState("")
     const [clientPhone, setClientPhone] = useState("")
     const [deliveryAddress, setDeliveryAddress] = useState("")
     const [quoteNumber, setQuoteNumber] = useState("Cargando...")
     const [globalQuoteNumber, setGlobalQuoteNumber] = useState("")
-    const [advisorName, setAdvisorName] = useState("JUAN PABLO GUZMAN")
+    const [advisorName, setAdvisorName] = useState("NOMBRE DEL ASESOR")
+
+    useEffect(() => {
+        if (session?.user?.name) {
+            setAdvisorName(session.user.name.toUpperCase())
+        }
+    }, [session])
     const [warrantyNote, setWarrantyNote] = useState("Garantía de 12 meses contra defectos de fábrica. No cubre daños por mal uso or variaciones de voltaje.")
     const [warrantyComments, setWarrantyComments] = useState("")
     const [items, setItems] = useState<QuoteItem[]>([
@@ -507,6 +515,19 @@ export default function QuotationGenerator() {
                                         onChange={(e) => setDeliveryAddress(e.target.value)}
                                         placeholder="CALLE PRIMARIA, SECUNDARIA Y NRO..."
                                         className="w-full pl-14 pr-5 py-4 border border-neutral-100 bg-neutral-50 text-sm font-bold uppercase focus:border-orange-600 outline-none"
+                                    />
+                                </div>
+                            </div>
+                            <div className="md:col-span-2">
+                                <label className="block text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-2">Asesor Comercial Responsable (Se refleja en PDF)</label>
+                                <div className="relative">
+                                    <User className="absolute left-5 top-1/2 -translate-y-1/2 text-neutral-300" size={16} />
+                                    <input
+                                        type="text"
+                                        value={advisorName}
+                                        onChange={(e) => setAdvisorName(e.target.value)}
+                                        placeholder="NOMBRE DEL ASESOR"
+                                        className="w-full pl-14 pr-5 py-4 border border-neutral-100 bg-orange-50/30 text-sm font-bold uppercase focus:border-orange-600 outline-none"
                                     />
                                 </div>
                             </div>
