@@ -13,17 +13,17 @@ export const authOptions: NextAuthOptions = {
             },
             async authorize(credentials) {
                 if (!credentials?.email || !credentials?.password) {
-                    throw new Error("Invalid credentials")
+                    throw new Error("Credenciales incompletas")
                 }
 
                 const user = await prisma.user.findUnique({
                     where: {
-                        email: credentials.email.toLowerCase()
+                        email: credentials.email.trim().toLowerCase()
                     }
                 })
 
                 if (!user || !user?.passwordHash) {
-                    throw new Error("Invalid credentials")
+                    throw new Error("Credenciales inválidas")
                 }
 
                 const isCorrectPassword = await bcrypt.compare(
@@ -32,11 +32,11 @@ export const authOptions: NextAuthOptions = {
                 )
 
                 if (!isCorrectPassword) {
-                    throw new Error("Invalid credentials")
+                    throw new Error("Credenciales inválidas")
                 }
 
-                if (user.status !== "APPROVED") {
-                    throw new Error("Your account is pending approval or has been rejected.")
+                if (user.status !== "APPROVED" && user.status !== "ACTIVE") {
+                    throw new Error("Su cuenta está pendiente de aprobación o inactiva.")
                 }
 
                 return {
