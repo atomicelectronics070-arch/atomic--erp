@@ -1,10 +1,13 @@
 import { NextResponse } from "next/server"
-import { PrismaClient } from "@prisma/client"
-
-const prisma = new PrismaClient()
+import { prisma } from "@/lib/prisma"
+import { getServerSession } from "next-auth/next"
+import { authOptions } from "@/lib/auth"
 
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
+        const session = await getServerSession(authOptions)
+        if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+
         const body = await req.json()
         const resolvedParams = await params
         const evaluation = await prisma.evaluation.update({
@@ -24,6 +27,9 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 
 export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
+        const session = await getServerSession(authOptions)
+        if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+
         const resolvedParams = await params
         await prisma.evaluation.delete({
             where: { id: resolvedParams.id }
