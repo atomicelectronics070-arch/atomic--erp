@@ -1,7 +1,12 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Save, BrainCircuit, CheckCircle2, AlertCircle, History, UserCircle, Bot, Copy, Users, Search, ChevronRight, Layout, Trash2 } from "lucide-react"
+import { 
+    Save, BrainCircuit, CheckCircle2, AlertCircle, History, 
+    UserCircle, Bot, Copy, Users, Search, 
+    ChevronRight, Layout, Trash2, Cpu, Sparkles, 
+    Zap, Settings2, ShieldCheck, Mail
+} from "lucide-react"
 
 type SavedPrompt = {
     id: string
@@ -47,7 +52,6 @@ export default function AdminPromptPage() {
         setIsLoading(true)
         try {
             const url = new URL("/api/admin/prompt", window.location.origin)
-            // If we have a selected user, ask for their specific config. 
             if (selectedUser) {
                 url.searchParams.append("userId", selectedUser)
             }
@@ -61,7 +65,6 @@ export default function AdminPromptPage() {
                 setSavedPrompts(data.savedPrompts || [])
                 setActiveConfigs(data.activeConfigs || [])
 
-                // Auto-select first user if none selected and we have users loaded
                 if (!selectedUser && data.users && data.users.length > 0) {
                     setSelectedUser(data.users[0].id)
                 }
@@ -73,7 +76,6 @@ export default function AdminPromptPage() {
         }
     }
 
-    // Load data on start and when type/user changes
     useEffect(() => {
         fetchConfig()
         setMessage({ text: "", type: "" })
@@ -107,15 +109,15 @@ export default function AdminPromptPage() {
             })
 
             if (res.ok) {
-                setMessage({ text: "Configuración Cognitiva guardada correctamente.", type: "success" })
+                setMessage({ text: "Núcleo Cognitivo actualizado exitosamente.", type: "success" })
                 setSaveAsTemplate(false)
                 setTemplateName("")
                 fetchConfig()
             } else {
-                setMessage({ text: "Hubo un error al guardar el prompt.", type: "error" })
+                setMessage({ text: "Error en la sincronización neuronal.", type: "error" })
             }
         } catch (err) {
-            setMessage({ text: "Error de conexión.", type: "error" })
+            setMessage({ text: "Error de conexión con el servidor IA.", type: "error" })
         } finally {
             setIsSaving(false)
         }
@@ -128,262 +130,418 @@ export default function AdminPromptPage() {
 
     const currentUser = users.find(u => u.id === selectedUser)
 
+    const handleDeleteTemplate = async (id: string) => {
+        if (!confirm("¿Estás seguro de eliminar esta plantilla cognitiva?")) return
+        
+        try {
+            const res = await fetch(`/api/admin/prompt?id=${id}`, {
+                method: "DELETE"
+            })
+            if (res.ok) {
+                setMessage({ text: "Plantilla eliminada del núcleo.", type: "success" })
+                fetchConfig()
+            }
+        } catch (err) {
+            console.error(err)
+        }
+    }
+
     if (isLoading && users.length === 0) {
         return (
-            <div className="flex items-center justify-center p-20">
-                <div className="text-center space-y-4">
-                    <div className="w-12 h-12 border-4 border-orange-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
-                    <p className="text-xs font-bold uppercase tracking-widest text-neutral-400">Cargando Asesores y Prompts...</p>
+            <div className="flex h-[80vh] items-center justify-center p-20 bg-slate-950 rounded-3xl border border-slate-900 shadow-2xl">
+                <div className="text-center space-y-6">
+                    <div className="relative">
+                        <div className="w-16 h-16 border-2 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin mx-auto"></div>
+                        <BrainCircuit className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-indigo-500 animate-pulse" size={24} />
+                    </div>
+                    <div className="space-y-2">
+                        <p className="text-sm font-black uppercase tracking-[0.4em] text-indigo-400">Iniciando Sincronización</p>
+                        <p className="text-xs text-slate-500 font-medium">Cargando modelos cognitivos y datos de asesores...</p>
+                    </div>
                 </div>
             </div>
         )
     }
 
     return (
-        <div className="flex flex-col lg:flex-row gap-8 min-h-[800px] -m-10 lg:-m-14 bg-neutral-50 overflow-hidden border-t border-neutral-200">
-
+        <div className="min-h-screen bg-slate-950 text-slate-200 font-sans selection:bg-indigo-500/30 selection:text-indigo-200 rounded-3xl overflow-hidden border border-slate-900 shadow-2xl flex flex-col lg:flex-row">
+            
             {/* LEFT SIDEBAR: Advisors List */}
-            <div className="w-full lg:w-72 bg-white border-r border-neutral-200 flex flex-col shadow-sm">
-                <div className="p-6 border-b border-neutral-100 bg-neutral-900 text-white">
-                    <h2 className="text-sm font-black uppercase tracking-widest flex items-center gap-2 mb-4">
-                        <Users className="text-orange-500" size={16} /> Asesores
-                    </h2>
-                    <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500" size={14} />
+            <div className="w-full lg:w-80 bg-slate-900/30 border-r border-slate-800/50 backdrop-blur-md flex flex-col pt-4">
+                <div className="p-8 pb-6 border-b border-slate-800/50">
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="bg-gradient-to-br from-indigo-500 to-violet-600 p-2 rounded-xl shadow-lg shadow-indigo-500/20">
+                            <Users className="text-white" size={18} />
+                        </div>
+                        <h2 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Asesores Activos</h2>
+                    </div>
+                    
+                    <div className="relative group">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-indigo-500 transition-colors" size={14} />
                         <input
                             type="text"
-                            placeholder="Buscar..."
+                            placeholder="Buscar asesor..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full bg-neutral-800 border-none p-2 rounded text-xs pl-9 focus:ring-1 focus:ring-orange-500 outline-none placeholder:text-neutral-600"
+                            className="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-xs pl-10 focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 outline-none transition-all placeholder:text-slate-700 font-medium"
                         />
                     </div>
                 </div>
 
-                <div className="flex-1 overflow-y-auto bg-neutral-50/50">
+                <div className="flex-1 overflow-y-auto px-4 py-6 space-y-2 custom-scrollbar">
                     {filteredUsers.length === 0 ? (
-                        <div className="p-10 text-center text-neutral-300">
-                            <Users size={24} className="mx-auto mb-2 opacity-20" />
-                            <p className="text-[10px] uppercase font-bold tracking-tight">Vacio</p>
+                        <div className="p-12 text-center">
+                            <div className="w-12 h-12 bg-slate-900 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-800 opacity-50">
+                                <Users size={16} className="text-slate-600" />
+                            </div>
+                            <p className="text-[10px] uppercase font-bold tracking-widest text-slate-600">Sin resultados</p>
                         </div>
                     ) : (
-                        <div className="divide-y divide-neutral-100">
-                            {filteredUsers.map(u => (
-                                <button
-                                    key={u.id}
-                                    onClick={() => setSelectedUser(u.id)}
-                                    className={`w-full text-left p-4 pr-3 transition-all flex items-center justify-between group ${selectedUser === u.id ? 'bg-white border-l-4 border-l-orange-600 shadow-sm' : 'hover:bg-neutral-100/50 opacity-70 hover:opacity-100'}`}
-                                >
-                                    <div className="truncate">
-                                        <p className={`text-xs font-bold truncate ${selectedUser === u.id ? 'text-neutral-900' : 'text-neutral-600'}`}>{u.name || 'Sin Nombre'}</p>
-                                        <p className="text-[10px] text-neutral-400 truncate opacity-60 font-medium">{u.email}</p>
+                        filteredUsers.map(u => (
+                            <button
+                                key={u.id}
+                                onClick={() => setSelectedUser(u.id)}
+                                className={`w-full text-left p-4 rounded-2xl transition-all flex items-center justify-between group relative overflow-hidden ${
+                                    selectedUser === u.id 
+                                    ? 'bg-gradient-to-r from-indigo-600/10 to-transparent border border-indigo-500/20' 
+                                    : 'hover:bg-slate-900/50 border border-transparent'
+                                }`}
+                            >
+                                <div className="z-10 flex items-center gap-4">
+                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-xs transition-colors duration-300 ${
+                                        selectedUser === u.id ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/30' : 'bg-slate-800 text-slate-400 group-hover:bg-slate-700'
+                                    }`}>
+                                        {u.name?.[0].toUpperCase() || '?'}
                                     </div>
-                                    <ChevronRight size={14} className={`text-orange-600 transition-transform ${selectedUser === u.id ? 'translate-x-0' : 'translate-x-4 opacity-0 group-hover:opacity-100'}`} />
-                                </button>
-                            ))}
-                        </div>
+                                    <div className="truncate">
+                                        <p className={`text-xs font-bold truncate transition-colors ${selectedUser === u.id ? 'text-white' : 'text-slate-400 group-hover:text-slate-200'}`}>
+                                            {u.name || 'Sin Nombre'}
+                                        </p>
+                                        <p className="text-[10px] text-slate-600 truncate font-medium flex items-center gap-1 mt-0.5">
+                                            <Mail size={10} className="shrink-0" />
+                                            {u.email}
+                                        </p>
+                                    </div>
+                                </div>
+                                {selectedUser === u.id && (
+                                    <div className="w-1.5 h-6 bg-indigo-500 rounded-full shadow-[0_0_15px_rgba(99,102,241,0.6)]"></div>
+                                )}
+                            </button>
+                        ))
                     )}
                 </div>
             </div>
 
-            {/* CENTER: Editor */}
-            <div className="flex-1 flex flex-col p-8 lg:p-12 overflow-y-auto">
-                <div className="mb-10">
-                    <div className="flex items-center gap-3 mb-2">
-                        <div className="bg-orange-600 h-1 w-8"></div>
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-orange-600">Cognitive Engine</span>
-                    </div>
-                    <h1 className="text-4xl font-black uppercase text-neutral-900 tracking-tighter">
-                        Configuración <span className="text-neutral-400">IA</span>
-                    </h1>
-                    {currentUser && (
-                        <p className="mt-2 text-neutral-500 font-medium flex items-center gap-2">
-                            Editando comportamiento para <span className="text-neutral-900 font-bold underline decoration-orange-500 underline-offset-4">{currentUser.name || 'Asesor'}</span>
-                        </p>
-                    )}
-                </div>
+            {/* MAIN CONTENT AREA */}
+            <div className="flex-1 flex flex-col bg-slate-950 relative overflow-y-auto custom-scrollbar">
+                
+                {/* Background Glows */}
+                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-600/5 blur-[120px] rounded-full pointer-events-none -mr-40 -mt-20"></div>
+                <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-violet-600/5 blur-[120px] rounded-full pointer-events-none -ml-40 -mb-20"></div>
 
-                <div className="bg-white border border-neutral-200 shadow-xl shadow-neutral-200/50 rounded-lg overflow-hidden flex flex-col">
-                    {/* Bot Selector Tabs */}
-                    <div className="flex border-b border-neutral-100">
-                        <button
-                            onClick={() => setSelectedType("CAPACITADOR")}
-                            className={`flex-1 p-5 flex items-center justify-center gap-3 transition-all border-b-2 ${selectedType === "CAPACITADOR" ? 'bg-white border-orange-600 text-orange-600' : 'bg-neutral-50 border-transparent text-neutral-400 hover:text-neutral-700'}`}
-                        >
-                            <Bot size={18} />
-                            <span className="text-xs font-black uppercase tracking-widest">Capacitador Corporativo</span>
-                        </button>
-                        <button
-                            onClick={() => setSelectedType("TUTOR")}
-                            className={`flex-1 p-5 flex items-center justify-center gap-3 transition-all border-b-2 ${selectedType === "TUTOR" ? 'bg-white border-orange-600 text-orange-600' : 'bg-neutral-50 border-transparent text-neutral-400 hover:text-neutral-700'}`}
-                        >
-                            <BrainCircuit size={18} />
-                            <span className="text-xs font-black uppercase tracking-widest">Tutor del Día</span>
-                        </button>
-                    </div>
-
-                    <div className="p-8 space-y-6">
-                        {message.text && (
-                            <div className={`p-4 flex items-center gap-3 text-xs font-bold uppercase tracking-widest rounded-lg border ${message.type === 'success' ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'}`}>
-                                {message.type === 'success' ? <CheckCircle2 size={16} /> : <AlertCircle size={16} />}
-                                <span>{message.text}</span>
-                            </div>
-                        )}
-
-                        <div className="relative group">
-                            <div className="absolute top-4 right-4 flex gap-2">
-                                <span className="bg-neutral-100 text-[9px] font-bold text-neutral-400 px-2 py-1 rounded-sm uppercase tracking-tighter">
-                                    {prompt.length} Caracteres
-                                </span>
-                            </div>
-                            <textarea
-                                value={prompt}
-                                onChange={(e) => setPrompt(e.target.value)}
-                                placeholder={`Instrucciones específicas para el ${selectedType.toLowerCase()}...`}
-                                rows={12}
-                                className={`w-full p-8 pt-12 text-sm font-mono text-neutral-800 bg-neutral-50 border border-neutral-200 rounded-lg focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all resize-none ${isLoading ? 'animate-pulse' : ''}`}
-                            />
+                <div className="p-8 lg:p-14 z-10 max-w-6xl mx-auto w-full">
+                    
+                    {/* Header Section */}
+                    <header className="mb-12">
+                        <div className="flex items-center gap-3 mb-4">
+                            <span className="h-px w-8 bg-indigo-500"></span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.5em] text-indigo-400">Nucleus AI Control</span>
                         </div>
-
-                        <div className="flex flex-col md:flex-row gap-4 items-center justify-between pt-4 border-t border-neutral-100">
-                            <div className="flex items-center gap-4 bg-neutral-50 px-4 py-3 rounded-lg border border-neutral-100 w-full md:w-auto">
-                                <input
-                                    type="checkbox"
-                                    id="saveTemplate"
-                                    checked={saveAsTemplate}
-                                    onChange={(e) => setSaveAsTemplate(e.target.checked)}
-                                    className="w-4 h-4 accent-orange-600"
-                                />
-                                <label htmlFor="saveTemplate" className="text-[10px] font-bold uppercase tracking-widest text-neutral-600 cursor-pointer">Guardar Plantilla</label>
-                                {saveAsTemplate && (
-                                    <input
-                                        type="text"
-                                        placeholder="Nombre..."
-                                        value={templateName}
-                                        onChange={(e) => setTemplateName(e.target.value)}
-                                        className="bg-white border border-neutral-200 p-2 text-xs rounded focus:ring-1 focus:ring-orange-500 outline-none w-32"
-                                    />
+                        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+                            <div>
+                                <h1 className="text-5xl font-black uppercase text-white tracking-tighter leading-none mb-4">
+                                    Cognitive <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-violet-500">Engine</span>
+                                </h1>
+                                {currentUser && (
+                                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-slate-900/50 border border-slate-800 rounded-full backdrop-blur-md">
+                                        <Sparkles className="text-yellow-500" size={14} />
+                                        <p className="text-xs text-slate-400 font-medium">
+                                            Sincronizando modelos para <span className="text-indigo-400 font-bold">{currentUser.name || 'Asesor'}</span>
+                                        </p>
+                                    </div>
                                 )}
                             </div>
+                            
+                            <div className="flex bg-slate-900/50 p-1.5 rounded-2xl border border-slate-800 backdrop-blur-md">
+                                <button
+                                    onClick={() => setSelectedType("CAPACITADOR")}
+                                    className={`px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 ${
+                                        selectedType === "CAPACITADOR" 
+                                        ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' 
+                                        : 'text-slate-500 hover:text-slate-300'
+                                    }`}
+                                >
+                                    <Bot size={14} /> Capacitador
+                                </button>
+                                <button
+                                    onClick={() => setSelectedType("TUTOR")}
+                                    className={`px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 ${
+                                        selectedType === "TUTOR" 
+                                        ? 'bg-violet-600 text-white shadow-lg shadow-violet-600/20' 
+                                        : 'text-slate-500 hover:text-slate-300'
+                                    }`}
+                                >
+                                    <BrainCircuit size={14} /> Tutor del día
+                                </button>
+                            </div>
+                        </div>
+                    </header>
 
-                            <button
-                                onClick={handleSave}
-                                disabled={isSaving || !selectedUser}
-                                className="w-full md:w-auto bg-neutral-900 text-white px-10 py-4 text-xs font-black uppercase tracking-[0.2em] rounded-lg hover:bg-orange-600 transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:grayscale"
-                            >
-                                <Save size={16} />
-                                {isSaving ? "Guardando..." : "Asignar Configuración"}
-                            </button>
+                    {/* Main Editor Card */}
+                    <div className="relative mb-16">
+                        <div className="absolute -inset-0.5 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-3xl blur opacity-[0.07] group-hover:opacity-100 transition duration-1000"></div>
+                        <div className="relative bg-slate-950 border border-slate-900 rounded-3xl overflow-hidden shadow-2xl flex flex-col">
+                            
+                            {/* Editor Status Bar */}
+                            <div className="flex items-center justify-between px-8 py-5 border-b border-slate-900 bg-slate-900/20">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></div>
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Neural Network Ready</span>
+                                </div>
+                                <div className="flex items-center gap-4">
+                                    <span className="text-[9px] font-bold text-slate-600 uppercase tracking-tighter bg-slate-950 px-2 py-1 rounded border border-slate-800">
+                                        {prompt.length} Tokens Sim.
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div className="p-8 lg:p-10">
+                                {message.text && (
+                                    <div className={`mb-8 p-5 flex items-center gap-4 text-xs font-bold uppercase tracking-widest rounded-2xl border backdrop-blur-xl animate-in fade-in slide-in-from-top-4 duration-300 ${
+                                        message.type === 'success' 
+                                        ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' 
+                                        : 'bg-rose-500/10 border-rose-500/20 text-rose-400'
+                                    }`}>
+                                        <div className={`p-2 rounded-lg ${message.type === 'success' ? 'bg-emerald-500/20' : 'bg-rose-500/20'}`}>
+                                            {message.type === 'success' ? <CheckCircle2 size={16} /> : <AlertCircle size={16} />}
+                                        </div>
+                                        <span>{message.text}</span>
+                                    </div>
+                                )}
+
+                                <div className="relative">
+                                    <textarea
+                                        value={prompt}
+                                        onChange={(e) => setPrompt(e.target.value)}
+                                        placeholder={`Escribe las instrucciones de comportamiento para el ${selectedType === 'CAPACITADOR' ? 'Capacitador' : 'Tutor'}...`}
+                                        rows={14}
+                                        className={`w-full p-10 text-sm font-mono text-slate-100 bg-slate-900/10 border border-slate-800 rounded-2xl focus:ring-4 focus:ring-indigo-500/5 focus:border-indigo-500/50 outline-none transition-all resize-none shadow-inner leading-relaxed placeholder:text-slate-800 ${isLoading ? 'animate-pulse' : ''}`}
+                                    />
+                                    <div className="absolute top-5 left-5 pointer-events-none opacity-20">
+                                        <Cpu size={24} className="text-indigo-500" />
+                                    </div>
+                                </div>
+
+                                <div className="mt-10 flex flex-col xl:flex-row gap-6 items-center justify-between">
+                                    <div className="flex items-center gap-6 bg-slate-900/30 px-6 py-4 rounded-2xl border border-slate-800/50 w-full xl:w-auto backdrop-blur-md">
+                                        <div className="flex items-center gap-4">
+                                            <input
+                                                type="checkbox"
+                                                id="saveTemplate"
+                                                checked={saveAsTemplate}
+                                                onChange={(e) => setSaveAsTemplate(e.target.checked)}
+                                                className="w-5 h-5 accent-indigo-500 cursor-pointer rounded-lg border-slate-700 bg-slate-950"
+                                            />
+                                            <label htmlFor="saveTemplate" className="text-[10px] font-black uppercase tracking-widest text-slate-400 cursor-pointer select-none">Preservar como Plantilla</label>
+                                        </div>
+                                        {saveAsTemplate && (
+                                            <div className="h-8 w-px bg-slate-800 mx-2"></div>
+                                        )}
+                                        {saveAsTemplate && (
+                                            <div className="relative">
+                                                <input
+                                                    type="text"
+                                                    placeholder="Nombre de la plantilla..."
+                                                    value={templateName}
+                                                    onChange={(e) => setTemplateName(e.target.value)}
+                                                    className="bg-slate-950 border border-slate-800 p-3 text-xs rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none w-56 text-white font-medium placeholder:text-slate-700"
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <button
+                                        onClick={handleSave}
+                                        disabled={isSaving || !selectedUser}
+                                        className="w-full xl:w-auto relative group overflow-hidden"
+                                    >
+                                        <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-violet-600 rounded-2xl blur opacity-30 group-hover:opacity-70 transition duration-500"></div>
+                                        <div className="relative flex items-center justify-center gap-3 bg-white text-black px-12 py-5 text-xs font-black uppercase tracking-[0.25em] rounded-2xl hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:scale-100 disabled:grayscale">
+                                            {isSaving 
+                                                ? <div className="w-4 h-4 border-2 border-slate-900 border-t-transparent rounded-full animate-spin"></div> 
+                                                : <Sparkles size={16} className="text-indigo-600" />
+                                            }
+                                            {isSaving ? "Codificando..." : "Inyectar Prompt"}
+                                        </div>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                {/* TABLA HORIZONTAL: Prompts Activos */}
-                <div className="mt-16 bg-white border border-neutral-200 rounded-lg shadow-sm overflow-hidden">
-                    <div className="p-6 border-b border-neutral-100 flex items-center justify-between bg-neutral-900 text-white">
-                        <h3 className="text-xs font-black uppercase tracking-widest flex items-center gap-3">
-                            <Layout size={16} className="text-orange-500" /> Historial de Asignaciones <span className="text-neutral-500">(Configuraciones en Curso)</span>
-                        </h3>
-                    </div>
-                    
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left border-collapse">
-                            <thead>
-                                <tr className="bg-neutral-50 text-[10px] font-black uppercase tracking-widest text-neutral-400 border-b border-neutral-100">
-                                    <th className="px-6 py-4">Asesor Asignado (No editable)</th>
-                                    <th className="px-6 py-4">Tipo</th>
-                                    <th className="px-6 py-4">Prompt en Curso (Editable)</th>
-                                    <th className="px-6 py-4 text-right">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-neutral-100">
+                    {/* TWO-COLUMN GRID: History and Library */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                        
+                        {/* ACTIVE CONFIGS: Modern Card List */}
+                        <section>
+                            <div className="flex items-center justify-between mb-8">
+                                <div className="flex items-center gap-4">
+                                    <div className="p-2.5 bg-slate-900 rounded-xl border border-slate-800 shadow-inner">
+                                        <ShieldCheck className="text-emerald-500" size={18} />
+                                    </div>
+                                    <div>
+                                        <h2 className="text-xs font-black uppercase tracking-widest text-white">Sistemas Activos</h2>
+                                        <p className="text-[10px] text-slate-600 font-bold uppercase mt-1">Configuraciones en producción</p>
+                                    </div>
+                                </div>
+                                <span className="bg-emerald-500/10 text-emerald-500 text-[10px] font-black px-3 py-1 rounded-full border border-emerald-500/20">
+                                    {activeConfigs.length} ONLINE
+                                </span>
+                            </div>
+
+                            <div className="space-y-4">
                                 {activeConfigs.length === 0 ? (
-                                    <tr>
-                                        <td colSpan={4} className="p-10 text-center text-neutral-300 text-[10px] font-bold uppercase tracking-widest">
-                                            No hay configuraciones cognitivas activas
-                                        </td>
-                                    </tr>
+                                    <div className="p-12 border-2 border-dashed border-slate-900 rounded-3xl text-center">
+                                        <Zap size={24} className="mx-auto mb-4 text-slate-800 opacity-50" />
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-700">Sin despliegues activos</p>
+                                    </div>
                                 ) : (
                                     activeConfigs.map(config => (
-                                        <tr key={config.id} className="hover:bg-neutral-50 transition-all group">
-                                            <td className="px-6 py-4">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="relative">
-                                                        <div className="w-8 h-8 rounded bg-neutral-100 text-neutral-400 flex items-center justify-center text-[10px] font-black">
-                                                            {config.user?.name?.[0] || 'U'}
-                                                        </div>
-                                                        <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-white rounded-full animate-pulse"></div>
+                                        <div key={config.id} className="group bg-slate-900/20 border border-slate-900 hover:border-indigo-500/30 p-6 rounded-3xl transition-all duration-500 hover:shadow-2xl hover:shadow-indigo-500/5 backdrop-blur-sm">
+                                            <div className="flex items-start justify-between mb-4">
+                                                <div className="flex items-center gap-4">
+                                                    <div className="w-12 h-12 bg-slate-950 rounded-2xl flex items-center justify-center font-black text-xs text-indigo-400 border border-slate-800 shadow-inner group-hover:bg-indigo-600 group-hover:text-white transition-all duration-500">
+                                                        {config.user?.name?.[0] || 'U'}
                                                     </div>
                                                     <div>
-                                                        <p className="text-[11px] font-bold text-neutral-900 uppercase">{config.user?.name || 'Asesor'}</p>
-                                                        <p className="text-[9px] text-neutral-400">{config.user?.email}</p>
+                                                        <h4 className="text-xs font-black uppercase tracking-tight text-white">{config.user?.name || 'Asesor'}</h4>
+                                                        <span className={`inline-block mt-1.5 text-[8px] font-black px-2 py-0.5 rounded-full uppercase ${
+                                                            config.type === 'CAPACITADOR' ? 'bg-indigo-500/10 text-indigo-500 border border-indigo-500/20' : 'bg-violet-500/10 text-violet-500 border border-violet-500/20'
+                                                        }`}>
+                                                            {config.type}
+                                                        </span>
                                                     </div>
                                                 </div>
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                <span className={`text-[9px] font-black px-2 py-1 rounded-full uppercase ${config.type === 'CAPACITADOR' ? 'bg-blue-50 text-blue-600' : 'bg-purple-50 text-purple-600'}`}>
-                                                    {config.type}
-                                                </span>
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                <p className="text-[11px] text-neutral-600 font-mono line-clamp-1 italic max-w-sm">
-                                                    {config.prompt}
-                                                </p>
-                                            </td>
-                                            <td className="px-6 py-4 text-right">
                                                 <button 
                                                     onClick={() => {
                                                         setSelectedUser(config.userId)
                                                         setSelectedType(config.type)
                                                         window.scrollTo({ top: 0, behavior: 'smooth' })
                                                     }}
-                                                    className="inline-flex items-center gap-2 bg-neutral-900 text-white px-4 py-2 text-[10px] font-black uppercase tracking-widest hover:bg-orange-600 transition-all rounded shadow-sm"
+                                                    className="p-3 bg-slate-950 rounded-xl border border-slate-800 text-slate-600 hover:text-indigo-400 hover:border-indigo-400/50 transition-all active:scale-95"
+                                                    title="Editar Configuración"
                                                 >
-                                                    <Edit size={12} className="lucide lucide-edit" /> Editar
+                                                    <Edit size={16} />
                                                 </button>
-                                            </td>
-                                        </tr>
+                                            </div>
+                                            <div className="relative">
+                                                <p className="text-[11px] text-slate-500 font-mono leading-relaxed line-clamp-2 italic italic opacity-60 group-hover:opacity-100 transition-opacity">
+                                                    "{config.prompt}"
+                                                </p>
+                                                <div className="absolute top-0 right-0 w-12 h-full bg-gradient-to-l from-slate-950 to-transparent rounded-r-3xl group-hover:hidden"></div>
+                                            </div>
+                                        </div>
                                     ))
                                 )}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                            </div>
+                        </section>
 
-                {/* HISTORIAL: Bottom of Center Column */}
-                <div className="mt-16 space-y-6">
-                    <div className="flex items-center gap-3">
-                        <History className="text-neutral-400" size={18} />
-                        <h2 className="text-xs font-black uppercase tracking-widest text-neutral-500">Biblioteca de Plantillas Cognitivas</h2>
-                    </div>
-                    {savedPrompts.length === 0 ? (
-                        <div className="p-10 border border-dashed border-neutral-200 rounded-lg text-center text-neutral-400 text-xs">No hay plantillas guardadas.</div>
-                    ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {savedPrompts.map(sp => (
-                                <div key={sp.id} className="bg-white p-6 border border-neutral-200 rounded-lg hover:border-orange-500 transition-all group shadow-sm flex flex-col justify-between">
-                                    <div>
-                                        <div className="flex justify-between items-start mb-3">
-                                            <h4 className="text-xs font-black uppercase tracking-tight text-neutral-900">{sp.name}</h4>
-                                            <span className={`text-[8px] font-bold px-2 py-1 rounded-full uppercase ${sp.type === 'CAPACITADOR' ? 'bg-blue-50 text-blue-600' : 'bg-purple-50 text-purple-600'}`}>
-                                                {sp.type}
-                                            </span>
-                                        </div>
-                                        <p className="text-[11px] text-neutral-500 line-clamp-3 font-mono leading-relaxed">{sp.content}</p>
+                        {/* TEMPLATE LIBRARY: Grid of Cards */}
+                        <section>
+                            <div className="flex items-center justify-between mb-8">
+                                <div className="flex items-center gap-4">
+                                    <div className="p-2.5 bg-slate-900 rounded-xl border border-slate-800 shadow-inner">
+                                        <History className="text-indigo-400" size={18} />
                                     </div>
-                                    <button
-                                        onClick={() => setPrompt(sp.content)}
-                                        className="mt-4 w-full py-2 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest bg-neutral-50 text-neutral-400 group-hover:bg-orange-600 group-hover:text-white transition-all rounded"
-                                    >
-                                        <Copy size={12} /> Cargar este Prompt
-                                    </button>
+                                    <div>
+                                        <h2 className="text-xs font-black uppercase tracking-widest text-white">Librería Cognitiva</h2>
+                                        <p className="text-[10px] text-slate-600 font-bold uppercase mt-1">Plantillas optimizadas</p>
+                                    </div>
                                 </div>
-                            ))}
+                                <span className="bg-indigo-500/10 text-indigo-500 text-[10px] font-black px-3 py-1 rounded-full border border-indigo-500/20">
+                                    {savedPrompts.length} READY
+                                </span>
+                            </div>
+
+                            {savedPrompts.length === 0 ? (
+                                <div className="p-12 border-2 border-dashed border-slate-900 rounded-3xl text-center">
+                                    <Copy size={24} className="mx-auto mb-4 text-slate-800 opacity-50" />
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-700">Biblioteca vacía</p>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    {savedPrompts.map(sp => (
+                                        <div key={sp.id} className="group relative bg-slate-900/40 border border-slate-800/50 p-6 rounded-3xl hover:bg-slate-900 transition-all duration-300 flex flex-col justify-between hover:shadow-xl hover:shadow-slate-900/50 hover:-translate-y-1">
+                                            <div className="absolute top-4 right-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <button 
+                                                    onClick={() => handleDeleteTemplate(sp.id)}
+                                                    className="p-1.5 bg-slate-950 border border-slate-800 text-slate-600 hover:text-rose-500 hover:border-rose-500/50 rounded-lg transition-all"
+                                                    title="Eliminar Plantilla"
+                                                >
+                                                    <Trash2 size={12} />
+                                                </button>
+                                                <Bot size={12} className={sp.type === 'CAPACITADOR' ? 'text-indigo-500' : 'text-violet-500'} />
+                                            </div>
+                                            <div>
+                                                <div className="mb-4">
+                                                    <h4 className="text-[11px] font-black uppercase tracking-tight text-white mb-1">{sp.name}</h4>
+                                                    <span className={`text-[7px] font-black px-1.5 py-0.5 rounded-md uppercase border ${
+                                                        sp.type === 'CAPACITADOR' ? 'bg-indigo-500/10 text-indigo-500 border-indigo-500/20' : 'bg-violet-500/10 text-violet-500 border-violet-500/20'
+                                                    }`}>
+                                                        {sp.type}
+                                                    </span>
+                                                </div>
+                                                <p className="text-[10px] text-slate-500 font-mono leading-relaxed line-clamp-4 italic border-l-2 border-slate-800 pl-3">
+                                                    {sp.content}
+                                                </p>
+                                            </div>
+                                            <button
+                                                onClick={() => {
+                                                    setPrompt(sp.content)
+                                                    setSelectedType(sp.type)
+                                                    window.scrollTo({ top: 0, behavior: 'smooth' })
+                                                }}
+                                                className="mt-6 w-full py-3 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest bg-slate-950 text-slate-400 hover:bg-indigo-600 hover:text-white border border-slate-800 hover:border-indigo-500 transition-all rounded-2xl shadow-sm"
+                                            >
+                                                <Copy size={14} /> Aplicar Patrón
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </section>
+                    </div>
+
+                    <footer className="mt-24 pt-8 border-t border-slate-900 flex flex-col md:flex-row items-center justify-between gap-6 opacity-30">
+                        <div className="flex items-center gap-4">
+                            <BrainCircuit size={16} />
+                            <span className="text-[10px] font-bold uppercase tracking-widest">Atomic Cognitive Services v2.0</span>
                         </div>
-                    )}
+                        <p className="text-[9px] font-medium text-slate-500">Asegúrate de revisar los parámetros técnicos antes de inyectar nuevos modelos de comportamiento neuronal.</p>
+                    </footer>
                 </div>
             </div>
 
+            <style jsx global>{`
+                .custom-scrollbar::-webkit-scrollbar {
+                    width: 6px;
+                }
+                .custom-scrollbar::-webkit-scrollbar-track {
+                    background: transparent;
+                }
+                .custom-scrollbar::-webkit-scrollbar-thumb {
+                    background: #1e293b;
+                    border-radius: 10px;
+                }
+                .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                    background: #334155;
+                }
+                @keyframes float {
+                    0% { transform: translateY(0px); }
+                    50% { transform: translateY(-10px); }
+                    100% { transform: translateY(0px); }
+                }
+            `}</style>
         </div>
     )
 }
@@ -397,7 +555,7 @@ function Edit({ size, ...props }: any) {
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
-            strokeWidth="2"
+            strokeWidth="3"
             strokeLinecap="round"
             strokeLinejoin="round"
             {...props}

@@ -107,3 +107,28 @@ export async function POST(req: Request) {
     }
 }
 
+export async function DELETE(req: Request) {
+    try {
+        const session = await getServerSession(authOptions)
+        if (!session || session.user.role !== "ADMIN") {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+        }
+
+        const { searchParams } = new URL(req.url)
+        const id = searchParams.get('id')
+
+        if (!id) {
+            return NextResponse.json({ error: "Missing template ID" }, { status: 400 })
+        }
+
+        await prisma.savedPrompt.delete({
+            where: { id }
+        })
+
+        return NextResponse.json({ message: "Template deleted successfully" })
+    } catch (error) {
+        console.error("Admin prompt DELETE error:", error)
+        return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    }
+}
+
