@@ -69,10 +69,10 @@ export default function PublicWebPage() {
                             Nueva Colección 2026
                         </div>
                         <h1 className="text-6xl md:text-8xl font-light text-neutral-800 tracking-tighter leading-[0.9]">
-                            Tecnología <br /><span className="font-black text-neutral-900">Industial Pro</span>
+                            Tecnología <br /><span className="font-black text-neutral-900">Industial</span>
                         </h1>
                         <p className="text-neutral-500 text-lg max-w-md mx-auto md:mx-0 font-medium">
-                            Descubre la potencia de los equipos ATOMIC. Diseñados para un alto rendimiento y eficiencia máxima.
+                            Descubre la potencia de nuestros equipos  Diseñados para alto rendimiento y máxima calidad.
                         </p>
                         <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6 pt-6">
                             <a href="#productos" className="bg-neutral-900 text-white px-10 py-5 text-xs font-bold uppercase tracking-widest hover:bg-orange-600 transition-all shadow-2xl shadow-neutral-200">

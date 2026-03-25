@@ -171,6 +171,7 @@ export default function QuotationGenerator() {
                 subtotal,
                 tax: taxAmount,
                 total,
+                advisorName: advisorName,
                 items: items.filter(i => i.description.trim() !== "")
             };
 
@@ -788,7 +789,7 @@ export default function QuotationGenerator() {
                                                 </div>
                                                 <h3 className="text-sm font-bold text-neutral-900 mt-2 uppercase">{quote.clientName || 'CLIENTE NO ESPECIFICADO'}</h3>
                                                 <span className="text-[9px] font-bold text-neutral-500 uppercase mt-1 block">
-                                                    Asesor: <span className="text-neutral-800">{quote.salesperson?.name || "USUARIO"}</span>
+                                                    Asesor: <span className="text-neutral-800">{quote.advisorName || quote.salesperson?.name || "USUARIO"}</span>
                                                 </span>
                                                 <span className="text-[9px] font-mono text-neutral-400 uppercase mt-0.5 block">
                                                     Emitida: {new Date(quote.createdAt).toLocaleDateString()} a las {new Date(quote.createdAt).toLocaleTimeString()}

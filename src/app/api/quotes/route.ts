@@ -49,7 +49,7 @@ export async function POST(req: Request) {
         }
 
         const body = await req.json()
-        const { quoteNumber, globalQuoteNumber, clientName, clientEmail, subtotal, tax, discountPercent, total, items, deliveryAddress, warrantyComments } = body
+        const { quoteNumber, globalQuoteNumber, clientName, clientEmail, subtotal, tax, discountPercent, total, items, deliveryAddress, warrantyComments, advisorName } = body
 
         // Find or create a client record to satisfy database relations
         let client = await prisma.client.findFirst({
@@ -84,6 +84,7 @@ export async function POST(req: Request) {
                 discountPercent,
                 deliveryAddress,
                 warrantyComments,
+                advisorName,
                 itemsData: JSON.stringify(items),
 
                 status: "SAVED"

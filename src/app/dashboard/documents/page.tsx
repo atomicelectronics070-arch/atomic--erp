@@ -1,11 +1,13 @@
 "use client"
 
-import { useState } from "react"
-import { FileText, FileSignature, Receipt, Download, MapPin, MessageSquare, CreditCard } from "lucide-react"
+import { useState, useEffect } from "react"
+import { useSession } from "next-auth/react"
+import { FileText, FileSignature, Receipt, Download, MapPin, MessageSquare, CreditCard, User } from "lucide-react"
 import jsPDF from "jspdf"
 import autoTable from "jspdf-autotable"
 
 export default function DocumentGenerator() {
+    const { data: session } = useSession()
     const [docType, setDocType] = useState<"warranty" | "receipt" | "purchase_order">("receipt")
     const [clientName, setClientName] = useState("")
     const [concept, setConcept] = useState("")
@@ -15,6 +17,13 @@ export default function DocumentGenerator() {
     const [deliveryAddress, setDeliveryAddress] = useState("")
     const [paymentMethod, setPaymentMethod] = useState("TRANSFERENCIA")
     const [reference, setReference] = useState("")
+    const [advisorName, setAdvisorName] = useState("ASIGNADO")
+
+    useEffect(() => {
+        if (session?.user?.name) {
+            setAdvisorName(session.user.name.toUpperCase())
+        }
+    }, [session])
 
     const handleGeneratePDF = () => {
         if (!clientName.trim() || !concept.trim()) {
@@ -113,7 +122,7 @@ export default function DocumentGenerator() {
         doc.line(14, finalY + 30, 80, finalY + 30)
         doc.text("FIRMA AUTORIZADA", 14, finalY + 35)
         doc.setFont("helvetica", "normal")
-        doc.text("ATOMIC INDUSTRIES", 14, finalY + 39)
+        doc.text(advisorName.toUpperCase(), 14, finalY + 39)
 
         doc.save(`${title.replace(/\s+/g, '_')}_${clientName.replace(/\s+/g, '_')}.pdf`)
     }
@@ -190,6 +199,20 @@ export default function DocumentGenerator() {
                             placeholder="EJ: SOPORTE NIVEL 3 / HARDWARE"
                             className="w-full px-5 py-4 bg-neutral-50 border border-neutral-100 text-sm font-bold uppercase focus:border-orange-600 outline-none transition-all"
                         />
+                    </div>
+
+                    <div className="space-y-2 col-span-2 md:col-span-1">
+                        <label className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Asesor Responsable (Firma)</label>
+                        <div className="relative">
+                            <User className="absolute left-5 top-1/2 -translate-y-1/2 text-neutral-300" size={16} />
+                            <input
+                                type="text"
+                                value={advisorName}
+                                onChange={(e) => setAdvisorName(e.target.value)}
+                                placeholder="NOMBRE DEL ASESOR"
+                                className="w-full pl-14 pr-5 py-4 bg-orange-50/30 border border-neutral-100 text-sm font-bold uppercase focus:border-orange-600 outline-none transition-all"
+                            />
+                        </div>
                     </div>
 
                     {docType === 'warranty' && (
