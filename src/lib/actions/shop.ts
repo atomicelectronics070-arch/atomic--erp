@@ -66,7 +66,7 @@ export async function getProducts(options: {
     const skip = (page - 1) * pageSize;
 
     const where: any = {
-        isDeleted: showDeleted
+        NOT: { isDeleted: showDeleted ? false : true }
     };
 
     if (search) {
@@ -140,7 +140,7 @@ export async function saveProduct(data: any) {
 
 export async function deleteProduct(id: string) {
     // Soft delete
-    await prisma.product.update({
+    await (prisma as any).product.update({
         where: { id },
         data: { isDeleted: true }
     })
@@ -150,7 +150,7 @@ export async function deleteProduct(id: string) {
 }
 
 export async function restoreProduct(id: string) {
-    await prisma.product.update({
+    await (prisma as any).product.update({
         where: { id },
         data: { isDeleted: false }
     })
@@ -166,7 +166,7 @@ export async function permanentDeleteProduct(id: string) {
 
 export async function deleteManyProducts(ids: string[]) {
     // Soft bulk delete
-    await prisma.product.updateMany({
+    await (prisma as any).product.updateMany({
         where: { id: { in: ids } },
         data: { isDeleted: true }
     })
@@ -176,7 +176,7 @@ export async function deleteManyProducts(ids: string[]) {
 }
 
 export async function restoreManyProducts(ids: string[]) {
-    await prisma.product.updateMany({
+    await (prisma as any).product.updateMany({
         where: { id: { in: ids } },
         data: { isDeleted: false }
     })
@@ -232,12 +232,11 @@ export async function getProductById(id: string) {
 
 export async function getRelatedProducts(categoryId: string | null, currentProductId: string) {
     if (!categoryId) return []
-    return await prisma.product.findMany({
+    return await (prisma as any).product.findMany({
         where: {
             categoryId,
             id: { not: currentProductId },
-            isDeleted: false,
-            isActive: true
+            NOT: { isDeleted: true }
         },
         take: 4,
         orderBy: { createdAt: 'desc' },
