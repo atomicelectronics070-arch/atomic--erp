@@ -104,7 +104,7 @@ export default function EvaluationsPage() {
         if (res.success) {
             const updatedUsers = await getAllUsersWithActiveCycle()
             setUsers(updatedUsers)
-            const updatedUser = updatedUsers.find(u => u.id === selectedUser.id)
+            const updatedUser = updatedUsers.find((u: any) => u.id === selectedUser.id)
             setSelectedUser(updatedUser)
             setActiveCycle(updatedUser?.workCycles?.[0] || null)
             setView("dashboard")
@@ -143,15 +143,15 @@ export default function EvaluationsPage() {
         if (res.success) {
             const updatedUsers = await getAllUsersWithActiveCycle()
             setUsers(updatedUsers)
-            const updatedUser = updatedUsers.find(u => u.id === selectedUser.id)
+            const updatedUser = updatedUsers.find((u: any) => u.id === selectedUser?.id)
             setActiveCycle(updatedUser?.workCycles?.[0] || null)
             setSelectedDay(null)
         }
         setLoading(false)
     }
 
-    const filteredUsers = users.filter(u => 
-        (u.name || u.email).toLowerCase().includes(searchTerm.toLowerCase())
+    const filteredUsers = users.filter((u: any) => 
+        ((u.name || u.email) as string).toLowerCase().includes(searchTerm.toLowerCase())
     )
 
     if (loading && users.length === 0) {

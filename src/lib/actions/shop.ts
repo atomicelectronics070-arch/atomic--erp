@@ -220,3 +220,33 @@ export async function bulkUpdateProducts(productIds: string[], data: any) {
     return { success: true }
 }
 
+export async function getProductById(id: string) {
+    return await prisma.product.findUnique({
+        where: { id },
+        include: {
+            category: true,
+            collection: true
+        }
+    })
+}
+
+export async function getRelatedProducts(categoryId: string | null, currentProductId: string) {
+    if (!categoryId) return []
+    return await prisma.product.findMany({
+        where: {
+            categoryId,
+            id: { not: currentProductId },
+            isDeleted: false,
+            isActive: true
+        },
+        take: 4,
+        orderBy: { createdAt: 'desc' },
+        select: {
+            id: true,
+            name: true,
+            price: true,
+            images: true
+        }
+    })
+}
+

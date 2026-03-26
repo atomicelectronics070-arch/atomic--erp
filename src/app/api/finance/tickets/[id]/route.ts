@@ -5,9 +5,10 @@ import { prisma } from "@/lib/prisma"
 
 export async function PATCH(
     req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const { id } = await params
         const session = await getServerSession(authOptions)
         if (!session) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
@@ -28,7 +29,7 @@ export async function PATCH(
 
         // 1. Get current ticket to check if it's already paid or to get amount/advisor
         const ticket = await prisma.paymentTicket.findUnique({
-            where: { id: params.id },
+            where: { id },
             include: { advisor: true }
         })
 
@@ -38,7 +39,7 @@ export async function PATCH(
 
         // 2. Update status
         const updatedTicket = await prisma.paymentTicket.update({
-            where: { id: params.id },
+            where: { id },
             data: { status }
         })
 
