@@ -1,8 +1,9 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useSession } from "next-auth/react"
-import { Plus, DollarSign, Calendar, Users, X, Send, CreditCard, Tag } from "lucide-react"
+import { useSearchParams } from "next/navigation"
+import { Plus, DollarSign, Calendar, Users, X, Send, CreditCard, Tag, CheckCircle2, AlertCircle } from "lucide-react"
 
 interface Ticket {
     id: string
@@ -18,10 +19,15 @@ interface Ticket {
 
 export default function PaymentTickets() {
     const { data: session } = useSession()
+    const searchParams = useSearchParams()
+    const targetTicketId = searchParams.get("ticketId")
+    
     const [tickets, setTickets] = useState<Ticket[]>([])
     const [loading, setLoading] = useState(true)
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [advisors, setAdvisors] = useState<{ id: string, name: string, role?: string }[]>([])
+    
+    const ticketRefs = useRef<{ [key: string]: HTMLDivElement | null }>({})
 
     const role = session?.user?.role
     const isAdmin = role === "ADMIN" || role === "MANAGEMENT"
@@ -40,6 +46,19 @@ export default function PaymentTickets() {
             fetchAdvisors()
         }
     }, [isAdmin, session])
+
+    useEffect(() => {
+        if (targetTicketId && tickets.length > 0) {
+            const el = ticketRefs.current[targetTicketId]
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                el.classList.add('ring-4', 'ring-orange-500', 'ring-offset-4')
+                setTimeout(() => {
+                    el.classList.remove('ring-4', 'ring-orange-500', 'ring-offset-4')
+                }, 5000)
+            }
+        }
+    }, [targetTicketId, tickets])
 
     const fetchTickets = async () => {
         setLoading(true)
@@ -61,17 +80,7 @@ export default function PaymentTickets() {
             const res = await fetch("/api/crm/users", { cache: 'no-store' })
             if (res.ok) {
                 const data = await res.json()
-                console.log("[PaymentTickets] Raw users from API:", data.length, data)
-                // Show all users that have APPROVED or ACTIVE status
-                const filtered = data.filter((u: any) => {
-                    const status = (u.status || "").toUpperCase()
-                    return status === "APPROVED" || status === "ACTIVE"
-                })
-                console.log("[PaymentTickets] Filtered advisors:", filtered.length)
-                setAdvisors(filtered)
-            } else {
-                const errText = await res.text()
-                console.error("[PaymentTickets] Failed to fetch advisors:", res.status, errText)
+                setAdvisors(data)
             }
         } catch (error) {
             console.error("[PaymentTickets] Error fetching advisors:", error)
@@ -104,6 +113,21 @@ export default function PaymentTickets() {
         }
     }
 
+    const handleStatusUpdate = async (ticketId: string, newStatus: string) => {
+        try {
+            const res = await fetch(`/api/finance/tickets/${ticketId}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status: newStatus })
+            })
+            if (res.ok) {
+                fetchTickets()
+            }
+        } catch (error) {
+            console.error("Failed to update status", error)
+        }
+    }
+
     if (loading) return <div className="animate-pulse bg-neutral-100 h-64 w-full"></div>
 
     return (
@@ -112,9 +136,9 @@ export default function PaymentTickets() {
                 <div>
                     <h2 className="text-2xl font-bold text-neutral-900 flex items-center gap-3">
                         <CreditCard className="text-orange-600" />
-                        Tickets de Pago
+                        Tickets de Pago & Liquidaciones
                     </h2>
-                    <p className="text-neutral-500 text-sm mt-1">{isAdmin ? "Emite y administra tickets de pago para tu equipo." : "Tus tickets de pago recibidos."}</p>
+                    <p className="text-neutral-500 text-sm mt-1">{isAdmin ? "Emite y administra tickets de pago para tu equipo." : "Tus tickets de pago recibidos y por cobrar."}</p>
                 </div>
                 {isAdmin && (
                     <button
@@ -122,7 +146,7 @@ export default function PaymentTickets() {
                         className="bg-orange-600 text-white px-6 py-3 font-bold uppercase tracking-widest text-[10px] flex items-center space-x-2 hover:bg-neutral-900 transition-colors shadow-md"
                     >
                         <Plus size={16} />
-                        <span>Emitir Ticket</span>
+                        <span>Emitir Nuevo Ticket</span>
                     </button>
                 )}
             </div>
@@ -131,21 +155,46 @@ export default function PaymentTickets() {
             {tickets.length === 0 ? (
                 <div className="text-center py-16 bg-white border border-neutral-200 shadow-sm">
                     <CreditCard size={48} className="mx-auto text-neutral-200 mb-4" />
-                    <p className="text-neutral-500 font-medium">No hay tickets de pago registrados.</p>
+                    <p className="text-neutral-500 font-medium">No hay tickets registrados en esta sección.</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                     {tickets.map(ticket => (
-                        <div key={ticket.id} className="bg-white border text-left border-neutral-200 p-6 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+                        <div 
+                            key={ticket.id} 
+                            ref={el => { ticketRefs.current[ticket.id] = el }}
+                            className={`border text-left p-6 shadow-sm hover:shadow-md transition-all relative overflow-hidden group ${
+                                ticket.status === 'PAGADO' ? 'bg-green-50/40 border-green-200' : 
+                                ticket.status === 'RECIBIDO' ? 'bg-blue-50/40 border-blue-200' :
+                                'bg-white border-neutral-200'
+                            }`}
+                        >
                             <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:scale-110 transition-transform">
                                 <DollarSign size={80} />
                             </div>
 
                             <div className="flex justify-between items-start mb-4">
-                                <span className={`px-2 py-1 text-[9px] font-bold uppercase tracking-widest border ${ticket.status === 'PAGADO' ? 'text-green-700 bg-green-50 border-green-200' : 'text-orange-700 bg-orange-50 border-orange-200'
+                                <div className="flex flex-col gap-2">
+                                    <span className={`px-2 py-1 text-[9px] font-bold uppercase tracking-widest border w-fit ${
+                                        ticket.status === 'PAGADO' ? 'text-green-700 bg-green-50 border-green-200' : 
+                                        ticket.status === 'RECIBIDO' ? 'text-blue-700 bg-blue-50 border-blue-200' :
+                                        'text-orange-700 bg-orange-50 border-orange-200'
                                     }`}>
-                                    {ticket.status}
-                                </span>
+                                        {ticket.status}
+                                    </span>
+                                    {isAdmin && (
+                                        <select 
+                                            value={ticket.status}
+                                            onChange={(e) => handleStatusUpdate(ticket.id, e.target.value)}
+                                            className="text-[9px] font-bold uppercase tracking-widest bg-neutral-100 border-none px-2 py-1 outline-none cursor-pointer hover:bg-neutral-200"
+                                        >
+                                            <option value="PENDIENTE">PENDIENTE</option>
+                                            <option value="RECIBIDO">MARCAR RECIBIDO</option>
+                                            <option value="PAGADO">MARCAR PAGADO</option>
+                                            <option value="CANCELADO">CANCELAR TICKET</option>
+                                        </select>
+                                    )}
+                                </div>
                                 <span className="text-xs font-bold text-neutral-400">
                                     {(new Date(ticket.issueDate)).toLocaleDateString()}
                                 </span>
@@ -167,14 +216,33 @@ export default function PaymentTickets() {
                                 </div>
                             </div>
 
-                            <div className="pt-4 border-t border-neutral-100 flex justify-between items-end">
-                                <div>
-                                    <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-1">Monto a Pagar</p>
-                                    <p className="text-2xl font-bold text-green-600">${ticket.amount.toLocaleString()}</p>
+                            <div className="pt-4 border-t border-neutral-100 flex flex-col gap-4">
+                                <div className="flex justify-between items-end">
+                                    <div>
+                                        <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-1">Monto a Pagar</p>
+                                        <p className="text-2xl font-bold text-green-600">${ticket.amount.toLocaleString()}</p>
+                                    </div>
+                                    {!isAdmin && (
+                                        <div className="text-[9px] font-bold text-neutral-400 uppercase text-right">
+                                            Emitido por:<br />{ticket.admin.name}
+                                        </div>
+                                    )}
                                 </div>
-                                {!isAdmin && (
-                                    <div className="text-[9px] font-bold text-neutral-400 uppercase text-right">
-                                        Por:<br />{ticket.admin.name}
+                                
+                                {!isAdmin && ticket.status === 'PENDIENTE' && (
+                                    <button 
+                                        onClick={() => handleStatusUpdate(ticket.id, 'RECIBIDO')}
+                                        className="w-full bg-neutral-900 text-white py-3 text-[10px] font-bold uppercase tracking-[0.2em] flex items-center justify-center gap-2 hover:bg-blue-600 transition-colors"
+                                    >
+                                        <CheckCircle2 size={14} />
+                                        Confirmar Recepción (Aprobar)
+                                    </button>
+                                )}
+                                
+                                {!isAdmin && ticket.status === 'RECIBIDO' && (
+                                    <div className="w-full bg-blue-50 text-blue-700 py-3 text-[9px] font-bold uppercase tracking-[0.2em] flex items-center justify-center gap-2 border border-blue-100">
+                                        <ClockIcon size={14} />
+                                        Esperando Liquidación de Admin
                                     </div>
                                 )}
                             </div>
@@ -183,7 +251,7 @@ export default function PaymentTickets() {
                 </div>
             )}
 
-            {/* Emit Modal */}
+            {/* Emit Modal remains same for Admin */}
             {isModalOpen && isAdmin && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 backdrop-blur-sm bg-neutral-900/40">
                     <div className="bg-white w-full max-w-lg shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
@@ -273,5 +341,13 @@ export default function PaymentTickets() {
                 </div>
             )}
         </div>
+    )
+}
+
+function ClockIcon({ size, className }: { size: number, className?: string }) {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+        </svg>
     )
 }

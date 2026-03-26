@@ -64,7 +64,8 @@ export default function NotificationBell() {
         if (notification.type === "MESSAGE") {
             router.push("/dashboard/messages")
         } else if (notification.type === "TICKET") {
-            router.push("/dashboard/finance")
+            // Deep link to finance with ticketId
+            router.push(`/dashboard/finance?ticketId=${notification.relatedId}`)
         } else if (notification.type === "GOAL") {
             router.push("/dashboard")
         }

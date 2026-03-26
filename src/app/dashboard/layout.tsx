@@ -56,6 +56,7 @@ export default function DashboardLayout({
         operaciones: true,
         rrhh: false,
         comunicacion: true,
+        ia: true,
         config: false
     })
 
@@ -121,6 +122,16 @@ export default function DashboardLayout({
                         </CollapsibleSection>
                     )}
 
+                    {(role === "ADMIN" || role === "MANAGEMENT" || role === "COORDINATOR" || role === "COORD_ASSISTANT" || role === "SALESPERSON" || role === "EDITOR") && (
+                        <CollapsibleSection
+                            label="Cerebro IA"
+                            isOpen={openSections.ia}
+                            onToggle={() => toggleSection('ia')}
+                        >
+                            <NavLink href="/dashboard/training" icon={<BrainCircuit size={18} />} label="IA Cognitiva" />
+                        </CollapsibleSection>
+                    )}
+
                     {(role === "ADMIN" || role === "MANAGEMENT" || role === "COORDINATOR" || role === "COORD_ASSISTANT" || role === "SALESPERSON") && (
                         <CollapsibleSection
                             label="Crecimiento"
@@ -128,7 +139,6 @@ export default function DashboardLayout({
                             onToggle={() => toggleSection('rrhh')}
                         >
                             <NavLink href="/dashboard/evaluations" icon={<CheckSquare size={18} />} label="Rúbricas" />
-                            <NavLink href="/dashboard/training" icon={<BrainCircuit size={18} />} label="Tutor IA Cognitivo" />
                         </CollapsibleSection>
                     )}
 

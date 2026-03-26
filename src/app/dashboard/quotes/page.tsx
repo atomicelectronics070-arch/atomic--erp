@@ -33,10 +33,10 @@ export default function QuotationGenerator() {
     const [advisorName, setAdvisorName] = useState("NOMBRE DEL ASESOR")
 
     useEffect(() => {
-        if (session?.user?.name) {
+        if (session?.user?.name && (advisorName === "NOMBRE DEL ASESOR" || advisorName === "")) {
             setAdvisorName(session.user.name.toUpperCase())
         }
-    }, [session])
+    }, [session, advisorName])
     const [warrantyNote, setWarrantyNote] = useState("Garantía de 12 meses contra defectos de fábrica. No cubre daños por mal uso or variaciones de voltaje.")
     const [warrantyComments, setWarrantyComments] = useState("")
     const [items, setItems] = useState<QuoteItem[]>([
@@ -243,9 +243,9 @@ export default function QuotationGenerator() {
         doc.setFontSize(11)
         doc.setFont("helvetica", "bold")
         doc.setTextColor(0)
-        doc.text("ASESOR COMERCIAL:", rightColumnX, 65)
+        doc.text("VENDEDOR RESPONSABLE:", rightColumnX, 65)
         doc.setFontSize(10)
-        doc.text(advisorName || "ASIGNADO", rightColumnX, 72)
+        doc.text(advisorName || "EMPRESA - ATOMIC", rightColumnX, 72)
         doc.setFontSize(8)
         doc.setFont("helvetica", "normal")
         doc.text("Nivel Industrial | División ERP", rightColumnX, 77)
@@ -408,6 +408,7 @@ export default function QuotationGenerator() {
         setDeliveryAddress(quote.deliveryAddress || "")
         setWarrantyComments(quote.warrantyComments || "")
         setDiscountPercent(quote.discountPercent || 0)
+        setAdvisorName(quote.advisorName || "")
 
         try {
             if (quote.itemsData) {
@@ -520,15 +521,15 @@ export default function QuotationGenerator() {
                                 </div>
                             </div>
                             <div className="md:col-span-2">
-                                <label className="block text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-2">Asesor Comercial Responsable (Se refleja en PDF)</label>
+                                <label className="block text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-2">Vendedor Responsable (Se refleja en PDF)</label>
                                 <div className="relative">
                                     <User className="absolute left-5 top-1/2 -translate-y-1/2 text-neutral-300" size={16} />
                                     <input
                                         type="text"
                                         value={advisorName}
                                         onChange={(e) => setAdvisorName(e.target.value)}
-                                        placeholder="NOMBRE DEL ASESOR"
-                                        className="w-full pl-14 pr-5 py-4 border border-neutral-100 bg-orange-50/30 text-sm font-bold uppercase focus:border-orange-600 outline-none"
+                                        placeholder="EJ: JUAN PÉREZ / DEPARTAMENTO DE VENTAS"
+                                        className="w-full pl-14 pr-5 py-4 border border-neutral-100 bg-orange-50/10 text-sm font-bold uppercase focus:border-orange-600 outline-none transition-all"
                                     />
                                 </div>
                             </div>
@@ -789,7 +790,7 @@ export default function QuotationGenerator() {
                                                 </div>
                                                 <h3 className="text-sm font-bold text-neutral-900 mt-2 uppercase">{quote.clientName || 'CLIENTE NO ESPECIFICADO'}</h3>
                                                 <span className="text-[9px] font-bold text-neutral-500 uppercase mt-1 block">
-                                                    Asesor: <span className="text-neutral-800">{quote.advisorName || quote.salesperson?.name || "USUARIO"}</span>
+                                                    Vendedor: <span className="text-neutral-800">{quote.advisorName || quote.salesperson?.name || "SISTEMA"}</span>
                                                 </span>
                                                 <span className="text-[9px] font-mono text-neutral-400 uppercase mt-0.5 block">
                                                     Emitida: {new Date(quote.createdAt).toLocaleDateString()} a las {new Date(quote.createdAt).toLocaleTimeString()}

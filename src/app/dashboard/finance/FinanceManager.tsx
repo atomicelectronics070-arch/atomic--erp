@@ -5,7 +5,7 @@ import {
     Plus, Search, Edit3, Trash2, Filter,
     DollarSign, Calendar, Users,
     ChevronDown, X, Check, Save,
-    ArrowUpRight, ArrowDownRight, Info
+    ArrowUpRight, ArrowDownRight, Info, Clock
 } from "lucide-react"
 
 interface Transaction {
@@ -20,12 +20,11 @@ interface Transaction {
     type: string
 }
 
-
-
 export default function FinanceManager() {
     const [data, setData] = useState<Transaction[]>([])
     const [loading, setLoading] = useState(true)
     const [searchTerm, setSearchTerm] = useState("")
+    const [periodFilter, setPeriodFilter] = useState("TODOS")
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [editingItem, setEditingItem] = useState<Transaction | null>(null)
 
@@ -58,10 +57,32 @@ export default function FinanceManager() {
     }
 
     const filteredData = useMemo(() => {
-        return data.filter(item =>
-            (item.id || "").toLowerCase().includes(searchTerm.toLowerCase())
-        )
-    }, [data, searchTerm])
+        const now = new Date()
+        const currentYear = now.getFullYear()
+        const currentMonth = now.getMonth()
+        const currentQuarter = Math.floor(currentMonth / 3)
+
+        return data.filter(item => {
+            const itemDate = new Date(item.date)
+            const matchesSearch = (item.id || "").toLowerCase().includes(searchTerm.toLowerCase()) || 
+                                 (item.client || "").toLowerCase().includes(searchTerm.toLowerCase())
+            
+            if (!matchesSearch) return false
+
+            if (periodFilter === "ANUAL") {
+                return itemDate.getFullYear() === currentYear
+            }
+            if (periodFilter === "TRIMESTRAL") {
+                const itemQuarter = Math.floor(itemDate.getMonth() / 3)
+                return itemDate.getFullYear() === currentYear && itemQuarter === currentQuarter
+            }
+            if (periodFilter === "MENSUAL") {
+                return itemDate.getFullYear() === currentYear && itemDate.getMonth() === currentMonth
+            }
+
+            return true // TODOS
+        })
+    }, [data, searchTerm, periodFilter])
 
     const totalSales = filteredData.reduce((acc, curr) => acc + curr.amount, 0)
     const totalProfit = filteredData.reduce((acc, curr) => acc + curr.profit, 0)
@@ -123,32 +144,46 @@ export default function FinanceManager() {
 
     return (
         <div className="space-y-8 pb-12">
-            {/* Search and Global Actions */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div className="relative w-full md:w-96 group">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400 group-focus-within:text-orange-600 transition-colors" size={18} />
-                    <input
-                        type="text"
-                        placeholder="Buscar por cliente o ID de transacción..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full bg-white border border-neutral-100 rounded-none py-4 pl-12 pr-4 text-sm font-medium outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all shadow-sm"
-                    />
+            {/* Period Filters and Search */}
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 bg-white p-6 border border-neutral-100 shadow-sm">
+                <div className="flex flex-wrap items-center gap-2 bg-neutral-100 p-1">
+                    {(["TODOS", "ANUAL", "TRIMESTRAL", "MENSUAL"] as const).map(p => (
+                        <button 
+                            key={p}
+                            onClick={() => setPeriodFilter(p)}
+                            className={`px-4 py-2 text-[10px] font-bold uppercase tracking-widest transition-all ${periodFilter === p ? 'bg-white text-neutral-950 shadow-sm' : 'text-neutral-400 hover:text-neutral-600'}`}
+                        >
+                            {p === "TODOS" ? "Histórico Total" : p === "ANUAL" ? "Año Actual" : p === "TRIMESTRAL" ? "Trimestre" : "Este Mes"}
+                        </button>
+                    ))}
                 </div>
-                <button
-                    onClick={() => handleOpenModal()}
-                    className="bg-neutral-900 text-white px-8 py-4 rounded-none font-bold uppercase tracking-widest text-[10px] flex items-center space-x-3 hover:bg-orange-600 transition-all shadow-lg active:scale-95"
-                >
-                    <Plus size={16} />
-                    <span>Nuevo Registro</span>
-                </button>
+
+                <div className="flex flex-col md:flex-row items-center gap-4 w-full lg:w-auto">
+                    <div className="relative w-full md:w-80 group">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400 group-focus-within:text-orange-600 transition-colors" size={16} />
+                        <input
+                            type="text"
+                            placeholder="Buscar cliente o ID..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-full bg-neutral-50 border border-neutral-100 rounded-none py-3 pl-10 pr-4 text-xs font-medium outline-none focus:ring-1 focus:ring-orange-500 transition-all"
+                        />
+                    </div>
+                    <button
+                        onClick={() => handleOpenModal()}
+                        className="w-full md:w-auto bg-neutral-900 text-white px-6 py-3 rounded-none font-bold uppercase tracking-widest text-[10px] flex items-center justify-center space-x-2 hover:bg-orange-600 transition-all shadow-md active:scale-95"
+                    >
+                        <Plus size={14} />
+                        <span>Nuevo Registro</span>
+                    </button>
+                </div>
             </div>
 
             {/* Summary Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <StatSummary label="Ventas Filtradas" value={totalSales} icon={<DollarSign size={24} />} trend={totalSales > 0 ? "+ Active" : "No Data"} color="orange" />
-                <StatSummary label="Utilidad Estimada" value={totalProfit} icon={<Info size={24} />} trend="Post-Costos" color="neutral" />
-                <StatSummary label="Comisiones Netas" value={totalCommission} icon={<ArrowUpRight size={24} />} trend="Liquidables" color="green" />
+                <StatSummary label={`Ventas (${periodFilter})`} value={totalSales} icon={<DollarSign size={20} />} trend={periodFilter} color="orange" />
+                <StatSummary label="Utilidad Estimada" value={totalProfit} icon={<Info size={20} />} trend="Post-Costos" color="neutral" />
+                <StatSummary label="Comisiones Netas" value={totalCommission} icon={<ArrowUpRight size={20} />} trend="Liquidables" color="green" />
             </div>
 
             {/* Data Table */}
@@ -204,12 +239,20 @@ export default function FinanceManager() {
                                     </td>
                                 </tr>
                             ))}
+                            {filteredData.length === 0 && (
+                                <tr>
+                                    <td colSpan={7} className="px-8 py-20 text-center">
+                                        <Clock className="mx-auto text-neutral-200 mb-4" size={40} />
+                                        <p className="text-neutral-400 font-bold text-xs uppercase tracking-widest">No se encontraron registros para este periodo.</p>
+                                    </td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            {/* CRUD Modal */}
+            {/* CRUD Modal remains same logic, just keeping it here for consistency */}
             {isModalOpen && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 backdrop-blur-md bg-stone-900/10">
                     <div className="bg-white w-full max-w-xl rounded-none shadow-2xl border border-neutral-100 overflow-hidden animate-in zoom-in-95 duration-200">
@@ -265,6 +308,7 @@ export default function FinanceManager() {
                                         <option value="Servicio">Servicio</option>
                                         <option value="Proyectos">Proyectos</option>
                                         <option value="Distribución">Distribución</option>
+                                        <option value="Ticket de Pago">Ticket de Pago</option>
                                     </select>
                                 </div>
 
@@ -354,5 +398,3 @@ function StatSummary({ label, value, icon, trend, color }: any) {
         </div>
     )
 }
-
-

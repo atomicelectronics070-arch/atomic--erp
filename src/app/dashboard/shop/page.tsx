@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { ShoppingBag, Plus, Save, Image as ImageIcon, FileText, Trash2, X, PlusCircle, Globe, LayoutGrid, List, Layers, Tag as TagIcon, Edit, Power, Star, Settings, CreditCard, Box, CheckSquare, Square, ChevronRight, Search } from "lucide-react"
-import { saveProduct, getProducts, deleteProduct, getShopMetadata, createCategory, createCollection, deleteCollection, deleteManyCollections, updateCollection, deleteManyProducts, updateProductsCollection } from "@/lib/actions/shop"
+import { saveProduct, getProducts, deleteProduct, getShopMetadata, createCategory, createCollection, deleteCollection, deleteManyCollections, updateCollection, deleteManyProducts, updateProductsCollection, restoreProduct, restoreManyProducts, permanentDeleteManyProducts, bulkUpdateProducts } from "@/lib/actions/shop"
 
 const safeParseArray = (str: any, fallback: any = []) => {
     if (!str || str === 'null') return fallback;
@@ -27,7 +27,8 @@ export default function ShopConfigPage() {
     const [loading, setLoading] = useState(true)
     const [selectedProducts, setSelectedProducts] = useState<string[]>([])
     const [selectedCollections, setSelectedCollections] = useState<string[]>([])
-    const [showBulkActions, setShowBulkActions] = useState(false)
+    const [showBulkEdit, setShowBulkEdit] = useState(false)
+    const [isTrashView, setIsTrashView] = useState(false)
 
     // Store Settings State
     const [storeSettings, setStoreSettings] = useState({
@@ -51,7 +52,7 @@ export default function ShopConfigPage() {
         setLoading(true)
         try {
             const [productRes, m, s] = await Promise.all([
-                getProducts({ page: currentPage, pageSize, search: dashboardSearch }),
+                getProducts({ page: currentPage, pageSize, search: dashboardSearch, showDeleted: isTrashView }),
                 getShopMetadata(),
                 fetch("/api/shop/settings").then(res => res.json()).catch(() => ({}))
             ])
@@ -107,7 +108,31 @@ export default function ShopConfigPage() {
 
     const handleBulkUpdateCollection = async (collectionId: string | null) => {
         await updateProductsCollection(selectedProducts, collectionId)
+        alert("Colección actualizada en masa")
         refreshData()
+    }
+
+    const handleBulkEdit = async (data: any) => {
+        await bulkUpdateProducts(selectedProducts, data)
+        setShowBulkEdit(false)
+        refreshData()
+    }
+
+    const handleRestore = async (id: string) => {
+        await restoreProduct(id)
+        refreshData()
+    }
+
+    const handleBulkRestore = async () => {
+        await restoreManyProducts(selectedProducts)
+        refreshData()
+    }
+
+    const handleBulkPermanentDelete = async () => {
+        if (confirm(`¿Estás seguro de eliminar PERMANENTEMENTE ${selectedProducts.length} productos? Esta acción no se puede deshacer.`)) {
+            await permanentDeleteManyProducts(selectedProducts)
+            refreshData()
+        }
     }
 
     const toggleProductSelection = (id: string) => {
@@ -211,6 +236,20 @@ export default function ShopConfigPage() {
                                         className="w-full bg-white border border-neutral-200 pl-10 pr-4 py-2.5 text-sm outline-none focus:border-orange-600 transition-colors"
                                     />
                                 </div>
+                                <div className="flex bg-neutral-100 p-1 rounded-none border border-neutral-200">
+                                    <button 
+                                        onClick={() => { setIsTrashView(false); setCurrentPage(1); }}
+                                        className={`px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${!isTrashView ? 'bg-white text-orange-600 shadow-sm border border-neutral-100' : 'text-neutral-400 hover:text-neutral-600'}`}
+                                    >
+                                        Activos
+                                    </button>
+                                    <button 
+                                        onClick={() => { setIsTrashView(true); setCurrentPage(1); }}
+                                        className={`px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 ${isTrashView ? 'bg-white text-red-600 shadow-sm border border-neutral-100' : 'text-neutral-400 hover:text-neutral-600'}`}
+                                    >
+                                        <Trash2 size={12} /> Papelera
+                                    </button>
+                                </div>
                             </div>
 
                             <div className="bg-white border border-neutral-100 overflow-hidden">
@@ -274,12 +313,20 @@ export default function ShopConfigPage() {
                                                     </td>
                                                     <td className="px-6 py-5">
                                                         <div className="flex items-center justify-end space-x-2">
-                                                            <button onClick={() => handleEdit(p)} className="p-2 text-neutral-300 hover:text-orange-600 transition-colors">
-                                                                <Edit size={16} />
-                                                            </button>
-                                                            <button onClick={() => handleDelete(p.id)} className="p-2 text-neutral-300 hover:text-red-600 transition-colors">
-                                                                <Trash2 size={16} />
-                                                            </button>
+                                                            {isTrashView ? (
+                                                                <button onClick={() => handleRestore(p.id)} className="flex items-center space-x-1 px-3 py-1.5 bg-green-50 text-green-600 hover:bg-green-600 hover:text-white transition-all text-[10px] font-black uppercase tracking-widest border border-green-100">
+                                                                    <span>Restaurar</span>
+                                                                </button>
+                                                            ) : (
+                                                                <>
+                                                                    <button onClick={() => handleEdit(p)} className="p-2 text-neutral-300 hover:text-orange-600 transition-colors">
+                                                                        <Edit size={16} />
+                                                                    </button>
+                                                                    <button onClick={() => handleDelete(p.id)} className="p-2 text-neutral-300 hover:text-red-600 transition-colors">
+                                                                        <Trash2 size={16} />
+                                                                    </button>
+                                                                </>
+                                                            )}
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -319,26 +366,54 @@ export default function ShopConfigPage() {
                                         <span className="text-[10px] font-black uppercase tracking-widest text-neutral-400">Seleccionados</span>
                                     </div>
                                     <div className="flex items-center space-x-4">
-                                        <div className="flex items-center space-x-2">
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-neutral-400">Colección:</span>
-                                            <select 
-                                                onChange={(e) => handleBulkUpdateCollection(e.target.value || null)}
-                                                className="bg-neutral-800 border-none text-[10px] font-bold uppercase tracking-widest px-4 py-2 outline-none cursor-pointer hover:bg-neutral-700 transition-colors"
-                                            >
-                                                <option value="">Cambiar a...</option>
-                                                <option value="none">Sin Colección</option>
-                                                {metadata.collections.map(c => (
-                                                    <option key={c.id} value={c.id}>{c.name}</option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                        <button 
-                                            onClick={handleBulkDeleteProducts}
-                                            className="flex items-center space-x-2 bg-red-600/10 text-red-500 hover:bg-red-600 hover:text-white px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all"
-                                        >
-                                            <Trash2 size={14} />
-                                            <span>Eliminar Selección</span>
-                                        </button>
+                                        {!isTrashView ? (
+                                            <>
+                                                <div className="flex items-center space-x-2">
+                                                    <span className="text-[10px] font-black uppercase tracking-widest text-neutral-400">Colección:</span>
+                                                    <select 
+                                                        onChange={(e) => handleBulkUpdateCollection(e.target.value || null)}
+                                                        className="bg-neutral-800 border-none text-[10px] font-bold uppercase tracking-widest px-4 py-2 outline-none cursor-pointer hover:bg-neutral-700 transition-colors"
+                                                    >
+                                                        <option value="">Cambiar a...</option>
+                                                        <option value="none">Sin Colección</option>
+                                                        {metadata.collections.map(c => (
+                                                            <option key={c.id} value={c.id}>{c.name}</option>
+                                                        ))}
+                                                    </select>
+                                                </div>
+                                                <button 
+                                                    onClick={() => setShowBulkEdit(true)}
+                                                    className="flex items-center space-x-2 bg-neutral-800 text-white hover:bg-neutral-700 px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all"
+                                                >
+                                                    <Edit size={14} />
+                                                    <span>Edición en Masa</span>
+                                                </button>
+                                                <button 
+                                                    onClick={handleBulkDeleteProducts}
+                                                    className="flex items-center space-x-2 bg-red-600/10 text-red-500 hover:bg-red-600 hover:text-white px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all"
+                                                >
+                                                    <Trash2 size={14} />
+                                                    <span>Mover a Papelera</span>
+                                                </button>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <button 
+                                                    onClick={handleBulkRestore}
+                                                    className="flex items-center space-x-2 bg-green-600/10 text-green-500 hover:bg-green-600 hover:text-white px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all"
+                                                >
+                                                    <Layers size={14} />
+                                                    <span>Restaurar Selección</span>
+                                                </button>
+                                                <button 
+                                                    onClick={handleBulkPermanentDelete}
+                                                    className="flex items-center space-x-2 bg-red-600/10 text-red-500 hover:bg-red-600 hover:text-white px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all"
+                                                >
+                                                    <Trash2 size={14} />
+                                                    <span>Eliminar Definitivamente</span>
+                                                </button>
+                                            </>
+                                        )}
                                         <button 
                                             onClick={() => setSelectedProducts([])}
                                             className="text-neutral-400 hover:text-white transition-colors"
@@ -347,6 +422,16 @@ export default function ShopConfigPage() {
                                         </button>
                                     </div>
                                 </div>
+                            )}
+
+                            {showBulkEdit && (
+                                <BulkEditModal 
+                                    selectedCount={selectedProducts.length}
+                                    categories={metadata.categories}
+                                    collections={metadata.collections}
+                                    onClose={() => setShowBulkEdit(false)}
+                                    onSave={handleBulkEdit}
+                                />
                             )}
                         </div>
                     )}
@@ -900,6 +985,126 @@ function Toggle({ label, checked, onChange, icon }: { label: string, checked: bo
             >
                 <div className={`w-4 h-4 bg-white shadow-sm transition-transform ${checked ? 'translate-x-6' : 'translate-x-0'}`}></div>
             </button>
+        </div>
+    )
+}
+
+function BulkEditModal({ selectedCount, categories, collections, onClose, onSave }: { selectedCount: number, categories: any[], collections: any[], onClose: () => void, onSave: (data: any) => void }) {
+    const [data, setData] = useState<any>({
+        name: undefined,
+        price: undefined,
+        stock: undefined,
+        isActive: undefined,
+        categoryId: undefined,
+        collectionId: undefined
+    })
+
+    return (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+            <div className="bg-white max-w-lg w-full p-8 space-y-8 animate-in zoom-in-95 duration-300">
+                <div className="flex justify-between items-start">
+                    <div>
+                        <h2 className="text-2xl font-black text-neutral-900 uppercase tracking-tighter italic">Edición en Masa</h2>
+                        <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mt-1">Modificando <span className="text-orange-600">{selectedCount}</span> productos seleccionados</p>
+                    </div>
+                    <button onClick={onClose} className="p-2 hover:bg-neutral-100 transition-colors">
+                        <X size={20} className="text-neutral-400" />
+                    </button>
+                </div>
+
+                <div className="space-y-6">
+                    <div className="space-y-2">
+                        <label className="text-[9px] font-black uppercase text-neutral-400 tracking-wider">Nuevo Nombre Común</label>
+                        <input 
+                            type="text"
+                            placeholder="Dejar vacío para no cambiar"
+                            className="w-full bg-neutral-50 border-none px-4 py-3 text-sm font-bold outline-none border-b-2 border-transparent focus:border-orange-500 transition-all"
+                            onChange={(e) => setData({ ...data, name: e.target.value || undefined })}
+                        />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <label className="text-[9px] font-black uppercase text-neutral-400 tracking-wider">Nuevo Precio (USD)</label>
+                            <input 
+                                type="number"
+                                placeholder="Sin cambios"
+                                className="w-full bg-neutral-50 border-none px-4 py-3 text-sm font-bold outline-none border-b-2 border-transparent focus:border-orange-500 transition-all"
+                                onChange={(e) => setData({ ...data, price: e.target.value || undefined })}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-[9px] font-black uppercase text-neutral-400 tracking-wider">Nuevo Stock</label>
+                            <input 
+                                type="number"
+                                placeholder="Sin cambios"
+                                className="w-full bg-neutral-50 border-none px-4 py-3 text-sm font-bold outline-none border-b-2 border-transparent focus:border-orange-500 transition-all"
+                                onChange={(e) => setData({ ...data, stock: e.target.value || undefined })}
+                            />
+                        </div>
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className="text-[9px] font-black uppercase text-neutral-400 tracking-wider">Cambiar Categoría</label>
+                        <select 
+                            className="w-full bg-neutral-50 border-none px-4 py-3 text-xs font-bold uppercase outline-none"
+                            onChange={(e) => setData({ ...data, categoryId: e.target.value || undefined })}
+                        >
+                            <option value="">Mantener actuales</option>
+                            {categories.map(c => (
+                                <option key={c.id} value={c.id}>{c.name}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className="text-[9px] font-black uppercase text-neutral-400 tracking-wider">Cambiar Colección</label>
+                        <select 
+                            className="w-full bg-neutral-50 border-none px-4 py-3 text-xs font-bold uppercase outline-none"
+                            onChange={(e) => setData({ ...data, collectionId: e.target.value || undefined })}
+                        >
+                            <option value="">Mantener actuales</option>
+                            <option value="none">Quitar de todas</option>
+                            {collections.map(c => (
+                                <option key={c.id} value={c.id}>{c.name}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className="flex items-center justify-between p-4 bg-orange-50/50 border border-orange-100">
+                        <span className="text-[10px] font-black uppercase text-neutral-600 tracking-widest">Visibilidad en Web</span>
+                        <div className="flex gap-2">
+                            <button 
+                                onClick={() => setData({ ...data, isActive: true })}
+                                className={`px-4 py-1.5 text-[9px] font-black uppercase tracking-widest transition-all ${data.isActive === true ? 'bg-orange-600 text-white' : 'bg-white text-neutral-400'}`}
+                            > Activar </button>
+                            <button 
+                                onClick={() => setData({ ...data, isActive: false })}
+                                className={`px-4 py-1.5 text-[9px] font-black uppercase tracking-widest transition-all ${data.isActive === false ? 'bg-red-600 text-white' : 'bg-white text-neutral-400'}`}
+                            > Desactivar </button>
+                            <button 
+                                onClick={() => setData({ ...data, isActive: undefined })}
+                                className={`px-4 py-1.5 text-[9px] font-black uppercase tracking-widest transition-all ${data.isActive === undefined ? 'bg-neutral-800 text-white' : 'bg-white text-neutral-400'}`}
+                            > S/C </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="flex flex-col gap-3">
+                    <button 
+                        onClick={() => onSave(data)}
+                        className="w-full bg-neutral-900 text-white py-4 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-orange-600 transition-all shadow-xl shadow-neutral-200"
+                    >
+                        Aplicar Cambios en Masa
+                    </button>
+                    <button 
+                        onClick={onClose}
+                        className="w-full text-[9px] font-black uppercase text-neutral-400 hover:text-neutral-800 transition-all tracking-widest"
+                    >
+                        Cancelar Proceso
+                    </button>
+                </div>
+            </div>
         </div>
     )
 }

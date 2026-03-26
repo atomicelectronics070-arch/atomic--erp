@@ -53,12 +53,22 @@ export async function updateCollection(id: string, name: string) {
 }
 
 // PRODUCTS
-export async function getProducts(options: { page?: number, pageSize?: number, search?: string, categoryId?: string, collectionId?: string } = {}) {
+export async function getProducts(options: { 
+    page?: number, 
+    pageSize?: number, 
+    search?: string, 
+    categoryId?: string, 
+    collectionId?: string,
+    showDeleted?: boolean 
+} = {}) {
     noStore(); 
-    const { page = 1, pageSize = 50, search = "", categoryId, collectionId } = options;
+    const { page = 1, pageSize = 50, search = "", categoryId, collectionId, showDeleted = false } = options;
     const skip = (page - 1) * pageSize;
 
-    const where: any = {};
+    const where: any = {
+        isDeleted: showDeleted
+    };
+
     if (search) {
         where.OR = [
             { name: { contains: search, mode: 'insensitive' } },
@@ -102,47 +112,9 @@ export async function getProducts(options: { page?: number, pageSize?: number, s
     }
 }
 
-export async function getProductById(id: string) {
-    noStore();
-    try {
-        const product = await prisma.product.findUnique({
-            where: { id },
-            include: {
-                category: true,
-                collection: true
-            }
-        });
-        return product;
-    } catch (error) {
-        console.error("Error fetching product by id:", error);
-        return null;
-    }
-}
-
-export async function getRelatedProducts(categoryId: string | null, currentProductId: string) {
-    noStore();
-    if (!categoryId) return [];
-    try {
-        const products = await prisma.product.findMany({
-            where: {
-                categoryId,
-                id: { not: currentProductId },
-                isActive: true
-            },
-            take: 4,
-            orderBy: { createdAt: 'desc' }
-        });
-        return products;
-    } catch (error) {
-        console.error("Error fetching related products:", error);
-        return [];
-    }
-}
-
 export async function saveProduct(data: any) {
     const { id, ...productData } = data
 
-    // Ensure numeric fields are numbers
     const finalData = {
         ...productData,
         price: parseFloat(productData.price) || 0,
@@ -167,18 +139,56 @@ export async function saveProduct(data: any) {
 }
 
 export async function deleteProduct(id: string) {
-    await prisma.product.delete({ where: { id } })
+    // Soft delete
+    await prisma.product.update({
+        where: { id },
+        data: { isDeleted: true }
+    })
     revalidatePath('/dashboard/shop')
     revalidatePath('/web')
     return { success: true }
 }
 
+export async function restoreProduct(id: string) {
+    await prisma.product.update({
+        where: { id },
+        data: { isDeleted: false }
+    })
+    revalidatePath('/dashboard/shop')
+    return { success: true }
+}
+
+export async function permanentDeleteProduct(id: string) {
+    await prisma.product.delete({ where: { id } })
+    revalidatePath('/dashboard/shop')
+    return { success: true }
+}
+
 export async function deleteManyProducts(ids: string[]) {
+    // Soft bulk delete
+    await prisma.product.updateMany({
+        where: { id: { in: ids } },
+        data: { isDeleted: true }
+    })
+    revalidatePath('/dashboard/shop')
+    revalidatePath('/web')
+    return { success: true }
+}
+
+export async function restoreManyProducts(ids: string[]) {
+    await prisma.product.updateMany({
+        where: { id: { in: ids } },
+        data: { isDeleted: false }
+    })
+    revalidatePath('/dashboard/shop')
+    return { success: true }
+}
+
+export async function permanentDeleteManyProducts(ids: string[]) {
     await prisma.product.deleteMany({
         where: { id: { in: ids } }
     })
     revalidatePath('/dashboard/shop')
-    revalidatePath('/web')
     return { success: true }
 }
 
@@ -191,3 +201,22 @@ export async function updateProductsCollection(productIds: string[], collectionI
     revalidatePath('/web')
     return { success: true }
 }
+
+export async function bulkUpdateProducts(productIds: string[], data: any) {
+    const updateData: any = {}
+    if (data.name !== undefined && data.name !== "") updateData.name = data.name
+    if (data.price !== undefined) updateData.price = parseFloat(data.price)
+    if (data.stock !== undefined) updateData.stock = parseInt(data.stock)
+    if (data.isActive !== undefined) updateData.isActive = data.isActive
+    if (data.categoryId !== undefined) updateData.categoryId = data.categoryId
+    if (data.collectionId !== undefined) updateData.collectionId = data.collectionId
+
+    await prisma.product.updateMany({
+        where: { id: { in: productIds } },
+        data: updateData
+    })
+    revalidatePath('/dashboard/shop')
+    revalidatePath('/web')
+    return { success: true }
+}
+

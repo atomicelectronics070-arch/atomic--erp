@@ -49,6 +49,8 @@ model User {
 
   // Cognitive Prompts
   promptConfigs    UserPromptConfig[]
+  workCycles       WorkCycle[]
+  transactions     Transaction[]      @relation("UserTransactions")
 }
 
 model Team {
@@ -109,6 +111,8 @@ model Product {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  isDeleted Boolean @default(false)
 }
 
 model Category {
@@ -176,6 +180,9 @@ model Transaction {
   status     String   @default("PENDIENTE") // PAGADO, PENDIENTE
   type       String   @default("Venta Directa")
 
+  salespersonId String?
+  salesperson   User?    @relation("UserTransactions", fields: [salespersonId], references: [id])
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -194,6 +201,36 @@ model Evaluation {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model WorkCycle {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  role          String
+  startDate     DateTime
+  endDate       DateTime
+  fixedPay      Float
+  commissionPct Float
+  functions     String   // JSON string array of job functions
+  isActive      Boolean  @default(true)
+  
+  dailyLogs     DailyLog[]
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model DailyLog {
+  id          String    @id @default(cuid())
+  cycleId     String
+  cycle       WorkCycle @relation(fields: [cycleId], references: [id])
+  dayNumber   Int       // Day 1 to 30
+  date        DateTime  @default(now())
+  content     String    // JSON string { "funcName": "progress text" }
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 model ExtractionTemplate {
