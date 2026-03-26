@@ -1,34 +1,32 @@
-import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import bcrypt from 'bcryptjs';
+import { NextResponse } from "next/server"
+import { prisma } from "@/lib/prisma"
 
-export async function GET(req: Request) {
+export async function GET() {
     try {
-        const { searchParams } = new URL(req.url);
-        const email = searchParams.get('email') || 'juanguzman7100@gmail.com';
-        const testPassword = searchParams.get('pass') || 'Jp2024013gg002';
-
-        const user = await prisma.user.findUnique({
-            where: { email: email.toLowerCase() }
-        });
-
-        if (!user) {
-            return NextResponse.json({ error: 'User not found in Vercel database', email }, { status: 404 });
-        }
-
-        const match = await bcrypt.compare(testPassword, user.passwordHash);
+        const counts = await Promise.all([
+            prisma.user.count().catch(() => -1),
+            prisma.product.count().catch(() => -1),
+            prisma.quote.count().catch(() => -1),
+            prisma.transaction.count().catch(() => -1),
+            (prisma as any).workCycle.count().catch(() => -1)
+        ])
 
         return NextResponse.json({
-            success: true,
-            email: user.email,
-            status: user.status,
-            role: user.role,
-            hashSnippet: user.passwordHash.substring(0, 15) + '...',
-            passwordMatch: match,
-            envUrl: process.env.DATABASE_URL ? process.env.DATABASE_URL.substring(0, 15) + '...' : 'MISSING',
-            nextAuthUrl: process.env.NEXTAUTH_URL || 'MISSING'
-        });
+            status: "connected",
+            database: process.env.DATABASE_URL?.split("@")[1].split("/")[0] || "unknown",
+            counts: {
+                users: counts[0],
+                products: counts[1],
+                quotes: counts[2],
+                transactions: counts[3],
+                workCycles: counts[4]
+            }
+        })
     } catch (error: any) {
-        return NextResponse.json({ error: 'Prisma Connection Error', message: error.message }, { status: 500 });
+        return NextResponse.json({ 
+            status: "error", 
+            message: error.message,
+            db_host: process.env.DATABASE_URL?.split("@")[1].split("/")[0] || "unknown"
+        }, { status: 500 })
     }
 }

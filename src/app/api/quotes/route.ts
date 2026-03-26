@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
 
+export const dynamic = "force-dynamic"
+
 export async function GET(req: Request) {
     try {
         const session = await getServerSession(authOptions)
@@ -66,7 +68,7 @@ export async function POST(req: Request) {
         }
 
         // Save Quote to database
-        const quote = await prisma.quote.create({
+        const quote = await (prisma as any).quote.create({
             data: {
                 quoteNumber,
                 globalQuoteNumber,

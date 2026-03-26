@@ -3,9 +3,14 @@ import { prisma } from "@/lib/prisma"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
 
+export const dynamic = "force-dynamic"
+
 export async function GET() {
     try {
-        const products = await prisma.product.findMany({
+        const products = await (prisma as any).product.findMany({
+            where: {
+                NOT: { isDeleted: true }
+            },
             orderBy: { name: 'asc' }
         })
         return NextResponse.json(products)
@@ -25,7 +30,7 @@ export async function POST(req: Request) {
         
         // Soporte para creación masiva (Bulk)
         if (Array.isArray(data)) {
-            const products = await prisma.product.createMany({
+            const products = await (prisma as any).product.createMany({
                 data: data.map(p => ({
                     name: p.name,
                     description: p.description || '',
@@ -38,7 +43,7 @@ export async function POST(req: Request) {
                     keywords: p.keywords || null,
                     specs: p.specs || null,
                 })),
-                skipDuplicates: true // Muy importante para evitar errores
+                skipDuplicates: true 
             })
             return NextResponse.json({ success: true, count: products.count })
         }

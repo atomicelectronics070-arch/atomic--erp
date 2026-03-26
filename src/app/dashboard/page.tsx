@@ -30,9 +30,14 @@ export default function DashboardOverview() {
     const loadStats = async () => {
         if (!session?.user?.id || !session?.user?.role) return
         setLoading(true)
-        const stats = await getDashboardData(session.user.id, session.user.role)
-        setData(stats)
-        setLoading(false)
+        try {
+            const stats = await getDashboardData(session.user.id, session.user.role)
+            setData(stats)
+        } catch (error) {
+            console.error("Dashboard load error:", error)
+        } finally {
+            setLoading(false)
+        }
     }
 
     useEffect(() => {
