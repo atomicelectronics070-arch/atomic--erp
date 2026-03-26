@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 
+export const dynamic = "force-dynamic"
+
 export async function GET() {
     try {
         const counts = await Promise.all([
@@ -8,6 +10,8 @@ export async function GET() {
             prisma.product.count().catch(() => -1),
             prisma.quote.count().catch(() => -1),
             prisma.transaction.count().catch(() => -1),
+            prisma.paymentTicket.count().catch(() => -1),
+            prisma.internalMessage.count().catch(() => -1),
             (prisma as any).workCycle.count().catch(() => -1)
         ])
 
@@ -19,7 +23,9 @@ export async function GET() {
                 products: counts[1],
                 quotes: counts[2],
                 transactions: counts[3],
-                workCycles: counts[4]
+                paymentTickets: counts[4],
+                internalMessages: counts[5],
+                workCycles: counts[6]
             }
         })
     } catch (error: any) {
