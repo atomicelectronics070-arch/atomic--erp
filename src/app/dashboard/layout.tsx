@@ -15,6 +15,15 @@ export default function DashboardLayout({
 }) {
     const { data: session, status } = useSession()
     const [darkMode, setDarkMode] = useState(false)
+    const [sidebarOpen, setSidebarOpen] = useState(false)
+    const [unreadCount, setUnreadCount] = useState(0)
+    const [openSections, setOpenSections] = useState<Record<string, boolean>>({
+        operaciones: true,
+        rrhh: false,
+        comunicacion: true,
+        ia: true,
+        config: false
+    })
     const router = useRouter()
 
     useEffect(() => {
@@ -23,7 +32,6 @@ export default function DashboardLayout({
         }
     }, [status, router])
 
-    const [unreadCount, setUnreadCount] = useState(0)
 
     useEffect(() => {
         if (session?.user?.id) {
@@ -49,16 +57,8 @@ export default function DashboardLayout({
         return <div className="h-screen w-screen flex items-center justify-center bg-white  font-bold text-orange-600 uppercase tracking-widest animate-pulse">ATOMIC...</div>
     }
 
-    const [sidebarOpen, setSidebarOpen] = useState(false)
     const role = session.user?.role
 
-    const [openSections, setOpenSections] = useState<Record<string, boolean>>({
-        operaciones: true,
-        rrhh: false,
-        comunicacion: true,
-        ia: true,
-        config: false
-    })
 
     const toggleSection = (section: string) => {
         setOpenSections(prev => ({ ...prev, [section]: !prev[section] }))
