@@ -117,27 +117,47 @@ export default function PublicWebPage() {
                 </div>
             </section>
 
-            <section id="categorias" className="py-24 max-w-7xl mx-auto px-6">
-                <div className="flex flex-col md:flex-row justify-between items-end mb-16">
+            <section id="categorias" className="py-24 w-full overflow-hidden bg-white">
+                <div className="max-w-7xl mx-auto px-6 mb-12 flex items-end justify-between">
                     <div className="space-y-2">
-                        <p className="text-orange-600 text-[10px] font-black uppercase tracking-[0.3em]">Explora</p>
-                        <h2 className="text-4xl font-light text-neutral-800">Secciones <span className="font-black text-neutral-900">Industriales</span></h2>
+                        <p className="text-orange-600 text-[10px] font-black uppercase tracking-[0.3em]">Explora el Catálogo</p>
+                        <h2 className="text-4xl font-light text-neutral-800">Secciones <span className="font-black text-neutral-900">Principales</span></h2>
+                    </div>
+                    <div className="hidden md:flex space-x-2">
+                        <button className="w-10 h-10 border border-neutral-200 flex items-center justify-center text-neutral-400 hover:text-orange-600 hover:border-orange-600 transition-all">
+                            <ChevronRight className="rotate-180" size={16} />
+                        </button>
+                        <button className="w-10 h-10 border border-neutral-200 flex items-center justify-center text-neutral-400 hover:text-orange-600 hover:border-orange-600 transition-all">
+                            <ChevronRight size={16} />
+                        </button>
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    {metadata.categories.slice(0, 3).map((cat: any, i: number) => (
-                        <div key={cat.id} className="group relative h-96 overflow-hidden bg-neutral-100 cursor-pointer border border-neutral-100">
-                            <div className="absolute inset-0 flex items-center justify-center bg-neutral-50 font-black text-neutral-100 text-9xl uppercase select-none opacity-20">
-                                {cat.name[0]}
+                <div className="w-full pl-6 md:pl-[max(1.5rem,calc((100vw-80rem)/2))]">
+                    <div className="flex space-x-6 overflow-x-auto snap-x snap-mandatory pb-8 pr-6 [&::-webkit-scrollbar]:h-1 [&::-webkit-scrollbar-track]:bg-neutral-100 [&::-webkit-scrollbar-thumb]:bg-orange-600/20 hover:[&::-webkit-scrollbar-thumb]:bg-orange-600 items-stretch">
+                        {metadata.categories.filter((c: any) => c.isVisible !== false).map((cat: any) => (
+                            <div key={cat.id} className="min-w-[280px] md:min-w-[320px] snap-start group cursor-pointer border border-neutral-100 bg-neutral-50 flex flex-col hover:border-orange-500/30 transition-all hover:shadow-2xl shadow-neutral-200/50">
+                                <div className="h-48 overflow-hidden relative bg-white border-b border-neutral-50">
+                                    {cat.image ? (
+                                        <img src={cat.image} alt={cat.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out" />
+                                    ) : (
+                                        <div className="absolute inset-0 flex items-center justify-center bg-neutral-50 text-neutral-200 text-7xl font-black uppercase select-none group-hover:scale-110 transition-transform duration-700 ease-out">
+                                            {cat.name[0]}
+                                        </div>
+                                    )}
+                                    <div className="absolute inset-0 bg-gradient-to-t from-neutral-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
+                                        <p className="text-white text-[10px] font-black uppercase tracking-widest flex items-center gap-2">Explorar <ArrowRight size={14} /></p>
+                                    </div>
+                                </div>
+                                <div className="p-6 flex-1 flex flex-col bg-white">
+                                    <h3 className="text-lg font-black uppercase tracking-wide text-neutral-900 mb-2 group-hover:text-orange-600 transition-colors">{cat.name}</h3>
+                                    <p className="text-xs text-neutral-500 font-medium line-clamp-2 leading-relaxed flex-1">
+                                        {cat.description || "Descubre los mejores equipos y soluciones diseñados para alto rendimiento en esta categoría."}
+                                    </p>
+                                </div>
                             </div>
-                            <div className="absolute inset-0 bg-gradient-to-t from-neutral-900 via-transparent to-transparent opacity-80"></div>
-                            <div className="absolute bottom-8 left-8 right-8">
-                                <h3 className="text-white text-2xl font-black uppercase mb-2">{cat.name}</h3>
-                                <p className="text-white/60 text-[10px] font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity duration-300">Explorar productos</p>
-                            </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
             </section>
 

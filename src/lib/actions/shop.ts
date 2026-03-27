@@ -10,6 +10,34 @@ export async function getShopMetadata() {
     return { categories, collections }
 }
 
+export async function saveCategory(id: string | null, data: any, productIds: string[] = []) {
+    const slug = data.name.toLowerCase().replace(/ /g, '-')
+    const finalData = {
+        name: data.name,
+        slug,
+        description: data.description || null,
+        image: data.image || null,
+        isVisible: data.isVisible ?? true
+    }
+    
+    let cat;
+    if (id) {
+        cat = await prisma.category.update({ where: { id }, data: finalData })
+        await prisma.product.updateMany({ where: { categoryId: id }, data: { categoryId: null } })
+        if (productIds.length > 0) {
+            await prisma.product.updateMany({ where: { id: { in: productIds } }, data: { categoryId: id } })
+        }
+    } else {
+        cat = await prisma.category.create({ data: finalData })
+        if (productIds.length > 0) {
+            await prisma.product.updateMany({ where: { id: { in: productIds } }, data: { categoryId: cat.id } })
+        }
+    }
+    revalidatePath('/dashboard/shop')
+    revalidatePath('/web')
+    return cat
+}
+
 export async function createCategory(name: string) {
     const slug = name.toLowerCase().replace(/ /g, '-')
     const cat = await prisma.category.create({
@@ -17,6 +45,34 @@ export async function createCategory(name: string) {
     })
     revalidatePath('/dashboard/shop')
     return cat
+}
+
+export async function saveCollection(id: string | null, data: any, productIds: string[] = []) {
+    const slug = data.name.toLowerCase().replace(/ /g, '-')
+    const finalData = {
+        name: data.name,
+        slug,
+        description: data.description || null,
+        image: data.image || null,
+        isVisible: data.isVisible ?? true
+    }
+    
+    let col;
+    if (id) {
+        col = await prisma.collection.update({ where: { id }, data: finalData })
+        await prisma.product.updateMany({ where: { collectionId: id }, data: { collectionId: null } })
+        if (productIds.length > 0) {
+            await prisma.product.updateMany({ where: { id: { in: productIds } }, data: { collectionId: id } })
+        }
+    } else {
+        col = await prisma.collection.create({ data: finalData })
+        if (productIds.length > 0) {
+            await prisma.product.updateMany({ where: { id: { in: productIds } }, data: { collectionId: col.id } })
+        }
+    }
+    revalidatePath('/dashboard/shop')
+    revalidatePath('/web')
+    return col
 }
 
 export async function createCollection(name: string) {

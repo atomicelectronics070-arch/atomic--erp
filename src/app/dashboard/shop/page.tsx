@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { ShoppingBag, Plus, Save, Image as ImageIcon, FileText, Trash2, X, PlusCircle, Globe, LayoutGrid, List, Layers, Tag as TagIcon, Edit, Power, Star, Settings, CreditCard, Box, CheckSquare, Square, ChevronRight, Search } from "lucide-react"
-import { saveProduct, getProducts, deleteProduct, getShopMetadata, createCategory, createCollection, deleteCollection, deleteManyCollections, updateCollection, deleteManyProducts, updateProductsCollection, restoreProduct, restoreManyProducts, permanentDeleteManyProducts, bulkUpdateProducts } from "@/lib/actions/shop"
+import { saveProduct, getProducts, deleteProduct, getShopMetadata, createCategory, saveCategory, createCollection, saveCollection, deleteCollection, deleteManyCollections, updateCollection, deleteManyProducts, updateProductsCollection, restoreProduct, restoreManyProducts, permanentDeleteManyProducts, bulkUpdateProducts } from "@/lib/actions/shop"
 
 const safeParseArray = (str: any, fallback: any = []) => {
     if (!str || str === 'null') return fallback;
@@ -24,6 +24,7 @@ export default function ShopConfigPage() {
     const [dashboardSearch, setDashboardSearch] = useState("")
     const [metadata, setMetadata] = useState<{ categories: any[], collections: any[] }>({ categories: [], collections: [] })
     const [editingProduct, setEditingProduct] = useState<any>(null)
+    const [editingTaxonomy, setEditingTaxonomy] = useState<{ type: 'category' | 'collection', data: any } | null>(null)
     const [loading, setLoading] = useState(true)
     const [selectedProducts, setSelectedProducts] = useState<string[]>([])
     const [selectedCollections, setSelectedCollections] = useState<string[]>([])
@@ -457,9 +458,16 @@ export default function ShopConfigPage() {
                                     <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-800 mb-4 border-b pb-4">Categorías Actuales</h3>
                                     <ul className="space-y-2">
                                         {metadata.categories.map(c => (
-                                            <li key={c.id} className="flex justify-between items-center py-2 px-3 bg-neutral-50 hover:bg-neutral-100 transition-colors">
-                                                <span className="font-medium text-neutral-700">{c.name}</span>
-                                                <span className="text-[10px] text-neutral-400 font-bold uppercase">/{c.slug}</span>
+                                            <li key={c.id} className="flex justify-between items-center py-2 px-3 bg-neutral-50 hover:bg-neutral-100 transition-colors group">
+                                                <div>
+                                                    <span className="font-medium text-neutral-700">{c.name}</span>
+                                                    <span className="text-[10px] text-neutral-400 font-bold uppercase ml-2">/{c.slug}</span>
+                                                </div>
+                                                <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <button onClick={() => setEditingTaxonomy({ type: 'category', data: c })} className="p-1.5 text-neutral-400 hover:text-orange-600 transition-colors">
+                                                        <Edit size={14} />
+                                                    </button>
+                                                </div>
                                             </li>
                                         ))}
                                     </ul>
@@ -503,10 +511,7 @@ export default function ShopConfigPage() {
                                                         </div>
                                                         <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                                             <button 
-                                                                onClick={() => {
-                                                                    const newName = prompt("Nuevo nombre para la colección:", c.name);
-                                                                    if (newName && newName !== c.name) updateCollection(c.id, newName).then(refreshData);
-                                                                }}
+                                                                onClick={() => setEditingTaxonomy({ type: 'collection', data: c })}
                                                                 className="p-1.5 text-neutral-400 hover:text-orange-600 transition-colors"
                                                             >
                                                                 <Edit size={14} />
@@ -642,6 +647,16 @@ export default function ShopConfigPage() {
                                 </button>
                             </div>
                         </div>
+                    )}
+
+                    {editingTaxonomy && (
+                        <TaxonomyModal
+                            type={editingTaxonomy.type}
+                            initialData={editingTaxonomy.data}
+                            allProducts={products}
+                            onClose={() => setEditingTaxonomy(null)}
+                            onSaved={() => { setEditingTaxonomy(null); refreshData(); }}
+                        />
                     )}
                 </div>
             ) : (
@@ -1102,6 +1117,154 @@ function BulkEditModal({ selectedCount, categories, collections, onClose, onSave
                         className="w-full text-[9px] font-black uppercase text-neutral-400 hover:text-neutral-800 transition-all tracking-widest"
                     >
                         Cancelar Proceso
+                    </button>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+function TaxonomyModal({ type, initialData, allProducts, onClose, onSaved }: { type: 'category' | 'collection', initialData: any, allProducts: any[], onClose: () => void, onSaved: () => void }) {
+    const [loading, setLoading] = useState(false)
+    const [data, setData] = useState({
+        id: initialData?.id || null,
+        name: initialData?.name || '',
+        description: initialData?.description || '',
+        image: initialData?.image || '',
+        isVisible: initialData?.isVisible ?? true
+    })
+    
+    // Find products currently assigned to this category/collection
+    const assignedProducts = allProducts.filter(p => type === 'category' ? p.categoryId === data.id : p.collectionId === data.id).map(p => p.id)
+    const [selectedProducts, setSelectedProducts] = useState<string[]>(assignedProducts)
+    
+    const handleSubmit = async () => {
+        setLoading(true)
+        try {
+            if (type === 'category') {
+                await saveCategory(data.id, data, selectedProducts)
+            } else {
+                await saveCollection(data.id, data, selectedProducts)
+            }
+            onSaved()
+        } catch (error) {
+            alert("Error al guardar")
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const toggleProduct = (id: string) => {
+        setSelectedProducts(prev => prev.includes(id) ? prev.filter(p => p !== id) : [...prev, id])
+    }
+
+    return (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+            <div className="bg-white max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-in zoom-in-95 duration-300">
+                <div className="sticky top-0 bg-white border-b border-neutral-100 p-6 flex justify-between items-center z-10">
+                    <div>
+                        <h2 className="text-xl font-black text-neutral-900 uppercase tracking-tighter">Editar {type === 'category' ? 'Categoría' : 'Colección'}</h2>
+                        <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mt-1">Configuración Avanzada</p>
+                    </div>
+                    <button onClick={onClose} className="p-2 hover:bg-neutral-100 transition-colors">
+                        <X size={20} className="text-neutral-400" />
+                    </button>
+                </div>
+
+                <div className="p-8 space-y-8">
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase text-neutral-400 tracking-wider">Nombre</label>
+                        <input 
+                            type="text"
+                            value={data.name}
+                            onChange={(e) => setData({ ...data, name: e.target.value })}
+                            className="w-full bg-neutral-50 border-none px-6 py-4 text-sm font-bold outline-none border-b-2 border-transparent focus:border-orange-500 transition-all"
+                        />
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase text-neutral-400 tracking-wider">Breve Descripción</label>
+                        <textarea 
+                            rows={3}
+                            value={data.description}
+                            onChange={(e) => setData({ ...data, description: e.target.value })}
+                            placeholder="Descripción opcional..."
+                            className="w-full bg-neutral-50 border-none px-6 py-4 text-sm font-medium outline-none border-b-2 border-transparent focus:border-orange-500 transition-all resize-none"
+                        />
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase text-neutral-400 tracking-wider">URL de Imagen</label>
+                        <input 
+                            type="text"
+                            value={data.image}
+                            onChange={(e) => setData({ ...data, image: e.target.value })}
+                            placeholder="https://ejemplo.com/imagen.jpg"
+                            className="w-full bg-neutral-50 border-none px-6 py-4 text-sm outline-none border-b-2 border-transparent focus:border-orange-500 transition-all font-mono"
+                        />
+                        {data.image && (
+                            <div className="mt-4 border border-neutral-100 w-32 h-32 overflow-hidden flex items-center justify-center bg-neutral-50">
+                                <img src={data.image} alt="Preview" className="w-full h-full object-cover" onError={(e) => (e.currentTarget.style.display = 'none')} />
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="pt-4 border-t border-neutral-100">
+                        <Toggle 
+                            label="Visible en la Tienda Web" 
+                            icon={<Globe size={14} />} 
+                            checked={data.isVisible} 
+                            onChange={(v) => setData({ ...data, isVisible: v })} 
+                        />
+                    </div>
+
+                    <div className="pt-6 border-t border-neutral-100 border-dashed">
+                        <div className="flex items-center justify-between mb-4">
+                            <label className="text-[10px] font-black uppercase text-neutral-400 tracking-wider flex items-center gap-2">
+                                <Box size={14} /> Productos Asignados ({selectedProducts.length})
+                            </label>
+                        </div>
+                        <div className="bg-neutral-50 border border-neutral-100 max-h-64 overflow-y-auto">
+                            {allProducts.length === 0 ? (
+                                <p className="text-center py-6 text-[10px] font-bold uppercase tracking-widest text-neutral-400">No hay productos en tu catálogo</p>
+                            ) : (
+                                <ul className="divide-y divide-neutral-100">
+                                    {allProducts.map(p => {
+                                        const isSelected = selectedProducts.includes(p.id)
+                                        return (
+                                            <li key={p.id} className={`flex items-center justify-between p-3 cursor-pointer transition-colors ${isSelected ? 'bg-orange-50 hover:bg-orange-100' : 'hover:bg-white'}`} onClick={() => toggleProduct(p.id)}>
+                                                <div className="flex items-center space-x-3">
+                                                    <div className={`${isSelected ? 'text-orange-600' : 'text-neutral-300'}`}>
+                                                        {isSelected ? <CheckSquare size={16} /> : <Square size={16} />}
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-xs font-bold text-neutral-800">{p.name}</p>
+                                                        <p className="text-[9px] text-neutral-500 font-bold uppercase tracking-widest">{p.sku || 'N/A'}</p>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        )
+                                    })}
+                                </ul>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                <div className="sticky bottom-0 bg-white border-t border-neutral-100 p-6 flex gap-3 z-10">
+                    <button 
+                        disabled={loading}
+                        onClick={onClose}
+                        className="flex-1 px-4 py-4 text-[10px] font-black uppercase tracking-widest text-neutral-400 hover:text-neutral-800 transition-all bg-neutral-100 hover:bg-neutral-200"
+                    >
+                        Cancelar
+                    </button>
+                    <button 
+                        disabled={loading}
+                        onClick={handleSubmit}
+                        className="flex-1 bg-neutral-900 text-white py-4 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-orange-600 transition-all shadow-xl shadow-neutral-200"
+                    >
+                        {loading ? 'Guardando...' : 'Aplicar Cambios'}
                     </button>
                 </div>
             </div>
