@@ -120,8 +120,6 @@ model Category {
   name        String    @unique
   slug        String    @unique
   description String?
-  image       String?
-  isVisible   Boolean   @default(true)
   products    Product[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -132,8 +130,6 @@ model Collection {
   name        String    @unique
   slug        String    @unique
   description String?
-  image       String?
-  isVisible   Boolean   @default(true)
   products    Product[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
