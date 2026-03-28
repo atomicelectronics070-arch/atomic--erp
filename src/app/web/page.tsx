@@ -207,6 +207,7 @@ export default function PublicWebPage() {
                                                     <img
                                                         src={imageUrls[0]}
                                                         alt={p.name}
+                                                        referrerPolicy="no-referrer"
                                                         className="w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-700 ease-out"
                                                     />
                                                 ) : (

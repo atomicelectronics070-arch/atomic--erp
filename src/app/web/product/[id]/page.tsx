@@ -122,6 +122,7 @@ export default function ProductDetailPage() {
                                 <img 
                                     src={images[selectedImage]} 
                                     alt={product.name}
+                                    referrerPolicy="no-referrer"
                                     className="w-full h-full object-contain mix-blend-multiply transition-transform duration-700 group-hover:scale-105" 
                                 />
                             ) : (
@@ -139,7 +140,7 @@ export default function ProductDetailPage() {
                                         onClick={() => setSelectedImage(i)}
                                         className={`aspect-square bg-neutral-50 border transition-all p-3 flex items-center justify-center ${selectedImage === i ? 'border-orange-600 ring-2 ring-orange-50' : 'border-neutral-100 hover:border-neutral-200'}`}
                                     >
-                                        <img src={img} alt="" className="w-full h-full object-contain mix-blend-multiply" />
+                                        <img src={img} alt="" referrerPolicy="no-referrer" className="w-full h-full object-contain mix-blend-multiply" />
                                     </button>
                                 ))}
                             </div>
@@ -260,6 +261,7 @@ export default function ProductDetailPage() {
                                                     <img 
                                                         src={rImages[0]} 
                                                         alt={p.name} 
+                                                        referrerPolicy="no-referrer"
                                                         className="w-full h-full object-contain mix-blend-multiply group-hover:rotate-3 transition-transform duration-700" 
                                                     />
                                                 ) : null;
