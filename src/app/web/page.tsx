@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ShoppingBag, ChevronRight, Star, ArrowRight, Shield, Zap, Truck, Search, ShoppingCart, User, Download, ExternalLink, Power } from "lucide-react"
+import { ShoppingBag, ChevronRight, Star, ArrowRight, Shield, Zap, Truck, Search, ShoppingCart, User, Download, ExternalLink, Power, X } from "lucide-react"
 import { getProducts, getShopMetadata } from "@/lib/actions/shop"
 import Link from "next/link"
 
@@ -194,28 +194,39 @@ export default function PublicWebPage() {
                         <h2 className="text-5xl font-light text-neutral-800">Equipos <span className="font-black text-neutral-900">Disponibles</span></h2>
                     </div>
 
-                    {!loading && (
-                        <div className="mb-12 max-w-2xl mx-auto relative group">
-                            <div className={`absolute inset-y-0 left-6 flex items-center pointer-events-none transition-colors ${isSearching ? 'text-orange-600' : 'text-neutral-400 group-focus-within:text-orange-600'}`}>
-                                {isSearching ? (
-                                    <div className="animate-spin rounded-full h-5 w-5 border-2 border-orange-600 border-t-transparent"></div>
-                                ) : (
-                                    <Search size={20} />
-                                )}
-                            </div>
-                            <input
-                                type="text"
-                                placeholder="BUSCAR POR NOMBRE O CATEGORÍA..."
-                                value={localSearch}
-                                onChange={(e) => setLocalSearch(e.target.value)}
-                                className="w-full bg-white border-2 border-neutral-100 px-16 py-6 text-sm font-bold uppercase tracking-widest focus:outline-none focus:border-orange-600 transition-all shadow-xl shadow-neutral-100/50"
-                            />
+                    <div className="mb-16 max-w-2xl mx-auto relative group">
+                        <div className={`absolute inset-y-0 left-6 flex items-center pointer-events-none transition-all duration-300 ${isSearching ? 'text-orange-600 scale-110' : 'text-neutral-400 group-focus-within:text-orange-600'}`}>
+                            {isSearching ? (
+                                <div className="flex items-center space-x-2">
+                                    <div className="animate-spin rounded-full h-5 w-5 border-2 border-orange-600 border-t-transparent shadow-lg shadow-orange-100"></div>
+                                </div>
+                            ) : (
+                                <Search size={22} className="group-focus-within:scale-110 transition-transform" />
+                            )}
                         </div>
-                    )}
+                        <input
+                            type="text"
+                            placeholder="Buscar en el catálogo tecnológico..."
+                            value={localSearch}
+                            onChange={(e) => setLocalSearch(e.target.value)}
+                            className="w-full bg-white border-b-2 border-neutral-100 px-16 py-8 text-[11px] font-black uppercase tracking-[0.2em] focus:outline-none focus:border-orange-600 transition-all shadow-2xl shadow-neutral-100/30 hover:shadow-orange-100/10 placeholder:text-neutral-300 placeholder:italic"
+                        />
+                        {localSearch && !isSearching && (
+                            <button 
+                                onClick={() => setLocalSearch("")}
+                                className="absolute inset-y-0 right-6 flex items-center text-neutral-300 hover:text-red-500 transition-colors"
+                            >
+                                <X size={18} />
+                            </button>
+                        )}
+                    </div>
 
                     {loading ? (
-                        <div className="py-20 text-center animate-pulse">
-                            <p className="font-black text-neutral-200 text-4xl uppercase tracking-widest">Cargando Catálogo...</p>
+                        <div className="py-32 text-center">
+                            <div className="inline-block animate-pulse space-y-4">
+                                <div className="h-4 w-64 bg-neutral-100 mx-auto"></div>
+                                <div className="h-12 w-96 bg-neutral-100 mx-auto"></div>
+                            </div>
                         </div>
                     ) : (
                         <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 transition-opacity duration-300 ${isSearching ? 'opacity-50 grayscale' : 'opacity-100'}`}>

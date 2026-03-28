@@ -1,8 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ShoppingBag, Plus, Save, Image as ImageIcon, FileText, Trash2, X, PlusCircle, Globe, LayoutGrid, List, Layers, Tag as TagIcon, Edit, Power, Star, Settings, CreditCard, Box, CheckSquare, Square, ChevronRight, Search } from "lucide-react"
-import { saveProduct, getProducts, deleteProduct, getShopMetadata, createCategory, saveCategory, createCollection, saveCollection, deleteCollection, deleteManyCollections, updateCollection, deleteManyProducts, updateProductsCollection, restoreProduct, restoreManyProducts, permanentDeleteManyProducts, bulkUpdateProducts } from "@/lib/actions/shop"
+import { ShoppingBag, Plus, Save, Image as ImageIcon, FileText, Trash2, X, PlusCircle, Globe, LayoutGrid, List, Layers, Tag as TagIcon, Edit, Power, Star, Settings, CreditCard, Box, CheckSquare, Square, ChevronRight, Search, Store } from "lucide-react"
+import { saveProduct, getProducts, deleteProduct, getShopMetadata, createCategory, saveCategory, createCollection, saveCollection, deleteCollection, deleteManyCollections, updateCollection, deleteManyProducts, updateProductsCollection, restoreProduct, restoreManyProducts, permanentDeleteManyProducts, bulkUpdateProducts, cleanupDuplicateProducts, getProviderStats } from "@/lib/actions/shop"
 
 const safeParseArray = (str: any, fallback: any = []) => {
     if (!str || str === 'null') return fallback;
@@ -30,6 +30,8 @@ export default function ShopConfigPage() {
     const [selectedCollections, setSelectedCollections] = useState<string[]>([])
     const [showBulkEdit, setShowBulkEdit] = useState(false)
     const [isTrashView, setIsTrashView] = useState(false)
+    const [providerStats, setProviderStats] = useState<any[]>([])
+    const [isCleaning, setIsCleaning] = useState(false)
 
     // Store Settings State
     const [storeSettings, setStoreSettings] = useState({
@@ -60,6 +62,11 @@ export default function ShopConfigPage() {
             setProducts(productRes.products)
             setTotalProducts(productRes.total)
             setMetadata(m)
+            
+            // Fetch Provider Stats
+            const stats = await getProviderStats()
+            setProviderStats(stats)
+            
             if (s && s.settings) {
                 setStoreSettings(s.settings)
             }
@@ -637,7 +644,63 @@ export default function ShopConfigPage() {
                                 </div>
                             </div>
 
-                            <div className="flex justify-end pt-4">
+                            {/* AJUSTES DE MANTENIMIENTO */}
+                            <div className="bg-white border border-neutral-100 p-8 mt-12 bg-neutral-50/10">
+                                <h3 className="text-xs font-black uppercase tracking-[0.2em] text-neutral-800 mb-8 flex items-center gap-3">
+                                    <Settings size={18} className="text-red-600" /> 
+                                    Mantenimiento Automático del Catálogo
+                                </h3>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                                    <div className="space-y-6">
+                                        <div className="flex items-center space-x-2 text-rose-600">
+                                            <Trash2 size={16} />
+                                            <span className="text-[10px] uppercase font-black tracking-widest">Poda de Duplicados Pro</span>
+                                        </div>
+                                        <p className="text-[11px] text-neutral-500 leading-relaxed font-bold uppercase tracking-tighter italic opacity-70">
+                                            Elimina productos 100% idénticos (Nombre, Precio, Imágenes). El sistema mantendrá solo la entrada más reciente.
+                                        </p>
+                                        <button 
+                                            onClick={async () => {
+                                                if(confirm("¿Seguro que quieres eliminar duplicados exactos?")) {
+                                                    setIsCleaning(true);
+                                                    try {
+                                                        await cleanupDuplicateProducts();
+                                                        await refreshData();
+                                                        alert("Catálogo saneado con éxito.");
+                                                    } finally {
+                                                        setIsCleaning(false);
+                                                    }
+                                                }
+                                            }}
+                                            disabled={isCleaning}
+                                            className="w-full bg-rose-50 text-rose-600 border border-rose-100 px-8 py-5 text-[10px] font-black uppercase tracking-widest hover:bg-rose-600 hover:text-white transition-all disabled:opacity-50 shadow-sm"
+                                        >
+                                            {isCleaning ? 'Limpiando...' : 'Borrar Productos Duplicados'}
+                                        </button>
+                                    </div>
+
+                                    <div className="space-y-6">
+                                        <div className="flex items-center space-x-2 text-indigo-600">
+                                            <ShoppingBag size={16} />
+                                            <span className="text-[10px] uppercase font-black tracking-widest">Proveedores en Catálogo</span>
+                                        </div>
+                                        <div className="bg-white border border-neutral-100 divide-y divide-neutral-100 max-h-48 overflow-y-auto">
+                                            {providerStats.length > 0 ? providerStats.map((s, i) => (
+                                                <div key={i} className="p-4 flex justify-between items-center hover:bg-neutral-50 transition-colors">
+                                                    <span className="text-[11px] font-black text-neutral-800 uppercase tracking-tight truncate">{s.name}</span>
+                                                    <span className="bg-indigo-600 text-white px-2 py-0.5 text-[9px] font-black">{s.count} uds.</span>
+                                                </div>
+                                            )) : (
+                                                <div className="p-8 text-center text-[10px] text-neutral-400 font-bold uppercase italic">Detectando orígenes...</div>
+                                            )}
+                                        </div>
+                                        <p className="text-[9px] text-neutral-400 font-bold uppercase tracking-widest text-center">Datos basados en el origen de las imágenes</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="flex justify-end pt-8">
                                 <button
                                     onClick={saveSettings}
                                     disabled={loading}

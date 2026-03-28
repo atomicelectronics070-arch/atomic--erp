@@ -305,3 +305,49 @@ export async function getRelatedProducts(categoryId: string | null, currentProdu
     })
 }
 
+export async function cleanupDuplicateProducts() {
+    // Buscamos duplicados exactos (nombre, precio, imágenes) y nos quedamos solo con el más reciente
+    await prisma.$executeRaw`
+        WITH dups AS (
+            SELECT id,
+                   ROW_NUMBER() OVER(PARTITION BY name, price, images ORDER BY "createdAt" DESC) as row_num
+            FROM "Product"
+            WHERE "isDeleted" = false
+        )
+        UPDATE "Product"
+        SET "isDeleted" = true, "updatedAt" = NOW()
+        WHERE id IN (SELECT id FROM dups WHERE row_num > 1)
+    `
+    revalidatePath('/dashboard/shop')
+    return { success: true }
+}
+
+export async function getProviderStats() {
+    // Obtenemos todos los productos que tengan imágenes para detectar proveedores
+    const products = await prisma.product.findMany({
+        where: { 
+            images: { not: '' },
+            isDeleted: false
+        },
+        select: { images: true }
+    })
+
+    const providersMap: Record<string, number> = {}
+    
+    products.forEach(p => {
+        try {
+            const imgs = JSON.parse(p.images)
+            if (Array.isArray(imgs) && imgs.length > 0) {
+                const url = new URL(imgs[0])
+                const domain = url.hostname.replace('www.', '')
+                providersMap[domain] = (providersMap[domain] || 0) + 1
+            }
+        } catch (e) {}
+    })
+
+    const stats = Object.entries(providersMap)
+        .map(([name, count]) => ({ name, count }))
+        .sort((a, b) => b.count - a.count)
+
+    return stats
+}
