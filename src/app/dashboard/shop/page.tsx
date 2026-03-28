@@ -225,222 +225,271 @@ export default function ShopConfigPage() {
 
                     {activeTab === 'products' && (
                         <div className="space-y-6">
-                            {/* Stats & Tools */}
+                            {/* Stats Summary */}
                             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                                <StatCard label="Total Productos" value={totalProducts} icon={<ShoppingBag size={14} />} />
+                                <StatCard label="Catalogados" value={totalProducts} icon={<ShoppingBag size={14} />} />
                                 <StatCard label="Categorías" value={metadata.categories.length} icon={<TagIcon size={14} />} />
-                                <StatCard label="Colecciones" value={metadata.collections.length} icon={<Layers size={14} />} />
-                                <StatCard label="Visibles en Web" value={products.filter(p => p.isActive).length} icon={<Globe size={14} />} />
+                                <StatCard label="Orígenes" value={providerStats.length} icon={<Globe size={14} />} />
+                                <StatCard label="Visitas Web" value={50} icon={<Power size={14} />} />
                             </div>
 
-                            <div className="flex flex-col md:flex-row gap-4 mb-4">
-                                <div className="flex-1 relative">
-                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" size={16} />
-                                    <input 
-                                        type="text"
-                                        placeholder="Buscar por nombre, SKU o descripción..."
-                                        value={dashboardSearch}
-                                        onChange={(e) => { setDashboardSearch(e.target.value); setCurrentPage(1); }}
-                                        className="w-full bg-white border border-neutral-200 pl-10 pr-4 py-2.5 text-sm outline-none focus:border-orange-600 transition-colors"
-                                    />
-                                </div>
-                                <div className="flex bg-neutral-100 p-1 rounded-none border border-neutral-200">
-                                    <button 
-                                        onClick={() => { setIsTrashView(false); setCurrentPage(1); }}
-                                        className={`px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${!isTrashView ? 'bg-white text-orange-600 shadow-sm border border-neutral-100' : 'text-neutral-400 hover:text-neutral-600'}`}
-                                    >
-                                        Activos
-                                    </button>
-                                    <button 
-                                        onClick={() => { setIsTrashView(true); setCurrentPage(1); }}
-                                        className={`px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 ${isTrashView ? 'bg-white text-red-600 shadow-sm border border-neutral-100' : 'text-neutral-400 hover:text-neutral-600'}`}
-                                    >
-                                        <Trash2 size={12} /> Papelera
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div className="bg-white border border-neutral-100 overflow-hidden">
-                                <table className="w-full text-left border-collapse">
-                                    <thead>
-                                        <tr className="bg-neutral-50 text-[10px] font-black uppercase tracking-widest text-neutral-400 border-b border-neutral-100">
-                                            <th className="px-6 py-4 w-10">
-                                                <button onClick={toggleAllProducts} className="text-neutral-400 hover:text-orange-600 transition-colors">
-                                                    {selectedProducts.length === products.length && products.length > 0 ? <CheckSquare size={16} /> : <Square size={16} />}
-                                                </button>
-                                            </th>
-                                            <th className="px-6 py-4 font-black">Producto</th>
-                                            <th className="px-6 py-4 font-black">Categoría</th>
-                                            <th className="px-6 py-4 font-black">Stock</th>
-                                            <th className="px-6 py-4 font-black">Precio</th>
-                                            <th className="px-6 py-4 font-black text-right">Acciones</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-neutral-50">
-                                        {products.length === 0 ? (
-                                            <tr>
-                                                <td colSpan={5} className="py-20 text-center text-neutral-300">
-                                                    <p className="uppercase text-[10px] font-bold tracking-[0.2em]">No hay productos registrados</p>
-                                                </td>
-                                            </tr>
-                                        ) : (
-                                            products.map((p) => (
-                                                <tr key={p.id} className={`hover:bg-neutral-50/50 transition-colors group ${selectedProducts.includes(p.id) ? 'bg-orange-50/30' : ''}`}>
-                                                    <td className="px-6 py-5">
-                                                        <button onClick={() => toggleProductSelection(p.id)} className={`${selectedProducts.includes(p.id) ? 'text-orange-600' : 'text-neutral-200 group-hover:text-neutral-400'} transition-colors`}>
-                                                            {selectedProducts.includes(p.id) ? <CheckSquare size={16} /> : <Square size={16} />}
-                                                        </button>
-                                                    </td>
-                                                    <td className="px-6 py-5">
-                                                        <div className="flex items-center space-x-3">
-                                                            <div className="w-10 h-10 bg-neutral-100 rounded-none overflow-hidden flex items-center justify-center">
-                                                                {p.images && p.images !== 'null' && safeParseArray(p.images).length > 0 ? (
-                                                                    <img src={safeParseArray(p.images)[0]} className="w-full h-full object-cover" />
-                                                                ) : (
-                                                                    <ImageIcon size={16} className="text-neutral-300" />
-                                                                )}
-                                                            </div>
-                                                            <div>
-                                                                <p className="text-sm font-bold text-neutral-800">{p.name}</p>
-                                                                <p className="text-[10px] text-neutral-400 uppercase tracking-wider">{p.sku || 'SIN SKU'}</p>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                    <td className="px-6 py-5">
-                                                        <span className="px-2 py-1 bg-neutral-100 text-[10px] font-bold uppercase tracking-wider text-neutral-500">
-                                                            {p.category?.name || 'Varios'}
-                                                        </span>
-                                                    </td>
-                                                    <td className="px-6 py-5">
-                                                        <span className={`text-xs font-bold ${p.stock < 5 ? 'text-red-500' : 'text-neutral-600'}`}>
-                                                            {p.stock} uds.
-                                                        </span>
-                                                    </td>
-                                                    <td className="px-6 py-5">
-                                                        <p className="text-sm font-black text-neutral-900">${p.price.toFixed(2)}</p>
-                                                    </td>
-                                                    <td className="px-6 py-5">
-                                                        <div className="flex items-center justify-end space-x-2">
-                                                            {isTrashView ? (
-                                                                <button onClick={() => handleRestore(p.id)} className="flex items-center space-x-1 px-3 py-1.5 bg-green-50 text-green-600 hover:bg-green-600 hover:text-white transition-all text-[10px] font-black uppercase tracking-widest border border-green-100">
-                                                                    <span>Restaurar</span>
-                                                                </button>
-                                                            ) : (
-                                                                <>
-                                                                    <button onClick={() => handleEdit(p)} className="p-2 text-neutral-300 hover:text-orange-600 transition-colors">
-                                                                        <Edit size={16} />
-                                                                    </button>
-                                                                    <button onClick={() => handleDelete(p.id)} className="p-2 text-neutral-300 hover:text-red-600 transition-colors">
-                                                                        <Trash2 size={16} />
-                                                                    </button>
-                                                                </>
-                                                            )}
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            ))
-                                        )}
-                                    </tbody>
-                                </table>
-                                {/* Pagination Controls */}
-                                <div className="p-6 border-t border-neutral-100 flex items-center justify-between bg-white text-xs">
-                                    <p className="text-neutral-500 font-medium">Mostrando <span className="text-neutral-900 font-bold">{products.length}</span> de <span className="text-neutral-900 font-bold">{totalProducts}</span> productos</p>
-                                    <div className="flex items-center space-x-2">
-                                        <button 
-                                            disabled={currentPage <= 1}
-                                            onClick={() => setCurrentPage(prev => prev - 1)}
-                                            className="px-4 py-2 border border-neutral-200 text-neutral-400 hover:text-orange-600 hover:border-orange-600 disabled:opacity-30 disabled:hover:text-neutral-400 disabled:hover:border-neutral-200 transition-all font-bold uppercase tracking-widest text-[9px]"
-                                        >
-                                            Anterior
-                                        </button>
-                                        <div className="flex items-center justify-center px-4 font-black text-neutral-800">
-                                            {currentPage} / {Math.ceil(totalProducts / pageSize) || 1}
+                            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                                {/* Sidebar: Insights & Maintenance */}
+                                <div className="lg:col-span-1 space-y-6">
+                                    <div className="bg-white border border-neutral-100 p-6 space-y-4">
+                                        <div className="flex items-center space-x-2 text-indigo-600 border-b border-neutral-50 pb-3 mb-4">
+                                            <Store size={16} />
+                                            <h3 className="text-[10px] font-black uppercase tracking-widest text-neutral-800">Orígenes Detectados</h3>
                                         </div>
+                                        <div className="space-y-2 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
+                                            {providerStats.length > 0 ? providerStats.map((s, i) => (
+                                                <div key={i} className="flex justify-between items-center group cursor-default">
+                                                    <span className="text-[10px] font-bold text-neutral-500 uppercase truncate pr-4 group-hover:text-indigo-600 transition-colors">{s.name}</span>
+                                                    <span className="text-[9px] font-black text-neutral-400 bg-neutral-50 px-2 py-0.5 rounded-none">{s.count}</span>
+                                                </div>
+                                            )) : (
+                                                <div className="text-[10px] text-neutral-300 italic font-bold uppercase text-center py-4">Sincronizando proveedores...</div>
+                                            )}
+                                        </div>
+                                        <div className="pt-4 border-t border-neutral-50">
+                                            <button 
+                                                onClick={() => setActiveTab('settings')}
+                                                className="w-full text-center text-[9px] font-black uppercase tracking-widest text-neutral-400 hover:text-orange-600 transition-all"
+                                            >
+                                                Ver Mantenimiento Avanzado →
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-neutral-900 p-6 text-white space-y-4 shadow-xl border-l-4 border-orange-600">
+                                        <div className="flex items-center space-x-2">
+                                            <Trash2 size={16} className="text-orange-600" />
+                                            <h3 className="text-[10px] font-black uppercase tracking-widest">Optimización del Catálogo</h3>
+                                        </div>
+                                        <p className="text-[10px] font-bold uppercase italic opacity-60 leading-relaxed">
+                                            Elimina duplicados exactos para mejorar la velocidad de carga de la web.
+                                        </p>
                                         <button 
-                                            disabled={currentPage >= Math.ceil(totalProducts / pageSize)}
-                                            onClick={() => setCurrentPage(prev => prev + 1)}
-                                            className="px-4 py-2 border border-neutral-200 text-neutral-400 hover:text-orange-600 hover:border-orange-600 disabled:opacity-30 disabled:hover:text-neutral-400 disabled:hover:border-neutral-200 transition-all font-bold uppercase tracking-widest text-[9px]"
+                                            onClick={async () => {
+                                                if(confirm("¿Ejecutar limpieza de duplicados exactos ahora?")) {
+                                                    setIsCleaning(true);
+                                                    try {
+                                                        await cleanupDuplicateProducts();
+                                                        await refreshData();
+                                                        alert("Catálogo saneado correctamente.");
+                                                    } finally {
+                                                        setIsCleaning(false);
+                                                    }
+                                                }
+                                            }}
+                                            disabled={isCleaning}
+                                            className="w-full bg-orange-600 text-white py-3 text-[9px] font-black uppercase tracking-[0.2em] hover:bg-white hover:text-orange-600 transition-all shadow-lg disabled:opacity-50"
                                         >
-                                            Siguiente
+                                            {isCleaning ? 'Saneando...' : 'Poda de Duplicados'}
                                         </button>
                                     </div>
+                                </div>
+
+                                {/* Main Content: Search & Table */}
+                                <div className="lg:col-span-3 space-y-6">
+                                    <div className="flex flex-col md:flex-row gap-4 mb-4">
+                                        <div className="flex-1 relative group">
+                                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 group-focus-within:text-orange-600 transition-colors" size={16} />
+                                            <input 
+                                                type="text"
+                                                placeholder="Buscar por nombre, SKU o categoría..."
+                                                value={dashboardSearch}
+                                                onChange={(e) => { setDashboardSearch(e.target.value); setCurrentPage(1); }}
+                                                className="w-full bg-white border border-neutral-100 pl-10 pr-4 py-3 text-sm outline-none focus:border-orange-600 transition-colors shadow-sm"
+                                            />
+                                        </div>
+                                        <div className="flex bg-neutral-50 p-1 rounded-none border border-neutral-100">
+                                            <button 
+                                                onClick={() => { setIsTrashView(false); setCurrentPage(1); }}
+                                                className={`px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${!isTrashView ? 'bg-white text-orange-600 shadow-sm border border-neutral-100' : 'text-neutral-400 hover:text-neutral-600'}`}
+                                            >
+                                                Catálogo Activo
+                                            </button>
+                                            <button 
+                                                onClick={() => { setIsTrashView(true); setCurrentPage(1); }}
+                                                className={`px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 ${isTrashView ? 'bg-white text-red-600 shadow-sm border border-neutral-100' : 'text-neutral-400 hover:text-neutral-600'}`}
+                                            >
+                                                <Trash2 size={12} /> Papelera
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-white border border-neutral-100 overflow-hidden shadow-sm">
+                                        <table className="w-full text-left border-collapse">
+                                            <thead>
+                                                <tr className="bg-neutral-50/50 text-[10px] font-black uppercase tracking-widest text-neutral-400 border-b border-neutral-100">
+                                                    <th className="px-6 py-4 w-10">
+                                                        <button onClick={toggleAllProducts} className="text-neutral-400 hover:text-orange-600 transition-colors">
+                                                            {selectedProducts.length === products.length && products.length > 0 ? <CheckSquare size={16} /> : <Square size={16} />}
+                                                        </button>
+                                                    </th>
+                                                    <th className="px-6 py-4">Producto / SKU</th>
+                                                    <th className="px-6 py-4">Categoría</th>
+                                                    <th className="px-6 py-4">Stock</th>
+                                                    <th className="px-6 py-4">Precio</th>
+                                                    <th className="px-6 py-4 text-right">Acciones</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-neutral-50">
+                                                {products.length === 0 ? (
+                                                    <tr>
+                                                        <td colSpan={6} className="py-24 text-center text-neutral-300">
+                                                            <div className="flex flex-col items-center space-y-4">
+                                                                <ShoppingBag size={48} className="opacity-10" />
+                                                                <p className="uppercase text-[10px] font-black tracking-[0.2em] opacity-40">Sin registros encontrados</p>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                ) : (
+                                                    products.map((p) => (
+                                                        <tr key={p.id} className={`hover:bg-neutral-50/30 transition-colors group ${selectedProducts.includes(p.id) ? 'bg-orange-50/20' : ''}`}>
+                                                            <td className="px-6 py-5">
+                                                                <button onClick={() => toggleProductSelection(p.id)} className={`${selectedProducts.includes(p.id) ? 'text-orange-600' : 'text-neutral-200 group-hover:text-neutral-400'} transition-colors`}>
+                                                                    {selectedProducts.includes(p.id) ? <CheckSquare size={16} /> : <Square size={16} />}
+                                                                </button>
+                                                            </td>
+                                                            <td className="px-6 py-5">
+                                                                <div className="flex items-center space-x-4">
+                                                                    <div className="w-12 h-12 bg-neutral-100 border border-neutral-100 overflow-hidden flex items-center justify-center relative group-hover:border-orange-200 transition-colors">
+                                                                        {p.images && p.images !== 'null' && safeParseArray(p.images).length > 0 ? (
+                                                                            <img src={safeParseArray(p.images)[0]} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                                                        ) : (
+                                                                            <ImageIcon size={16} className="text-neutral-300" />
+                                                                        )}
+                                                                    </div>
+                                                                    <div className="max-w-xs">
+                                                                        <p className="text-sm font-bold text-neutral-800 line-clamp-1 group-hover:text-orange-600 transition-colors">{p.name}</p>
+                                                                        <p className="text-[9px] text-neutral-400 font-black uppercase tracking-widest mt-0.5">{p.sku || 'N/A'}</p>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td className="px-6 py-5">
+                                                                <span className="text-[10px] font-black uppercase tracking-widest text-neutral-500 bg-neutral-50 px-2 py-1 border border-neutral-100">
+                                                                    {p.category?.name || 'Varios'}
+                                                                </span>
+                                                            </td>
+                                                            <td className="px-6 py-5">
+                                                                <span className={`text-xs font-black ${p.stock < 5 ? 'text-red-500' : 'text-neutral-700'}`}>
+                                                                    {p.stock} <span className="text-[10px] opacity-40 uppercase font-black">uds.</span>
+                                                                </span>
+                                                            </td>
+                                                            <td className="px-6 py-5">
+                                                                <p className="text-sm font-black text-neutral-900 font-mono italic">${p.price.toFixed(2)}</p>
+                                                            </td>
+                                                            <td className="px-6 py-5">
+                                                                <div className="flex items-center justify-end space-x-1">
+                                                                    {isTrashView ? (
+                                                                        <button onClick={() => handleRestore(p.id)} className="px-3 py-1.5 bg-green-50 text-green-600 hover:bg-green-600 hover:text-white transition-all text-[9px] font-black uppercase tracking-widest border border-green-100">
+                                                                            Restaurar
+                                                                        </button>
+                                                                    ) : (
+                                                                        <>
+                                                                            <button onClick={() => handleEdit(p)} className="p-2 text-neutral-300 hover:text-orange-600 transition-colors">
+                                                                                <Edit size={16} />
+                                                                            </button>
+                                                                            <button onClick={() => handleDelete(p.id)} className="p-2 text-neutral-300 hover:text-red-600 transition-colors">
+                                                                                <Trash2 size={16} />
+                                                                            </button>
+                                                                        </>
+                                                                    )}
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    ))
+                                                )}
+                                            </tbody>
+                                        </table>
+                                        {/* Pagination */}
+                                        <div className="px-6 py-6 border-t border-neutral-50 flex items-center justify-between bg-white">
+                                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-300">Pág {currentPage} de {Math.ceil(totalProducts / pageSize) || 1} — {totalProducts} ítems</p>
+                                            <div className="flex items-center space-x-2">
+                                                <button 
+                                                    disabled={currentPage <= 1}
+                                                    onClick={() => setCurrentPage(prev => prev - 1)}
+                                                    className="px-6 py-2 border border-neutral-100 text-neutral-400 hover:text-orange-600 hover:border-orange-600 disabled:opacity-20 transition-all font-black uppercase tracking-widest text-[9px]"
+                                                >
+                                                    Anterior
+                                                </button>
+                                                <button 
+                                                    disabled={currentPage >= Math.ceil(totalProducts / pageSize)}
+                                                    onClick={() => setCurrentPage(prev => prev + 1)}
+                                                    className="px-6 py-2 border border-neutral-100 text-neutral-400 hover:text-orange-600 hover:border-orange-600 disabled:opacity-20 transition-all font-black uppercase tracking-widest text-[9px]"
+                                                >
+                                                    Siguiente
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Bulk Actions Bar */}
+                                    {selectedProducts.length > 0 && (
+                                        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-neutral-900 text-white px-8 py-4 flex items-center space-x-8 shadow-2xl z-50 animate-in slide-in-from-bottom-4 duration-300">
+                                            <div className="flex items-center space-x-2 border-r border-neutral-700 pr-8">
+                                                <span className="text-orange-500 font-bold">{selectedProducts.length}</span>
+                                                <span className="text-[10px] font-black uppercase tracking-widest text-neutral-400">Seleccionados</span>
+                                            </div>
+                                            <div className="flex items-center space-x-4">
+                                                {!isTrashView ? (
+                                                    <>
+                                                        <button 
+                                                            onClick={() => setShowBulkEdit(true)}
+                                                            className="flex items-center space-x-2 bg-neutral-800 text-white hover:bg-neutral-700 px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all"
+                                                        >
+                                                            <Edit size={14} />
+                                                            <span>Edición en Masa</span>
+                                                        </button>
+                                                        <button 
+                                                            onClick={handleBulkDeleteProducts}
+                                                            className="flex items-center space-x-2 bg-red-600/10 text-red-500 hover:bg-red-600 hover:text-white px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all"
+                                                        >
+                                                            <Trash2 size={14} />
+                                                            <span>Mover a Papelera</span>
+                                                        </button>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <button 
+                                                            onClick={handleBulkRestore}
+                                                            className="flex items-center space-x-2 bg-green-600/10 text-green-500 hover:bg-green-600 hover:text-white px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all"
+                                                        >
+                                                            <Layers size={14} />
+                                                            <span>Restaurar Selección</span>
+                                                        </button>
+                                                        <button 
+                                                            onClick={handleBulkPermanentDelete}
+                                                            className="flex items-center space-x-2 bg-red-600/10 text-red-500 hover:bg-red-600 hover:text-white px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all"
+                                                        >
+                                                            <Trash2 size={14} />
+                                                            <span>Eliminar Definitivamente</span>
+                                                        </button>
+                                                    </>
+                                                )}
+                                                <button 
+                                                    onClick={() => setSelectedProducts([])}
+                                                    className="text-neutral-400 hover:text-white transition-colors"
+                                                >
+                                                    <X size={18} />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {showBulkEdit && (
+                                        <BulkEditModal 
+                                            selectedCount={selectedProducts.length}
+                                            categories={metadata.categories}
+                                            collections={metadata.collections}
+                                            onClose={() => setShowBulkEdit(false)}
+                                            onSave={handleBulkEdit}
+                                        />
+                                    )}
                                 </div>
                             </div>
-                            {/* Bulk Actions Bar */}
-                            {selectedProducts.length > 0 && (
-                                <div className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-neutral-900 text-white px-8 py-4 flex items-center space-x-8 shadow-2xl z-50 animate-in slide-in-from-bottom-4 duration-300">
-                                    <div className="flex items-center space-x-2 border-r border-neutral-700 pr-8">
-                                        <span className="text-orange-500 font-bold">{selectedProducts.length}</span>
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-neutral-400">Seleccionados</span>
-                                    </div>
-                                    <div className="flex items-center space-x-4">
-                                        {!isTrashView ? (
-                                            <>
-                                                <div className="flex items-center space-x-2">
-                                                    <span className="text-[10px] font-black uppercase tracking-widest text-neutral-400">Colección:</span>
-                                                    <select 
-                                                        onChange={(e) => handleBulkUpdateCollection(e.target.value || null)}
-                                                        className="bg-neutral-800 border-none text-[10px] font-bold uppercase tracking-widest px-4 py-2 outline-none cursor-pointer hover:bg-neutral-700 transition-colors"
-                                                    >
-                                                        <option value="">Cambiar a...</option>
-                                                        <option value="none">Sin Colección</option>
-                                                        {metadata.collections.map(c => (
-                                                            <option key={c.id} value={c.id}>{c.name}</option>
-                                                        ))}
-                                                    </select>
-                                                </div>
-                                                <button 
-                                                    onClick={() => setShowBulkEdit(true)}
-                                                    className="flex items-center space-x-2 bg-neutral-800 text-white hover:bg-neutral-700 px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all"
-                                                >
-                                                    <Edit size={14} />
-                                                    <span>Edición en Masa</span>
-                                                </button>
-                                                <button 
-                                                    onClick={handleBulkDeleteProducts}
-                                                    className="flex items-center space-x-2 bg-red-600/10 text-red-500 hover:bg-red-600 hover:text-white px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all"
-                                                >
-                                                    <Trash2 size={14} />
-                                                    <span>Mover a Papelera</span>
-                                                </button>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <button 
-                                                    onClick={handleBulkRestore}
-                                                    className="flex items-center space-x-2 bg-green-600/10 text-green-500 hover:bg-green-600 hover:text-white px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all"
-                                                >
-                                                    <Layers size={14} />
-                                                    <span>Restaurar Selección</span>
-                                                </button>
-                                                <button 
-                                                    onClick={handleBulkPermanentDelete}
-                                                    className="flex items-center space-x-2 bg-red-600/10 text-red-500 hover:bg-red-600 hover:text-white px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all"
-                                                >
-                                                    <Trash2 size={14} />
-                                                    <span>Eliminar Definitivamente</span>
-                                                </button>
-                                            </>
-                                        )}
-                                        <button 
-                                            onClick={() => setSelectedProducts([])}
-                                            className="text-neutral-400 hover:text-white transition-colors"
-                                        >
-                                            <X size={18} />
-                                        </button>
-                                    </div>
-                                </div>
-                            )}
-
-                            {showBulkEdit && (
-                                <BulkEditModal 
-                                    selectedCount={selectedProducts.length}
-                                    categories={metadata.categories}
-                                    collections={metadata.collections}
-                                    onClose={() => setShowBulkEdit(false)}
-                                    onSave={handleBulkEdit}
-                                />
-                            )}
                         </div>
                     )}
 
