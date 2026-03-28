@@ -12,26 +12,51 @@ export default function PublicWebPage() {
     const [searchQuery, setSearchQuery] = useState("")
     const [currentPage, setCurrentPage] = useState(1)
     const [totalProducts, setTotalProducts] = useState(0)
+    const [localSearch, setLocalSearch] = useState("")
+    const [isSearching, setIsSearching] = useState(false)
     const itemsPerPage = 24
 
+    // METADATA
     useEffect(() => {
-        const load = async () => {
-            setLoading(true)
-            const [productRes, m] = await Promise.all([
-                getProducts({ page: currentPage, pageSize: itemsPerPage, search: searchQuery }),
-                getShopMetadata()
-            ])
-            setProducts(productRes.products)
-            setTotalProducts(productRes.total)
+        const loadMeta = async () => {
+            const m = await getShopMetadata()
             setMetadata(m)
-            setLoading(false)
         }
-        load()
+        loadMeta()
+    }, [])
+
+    // DEBOUNCE
+    useEffect(() => {
+        if (loading) return
+        const timer = setTimeout(() => {
+            setSearchQuery(localSearch)
+            setCurrentPage(1)
+        }, 500)
+        return () => clearTimeout(timer)
+    }, [localSearch])
+
+    // DATA LOADING
+    useEffect(() => {
+        const loadProds = async () => {
+            setIsSearching(true)
+            try {
+                const productRes = await getProducts({ 
+                    page: currentPage, 
+                    pageSize: itemsPerPage, 
+                    search: searchQuery 
+                })
+                setProducts(productRes.products)
+                setTotalProducts(productRes.total)
+            } finally {
+                setIsSearching(false)
+                setLoading(false)
+            }
+        }
+        loadProds()
     }, [currentPage, searchQuery])
 
     const totalPages = Math.ceil(totalProducts / itemsPerPage)
-    const paginatedProducts = products // Now coming paginated from server
-
+    const paginatedProducts = products
     const featuredProducts = products.filter(p => p.featured).slice(0, 4)
 
     return (
@@ -171,17 +196,18 @@ export default function PublicWebPage() {
 
                     {!loading && (
                         <div className="mb-12 max-w-2xl mx-auto relative group">
-                            <div className="absolute inset-y-0 left-6 flex items-center pointer-events-none text-neutral-400 group-focus-within:text-orange-600 transition-colors">
-                                <Search size={20} />
+                            <div className={`absolute inset-y-0 left-6 flex items-center pointer-events-none transition-colors ${isSearching ? 'text-orange-600' : 'text-neutral-400 group-focus-within:text-orange-600'}`}>
+                                {isSearching ? (
+                                    <div className="animate-spin rounded-full h-5 w-5 border-2 border-orange-600 border-t-transparent"></div>
+                                ) : (
+                                    <Search size={20} />
+                                )}
                             </div>
                             <input
                                 type="text"
                                 placeholder="BUSCAR POR NOMBRE O CATEGORÍA..."
-                                value={searchQuery}
-                                onChange={(e) => {
-                                    setSearchQuery(e.target.value)
-                                    setCurrentPage(1)
-                                }}
+                                value={localSearch}
+                                onChange={(e) => setLocalSearch(e.target.value)}
                                 className="w-full bg-white border-2 border-neutral-100 px-16 py-6 text-sm font-bold uppercase tracking-widest focus:outline-none focus:border-orange-600 transition-all shadow-xl shadow-neutral-100/50"
                             />
                         </div>
@@ -192,7 +218,7 @@ export default function PublicWebPage() {
                             <p className="font-black text-neutral-200 text-4xl uppercase tracking-widest">Cargando Catálogo...</p>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                        <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 transition-opacity duration-300 ${isSearching ? 'opacity-50 grayscale' : 'opacity-100'}`}>
                             {paginatedProducts.map((p) => (
                                 <Link 
                                     key={p.id} 
