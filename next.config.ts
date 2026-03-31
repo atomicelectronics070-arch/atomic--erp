@@ -15,6 +15,18 @@ const nextConfig: NextConfig = {
       },
     ]
   },
+  async rewrites() {
+    return [
+      {
+        source: "/scraper-api/:path*",
+        destination: "http://localhost:5005/api/:path*",
+      },
+      {
+        source: "/scraper-download/:path*",
+        destination: "http://localhost:5005/:path*",
+      }
+    ]
+  },
 };
 
 export default nextConfig;
