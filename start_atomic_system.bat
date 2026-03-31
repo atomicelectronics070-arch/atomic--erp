@@ -6,7 +6,7 @@ echo ==========================================
 
 :: Configuración de Rutas
 set PROJECT_DIR=%~dp0
-set CLOUDFLARED_EXE=%PROJECT_DIR%cloudflared.exe
+set CLOUDFLARED_EXE="%PROJECT_DIR%cloudflared.exe"
 if not exist %CLOUDFLARED_EXE% set CLOUDFLARED_EXE="C:\Users\SANTIAGO\Downloads\cloudflared-windows-amd64.exe"
 if not exist %CLOUDFLARED_EXE% set CLOUDFLARED_EXE="C:\Users\HP I7\Downloads\cloudflared-windows-amd64.exe"
 if not exist %CLOUDFLARED_EXE% set CLOUDFLARED_EXE="C:\cloudflared\cloudflared-windows-amd64.exe"

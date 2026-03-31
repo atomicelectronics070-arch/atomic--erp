@@ -351,3 +351,25 @@ export async function getProviderStats() {
 
     return stats
 }
+
+export async function searchProductsForTaxonomy(query: string) {
+    if (!query || query.length < 2) return []
+
+    return await prisma.product.findMany({
+        where: {
+            OR: [
+                { name: { contains: query, mode: 'insensitive' } },
+                { sku: { contains: query, mode: 'insensitive' } }
+            ],
+            isDeleted: false
+        },
+        select: {
+            id: true,
+            name: true,
+            sku: true,
+            images: true
+        },
+        take: 20,
+        orderBy: { name: 'asc' }
+    })
+}

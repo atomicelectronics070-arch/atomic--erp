@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { ShoppingBag, Plus, Save, Image as ImageIcon, FileText, Trash2, X, PlusCircle, Globe, LayoutGrid, List, Layers, Tag as TagIcon, Edit, Power, Star, Settings, CreditCard, Box, CheckSquare, Square, ChevronRight, Search, Store } from "lucide-react"
-import { saveProduct, getProducts, deleteProduct, getShopMetadata, createCategory, saveCategory, createCollection, saveCollection, deleteCollection, deleteManyCollections, updateCollection, deleteManyProducts, updateProductsCollection, restoreProduct, restoreManyProducts, permanentDeleteManyProducts, bulkUpdateProducts, cleanupDuplicateProducts, getProviderStats } from "@/lib/actions/shop"
+import { saveProduct, getProducts, deleteProduct, getShopMetadata, createCategory, saveCategory, createCollection, saveCollection, deleteCollection, deleteManyCollections, updateCollection, deleteManyProducts, updateProductsCollection, restoreProduct, restoreManyProducts, permanentDeleteManyProducts, bulkUpdateProducts, cleanupDuplicateProducts, getProviderStats, searchProductsForTaxonomy } from "@/lib/actions/shop"
 
 const safeParseArray = (str: any, fallback: any = []) => {
     if (!str || str === 'null') return fallback;
@@ -1238,6 +1238,11 @@ function BulkEditModal({ selectedCount, categories, collections, onClose, onSave
 
 function TaxonomyModal({ type, initialData, allProducts, onClose, onSaved }: { type: 'category' | 'collection', initialData: any, allProducts: any[], onClose: () => void, onSaved: () => void }) {
     const [loading, setLoading] = useState(false)
+    const [searching, setSearching] = useState(false)
+    const [searchTerm, setSearchTerm] = useState('')
+    const [searchResults, setSearchResults] = useState<any[]>([])
+    const [activeSection, setActiveSection] = useState<'assigned' | 'search'>('assigned')
+    
     const [data, setData] = useState({
         id: initialData?.id || null,
         name: initialData?.name || '',
@@ -1246,17 +1251,40 @@ function TaxonomyModal({ type, initialData, allProducts, onClose, onSaved }: { t
         isVisible: initialData?.isVisible ?? true
     })
     
-    // Find products currently assigned to this category/collection
-    const assignedProducts = allProducts.filter(p => type === 'category' ? p.categoryId === data.id : p.collectionId === data.id).map(p => p.id)
-    const [selectedProducts, setSelectedProducts] = useState<string[]>(assignedProducts)
+    // Find products currently assigned to this category/collection from the initial list
+    const assignedProducts = allProducts.filter(p => type === 'category' ? p.categoryId === data.id : p.collectionId === data.id)
+    const [selectedProducts, setSelectedProducts] = useState<any[]>(assignedProducts)
     
+    // Debounced Search
+    useEffect(() => {
+        const delayDebounceFn = setTimeout(async () => {
+            if (searchTerm.length >= 2) {
+                setSearching(true)
+                try {
+                    const results = await searchProductsForTaxonomy(searchTerm)
+                    setSearchResults(results)
+                    setActiveSection('search')
+                } catch (error) {
+                    console.error("Error searching:", error)
+                } finally {
+                    setSearching(false)
+                }
+            } else {
+                setSearchResults([])
+            }
+        }, 500)
+
+        return () => clearTimeout(delayDebounceFn)
+    }, [searchTerm])
+
     const handleSubmit = async () => {
         setLoading(true)
         try {
+            const productIds = selectedProducts.map(p => p.id)
             if (type === 'category') {
-                await saveCategory(data.id, data, selectedProducts)
+                await saveCategory(data.id, data, productIds)
             } else {
-                await saveCollection(data.id, data, selectedProducts)
+                await saveCollection(data.id, data, productIds)
             }
             onSaved()
         } catch (error) {
@@ -1266,104 +1294,178 @@ function TaxonomyModal({ type, initialData, allProducts, onClose, onSaved }: { t
         }
     }
 
-    const toggleProduct = (id: string) => {
-        setSelectedProducts(prev => prev.includes(id) ? prev.filter(p => p !== id) : [...prev, id])
+    const toggleProduct = (product: any) => {
+        setSelectedProducts(prev => {
+            const isSelected = prev.find(p => p.id === product.id)
+            if (isSelected) {
+                return prev.filter(p => p.id !== product.id)
+            } else {
+                return [...prev, product]
+            }
+        })
     }
 
     return (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-            <div className="bg-white max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-in zoom-in-95 duration-300">
-                <div className="sticky top-0 bg-white border-b border-neutral-100 p-6 flex justify-between items-center z-10">
+            <div className="bg-white max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col animate-in zoom-in-95 duration-300">
+                {/* Header */}
+                <div className="bg-white border-b border-neutral-100 p-6 flex justify-between items-center shrink-0">
                     <div>
                         <h2 className="text-xl font-black text-neutral-900 uppercase tracking-tighter">Editar {type === 'category' ? 'Categoría' : 'Colección'}</h2>
-                        <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mt-1">Configuración Avanzada</p>
+                        <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mt-1">Gestión de Productos Avanzada</p>
                     </div>
                     <button onClick={onClose} className="p-2 hover:bg-neutral-100 transition-colors">
                         <X size={20} className="text-neutral-400" />
                     </button>
                 </div>
 
-                <div className="p-8 space-y-8">
-                    <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase text-neutral-400 tracking-wider">Nombre</label>
-                        <input 
-                            type="text"
-                            value={data.name}
-                            onChange={(e) => setData({ ...data, name: e.target.value })}
-                            className="w-full bg-neutral-50 border-none px-6 py-4 text-sm font-bold outline-none border-b-2 border-transparent focus:border-orange-500 transition-all"
-                        />
-                    </div>
+                {/* Form Body - Scrollable */}
+                <div className="flex-1 overflow-y-auto p-8 space-y-8 custom-scrollbar">
+                    <div className="space-y-6">
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black uppercase text-neutral-400 tracking-wider">Nombre</label>
+                            <input 
+                                type="text"
+                                value={data.name}
+                                onChange={(e) => setData({ ...data, name: e.target.value })}
+                                className="w-full bg-neutral-50 border-none px-6 py-4 text-sm font-bold outline-none border-b-2 border-transparent focus:border-orange-500 transition-all"
+                            />
+                        </div>
 
-                    <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase text-neutral-400 tracking-wider">Breve Descripción</label>
-                        <textarea 
-                            rows={3}
-                            value={data.description}
-                            onChange={(e) => setData({ ...data, description: e.target.value })}
-                            placeholder="Descripción opcional..."
-                            className="w-full bg-neutral-50 border-none px-6 py-4 text-sm font-medium outline-none border-b-2 border-transparent focus:border-orange-500 transition-all resize-none"
-                        />
-                    </div>
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black uppercase text-neutral-400 tracking-wider">Breve Descripción</label>
+                            <textarea 
+                                rows={2}
+                                value={data.description}
+                                onChange={(e) => setData({ ...data, description: e.target.value })}
+                                placeholder="Descripción opcional..."
+                                className="w-full bg-neutral-50 border-none px-6 py-4 text-sm font-medium outline-none border-b-2 border-transparent focus:border-orange-500 transition-all resize-none"
+                            />
+                        </div>
 
-                    <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase text-neutral-400 tracking-wider">URL de Imagen</label>
-                        <input 
-                            type="text"
-                            value={data.image}
-                            onChange={(e) => setData({ ...data, image: e.target.value })}
-                            placeholder="https://ejemplo.com/imagen.jpg"
-                            className="w-full bg-neutral-50 border-none px-6 py-4 text-sm outline-none border-b-2 border-transparent focus:border-orange-500 transition-all font-mono"
-                        />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase text-neutral-400 tracking-wider">URL de Imagen</label>
+                                <input 
+                                    type="text"
+                                    value={data.image}
+                                    onChange={(e) => setData({ ...data, image: e.target.value })}
+                                    placeholder="https://ejemplo.com/imagen.jpg"
+                                    className="w-full bg-neutral-50 border-none px-6 py-4 text-sm outline-none border-b-2 border-transparent focus:border-orange-500 transition-all font-mono"
+                                />
+                            </div>
+                            <div className="pb-2">
+                                <Toggle 
+                                    label="Visible en Web" 
+                                    icon={<Globe size={14} />} 
+                                    checked={data.isVisible} 
+                                    onChange={(v) => setData({ ...data, isVisible: v })} 
+                                />
+                            </div>
+                        </div>
+
                         {data.image && (
-                            <div className="mt-4 border border-neutral-100 w-32 h-32 overflow-hidden flex items-center justify-center bg-neutral-50">
-                                <img src={data.image} alt="Preview" className="w-full h-full object-cover" onError={(e) => (e.currentTarget.style.display = 'none')} />
+                            <div className="border border-neutral-100 w-24 h-24 overflow-hidden flex items-center justify-center bg-neutral-50">
+                                <img src={data.image} alt="Preview" className="w-full h-full object-cover" />
                             </div>
                         )}
                     </div>
 
-                    <div className="pt-4 border-t border-neutral-100">
-                        <Toggle 
-                            label="Visible en la Tienda Web" 
-                            icon={<Globe size={14} />} 
-                            checked={data.isVisible} 
-                            onChange={(v) => setData({ ...data, isVisible: v })} 
-                        />
-                    </div>
-
-                    <div className="pt-6 border-t border-neutral-100 border-dashed">
-                        <div className="flex items-center justify-between mb-4">
-                            <label className="text-[10px] font-black uppercase text-neutral-400 tracking-wider flex items-center gap-2">
-                                <Box size={14} /> Productos Asignados ({selectedProducts.length})
+                    {/* PRODUCT SELECTOR AREA */}
+                    <div className="pt-8 border-t border-neutral-100 border-dashed space-y-6">
+                        <div className="flex items-center justify-between">
+                            <label className="text-[10px] font-black uppercase text-neutral-800 tracking-[0.2em] flex items-center gap-2">
+                                <Box size={14} className="text-orange-600" /> 
+                                Asignación de Productos
                             </label>
+                            <span className="text-[9px] font-black bg-orange-600 text-white px-2 py-0.5 uppercase tracking-widest">
+                                {selectedProducts.length} Seleccionados
+                            </span>
                         </div>
-                        <div className="bg-neutral-50 border border-neutral-100 max-h-64 overflow-y-auto">
-                            {allProducts.length === 0 ? (
-                                <p className="text-center py-6 text-[10px] font-bold uppercase tracking-widest text-neutral-400">No hay productos en tu catálogo</p>
+
+                        {/* Search Input */}
+                        <div className="relative group">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400 group-focus-within:text-orange-600" size={16} />
+                            <input 
+                                type="text"
+                                placeholder="Buscar productos por nombre o SKU..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="w-full bg-neutral-900 text-white pl-12 pr-4 py-4 text-xs font-bold uppercase tracking-widest outline-none focus:ring-4 focus:ring-orange-600/20"
+                            />
+                            {searching && (
+                                <RefreshCw className="absolute right-4 top-1/2 -translate-y-1/2 text-orange-600 animate-spin" size={16} />
+                            )}
+                        </div>
+
+                        {/* Selector Tabs */}
+                        <div className="flex border-b border-neutral-100">
+                            <button 
+                                onClick={() => setActiveSection('assigned')}
+                                className={`px-4 py-3 text-[9px] font-black uppercase tracking-widest transition-all ${activeSection === 'assigned' ? 'border-b-2 border-orange-600 text-orange-600' : 'text-neutral-400'}`}
+                            >
+                                Asignados ({selectedProducts.length})
+                            </button>
+                            <button 
+                                onClick={() => setActiveSection('search')}
+                                className={`px-4 py-3 text-[9px] font-black uppercase tracking-widest transition-all ${activeSection === 'search' ? 'border-b-2 border-orange-600 text-orange-600' : 'text-neutral-400'}`}
+                            >
+                                {searchTerm ? 'Resultados de Búsqueda' : 'Catálogo Reciente'}
+                            </button>
+                        </div>
+
+                        <div className="bg-neutral-50 border border-neutral-100 min-h-[300px] max-h-[300px] overflow-y-auto custom-scrollbar">
+                            {activeSection === 'assigned' ? (
+                                selectedProducts.length === 0 ? (
+                                    <div className="flex flex-col items-center justify-center py-20 opacity-30">
+                                        <Box size={32} />
+                                        <p className="text-[9px] font-black uppercase tracking-widest mt-4">Sin productos asignados</p>
+                                    </div>
+                                ) : (
+                                    <ul className="divide-y divide-neutral-100">
+                                        {selectedProducts.map(p => (
+                                            <ProductItem 
+                                                key={p.id} 
+                                                product={p} 
+                                                isSelected={true} 
+                                                onClick={() => toggleProduct(p)} 
+                                            />
+                                        ))}
+                                    </ul>
+                                )
                             ) : (
-                                <ul className="divide-y divide-neutral-100">
-                                    {allProducts.map(p => {
-                                        const isSelected = selectedProducts.includes(p.id)
-                                        return (
-                                            <li key={p.id} className={`flex items-center justify-between p-3 cursor-pointer transition-colors ${isSelected ? 'bg-orange-50 hover:bg-orange-100' : 'hover:bg-white'}`} onClick={() => toggleProduct(p.id)}>
-                                                <div className="flex items-center space-x-3">
-                                                    <div className={`${isSelected ? 'text-orange-600' : 'text-neutral-300'}`}>
-                                                        {isSelected ? <CheckSquare size={16} /> : <Square size={16} />}
-                                                    </div>
-                                                    <div>
-                                                        <p className="text-xs font-bold text-neutral-800">{p.name}</p>
-                                                        <p className="text-[9px] text-neutral-500 font-bold uppercase tracking-widest">{p.sku || 'N/A'}</p>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                        )
-                                    })}
-                                </ul>
+                                <>
+                                    <ul className="divide-y divide-neutral-100">
+                                        {(searchTerm.length >= 2 ? searchResults : allProducts.slice(0, 50)).map(p => {
+                                            const isSelected = !!selectedProducts.find(sp => sp.id === p.id)
+                                            return (
+                                                <ProductItem 
+                                                    key={p.id} 
+                                                    product={p} 
+                                                    isSelected={isSelected} 
+                                                    onClick={() => toggleProduct(p)} 
+                                                />
+                                            )
+                                        })}
+                                        {searchTerm.length < 2 && searchTerm.length > 0 && (
+                                            <div className="p-12 text-center text-[10px] font-bold text-neutral-400 uppercase tracking-widest">
+                                                Escribe al menos 2 caracteres...
+                                            </div>
+                                        )}
+                                        {searchTerm.length >= 2 && searchResults.length === 0 && !searching && (
+                                            <div className="p-12 text-center text-[10px] font-bold text-neutral-400 uppercase tracking-widest">
+                                                No se encontraron coincidencias
+                                            </div>
+                                        )}
+                                    </ul>
+                                </>
                             )}
                         </div>
                     </div>
                 </div>
 
-                <div className="sticky bottom-0 bg-white border-t border-neutral-100 p-6 flex gap-3 z-10">
+                {/* Footer */}
+                <div className="shrink-0 bg-white border-t border-neutral-100 p-6 flex gap-3">
                     <button 
                         disabled={loading}
                         onClick={onClose}
@@ -1381,5 +1483,31 @@ function TaxonomyModal({ type, initialData, allProducts, onClose, onSaved }: { t
                 </div>
             </div>
         </div>
+    )
+}
+
+function ProductItem({ product, isSelected, onClick }: { product: any, isSelected: boolean, onClick: () => void }) {
+    return (
+        <li 
+            className={`flex items-center justify-between p-4 cursor-pointer transition-colors ${isSelected ? 'bg-orange-50 hover:bg-orange-100' : 'hover:bg-white bg-white'}`} 
+            onClick={onClick}
+        >
+            <div className="flex items-center space-x-4">
+                <div className="w-10 h-10 bg-neutral-100 overflow-hidden flex items-center justify-center shrink-0">
+                    {product.images && safeParseArray(product.images).length > 0 ? (
+                        <img src={safeParseArray(product.images)[0]} className="w-full h-full object-cover" />
+                    ) : (
+                        <ImageIcon size={14} className="text-neutral-300" />
+                    )}
+                </div>
+                <div>
+                    <p className="text-xs font-bold text-neutral-800 line-clamp-1">{product.name}</p>
+                    <p className="text-[9px] text-neutral-400 font-black uppercase tracking-widest">{product.sku || 'S/N'}</p>
+                </div>
+            </div>
+            <div className={`${isSelected ? 'text-orange-600' : 'text-neutral-200'}`}>
+                {isSelected ? <CheckSquare size={18} /> : <Square size={18} />}
+            </div>
+        </li>
     )
 }
