@@ -3,7 +3,7 @@
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { Home, Users, FileText, Settings, LogOut, CheckSquare, Sun, Moon, LayoutDashboard, Tag, Database, MessageSquare, ExternalLink, ShoppingBag, Menu, X, Calendar, Edit3, Mail, BrainCircuit } from "lucide-react"
+import { Home, Users, FileText, Settings, LogOut, CheckSquare, Sun, Moon, LayoutDashboard, Tag, Database, MessageSquare, ExternalLink, ShoppingBag, Menu, X, Calendar, Edit3, Mail, BrainCircuit, Bot } from "lucide-react"
 import { useState, useEffect } from "react"
 import { ChevronDown, ChevronRight } from "lucide-react"
 import NotificationBell from "@/components/NotificationBell"
@@ -184,6 +184,16 @@ export default function DashboardLayout({
                             <NavLink href="/dashboard/extraction" icon={<Database size={18} />} label="Herramienta Web" />
                             <NavLink href="/dashboard/admin/prompt" icon={<Settings size={18} />} label="Configuración Cognitiva" />
                             <NavLink href="/dashboard/admin/users" icon={<Users size={18} />} label="Equipos" />
+                        </CollapsibleSection>
+                    )}
+
+                    {role === "ADMIN" && (
+                        <CollapsibleSection
+                            label="Herramientas"
+                            isOpen={openSections.herramientas ?? true}
+                            onToggle={() => toggleSection('herramientas')}
+                        >
+                            <NavLink href="/dashboard/scraper" icon={<Bot size={18} />} label="Scraper Pro AI" />
                         </CollapsibleSection>
                     )}
                 </nav>

@@ -1,9 +1,20 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Disable the development compilation indicator in the bottom right corner
-  // Ensure React Strict Mode is on to highlight potential rendering issues
   reactStrictMode: true,
+  async headers() {
+    return [
+      {
+        source: "/dashboard/scraper",
+        headers: [
+          {
+            key: "Content-Security-Policy",
+            value: "frame-src 'self' http://localhost:5173 http://localhost:5005;",
+          },
+        ],
+      },
+    ]
+  },
 };
 
 export default nextConfig;
