@@ -1,9 +1,13 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { ShoppingBag, ChevronRight, Star, ArrowRight, Shield, Zap, Truck, Search, ShoppingCart, User, Download, ExternalLink, Power, X } from "lucide-react"
+import { useState, useEffect, useRef } from "react"
+import { ShoppingBag, ChevronRight, Star, ArrowRight, Shield, Zap, Truck, Search, ShoppingCart, User, Download, ExternalLink, Power, X, ChevronLeft, Monitor, Cpu, Gamepad2 } from "lucide-react"
 import { getProducts, getShopMetadata } from "@/lib/actions/shop"
 import Link from "next/link"
+
+const safeParseArr = (str: any) => {
+    try { const p = JSON.parse(str); return Array.isArray(p) ? p : [] } catch { return [] }
+}
 
 export default function PublicWebPage() {
     const [products, setProducts] = useState<any[]>([])
@@ -14,113 +18,143 @@ export default function PublicWebPage() {
     const [totalProducts, setTotalProducts] = useState(0)
     const [localSearch, setLocalSearch] = useState("")
     const [isSearching, setIsSearching] = useState(false)
+    const [shopSettings, setShopSettings] = useState<any>(null)
+    const [allProductsMap, setAllProductsMap] = useState<Record<string, any>>({})
     const itemsPerPage = 24
 
-    // METADATA
+    // Load metadata + settings
     useEffect(() => {
-        const loadMeta = async () => {
-            const m = await getShopMetadata()
+        const init = async () => {
+            const [m, s] = await Promise.all([
+                getShopMetadata(),
+                fetch("/api/shop/settings").then(r => r.json()).catch(() => ({}))
+            ])
             setMetadata(m)
+            if (s?.settings) setShopSettings(s.settings)
         }
-        loadMeta()
+        init()
     }, [])
 
-    // DEBOUNCE
+    // Debounce search
     useEffect(() => {
         if (loading) return
-        const timer = setTimeout(() => {
-            setSearchQuery(localSearch)
-            setCurrentPage(1)
-        }, 500)
-        return () => clearTimeout(timer)
+        const t = setTimeout(() => { setSearchQuery(localSearch); setCurrentPage(1) }, 500)
+        return () => clearTimeout(t)
     }, [localSearch])
 
-    // DATA LOADING
+    // Load products
     useEffect(() => {
-        const loadProds = async () => {
+        const load = async () => {
             setIsSearching(true)
             try {
-                const productRes = await getProducts({ 
-                    page: currentPage, 
-                    pageSize: itemsPerPage, 
-                    search: searchQuery 
-                })
-                setProducts(productRes.products)
-                setTotalProducts(productRes.total)
-            } finally {
-                setIsSearching(false)
-                setLoading(false)
-            }
+                const res = await getProducts({ page: currentPage, pageSize: itemsPerPage, search: searchQuery })
+                setProducts(res.products)
+                setTotalProducts(res.total)
+                // Build map for banner product lookup
+                const map: Record<string, any> = {}
+                res.products.forEach((p: any) => { map[p.id] = p })
+                setAllProductsMap(prev => ({ ...prev, ...map }))
+            } finally { setIsSearching(false); setLoading(false) }
         }
-        loadProds()
+        load()
     }, [currentPage, searchQuery])
 
+    // Pre-fetch banner products if not already in map
+    useEffect(() => {
+        if (!shopSettings?.banners) return
+        const allIds = [
+            ...(shopSettings.banners.software?.productIds || []),
+            ...(shopSettings.banners.automation?.productIds || []),
+            ...(shopSettings.banners.gaming?.productIds || []),
+        ]
+        if (allIds.length === 0) return
+        const missing = allIds.filter((id: string) => !allProductsMap[id])
+        if (missing.length === 0) return
+        getProducts({ page: 1, pageSize: 200, search: '' }).then(res => {
+            const map: Record<string, any> = {}
+            res.products.forEach((p: any) => { map[p.id] = p })
+            setAllProductsMap(prev => ({ ...prev, ...map }))
+        })
+    }, [shopSettings])
+
     const totalPages = Math.ceil(totalProducts / itemsPerPage)
-    const paginatedProducts = products
-    const featuredProducts = products.filter(p => p.featured).slice(0, 4)
+    const banners = shopSettings?.banners || {}
+
+    const BANNER_CONFIGS = [
+        {
+            key: 'software',
+            defaultTitle: 'Software & Desarrollo',
+            defaultDesc: 'Licencias, herramientas y soluciones para llevar tu negocio al siguiente nivel.',
+            defaultBg: 'from-slate-900 via-blue-950 to-slate-900',
+            accent: '#3b82f6',
+            accentDark: '#1d4ed8',
+            icon: <Monitor size={14} />,
+            tag: 'Software',
+            tagBg: 'bg-blue-600',
+        },
+        {
+            key: 'automation',
+            defaultTitle: 'Automatización Industrial',
+            defaultDesc: 'Sistemas de control, PLCs y soluciones de automatización de última generación.',
+            defaultBg: 'from-emerald-950 via-teal-900 to-slate-900',
+            accent: '#10b981',
+            accentDark: '#047857',
+            icon: <Cpu size={14} />,
+            tag: 'Automatización',
+            tagBg: 'bg-emerald-600',
+        },
+        {
+            key: 'gaming',
+            defaultTitle: 'Gaming & Consolas',
+            defaultDesc: 'El mejor equipamiento gamer, consolas y accesorios para la experiencia definitiva.',
+            defaultBg: 'from-purple-950 via-violet-900 to-slate-900',
+            accent: '#a855f7',
+            accentDark: '#7c3aed',
+            icon: <Gamepad2 size={14} />,
+            tag: 'Gaming',
+            tagBg: 'bg-purple-600',
+        },
+    ]
 
     return (
         <div className="min-h-screen bg-white text-neutral-900 font-sans">
-            {/* Minimalist Navbar */}
-            <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-neutral-100">
-                <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-                    <div className="flex items-center space-x-12">
-                        <Link href="/web" className="text-2xl font-black tracking-tighter uppercase italic">
-                            ATOMIC<span className="text-orange-600">.</span>
-                        </Link>
-                        <div className="hidden md:flex space-x-8 text-[11px] font-bold uppercase tracking-widest text-neutral-500">
-                            <a href="#" className="text-orange-600 border-b-2 border-orange-600 pb-1">Inicio</a>
-                            <a href="#productos" className="hover:text-neutral-800 transition-colors">Productos</a>
-                            <a href="#categorias" className="hover:text-neutral-800 transition-colors">Categorías</a>
-                            <a href="#" className="hover:text-neutral-800 transition-colors">Soporte</a>
-                        </div>
-                    </div>
-                    <div className="flex items-center space-x-6">
-                        <button className="text-neutral-400 hover:text-orange-600 transition-colors"><Search size={20} /></button>
-                        <button className="text-neutral-400 hover:text-orange-600 transition-colors"><User size={20} /></button>
-                        <div className="relative">
-                            <button className="text-neutral-400 hover:text-orange-600 transition-colors"><ShoppingCart size={20} /></button>
-                            <span className="absolute -top-1 -right-1 bg-orange-600 text-white text-[8px] font-black w-3.5 h-3.5 flex items-center justify-center rounded-none shadow-sm shadow-orange-200">0</span>
-                        </div>
-                    </div>
-                </div>
-            </nav>
+            {/* Minimalist Navbar removido - Controlado por layout.tsx */}
 
-            {/* Hero Section */}
-            <section className="relative bg-neutral-50 py-32 overflow-hidden">
-                <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center relative z-10">
-                    <div className="md:w-1/2 space-y-6 text-center md:text-left">
-                        <div className="inline-block bg-orange-600 text-white text-[10px] font-black uppercase tracking-[0.3em] px-4 py-1.5 mb-2">
-                            Nueva Colección 2026
-                        </div>
-                        <h1 className="text-6xl md:text-8xl font-light text-neutral-800 tracking-tighter leading-[0.9]">
-                            Tecnología <br /><span className="font-black text-neutral-900">Industial</span>
-                        </h1>
-                        <p className="text-neutral-500 text-lg max-w-md mx-auto md:mx-0 font-medium">
-                            Descubre la potencia de nuestros equipos  Diseñados para alto rendimiento y máxima calidad.
-                        </p>
-                        <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6 pt-6">
-                            <a href="#productos" className="bg-neutral-900 text-white px-10 py-5 text-xs font-bold uppercase tracking-widest hover:bg-orange-600 transition-all shadow-2xl shadow-neutral-200">
-                                Explorar Catálogo
-                            </a>
-                            <button className="flex items-center space-x-2 text-xs font-bold uppercase tracking-widest text-neutral-800 group">
-                                <span>Ver Video</span>
-                                <div className="w-10 h-10 border border-neutral-200 rounded-none flex items-center justify-center group-hover:border-orange-600 transition-all">
-                                    <div className="w-0 h-0 border-t-[5px] border-t-transparent border-l-[8px] border-l-neutral-800 border-b-[5px] border-b-transparent ml-1"></div>
-                                </div>
-                            </button>
-                        </div>
-                    </div>
-                    <div className="md:w-1/2 mt-20 md:mt-0 relative group">
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-orange-500/5 blur-[120px] rounded-full"></div>
-                        <img
-                            src="https://images.unsplash.com/photo-1542496658-e33a6d0d50f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                            alt="Featured Product"
-                            className="w-full max-w-md mx-auto relative z-10 shadow-3xl transform group-hover:scale-105 transition-transform duration-700 ease-out"
-                        />
-                    </div>
-                </div>
-            </section>
+            {/* ══════════════════════════════════════════
+                 BANNERS HERO (Software / Auto / Gaming)
+              ══════════════════════════════════════════ */}
+            {BANNER_CONFIGS.map((cfg) => {
+                const bData = banners[cfg.key] || {}
+                if (bData.active === false) return null
+                const title = bData.title || cfg.defaultTitle
+                const desc = bData.description || cfg.defaultDesc
+                const bg = bData.imageUrl
+                const prodIds: string[] = bData.productIds || []
+                const bannerProducts = prodIds.map((id: string) => allProductsMap[id]).filter(Boolean)
+
+                return (
+                    <HeroBanner
+                        key={cfg.key}
+                        title={title}
+                        description={desc}
+                        backgroundImage={bg}
+                        gradientClass={cfg.defaultBg}
+                        accent={cfg.accent}
+                        accentDark={cfg.accentDark}
+                        tag={cfg.tag}
+                        tagBg={cfg.tagBg}
+                        icon={cfg.icon}
+                        products={bannerProducts}
+                        linkUrl={cfg.key === 'banner1' ? '/web/software' : '#productos'}
+                        linkText={cfg.key === 'banner1' ? 'Ver Portafolio' : 'Ver Catálogo'}
+                    />
+                )
+            })}
+
+            {/* ══════════════════════════════════════════
+                 BANNER 4 — CATEGORÍAS SCROLLABLES
+              ══════════════════════════════════════════ */}
+            <CategoriesBanner categories={metadata.categories} />
 
             {/* Features Bar */}
             <section className="bg-neutral-900 py-12">
@@ -142,51 +176,7 @@ export default function PublicWebPage() {
                 </div>
             </section>
 
-            <section id="categorias" className="py-24 w-full overflow-hidden bg-white">
-                <div className="max-w-7xl mx-auto px-6 mb-12 flex items-end justify-between">
-                    <div className="space-y-2">
-                        <p className="text-orange-600 text-[10px] font-black uppercase tracking-[0.3em]">Explora el Catálogo</p>
-                        <h2 className="text-4xl font-light text-neutral-800">Secciones <span className="font-black text-neutral-900">Principales</span></h2>
-                    </div>
-                    <div className="hidden md:flex space-x-2">
-                        <button className="w-10 h-10 border border-neutral-200 flex items-center justify-center text-neutral-400 hover:text-orange-600 hover:border-orange-600 transition-all">
-                            <ChevronRight className="rotate-180" size={16} />
-                        </button>
-                        <button className="w-10 h-10 border border-neutral-200 flex items-center justify-center text-neutral-400 hover:text-orange-600 hover:border-orange-600 transition-all">
-                            <ChevronRight size={16} />
-                        </button>
-                    </div>
-                </div>
-
-                <div className="w-full pl-6 md:pl-[max(1.5rem,calc((100vw-80rem)/2))]">
-                    <div className="flex space-x-6 overflow-x-auto snap-x snap-mandatory pb-8 pr-6 [&::-webkit-scrollbar]:h-1 [&::-webkit-scrollbar-track]:bg-neutral-100 [&::-webkit-scrollbar-thumb]:bg-orange-600/20 hover:[&::-webkit-scrollbar-thumb]:bg-orange-600 items-stretch">
-                        {metadata.categories.filter((c: any) => c.isVisible !== false).map((cat: any) => (
-                            <div key={cat.id} className="min-w-[280px] md:min-w-[320px] snap-start group cursor-pointer border border-neutral-100 bg-neutral-50 flex flex-col hover:border-orange-500/30 transition-all hover:shadow-2xl shadow-neutral-200/50">
-                                <div className="h-48 overflow-hidden relative bg-white border-b border-neutral-50">
-                                    {cat.image ? (
-                                        <img src={cat.image} alt={cat.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out" />
-                                    ) : (
-                                        <div className="absolute inset-0 flex items-center justify-center bg-neutral-50 text-neutral-200 text-7xl font-black uppercase select-none group-hover:scale-110 transition-transform duration-700 ease-out">
-                                            {cat.name[0]}
-                                        </div>
-                                    )}
-                                    <div className="absolute inset-0 bg-gradient-to-t from-neutral-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
-                                        <p className="text-white text-[10px] font-black uppercase tracking-widest flex items-center gap-2">Explorar <ArrowRight size={14} /></p>
-                                    </div>
-                                </div>
-                                <div className="p-6 flex-1 flex flex-col bg-white">
-                                    <h3 className="text-lg font-black uppercase tracking-wide text-neutral-900 mb-2 group-hover:text-orange-600 transition-colors">{cat.name}</h3>
-                                    <p className="text-xs text-neutral-500 font-medium line-clamp-2 leading-relaxed flex-1">
-                                        {cat.description || "Descubre los mejores equipos y soluciones diseñados para alto rendimiento en esta categoría."}
-                                    </p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* Featured Products */}
+            {/* Products Section */}
             <section id="productos" className="bg-neutral-50 py-24">
                 <div className="max-w-7xl mx-auto px-6">
                     <div className="text-center space-y-4 mb-16">
@@ -197,9 +187,7 @@ export default function PublicWebPage() {
                     <div className="mb-16 max-w-2xl mx-auto relative group">
                         <div className={`absolute inset-y-0 left-6 flex items-center pointer-events-none transition-all duration-300 ${isSearching ? 'text-orange-600 scale-110' : 'text-neutral-400 group-focus-within:text-orange-600'}`}>
                             {isSearching ? (
-                                <div className="flex items-center space-x-2">
-                                    <div className="animate-spin rounded-full h-5 w-5 border-2 border-orange-600 border-t-transparent shadow-lg shadow-orange-100"></div>
-                                </div>
+                                <div className="animate-spin rounded-full h-5 w-5 border-2 border-orange-600 border-t-transparent shadow-lg shadow-orange-100"></div>
                             ) : (
                                 <Search size={22} className="group-focus-within:scale-110 transition-transform" />
                             )}
@@ -212,10 +200,7 @@ export default function PublicWebPage() {
                             className="w-full bg-white border-b-2 border-neutral-100 px-16 py-8 text-[11px] font-black uppercase tracking-[0.2em] focus:outline-none focus:border-orange-600 transition-all shadow-2xl shadow-neutral-100/30 hover:shadow-orange-100/10 placeholder:text-neutral-300 placeholder:italic"
                         />
                         {localSearch && !isSearching && (
-                            <button 
-                                onClick={() => setLocalSearch("")}
-                                className="absolute inset-y-0 right-6 flex items-center text-neutral-300 hover:text-red-500 transition-colors"
-                            >
+                            <button onClick={() => setLocalSearch("")} className="absolute inset-y-0 right-6 flex items-center text-neutral-300 hover:text-red-500 transition-colors">
                                 <X size={18} />
                             </button>
                         )}
@@ -230,35 +215,26 @@ export default function PublicWebPage() {
                         </div>
                     ) : (
                         <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 transition-opacity duration-300 ${isSearching ? 'opacity-50 grayscale' : 'opacity-100'}`}>
-                            {paginatedProducts.map((p) => (
-                                <Link 
-                                    key={p.id} 
+                            {products.map((p) => (
+                                <Link
+                                    key={p.id}
                                     href={`/web/product/${p.id}`}
                                     className="bg-white group cursor-pointer border border-neutral-100 hover:border-orange-500/20 transition-all flex flex-col h-full hover:shadow-2xl shadow-neutral-100/50 hover:shadow-orange-100/20"
                                 >
                                     <div className="aspect-square bg-neutral-50 relative overflow-hidden flex items-center justify-center p-8 border-b border-neutral-50">
                                         {(() => {
-                                            try {
-                                                const imageUrls = p.images ? JSON.parse(p.images) : [];
-                                                return imageUrls.length > 0 ? (
-                                                    <img
-                                                        src={imageUrls[0]}
-                                                        alt={p.name}
-                                                        referrerPolicy="no-referrer"
-                                                        className="w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-700 ease-out"
-                                                    />
-                                                ) : (
-                                                    <div className="text-neutral-200 uppercase font-black text-[10px] text-center">Sin imagen</div>
-                                                );
-                                            } catch (e) {
-                                                return <div className="text-neutral-200 uppercase font-black text-[10px] text-center">Error imagen</div>;
-                                            }
+                                            const imgs = safeParseArr(p.images)
+                                            return imgs.length > 0 ? (
+                                                <img src={imgs[0]} alt={p.name} referrerPolicy="no-referrer" className="w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-700 ease-out" />
+                                            ) : (
+                                                <div className="text-neutral-200 uppercase font-black text-[10px] text-center">Sin imagen</div>
+                                            )
                                         })()}
                                         {p.featured && (
                                             <div className="absolute top-4 right-4 bg-orange-600 text-white text-[8px] font-black uppercase px-2 py-1 shadow-lg">Destacado</div>
                                         )}
                                         <div className="absolute inset-x-0 bottom-0 bg-neutral-900 text-white py-4 text-[9px] font-black uppercase tracking-[0.3em] translate-y-full group-hover:translate-y-0 transition-transform flex items-center justify-center space-x-2">
-                                            <span>Ver detalles pro</span> <ChevronRight size={12} />
+                                            <span>Ver detalles</span> <ChevronRight size={12} />
                                         </div>
                                     </div>
                                     <div className="p-6 space-y-3 flex-1 flex flex-col group-hover:bg-neutral-50/50 transition-colors">
@@ -266,12 +242,10 @@ export default function PublicWebPage() {
                                             <span className="text-[10px] font-black text-orange-600 uppercase tracking-[0.2em]">{p.category?.name || 'Varios'}</span>
                                             {p.specSheetUrl && <Download size={12} className="text-neutral-300" />}
                                         </div>
-                                        <h4 className="text-xs font-black uppercase tracking-wide text-neutral-800 line-clamp-2 leading-[1.1] flex-1 group-hover:text-orange-600 transition-colors uppercase italic">{p.name}</h4>
+                                        <h4 className="text-xs font-black uppercase tracking-wide text-neutral-800 line-clamp-2 leading-[1.1] flex-1 group-hover:text-orange-600 transition-colors italic">{p.name}</h4>
                                         <div className="pt-4 border-t border-neutral-50 flex items-center justify-between">
-                                            <p className="text-lg font-black text-neutral-900 font-mono tracking-tighter">${p.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-                                            {p.compareAtPrice && (
-                                                <p className="text-[10px] text-neutral-300 line-through font-bold">${p.compareAtPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-                                            )}
+                                            <p className="text-lg font-black text-neutral-900 font-mono tracking-tighter">${p.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
+                                            {p.compareAtPrice && <p className="text-[10px] text-neutral-300 line-through font-bold">${p.compareAtPrice.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>}
                                         </div>
                                     </div>
                                 </Link>
@@ -284,109 +258,385 @@ export default function PublicWebPage() {
                         </div>
                     )}
 
-
-
                     {!loading && totalProducts > 0 && (
                         <div className="mt-24 flex flex-col items-center space-y-8">
                             <div className="flex items-center space-x-2">
-                                <button
-                                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                                    disabled={currentPage === 1}
-                                    className="w-12 h-12 flex items-center justify-center border-2 border-neutral-100 text-neutral-400 hover:border-orange-600 hover:text-orange-600 disabled:opacity-30 disabled:hover:border-neutral-100 disabled:hover:text-neutral-400 transition-all font-black"
-                                >
-                                    &lt;
-                                </button>
-                                
+                                <button onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))} disabled={currentPage === 1} className="w-12 h-12 flex items-center justify-center border-2 border-neutral-100 text-neutral-400 hover:border-orange-600 hover:text-orange-600 disabled:opacity-30 transition-all font-black">&lt;</button>
                                 {[...Array(totalPages)].map((_, i) => {
-                                    const page = i + 1;
-                                    if (totalPages > 7) {
-                                        if (page !== 1 && page !== totalPages && Math.abs(page - currentPage) > 1) {
-                                            if (page === 2 || page === totalPages - 1) return <span key={page} className="text-neutral-300">...</span>;
-                                            return null;
-                                        }
+                                    const page = i + 1
+                                    if (totalPages > 7 && page !== 1 && page !== totalPages && Math.abs(page - currentPage) > 1) {
+                                        if (page === 2 || page === totalPages - 1) return <span key={page} className="text-neutral-300">...</span>
+                                        return null
                                     }
-
                                     return (
-                                        <button
-                                            key={page}
-                                            onClick={() => setCurrentPage(page)}
-                                            className={`w-12 h-12 flex items-center justify-center border-2 font-black text-xs transition-all ${
-                                                currentPage === page 
-                                                ? "bg-neutral-900 border-neutral-900 text-white shadow-lg shadow-neutral-200" 
-                                                : "bg-white border-neutral-100 text-neutral-400 hover:border-orange-600 hover:text-orange-600"
-                                            }`}
-                                        >
-                                            {page}
-                                        </button>
-                                    );
+                                        <button key={page} onClick={() => setCurrentPage(page)} className={`w-12 h-12 flex items-center justify-center border-2 font-black text-xs transition-all ${currentPage === page ? "bg-neutral-900 border-neutral-900 text-white shadow-lg" : "bg-white border-neutral-100 text-neutral-400 hover:border-orange-600 hover:text-orange-600"}`}>{page}</button>
+                                    )
                                 })}
-
-                                <button
-                                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                                    disabled={currentPage === totalPages}
-                                    className="w-12 h-12 flex items-center justify-center border-2 border-neutral-100 text-neutral-400 hover:border-orange-600 hover:text-orange-600 disabled:opacity-30 disabled:hover:border-neutral-100 disabled:hover:text-neutral-400 transition-all font-black"
-                                >
-                                    &gt;
-                                </button>
+                                <button onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))} disabled={currentPage === totalPages} className="w-12 h-12 flex items-center justify-center border-2 border-neutral-100 text-neutral-400 hover:border-orange-600 hover:text-orange-600 disabled:opacity-30 transition-all font-black">&gt;</button>
                             </div>
-                            <p className="text-[10px] font-black text-neutral-300 uppercase tracking-widest">
-                                Página {currentPage} de {totalPages} — {totalProducts} resultados
-                            </p>
+                            <p className="text-[10px] font-black text-neutral-300 uppercase tracking-widest">Página {currentPage} de {totalPages} — {totalProducts} resultados</p>
                         </div>
                     )}
                 </div>
             </section>
 
+            {/* Removed Newsletter and Footer (Newsletter stays in home, footer goes to layout) */}
             {/* Newsletter */}
             <section className="bg-orange-600 py-24 relative overflow-hidden">
                 <div className="absolute right-0 top-0 h-full w-1/3 bg-orange-500/20 -skew-x-12 translate-x-20"></div>
                 <div className="max-w-7xl mx-auto px-6 relative z-10 flex flex-col md:flex-row items-center justify-between gap-12 text-white">
                     <div className="max-w-xl space-y-4">
                         <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter leading-none">Únete a la <br />Comunidad ATOMIC</h2>
-                        <p className="text-white/80 font-medium">Suscríbete para recibir ofertas exclusivas, lanzamientos de nuevos productos y consejos de tecnología industrial.</p>
+                        <p className="text-white/80 font-medium">Suscríbete para recibir ofertas exclusivas, lanzamientos y consejos de tecnología.</p>
                     </div>
                     <form className="w-full max-w-md flex flex-col sm:flex-row gap-4">
-                        <input
-                            type="email"
-                            placeholder="Tu correo electrónico"
-                            className="flex-1 bg-white/10 border-2 border-white/20 px-6 py-5 text-white placeholder-white/50 focus:outline-none focus:border-white transition-all font-bold"
-                        />
-                        <button className="bg-white text-orange-600 px-10 py-5 text-xs font-black uppercase tracking-widest shadow-2xl hover:bg-neutral-900 hover:text-white transition-all">
-                            Suscribirme
-                        </button>
+                        <input type="email" placeholder="Tu correo electrónico" className="flex-1 bg-white/10 border-2 border-white/20 px-6 py-5 text-white placeholder-white/50 focus:outline-none focus:border-white transition-all font-bold" />
+                        <button className="bg-white text-orange-600 px-10 py-5 text-xs font-black uppercase tracking-widest shadow-2xl hover:bg-neutral-900 hover:text-white transition-all">Suscribirme</button>
                     </form>
                 </div>
             </section>
+        </div>
+    )
+}
 
-            <footer className="bg-neutral-900 pt-24 pb-12 text-white border-t border-white/5">
-                <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-16 border-b border-white/5 pb-16">
-                    <div className="space-y-8">
-                        <span className="text-3xl font-black tracking-tighter uppercase italic">
-                            ATOMIC<span className="text-orange-600">.</span>
-                        </span>
-                        <p className="text-sm text-white/50 leading-relaxed font-medium">
-                            Líderes en tecnología industrial y soluciones de refrigeración avanzada para el mercado global.
-                        </p>
+// ══════════════════════════════════════════════════════════════
+//  HeroBanner — Banner hero full-width con galería de productos
+// ══════════════════════════════════════════════════════════════
+function HeroBanner({ title, description, backgroundImage, gradientClass, accent, accentDark, tag, tagBg, icon, products, linkUrl = "#productos", linkText = "Ver Catálogo" }: {
+    title: string
+    description: string
+    backgroundImage?: string
+    gradientClass: string
+    accent: string
+    accentDark: string
+    tag: string
+    tagBg: string
+    icon: any
+    products: any[]
+    linkUrl?: string
+    linkText?: string
+}) {
+    const galleryRef = useRef<HTMLDivElement>(null)
+
+    const scrollGallery = (dir: 'left' | 'right') => {
+        if (!galleryRef.current) return
+        galleryRef.current.scrollBy({ left: dir === 'right' ? 260 : -260, behavior: 'smooth' })
+    }
+
+    return (
+        <section className="relative w-full overflow-hidden" style={{ minHeight: '72vh' }}>
+            {/* Background */}
+            {backgroundImage ? (
+                <>
+                    <img src={backgroundImage} alt={title} className="absolute inset-0 w-full h-full object-cover" />
+                    <div className={`absolute inset-0 bg-gradient-to-r ${gradientClass} opacity-85`}></div>
+                </>
+            ) : (
+                <div className={`absolute inset-0 bg-gradient-to-r ${gradientClass}`}></div>
+            )}
+
+            {/* Decorative patterns */}
+            <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")' }}></div>
+
+            {/* Accent line */}
+            <div className="absolute left-0 top-0 bottom-0 w-1.5" style={{ backgroundColor: accent }}></div>
+
+            {/* Content */}
+            <div className="relative z-10 w-full h-full flex flex-col justify-between" style={{ minHeight: '72vh' }}>
+                {/* Top: tag */}
+                <div className="px-12 pt-12">
+                    <div className={`inline-flex items-center gap-2 ${tagBg} text-white text-[10px] font-black uppercase tracking-[0.3em] px-4 py-2`}>
+                        {icon}
+                        <span>{tag}</span>
                     </div>
-                    {/* Simplified for demo */}
-                    <div className="col-span-3 grid grid-cols-3">
-                        <div className="space-y-6">
-                            <h5 className="text-[11px] font-black uppercase tracking-[0.3em] text-orange-500">Corporativo</h5>
-                            <ul className="space-y-4 text-sm text-white/40 font-bold uppercase text-[10px]">
-                                <li>Nuestra Visión</li>
-                                <li>Contacto</li>
-                                <li>Trabaja con nosotros</li>
-                            </ul>
+                </div>
+
+                {/* Center: main copy */}
+                <div className="px-12 md:px-20 flex-1 flex flex-col justify-center py-8" style={{ maxWidth: '65%' }}>
+                    <h2 className="text-5xl md:text-7xl xl:text-8xl font-black text-white tracking-tighter leading-[0.88] mb-6 uppercase" style={{ textShadow: '0 4px 30px rgba(0,0,0,0.5)' }}>
+                        {title}
+                    </h2>
+                    <p className="text-white/70 text-base md:text-lg font-medium max-w-lg leading-relaxed mb-8">
+                        {description}
+                    </p>
+                    <div className="flex items-center gap-4">
+                        <Link
+                            href={linkUrl || "#productos"}
+                            className="inline-flex items-center gap-3 text-white text-[11px] font-black uppercase tracking-widest px-8 py-4 transition-all hover:gap-5"
+                            style={{ backgroundColor: accent }}
+                        >
+                            {linkText || "Ver Catálogo"} <ArrowRight size={14} />
+                        </Link>
+                        <a href="#categorias" className="text-white/50 text-[10px] font-black uppercase tracking-widest hover:text-white transition-colors">
+                            Ver Categorías →
+                        </a>
+                    </div>
+                </div>
+
+                {/* Bottom-right: product gallery scroll */}
+                {products.length > 0 && (
+                    <div className="absolute bottom-0 right-0 w-full md:w-[55%] pb-6 pr-6">
+                        <div className="flex items-center justify-between mb-3 px-2">
+                            <span className="text-white/40 text-[9px] font-black uppercase tracking-[0.3em]">Productos Destacados</span>
+                            <div className="flex gap-1">
+                                <button
+                                    onClick={() => scrollGallery('left')}
+                                    className="w-7 h-7 border border-white/20 flex items-center justify-center text-white/40 hover:text-white hover:border-white/60 transition-all"
+                                >
+                                    <ChevronLeft size={12} />
+                                </button>
+                                <button
+                                    onClick={() => scrollGallery('right')}
+                                    className="w-7 h-7 border border-white/20 flex items-center justify-center text-white/40 hover:text-white hover:border-white/60 transition-all"
+                                >
+                                    <ChevronRight size={12} />
+                                </button>
+                            </div>
+                        </div>
+                        <div
+                            ref={galleryRef}
+                            className="flex gap-3 overflow-x-auto pb-1 scroll-smooth"
+                            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                        >
+                            {products.map((p: any) => {
+                                const imgs = safeParseArr(p.images)
+                                return (
+                                    <Link
+                                        key={p.id}
+                                        href={`/web/product/${p.id}`}
+                                        className="group shrink-0 w-36 bg-white/10 backdrop-blur-md border border-white/10 hover:border-white/30 hover:bg-white/20 transition-all overflow-hidden"
+                                    >
+                                        <div className="h-24 overflow-hidden bg-white/5 flex items-center justify-center">
+                                            {imgs.length > 0 ? (
+                                                <img src={imgs[0]} alt={p.name} referrerPolicy="no-referrer" className="w-full h-full object-contain p-2 mix-blend-luminosity group-hover:mix-blend-normal group-hover:scale-110 transition-all duration-500" />
+                                            ) : (
+                                                <ShoppingBag size={24} className="text-white/20" />
+                                            )}
+                                        </div>
+                                        <div className="p-2.5">
+                                            <p className="text-white text-[9px] font-black uppercase tracking-wide line-clamp-2 leading-tight">{p.name}</p>
+                                            <p className="text-white/70 text-[10px] font-black font-mono mt-1">${p.price?.toLocaleString('en-US', { minimumFractionDigits: 2 }) || '0.00'}</p>
+                                        </div>
+                                    </Link>
+                                )
+                            })}
                         </div>
                     </div>
+                )}
+            </div>
+
+            {/* Divider bottom glow */}
+            <div className="absolute bottom-0 left-0 right-0 h-px" style={{ background: `linear-gradient(90deg, transparent, ${accent}, transparent)` }}></div>
+        </section>
+    )
+}
+
+// ══════════════════════════════════════════════════════════════
+//  CategoriesBanner — Banner 4 con todas las categorías scrollable
+// ══════════════════════════════════════════════════════════════
+function CategoriesBanner({ categories }: { categories: any[] }) {
+    const scrollRef = useRef<HTMLDivElement>(null)
+    const [canScrollLeft, setCanScrollLeft] = useState(false)
+    const [canScrollRight, setCanScrollRight] = useState(true)
+    const [activeIdx, setActiveIdx] = useState(0)
+    const [isDragging, setIsDragging] = useState(false)
+    const [dragStart, setDragStart] = useState(0)
+    const [scrollStart, setScrollStart] = useState(0)
+    const CARD_W = 216
+
+    const checkScroll = () => {
+        if (!scrollRef.current) return
+        const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current
+        setCanScrollLeft(scrollLeft > 10)
+        setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10)
+        setActiveIdx(Math.round(scrollLeft / CARD_W))
+    }
+
+    useEffect(() => {
+        const el = scrollRef.current
+        if (!el) return
+        el.addEventListener('scroll', checkScroll, { passive: true })
+        checkScroll()
+        return () => el.removeEventListener('scroll', checkScroll)
+    }, [categories])
+
+    const scroll = (dir: 'left' | 'right') => {
+        scrollRef.current?.scrollBy({ left: dir === 'right' ? CARD_W * 2 : -CARD_W * 2, behavior: 'smooth' })
+    }
+    const goToIdx = (i: number) => {
+        scrollRef.current?.scrollTo({ left: i * CARD_W, behavior: 'smooth' })
+    }
+
+    // Drag-to-scroll
+    const onMouseDown = (e: React.MouseEvent) => {
+        setIsDragging(true)
+        setDragStart(e.clientX)
+        setScrollStart(scrollRef.current?.scrollLeft || 0)
+    }
+    const onMouseMove = (e: React.MouseEvent) => {
+        if (!isDragging || !scrollRef.current) return
+        scrollRef.current.scrollLeft = scrollStart + (dragStart - e.clientX)
+    }
+    const onMouseUp = () => setIsDragging(false)
+
+    if (categories.length === 0) return null
+    const visible = categories.filter((c: any) => c.isVisible !== false)
+
+    return (
+        <section id="categorias" className="w-full bg-neutral-950 relative overflow-hidden">
+            {/* Diagonal grid texture */}
+            <div
+                className="absolute inset-0 opacity-[0.025]"
+                style={{ backgroundImage: 'repeating-linear-gradient(45deg, #fff 0, #fff 1px, transparent 0, transparent 50%)', backgroundSize: '14px 14px' }}
+            ></div>
+
+            {/* Top orange line */}
+            <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-orange-600 to-transparent"></div>
+
+            <div className="relative z-10 py-10 pb-8">
+                {/* Header row */}
+                <div className="max-w-7xl mx-auto px-6 mb-7 flex items-end justify-between">
+                    <div className="space-y-1">
+                        <p className="text-orange-500 text-[9px] font-black uppercase tracking-[0.4em]">Explorar por sección</p>
+                        <h2 className="text-3xl md:text-4xl font-black text-white uppercase tracking-tighter leading-none">
+                            Todas las <span className="text-orange-500">Categorías</span>
+                        </h2>
+                        <p className="text-white/25 text-[10px] font-bold uppercase tracking-widest pt-1">
+                            {visible.length} categoría{visible.length !== 1 ? 's' : ''} disponible{visible.length !== 1 ? 's' : ''} — arrastra para explorar
+                        </p>
+                    </div>
+                    <div className="flex items-center gap-2 pb-1">
+                        <button
+                            onClick={() => scroll('left')}
+                            disabled={!canScrollLeft}
+                            className="w-10 h-10 border border-white/10 flex items-center justify-center text-white/30 hover:text-white hover:border-orange-600 hover:bg-orange-600/10 transition-all disabled:opacity-20 disabled:cursor-not-allowed"
+                        >
+                            <ChevronLeft size={16} />
+                        </button>
+                        <button
+                            onClick={() => scroll('right')}
+                            disabled={!canScrollRight}
+                            className="w-10 h-10 border border-white/10 flex items-center justify-center text-white/30 hover:text-white hover:border-orange-600 hover:bg-orange-600/10 transition-all disabled:opacity-20 disabled:cursor-not-allowed"
+                        >
+                            <ChevronRight size={16} />
+                        </button>
+                    </div>
                 </div>
-                <div className="max-w-7xl mx-auto px-6 pt-12 flex flex-col md:flex-row justify-between items-center gap-6">
-                    <p className="text-[10px] font-black uppercase text-white/20 tracking-widest">© 2026 INDUSTRIAS ATOMIC. Todos los derechos reservados.</p>
-                    <a href="/dashboard" className="text-[10px] font-black uppercase text-neutral-600 hover:text-orange-600 flex items-center space-x-2 border-2 border-neutral-800 px-4 py-2 transition-all">
-                        <Power size={12} /> <span>Acceso Sistema Interno</span>
-                    </a>
+
+                {/* Cards track */}
+                <div className="relative">
+                    {/* Left fade gradient */}
+                    <div
+                        className={`absolute left-0 top-0 bottom-4 w-20 z-10 pointer-events-none transition-opacity duration-400 ${canScrollLeft ? 'opacity-100' : 'opacity-0'}`}
+                        style={{ background: 'linear-gradient(90deg, #030712 0%, transparent 100%)' }}
+                    ></div>
+                    {/* Right fade gradient */}
+                    <div
+                        className={`absolute right-0 top-0 bottom-4 w-20 z-10 pointer-events-none transition-opacity duration-400 ${canScrollRight ? 'opacity-100' : 'opacity-0'}`}
+                        style={{ background: 'linear-gradient(270deg, #030712 0%, transparent 100%)' }}
+                    ></div>
+
+                    <div
+                        ref={scrollRef}
+                        onScroll={checkScroll}
+                        onMouseDown={onMouseDown}
+                        onMouseMove={onMouseMove}
+                        onMouseUp={onMouseUp}
+                        onMouseLeave={onMouseUp}
+                        className="flex gap-3 overflow-x-auto pl-6 pr-6 pb-3"
+                        style={{
+                            scrollbarWidth: 'none',
+                            msOverflowStyle: 'none',
+                            cursor: isDragging ? 'grabbing' : 'grab',
+                            userSelect: 'none',
+                            WebkitOverflowScrolling: 'touch',
+                        }}
+                    >
+                        {visible.map((cat: any, i: number) => (
+                            <a
+                                key={cat.id}
+                                href="#productos"
+                                draggable={false}
+                                className="group shrink-0 relative overflow-hidden transition-all duration-300 hover:-translate-y-1"
+                                style={{
+                                    width: `${CARD_W}px`,
+                                    minWidth: `${CARD_W}px`,
+                                    border: '1px solid rgba(255,255,255,0.07)',
+                                    boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
+                                }}
+                            >
+                                {/* Category image */}
+                                <div className="h-40 overflow-hidden bg-neutral-900 relative">
+                                    {cat.image ? (
+                                        <img
+                                            src={cat.image}
+                                            alt={cat.name}
+                                            draggable={false}
+                                            className="w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700 ease-out"
+                                        />
+                                    ) : (
+                                        <div className="absolute inset-0 flex items-center justify-center">
+                                            <span className="text-6xl font-black uppercase select-none"
+                                                style={{ color: 'rgba(255,255,255,0.05)' }}>
+                                                {cat.name[0]}
+                                            </span>
+                                        </div>
+                                    )}
+                                    {/* Scrim */}
+                                    <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/20 to-transparent"></div>
+                                    {/* Orange bottom bar on hover */}
+                                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-orange-600 scale-x-0 group-hover:scale-x-100 transition-transform duration-400 origin-left"></div>
+                                    {/* Category number */}
+                                    <div className="absolute top-3 right-3 text-[9px] font-black text-white/20 group-hover:text-orange-500/70 transition-colors">
+                                        {String(i + 1).padStart(2, '0')}
+                                    </div>
+                                </div>
+
+                                {/* Info */}
+                                <div className="p-3.5 bg-neutral-900/90 backdrop-blur-sm">
+                                    <h3 className="text-white text-[12px] font-black uppercase tracking-wide line-clamp-1 group-hover:text-orange-400 transition-colors duration-200">
+                                        {cat.name}
+                                    </h3>
+                                    {cat.description ? (
+                                        <p className="text-white/35 text-[9px] font-medium mt-0.5 line-clamp-1 leading-relaxed">
+                                            {cat.description}
+                                        </p>
+                                    ) : (
+                                        <p className="text-white/20 text-[9px] font-medium mt-0.5 italic">Ver productos →</p>
+                                    )}
+                                    <div className="flex items-center gap-1 mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                        <span className="text-[8px] font-black uppercase tracking-widest text-orange-500">Explorar</span>
+                                        <ArrowRight size={8} className="text-orange-500" />
+                                    </div>
+                                </div>
+                            </a>
+                        ))}
+                    </div>
                 </div>
-            </footer>
-        </div>
+
+                {/* Dots progress bar */}
+                <div className="flex justify-center items-center gap-1.5 mt-5">
+                    {visible.slice(0, Math.min(visible.length, 12)).map((_: any, i: number) => (
+                        <button
+                            key={i}
+                            onClick={() => goToIdx(i)}
+                            className="transition-all duration-300 rounded-none"
+                            title={visible[i]?.name}
+                            style={{
+                                height: '3px',
+                                width: activeIdx === i ? '24px' : '6px',
+                                backgroundColor: activeIdx === i ? '#ea580c' : 'rgba(255,255,255,0.15)',
+                            }}
+                        />
+                    ))}
+                    {visible.length > 12 && (
+                        <span className="text-white/20 text-[8px] font-black uppercase ml-1">+{visible.length - 12}</span>
+                    )}
+                </div>
+            </div>
+
+            {/* Bottom line */}
+            <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-orange-600/25 to-transparent"></div>
+        </section>
     )
 }

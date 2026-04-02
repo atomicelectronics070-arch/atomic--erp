@@ -1,10 +1,13 @@
 "use client"
 
-import { useState, useRef, useCallback } from "react"
-import { Calendar as CalendarIcon, Upload, CheckCircle2, FileSignature, Timer, ShieldAlert, ChevronRight, Loader2, FileText, X } from "lucide-react"
+import { useState, useRef, useCallback, useEffect } from "react"
+import { useSession } from "next-auth/react"
+import { Calendar as CalendarIcon, Upload, CheckCircle2, FileSignature, Timer, ShieldAlert, ChevronRight, Loader2, FileText, X, DollarSign, Percent } from "lucide-react"
 
 // Helper to compute cycle info from a start date
-function getCycleInfo(cycleStartDate: Date) {
+function getCycleInfo(startDateStr: string | null) {
+    if (!startDateStr) return null
+    const cycleStartDate = new Date(startDateStr)
     const now = new Date()
     const msPerDay = 1000 * 60 * 60 * 24
     const elapsed = Math.floor((now.getTime() - cycleStartDate.getTime()) / msPerDay)
@@ -29,20 +32,53 @@ const WEEK_DEFINITIONS = [
 ]
 
 export default function ContractsEvidencePage() {
-    // Role toggle (Admin vs Colaborador)
-    const [isAdmin, setIsAdmin] = useState(false)
+    const { data: session } = useSession()
+    const isAdmin = session?.user?.role === "ADMIN" || session?.user?.role === "MANAGER"
+
+    // User Cycle state
+    const [myCycle, setMyCycle] = useState<any>(null)
+    const [loadingCycle, setLoadingCycle] = useState(true)
 
     // Admin: pending contract requests
-    const [adminContracts, setAdminContracts] = useState([
-        { id: 1, user: "Carlos Rodriguez", status: "pending", date: "2026-03-05", file: "contrato_carlos.pdf" },
-        { id: 2, user: "Ana Martinez", status: "approved", date: "2026-02-15", cycleStart: "2026-02-16", file: "contrato_ana.pdf" },
-    ])
+    const [pendingRequests, setPendingRequests] = useState<any[]>([])
+    const [loadingPending, setLoadingPending] = useState(false)
+    const [approveForm, setApproveForm] = useState({ fixedPay: "0", commissionPct: "0" })
 
     // Colaborador: contract upload state
     const [uploadedFile, setUploadedFile] = useState<File | null>(null)
     const [isUploading, setIsUploading] = useState(false)
-    const [cycleStartDate, setCycleStartDate] = useState<Date | null>(null)
     const fileInputRef = useRef<HTMLInputElement>(null)
+
+    const fetchMyCycle = useCallback(async () => {
+        try {
+            const res = await fetch("/api/contracts/me")
+            const data = await res.json()
+            if (data.cycle) setMyCycle(data.cycle)
+        } catch (error) {
+            console.error("Error fetching cycle:", error)
+        } finally {
+            setLoadingCycle(false)
+        }
+    }, [])
+
+    const fetchPendingRequests = useCallback(async () => {
+        if (!isAdmin) return
+        setLoadingPending(true)
+        try {
+            const res = await fetch("/api/contracts/all")
+            const data = await res.json()
+            if (data.cycles) setPendingRequests(data.cycles)
+        } catch (error) {
+            console.error("Error fetching pending:", error)
+        } finally {
+            setLoadingPending(false)
+        }
+    }, [isAdmin])
+
+    useEffect(() => {
+        fetchMyCycle()
+        if (isAdmin) fetchPendingRequests()
+    }, [fetchMyCycle, fetchPendingRequests, isAdmin])
 
     const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
@@ -57,28 +93,69 @@ export default function ContractsEvidencePage() {
     const handleUpload = useCallback(async () => {
         if (!uploadedFile) return
         setIsUploading(true)
-        // Simulate upload delay
-        await new Promise(r => setTimeout(r, 2000))
-        setCycleStartDate(new Date())
-        setIsUploading(false)
-    }, [uploadedFile])
+        
+        const formData = new FormData()
+        formData.append("file", uploadedFile)
+
+        try {
+            const res = await fetch("/api/contracts/upload", {
+                method: "POST",
+                body: formData
+            })
+            const data = await res.json()
+            if (data.success) {
+                alert("Contrato subido. Espera a que el administrador lo apruebe para iniciar tu ciclo.")
+                setUploadedFile(null)
+                fetchMyCycle()
+            } else {
+                alert(data.error || "Error al subir")
+            }
+        } catch (error) {
+            alert("Error de conexión al subir contrato")
+        } finally {
+            setIsUploading(false)
+        }
+    }, [uploadedFile, fetchMyCycle])
+
+    const handleApproveAdmin = async (cycleId: string) => {
+        try {
+            const res = await fetch("/api/contracts/approve", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    cycleId,
+                    fixedPay: approveForm.fixedPay,
+                    commissionPct: approveForm.commissionPct
+                })
+            })
+            const data = await res.json()
+            if (data.success) {
+                alert("Ciclo activado exitosamente")
+                fetchPendingRequests()
+                fetchMyCycle() // Update current view if admin is checking their own or just refreshing
+            } else {
+                alert(data.error || "Error al aprobar")
+            }
+        } catch (error) {
+            alert("Error de conexión al aprobar")
+        }
+    }
 
     const handleResetUpload = useCallback(() => {
         setUploadedFile(null)
-        setCycleStartDate(null)
         if (fileInputRef.current) fileInputRef.current.value = ""
     }, [])
 
-    const handleApproveAdmin = (id: number) => {
-        setAdminContracts(prev => prev.map(c =>
-            c.id === id ? { ...c, status: "approved", cycleStart: new Date().toISOString().split('T')[0] } : c
-        ))
+    // Cycle computation for current user
+    const cycleInfo = myCycle?.isActive ? getCycleInfo(myCycle.startDate) : null
+
+    if (loadingCycle) {
+        return (
+            <div className="flex items-center justify-center min-h-[400px]">
+                <Loader2 className="animate-spin text-orange-600" size={48} />
+            </div>
+        )
     }
-
-    // Cycle computation
-    const cycleInfo = cycleStartDate ? getCycleInfo(cycleStartDate) : null
-
-    const approvedAdminContract = adminContracts.find(c => c.status === "approved")
 
     return (
         <div className="space-y-8 pb-12">
@@ -90,21 +167,17 @@ export default function ContractsEvidencePage() {
                     </h1>
                     <p className="text-neutral-500 font-medium">Gestión de vinculación legal y seguimiento del programa de 30 días.</p>
                 </div>
-                {/* Role toggle for demo */}
-                <button
-                    onClick={() => setIsAdmin(a => !a)}
-                    className="flex items-center gap-2 px-4 py-2 border border-neutral-200 rounded-none text-xs font-bold uppercase tracking-widest hover:bg-neutral-100 transition-all"
-                >
+                <div className="flex items-center gap-2 px-4 py-2 bg-neutral-100 border border-neutral-200 text-[10px] font-bold uppercase tracking-widest text-neutral-600">
                     <span className={`w-2 h-2 rounded-full ${isAdmin ? "bg-orange-500" : "bg-blue-500"}`} />
-                    Vista: {isAdmin ? "Administrador" : "Colaborador"}
-                </button>
+                    Rol: {session?.user?.role || "COLABORADOR"}
+                </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
                 {/* Left Panel */}
                 <div className="lg:col-span-1 space-y-6">
-                    {isAdmin ? (
+                    {isAdmin && (
                         /* Admin: Pending Requests */
                         <div className="bg-white rounded-none border border-neutral-200 shadow-sm overflow-hidden flex flex-col">
                             <div className="p-8 border-b border-neutral-100">
@@ -113,50 +186,81 @@ export default function ContractsEvidencePage() {
                                 </h2>
                             </div>
                             <div className="p-4 space-y-4">
-                                {adminContracts.filter(c => c.status === "pending").length === 0 && (
+                                {loadingPending ? (
+                                    <div className="flex justify-center py-8"><Loader2 className="animate-spin text-neutral-400" /></div>
+                                ) : pendingRequests.length === 0 ? (
                                     <p className="text-sm text-neutral-400 text-center py-6 font-medium">No hay solicitudes pendientes.</p>
-                                )}
-                                {adminContracts.filter(c => c.status === "pending").map(contract => (
-                                    <div key={contract.id} className="bg-neutral-50 p-6 rounded-none border border-neutral-100">
-                                        <div className="flex items-center space-x-3 mb-4">
-                                            <div className="w-10 h-10 bg-orange-100 rounded-none flex items-center justify-center text-orange-600 font-bold">
-                                                {contract.user[0]}
+                                ) : (
+                                    pendingRequests.map(cycle => (
+                                        <div key={cycle.id} className="bg-neutral-50 p-6 rounded-none border border-neutral-100 space-y-4">
+                                            <div className="flex items-center space-x-3">
+                                                <div className="w-10 h-10 bg-orange-100 rounded-none flex items-center justify-center text-orange-600 font-bold uppercase">
+                                                    {cycle.user?.name?.[0] || "U"}
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm font-bold text-neutral-900">{cycle.user?.name}</p>
+                                                    <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">{new Date(cycle.createdAt).toLocaleDateString()}</p>
+                                                </div>
                                             </div>
-                                            <div>
-                                                <p className="text-sm font-bold text-neutral-900">{contract.user}</p>
-                                                <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">{contract.date}</p>
+                                            
+                                            <a 
+                                                href={cycle.contractUrl} 
+                                                target="_blank" 
+                                                rel="noreferrer"
+                                                className="flex items-center gap-2 text-xs text-orange-600 font-bold hover:underline bg-orange-50 px-3 py-2"
+                                            >
+                                                <FileText size={14} />
+                                                Ver Contrato Subido
+                                            </a>
+
+                                            <div className="grid grid-cols-2 gap-2">
+                                                <div className="space-y-1">
+                                                    <label className="text-[9px] font-bold text-neutral-500 uppercase">Sueldo Fijo ($)</label>
+                                                    <input 
+                                                        type="number" 
+                                                        className="w-full bg-white border border-neutral-200 px-2 py-1.5 text-xs font-bold"
+                                                        value={approveForm.fixedPay}
+                                                        onChange={(e) => setApproveForm(prev => ({ ...prev, fixedPay: e.target.value }))}
+                                                    />
+                                                </div>
+                                                <div className="space-y-1">
+                                                    <label className="text-[9px] font-bold text-neutral-500 uppercase">Comisión (%)</label>
+                                                    <input 
+                                                        type="number" 
+                                                        className="w-full bg-white border border-neutral-200 px-2 py-1.5 text-xs font-bold"
+                                                        value={approveForm.commissionPct}
+                                                        onChange={(e) => setApproveForm(prev => ({ ...prev, commissionPct: e.target.value }))}
+                                                    />
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className="flex flex-col space-y-2">
-                                            <div className="flex items-center gap-2 text-xs text-neutral-500 font-medium bg-neutral-100 px-3 py-2">
-                                                <FileText size={14} className="text-orange-500" />
-                                                {contract.file}
-                                            </div>
+
                                             <button
-                                                onClick={() => handleApproveAdmin(contract.id)}
+                                                onClick={() => handleApproveAdmin(cycle.id)}
                                                 className="w-full bg-orange-600 hover:bg-orange-700 text-white py-2 rounded-none text-xs font-bold transition-all shadow-lg shadow-orange-500/20"
                                             >
                                                 Aprobar y Activar Ciclo
                                             </button>
                                         </div>
-                                    </div>
-                                ))}
+                                    ))
+                                )}
                             </div>
                         </div>
-                    ) : (
-                        /* Colaborador: Upload */
+                    )}
+
+                    {!isAdmin && (
+                        /* Colaborador Section */
                         <div className="bg-white rounded-none border border-neutral-200 shadow-sm p-8">
-                            {!cycleStartDate ? (
+                            {!myCycle ? (
+                                /* No cycle at all -> Upload */
                                 <>
                                     <div className="w-20 h-20 bg-orange-50 text-orange-600 rounded-none flex items-center justify-center mx-auto mb-6">
                                         <FileSignature size={40} />
                                     </div>
                                     <h2 className="text-xl font-bold text-neutral-900 uppercase mb-2 text-center">Mi Contrato</h2>
                                     <p className="text-sm text-neutral-500 mb-6 font-medium text-center">
-                                        Sube tu contrato firmado (PDF) para iniciar tu ciclo de 30 días.
+                                        Sube tu contrato firmado (PDF) para iniciar tu proceso de validación.
                                     </p>
 
-                                    {/* File Selector */}
                                     <input
                                         ref={fileInputRef}
                                         type="file"
@@ -190,29 +294,54 @@ export default function ContractsEvidencePage() {
                                                 {isUploading ? (
                                                     <><Loader2 size={18} className="animate-spin" /> Subiendo...</>
                                                 ) : (
-                                                    <><Upload size={18} /> Subir y Activar Ciclo</>
+                                                    <><Upload size={18} /> Subir Contrato</>
                                                 )}
                                             </button>
                                         </div>
                                     )}
                                 </>
-                            ) : (
-                                /* Uploaded success */
-                                <div className="text-center">
-                                    <div className="w-16 h-16 bg-green-100 text-green-600 rounded-none flex items-center justify-center mx-auto mb-4">
-                                        <CheckCircle2 size={36} />
+                            ) : myCycle.isActive === false ? (
+                                /* Cycle exists but not approved */
+                                <div className="text-center py-6">
+                                    <div className="w-20 h-20 bg-neutral-100 text-neutral-400 rounded-none flex items-center justify-center mx-auto mb-6">
+                                        <Timer size={40} />
                                     </div>
-                                    <h2 className="text-lg font-bold text-green-700 uppercase mb-1">¡Contrato Activado!</h2>
-                                    <p className="text-xs text-neutral-500 font-medium mb-4">{uploadedFile?.name}</p>
-                                    <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">
-                                        Inicio: {cycleStartDate.toLocaleDateString("es-EC", { day: "2-digit", month: "long", year: "numeric" })}
+                                    <h2 className="text-lg font-bold text-neutral-900 uppercase mb-2">Validación Pendiente</h2>
+                                    <p className="text-xs text-neutral-500 font-medium mb-6">
+                                        Tu contrato ha sido recibido. El administrador debe validarlo y configurar tus términos para iniciar el ciclo de 30 días.
                                     </p>
-                                    <button
-                                        onClick={handleResetUpload}
-                                        className="mt-6 text-xs text-neutral-400 hover:text-red-500 underline transition-colors"
-                                    >
-                                        Reiniciar (demo)
-                                    </button>
+                                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-neutral-100 text-[10px] font-bold text-neutral-500 uppercase tracking-widest border border-neutral-200">
+                                        Estatus: Esperando Aprobación
+                                    </div>
+                                </div>
+                            ) : (
+                                /* Active cycle info */
+                                <div className="space-y-6">
+                                    <div className="text-center">
+                                        <div className="w-16 h-16 bg-green-100 text-green-600 rounded-none flex items-center justify-center mx-auto mb-4">
+                                            <CheckCircle2 size={36} />
+                                        </div>
+                                        <h2 className="text-lg font-bold text-green-700 uppercase mb-1">¡Ciclo Activado!</h2>
+                                        <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-6">
+                                            Inició el: {new Date(myCycle.startDate).toLocaleDateString("es-EC", { day: "2-digit", month: "long", year: "numeric" })}
+                                        </p>
+                                    </div>
+
+                                    {/* Economic Terms for User */}
+                                    <div className="grid grid-cols-2 gap-4 border-t border-neutral-100 pt-6">
+                                        <div className="bg-neutral-50 p-4 border border-neutral-100">
+                                            <p className="text-[9px] font-bold text-neutral-400 uppercase tracking-widest mb-1 flex items-center gap-1">
+                                                <DollarSign size={10} /> Sueldo Fijo
+                                            </p>
+                                            <p className="text-xl font-black text-neutral-900">${myCycle.fixedPay || 0}</p>
+                                        </div>
+                                        <div className="bg-neutral-50 p-4 border border-neutral-100">
+                                            <p className="text-[9px] font-bold text-neutral-400 uppercase tracking-widest mb-1 flex items-center gap-1">
+                                                <Percent size={10} /> Comisiones
+                                            </p>
+                                            <p className="text-xl font-black text-neutral-900">{myCycle.commissionPct || 0}%</p>
+                                        </div>
+                                    </div>
                                 </div>
                             )}
                         </div>
@@ -220,10 +349,10 @@ export default function ContractsEvidencePage() {
 
                     {/* Cycle Status Card (Colaborador only when cycle is active) */}
                     {!isAdmin && cycleInfo && (
-                        <div className="bg-neutral-950 rounded-none p-8 text-white border border-neutral-800">
+                        <div className="bg-neutral-950 rounded-none p-8 text-white border border-neutral-800 shadow-2xl">
                             <div className="flex items-center space-x-2 text-orange-500 mb-4">
                                 <Timer size={18} />
-                                <span className="text-[10px] font-bold uppercase tracking-widest">Estado del Ciclo</span>
+                                <span className="text-[10px] font-bold uppercase tracking-widest">Progreso del Programa</span>
                             </div>
                             <h3 className="text-3xl font-bold mb-1">
                                 Día {cycleInfo.currentDay} <span className="text-sm text-neutral-500">/ 30</span>
@@ -236,8 +365,8 @@ export default function ContractsEvidencePage() {
                             </div>
                             <p className="text-[10px] text-neutral-400 mt-4 uppercase font-bold tracking-widest">
                                 {cycleInfo.daysRemaining === 0
-                                    ? "¡Ciclo completado!"
-                                    : `Faltan ${cycleInfo.daysRemaining} día${cycleInfo.daysRemaining !== 1 ? "s" : ""} para revisión final`}
+                                    ? "¡Felicidades! Ciclo completado"
+                                    : `Faltan ${cycleInfo.daysRemaining} días para cumplir el ciclo`}
                             </p>
                         </div>
                     )}
@@ -251,11 +380,9 @@ export default function ContractsEvidencePage() {
                                 <CalendarIcon size={24} className="mr-3 text-orange-600" /> Plan de Desarrollo (30 días)
                             </h2>
                             <span className="text-[10px] font-bold text-orange-600 bg-orange-50 px-3 py-1.5 rounded-none uppercase tracking-widest">
-                                {isAdmin
-                                    ? (approvedAdminContract?.cycleStart ? `Inicio: ${approvedAdminContract.cycleStart}` : "Sin ciclo activo")
-                                    : (cycleStartDate
-                                        ? `Inicio: ${cycleStartDate.toLocaleDateString("es-EC")}`
-                                        : "Pendiente")}
+                                {myCycle?.isActive 
+                                    ? `Vence: ${new Date(myCycle.endDate).toLocaleDateString("es-EC")}`
+                                    : "Esperando activación"}
                             </span>
                         </div>
 
@@ -269,9 +396,9 @@ export default function ContractsEvidencePage() {
                                     <div
                                         key={week.id}
                                         className={`p-6 rounded-none border-2 transition-all flex flex-col justify-between ${status === "completed"
-                                            ? "border-green-100 bg-green-50/20"
+                                            ? "border-green-100 bg-green-50/10 grayscale-[0.5]"
                                             : status === "pending"
-                                                ? "border-orange-200 bg-orange-50/50 shadow-lg shadow-orange-500/10 scale-[1.02]"
+                                                ? "border-orange-200 bg-orange-50/30 shadow-lg shadow-orange-500/5 scale-[1.02] border-dashed"
                                                 : "border-neutral-100 bg-neutral-50/50 opacity-40 grayscale"
                                             }`}
                                     >
@@ -296,11 +423,11 @@ export default function ContractsEvidencePage() {
 
                                         <div className="pt-4 border-t border-neutral-100 flex items-center justify-between">
                                             <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">
-                                                {status === "completed" ? "Verificado" : status === "pending" ? "Acción Requerida" : "Bloqueado"}
+                                                {status === "completed" ? "Verificado" : status === "pending" ? "En curso" : "Bloqueado"}
                                             </span>
                                             {status === "pending" && (
                                                 <button className="text-orange-600 hover:text-orange-700 font-bold text-sm uppercase flex items-center transition-all hover:translate-x-1">
-                                                    Ver <ChevronRight size={16} />
+                                                    Ver Detalle <ChevronRight size={16} />
                                                 </button>
                                             )}
                                         </div>

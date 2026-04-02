@@ -5,9 +5,6 @@ import { prisma } from "@/lib/prisma"
 
 export async function GET() {
     try {
-        const session = await getServerSession(authOptions)
-        if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-
         const setting = await prisma.systemSetting.findUnique({
             where: { key: "SHOP_SETTINGS" }
         })
@@ -18,7 +15,7 @@ export async function GET() {
 
         return NextResponse.json({ settings: JSON.parse(setting.value) })
     } catch (error) {
-        return NextResponse.json({ error: "Internal Error" }, { status: 500 })
+        return NextResponse.json({ settings: {} })
     }
 }
 

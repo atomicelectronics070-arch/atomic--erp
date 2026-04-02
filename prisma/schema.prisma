@@ -208,12 +208,13 @@ model WorkCycle {
   userId        String
   user          User     @relation(fields: [userId], references: [id])
   role          String
-  startDate     DateTime
-  endDate       DateTime
-  fixedPay      Float
-  commissionPct Float
-  functions     String   // JSON string array of job functions
-  isActive      Boolean  @default(true)
+  startDate     DateTime?
+  endDate       DateTime?
+  fixedPay      Float?
+  commissionPct Float?
+  contractUrl   String?
+  functions     String   @default("[]") // JSON string array of job functions
+  isActive      Boolean  @default(false)
   
   dailyLogs     DailyLog[]
   

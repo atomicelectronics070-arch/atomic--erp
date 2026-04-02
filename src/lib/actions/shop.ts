@@ -336,7 +336,7 @@ export async function getProviderStats() {
     
     products.forEach(p => {
         try {
-            const imgs = JSON.parse(p.images)
+            const imgs = JSON.parse(p.images ?? '[]')
             if (Array.isArray(imgs) && imgs.length > 0) {
                 const url = new URL(imgs[0])
                 const domain = url.hostname.replace('www.', '')

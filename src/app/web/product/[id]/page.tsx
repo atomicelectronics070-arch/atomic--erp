@@ -78,30 +78,7 @@ export default function ProductDetailPage() {
 
     return (
         <div className="min-h-screen bg-white text-neutral-900 font-sans">
-            {/* Nav */}
-            <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-neutral-100">
-                <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-                    <div className="flex items-center space-x-12">
-                        <Link href="/web" className="text-2xl font-black tracking-tighter uppercase italic">
-                            ATOMIC<span className="text-orange-600">.</span>
-                        </Link>
-                        <div className="hidden md:flex space-x-8 text-[11px] font-bold uppercase tracking-widest text-neutral-500">
-                            <Link href="/web" className="hover:text-neutral-800 transition-colors">Inicio</Link>
-                            <Link href="/web#productos" className="text-orange-600 border-b-2 border-orange-600 pb-1">Productos</Link>
-                            <Link href="/web#categorias" className="hover:text-neutral-800 transition-colors">Categorías</Link>
-                        </div>
-                    </div>
-                    <div className="flex items-center space-x-6">
-                        <button className="text-neutral-400 hover:text-orange-600 transition-colors"><Search size={20} /></button>
-                        <button className="text-neutral-400 hover:text-orange-600 transition-colors"><User size={20} /></button>
-                        <div className="relative">
-                            <button className="text-neutral-400 hover:text-orange-600 transition-colors"><ShoppingCart size={20} /></button>
-                            <span className="absolute -top-1 -right-1 bg-orange-600 text-white text-[8px] font-black w-3.5 h-3.5 flex items-center justify-center rounded-none shadow-sm shadow-orange-200">0</span>
-                        </div>
-                    </div>
-                </div>
-            </nav>
-
+            {/* Nav removed -> Handled by layout.tsx */}
             <div className="max-w-7xl mx-auto px-6 py-12">
                 {/* Breadcrumbs */}
                 <div className="flex items-center space-x-2 text-[10px] font-black uppercase tracking-widest text-neutral-400 mb-12 overflow-x-auto whitespace-nowrap pb-4 md:pb-0">
@@ -282,45 +259,6 @@ export default function ProductDetailPage() {
                 )}
             </div>
 
-            {/* Same Footer */}
-            <footer className="bg-neutral-900 pt-32 pb-12 text-white border-t border-white/5">
-                <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-20 border-b border-white/5 pb-20">
-                    <div className="space-y-10">
-                        <span className="text-4xl font-black tracking-tighter uppercase italic text-white flex items-center">
-                            ATOMIC<span className="text-orange-600">.</span>
-                        </span>
-                        <p className="text-sm text-white/40 leading-relaxed font-medium max-w-xs">
-                            Líderes en tecnología industrial y soluciones de refrigeración avanzada para el mercado global de alto rendimiento.
-                        </p>
-                    </div>
-                    <div className="col-span-3 grid grid-cols-1 md:grid-cols-3 gap-12">
-                        <div className="space-y-8">
-                            <h5 className="text-[12px] font-black uppercase tracking-[0.4em] text-orange-600">Corporativo</h5>
-                            <ul className="space-y-5 text-[11px] text-white/30 font-black uppercase tracking-widest">
-                                <li className="hover:text-white transition-colors cursor-pointer">Visión 2030</li>
-                                <li className="hover:text-white transition-colors cursor-pointer">Centros de I+D</li>
-                                <li className="hover:text-white transition-colors cursor-pointer">Garantía Global</li>
-                            </ul>
-                        </div>
-                        <div className="space-y-8">
-                            <h5 className="text-[12px] font-black uppercase tracking-[0.4em] text-orange-600">Soporte</h5>
-                            <ul className="space-y-5 text-[11px] text-white/30 font-black uppercase tracking-widest">
-                                <li className="hover:text-white transition-colors cursor-pointer">Centro de Ayuda</li>
-                                <li className="hover:text-white transition-colors cursor-pointer">Manuales Técnicos</li>
-                                <li className="hover:text-white transition-colors cursor-pointer">Contactar Especialista</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div className="max-w-7xl mx-auto px-6 pt-12 flex flex-col md:flex-row justify-between items-center gap-10">
-                    <p className="text-[10px] font-black uppercase text-white/20 tracking-[0.3em]">© 2026 INDUSTRIAS ATOMIC. Ingeniería de precisión.</p>
-                    <div className="flex items-center space-x-8 opacity-20">
-                        <Shield size={18} />
-                        <Zap size={18} />
-                        <CheckCircle2 size={18} />
-                    </div>
-                </div>
-            </footer>
         </div>
     )
 }
