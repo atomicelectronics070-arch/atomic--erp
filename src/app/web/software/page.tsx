@@ -30,6 +30,7 @@ const PORTFOLIO_ITEMS = [
         imagePlaceholderbg: "bg-indigo-900/40",
         accent: "#6366f1",
         delay: false,
+        previewUrl: "/instituto_sucre.html"
     },
     {
         id: 2,
@@ -39,6 +40,7 @@ const PORTFOLIO_ITEMS = [
         imagePlaceholderbg: "bg-emerald-900/40",
         accent: "#10b981",
         delay: true,
+        previewUrl: "/bodegas.html"
     },
     {
         id: 3,
@@ -65,6 +67,7 @@ export default function SoftwareLandingPage() {
     const [isDragging, setIsDragging] = useState(false)
     const [startX, setStartX] = useState(0)
     const [scrollLeft, setScrollLeft] = useState(0)
+    const [activePreview, setActivePreview] = useState<string | null>(null)
 
     const onMouseDown = (e: React.MouseEvent) => {
         setIsDragging(true)
@@ -73,7 +76,9 @@ export default function SoftwareLandingPage() {
     }
 
     const onMouseLeave = () => setIsDragging(false)
-    const onMouseUp = () => setIsDragging(false)
+    const onMouseUp = () => {
+        setIsDragging(false)
+    }
 
     const onMouseMove = (e: React.MouseEvent) => {
         if (!isDragging) return
@@ -93,6 +98,37 @@ export default function SoftwareLandingPage() {
         <div className="min-h-screen bg-neutral-950 text-white selection:bg-orange-500/30 overflow-hidden relative">
             <style dangerouslySetInnerHTML={{ __html: styles }} />
             
+            {/* INICIO MODAL DE SOFTWARE INTERACTIVO */}
+            {activePreview && (
+                <div className="fixed inset-0 z-[100] flex flex-col bg-neutral-950/95 backdrop-blur-3xl animate-in fade-in duration-300">
+                    <div className="h-16 border-b border-white/10 flex items-center justify-between px-6 bg-neutral-950">
+                        <div className="flex items-center space-x-4">
+                            <div className="w-2.5 h-2.5 bg-orange-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(249,115,22,0.8)]" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/50">Simulador de Entorno Operativo</span>
+                        </div>
+                        <button 
+                            onClick={() => setActivePreview(null)}
+                            className="flex items-center space-x-2 text-[10px] font-black uppercase tracking-[0.2em] bg-white/10 hover:bg-red-500 hover:text-white border border-white/10 px-4 py-2 transition-all"
+                        >
+                            <span className="hidden sm:inline">Cerrar Entorno</span>
+                            <ArrowRight size={14} />
+                        </button>
+                    </div>
+                    <div className="flex-1 w-full bg-neutral-900/50 p-2 md:p-6 overflow-hidden">
+                        <div className="w-full h-full border border-white/10 bg-white shadow-2xl rounded-sm overflow-hidden relative">
+                            {/* Iframe Interactivo */}
+                            <iframe 
+                                src={activePreview} 
+                                className="w-full h-full bg-white border-0"
+                                sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+                                title="App Preview"
+                            />
+                        </div>
+                    </div>
+                </div>
+            )}
+            {/* FIN MODAL */}
+
             {/* Background Effects */}
             <div className="absolute top-0 inset-x-0 h-[500px] bg-gradient-to-b from-orange-900/20 via-neutral-950 to-neutral-950 pointer-events-none"></div>
             <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full bg-orange-600/5 blur-[150px] pointer-events-none"></div>
@@ -175,29 +211,49 @@ export default function SoftwareLandingPage() {
                                         {/* Screen */}
                                         <div className={`w-full aspect-[9/16] rounded-[28px] overflow-hidden ${item.imagePlaceholderbg} relative flex flex-col`}>
                                             {/* Camera Notch */}
-                                            <div className="absolute top-2 left-1/2 -translate-x-1/2 w-20 h-5 bg-neutral-950 rounded-full z-10"></div>
+                                            <div className="absolute top-2 left-1/2 -translate-x-1/2 w-20 h-5 bg-neutral-950 rounded-full z-10 pointer-events-none"></div>
                                             
-                                            {/* Inner Simulated UI (Mockup of App) */}
-                                            <div className="flex-1 w-full p-6 pt-12 flex flex-col transform transition-transform duration-1000 group-hover:-translate-y-16 ease-out">
-                                                <div className="w-full flex justify-between items-center mb-8">
-                                                    <div className="w-8 h-8 rounded-full bg-white/20"></div>
-                                                    <div className="w-16 h-3 rounded bg-white/20"></div>
+                                            {/* Inner Simulated UI or Embedded Preview */}
+                                            {item.previewUrl ? (
+                                                <div className="absolute inset-0 w-full h-full bg-white opacity-40 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none">
+                                                    <iframe 
+                                                        src={item.previewUrl} 
+                                                        className="w-[300%] h-[300%] origin-top-left scale-[0.33] border-none"
+                                                        aria-hidden="true"
+                                                        tabIndex={-1}
+                                                    />
                                                 </div>
-                                                <div className="w-3/4 h-6 rounded bg-white/30 mb-3"></div>
-                                                <div className="w-1/2 h-3 rounded bg-white/20 mb-10"></div>
+                                            ) : (
+                                                <div className="flex-1 w-full p-6 pt-12 flex flex-col transform transition-transform duration-1000 group-hover:-translate-y-16 ease-out">
+                                                    <div className="w-full flex justify-between items-center mb-8">
+                                                        <div className="w-8 h-8 rounded-full bg-white/20"></div>
+                                                        <div className="w-16 h-3 rounded bg-white/20"></div>
+                                                    </div>
+                                                    <div className="w-3/4 h-6 rounded bg-white/30 mb-3"></div>
+                                                    <div className="w-1/2 h-3 rounded bg-white/20 mb-10"></div>
 
-                                                <div className="w-full h-32 rounded-xl bg-white/10 mb-4 border border-white/5"></div>
-                                                <div className="w-full h-32 rounded-xl bg-white/10 mb-4 border border-white/5"></div>
-                                                <div className="w-full h-32 rounded-xl bg-white/10 mb-4 border border-white/5"></div>
-                                                <div className="w-full h-32 rounded-xl bg-white/10 border border-white/5"></div>
-                                            </div>
-
-                                            {/* Hover Glow Accent */}
-                                            <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-black/80 to-transparent flex items-end p-6 translate-y-8 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-500">
-                                                <div className="w-full text-center">
-                                                    <span className="text-[10px] font-black uppercase tracking-widest px-3 py-1 bg-white inline-block mb-3" style={{ color: item.accent }}>Inspeccionar UI</span>
+                                                    <div className="w-full h-32 rounded-xl bg-white/10 mb-4 border border-white/5"></div>
+                                                    <div className="w-full h-32 rounded-xl bg-white/10 mb-4 border border-white/5"></div>
+                                                    <div className="w-full h-32 rounded-xl bg-white/10 mb-4 border border-white/5"></div>
+                                                    <div className="w-full h-32 rounded-xl bg-white/10 border border-white/5"></div>
                                                 </div>
-                                            </div>
+                                            )}
+
+                                            {/* Hover Glow Accent / Click Interceptor */}
+                                            <button 
+                                                onClick={(e) => {
+                                                    if (!isDragging && item.previewUrl) {
+                                                        setActivePreview(item.previewUrl)
+                                                    }
+                                                }}
+                                                className={`absolute inset-0 w-full flex flex-col justify-end bg-gradient-to-t from-black/80 via-black/20 to-transparent p-6 ${item.previewUrl ? 'cursor-pointer hover:bg-black/40' : ''} transition-all duration-500`}
+                                            >
+                                                <div className="w-full text-center translate-y-8 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-500">
+                                                    <span className="text-[10px] font-black uppercase tracking-widest px-4 py-2 bg-neutral-900 border border-white/20 shadow-2xl inline-block mb-3 hover:scale-105 transition-transform" style={{ color: item.accent }}>
+                                                        {item.previewUrl ? 'INGRESAR AL SISTEMA' : 'Inspeccionar UI'}
+                                                    </span>
+                                                </div>
+                                            </button>
                                         </div>
                                     </div>
 
@@ -206,7 +262,7 @@ export default function SoftwareLandingPage() {
                                         <p className="text-[10px] font-black uppercase tracking-[0.2em] mb-2" style={{ color: item.accent }}>
                                             {String(idx + 1).padStart(2, '0')} // {item.category}
                                         </p>
-                                        <h3 className="text-2xl font-black uppercase tracking-tight text-white mb-3">{item.title}</h3>
+                                        <h3 className="text-xl md:text-2xl font-black uppercase tracking-tight text-white mb-3">{item.title}</h3>
                                         <p className="text-neutral-400 text-xs font-medium leading-relaxed">
                                             {item.description}
                                         </p>

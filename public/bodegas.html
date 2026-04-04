@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Módulo de Bodegas - Softres</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <style>
+        :root {
+            --sidebar: #1f2a37;
+            --sidebar-hover: #111827;
+            --primary: #0d6efd;
+            --success-soft: #e8fff3;
+            --danger-soft: #ffeaea;
+            --warning-soft: #fff8e1;
+            --info-soft: #e8f2ff;
+            --card-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+            --radius: 16px;
+        }
+
+        body {
+            background: #f4f7fb;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            color: #1f2937;
+        }
+
+        .sidebar {
+            background: linear-gradient(180deg, #1f2a37 0%, #111827 100%);
+            min-height: 100vh;
+            color: #fff;
+            padding: 24px 14px;
+            position: sticky;
+            top: 0;
+        }
+
+        .brand {
+            font-size: 1.35rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .brand small {
+            display: block;
+            font-size: 0.8rem;
+            color: #cbd5e1;
+            font-weight: 400;
+        }
+
+        .user-box {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 18px;
+            padding: 16px;
+            margin: 22px 0 18px;
+            text-align: center;
+        }
+
+        .user-avatar {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #0d6efd;
+            color: #fff;
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .menu-link {
+            color: #e5e7eb;
+            text-decoration: none;
+            padding: 12px 14px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 8px;
+            transition: 0.2s ease;
+            cursor: pointer;
+        }
+
+        .menu-link .menu-left {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .menu-link:hover,
+        .menu-link.active {
+            background: rgba(13, 110, 253, 0.18);
+            color: #fff;
+        }
+
+        .submenu {
+            display: none;
+            margin: 4px 0 12px 10px;
+            border-left: 1px solid rgba(255,255,255,0.12);
+            padding-left: 10px;
+        }
+
+        .submenu.show { display: block; }
+        .submenu-link {
+            color: #d1d5db;
+            text-decoration: none;
+            padding: 9px 12px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 6px;
+            font-size: 0.94rem;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+        .submenu-link:hover, .submenu-link.active { background: rgba(255,255,255,0.08); color: #fff; }
+        .submenu-title { color: #9ca3af; font-size: 0.8rem; padding: 4px 10px 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .rotate-icon { transition: transform 0.2s ease; }
+        .rotate-icon.open { transform: rotate(180deg); }
+        .content { padding: 28px 22px; }
+        .page { display: none; }
+        .page.active { display: block; }
+        .main-card, .kpi-card { background: #fff; border: none; border-radius: var(--radius); box-shadow: var(--card-shadow); }
+        .main-card { padding: 22px; }
+        .kpi-card { padding: 18px; height: 100%; }
+        .kpi-icon { width: 52px; height: 52px; border-radius: 14px; display: inline-flex; align-items: center; justify-content: center; font-size: 1.2rem; margin-bottom: 12px; }
+        .kpi-title { font-size: 0.92rem; color: #6b7280; margin-bottom: 6px; }
+        .kpi-value { font-size: 1.8rem; font-weight: 700; line-height: 1; }
+        .page-title { font-size: 1.65rem; font-weight: 700; margin-bottom: 4px; }
+        .page-subtitle { color: #6b7280; margin-bottom: 24px; }
+        .table-responsive { border-radius: 14px; overflow: hidden; }
+        .table thead th { background: #f8fafc; font-size: 0.92rem; white-space: nowrap; }
+        .badge-soft-success { background: var(--success-soft); color: #198754; font-weight: 600; }
+        .badge-soft-danger { background: var(--danger-soft); color: #dc3545; font-weight: 600; }
+        .badge-soft-warning { background: var(--warning-soft); color: #b58105; font-weight: 600; }
+        .badge-soft-info { background: var(--info-soft); color: #0a58ca; font-weight: 600; }
+        .badge-soft-secondary { background: #eef2f7; color: #475569; font-weight: 600; }
+        .section-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; }
+        .empty-state { text-align: center; padding: 30px 16px; color: #6b7280; }
+        .empty-state i { font-size: 2rem; margin-bottom: 12px; color: #94a3b8; }
+        .form-control, .form-select { border-radius: 12px; min-height: 46px; }
+        .btn { border-radius: 12px; }
+        .stock-ok { color: #198754; font-weight: 700; }
+        .stock-low { color: #fd7e14; font-weight: 700; }
+        .stock-critical { color: #dc3545; font-weight: 700; }
+        .report-card { border-radius: 16px; padding: 18px; background: #fff; box-shadow: var(--card-shadow); height: 100%; }
+        .employee-status-active { color: #198754; font-weight: 700; }
+        .employee-status-disabled { color: #dc3545; font-weight: 700; }
+        .locked-row { opacity: 0.7; }
+        .mini-summary { background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 14px; padding: 10px 12px; }
+        .mini-summary strong { display: block; font-size: 1.05rem; }
+        .mini-summary small { color: #64748b; }
+        .inventory-real-input { min-width: 110px; max-width: 130px; min-height: 38px; }
+        .diff-positive { color: #198754; font-weight: 700; }
+        .diff-negative { color: #dc3545; font-weight: 700; }
+        .diff-zero { color: #64748b; font-weight: 700; }
+        .table tfoot td { background: #f8fafc; font-weight: 600; }
+        .selection-grid { max-height: 300px; overflow: auto; border: 1px solid #e5e7eb; border-radius: 14px; padding: 10px; background: #fff; }
+        .selection-item { border: 1px solid #e5e7eb; border-radius: 12px; padding: 10px 12px; margin-bottom: 10px; }
+        .selection-item:last-child { margin-bottom: 0; }
+        .helper-card { background: #f8fafc; border-radius: 14px; padding: 12px 14px; border: 1px solid #e5e7eb; }
+        .operation-fields { display: none; }
+        .operation-fields.show { display: block; }
+        .operation-toolbar { background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 14px; padding: 14px; }
+        .selection-grid.compact { max-height: 240px; }
+        .selection-item.compact { padding: 8px 10px; margin-bottom: 8px; }
+        .selection-meta { font-size: 0.82rem; color: #64748b; }
+        .operation-summary-card { background: linear-gradient(135deg, #f8fafc 0%, #eef4ff 100%); border: 1px solid #dbeafe; border-radius: 14px; padding: 12px 14px; }
+        .operation-summary-card strong { font-size: 1.1rem; display: block; }
+        .table-compact thead th, .table-compact tbody td, .table-compact tfoot td { padding-top: 0.55rem; padding-bottom: 0.55rem; font-size: 0.9rem; }
+        .qty-input-sm { max-width: 110px; }
+        .sticky-operation-footer { position: sticky; bottom: 0; background: #fff; }
+
+        @media print {
+            body * { visibility: hidden; }
+            #printArea, #printArea * { visibility: visible; }
+            #printArea { position: absolute; left: 0; top: 0; width: 100%; background: white; padding: 20px; }
+        }
+
+        @media (max-width: 767px) {
+            .sidebar { min-height: auto; position: relative; }
+            .content { padding: 18px 14px; }
+            .page-title { font-size: 1.35rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row g-0">
+            <aside class="col-md-3 col-lg-2 sidebar">
+                <div class="brand"><i class="fa-solid fa-warehouse"></i> SOFTRES<small>Sistema de Bodegas</small></div>
+                <div class="user-box">
+                    <div class="user-avatar">AD</div>
+                    <div class="fw-bold">Administrador</div>
+                    <small class="text-light-emphasis">Control de inventario</small>
+                </div>
+                <nav>
+                    <a class="menu-link active nav-main-link" data-page="page-dashboard"><span class="menu-left"><i class="fa-solid fa-gauge"></i> Dashboard</span></a>
+                    <a class="menu-link nav-main-link" data-page="page-empleados"><span class="menu-left"><i class="fa-solid fa-users"></i> Empleados</span></a>
+                    <a class="menu-link" id="toggleBodegasMenu"><span class="menu-left"><i class="fa-solid fa-warehouse"></i> Bodegas</span><i class="fa-solid fa-chevron-down rotate-icon open" id="bodegasArrow"></i></a>
+                    <div class="submenu show" id="bodegasSubmenu">
+                        <a class="submenu-link active" id="submenuBodegasGeneral"><i class="fa-solid fa-list"></i> Ver bodegas</a>
+                        <div class="submenu-title">Colaboradores</div>
+                        <div id="sidebarColaboradores"></div>
+                    </div>
+                    <a class="menu-link nav-main-link" data-page="page-inventario"><span class="menu-left"><i class="fa-solid fa-boxes-stacked"></i> Inventario</span></a>
+                    <a class="menu-link nav-main-link" data-page="page-reportes"><span class="menu-left"><i class="fa-solid fa-chart-column"></i> Reportes</span></a>
+                </nav>
+            </aside>
+            <main class="col-md-9 col-lg-10 content">
+                <section id="page-dashboard" class="page active">
+                    <div class="page-title">Dashboard</div>
+                    <div class="page-subtitle">Resumen general del sistema de bodegas, inventario y colaboradores.</div>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6 col-xl-3"><div class="kpi-card"><div class="kpi-icon bg-primary-subtle text-primary"><i class="fa-solid fa-warehouse"></i></div><div class="kpi-title">Bodegas registradas</div><div class="kpi-value" id="kpiBodegas">0</div></div></div>
+                        <div class="col-md-6 col-xl-3"><div class="kpi-card"><div class="kpi-icon bg-success-subtle text-success"><i class="fa-solid fa-users"></i></div><div class="kpi-title">Colaboradores activos</div><div class="kpi-value" id="kpiEncargados">0</div></div></div>
+                        <div class="col-md-6 col-xl-3"><div class="kpi-card"><div class="kpi-icon bg-warning-subtle text-warning"><i class="fa-solid fa-triangle-exclamation"></i></div><div class="kpi-title">Productos con stock bajo</div><div class="kpi-value" id="kpiStockBajo">0</div></div></div>
+                        <div class="col-md-6 col-xl-3"><div class="kpi-card"><div class="kpi-icon bg-info-subtle text-info"><i class="fa-solid fa-sack-dollar"></i></div><div class="kpi-title">Valor total inventario</div><div class="kpi-value" id="kpiValorTotal">$0</div></div></div>
+                    </div>
+                    <div class="main-card mb-4">
+                        <div class="section-header"><div><h5 class="mb-1">Colaboradores del sistema</h5><small class="text-muted">El administrador puede activar o deshabilitar el acceso al inventario.</small></div></div>
+                        <div class="table-responsive"><table class="table table-hover align-middle mb-0"><thead><tr><th>ID</th><th>Nombre</th><th>Estado</th><th>Bodegas asignadas</th><th>Productos a cargo</th><th>Acceso inventario</th><th>Acciones</th></tr></thead><tbody id="dashboardColaboradoresBody"></tbody></table></div>
+                    </div>
+                    <div class="main-card"><h5 class="mb-2">Mejoras incorporadas</h5><p class="text-muted mb-0">Esta vista incluye ajustes contables por producto, ingresos, egresos y traslados entre bodegas con flujo simplificado por lista.</p></div>
+                </section>
+
+                <section id="page-empleados" class="page">
+                    <div class="page-title">Empleados</div>
+                    <div class="page-subtitle">Listado general de colaboradores registrados en el sistema.</div>
+                    <div class="main-card"><div class="table-responsive"><table class="table table-hover align-middle mb-0"><thead><tr><th>ID</th><th>Nombre</th><th>Estado</th><th>Bodegas asignadas</th><th>Productos a cargo</th><th>Acción</th></tr></thead><tbody id="empleadosTableBody"></tbody></table></div></div>
+                </section>
+
+                <section id="page-bodegas" class="page">
+                    <div class="page-title">Módulo de Bodegas</div>
+                    <div class="page-subtitle">Administra bodegas, empleados encargados y productos por sucursal.</div>
+                    <div class="main-card">
+                        <div class="section-header">
+                            <div><h5 class="mb-1">Listado de Bodegas</h5><small class="text-muted">Vista general de bodegas y responsables.</small></div>
+                            <div class="d-flex gap-2 flex-wrap">
+                                <input type="text" class="form-control" id="searchBodega" placeholder="Buscar bodega..." style="max-width: 240px;" />
+                                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalBodega"><i class="fa-solid fa-plus"></i> Nueva Bodega</button>
+                            </div>
+                        </div>
+                        <div class="table-responsive"><table class="table table-hover align-middle mb-0"><thead><tr><th>N° Bodega</th><th>Nombre</th><th>Tipo</th><th>Empleado a cargo</th><th>Total artículos</th><th>Estado</th><th style="width: 240px;">Acciones</th></tr></thead><tbody id="bodegasTableBody"></tbody></table></div>
+                    </div>
+                </section>
+
+                <section id="page-inventario" class="page">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                        <div>
+                            <div class="page-title mb-1">Control de Stock</div>
+                            <div class="page-subtitle mb-0" id="inventarioSubtitulo">Inventario seleccionado</div>
+                        </div>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button class="btn btn-outline-secondary" onclick="goToBodegas()"><i class="fa-solid fa-arrow-left"></i> Volver</button>
+                            <button class="btn btn-outline-success" onclick="openOperacionModal('ingreso')"><i class="fa-solid fa-arrow-down"></i> Ingresos</button>
+                            <button class="btn btn-outline-warning" onclick="openOperacionModal('egreso')"><i class="fa-solid fa-arrow-up"></i> Egresos</button>
+                            <button class="btn btn-outline-primary" onclick="openOperacionModal('traslado')"><i class="fa-solid fa-right-left"></i> Traslados</button>
+                            <button class="btn btn-danger" onclick="exportarPDF()"><i class="fa-solid fa-file-pdf"></i> Reporte PDF</button>
+                        </div>
+                    </div>
+                    <div class="main-card">
+                        <div class="section-header mb-3">
+                            <div><div class="fw-bold mb-1">Total artículos</div><small class="text-muted">Vista simplificada para conteo físico, ajuste contable y búsqueda por categoría o tipo.</small></div>
+                            <div class="d-flex gap-2 flex-wrap">
+                                <input type="text" class="form-control" id="searchProducto" placeholder="Buscar por código, nombre, código de barras o responsable..." style="max-width: 280px;" />
+                                <select class="form-select" id="filterCategoriaProducto" style="max-width: 180px;"></select>
+                                <select class="form-select" id="filterTipoProducto" style="max-width: 180px;"></select>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-bordered align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Código</th><th>Producto</th><th>Empleado a cargo</th><th>Inventario actual</th><th>Inventario real</th><th>Precio venta</th><th>Total</th><th>Estado stock</th><th>Ajuste contable</th><th style="width: 120px;">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="inventarioTableBody"></tbody>
+                                <tfoot id="inventarioTableFoot"></tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="page-reportes" class="page">
+                    <div class="page-title">Reportes</div>
+                    <div class="page-subtitle">Vista rápida de indicadores del inventario.</div>
+                    <div class="row g-3">
+                        <div class="col-md-4"><div class="report-card"><h6 class="fw-bold">Productos totales</h6><div class="display-6 fw-bold" id="reporteProductosTotales">0</div></div></div>
+                        <div class="col-md-4"><div class="report-card"><h6 class="fw-bold">Bodega con más productos</h6><div class="fs-5 fw-bold" id="reporteTopBodega">-</div></div></div>
+                        <div class="col-md-4"><div class="report-card"><h6 class="fw-bold">Colaborador con más productos</h6><div class="fs-5 fw-bold" id="reporteTopEmpleado">-</div></div></div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalBodega" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content border-0" style="border-radius: 18px;">
+                <div class="modal-header"><h5 class="modal-title"><i class="fa-solid fa-warehouse"></i> Registrar Nueva Bodega</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                <form id="formBodega"><div class="modal-body"><div class="row g-3">
+                    <div class="col-md-4"><label class="form-label">N° Bodega</label><input type="number" min="1" class="form-control" id="bodegaNumero" required /></div>
+                    <div class="col-md-8"><label class="form-label">Nombre de la bodega</label><input type="text" class="form-control" id="bodegaNombre" required /></div>
+                    <div class="col-md-4"><label class="form-label">Tipo de bodega</label><select class="form-select" id="bodegaTipo" required><option value="Local">Local</option><option value="Móvil">Móvil</option><option value="Producción">Producción</option></select></div>
+                    <div class="col-md-4"><label class="form-label">Empleado a cargo</label><select class="form-select" id="bodegaEncargado" required></select></div>
+                    <div class="col-md-4"><label class="form-label">Estado</label><select class="form-select" id="bodegaEstado" required><option value="Activo">Activo</option><option value="Mantenimiento">Mantenimiento</option><option value="Inactivo">Inactivo</option></select></div>
+                    <div class="col-md-12"><label class="form-label">Dirección</label><input type="text" class="form-control" id="bodegaDireccion" required /></div>
+                </div></div><div class="modal-footer"><button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button><button type="submit" class="btn btn-primary">Guardar Bodega</button></div></form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalProducto" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered"><div class="modal-content border-0" style="border-radius: 18px;">
+            <div class="modal-header"><h5 class="modal-title"><i class="fa-solid fa-box-open"></i> Ficha del producto</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <form id="formProducto"><div class="modal-body"><input type="hidden" id="productoEditId" />
+                <div class="row g-3">
+                    <div class="col-md-4"><label class="form-label">Bodega</label><select class="form-select" id="productoBodega" required></select></div>
+                    <div class="col-md-4"><label class="form-label">Empleado a cargo</label><select class="form-select" id="productoEncargado" required></select></div>
+                    <div class="col-md-4"><label class="form-label">Código</label><input type="text" class="form-control" id="productoCodigo" required /></div>
+                    <div class="col-md-6"><label class="form-label">Nombre del producto</label><input type="text" class="form-control" id="productoNombre" required /></div>
+                    <div class="col-md-3"><label class="form-label">Categoría</label><input type="text" class="form-control" id="productoCategoria" required /></div>
+                    <div class="col-md-3"><label class="form-label">Tipo</label><input type="text" class="form-control" id="productoTipo" required /></div>
+                    <div class="col-md-3"><label class="form-label">Cantidad</label><input type="number" min="0" step="1" class="form-control" id="productoCantidad" required /></div>
+                    <div class="col-md-3"><label class="form-label">Stock mínimo</label><input type="number" min="0" step="1" class="form-control" id="productoMinimo" required /></div>
+                    <div class="col-md-3"><label class="form-label">Precio compra</label><input type="number" min="0" step="0.01" class="form-control" id="productoPrecioCompra" required /></div>
+                    <div class="col-md-3"><label class="form-label">Precio 1</label><input type="number" min="0" step="0.01" class="form-control" id="productoPrecio1" required /></div>
+                    <div class="col-md-3"><label class="form-label">Precio 2</label><input type="number" min="0" step="0.01" class="form-control" id="productoPrecio2" /></div>
+                    <div class="col-md-3"><label class="form-label">Precio 3</label><input type="number" min="0" step="0.01" class="form-control" id="productoPrecio3" /></div>
+                    <div class="col-md-12"><label class="form-label">Descripción</label><input type="text" class="form-control" id="productoDescripcion" required /></div>
+                </div>
+            </div><div class="modal-footer"><button type="button" class="btn btn-outline-secondary" onclick="confirmarCancelarProducto()">Cancelar</button><button type="submit" class="btn btn-primary">Guardar Producto</button></div></form>
+        </div></div>
+    </div>
+
+    <div class="modal fade" id="modalOperaciones" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable modal-dialog-centered"><div class="modal-content border-0" style="border-radius: 18px;">
+            <div class="modal-header"><h5 class="modal-title" id="operacionTitulo"><i class="fa-solid fa-right-left"></i> Operaciones</h5><button type="button" class="btn-close" onclick="confirmarCancelarOperacion()"></button></div>
+            <form id="formOperacion"><div class="modal-body">
+                <input type="hidden" id="operacionModo" />
+                <div class="operation-toolbar mb-3">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-3"><label class="form-label">Buscar producto</label><input type="text" class="form-control" id="operacionSearch" placeholder="Buscar por código o nombre" /></div>
+                        <div class="col-md-2"><label class="form-label">Categoría</label><select class="form-select" id="operacionCategoria"></select></div>
+                        <div class="col-md-2"><label class="form-label">Tipo</label><select class="form-select" id="operacionTipo"></select></div>
+                        <div class="col-md-3 operation-fields" id="trasladoDestinoWrap"><label class="form-label">Bodega destino</label><select class="form-select" id="trasladoDestino"></select></div>
+                        <div class="col-md-2 operation-fields" id="motivoWrap"><label class="form-label">Motivo</label><select class="form-select" id="operacionMotivo"></select></div>
+                        <div class="col-md-2"><button type="button" class="btn btn-outline-primary w-100" id="btnOperacionFiltrar" onclick="renderOperacionLista()"><i class="fa-solid fa-filter"></i> Filtrar</button></div>
+                    </div>
+                </div>
+                <div class="row g-3 mb-3">
+                    <div class="col-lg-7">
+                        <div class="helper-card h-100">
+                            <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+                                <div><strong>Productos disponibles</strong><div class="small text-muted">Use “Agregar a la lista” para pasar productos al detalle de la operación.</div></div>
+                                <span class="badge badge-soft-info" id="operacionDisponiblesCount">0 disponibles</span>
+                            </div>
+                            <div class="selection-grid compact mb-0" id="operacionLista"></div>
+                        </div>
+                    </div>
+                    <div class="col-lg-5">
+                        <div class="operation-summary-card h-100">
+                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+                                <div><strong id="operacionResumenCantidad">0</strong><small>ítems agregados</small></div>
+                                <div class="text-end"><strong id="operacionResumenMonto">$0.00</strong><small>total estimado</small></div>
+                            </div>
+                            <div class="small text-muted" id="operacionResumenTexto">Agrega productos para construir la operación.</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-sm align-middle table-compact" id="tablaOperacionSeleccionados">
+                        <thead id="operacionSeleccionadosHead"></thead>
+                        <tbody id="operacionSeleccionadosBody"></tbody>
+                        <tfoot class="sticky-operation-footer" id="operacionSeleccionadosFoot"></tfoot>
+                    </table>
+                </div>
+            </div><div class="modal-footer"><button type="button" class="btn btn-outline-secondary" onclick="confirmarCancelarOperacion()">Cancelar</button><button type="submit" class="btn btn-primary" id="btnGuardarOperacion">Guardar</button></div></form>
+        </div></div>
+    </div>
+
+    <div class="position-fixed top-0 end-0 p-3" style="z-index: 1080;"><div id="appToast" class="toast align-items-center text-bg-dark border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex"><div class="toast-body" id="toastMessage">Acción realizada.</div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div></div></div>
+    <div id="printArea" style="display:none;"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const empleados = [
+            { id: 1, nombre: "Juan Pérez", activo: true },
+            { id: 2, nombre: "María Gómez", activo: true },
+            { id: 3, nombre: "Carlos Sánchez", activo: true },
+            { id: 4, nombre: "Ana Torres", activo: false },
+            { id: 5, nombre: "Luis Herrera", activo: true }
+        ];
+
+        const bodegas = [
+            { id: 1, numero: 1, nombre: "Bodega Principal Norte", tipo: "Local", encargadoId: 1, estado: "Activo", direccion: "Av. Principal y Calle 10" },
+            { id: 2, numero: 2, nombre: "Bodega Sur", tipo: "Local", encargadoId: 3, estado: "Activo", direccion: "Av. Sur y Calle 5" }
+        ];
+
+        let productos = [
+            { id: 1, bodegaId: 1, encargadoId: 1, codigo: "ART-001", nombre: "Coca Cola 3L", cantidad: 50, inventarioReal: 50, precioCompra: 1.80, precio: 2.35, precio1: 2.35, precio2: 2.50, precio3: 2.70, minimo: 10, categoria: "Bebidas", tipoProducto: "Gaseosa", descripcion: "Gaseosa Coca Cola 3 litros", movimientos: [ { tipo: "registro", fecha: "2025-01-08 09:10", detalle: "Producto registrado en sistema" }, { tipo: "entrada", fecha: "2025-01-09 10:30", detalle: "Entrada de 50 unidades" } ] },
+            { id: 2, bodegaId: 1, encargadoId: 2, codigo: "ART-002", nombre: "Papas Lays", cantidad: 5, inventarioReal: 4, precioCompra: 0.65, precio: 0.95, precio1: 0.95, precio2: 1.05, precio3: 1.10, minimo: 8, categoria: "Snacks", tipoProducto: "Papas fritas", descripcion: "Papas fritas clásicas", movimientos: [ { tipo: "registro", fecha: "2025-01-10 12:00", detalle: "Producto registrado en sistema" }, { tipo: "salida", fecha: "2025-01-12 16:20", detalle: "Salida por consumo interno" } ] },
+            { id: 3, bodegaId: 2, encargadoId: 3, codigo: "ART-003", nombre: "Agua 1L", cantidad: 20, inventarioReal: 20, precioCompra: 0.45, precio: 0.75, precio1: 0.75, precio2: 0.85, precio3: 0.95, minimo: 12, categoria: "Bebidas", tipoProducto: "Agua", descripcion: "Botella de agua 1 litro", movimientos: [ { tipo: "registro", fecha: "2025-01-11 08:40", detalle: "Producto registrado en sistema" }, { tipo: "entrada", fecha: "2025-01-11 09:00", detalle: "Entrada de 20 unidades" } ] },
+            { id: 4, bodegaId: 2, encargadoId: 4, codigo: "ART-004", nombre: "Detergente", cantidad: 14, inventarioReal: 16, precioCompra: 2.40, precio: 3.20, precio1: 3.20, precio2: 3.40, precio3: 3.60, minimo: 5, categoria: "Limpieza", tipoProducto: "Detergente", descripcion: "Detergente líquido", movimientos: [ { tipo: "registro", fecha: "2025-01-13 11:20", detalle: "Producto registrado en sistema" } ] }
+        ];
+
+        let historialEliminados = [];
+        let selectedBodegaId = 1;
+        let selectedEmpleadoId = null;
+        let inventarioModo = "bodega";
+
+        const bodegasTableBody = document.getElementById("bodegasTableBody");
+        const inventarioTableBody = document.getElementById("inventarioTableBody");
+        const inventarioTableFoot = document.getElementById("inventarioTableFoot");
+        const empleadosTableBody = document.getElementById("empleadosTableBody");
+        const dashboardColaboradoresBody = document.getElementById("dashboardColaboradoresBody");
+        const searchBodega = document.getElementById("searchBodega");
+        const searchProducto = document.getElementById("searchProducto");
+        const modalBodega = new bootstrap.Modal(document.getElementById("modalBodega"));
+        const modalProducto = new bootstrap.Modal(document.getElementById("modalProducto"));
+        const modalOperaciones = new bootstrap.Modal(document.getElementById("modalOperaciones"));
+        const appToast = new bootstrap.Toast(document.getElementById("appToast"));
+
+        function nowString() {
+            const d = new Date();
+            const y = d.getFullYear();
+            const m = String(d.getMonth() + 1).padStart(2, "0");
+            const day = String(d.getDate()).padStart(2, "0");
+            const h = String(d.getHours()).padStart(2, "0");
+            const min = String(d.getMinutes()).padStart(2, "0");
+            return `${y}-${m}-${day} ${h}:${min}`;
+        }
+        function showToast(message) { document.getElementById("toastMessage").textContent = message; appToast.show(); }
+        function showPage(pageId) { 
+            try {
+                const section = pageId.replace('page-', '');
+                
+                // 1. Ocultar todas las páginas
+                document.querySelectorAll(".page").forEach(page => {
+                    page.classList.remove("active");
+                });
+                
+                // 2. Mostrar la página objetivo
+                const targetPage = document.getElementById(pageId); 
+                if (targetPage) {
+                    targetPage.classList.add("active");
+                    
+                    // 3. Renderizado especializado
+                    setTimeout(() => {
+                        try {
+                            if (section === 'empleados') renderEmpleados();
+                            if (section === 'dashboard') { renderKPIs(); renderDashboardColaboradores(); }
+                            if (section === 'bodegas') renderBodegas();
+                            if (section === 'inventario') renderInventario();
+                        } catch (e) { console.warn("Render fail:", e); }
+                    }, 0);
+                }
+                
+                // 4. URL PROFESIONAL (Slashes /) - Sin numerales
+                if (window.location.hash) window.location.hash = ""; // Limpiar hash viejo si existe
+                
+                const baseUrl = window.location.origin + "/comercio/bodegas";
+                const newPath = (section === 'dashboard' || section === 'bodegas') ? baseUrl : baseUrl + '/' + section;
+                
+                if (window.location.pathname !== newPath && !window.location.hostname.includes('127.0.0.1')) {
+                    window.history.pushState({ pageId: pageId }, '', newPath);
+                }
+                
+                // 5. Sincronizar Sidebar (Color activo)
+                document.querySelectorAll(".nav-main-link").forEach(l => l.classList.remove("active"));
+                const activeLink = document.querySelector(`.nav-main-link[data-page="${pageId}"]`);
+                if (activeLink) activeLink.classList.add("active");
+
+            } catch (err) { console.error("Nav error:", err); }
+        }
+        
+        // Función para sincronizar con el menú de Softres (Inyectada en la fuente)
+        function syncSidebar() {
+            const sidebarMenu = document.querySelector('.sidebar-menu') || document.querySelector('.main-sidebar');
+            if (!sidebarMenu) return;
+            const baseUrl = window.location.origin + "/comercio/bodegas";
+            const treeview = sidebarMenu.querySelector('li.active .treeview-menu') || sidebarMenu.querySelector('.treeview-menu');
+            if (treeview) {
+                treeview.innerHTML = `
+                    <li><a href="${baseUrl}" onclick="event.preventDefault(); showPage('page-dashboard')"><i class="fa fa-dashboard me-2"></i> Dashboard</a></li>
+                    <li><a href="${baseUrl}/empleados" onclick="event.preventDefault(); showPage('page-empleados')"><i class="fa fa-users me-2"></i> Empleados</a></li>
+                    <li><a href="${baseUrl}/ver-bodegas" onclick="event.preventDefault(); showPage('page-bodegas')"><i class="fa fa-university me-2"></i> Ver Bodegas</a></li>
+                    <li><a href="${baseUrl}/inventario" onclick="event.preventDefault(); showPage('page-inventario')"><i class="fa fa-boxes me-2"></i> Inventario</a></li>
+                    <li><a href="${baseUrl}/reportes" onclick="event.preventDefault(); showPage('page-reportes')"><i class="fa fa-file-text-o me-2"></i> Reportes</a></li>
+                `;
+            }
+        }
+        function setActiveMainMenu(pageId) { document.querySelectorAll(".nav-main-link").forEach(link => link.classList.remove("active")); const activeLink = document.querySelector(`.nav-main-link[data-page="${pageId}"]`); if (activeLink) activeLink.classList.add("active"); }
+        function clearActiveSubmenu() { document.querySelectorAll(".submenu-link").forEach(link => link.classList.remove("active")); }
+        function activateSubmenuGeneral() { clearActiveSubmenu(); document.getElementById("submenuBodegasGeneral").classList.add("active"); }
+        function showMainPage(pageId) { showPage(pageId); setActiveMainMenu(pageId); if (pageId !== "page-bodegas" && pageId !== "page-inventario") clearActiveSubmenu(); }
+        function getEmpleadoById(id) { return empleados.find(e => e.id === id); }
+        function getEmpleadoNombre(id) { const e = getEmpleadoById(id); return e ? e.nombre : "Sin asignar"; }
+        function isEmpleadoActivo(id) { const e = getEmpleadoById(id); return e ? e.activo : false; }
+        function getEmpleadoEstadoBadge(id) { return isEmpleadoActivo(id) ? '<span class="badge badge-soft-success">Activo</span>' : '<span class="badge badge-soft-danger">Deshabilitado</span>'; }
+        function getBodegaById(id) { return bodegas.find(b => b.id === id); }
+        function getBodegaNombre(id) { const b = getBodegaById(id); return b ? `#${b.numero} - ${b.nombre}` : "Sin bodega"; }
+        function getEstadoBadge(estado) { if (estado === "Activo") return '<span class="badge badge-soft-success">Activo</span>'; if (estado === "Mantenimiento") return '<span class="badge badge-soft-warning">Mantenimiento</span>'; return '<span class="badge badge-soft-danger">Inactivo</span>'; }
+        function getStockStatus(producto) { if (producto.cantidad <= producto.minimo / 2) return { className: "stock-critical", badge: '<span class="badge badge-soft-danger">Crítico</span>' }; if (producto.cantidad <= producto.minimo) return { className: "stock-low", badge: '<span class="badge badge-soft-warning">Bajo</span>' }; return { className: "stock-ok", badge: '<span class="badge badge-soft-success">Óptimo</span>' }; }
+        function getAjusteDiferencia(producto) { return Number(producto.inventarioReal ?? producto.cantidad) - Number(producto.cantidad); }
+        function getAjusteClase(diff) { return diff > 0 ? "diff-positive" : diff < 0 ? "diff-negative" : "diff-zero"; }
+        function getAjusteTexto(diff) { return diff > 0 ? `+${diff}` : `${diff}`; }
+        function getCategoriasProducto() { return [...new Set(productos.map(p => p.categoria).filter(Boolean))].sort(); }
+        function getTiposProducto() { return [...new Set(productos.map(p => p.tipoProducto || "").filter(Boolean))].sort(); }
+        function fillEmployeeSelects() { [document.getElementById("bodegaEncargado"), document.getElementById("productoEncargado")].forEach(select => { select.innerHTML = '<option value="">Seleccione...</option>'; empleados.forEach(emp => { select.innerHTML += `<option value="${emp.id}">${emp.nombre} ${emp.activo ? "(Activo)" : "(Deshabilitado)"}</option>`; }); }); }
+        function fillBodegaSelect() { const select = document.getElementById("productoBodega"); const traslado = document.getElementById("trasladoDestino"); [select, traslado].forEach(el => { el.innerHTML = '<option value="">Seleccione...</option>'; bodegas.forEach(b => { el.innerHTML += `<option value="${b.id}">#${b.numero} - ${b.nombre}</option>`; }); }); }
+        function fillProductFilterSelects() { const defs = [[document.getElementById("filterCategoriaProducto"), "Todas las categorías", getCategoriasProducto()], [document.getElementById("filterTipoProducto"), "Todos los tipos", getTiposProducto()], [document.getElementById("operacionCategoria"), "Todas las categorías", getCategoriasProducto()], [document.getElementById("operacionTipo"), "Todos los tipos", getTiposProducto()]]; defs.forEach(([el,label,vals]) => { if (!el) return; const current = el.value; el.innerHTML = `<option value="">${label}</option>` + vals.map(v => `<option value="${v}">${v}</option>`).join(""); if (vals.includes(current)) el.value = current; }); }
+
+        function renderSidebarColaboradores() {
+            const container = document.getElementById("sidebarColaboradores");
+            container.innerHTML = "";
+            empleados.forEach(emp => {
+                const total = productos.filter(p => p.encargadoId === emp.id).length;
+                const icono = emp.activo ? '<i class="fa-solid fa-circle-check text-success"></i>' : '<i class="fa-solid fa-lock text-warning"></i>';
+                const extraClass = emp.activo ? "" : "locked-row";
+                container.innerHTML += `<a class="submenu-link colaborador-link ${extraClass}" data-empleado-id="${emp.id}">${icono}${emp.nombre}<span class="ms-auto badge text-bg-secondary">${total}</span></a>`;
+            });
+            document.querySelectorAll(".colaborador-link").forEach(link => {
+                link.addEventListener("click", function() {
+                    const empleadoId = Number(this.dataset.empleadoId);
+                    openEmpleadoInventario(empleadoId);
+                    if (isEmpleadoActivo(empleadoId)) { clearActiveSubmenu(); this.classList.add("active"); }
+                });
+            });
+        }
+
+        function renderKPIs() {
+            document.getElementById("kpiBodegas").textContent = bodegas.length;
+            document.getElementById("kpiEncargados").textContent = empleados.filter(e => e.activo).length;
+            document.getElementById("kpiStockBajo").textContent = productos.filter(p => p.cantidad <= p.minimo).length;
+            document.getElementById("kpiValorTotal").textContent = "$" + productos.reduce((sum, p) => sum + (p.cantidad * p.precio), 0).toFixed(2);
+            document.getElementById("reporteProductosTotales").textContent = productos.length;
+            const conteoBodegas = bodegas.map(b => ({ nombre: b.nombre, total: productos.filter(p => p.bodegaId === b.id).length })).sort((a,b)=>b.total-a.total);
+            const conteoEmpleados = empleados.map(e => ({ nombre: e.nombre, total: productos.filter(p => p.encargadoId === e.id).length })).sort((a,b)=>b.total-a.total);
+            document.getElementById("reporteTopBodega").textContent = conteoBodegas.length ? `${conteoBodegas[0].nombre} (${conteoBodegas[0].total})` : "-";
+            document.getElementById("reporteTopEmpleado").textContent = conteoEmpleados.length ? `${conteoEmpleados[0].nombre} (${conteoEmpleados[0].total})` : "-";
+        }
+
+        function renderDashboardColaboradores() {
+            dashboardColaboradoresBody.innerHTML = "";
+            empleados.forEach(emp => {
+                const bodegasAsignadas = bodegas.filter(b => b.encargadoId === emp.id).length;
+                const productosAsignados = productos.filter(p => p.encargadoId === emp.id).length;
+                dashboardColaboradoresBody.innerHTML += `<tr class="${emp.activo ? '' : 'locked-row'}"><td><strong>${emp.id}</strong></td><td>${emp.nombre}</td><td>${getEmpleadoEstadoBadge(emp.id)}</td><td>${bodegasAsignadas}</td><td>${productosAsignados}</td><td>${emp.activo ? '<span class="employee-status-active">Permitido</span>' : '<span class="employee-status-disabled">Bloqueado</span>'}</td><td><div class="d-flex gap-2 flex-wrap"><button class="btn btn-sm ${emp.activo ? 'btn-outline-danger' : 'btn-outline-success'}" onclick="toggleEmpleadoEstado(${emp.id})"><i class="fa-solid ${emp.activo ? 'fa-lock' : 'fa-circle-check'}"></i> ${emp.activo ? 'Deshabilitar' : 'Activar'}</button><button class="btn btn-sm btn-primary" onclick="openEmpleadoInventario(${emp.id})"><i class="fa-solid fa-boxes-stacked"></i> Inventario</button></div></td></tr>`;
+            });
+        }
+
+        function renderEmpleados() {
+            empleadosTableBody.innerHTML = "";
+            if (!empleados || !empleados.length) {
+                empleadosTableBody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><i class="fa-solid fa-users"></i><div>No hay empleados registrados.</div></div></td></tr>';
+                return;
+            }
+            empleados.forEach(emp => {
+                const bodegasAsignadas = bodegas.filter(b => b.encargadoId === emp.id).length;
+                const productosAsignados = productos.filter(p => p.encargadoId === emp.id).length;
+                empleadosTableBody.innerHTML += `
+                    <tr class="${emp.activo ? '' : 'locked-row'}">
+                        <td><strong>${emp.id}</strong></td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-soft bg-primary text-white me-2 rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">${emp.nombre[0]}</div>
+                                ${emp.nombre}
+                            </div>
+                        </td>
+                        <td>${getEmpleadoEstadoBadge(emp.id)}</td>
+                        <td>${bodegasAsignadas}</td>
+                        <td>${productosAsignados}</td>
+                        <td><button class="btn btn-sm btn-primary" onclick="openEmpleadoInventario(${emp.id})"><i class="fa-solid fa-boxes-stacked"></i> Ver inventario</button></td>
+                    </tr>`;
+            });
+        }
+
+        function renderBodegas(filter = "") {
+            const text = filter.trim().toLowerCase();
+            const list = bodegas.filter(b => [b.nombre, String(b.numero), b.tipo || "", getEmpleadoNombre(b.encargadoId)].join(" ").toLowerCase().includes(text));
+            bodegasTableBody.innerHTML = "";
+            if (!list.length) {
+                bodegasTableBody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><i class="fa-solid fa-box-open"></i><div>No se encontraron bodegas.</div></div></td></tr>';
+                return;
+            }
+            list.forEach(bodega => {
+                const totalArticulos = productos.filter(p => p.bodegaId === bodega.id).reduce((sum, p) => sum + p.cantidad, 0);
+                bodegasTableBody.innerHTML += `<tr><td><strong>#${bodega.numero}</strong></td><td>${bodega.nombre}<br><small class="text-muted">${bodega.direccion}</small></td><td><span class="badge badge-soft-info">${bodega.tipo || 'Local'}</span></td><td>${getEmpleadoNombre(bodega.encargadoId)}<br><small>${getEmpleadoEstadoBadge(bodega.encargadoId)}</small></td><td><div class="mini-summary"><strong>${totalArticulos}</strong><small>Total artículos</small></div></td><td>${getEstadoBadge(bodega.estado)}</td><td><div class="d-flex gap-2 flex-wrap"><button class="btn btn-sm btn-primary" onclick="openInventario(${bodega.id})"><i class="fa-solid fa-cubes"></i> Stock</button></div></td></tr>`;
+            });
+        }
+
+        function getInventarioFiltrado(filter = "") {
+            const text = filter.trim().toLowerCase();
+            const categoria = document.getElementById("filterCategoriaProducto")?.value || "";
+            const tipo = document.getElementById("filterTipoProducto")?.value || "";
+            let list = productos.filter(p => [p.codigo, p.nombre, p.descripcion, p.categoria, p.tipoProducto || "", getEmpleadoNombre(p.encargadoId)].join(" ").toLowerCase().includes(text));
+            if (inventarioModo === "bodega") list = list.filter(p => p.bodegaId === selectedBodegaId);
+            else if (inventarioModo === "empleado") list = list.filter(p => p.encargadoId === selectedEmpleadoId);
+            if (categoria) list = list.filter(p => p.categoria === categoria);
+            if (tipo) list = list.filter(p => (p.tipoProducto || "") === tipo);
+            return list;
+        }
+
+        function renderInventario(filter = "") {
+            const list = getInventarioFiltrado(filter);
+            inventarioTableBody.innerHTML = "";
+            inventarioTableFoot.innerHTML = "";
+            if (inventarioModo === "bodega") {
+                const bodega = getBodegaById(selectedBodegaId); if (!bodega) return; document.getElementById("inventarioSubtitulo").textContent = `Bodega #${bodega.numero} - ${bodega.nombre}`;
+            } else if (inventarioModo === "empleado") {
+                document.getElementById("inventarioSubtitulo").textContent = `Inventario asignado a ${getEmpleadoNombre(selectedEmpleadoId)}`;
+            } else {
+                document.getElementById("inventarioSubtitulo").textContent = "Inventario general";
+            }
+            if (!list.length) {
+                inventarioTableBody.innerHTML = '<tr><td colspan="10"><div class="empty-state"><i class="fa-solid fa-box-open"></i><div>No hay productos registrados para esta vista.</div></div></td></tr>';
+                return;
+            }
+            let totalInv = 0, totalReal = 0, totalValor = 0, totalAjuste = 0;
+            list.forEach(producto => {
+                const status = getStockStatus(producto);
+                const real = Number(producto.inventarioReal ?? producto.cantidad);
+                const ajuste = getAjusteDiferencia(producto);
+                totalInv += producto.cantidad; totalReal += real; totalValor += producto.cantidad * (producto.precio1 || producto.precio || 0); totalAjuste += ajuste;
+                inventarioTableBody.innerHTML += `<tr><td><strong>${producto.codigo}</strong></td><td>${producto.nombre}<br><small class="text-muted">${producto.categoria}${producto.tipoProducto ? ' · ' + producto.tipoProducto : ''}</small></td><td>${getEmpleadoNombre(producto.encargadoId)}<br><small>${getEmpleadoEstadoBadge(producto.encargadoId)}</small></td><td class="${status.className}">${producto.cantidad}</td><td><div class="d-flex align-items-center gap-2 flex-wrap"><input type="number" min="0" step="1" class="form-control inventory-real-input" value="${real}" onchange="updateInventarioReal(${producto.id}, this.value)" /><small class="text-muted">conteo físico</small></div></td><td>$${(producto.precio1 || producto.precio || 0).toFixed(2)}</td><td><strong>$${(producto.cantidad * (producto.precio1 || producto.precio || 0)).toFixed(2)}</strong></td><td>${status.badge}</td><td><div class="d-flex flex-column gap-2"><span class="badge badge-soft-info ${getAjusteClase(ajuste)}">${getAjusteTexto(ajuste)} u.</span><button class="btn btn-sm btn-outline-primary" onclick="aplicarAjusteContable(${producto.id})"><i class="fa-solid fa-calculator"></i> Ajuste</button></div></td><td><button class="btn btn-sm btn-outline-secondary" type="button" disabled title="Edición reservada para una siguiente fase"><i class="fa-solid fa-pen"></i></button></td></tr>`;
+            });
+            inventarioTableFoot.innerHTML = `<tr><td colspan="3">Resumen</td><td>${totalInv}</td><td>${totalReal}</td><td>-</td><td>$${totalValor.toFixed(2)}</td><td>-</td><td class="${getAjusteClase(totalAjuste)}">${getAjusteTexto(totalAjuste)} u.</td><td></td></tr>`;
+        }
+
+        function updateInventarioReal(id, value) {
+            const producto = productos.find(p => p.id === id);
+            if (!producto) return;
+            producto.inventarioReal = Number(value);
+            renderInventario(searchProducto.value);
+            renderBodegas(searchBodega.value);
+        }
+        function aplicarAjusteContable(id) {
+            const producto = productos.find(p => p.id === id); if (!producto) return;
+            const real = Number(producto.inventarioReal ?? producto.cantidad);
+            const diff = real - producto.cantidad;
+            producto.cantidad = real;
+            if (!producto.movimientos) producto.movimientos = [];
+            producto.movimientos.push({ tipo: diff >= 0 ? "entrada" : "salida", fecha: nowString(), detalle: `Ajuste contable aplicado por diferencia de ${diff}` });
+            renderInventario(searchProducto.value); renderBodegas(searchBodega.value); renderEmpleados(); renderDashboardColaboradores(); renderSidebarColaboradores(); renderKPIs();
+            showToast(`Ajuste contable aplicado para ${producto.nombre}: ${getAjusteTexto(diff)} unidades.`);
+        }
+
+        function openInventario(bodegaId) { inventarioModo = "bodega"; selectedBodegaId = bodegaId; selectedEmpleadoId = null; renderInventario(searchProducto.value); showPage("page-inventario"); clearActiveSubmenu(); activateSubmenuGeneral(); setActiveMainMenu("page-inventario"); }
+        function openEmpleadoInventario(empleadoId) { if (!isEmpleadoActivo(empleadoId)) { showToast("Este colaborador está deshabilitado y no puede entrar al inventario."); return; } inventarioModo = "empleado"; selectedEmpleadoId = empleadoId; renderInventario(searchProducto.value); showPage("page-inventario"); setActiveMainMenu("page-inventario"); }
+        function openInventarioGeneral() { inventarioModo = "general"; selectedEmpleadoId = null; renderInventario(searchProducto.value); showPage("page-inventario"); setActiveMainMenu("page-inventario"); clearActiveSubmenu(); }
+
+        function prefillProductoBodega(bodegaId) { document.getElementById("formProducto").reset(); document.getElementById("productoEditId").value = ""; document.getElementById("productoBodega").value = bodegaId; const bodega = getBodegaById(bodegaId); if (bodega) document.getElementById("productoEncargado").value = bodega.encargadoId; }
+        function resetProductoForm() { document.getElementById("formProducto").reset(); document.getElementById("productoEditId").value = ""; if (inventarioModo === "bodega") { document.getElementById("productoBodega").value = selectedBodegaId || ""; const b = getBodegaById(selectedBodegaId); if (b) document.getElementById("productoEncargado").value = b.encargadoId; } }
+
+        function deleteBodega(id) {
+            if (productos.some(p => p.bodegaId === id)) { showToast("No se puede eliminar la bodega porque tiene productos registrados."); return; }
+            const index = bodegas.findIndex(b => b.id === id);
+            if (index !== -1) {
+                bodegas.splice(index, 1);
+                if (selectedBodegaId === id && bodegas.length) selectedBodegaId = bodegas[0].id;
+                fillBodegaSelect(); renderBodegas(searchBodega.value); renderEmpleados(); renderDashboardColaboradores(); renderSidebarColaboradores(); renderKPIs(); showToast("Bodega eliminada correctamente.");
+            }
+        }
+        function deleteProducto(id) {
+            const index = productos.findIndex(p => p.id === id);
+            if (index !== -1) {
+                const productoEliminado = JSON.parse(JSON.stringify(productos[index]));
+                productoEliminado.movimientos = productoEliminado.movimientos || [];
+                productoEliminado.movimientos.push({ tipo: "eliminado", fecha: nowString(), detalle: "Producto eliminado del inventario" });
+                historialEliminados.push(productoEliminado);
+                productos.splice(index, 1);
+                renderInventario(searchProducto.value); renderBodegas(searchBodega.value); renderEmpleados(); renderDashboardColaboradores(); renderSidebarColaboradores(); renderKPIs(); showToast("Producto eliminado correctamente.");
+            }
+        }
+        function editProducto(id) {
+            const p = productos.find(x => x.id === id); if (!p) return;
+            document.getElementById("productoEditId").value = p.id; document.getElementById("productoBodega").value = p.bodegaId; document.getElementById("productoEncargado").value = p.encargadoId; document.getElementById("productoCodigo").value = p.codigo; document.getElementById("productoNombre").value = p.nombre; document.getElementById("productoCantidad").value = p.cantidad; document.getElementById("productoMinimo").value = p.minimo; document.getElementById("productoCategoria").value = p.categoria; document.getElementById("productoTipo").value = p.tipoProducto || ""; document.getElementById("productoDescripcion").value = p.descripcion; document.getElementById("productoPrecioCompra").value = p.precioCompra || 0; document.getElementById("productoPrecio1").value = p.precio1 || p.precio || 0; document.getElementById("productoPrecio2").value = p.precio2 || 0; document.getElementById("productoPrecio3").value = p.precio3 || 0; modalProducto.show();
+        }
+        function toggleEmpleadoEstado(id) { const empleado = getEmpleadoById(id); if (!empleado) return; empleado.activo = !empleado.activo; if (!empleado.activo && inventarioModo === "empleado" && selectedEmpleadoId === id) goToBodegas(); fillEmployeeSelects(); renderKPIs(); renderSidebarColaboradores(); renderEmpleados(); renderDashboardColaboradores(); renderBodegas(searchBodega.value); renderInventario(searchProducto.value); showToast(empleado.activo ? "Colaborador activado correctamente." : "Colaborador deshabilitado correctamente."); }
+        function confirmarCancelarProducto() { if (confirm("Va a cerrar la ficha sin guardar. ¿Está seguro?")) { resetProductoForm(); modalProducto.hide(); } }
+        function goToBodegas() { showPage("page-bodegas"); setActiveMainMenu("page-bodegas"); activateSubmenuGeneral(); }
+
+        function exportarPDF() {
+            const list = getInventarioFiltrado(searchProducto.value);
+            let titulo = "Inventario general";
+            if (inventarioModo === "bodega") { const bodega = getBodegaById(selectedBodegaId); titulo = bodega ? `Inventario de ${bodega.nombre}` : "Inventario por bodega"; }
+            else if (inventarioModo === "empleado") titulo = `Inventario de ${getEmpleadoNombre(selectedEmpleadoId)}`;
+            const rows = list.map(p => `<tr><td>${p.codigo}</td><td>${p.nombre}</td><td>${getBodegaNombre(p.bodegaId)}</td><td>${getEmpleadoNombre(p.encargadoId)}</td><td>${p.cantidad}</td><td>${p.inventarioReal ?? p.cantidad}</td><td>$${p.precio.toFixed(2)}</td><td>$${(p.cantidad*p.precio).toFixed(2)}</td><td>${getAjusteTexto(getAjusteDiferencia(p))}</td></tr>`).join("");
+            const printArea = document.getElementById("printArea");
+            printArea.innerHTML = `<div><h2 style="margin-bottom:6px;">SOFTRES - Reporte PDF</h2><p style="margin-top:0;color:#555;">${titulo}</p><p style="margin-top:0;color:#555;">Fecha: ${nowString()}</p><table style="width:100%; border-collapse:collapse; margin-top:20px;"><thead><tr><th style="border:1px solid #ccc; padding:8px; text-align:left;">Código</th><th style="border:1px solid #ccc; padding:8px; text-align:left;">Producto</th><th style="border:1px solid #ccc; padding:8px; text-align:left;">Bodega</th><th style="border:1px solid #ccc; padding:8px; text-align:left;">Encargado</th><th style="border:1px solid #ccc; padding:8px; text-align:left;">Inventario</th><th style="border:1px solid #ccc; padding:8px; text-align:left;">Inventario real</th><th style="border:1px solid #ccc; padding:8px; text-align:left;">Precio</th><th style="border:1px solid #ccc; padding:8px; text-align:left;">Total</th><th style="border:1px solid #ccc; padding:8px; text-align:left;">Ajuste</th></tr></thead><tbody>${rows || '<tr><td colspan="9" style="border:1px solid #ccc; padding:8px;">Sin datos</td></tr>'}</tbody></table></div>`;
+            printArea.style.display = "block"; window.print(); printArea.style.display = "none";
+        }
+
+        function getProductosOperacionBase() { return getInventarioFiltrado(document.getElementById("operacionSearch").value || ""); }
+        let operacionListaSeleccionada = [];
+
+        function motivosPorModo(modo) {
+            if (modo === "egreso") return ["Por daño", "Devolución", "Uso interno"];
+            if (modo === "ingreso") return ["Compra", "Devolución", "Ajuste de ingreso"];
+            return [];
+        }
+        function getOperacionVerbo(modo) {
+            if (modo === "ingreso") return "ingreso";
+            if (modo === "egreso") return "egreso";
+            return "traslado";
+        }
+        function getOperacionEtiquetaCantidad(modo) {
+            return modo === "ingreso" ? "Ingreso" : modo === "egreso" ? "Egreso" : "Traslado";
+        }
+        function getOperacionNombre(modo) {
+            return modo === "ingreso" ? "ingreso" : modo === "egreso" ? "egreso" : "traslado";
+        }
+        function resetOperacionEstado() {
+            operacionListaSeleccionada = [];
+            document.getElementById("operacionSearch").value = "";
+            document.getElementById("operacionCategoria").value = "";
+            document.getElementById("operacionTipo").value = "";
+            document.getElementById("operacionLista").innerHTML = "";
+            document.getElementById("operacionSeleccionadosHead").innerHTML = "";
+            document.getElementById("operacionSeleccionadosBody").innerHTML = "";
+            document.getElementById("operacionSeleccionadosFoot").innerHTML = "";
+        }
+        function openOperacionModal(modo) {
+            document.getElementById("operacionModo").value = modo;
+            resetOperacionEstado();
+            const titulo = document.getElementById("operacionTitulo");
+            titulo.innerHTML = modo === "traslado" ? '<i class="fa-solid fa-right-left"></i> Traslados de inventario' : modo === "egreso" ? '<i class="fa-solid fa-arrow-up"></i> Egresos de inventario' : '<i class="fa-solid fa-arrow-down"></i> Ingresos de inventario';
+            document.getElementById("trasladoDestinoWrap").classList.toggle("show", modo === "traslado");
+            document.getElementById("motivoWrap").classList.toggle("show", modo !== "traslado");
+            document.getElementById("btnGuardarOperacion").textContent = modo === "ingreso" ? "Guardar ingreso" : modo === "egreso" ? "Guardar egreso" : "Guardar traslado";
+            const motivo = document.getElementById("operacionMotivo");
+            motivo.innerHTML = '<option value="">Seleccione...</option>';
+            motivosPorModo(modo).forEach(item => motivo.innerHTML += `<option value="${item}">${item}</option>`);
+            const trasladoDestino = document.getElementById("trasladoDestino");
+            trasladoDestino.value = "";
+            Array.from(trasladoDestino.options).forEach(opt => { opt.disabled = inventarioModo === "bodega" && Number(opt.value) === selectedBodegaId; });
+            renderOperacionLista();
+            renderOperacionSeleccionados();
+            modalOperaciones.show();
+        }
+        function renderOperacionLista() {
+            const modo = document.getElementById("operacionModo").value;
+            const list = getProductosOperacionBase();
+            const container = document.getElementById("operacionLista");
+            const count = document.getElementById("operacionDisponiblesCount");
+            container.innerHTML = "";
+            count.textContent = `${list.length} disponibles`;
+            if (!list.length) {
+                container.innerHTML = '<div class="empty-state py-4"><i class="fa-solid fa-box-open"></i><div>No hay productos disponibles.</div></div>';
+                return;
+            }
+            list.forEach(p => {
+                const agregado = operacionListaSeleccionada.some(item => item.productoId === p.id);
+                const precioRef = modo === "ingreso" ? Number(p.precioCompra || 0) : Number(p.precio1 || p.precio || 0);
+                container.innerHTML += `<div class="selection-item compact"><div class="d-flex justify-content-between align-items-start gap-3 flex-wrap"><div><strong>${p.codigo}</strong> - ${p.nombre}<div class="selection-meta mt-1">Inv.: ${p.cantidad}${inventarioModo !== 'bodega' ? ' · Bodega: ' + getBodegaNombre(p.bodegaId) : ''} · Precio: $${precioRef.toFixed(2)}</div></div><button type="button" class="btn btn-sm ${agregado ? 'btn-success disabled' : 'btn-outline-primary'}" ${agregado ? 'disabled' : ''} onclick="agregarProductoOperacion(${p.id})"><i class="fa-solid fa-plus"></i> ${agregado ? 'Agregado' : 'Agregar a la lista'}</button></div></div>`;
+            });
+        }
+        function agregarProductoOperacion(productoId) {
+            const producto = productos.find(p => p.id === productoId);
+            if (!producto) return;
+            if (operacionListaSeleccionada.some(item => item.productoId === productoId)) return;
+            operacionListaSeleccionada.push({ productoId, cantidad: 1 });
+            renderOperacionLista();
+            renderOperacionSeleccionados();
+        }
+        function quitarProductoOperacion(productoId) {
+            operacionListaSeleccionada = operacionListaSeleccionada.filter(item => item.productoId !== productoId);
+            renderOperacionLista();
+            renderOperacionSeleccionados();
+        }
+        function actualizarCantidadOperacion(productoId, value) {
+            const item = operacionListaSeleccionada.find(x => x.productoId === productoId);
+            const producto = productos.find(p => p.id === productoId);
+            if (!item || !producto) return;
+            const modo = document.getElementById("operacionModo").value;
+            const maximo = modo === "ingreso" ? 999999 : producto.cantidad;
+            let qty = Number(value || 0);
+            if (qty < 1) qty = 1;
+            if (qty > maximo) {
+                qty = maximo;
+                if (modo !== "ingreso") showToast(`La cantidad máxima para ${producto.nombre} es ${maximo}.`);
+            }
+            item.cantidad = qty;
+            renderOperacionSeleccionados();
+        }
+        function getOperacionSeleccionados() {
+            return operacionListaSeleccionada.map(item => {
+                const producto = productos.find(p => p.id === item.productoId);
+                return producto ? { producto, cantidad: Number(item.cantidad || 0) } : null;
+            }).filter(Boolean);
+        }
+        function renderOperacionSeleccionados() {
+            const modo = document.getElementById("operacionModo").value;
+            const etiquetaCantidad = getOperacionEtiquetaCantidad(modo);
+            const head = document.getElementById("operacionSeleccionadosHead");
+            const body = document.getElementById("operacionSeleccionadosBody");
+            const foot = document.getElementById("operacionSeleccionadosFoot");
+            const seleccionados = getOperacionSeleccionados();
+            const resumenCantidad = document.getElementById("operacionResumenCantidad");
+            const resumenMonto = document.getElementById("operacionResumenMonto");
+            const resumenTexto = document.getElementById("operacionResumenTexto");
+            head.innerHTML = `<tr><th>Código producto</th><th>Nombre del producto</th><th>Inventario</th><th>${etiquetaCantidad}</th><th>${modo === 'ingreso' ? 'Precio compra' : 'Precio'}</th><th>Total</th><th style="width:60px"></th></tr>`;
+            body.innerHTML = "";
+            foot.innerHTML = "";
+            resumenCantidad.textContent = `${seleccionados.length}`;
+            resumenMonto.textContent = `$0.00`;
+            resumenTexto.textContent = seleccionados.length ? `Detalle de ${getOperacionNombre(modo)} listo para guardar.` : 'Agrega productos para construir la operación.';
+            if (!seleccionados.length) {
+                body.innerHTML = '<tr><td colspan="7"><div class="empty-state py-4"><i class="fa-solid fa-list"></i><div>No hay productos agregados a la lista.</div></div></td></tr>';
+                return;
+            }
+            let totalCantidad = 0;
+            let totalMonto = 0;
+            seleccionados.forEach(({ producto, cantidad }) => {
+                const precio = modo === "ingreso" ? Number(producto.precioCompra || 0) : Number(producto.precio1 || producto.precio || 0);
+                const total = cantidad * precio;
+                totalCantidad += cantidad;
+                totalMonto += total;
+                body.innerHTML += `<tr><td><strong>${producto.codigo}</strong></td><td>${producto.nombre}</td><td>${producto.cantidad}</td><td><input type="number" min="1" step="1" max="${modo === 'ingreso' ? 999999 : producto.cantidad}" class="form-control form-control-sm qty-input-sm" value="${cantidad}" onchange="actualizarCantidadOperacion(${producto.id}, this.value)" /></td><td>$${precio.toFixed(2)}</td><td><strong>$${total.toFixed(2)}</strong></td><td><button type="button" class="btn btn-sm btn-outline-danger" title="Quitar" onclick="quitarProductoOperacion(${producto.id})"><i class="fa-solid fa-xmark"></i></button></td></tr>`;
+            });
+            resumenMonto.textContent = `$${totalMonto.toFixed(2)}`;
+            resumenTexto.textContent = `${totalCantidad} unidades en este ${getOperacionNombre(modo)}.`;
+            foot.innerHTML = `<tr><td colspan="3">Resumen</td><td>${totalCantidad}</td><td>-</td><td>$${totalMonto.toFixed(2)}</td><td></td></tr>`;
+        }
+        function confirmarCancelarOperacion() {
+            if (operacionListaSeleccionada.length && !confirm("Va a cerrar sin guardar la operación. ¿Está seguro?")) return;
+            resetOperacionEstado();
+            modalOperaciones.hide();
+        }
+
+        document.getElementById("formBodega").addEventListener("submit", function(e) {
+            e.preventDefault();
+            const numero = Number(document.getElementById("bodegaNumero").value);
+            const nombre = document.getElementById("bodegaNombre").value.trim();
+            const tipo = document.getElementById("bodegaTipo").value;
+            const encargadoId = Number(document.getElementById("bodegaEncargado").value);
+            const estado = document.getElementById("bodegaEstado").value;
+            const direccion = document.getElementById("bodegaDireccion").value.trim();
+            if (bodegas.some(b => b.numero === numero)) { showToast("Ya existe una bodega con ese número."); return; }
+            bodegas.push({ id: Date.now(), numero, nombre, tipo, encargadoId, estado, direccion });
+            this.reset(); modalBodega.hide(); fillBodegaSelect(); renderBodegas(searchBodega.value); renderEmpleados(); renderDashboardColaboradores(); renderSidebarColaboradores(); renderKPIs(); showToast("Bodega registrada correctamente.");
+        });
+
+        document.getElementById("formProducto").addEventListener("submit", function(e) {
+            e.preventDefault();
+            const editId = document.getElementById("productoEditId").value;
+            const bodegaId = Number(document.getElementById("productoBodega").value);
+            const encargadoId = Number(document.getElementById("productoEncargado").value);
+            const codigo = document.getElementById("productoCodigo").value.trim().toUpperCase();
+            const nombre = document.getElementById("productoNombre").value.trim();
+            const cantidad = Number(document.getElementById("productoCantidad").value);
+            const minimo = Number(document.getElementById("productoMinimo").value);
+            const categoria = document.getElementById("productoCategoria").value.trim();
+            const tipoProducto = document.getElementById("productoTipo").value.trim();
+            const descripcion = document.getElementById("productoDescripcion").value.trim();
+            const precioCompra = Number(document.getElementById("productoPrecioCompra").value);
+            const precio1 = Number(document.getElementById("productoPrecio1").value);
+            const precio2 = Number(document.getElementById("productoPrecio2").value || 0);
+            const precio3 = Number(document.getElementById("productoPrecio3").value || 0);
+            if (!editId && productos.some(p => p.bodegaId === bodegaId && p.codigo === codigo)) { showToast("Ya existe un producto con ese código en la bodega seleccionada."); return; }
+            if (editId) {
+                const producto = productos.find(p => p.id === Number(editId));
+                if (producto) { Object.assign(producto, { bodegaId, encargadoId, codigo, nombre, cantidad, inventarioReal: cantidad, precioCompra, precio: precio1, precio1, precio2, precio3, minimo, categoria, tipoProducto, descripcion }); producto.movimientos = producto.movimientos || []; producto.movimientos.push({ tipo: "edicion", fecha: nowString(), detalle: "Ficha del producto actualizada manualmente" }); showToast("Producto actualizado correctamente."); }
+            } else {
+                productos.push({ id: Date.now(), bodegaId, encargadoId, codigo, nombre, cantidad, inventarioReal: cantidad, precioCompra, precio: precio1, precio1, precio2, precio3, minimo, categoria, tipoProducto, descripcion, movimientos: [{ tipo: "registro", fecha: nowString(), detalle: "Producto registrado en sistema" }] }); showToast("Producto registrado correctamente.");
+            }
+            fillProductFilterSelects();
+            selectedBodegaId = bodegaId; this.reset(); document.getElementById("productoEditId").value = ""; modalProducto.hide(); if (inventarioModo === "empleado") selectedEmpleadoId = encargadoId; else { inventarioModo = "bodega"; selectedBodegaId = bodegaId; } renderInventario(searchProducto.value); renderBodegas(searchBodega.value); renderEmpleados(); renderDashboardColaboradores(); renderSidebarColaboradores(); renderKPIs(); showPage("page-inventario"); setActiveMainMenu("page-inventario");
+        });
+
+        // Inicialización inteligente
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentPath = window.location.pathname.replace(/\/$/, "");
+            const parts = currentPath.split('/');
+            const lastPart = parts[parts.length - 1];
+            
+            // Lógica de detección de "Carpeta Virtual"
+            const initialView = ['empleados', 'inventario', 'bodegas', 'ver-bodegas', 'reportes'].includes(lastPart) ? lastPart : 'dashboard';
+            
+            console.log("SPA Iniciada en:", initialView);
+            showPage('page-' + initialView);
+            syncSidebar();
+            
+            // Re-intento de sincronización para sistemas con carga lenta
+            setTimeout(syncSidebar, 1000);
+            setTimeout(syncSidebar, 3000);
+        });
+    </script>
+</body>
+</html>
+            fillProductFilterSelects();
+            selectedBodegaId = bodegaId; this.reset(); document.getElementById("productoEditId").value = ""; modalProducto.hide(); if (inventarioModo === "empleado") selectedEmpleadoId = encargadoId; else { inventarioModo = "bodega"; selectedBodegaId = bodegaId; } renderInventario(searchProducto.value); renderBodegas(searchBodega.value); renderEmpleados(); renderDashboardColaboradores(); renderSidebarColaboradores(); renderKPIs(); showPage("page-inventario"); setActiveMainMenu("page-inventario");
+        });
+
+        document.getElementById("formOperacion").addEventListener("submit", function(e) {
+            e.preventDefault();
+            const modo = document.getElementById("operacionModo").value;
+            const seleccionados = getOperacionSeleccionados();
+            if (!seleccionados.length) { showToast("Agrega al menos un producto a la lista."); return; }
+            const mensajeConfirmacion = modo === "traslado"
+                ? "¿Está seguro de guardar el traslado?"
+                : modo === "egreso"
+                    ? "¿Está seguro de guardar el egreso?"
+                    : "¿Está seguro de guardar el ingreso?";
+            if (!confirm(mensajeConfirmacion)) return;
+            if (modo === "traslado") {
+                const destinoId = Number(document.getElementById("trasladoDestino").value);
+                if (!destinoId) { showToast("Selecciona una bodega destino."); return; }
+                const destino = getBodegaById(destinoId);
+                seleccionados.forEach(({ producto, cantidad }) => {
+                    const qty = Number(cantidad || 0);
+                    if (!qty || qty > producto.cantidad) return;
+                    producto.cantidad -= qty;
+                    producto.inventarioReal = Math.min(Number(producto.inventarioReal ?? producto.cantidad), producto.cantidad);
+                    producto.movimientos = producto.movimientos || [];
+                    producto.movimientos.push({ tipo: "salida", fecha: nowString(), detalle: `Traslado de ${qty} unidades hacia ${destino.nombre}` });
+                    const existente = productos.find(x => x.bodegaId === destinoId && x.codigo === producto.codigo);
+                    if (existente) {
+                        existente.cantidad += qty;
+                        existente.inventarioReal = Number(existente.inventarioReal ?? existente.cantidad) + qty;
+                        existente.movimientos = existente.movimientos || [];
+                        existente.movimientos.push({ tipo: "entrada", fecha: nowString(), detalle: `Ingreso por traslado desde ${getBodegaNombre(producto.bodegaId)}` });
+                    } else {
+                        productos.push({ id: Date.now() + Math.floor(Math.random()*1000), bodegaId: destinoId, encargadoId: destino.encargadoId, codigo: producto.codigo, nombre: producto.nombre, cantidad: qty, inventarioReal: qty, precioCompra: producto.precioCompra || 0, precio: producto.precio1 || producto.precio || 0, precio1: producto.precio1 || producto.precio || 0, precio2: producto.precio2 || 0, precio3: producto.precio3 || 0, minimo: producto.minimo, categoria: producto.categoria, tipoProducto: producto.tipoProducto || '', descripcion: producto.descripcion, movimientos: [{ tipo: "registro", fecha: nowString(), detalle: `Creado en destino por traslado desde ${getBodegaNombre(producto.bodegaId)}` }, { tipo: "entrada", fecha: nowString(), detalle: `Ingreso por traslado desde ${getBodegaNombre(producto.bodegaId)}` }] });
+                    }
+                });
+                productos = productos.filter(p => p.cantidad > 0);
+                showToast(`Traslado guardado correctamente hacia ${destino.nombre}.`);
+            } else {
+                const motivo = document.getElementById("operacionMotivo").value;
+                if (!motivo) { showToast("Selecciona un motivo."); return; }
+                seleccionados.forEach(({ producto, cantidad }) => {
+                    const qty = Number(cantidad || 0);
+                    if (!qty) return;
+                    if (modo === "egreso") {
+                        if (qty > producto.cantidad) return;
+                        producto.cantidad -= qty;
+                        producto.inventarioReal = Math.min(Number(producto.inventarioReal ?? producto.cantidad), producto.cantidad);
+                        producto.movimientos = producto.movimientos || [];
+                        producto.movimientos.push({ tipo: "salida", fecha: nowString(), detalle: `Egreso por ${motivo}: ${qty} unidades` });
+                    } else {
+                        producto.cantidad += qty;
+                        producto.inventarioReal = Number(producto.inventarioReal ?? producto.cantidad) + qty;
+                        producto.movimientos = producto.movimientos || [];
+                        producto.movimientos.push({ tipo: "entrada", fecha: nowString(), detalle: `Ingreso por ${motivo}: ${qty} unidades` });
+                    }
+                });
+                productos = productos.filter(p => p.cantidad > 0);
+                showToast(modo === "egreso" ? `Egreso guardado correctamente por motivo: ${motivo}.` : `Ingreso guardado correctamente por motivo: ${motivo}.`);
+            }
+            fillProductFilterSelects();
+            resetOperacionEstado();
+            modalOperaciones.hide(); renderInventario(searchProducto.value); renderBodegas(searchBodega.value); renderEmpleados(); renderDashboardColaboradores(); renderSidebarColaboradores(); renderKPIs();
+        });
+
+        searchBodega.addEventListener("input", function() { renderBodegas(this.value); });
+        searchProducto.addEventListener("input", function() { renderInventario(this.value); });
+        document.getElementById("filterCategoriaProducto").addEventListener("change", function() { renderInventario(searchProducto.value); });
+        document.getElementById("filterTipoProducto").addEventListener("change", function() { renderInventario(searchProducto.value); });
+        document.getElementById("operacionSearch").addEventListener("input", renderOperacionLista);
+        document.getElementById("operacionCategoria").addEventListener("change", renderOperacionLista);
+        document.getElementById("operacionTipo").addEventListener("change", renderOperacionLista);
+
+        document.getElementById("modalProducto").addEventListener("show.bs.modal", function() {
+            if (!document.getElementById("productoEditId").value) {
+                if (inventarioModo === "bodega") { document.getElementById("productoBodega").value = selectedBodegaId || ""; const b = getBodegaById(selectedBodegaId); if (b) document.getElementById("productoEncargado").value = b.encargadoId; }
+            }
+        });
+
+        document.querySelectorAll(".nav-main-link").forEach(link => {
+            link.addEventListener("click", function() { const pageId = this.dataset.page; if (pageId === "page-inventario") { openInventarioGeneral(); return; } showMainPage(pageId); });
+        });
+        document.getElementById("submenuBodegasGeneral").addEventListener("click", function() { showPage("page-bodegas"); setActiveMainMenu("page-bodegas"); activateSubmenuGeneral(); });
+        document.getElementById("toggleBodegasMenu").addEventListener("click", function() { const submenu = document.getElementById("bodegasSubmenu"); const arrow = document.getElementById("bodegasArrow"); submenu.classList.toggle("show"); arrow.classList.toggle("open"); });
+
+        function init() { fillEmployeeSelects(); fillBodegaSelect(); fillProductFilterSelects(); renderSidebarColaboradores(); renderKPIs(); renderBodegas(); renderEmpleados(); renderDashboardColaboradores(); renderInventario(); showPage("page-dashboard"); setActiveMainMenu("page-dashboard"); }
+        init();
+    </script>
+</body>
+</html>
