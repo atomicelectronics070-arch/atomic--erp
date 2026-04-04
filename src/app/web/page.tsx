@@ -360,14 +360,14 @@ function HeroBanner({ title, description, backgroundImage, gradientClass, accent
                         {description}
                     </p>
                     <div className="flex items-center gap-4">
-                        <Link
+                        <a
                             href={linkUrl || "#productos"}
-                            className="inline-flex items-center gap-3 text-white text-[11px] font-black uppercase tracking-widest px-8 py-4 transition-all hover:gap-5"
+                            className="relative z-50 inline-flex items-center gap-3 text-white text-[11px] font-black uppercase tracking-widest px-8 py-4 transition-all hover:gap-5"
                             style={{ backgroundColor: accent }}
                         >
                             {linkText || "Ver Catálogo"} <ArrowRight size={14} />
-                        </Link>
-                        <a href="#categorias" className="text-white/50 text-[10px] font-black uppercase tracking-widest hover:text-white transition-colors">
+                        </a>
+                        <a href="#categorias" className="relative z-50 text-white/50 text-[10px] font-black uppercase tracking-widest hover:text-white transition-colors">
                             Ver Categorías →
                         </a>
                     </div>

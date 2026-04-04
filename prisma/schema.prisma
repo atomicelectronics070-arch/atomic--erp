@@ -51,7 +51,10 @@ model User {
   promptConfigs    UserPromptConfig[]
   workCycles       WorkCycle[]
   transactions     Transaction[]      @relation("UserTransactions")
+  // Web and Content
   webOrders        WebOrder[]         @relation("WebOrderAssignee")
+  canCreateBlogs   Boolean            @default(false)
+  blogs            Blog[]             @relation("UserBlogs")
 }
 
 model Team {
@@ -505,3 +508,19 @@ model SavedPrompt {
   updatedAt DateTime @updatedAt
 }
 
+// --- BLOG MODULE ---
+
+model Blog {
+  id        String   @id @default(cuid())
+  title     String
+  excerpt   String?
+  content   String   // HTML or Markdown
+  imageUrl  String?
+  published Boolean  @default(false)
+  
+  authorId  String
+  author    User     @relation("UserBlogs", fields: [authorId], references: [id])
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

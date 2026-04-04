@@ -29,28 +29,23 @@ export async function POST(req: Request) {
 
         const daysRegistered = Math.floor((new Date().getTime() - new Date(dbUser.createdAt).getTime()) / (1000 * 3600 * 24))
 
-        // 2. Fetch Prompt Config for this specific user & botType
+        // 2. Comprobar configuración de prompt para este usuario
         let userConfig = await prisma.userPromptConfig.findUnique({
             where: {
                 userId_type: { userId: session.user.id, type: botType }
             }
         })
 
-        // Fallback Prompts if Admin hasn't assigned anything yet
-        let basePrompt = ""
-        if (userConfig?.prompt) {
-            basePrompt = userConfig.prompt
-        } else {
-            if (botType === "CAPACITADOR") {
-                const globalSetting = await prisma.systemSetting.findUnique({ where: { key: "TRAINING_BOT_PROMPT" } })
-                basePrompt = globalSetting?.value || "Eres el Capacitador en Línea corporativo de ATOMIC INDUSTRIES. Responde de manera profesional."
-            } else {
-                basePrompt = "Eres un Tutor del Día amigable. Tu objetivo es guiar al asesor en sus tareas diarias, darle motivación y ayudarlo directamente con la plataforma."
-            }
+        if (!userConfig || !userConfig.prompt || userConfig.prompt.trim() === "") {
+            return NextResponse.json({ 
+                text: "No tengo configurado un diálogo aún. Por favor, comunícate con tu administrador para que me asigne un modelo de comportamiento." 
+            })
         }
 
+        const basePrompt = userConfig.prompt
+
         // 3. Inject Dynamic Context
-        const systemPrompt = `[CONTEXTO DEL SISTEMA INYECTADO AUTOMÁTICAMENTE: Te estás comunicando con el asesor comercial llamado ${dbUser.name || 'Usuario'}. Este asesor lleva ${daysRegistered} días registrado trabajando en la plataforma de ATOMIC INDUSTRIES.]\n\n--- INSTRUCCIONES COGNITIVAS ---\n${basePrompt}`
+        const systemPrompt = `[CONTEXTO DEL SISTEMA INYECTADO: Asesor: ${dbUser.name || 'Usuario'}, Días registrado: ${daysRegistered}]\n\n--- INSTRUCCIONES ---\n${basePrompt}`
 
         // To use Gemini REST API directly without installing extra SDKs
         const GOOGLE_API_KEY = process.env.GOOGLE_GEMINI_API_KEY || process.env.GEMINI_API_KEY

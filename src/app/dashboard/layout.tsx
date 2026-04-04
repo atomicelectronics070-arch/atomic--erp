@@ -164,6 +164,7 @@ export default function DashboardLayout({
                             <NavLink href="/dashboard/whatsapp" icon={<MessageSquare size={18} />} label="Mensajería WhatsApp" />
                             <NavLink href="/dashboard/agenda" icon={<Calendar size={18} />} label="Agenda" />
                             <NavLink href="/dashboard/notes" icon={<Edit3 size={18} />} label="Bloc de Notas" />
+                            <NavLink href="/dashboard/blogs" icon={<FileText size={18} />} label="Blogs Corporativos" />
                             <Link
                                 href="/web"
                                 target="_blank"
