@@ -51,6 +51,7 @@ model User {
   promptConfigs    UserPromptConfig[]
   workCycles       WorkCycle[]
   transactions     Transaction[]      @relation("UserTransactions")
+  webOrders        WebOrder[]         @relation("WebOrderAssignee")
 }
 
 model Team {
@@ -166,6 +167,25 @@ model Quote {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model WebOrder {
+  id              String   @id @default(cuid())
+  orderNumber     String   @unique 
+  customerName    String
+  customerEmail   String
+  customerPhone   String?
+  companyName     String?
+  status          String   @default("NUEVO") // NUEVO, PROCESANDO, COTIZADO, CERRADO
+  itemsData       String   // JSON string of cart items
+  totalAmount     Float
+  notes           String?
+  
+  assignedSalespersonId String?
+  assignedSalesperson   User? @relation("WebOrderAssignee", fields: [assignedSalespersonId], references: [id])
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
 
 model Transaction {

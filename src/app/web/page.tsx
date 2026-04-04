@@ -145,8 +145,8 @@ export default function PublicWebPage() {
                         tagBg={cfg.tagBg}
                         icon={cfg.icon}
                         products={bannerProducts}
-                        linkUrl={cfg.key === 'banner1' ? '/web/software' : '#productos'}
-                        linkText={cfg.key === 'banner1' ? 'Ver Portafolio' : 'Ver Catálogo'}
+                        linkUrl={cfg.key === 'software' ? '/web/software' : '#productos'}
+                        linkText={cfg.key === 'software' ? 'Ver Portafolio' : 'Ver Catálogo'}
                     />
                 )
             })}
