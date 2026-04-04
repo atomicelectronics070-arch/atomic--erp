@@ -34,7 +34,7 @@ const PORTFOLIO_ITEMS = [
     },
     {
         id: 2,
-        title: "Sistema de Bodegas",
+        title: "Bodegas Logistics",
         category: "Logística Industrial",
         description: "Control de inventario en tiempo real. Algoritmos de predicción de desabastecimiento y trazabilidad QR multi-almacén.",
         imagePlaceholderbg: "bg-emerald-900/40",
@@ -44,21 +44,33 @@ const PORTFOLIO_ITEMS = [
     },
     {
         id: 3,
-        title: "Atomic ERP",
-        category: "Ecosistema Central",
-        description: "El núcleo operativo de ATOMIC. Finanzas, ventas, configuración cognitiva (IA) y un storefront B2B dinámico de ultra-rendimiento.",
-        imagePlaceholderbg: "bg-orange-900/40",
-        accent: "#ea580c",
+        title: "Scraper Pro",
+        category: "Inteligencia Competitiva",
+        description: "Motor automatizado de extracción de datos masivos con exportación instantánea a Excel y CSV, impulsado por Puppeteer.",
+        imagePlaceholderbg: "bg-purple-900/40",
+        accent: "#a855f7",
         delay: false,
+        previewUrl: "/scraper/index.html"
     },
     {
         id: 4,
-        title: "Próximo Proyecto",
-        category: "Top Secret",
-        description: "Estamos desarrollando el siguiente gran salto tecnológico. Arquitecturas escalables listas para la era de la computación cuántica.",
-        imagePlaceholderbg: "bg-neutral-800/40",
-        accent: "#737373",
+        title: "Couple Games",
+        category: "Entretenimiento B2C",
+        description: "Aplicación interactiva y lúdica. Interfaces vibrantes con micro-animaciones fluidas diseñadas para alto engagement.",
+        imagePlaceholderbg: "bg-pink-900/40",
+        accent: "#ec4899",
         delay: true,
+        previewUrl: "/couples-game/index.html"
+    },
+    {
+        id: 5,
+        title: "Atomic ERP Admin",
+        category: "Ecosistema Central",
+        description: "El núcleo operativo de ATOMIC. Simulación en vivo de nuestro panel de control de Ultra-Rendimiento.",
+        imagePlaceholderbg: "bg-orange-900/40",
+        accent: "#ea580c",
+        delay: false,
+        previewUrl: "/dashboard"
     }
 ]
 
