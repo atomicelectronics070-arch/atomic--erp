@@ -250,29 +250,41 @@ export default function SoftwareLandingPage() {
                                             {/* Camera Notch */}
                                             <div className="absolute top-2 left-1/2 -translate-x-1/2 w-20 h-5 bg-neutral-950 rounded-full z-10 pointer-events-none shadow-md"></div>
                                             
-                                            {/* Inner Simulated UI (always show mock to avoid iframe scaling issues and improve performance) */}
-                                            <div className="flex-1 w-full p-6 pt-12 flex flex-col transform transition-transform duration-1000 group-hover:-translate-y-8 ease-out pointer-events-none">
-                                                <div className="w-full flex justify-between items-center mb-8">
-                                                    <div className="w-8 h-8 rounded-full bg-white/20 shadow-sm"></div>
-                                                    <div className="w-16 h-3 rounded bg-white/20 shadow-sm"></div>
+                                            {/* Inner UI: Real Iframe Scaled Down or Mock */}
+                                            {item.previewUrl ? (
+                                                <div className="absolute inset-0 w-full h-full bg-white transition-opacity duration-1000 pointer-events-none overflow-hidden">
+                                                    {/* Scale down the iframe to fit the phone screen aspect ratio */}
+                                                    <iframe 
+                                                        src={item.previewUrl} 
+                                                        className="w-[300%] h-[300%] origin-top-left scale-[0.33] border-none absolute top-0 left-0"
+                                                        aria-hidden="true"
+                                                        tabIndex={-1}
+                                                    />
                                                 </div>
-                                                <div className="flex space-x-2 w-full mb-3">
-                                                    <div className="flex-1 h-20 rounded-xl bg-white/10 shadow-sm"></div>
-                                                    <div className="flex-1 h-20 rounded-xl bg-white/10 shadow-sm"></div>
-                                                </div>
-                                                <div className="w-3/4 h-8 rounded-lg mb-6 shadow-sm" style={{ backgroundColor: item.accent, opacity: 0.8 }}></div>
+                                            ) : (
+                                                <div className="flex-1 w-full p-6 pt-12 flex flex-col transform transition-transform duration-1000 group-hover:-translate-y-8 ease-out pointer-events-none">
+                                                    <div className="w-full flex justify-between items-center mb-8">
+                                                        <div className="w-8 h-8 rounded-full bg-white/20 shadow-sm"></div>
+                                                        <div className="w-16 h-3 rounded bg-white/20 shadow-sm"></div>
+                                                    </div>
+                                                    <div className="flex space-x-2 w-full mb-3">
+                                                        <div className="flex-1 h-20 rounded-xl bg-white/10 shadow-sm"></div>
+                                                        <div className="flex-1 h-20 rounded-xl bg-white/10 shadow-sm"></div>
+                                                    </div>
+                                                    <div className="w-3/4 h-8 rounded-lg mb-6 shadow-sm" style={{ backgroundColor: item.accent, opacity: 0.8 }}></div>
 
-                                                <div className="w-full h-24 rounded-xl bg-white/10 mb-4 border border-white/5 shadow-sm"></div>
-                                                <div className="w-full h-24 rounded-xl bg-white/10 mb-4 border border-white/5 shadow-sm"></div>
-                                                <div className="w-full h-24 rounded-xl bg-white/10 mb-4 border border-white/5 shadow-sm"></div>
-                                                <div className="w-full flex-1 rounded-xl bg-white/10 border border-white/5 shadow-sm"></div>
-                                            </div>
+                                                    <div className="w-full h-24 rounded-xl bg-white/10 mb-4 border border-white/5 shadow-sm"></div>
+                                                    <div className="w-full h-24 rounded-xl bg-white/10 mb-4 border border-white/5 shadow-sm"></div>
+                                                    <div className="w-full h-24 rounded-xl bg-white/10 mb-4 border border-white/5 shadow-sm"></div>
+                                                    <div className="w-full flex-1 rounded-xl bg-white/10 border border-white/5 shadow-sm"></div>
+                                                </div>
+                                            )}
 
                                             {/* Hover Glow Accent / Call to action */}
                                             <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/90 via-black/40 to-transparent p-6 opacity-0 group-hover:opacity-100 transition-all duration-300">
                                                 <div className="w-full text-center translate-y-8 group-hover:translate-y-0 transition-all duration-500 ease-out">
                                                     <span className="text-[10px] font-black uppercase tracking-widest px-4 py-3 bg-neutral-900 border border-white/20 shadow-2xl rounded-sm inline-block scale-95 group-hover:scale-100 transition-transform duration-300" style={{ color: item.accent }}>
-                                                        {item.previewUrl ? 'INGRESAR AL ENTORNO' : 'Próximamente'}
+                                                        {item.previewUrl ? 'INSPECCIONAR UI / ABRIR' : 'Próximamente'}
                                                     </span>
                                                 </div>
                                             </div>
