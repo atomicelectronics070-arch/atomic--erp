@@ -18,6 +18,14 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       {
+        source: "/scraper",
+        destination: "/scraper/index.html",
+      },
+      {
+        source: "/scraper/:path*",
+        destination: "/scraper/:path*",
+      },
+      {
         source: "/scraper-api/:path*",
         destination: "http://localhost:5005/api/:path*",
       },
