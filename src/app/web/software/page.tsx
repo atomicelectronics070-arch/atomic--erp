@@ -108,15 +108,13 @@ export default function SoftwareLandingPage() {
     }
 
     const onMouseLeave = () => setIsDragging(false)
-    const onMouseUp = () => {
-        setIsDragging(false)
-    }
+    const onMouseUp = () => setIsDragging(false)
 
     const onMouseMove = (e: React.MouseEvent) => {
         if (!isDragging) return
         e.preventDefault()
         const x = e.pageX - (scrollRef.current?.offsetLeft || 0)
-        const walk = (x - startX) * 2 // Velocidad de arrastre
+        const walk = (x - startX) * 2
         if (scrollRef.current) scrollRef.current.scrollLeft = scrollLeft - walk
     }
 
@@ -126,33 +124,59 @@ export default function SoftwareLandingPage() {
         }
     }
 
+    useEffect(() => {
+        const handleEsc = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') setActivePreview(null)
+        }
+        window.addEventListener('keydown', handleEsc)
+        return () => window.removeEventListener('keydown', handleEsc)
+    }, [])
+
     return (
         <div className="min-h-screen bg-neutral-950 text-white selection:bg-orange-500/30 overflow-hidden relative">
             <style dangerouslySetInnerHTML={{ __html: styles }} />
             
             {/* INICIO MODAL DE SOFTWARE INTERACTIVO (OS WINDOW) */}
             {activePreview && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-neutral-950/80 backdrop-blur-md p-4 md:p-12 animate-in fade-in duration-300">
-                    <div className="relative w-full h-full max-w-7xl flex flex-col bg-[#030712] rounded-2xl border border-white/20 shadow-[0_0_80px_rgba(249,115,22,0.15)] overflow-hidden scale-in-center">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-neutral-950/90 backdrop-blur-xl p-4 md:p-12 animate-in fade-in duration-300">
+                    <div className="relative w-full h-full max-w-7xl flex flex-col bg-[#030712] rounded-3xl border border-white/20 shadow-[0_0_100px_rgba(0,0,0,0.5)] overflow-hidden scale-in-center">
                         
-                        {/* OS Header Bar */}
-                        <div className="h-14 bg-gradient-to-r from-neutral-900 to-neutral-950 border-b border-white/10 flex items-center justify-between px-4 shrink-0">
-                            <div className="flex items-center space-x-2">
-                                <button onClick={() => setActivePreview(null)} className="w-3.5 h-3.5 rounded-full bg-red-500 hover:bg-red-400 transition-colors shadow-inner" aria-label="Cerrar"></button>
-                                <div className="w-3.5 h-3.5 rounded-full bg-yellow-500 shadow-inner"></div>
-                                <div className="w-3.5 h-3.5 rounded-full bg-green-500 shadow-inner"></div>
+                        {/* OS Header Bar (IMPROVED CONTROLS) */}
+                        <div className="h-16 bg-neutral-900 border-b border-white/10 flex items-center justify-between px-6 shrink-0 z-50">
+                            <div className="flex items-center gap-4">
+                                <div className="flex items-center space-x-2">
+                                    <button 
+                                        onClick={() => setActivePreview(null)} 
+                                        className="group relative w-5 h-5 rounded-full bg-red-500 hover:bg-red-400 transition-all shadow-lg flex items-center justify-center" 
+                                        aria-label="Cerrar"
+                                    >
+                                        <X size={10} className="text-red-900 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                    </button>
+                                    <div className="w-5 h-5 rounded-full bg-yellow-500/50 shadow-inner"></div>
+                                    <div className="w-5 h-5 rounded-full bg-green-500/50 shadow-inner"></div>
+                                </div>
+                                <button 
+                                    onClick={() => setActivePreview(null)}
+                                    className="text-[10px] font-black uppercase tracking-widest text-neutral-500 hover:text-white transition-colors flex items-center gap-2"
+                                >
+                                    <span className="w-px h-4 bg-white/10 mx-2" />
+                                    Cerrar Vista (ESC)
+                                </button>
                             </div>
 
                             <div className="flex-1 flex justify-center pointer-events-none">
-                                <div className="bg-black/50 border border-white/5 rounded-full px-8 py-1.5 flex items-center space-x-3">
+                                <div className="bg-black/50 border border-white/10 rounded-full px-8 py-2 flex items-center space-x-3 backdrop-blur-md">
                                     <Sparkles size={12} style={{ color: activePreview.accent }} />
-                                    <span className="text-[11px] font-black uppercase tracking-[0.2em] text-neutral-400">
-                                        Entorno: <span className="text-white">{activePreview.title}</span>
+                                    <span className="text-[11px] font-black uppercase tracking-[0.25em] text-neutral-400">
+                                        Navegando: <span className="text-white">{activePreview.title}</span>
                                     </span>
                                 </div>
                             </div>
 
-                            <div className="w-10"></div> {/* Spacer for symmetry */}
+                            <div className="flex items-center gap-4">
+                                <span className="text-[9px] font-bold text-neutral-600 uppercase tracking-widest hidden md:block">Safe Environment</span>
+                                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                            </div>
                         </div>
 
                         {/* Iframe Interactivo */}
