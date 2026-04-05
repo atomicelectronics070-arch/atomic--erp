@@ -8,7 +8,7 @@ export default function BlogsDashboard() {
   const { data: session } = useSession()
   const [activeTab, setActiveTab] = useState<"mis_blogs" | "permisos">("mis_blogs")
   const isAdmin = session?.user?.role === "ADMIN" || session?.user?.role === "MANAGEMENT"
-  const canPublish = isAdmin || session?.user?.canCreateBlogs
+  const canPublish = isAdmin || (session?.user as any)?.canCreateBlogs
 
   // Blogs State
   const [blogs, setBlogs] = useState<any[]>([])
