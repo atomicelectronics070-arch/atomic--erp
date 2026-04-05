@@ -14,29 +14,29 @@ export default function Home() {
       
       {/* Background Orbs */}
       <div className="fixed inset-0 z-0 pointer-events-none">
-        <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] rounded-full bg-indigo-600/10 blur-[120px] animate-pulse" />
-        <div className="absolute bottom-[-10%] left-[-5%] w-[40%] h-[40%] rounded-full bg-pink-600/10 blur-[120px] animate-pulse" style={{ animationDelay: '2s' }} />
+        <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] rounded-full bg-azure-500/10 blur-[120px] animate-pulse" />
+        <div className="absolute bottom-[-10%] left-[-5%] w-[40%] h-[40%] rounded-full bg-tomato-500/10 blur-[120px] animate-pulse" style={{ animationDelay: '2s' }} />
       </div>
 
       {/* Navbar */}
       <nav className="fixed top-0 w-full z-50 border-b border-white/5 bg-slate-950/40 backdrop-blur-xl px-6 md:px-12 py-5 flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <div className="w-10 h-10 glass-panel flex items-center justify-center relative overflow-hidden group rounded-xl">
-            <div className="absolute inset-0 bg-gradient-to-tr from-indigo-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-            <div className="w-3 h-3 bg-indigo-500 shadow-[0_0_15px_rgba(99,102,241,0.8)] rounded-sm" />
+            <div className="absolute inset-0 bg-gradient-to-tr from-tomato-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="w-3 h-3 bg-secondary shadow-[0_0_15px_rgba(255,99,71,0.8)] rounded-sm" />
           </div>
           <div className="flex flex-col">
             <span className="text-xl md:text-2xl font-black tracking-tighter uppercase italic text-white leading-none">
-              ATOMIC<span className="text-indigo-500">.</span>
+              ATOMIC<span className="text-secondary">.</span>
             </span>
-            <span className="text-[8px] font-black tracking-[0.4em] text-indigo-400/60 uppercase mt-1">Industries ERP</span>
+            <span className="text-[8px] font-black tracking-[0.4em] text-slate-400/60 uppercase mt-1">Industries ERP</span>
           </div>
         </div>
         <div className="flex items-center space-x-8">
-            <Link href="/web" className="hidden sm:inline-flex text-[10px] uppercase font-black tracking-[0.2em] text-white/50 hover:text-indigo-400 transition-colors">
+            <Link href="/web" className="hidden sm:inline-flex text-[10px] uppercase font-black tracking-[0.2em] text-white/50 hover:text-secondary transition-colors">
                 Tienda Pública
             </Link>
-            <Link href="/login" className="px-5 py-2 glass-panel border-indigo-500/20 text-[10px] uppercase font-black tracking-[0.2em] text-indigo-300 hover:text-white hover:bg-indigo-500/10 transition-all rounded-full">
+            <Link href="/login" className="px-5 py-2 glass-panel border-secondary/20 text-[10px] uppercase font-black tracking-[0.2em] text-secondary hover:text-white hover:bg-secondary/10 transition-all rounded-full">
                 Portal Acceso
             </Link>
         </div>
@@ -49,10 +49,10 @@ export default function Home() {
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="inline-flex items-center gap-3 px-4 py-2 border border-indigo-500/30 bg-indigo-500/10 backdrop-blur-md rounded-full mb-8"
+          className="inline-flex items-center gap-3 px-4 py-2 border border-secondary/30 bg-secondary/10 backdrop-blur-md rounded-full mb-8"
         >
-            <Sparkles size={14} className="text-indigo-400" />
-            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-300">Inteligencia Operativa Centralizada</span>
+            <Sparkles size={14} className="text-secondary" />
+            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Inteligencia Operativa Centralizada</span>
         </motion.div>
 
         <motion.h1 
@@ -84,7 +84,7 @@ export default function Home() {
           {/* Main Action: Dashboard Login */}
           <Link
             href="/login"
-            className="flex-1 md:flex-none flex items-center justify-center space-x-3 bg-gradient-to-r from-indigo-600 to-pink-600 text-white px-12 py-5 text-xs font-black uppercase tracking-widest hover:translate-y-[-2px] transition-all shadow-[0_10px_40px_-10px_rgba(99,102,241,0.5)] group relative overflow-hidden rounded-2xl"
+            className="flex-1 md:flex-none flex items-center justify-center space-x-3 bg-gradient-to-r from-tomato-600 to-orange-500 text-white px-12 py-5 text-xs font-black uppercase tracking-widest hover:translate-y-[-2px] transition-all shadow-[0_10px_40px_-10px_rgba(255,99,71,0.5)] group relative overflow-hidden rounded-2xl"
           >
             <span className="relative z-10">Iniciar Sesión Segura</span>
             <ArrowRight size={16} className="relative z-10 group-hover:translate-x-1 transition-transform" />
@@ -94,9 +94,9 @@ export default function Home() {
           {/* Action 2: Web */}
           <Link
             href="/web"
-            className="flex-1 md:flex-none flex items-center justify-center space-x-3 glass-panel px-12 py-5 text-xs font-black uppercase tracking-widest text-white hover:border-indigo-500/50 hover:bg-indigo-500/10 transition-all group rounded-2xl"
+            className="flex-1 md:flex-none flex items-center justify-center space-x-3 glass-panel px-12 py-5 text-xs font-black uppercase tracking-widest text-white hover:border-secondary/50 hover:bg-secondary/10 transition-all group rounded-2xl"
           >
-            <LayoutGrid size={16} className="text-indigo-400 group-hover:scale-110 transition-transform" />
+            <LayoutGrid size={16} className="text-secondary group-hover:scale-110 transition-transform" />
             <span>Tienda en Línea</span>
           </Link>
         </motion.div>
@@ -114,7 +114,7 @@ export default function Home() {
           </div>
           <div className="w-px h-4 bg-white/10" />
           <div className="flex items-center gap-2">
-            <Activity size={14} className="text-indigo-500" />
+            <Activity size={14} className="text-secondary" />
             <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">v4.0.2 Stable</span>
           </div>
         </motion.div>
@@ -124,22 +124,22 @@ export default function Home() {
       <section className="relative z-10 px-6 max-w-7xl mx-auto my-40">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <FeatureCard
-            icon={<BrainCircuit className="text-indigo-400" size={24} />}
+            icon={<BrainCircuit className="text-azure-400" size={24} />}
             title="Motores de IA"
             desc="Modelos cognitivos avanzados para la automatización de procesos operativos y respuestas."
           />
           <FeatureCard
-            icon={<Database className="text-pink-400" size={24} />}
+            icon={<Database className="text-tomato-400" size={24} />}
             title="Data Cloud"
             desc="Sincronización masiva de inventarios y gestión documental bajo encriptación militar."
           />
           <FeatureCard
-            icon={<Shield className="text-indigo-400" size={24} />}
+            icon={<Shield className="text-azure-400" size={24} />}
             title="Seguridad ACL"
             desc="Control granular de permisos y roles para una administración transparente y segura."
           />
           <FeatureCard
-            icon={<Activity className="text-pink-400" size={24} />}
+            icon={<Activity className="text-tomato-400" size={24} />}
             title="Market Scraping"
             desc="Extracción de inteligencia comercial en tiempo real con Scraper Pro AI nativo."
           />
@@ -152,7 +152,7 @@ export default function Home() {
           <div className="flex flex-col items-center md:items-start space-y-4">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 glass-panel flex items-center justify-center rounded-lg">
-                <div className="w-2 h-2 bg-indigo-500" />
+                <div className="w-2 h-2 bg-secondary" />
               </div>
               <span className="text-xs font-black text-white tracking-[0.3em] uppercase">ATOMIC INDUSTRIES</span>
             </div>
@@ -167,7 +167,7 @@ export default function Home() {
           </div>
 
           <div className="flex items-center space-x-6">
-             <Link href="/register" className="glass-panel border-indigo-500/20 px-8 py-4 text-[10px] font-black text-indigo-400 hover:text-white hover:border-indigo-500 transition-all rounded-2xl flex items-center space-x-3 uppercase tracking-widest">
+             <Link href="/register" className="glass-panel border-secondary/20 px-8 py-4 text-[10px] font-black text-secondary hover:text-white hover:border-secondary transition-all rounded-2xl flex items-center space-x-3 uppercase tracking-widest">
                 <span>Solicitar Acceso</span>
                 <ArrowRight size={14} />
              </Link>
@@ -183,7 +183,7 @@ export default function Home() {
 
 function FeatureCard({ icon, title, desc }: { icon: React.ReactNode; title: string; desc: string }) {
   return (
-    <div className="glass-panel p-8 hover:border-indigo-500/40 hover:bg-white/5 transition-all group flex flex-col justify-start h-full cursor-default rounded-3xl">
+    <div className="glass-panel p-8 hover:border-secondary/40 hover:bg-white/5 transition-all group flex flex-col justify-start h-full cursor-default rounded-3xl">
       <div className="mb-8 w-12 h-12 glass-panel border-white/10 flex items-center justify-center rounded-2xl group-hover:scale-110 transition-transform">
         {icon}
       </div>

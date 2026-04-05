@@ -143,97 +143,99 @@ export default function FinanceManager() {
     }
 
     return (
-        <div className="space-y-8 pb-12">
+        <div className="space-y-10 pb-12 animate-in fade-in duration-1000">
             {/* Period Filters and Search */}
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 bg-white p-6 border border-neutral-100 shadow-sm">
-                <div className="flex flex-wrap items-center gap-2 bg-neutral-100 p-1">
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 glass-panel p-6 border-white/5 shadow-2xl rounded-[2rem]">
+                <div className="flex flex-wrap items-center gap-2 glass-panel !bg-slate-900/40 p-1.5 rounded-2xl border-white/5 ring-1 ring-white/5">
                     {(["TODOS", "ANUAL", "TRIMESTRAL", "MENSUAL"] as const).map(p => (
                         <button 
                             key={p}
                             onClick={() => setPeriodFilter(p)}
-                            className={`px-4 py-2 text-[10px] font-bold uppercase tracking-widest transition-all ${periodFilter === p ? 'bg-white text-neutral-950 shadow-sm' : 'text-neutral-400 hover:text-neutral-600'}`}
+                            className={`px-6 py-2.5 text-[10px] font-black uppercase tracking-widest transition-all rounded-xl ${periodFilter === p ? 'bg-secondary text-white shadow-[0_5px_15px_rgba(255,99,71,0.3)]' : 'text-slate-500 hover:text-white'}`}
                         >
-                            {p === "TODOS" ? "Histórico Total" : p === "ANUAL" ? "Año Actual" : p === "TRIMESTRAL" ? "Trimestre" : "Este Mes"}
+                            {p === "TODOS" ? "Histórico Total" : p === "ANUAL" ? "Año Actual" : p === p ? p : p}
                         </button>
                     ))}
                 </div>
 
-                <div className="flex flex-col md:flex-row items-center gap-4 w-full lg:w-auto">
-                    <div className="relative w-full md:w-80 group">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400 group-focus-within:text-orange-600 transition-colors" size={16} />
+                <div className="flex flex-col md:flex-row items-center gap-6 w-full lg:w-auto">
+                    <div className="relative w-full md:w-96 group">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-secondary transition-colors" size={18} />
                         <input
                             type="text"
-                            placeholder="Buscar cliente o ID..."
+                            placeholder="Buscar cliente o identificador..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full bg-neutral-50 border border-neutral-100 rounded-none py-3 pl-10 pr-4 text-xs font-medium outline-none focus:ring-1 focus:ring-orange-500 transition-all"
+                            className="w-full bg-slate-900/40 border border-white/5 rounded-xl py-3.5 pl-12 pr-6 text-[11px] font-black uppercase tracking-wider text-white outline-none focus:ring-2 focus:ring-secondary/50 transition-all placeholder:text-slate-700"
                         />
                     </div>
                     <button
                         onClick={() => handleOpenModal()}
-                        className="w-full md:w-auto bg-neutral-900 text-white px-6 py-3 rounded-none font-bold uppercase tracking-widest text-[10px] flex items-center justify-center space-x-2 hover:bg-orange-600 transition-all shadow-md active:scale-95"
+                        className="w-full md:w-auto bg-secondary text-white px-8 py-3.5 rounded-xl font-black uppercase tracking-[0.2em] text-[10px] flex items-center justify-center space-x-3 hover:bg-white hover:text-secondary transition-all shadow-[0_10px_30px_-5px_rgba(255,99,71,0.4)] active:scale-95"
                     >
-                        <Plus size={14} />
+                        <Plus size={18} />
                         <span>Nuevo Registro</span>
                     </button>
                 </div>
             </div>
 
             {/* Summary Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <StatSummary label={`Ventas (${periodFilter})`} value={totalSales} icon={<DollarSign size={20} />} trend={periodFilter} color="orange" />
-                <StatSummary label="Utilidad Estimada" value={totalProfit} icon={<Info size={20} />} trend="Post-Costos" color="neutral" />
-                <StatSummary label="Comisiones Netas" value={totalCommission} icon={<ArrowUpRight size={20} />} trend="Liquidables" color="green" />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <StatSummary label={`Ventas (${periodFilter})`} value={totalSales} icon={<DollarSign size={24} />} trend={periodFilter} color="secondary" />
+                <StatSummary label="Utilidad Estimada" value={totalProfit} icon={<Info size={24} />} trend="Post-Costos" color="azure" />
+                <StatSummary label="Comisiones Netas" value={totalCommission} icon={<ArrowUpRight size={24} />} trend="Liquidables" color="emerald" />
             </div>
 
             {/* Data Table */}
-            <div className="bg-white rounded-none border border-neutral-100 shadow-sm overflow-hidden">
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
+            <div className="glass-panel border-white/5 shadow-2xl overflow-hidden rounded-[2.5rem]">
+                <div className="overflow-x-auto scrollbar-hide">
+                    <table className="w-full text-left border-collapse whitespace-nowrap">
                         <thead>
-                            <tr className="border-b border-neutral-50 bg-neutral-50/20">
-                                <th className="px-8 py-6 text-[10px] font-bold text-neutral-400 uppercase tracking-widest">ID / Fecha</th>
-                                <th className="px-8 py-6 text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Cliente / Concepto</th>
-                                <th className="px-8 py-6 text-[10px] font-bold text-neutral-400 uppercase tracking-widest text-right">Monto Bruto</th>
-                                <th className="px-8 py-6 text-[10px] font-bold text-neutral-400 uppercase tracking-widest text-right">Costo Operativo</th>
-                                <th className="px-8 py-6 text-[10px] font-bold text-neutral-400 uppercase tracking-widest text-right">Utilidad</th>
-                                <th className="px-8 py-6 text-[10px] font-bold text-neutral-400 uppercase tracking-widest text-center">Estado</th>
-                                <th className="px-8 py-6 text-[10px] font-bold text-neutral-400 uppercase tracking-widest text-right">Acciones</th>
+                            <tr className="border-b border-white/5 bg-white/[0.02]">
+                                <th className="px-10 py-6 text-[10px] font-black text-slate-500 uppercase tracking-[0.4em]">ID / Cronología</th>
+                                <th className="px-10 py-6 text-[10px] font-black text-slate-500 uppercase tracking-[0.4em]">Cliente / Segmento</th>
+                                <th className="px-10 py-6 text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] text-right">Monto Bruto</th>
+                                <th className="px-10 py-6 text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] text-right">Inversión</th>
+                                <th className="px-10 py-6 text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] text-right">Utilidad Neta</th>
+                                <th className="px-10 py-6 text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] text-center">Estado</th>
+                                <th className="px-10 py-6 text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] text-right">Acciones</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-neutral-50">
+                        <tbody className="divide-y divide-white/[0.03]">
                             {filteredData.map((item) => (
-                                <tr key={item.id} className="hover:bg-neutral-50/50 transition-all group">
-                                    <td className="px-8 py-6">
-                                        <div className="text-xs font-bold text-neutral-900 mb-1">{item.id}</div>
-                                        <div className="text-[10px] text-neutral-400 flex items-center"><Calendar size={12} className="mr-1" /> {item.date}</div>
+                                <tr key={item.id} className="hover:bg-white/[0.03] transition-all group relative">
+                                    <td className="px-10 py-6">
+                                        <div className="text-xs font-black text-white mb-1.5 uppercase group-hover:text-secondary transition-colors">{item.id}</div>
+                                        <div className="text-[10px] text-slate-600 font-black flex items-center tracking-widest"><Calendar size={12} className="mr-2 text-slate-700" /> {item.date}</div>
                                     </td>
-                                    <td className="px-8 py-6">
-                                        <div className="text-sm font-bold text-neutral-900 mb-1">{item.client}</div>
-                                        <div className="text-[10px] font-bold text-orange-600 uppercase tracking-[0.1em]">{item.type}</div>
+                                    <td className="px-10 py-6">
+                                        <div className="text-sm font-black text-white mb-1.5 tracking-tight uppercase italic">{item.client}</div>
+                                        <div className="text-[10px] font-black text-secondary uppercase tracking-[0.2em]">{item.type}</div>
                                     </td>
-                                    <td className="px-8 py-6 text-right text-sm font-bold text-neutral-900">${item.amount.toLocaleString()}</td>
-                                    <td className="px-8 py-6 text-right text-sm font-medium text-neutral-400">-${item.cost.toLocaleString()}</td>
-                                    <td className="px-8 py-6 text-right text-sm font-bold text-green-600">${item.profit.toLocaleString()}</td>
-                                    <td className="px-8 py-6 text-center">
-                                        <span className={`px-3 py-1.5 rounded-none text-[9px] font-bold uppercase tracking-widest border ${item.status === 'PAGADO' ? 'bg-green-50 text-green-600 border-green-100' : 'bg-orange-50 text-orange-600 border-orange-100'
+                                    <td className="px-10 py-6 text-right text-sm font-black text-white tracking-tighter">${item.amount.toLocaleString()}</td>
+                                    <td className="px-10 py-6 text-right text-sm font-black text-slate-600 tracking-tighter">-${item.cost.toLocaleString()}</td>
+                                    <td className="px-10 py-6 text-right text-sm font-black text-emerald-400 tracking-tighter shadow-emerald-500/10">${item.profit.toLocaleString()}</td>
+                                    <td className="px-10 py-6 text-center">
+                                        <span className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-[0.2em] border shadow-2xl ${
+                                            item.status === 'PAGADO' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 shadow-emerald-500/10' : 
+                                            'bg-secondary/10 text-secondary border-secondary/20 shadow-secondary/10'
                                             }`}>
                                             {item.status}
                                         </span>
                                     </td>
-                                    <td className="px-8 py-6 text-right">
-                                        <div className="flex justify-end space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <td className="px-10 py-6 text-right">
+                                        <div className="flex justify-end space-x-3 opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0">
                                             <button
                                                 onClick={() => handleOpenModal(item)}
-                                                className="p-2 text-neutral-400 hover:text-orange-600 hover:bg-orange-50 rounded-none transition-all"
+                                                className="p-3 glass-panel !bg-slate-900 text-slate-500 hover:text-secondary hover:bg-white transition-all rounded-xl border-white/5"
                                             >
-                                                <Edit3 size={16} />
+                                                <Edit3 size={18} />
                                             </button>
                                             <button
                                                 onClick={() => handleDelete(item.id)}
-                                                className="p-2 text-neutral-400 hover:text-red-600 hover:bg-red-50 rounded-none transition-all"
+                                                className="p-3 glass-panel !bg-slate-900 text-slate-500 hover:text-red-500 hover:bg-red-500/10 transition-all rounded-xl border-white/5"
                                             >
-                                                <Trash2 size={16} />
+                                                <Trash2 size={18} />
                                             </button>
                                         </div>
                                     </td>
@@ -241,9 +243,9 @@ export default function FinanceManager() {
                             ))}
                             {filteredData.length === 0 && (
                                 <tr>
-                                    <td colSpan={7} className="px-8 py-20 text-center">
-                                        <Clock className="mx-auto text-neutral-200 mb-4" size={40} />
-                                        <p className="text-neutral-400 font-bold text-xs uppercase tracking-widest">No se encontraron registros para este periodo.</p>
+                                    <td colSpan={7} className="px-10 py-32 text-center">
+                                        <Clock className="mx-auto text-slate-900 mb-8" size={60} />
+                                        <p className="text-slate-600 font-black text-xs uppercase tracking-[0.4em]">Sin registros tácticos detectados en el periodo.</p>
                                     </td>
                                 </tr>
                             )}
@@ -254,118 +256,122 @@ export default function FinanceManager() {
 
             {/* CRUD Modal remains same logic, just keeping it here for consistency */}
             {isModalOpen && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 backdrop-blur-md bg-stone-900/10">
-                    <div className="bg-white w-full max-w-xl rounded-none shadow-2xl border border-neutral-100 overflow-hidden animate-in zoom-in-95 duration-200">
-                        <div className="p-10 border-b border-neutral-50 flex justify-between items-center">
+                <div className="fixed inset-0 z-[200] flex items-center justify-center p-8">
+                    <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-2xl animate-in fade-in duration-500" onClick={() => setIsModalOpen(false)} />
+                    <div className="glass-panel !bg-slate-950/80 w-full max-w-2xl shadow-[0_0_100px_rgba(0,0,0,0.8)] border-white/10 overflow-hidden animate-in zoom-in-95 duration-500 rounded-[3rem] relative z-10">
+                        <div className="p-12 border-b border-white/5 flex justify-between items-center bg-white/5">
                             <div>
-                                <h3 className="text-xl font-bold text-neutral-900">{editingItem ? 'Editar Transacción' : 'Nuevo Registro Operativo'}</h3>
-                                <p className="text-xs text-neutral-400 mt-1">Nivel Industrial • Control de Liquidación</p>
+                                <h3 className="text-3xl font-black text-white uppercase tracking-tighter italic">
+                                    {editingItem ? 'Modificar Registro' : 'Nueva Operación'}
+                                </h3>
+                                <p className="text-[11px] font-black text-secondary mt-3 uppercase tracking-[0.4em]">Control de Flujo de Caja Corporativo</p>
                             </div>
                             <button
                                 onClick={() => setIsModalOpen(false)}
-                                className="p-3 bg-neutral-50 rounded-none text-neutral-400 hover:text-neutral-900 transition-all"
+                                className="p-4 glass-panel !bg-slate-900 rounded-2xl text-slate-500 hover:text-white hover:rotate-90 transition-all duration-300 border-white/5"
                             >
-                                <X size={20} />
+                                <X size={24} />
                             </button>
                         </div>
 
-                        <form onSubmit={handleSave} className="p-10 space-y-6">
-                            <div className="grid grid-cols-2 gap-6">
-                                <div className="col-span-2 space-y-2">
-                                    <label className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest ml-1">Cliente Corporativo</label>
-                                    <div className="relative">
-                                        <Users className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-300" size={16} />
+                        <form onSubmit={handleSave} className="p-12 space-y-8 scrollbar-hide max-h-[70vh] overflow-y-auto">
+                            <div className="grid grid-cols-2 gap-8">
+                                <div className="col-span-2 space-y-3">
+                                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] ml-1">Cliente Corporativo / Nodo</label>
+                                    <div className="relative group">
+                                        <Users className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-700 group-focus-within:text-secondary transition-colors" size={18} />
                                         <input
                                             required
                                             value={formData.client}
                                             onChange={(e) => setFormData({ ...formData, client: e.target.value })}
-                                            className="w-full bg-neutral-50 border-none rounded-none py-4 pl-12 pr-4 text-sm font-medium focus:ring-2 focus:ring-orange-500/10 transition-all"
-                                            placeholder="Nombre de la empresa..."
+                                            className="w-full bg-slate-900 border border-white/5 rounded-2xl py-4.5 pl-14 pr-6 text-xs font-black uppercase tracking-widest text-white focus:ring-2 focus:ring-secondary/50 outline-none transition-all placeholder:text-slate-800"
+                                            placeholder="NOMBRE DEL ENTE CORPORATIVO..."
                                         />
                                     </div>
                                 </div>
 
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest ml-1">Fecha de Registro</label>
+                                <div className="space-y-3">
+                                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] ml-1">Cronología</label>
                                     <input
                                         type="date"
                                         required
                                         value={formData.date}
                                         onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                                        className="w-full bg-neutral-50 border-none rounded-none py-4 px-6 text-sm font-medium focus:ring-2 focus:ring-orange-500/10 transition-all"
+                                        className="w-full bg-slate-900 border border-white/5 rounded-2xl py-4.5 px-8 text-xs font-black uppercase tracking-widest text-white focus:ring-2 focus:ring-secondary/50 outline-none transition-all"
                                     />
                                 </div>
 
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest ml-1">Categoría</label>
+                                <div className="space-y-3">
+                                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] ml-1">Segmento</label>
                                     <select
                                         value={formData.type}
                                         onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                                        className="w-full bg-neutral-50 border-none rounded-none py-4 px-6 text-sm font-medium focus:ring-2 focus:ring-orange-500/10 transition-all appearance-none"
+                                        className="w-full bg-slate-900 border border-white/5 rounded-2xl py-4.5 px-8 text-[10px] font-black uppercase tracking-[0.2em] text-white focus:ring-2 focus:ring-secondary/50 outline-none transition-all cursor-pointer h-[57px]"
                                     >
-                                        <option value="Venta Directa">Venta Directa</option>
-                                        <option value="Equipos">Equipos</option>
-                                        <option value="Servicio">Servicio</option>
-                                        <option value="Proyectos">Proyectos</option>
-                                        <option value="Distribución">Distribución</option>
-                                        <option value="Ticket de Pago">Ticket de Pago</option>
+                                        <option value="Venta Directa">VENTA DIRECTA</option>
+                                        <option value="Equipos">EQUIPOS TÉCNICOS</option>
+                                        <option value="Servicio">SERVICIOS PROF.</option>
+                                        <option value="Proyectos">PROYECTOS I+D</option>
+                                        <option value="Distribución">LOGÍSTICA / DIST.</option>
+                                        <option value="Ticket de Pago">TICKET DE LIQUIDACIÓN</option>
                                     </select>
                                 </div>
 
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest ml-1">Precio de Venta ($)</label>
+                                <div className="space-y-3">
+                                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] ml-1">Precio Bruto ($)</label>
                                     <input
                                         type="number"
                                         required
                                         value={formData.amount}
                                         onChange={(e) => setFormData({ ...formData, amount: parseFloat(e.target.value) })}
-                                        className="w-full bg-neutral-50 border-none rounded-none py-4 px-6 text-sm font-bold text-neutral-900 focus:ring-2 focus:ring-orange-500/10 transition-all"
+                                        className="w-full bg-slate-900 border border-white/5 rounded-2xl py-4.5 px-8 text-sm font-black text-white focus:ring-2 focus:ring-secondary/50 outline-none transition-all"
                                     />
                                 </div>
 
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest ml-1">Costo ($)</label>
+                                <div className="space-y-3">
+                                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] ml-1">Costo Operativo ($)</label>
                                     <input
                                         type="number"
                                         required
                                         value={formData.cost}
                                         onChange={(e) => setFormData({ ...formData, cost: parseFloat(e.target.value) })}
-                                        className="w-full bg-neutral-50 border-none rounded-none py-4 px-6 text-sm font-bold text-neutral-400 focus:ring-2 focus:ring-orange-500/10 transition-all"
+                                        className="w-full bg-slate-900 border border-white/5 rounded-2xl py-4.5 px-8 text-sm font-black text-slate-400 focus:ring-2 focus:ring-secondary/50 outline-none transition-all"
                                     />
                                 </div>
 
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest ml-1">Comisión ($)</label>
+                                <div className="space-y-3">
+                                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] ml-1">Incentivo / Comisión ($)</label>
                                     <input
                                         type="number"
                                         required
                                         value={formData.commission}
                                         onChange={(e) => setFormData({ ...formData, commission: parseFloat(e.target.value) })}
-                                        className="w-full bg-neutral-50 border-none rounded-none py-4 px-6 text-sm font-bold text-green-600 focus:ring-2 focus:ring-orange-500/10 transition-all"
+                                        className="w-full bg-slate-900 border border-white/5 rounded-2xl py-4.5 px-8 text-sm font-black text-emerald-400 focus:ring-2 focus:ring-secondary/50 outline-none transition-all"
                                     />
                                 </div>
 
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest ml-1">Estado de Pago</label>
+                                <div className="space-y-3">
+                                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] ml-1">Estatus del Ciclo</label>
                                     <select
                                         value={formData.status}
                                         onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
-                                        className={`w-full border-none rounded-none py-4 px-6 text-sm font-bold transition-all appearance-none ${formData.status === 'PAGADO' ? 'bg-green-50 text-green-600' : 'bg-orange-50 text-orange-600'
+                                        className={`w-full border border-white/5 rounded-2xl py-4.5 px-8 text-[10px] font-black uppercase tracking-[0.2em] transition-all cursor-pointer h-[57px] ${
+                                            formData.status === 'PAGADO' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-secondary/10 text-secondary'
                                             }`}
                                     >
-                                        <option value="PENDIENTE">PENDIENTE</option>
-                                        <option value="PAGADO">PAGADO</option>
+                                        <option value="PENDIENTE">PENDIENTE DE LIQUIDACIÓN</option>
+                                        <option value="PAGADO">OPERACIÓN FINALIZADA</option>
                                     </select>
                                 </div>
                             </div>
 
-                            <div className="pt-6 flex space-x-4">
+                            <div className="pt-10 flex space-x-6">
                                 <button
                                     type="submit"
-                                    className="flex-1 bg-neutral-900 text-white font-bold py-5 rounded-none text-xs uppercase tracking-[0.2em] shadow-lg shadow-neutral-200 hover:bg-orange-600 transition-all flex items-center justify-center space-x-2"
+                                    className="flex-1 bg-secondary text-white font-black py-6 rounded-2xl text-[11px] uppercase tracking-[0.3em] shadow-[0_15px_40px_-5px_rgba(255,99,71,0.5)] hover:bg-white hover:text-secondary transition-all flex items-center justify-center space-x-4 active:scale-[0.98]"
                                 >
-                                    <Save size={18} />
-                                    <span>{editingItem ? 'Guardar Cambios' : 'Confirmar Registro'}</span>
+                                    <Save size={20} />
+                                    <span>{editingItem ? 'Sincronizar Cambios' : 'Confirmar Operación'}</span>
                                 </button>
                             </div>
                         </form>
@@ -378,23 +384,23 @@ export default function FinanceManager() {
 
 function StatSummary({ label, value, icon, trend, color }: any) {
     const colors = {
-        orange: "text-orange-600 bg-orange-50",
-        green: "text-green-600 bg-green-50",
-        neutral: "text-neutral-900 bg-neutral-50"
+        secondary: "text-secondary bg-secondary/10 border-secondary/20 shadow-secondary/5",
+        azure: "text-primary bg-primary/10 border-primary/20 shadow-primary/5",
+        emerald: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20 shadow-emerald-500/5"
     }
 
-    const colorKey = (color || 'neutral') as keyof typeof colors;
+    const colorKey = (color || 'secondary') as keyof typeof colors;
 
     return (
-        <div className="bg-white p-8 rounded-none border border-neutral-100 shadow-sm transition-all hover:shadow-md border-b-4 border-b-neutral-900">
-            <div className="flex justify-between items-start mb-6">
-                <div className={`p-4 rounded-none ${colors[colorKey]}`}>
+        <div className="glass-panel p-10 relative overflow-hidden group hover:scale-[1.02] transition-all rounded-[2.5rem] border-white/5 shadow-2xl">
+            <div className="flex justify-between items-start mb-8">
+                <div className={`p-4 glass-panel border shadow-2xl rounded-2xl ${colors[colorKey]}`}>
                     {icon}
                 </div>
-                <div className="text-[9px] font-extrabold text-neutral-300 uppercase tracking-[0.2em] pt-2">{trend}</div>
+                <div className="text-[9px] font-black text-slate-700 uppercase tracking-[0.4em] pt-3">{trend}</div>
             </div>
-            <h4 className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-1">{label}</h4>
-            <p className="text-3xl font-bold tracking-tight text-neutral-900">${value.toLocaleString()}</p>
+            <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-2">{label}</h4>
+            <p className="text-4xl font-black tracking-tighter text-white">${value.toLocaleString()}</p>
         </div>
     )
 }

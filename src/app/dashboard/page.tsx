@@ -49,127 +49,142 @@ export default function DashboardOverview() {
     const isAdmin = role === "ADMIN" || role === "MANAGEMENT"
 
     if (loading && !data) {
-        return <div className="h-screen flex items-center justify-center font-bold text-orange-600 animate-pulse tracking-widest uppercase">Arquitectando Centro de Control...</div>
+        return <div className="h-screen flex items-center justify-center font-black text-secondary animate-pulse tracking-[0.5em] uppercase text-xs">Sincronizando Nodo Central...</div>
     }
 
     const currentChartData = chartPeriod === "weekly" ? data.charts.weekly : chartPeriod === "monthly" ? data.charts.monthly : data.charts.annual
 
     return (
-        <div className="space-y-12 pb-20 animate-in fade-in duration-700">
+        <div className="space-y-16 pb-20 animate-in fade-in duration-1000 relative z-10">
             {/* Header section with Premium feel */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 border-b border-neutral-100 pb-10">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-10 border-b border-white/5 pb-14">
                 <div>
-                    <h1 className="text-5xl font-extrabold tracking-tighter text-neutral-900 uppercase">
-                        Centro de <span className="text-orange-600">Control</span>
+                    <h1 className="text-6xl font-black tracking-tighter text-white uppercase italic leading-none">
+                        Centro de <span className="text-secondary">Control</span>
                     </h1>
-                    <div className="flex items-center gap-3 mt-2">
-                        <span className="bg-neutral-900 text-white text-[10px] font-bold px-3 py-1 uppercase tracking-widest">Inteligencia de Negocio</span>
-                        <p className="text-neutral-400 font-medium text-sm">Vista consolidada de indicadores tácticos y financieros.</p>
+                    <div className="flex items-center gap-4 mt-4">
+                        <span className="bg-secondary/10 text-secondary text-[10px] font-black px-4 py-1.5 uppercase tracking-widest rounded-full border border-secondary/20">Inteligencia de Negocio</span>
+                        <p className="text-slate-500 font-bold text-xs uppercase tracking-tight">Efectividad Operativa y Financiera Consolidada</p>
                     </div>
                 </div>
                 
-                <div className="flex items-center gap-6">
-                    <button onClick={loadStats} className="p-3 bg-neutral-50 hover:bg-orange-50 text-neutral-400 hover:text-orange-600 transition-all rounded-full border border-neutral-100">
-                        <RefreshCw size={20} className={loading ? "animate-spin" : ""} />
+                <div className="flex items-center gap-8">
+                    <button onClick={loadStats} className="p-4 glass-panel hover:bg-white/5 text-slate-400 hover:text-secondary transition-all rounded-2xl group border-white/5">
+                        <RefreshCw size={24} className={loading ? "animate-spin" : "group-hover:rotate-180 transition-transform duration-500"} />
                     </button>
-                    <div className="flex items-center gap-4 bg-white border border-neutral-200 p-3 shadow-sm hover:shadow-md transition-all">
-                        <div className="w-12 h-12 bg-neutral-900 text-white flex items-center justify-center font-bold text-xl ring-4 ring-neutral-50">
+                    <div className="flex items-center gap-5 glass-panel !bg-slate-950/40 p-4 border-white/5 shadow-2xl rounded-2xl ring-1 ring-white/5">
+                        <div className="w-14 h-14 bg-slate-900 border border-white/10 text-white flex items-center justify-center font-black text-2xl shadow-xl shadow-azure-500/10 rounded-xl uppercase tracking-tighter">
                             {session.user?.name?.[0]}
                         </div>
                         <div>
-                            <p className="text-[9px] font-bold text-orange-600 uppercase tracking-[0.2em]">{role}</p>
-                            <p className="text-sm font-bold text-neutral-900">{session.user?.name}</p>
+                            <p className="text-[10px] font-black text-secondary uppercase tracking-[0.3em] mb-1">{role === "ADMIN" ? "ADMINISTRADOR" : role}</p>
+                            <p className="text-base font-black text-white uppercase tracking-tight">{session.user?.name}</p>
                         </div>
                     </div>
                 </div>
             </div>
 
             {/* Main KPI Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 {/* 1. Annual Sales */}
-                <div className="bg-white p-8 border border-neutral-200 shadow-sm relative overflow-hidden group hover:border-orange-200 transition-all">
-                    <div className="absolute -right-4 -top-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                        <DollarSign size={120} />
+                <div className="glass-panel p-10 relative overflow-hidden group hover:border-secondary/30 transition-all rounded-[2.5rem]">
+                    <div className="absolute -right-8 -top-8 opacity-[0.03] group-hover:opacity-10 transition-opacity text-white">
+                        <DollarSign size={160} />
                     </div>
-                    <div className="flex justify-between items-start mb-6">
-                        <div className="p-3 bg-neutral-900 text-white shadow-lg shadow-neutral-200">
-                            <TrendingUp size={24} />
+                    <div className="flex justify-between items-start mb-10">
+                        <div className="p-4 glass-panel !bg-slate-900 text-white shadow-2xl border-white/10 rounded-2xl ring-1 ring-white/20">
+                            <TrendingUp size={28} className="text-secondary" />
                         </div>
-                        <span className="text-[10px] font-bold text-green-600 bg-green-50 px-2 py-1 uppercase">Año 2026</span>
+                        <span className="text-[10px] font-black text-emerald-400 bg-emerald-500/10 px-4 py-1.5 uppercase tracking-widest rounded-full border border-emerald-500/20">Año Fiscal 2026</span>
                     </div>
-                    <h3 className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-1">Total Ventas Anual</h3>
+                    <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.25em] mb-2">Volumen de Ventas Anual</h3>
                     <div className="flex items-baseline gap-2">
-                        <p className="text-3xl font-black text-neutral-950 tracking-tighter">{fmt(data.annualSales)}</p>
+                        <p className="text-4xl font-black text-white tracking-tighter">{fmt(data.annualSales)}</p>
                     </div>
-                    <div className="mt-6 h-1 w-full bg-neutral-100">
-                        <div className="h-full bg-orange-600" style={{ width: '65%' }}></div>
+                    <div className="mt-8 h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                        <div className="h-full bg-gradient-to-r from-secondary to-orange-400 rounded-full shadow-[0_0_15px_rgba(255,99,71,0.5)]" style={{ width: '65%' }}></div>
                     </div>
-                    <p className="text-[9px] font-bold text-neutral-400 uppercase mt-2 tracking-widest">65% de la meta proyectada</p>
+                    <p className="text-[10px] font-black text-slate-500 uppercase mt-4 tracking-widest flex items-center gap-2">
+                        <Target size={12} className="text-secondary" /> 65% de Crecimiento Proyectado
+                    </p>
                 </div>
 
                 {/* 2. Quarter Sales */}
-                <div className="bg-white p-8 border border-neutral-200 shadow-sm relative overflow-hidden group hover:border-orange-200 transition-all">
-                    <div className="flex justify-between items-start mb-6">
-                        <div className="p-3 bg-neutral-900 text-white">
-                            <Calendar size={24} />
-                        </div>
-                        <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-1 uppercase">Primer Trimestre</span>
+                <div className="glass-panel p-10 relative overflow-hidden group hover:border-azure-500/30 transition-all rounded-[2.5rem]">
+                    <div className="absolute -right-8 -top-8 opacity-[0.03] group-hover:opacity-10 transition-opacity text-white">
+                        <Calendar size={160} />
                     </div>
-                    <h3 className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-1">Facturación Neta (Q1)</h3>
-                    <p className="text-3xl font-black text-neutral-950 tracking-tighter">{fmt(data.quarterSales)}</p>
-                    <div className="flex items-center gap-2 mt-4 text-[10px] font-bold text-neutral-500 uppercase tracking-widest">
-                        <CheckCircle2 size={12} className="text-green-500" />
-                        <span>{data.quarterCount} Ventas Realizadas</span>
+                    <div className="flex justify-between items-start mb-10">
+                        <div className="p-4 glass-panel !bg-slate-900 text-white shadow-2xl border-white/10 rounded-2xl ring-1 ring-white/20">
+                            <Calendar size={28} className="text-primary" />
+                        </div>
+                        <span className="text-[10px] font-black text-azure-400 bg-azure-500/10 px-4 py-1.5 uppercase tracking-widest rounded-full border border-azure-500/20">Cierre Q1</span>
+                    </div>
+                    <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.25em] mb-2">Facturación Neta Trimestral</h3>
+                    <p className="text-4xl font-black text-white tracking-tighter">{fmt(data.quarterSales)}</p>
+                    <div className="flex items-center gap-3 mt-6 text-[11px] font-black text-slate-400 uppercase tracking-widest">
+                        <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
+                        <span>{data.quarterCount} Ventas Liquidadas</span>
                     </div>
                 </div>
 
                 {/* 3. Quotes (Interactive) */}
                 <button 
                     onClick={() => setShowQuotesOverlay(true)}
-                    className="bg-neutral-950 p-8 text-white shadow-xl relative overflow-hidden text-left hover:bg-neutral-900 transition-all border-b-4 border-orange-600"
+                    className="glass-panel !bg-slate-950/60 p-10 text-white shadow-2xl relative overflow-hidden text-left hover:!bg-white/[0.04] transition-all border-b-4 border-secondary/50 rounded-[2.5rem] group ring-1 ring-white/5"
                 >
-                    <div className="absolute right-0 bottom-0 opacity-10">
-                        <FileText size={100} />
+                    <div className="absolute right-[-20px] bottom-[-20px] opacity-10 group-hover:scale-110 transition-transform">
+                        <FileText size={140} />
                     </div>
-                    <h3 className="text-[10px] font-bold text-orange-500 uppercase tracking-widest mb-1">Cotizaciones Históricas</h3>
-                    <p className="text-5xl font-black text-white tracking-tighter">{data.quotesCount}</p>
-                    <div className="mt-6 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-neutral-400 group">
-                        <span>Ver desglose completo</span>
-                        <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                    <h3 className="text-[10px] font-black text-secondary uppercase tracking-[0.25em] mb-2">Archivo de Cotizaciones</h3>
+                    <p className="text-6xl font-black text-white tracking-tighter drop-shadow-[0_0_20px_rgba(255,255,255,0.2)]">{data.quotesCount}</p>
+                    <div className="mt-8 flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.2em] text-slate-500 group-hover:text-white transition-colors">
+                        <span>Desglosar Registros</span>
+                        <ArrowRight size={16} className="group-hover:translate-x-2 transition-transform text-secondary" />
                     </div>
                 </button>
 
                 {/* 4. Commissions */}
-                <div className="bg-white p-8 border border-neutral-200 shadow-sm group hover:border-orange-200 transition-all">
-                    <div className="flex justify-between items-start mb-6">
-                        <div className="p-3 bg-orange-600 text-white shadow-lg shadow-orange-100">
-                            <Award size={24} />
+                <div className="glass-panel p-10 group hover:border-emerald-500/30 transition-all rounded-[2.5rem]">
+                    <div className="flex justify-between items-start mb-10">
+                        <div className="p-4 glass-panel !bg-emerald-500/10 text-emerald-400 shadow-2xl border-emerald-500/20 rounded-2xl">
+                            <Award size={28} />
                         </div>
+                        <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">Rendimiento</span>
                     </div>
-                    <h3 className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-1">
-                        {isAdmin ? "Comisiones Emitidas" : "Comisiones Obtenidas"}
+                    <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.25em] mb-2">
+                        {isAdmin ? "Comisiones Ejecutadas" : "Incentivos Acumulados"}
                     </h3>
-                    <p className="text-3xl font-black text-neutral-950 tracking-tighter">{fmt(data.commissionsTotal)}</p>
-                    <p className="text-[10px] font-bold text-green-600 uppercase mt-4">Total Acumulado a la fecha</p>
+                    <p className="text-4xl font-black text-white tracking-tighter">{fmt(data.commissionsTotal)}</p>
+                    <div className="mt-8 flex items-center gap-3">
+                         <div className="flex -space-x-2 overflow-hidden">
+                            {[1,2,3].map(i => (
+                                <div key={i} className="inline-block h-6 w-6 rounded-full ring-2 ring-slate-900 bg-slate-800 flex items-center justify-center text-[10px] font-black text-slate-500">
+                                    {i}
+                                </div>
+                            ))}
+                         </div>
+                         <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Meta de Bonificación: Activa</p>
+                    </div>
                 </div>
             </div>
 
             {/* Performance Charts */}
-            <div className="bg-white border border-neutral-200 shadow-sm overflow-hidden">
-                <div className="p-10 border-b border-neutral-100 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div className="glass-panel border-white/5 shadow-2xl overflow-hidden rounded-[3rem]">
+                <div className="p-12 border-b border-white/5 flex flex-col md:flex-row justify-between items-center gap-8 bg-white/5">
                     <div>
-                        <h2 className="text-2xl font-bold text-neutral-900 uppercase tracking-tight flex items-center gap-3">
-                            <BarChart3 className="text-orange-600" size={28} />
-                            Análisis de Rendimiento Operativo
+                        <h2 className="text-3xl font-black text-white uppercase tracking-tighter flex items-center gap-5">
+                            <BarChart3 className="text-secondary" size={32} />
+                            Análisis de Flujo Operativo Global
                         </h2>
-                        <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mt-1">Comparativa de ingresos y efectividad comercial.</p>
+                        <p className="text-[11px] font-black text-slate-500 uppercase tracking-[0.3em] mt-2">Métricas de eficiencia neta vs Proyección Comercial</p>
                     </div>
-                    <div className="flex bg-neutral-100 p-1 group">
+                    <div className="flex glass-panel !bg-slate-900/40 p-1.5 rounded-2xl border-white/10 ring-1 ring-white/5">
                         {(["weekly", "monthly", "annual"] as const).map(p => (
                             <button 
                                 key={p}
                                 onClick={() => setChartPeriod(p)}
-                                className={`px-6 py-2 text-[10px] font-bold uppercase tracking-widest transition-all ${chartPeriod === p ? 'bg-white text-neutral-950 shadow-sm' : 'text-neutral-400 hover:text-neutral-600'}`}
+                                className={`px-8 py-3 text-[11px] font-black uppercase tracking-widest transition-all rounded-xl ${chartPeriod === p ? 'bg-secondary text-white shadow-[0_10px_20px_-5px_rgba(255,99,71,0.4)]' : 'text-slate-500 hover:text-white'}`}
                             >
                                 {p === "weekly" ? "Semanal" : p === "monthly" ? "Mensual" : "Anual"}
                             </button>
@@ -177,24 +192,32 @@ export default function DashboardOverview() {
                     </div>
                 </div>
                 
-                <div className="p-10">
-                    <div className="h-[400px] w-full">
+                <div className="p-14">
+                    <div className="h-[450px] w-full">
                         <ResponsiveContainer width="100%" height="100%">
                             <AreaChart data={currentChartData}>
                                 <defs>
                                     <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#ea580c" stopOpacity={0.2} />
-                                        <stop offset="95%" stopColor="#ea580c" stopOpacity={0} />
+                                        <stop offset="5%" stopColor="#ff6347" stopOpacity={0.3} />
+                                        <stop offset="90%" stopColor="#ff6347" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
-                                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 'bold', fill: "#9ca3af" }} />
-                                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 'bold', fill: "#9ca3af" }} tickFormatter={(v) => `$${(v/1000).toFixed(0)}k`} />
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ffffff05" />
+                                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: '900', fill: "#64748b" }} dy={20} />
+                                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: '900', fill: "#64748b" }} tickFormatter={(v) => `$${(v/1000).toFixed(0)}k`} dx={-20} />
                                 <Tooltip 
-                                    contentStyle={{ borderRadius: '0', border: '1px solid #e5e7eb', background: '#fff', padding: '15px' }}
-                                    itemStyle={{ fontSize: '12px', fontWeight: 'bold', color: '#ea580c' }}
+                                    contentStyle={{ 
+                                        borderRadius: '20px', 
+                                        border: '1px solid rgba(255,255,255,0.1)', 
+                                        background: 'rgba(15,23,42,0.9)', 
+                                        backdropFilter: 'blur(10px)',
+                                        padding: '20px',
+                                        boxShadow: '0 20px 40px rgba(0,0,0,0.4)'
+                                    }}
+                                    itemStyle={{ fontSize: '13px', fontWeight: '900', color: '#ff6347', textTransform: 'uppercase' }}
+                                    cursor={{ stroke: 'rgba(255,99,71,0.2)', strokeWidth: 2 }}
                                 />
-                                <Area type="monotone" dataKey="total" stroke="#ea580c" strokeWidth={4} fillOpacity={1} fill="url(#colorTotal)" />
+                                <Area type="monotone" dataKey="total" stroke="#ff6347" strokeWidth={5} fillOpacity={1} fill="url(#colorTotal)" />
                             </AreaChart>
                         </ResponsiveContainer>
                     </div>
@@ -203,59 +226,69 @@ export default function DashboardOverview() {
 
             {/* Quote Overlay / Detail Section */}
             {showQuotesOverlay && (
-                <div className="fixed inset-0 z-50 flex items-center justify-end animate-in fade-in duration-300">
-                    <div className="absolute inset-0 bg-neutral-900/60 backdrop-blur-sm" onClick={() => setShowQuotesOverlay(false)}></div>
-                    <div className="w-full max-w-4xl h-full bg-white shadow-2xl relative flex flex-col animate-in slide-in-from-right duration-500">
-                        <div className="p-8 border-b border-neutral-100 flex justify-between items-center bg-neutral-950 text-white">
+                <div className="fixed inset-0 z-[100] flex items-center justify-end">
+                    <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="absolute inset-0 bg-slate-950/80 backdrop-blur-xl" 
+                        onClick={() => setShowQuotesOverlay(false)}
+                    />
+                    <motion.div 
+                        initial={{ x: '100%' }}
+                        animate={{ x: 0 }}
+                        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                        className="w-full max-w-4xl h-full glass-panel !bg-slate-950/60 !border-l !border-white/10 relative flex flex-col shadow-[0_0_100px_rgba(0,0,0,0.8)]"
+                    >
+                        <div className="p-10 border-b border-white/5 flex justify-between items-center bg-white/5">
                             <div>
-                                <h2 className="text-2xl font-bold uppercase tracking-tight">Archivo de Cotizaciones</h2>
-                                <p className="text-[10px] font-bold text-orange-500 uppercase tracking-widest mt-1">
-                                    {isAdmin ? "Vista Administrativa: Todos los Usuarios" : "Mis Registros Históricos"}
+                                <h2 className="text-3xl font-black uppercase tracking-tighter text-white italic">Archivo Maestro</h2>
+                                <p className="text-[11px] font-black text-secondary uppercase tracking-[0.4em] mt-2">
+                                    {isAdmin ? "Historial Operativo Consolidado" : "Mis Registros de Emisión"}
                                 </p>
                             </div>
-                            <button onClick={() => setShowQuotesOverlay(false)} className="w-10 h-10 bg-neutral-800 flex items-center justify-center hover:bg-orange-600 transition-all">
-                                <X size={20} />
+                            <button onClick={() => setShowQuotesOverlay(false)} className="w-14 h-14 glass-panel !bg-slate-900 flex items-center justify-center hover:bg-red-500/20 text-white transition-all rounded-2xl group border-white/10">
+                                <X size={24} className="group-hover:rotate-90 transition-transform duration-300" />
                             </button>
                         </div>
 
-                        <div className="flex-1 overflow-y-auto p-10 space-y-10">
+                        <div className="flex-1 overflow-y-auto p-12 space-y-12 scrollbar-hide">
                             {isAdmin ? (
                                 // Admin Grouped View
                                 data.quoteData.map((user: any) => (
-                                    <div key={user.id} className="space-y-4">
-                                        <div className="flex items-center gap-4 bg-neutral-50 p-4 border-l-4 border-orange-600">
-                                            <div className="w-8 h-8 bg-neutral-900 text-white flex items-center justify-center text-xs font-bold font-mono">
+                                    <div key={user.id} className="space-y-6">
+                                        <div className="flex items-center gap-5 glass-panel !bg-slate-900 border-white/10 p-5 rounded-2xl shadow-xl border-l-4 border-l-secondary">
+                                            <div className="w-10 h-10 glass-panel !bg-slate-950 text-white flex items-center justify-center text-xs font-black ring-1 ring-white/10 rounded-xl">
                                                 {user.name[0]}
                                             </div>
-                                            <h3 className="text-xs font-bold text-neutral-900 uppercase tracking-widest">{user.name}</h3>
-                                            <span className="ms-auto bg-neutral-200 text-neutral-600 text-[10px] px-3 py-1 font-bold">
-                                                {user.count} COTIZACIONES
+                                            <h3 className="text-sm font-black text-white uppercase tracking-widest">{user.name}</h3>
+                                            <span className="ms-auto glass-panel !bg-white/5 text-slate-400 text-[10px] px-4 py-1.5 font-black uppercase tracking-widest border-white/5 rounded-full">
+                                                {user.count} REGISTROS
                                             </span>
                                         </div>
-                                        <div className="grid grid-cols-1 gap-3">
+                                        <div className="grid grid-cols-1 gap-4 ps-6 border-l border-white/5">
                                             {user.latest.map((q: any) => (
                                                 <QuoteRow key={q.id} quote={q} />
                                             ))}
-                                            {user.latest.length === 0 && <p className="text-[10px] text-neutral-400 font-bold italic py-4">Este usuario no tiene cotizaciones registradas.</p>}
+                                            {user.latest.length === 0 && <p className="text-[11px] text-slate-600 font-black uppercase italic py-6 tracking-widest">Sin registros autorizados.</p>}
                                         </div>
                                     </div>
                                 ))
                             ) : (
                                 // Personal List View
-                                <div className="grid grid-cols-1 gap-4">
+                                <div className="grid grid-cols-1 gap-6">
                                     {data.quoteData.map((q: any) => (
                                         <QuoteRow key={q.id} quote={q} />
                                     ))}
                                     {data.quoteData.length === 0 && (
-                                        <div className="text-center py-20 bg-neutral-50 border border-dashed border-neutral-200">
-                                            <FileText className="mx-auto text-neutral-200 mb-4" size={48} />
-                                            <p className="text-neutral-400 font-bold text-sm uppercase">Aún no has generado ninguna cotización profesional.</p>
+                                        <div className="text-center py-28 glass-panel !border-dashed border-white/10 rounded-[3rem]">
+                                            <FileText className="mx-auto text-slate-800 mb-8" size={80} />
+                                            <p className="text-slate-500 font-black text-xs uppercase tracking-[0.4em]">Sin historial de emisión profesional registrado.</p>
                                         </div>
                                     )}
                                 </div>
                             )}
                         </div>
-                    </div>
+                    </motion.div>
                 </div>
             )}
         </div>
@@ -264,25 +297,25 @@ export default function DashboardOverview() {
 
 function QuoteRow({ quote }: { quote: any }) {
     return (
-        <div className="flex items-center justify-between p-5 bg-white border border-neutral-100 hover:border-orange-200 transition-all group">
-            <div className="flex items-center gap-6">
-                <div className="p-2 bg-neutral-50 text-neutral-400 group-hover:text-orange-600 transition-colors">
-                    <FileText size={18} />
+        <div className="flex items-center justify-between p-6 glass-panel !bg-white/[0.02] border-white/5 hover:!bg-white/[0.05] hover:border-secondary/30 transition-all group rounded-2xl shadow-sm">
+            <div className="flex items-center gap-8">
+                <div className="p-3 glass-panel !bg-slate-900 text-slate-500 group-hover:text-secondary transition-colors rounded-xl border-white/10">
+                    <FileText size={20} />
                 </div>
                 <div>
-                    <p className="text-xs font-black text-neutral-900 uppercase">{quote.quoteNumber}</p>
-                    <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-tight">{quote.client?.name || quote.clientName || 'Consumidor Final'}</p>
+                    <p className="text-sm font-black text-white uppercase tracking-tight">{quote.quoteNumber}</p>
+                    <p className="text-[10px] text-slate-500 font-black uppercase tracking-[0.2em] mt-1">{quote.client?.name || quote.clientName || 'Consumidor Final'}</p>
                 </div>
             </div>
-            <div className="flex items-center gap-10">
+            <div className="flex items-center gap-12">
                 <div className="text-right">
-                    <p className="text-sm font-bold text-neutral-900 tracking-tighter">{fmt(quote.total)}</p>
-                    <p className="text-[9px] text-neutral-400 font-bold uppercase">{new Date(quote.createdAt).toLocaleDateString()}</p>
+                    <p className="text-lg font-black text-white tracking-tighter">{fmt(quote.total)}</p>
+                    <p className="text-[10px] text-slate-600 font-black uppercase tracking-widest">{new Date(quote.createdAt).toLocaleDateString()}</p>
                 </div>
-                <div className={`text-[9px] font-bold px-3 py-1 border uppercase tracking-widest ${
-                    quote.status === "ACCEPTED" ? "bg-green-50 text-green-600 border-green-100" :
-                    quote.status === "SENT" ? "bg-blue-50 text-blue-600 border-blue-100" :
-                    "bg-neutral-50 text-neutral-400 border-neutral-100"
+                <div className={`text-[10px] font-black px-4 py-2 rounded-xl border uppercase tracking-[0.2em] shadow-lg ${
+                    quote.status === "ACCEPTED" ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20 shadow-emerald-500/5" :
+                    quote.status === "SENT" ? "bg-azure-500/10 text-azure-400 border-azure-500/20 shadow-azure-500/5" :
+                    "bg-slate-800/10 text-slate-500 border-white/5"
                 }`}>
                     {quote.status}
                 </div>

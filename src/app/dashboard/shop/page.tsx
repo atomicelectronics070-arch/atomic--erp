@@ -195,102 +195,138 @@ export default function ShopConfigPage() {
     }
 
     return (
-        <div className="p-8 max-w-7xl mx-auto">
-            <header className="flex flex-col md:flex-row md:items-end justify-between mb-12 border-b border-neutral-100 pb-8 gap-6">
+        <div className="p-8 max-w-[1600px] mx-auto animate-in fade-in duration-1000 pb-32">
+            <header className="flex flex-col xl:flex-row xl:items-end justify-between mb-16 gap-10">
                 <div>
-                    <div className="flex items-center space-x-2 text-orange-600 mb-2">
-                        <ShoppingBag size={20} />
-                        <span className="text-[10px] uppercase font-bold tracking-[0.2em]">E-Commerce Management</span>
+                    <div className="flex items-center space-x-3 text-secondary mb-4">
+                        <ShoppingBag size={20} className="drop-shadow-[0_0_8px_rgba(255,99,71,0.5)]" />
+                        <span className="text-[10px] uppercase font-black tracking-[0.4em]">SISTEMA DE GESTIÓN E-COMMERCE</span>
                     </div>
-                    <h1 className="text-4xl font-light text-neutral-800 tracking-tight">Centro de Catálogo</h1>
-                    <p className="text-neutral-500 text-sm mt-2">Gestiona el inventario, categorías y colecciones de tu web pública.</p>
+                    <h1 className="text-6xl font-black text-white tracking-tighter uppercase italic">Centro de <span className="text-secondary">Catálogo</span></h1>
+                    <p className="text-slate-500 font-bold text-xs uppercase tracking-[0.3em] mt-4 max-w-2xl leading-relaxed">Administración táctica de inventario digital, arquitecturas de taxonomía y despliegue de colecciones estratégicas para la plataforma pública.</p>
                 </div>
-                <div className="flex items-center space-x-4">
+                <div className="flex items-center gap-6">
                     <button
                         onClick={() => { setEditingProduct(null); setView(view === 'list' ? 'add' : 'list') }}
-                        className="flex items-center space-x-2 bg-orange-600 text-white px-6 py-3 rounded-none text-xs font-bold uppercase tracking-widest hover:bg-orange-700 transition-all shadow-lg shadow-orange-100"
+                        className="flex items-center space-x-4 bg-secondary text-white px-12 py-5 font-black uppercase tracking-[0.2em] text-[10px] hover:bg-white hover:text-secondary transition-all shadow-[0_20px_50px_-10px_rgba(255,99,71,0.4)] rounded-2xl active:scale-[0.98]"
                     >
                         {view === 'list' ? (
-                            <><Plus size={16} /> <span>Añadir Producto</span></>
+                            <><Plus size={20} /> <span>Inyectar Producto</span></>
                         ) : (
-                            <><List size={16} /> <span>Volver al Listado</span></>
+                            <><List size={20} /> <span>Retorno al Listado</span></>
                         )}
                     </button>
-                    <button className="p-3 border border-neutral-100 hover:bg-neutral-50 transition-colors text-neutral-400">
-                        <Settings size={20} />
+                    <button className="p-5 glass-panel text-slate-500 hover:text-white transition-all rounded-2xl border-white/5">
+                        <Settings size={22} />
                     </button>
                 </div>
             </header>
 
             {view === 'list' ? (
-                <div className="space-y-8 animate-in fade-in duration-500">
-                    {/* Horizontal Tabs */}
-                    <div className="flex border-b border-neutral-100 mb-6">
+                <div className="space-y-12 animate-in fade-in duration-700">
+                    {/* High-End Horizontal Tabs */}
+                    <div className="flex gap-4 p-2 glass-panel !bg-slate-950/40 rounded-[2rem] border-white/5 w-fit">
                         <button
                             onClick={() => setActiveTab('products')}
-                            className={`px-8 py-4 text-xs font-bold uppercase tracking-widest transition-colors ${activeTab === 'products' ? 'border-b-2 border-orange-600 text-orange-600' : 'text-neutral-400 hover:text-neutral-800'}`}
+                            className={`px-10 py-5 text-[10px] font-black uppercase tracking-widest transition-all rounded-[1.5rem] flex items-center gap-3 ${activeTab === 'products' ? 'bg-secondary text-white shadow-2xl shadow-secondary/20' : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'}`}
                         >
-                            Productos
+                            <ShoppingBag size={18} />
+                            Inventario Maestro
                         </button>
                         <button
                             onClick={() => setActiveTab('catalogs')}
-                            className={`px-8 py-4 text-xs font-bold uppercase tracking-widest transition-colors ${activeTab === 'catalogs' ? 'border-b-2 border-orange-600 text-orange-600' : 'text-neutral-400 hover:text-neutral-800'}`}
+                            className={`px-10 py-5 text-[10px] font-black uppercase tracking-widest transition-all rounded-[1.5rem] flex items-center gap-3 ${activeTab === 'catalogs' ? 'bg-secondary text-white shadow-2xl shadow-secondary/20' : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'}`}
                         >
-                            Catálogos & Colecciones
+                            <Layers size={18} />
+                            Taxonomías & Arquitectura
                         </button>
                         <button
                             onClick={() => setActiveTab('settings')}
-                            className={`px-8 py-4 text-xs font-bold uppercase tracking-widest transition-colors ${activeTab === 'settings' ? 'border-b-2 border-orange-600 text-orange-600' : 'text-neutral-400 hover:text-neutral-800'}`}
+                            className={`px-10 py-5 text-[10px] font-black uppercase tracking-widest transition-all rounded-[1.5rem] flex items-center gap-3 ${activeTab === 'settings' ? 'bg-secondary text-white shadow-2xl shadow-secondary/20' : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'}`}
                         >
-                            Ajustes Generales
+                            <Settings size={18} />
+                            Despliegue & Frontend
                         </button>
                     </div>
 
                     {activeTab === 'products' && (
-                        <div className="space-y-6">
-                            {/* Stats Summary */}
-                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                                <StatCard label="Catalogados" value={totalProducts} icon={<ShoppingBag size={14} />} />
-                                <StatCard label="Categorías" value={metadata.categories.length} icon={<TagIcon size={14} />} />
-                                <StatCard label="Orígenes" value={providerStats.length} icon={<Globe size={14} />} />
-                                <StatCard label="Visitas Web" value={50} icon={<Power size={14} />} />
+                        <div className="space-y-12">
+                            {/* Modern Stats Summary */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-8">
+                                <div className="glass-panel p-8 flex items-center gap-6 rounded-[2.5rem] border-white/5 relative overflow-hidden group">
+                                    <div className="absolute top-0 left-0 w-1 h-full bg-secondary"></div>
+                                    <div className="p-4 bg-secondary/10 text-secondary rounded-2xl group-hover:scale-110 transition-transform"><ShoppingBag size={24} /></div>
+                                    <div>
+                                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Items Catalogados</p>
+                                        <h4 className="text-3xl font-black text-white italic">{totalProducts}</h4>
+                                    </div>
+                                </div>
+                                <div className="glass-panel p-8 flex items-center gap-6 rounded-[2.5rem] border-white/5 relative overflow-hidden group">
+                                    <div className="absolute top-0 left-0 w-1 h-full bg-emerald-500"></div>
+                                    <div className="p-4 bg-emerald-500/10 text-emerald-500 rounded-2xl group-hover:scale-110 transition-transform"><TagIcon size={24} /></div>
+                                    <div>
+                                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Nodos de Categoría</p>
+                                        <h4 className="text-3xl font-black text-white italic">{metadata.categories.length}</h4>
+                                    </div>
+                                </div>
+                                <div className="glass-panel p-8 flex items-center gap-6 rounded-[2.5rem] border-white/5 relative overflow-hidden group">
+                                    <div className="absolute top-0 left-0 w-1 h-full bg-primary"></div>
+                                    <div className="p-4 bg-primary/10 text-primary rounded-2xl group-hover:scale-110 transition-transform"><Globe size={24} /></div>
+                                    <div>
+                                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Fuentes de Suministro</p>
+                                        <h4 className="text-3xl font-black text-white italic">{providerStats.length}</h4>
+                                    </div>
+                                </div>
+                                <div className="glass-panel p-8 flex items-center gap-6 rounded-[2.5rem] border-white/5 relative overflow-hidden group">
+                                    <div className="absolute top-0 left-0 w-1 h-full bg-purple-500"></div>
+                                    <div className="p-4 bg-purple-500/10 text-purple-500 rounded-2xl group-hover:scale-110 transition-transform"><Power size={24} /></div>
+                                    <div>
+                                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Tráfico de Despliegue</p>
+                                        <h4 className="text-3xl font-black text-white italic">5.2K</h4>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                            <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
                                 {/* Sidebar: Insights & Maintenance */}
-                                <div className="lg:col-span-1 space-y-6">
-                                    <div className="bg-white border border-neutral-100 p-6 space-y-4">
-                                        <div className="flex items-center space-x-2 text-indigo-600 border-b border-neutral-50 pb-3 mb-4">
-                                            <Store size={16} />
-                                            <h3 className="text-[10px] font-black uppercase tracking-widest text-neutral-800">Orígenes Detectados</h3>
+                                <div className="lg:col-span-1 space-y-8">
+                                    <div className="glass-panel p-10 rounded-[3rem] border-white/5 relative overflow-hidden">
+                                        <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/5 blur-3xl -mr-16 -mt-16 rounded-full"></div>
+                                        <div className="flex items-center space-x-3 text-secondary border-b border-white/5 pb-8 mb-8">
+                                            <Store size={22} />
+                                            <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-white italic">Estructura de Origen</h3>
                                         </div>
-                                        <div className="space-y-2 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
+                                        <div className="space-y-4 max-h-[400px] overflow-y-auto pr-4 custom-scrollbar">
                                             {providerStats.length > 0 ? providerStats.map((s, i) => (
-                                                <div key={i} className="flex justify-between items-center group cursor-default">
-                                                    <span className="text-[10px] font-bold text-neutral-500 uppercase truncate pr-4 group-hover:text-indigo-600 transition-colors">{s.name}</span>
-                                                    <span className="text-[9px] font-black text-neutral-400 bg-neutral-50 px-2 py-0.5 rounded-none">{s.count}</span>
+                                                <div key={i} className="flex justify-between items-center group cursor-default p-4 hover:bg-white/5 transition-all rounded-2xl border border-transparent hover:border-white/5">
+                                                    <span className="text-[10px] font-black text-slate-400 uppercase truncate pr-4 group-hover:text-secondary transition-colors italic">{s.name}</span>
+                                                    <span className="text-[10px] font-black text-white bg-slate-900 px-3 py-1 rounded-lg border border-white/5 shadow-xl">{s.count} <span className="opacity-40 ml-1">UDS</span></span>
                                                 </div>
                                             )) : (
-                                                <div className="text-[10px] text-neutral-300 italic font-bold uppercase text-center py-4">Sincronizando proveedores...</div>
+                                                <div className="text-[10px] text-slate-700 italic font-black uppercase text-center py-20 flex flex-col items-center gap-4">
+                                                    <RefreshCw size={32} className="animate-spin opacity-20" />
+                                                    Sincronizando proveedores...
+                                                </div>
                                             )}
                                         </div>
-                                        <div className="pt-4 border-t border-neutral-50">
+                                        <div className="pt-8 border-t border-white/5 mt-8">
                                             <button 
                                                 onClick={() => setActiveTab('settings')}
-                                                className="w-full text-center text-[9px] font-black uppercase tracking-widest text-neutral-400 hover:text-orange-600 transition-all"
+                                                className="w-full text-center text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 hover:text-secondary transition-all flex items-center justify-center gap-3"
                                             >
-                                                Ver Mantenimiento Avanzado →
+                                                Protocolo de Mantenimiento <ChevronRight size={14} />
                                             </button>
                                         </div>
                                     </div>
 
-                                    <div className="bg-neutral-900 p-6 text-white space-y-4 shadow-xl border-l-4 border-orange-600">
-                                        <div className="flex items-center space-x-2">
-                                            <Trash2 size={16} className="text-orange-600" />
-                                            <h3 className="text-[10px] font-black uppercase tracking-widest">Optimización del Catálogo</h3>
+                                    <div className="glass-panel p-10 rounded-[3rem] border-white/5 relative overflow-hidden group">
+                                        <div className="absolute inset-0 bg-gradient-to-br from-secondary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                        <div className="flex items-center space-x-4 mb-8">
+                                            <div className="p-3 bg-secondary/10 text-secondary rounded-xl"><Trash2 size={24} /></div>
+                                            <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-white">Saneamiento Maestro</h3>
                                         </div>
-                                        <p className="text-[10px] font-bold uppercase italic opacity-60 leading-relaxed">
-                                            Elimina duplicados exactos para mejorar la velocidad de carga de la web.
+                                        <p className="text-[11px] font-bold uppercase italic text-slate-500 leading-relaxed mb-10">
+                                            Ejecución intensiva de eliminación de colisiones de datos y duplicidad de nodos para optimizar el rendimiento del frontend.
                                         </p>
                                         <button 
                                             onClick={async () => {
@@ -306,197 +342,205 @@ export default function ShopConfigPage() {
                                                 }
                                             }}
                                             disabled={isCleaning}
-                                            className="w-full bg-orange-600 text-white py-3 text-[9px] font-black uppercase tracking-[0.2em] hover:bg-white hover:text-orange-600 transition-all shadow-lg disabled:opacity-50"
+                                            className="w-full bg-secondary text-white py-5 text-[10px] font-black uppercase tracking-[0.3em] hover:bg-white hover:text-secondary transition-all shadow-[0_20px_50px_-10px_rgba(255,99,71,0.5)] rounded-[2rem] disabled:opacity-50"
                                         >
-                                            {isCleaning ? 'Saneando...' : 'Poda de Duplicados'}
+                                            {isCleaning ? 'Saneando Arquitectura...' : 'Saneamiento de Catálogo'}
                                         </button>
                                     </div>
                                 </div>
 
                                 {/* Main Content: Search & Table */}
-                                <div className="lg:col-span-3 space-y-6">
-                                    <div className="flex flex-col md:flex-row gap-4 mb-4">
-                                        <div className="flex-1 relative group">
-                                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 group-focus-within:text-orange-600 transition-colors" size={16} />
+                                <div className="lg:col-span-3 space-y-10">
+                                    <div className="flex flex-col md:flex-row gap-8 items-center bg-slate-950/40 p-4 rounded-[2.5rem] border border-white/5 shadow-2xl backdrop-blur-3xl">
+                                        <div className="flex-1 relative group w-full">
+                                            <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-700 group-focus-within:text-secondary transition-colors" size={20} />
                                             <input 
                                                 type="text"
-                                                placeholder="Buscar por nombre, SKU o categoría..."
+                                                placeholder="BÚSQUEDA TÁCTICA POR SKU, NOMBRE O SEGMENTO..."
                                                 value={dashboardSearch}
                                                 onChange={(e) => { setDashboardSearch(e.target.value); setCurrentPage(1); }}
-                                                className="w-full bg-white border border-neutral-100 pl-10 pr-4 py-3 text-sm outline-none focus:border-orange-600 transition-colors shadow-sm"
+                                                className="w-full bg-slate-900/50 border border-white/5 pl-16 pr-8 py-5 text-[11px] font-black uppercase tracking-widest text-white outline-none focus:border-secondary focus:ring-4 focus:ring-secondary/10 transition-all rounded-2xl placeholder:text-slate-800"
                                             />
                                         </div>
-                                        <div className="flex bg-neutral-50 p-1 rounded-none border border-neutral-100">
+                                        <div className="flex bg-slate-900/80 p-2 rounded-2xl border border-white/10 w-full md:w-fit whitespace-nowrap">
                                             <button 
                                                 onClick={() => { setIsTrashView(false); setCurrentPage(1); }}
-                                                className={`px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${!isTrashView ? 'bg-white text-orange-600 shadow-sm border border-neutral-100' : 'text-neutral-400 hover:text-neutral-600'}`}
+                                                className={`px-8 py-3 text-[10px] font-black uppercase tracking-widest transition-all rounded-xl ${!isTrashView ? 'bg-secondary text-white shadow-xl shadow-secondary/20' : 'text-slate-500 hover:text-slate-300'}`}
                                             >
                                                 Catálogo Activo
                                             </button>
                                             <button 
                                                 onClick={() => { setIsTrashView(true); setCurrentPage(1); }}
-                                                className={`px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 ${isTrashView ? 'bg-white text-red-600 shadow-sm border border-neutral-100' : 'text-neutral-400 hover:text-neutral-600'}`}
+                                                className={`px-8 py-3 text-[10px] font-black uppercase tracking-widest transition-all rounded-xl flex items-center gap-2 ${isTrashView ? 'bg-red-500 text-white shadow-xl shadow-red-500/20' : 'text-slate-500 hover:text-red-400'}`}
                                             >
-                                                <Trash2 size={12} /> Papelera
+                                                <Trash2 size={14} /> Papelera
                                             </button>
                                         </div>
                                     </div>
 
-                                    <div className="bg-white border border-neutral-100 overflow-hidden shadow-sm">
-                                        <table className="w-full text-left border-collapse">
-                                            <thead>
-                                                <tr className="bg-neutral-50/50 text-[10px] font-black uppercase tracking-widest text-neutral-400 border-b border-neutral-100">
-                                                    <th className="px-6 py-4 w-10">
-                                                        <button onClick={toggleAllProducts} className="text-neutral-400 hover:text-orange-600 transition-colors">
-                                                            {selectedProducts.length === products.length && products.length > 0 ? <CheckSquare size={16} /> : <Square size={16} />}
-                                                        </button>
-                                                    </th>
-                                                    <th className="px-6 py-4">Producto / SKU</th>
-                                                    <th className="px-6 py-4">Categoría</th>
-                                                    <th className="px-6 py-4">Stock</th>
-                                                    <th className="px-6 py-4">Precio</th>
-                                                    <th className="px-6 py-4 text-right">Acciones</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody className="divide-y divide-neutral-50">
-                                                {products.length === 0 ? (
-                                                    <tr>
-                                                        <td colSpan={6} className="py-24 text-center text-neutral-300">
-                                                            <div className="flex flex-col items-center space-y-4">
-                                                                <ShoppingBag size={48} className="opacity-10" />
-                                                                <p className="uppercase text-[10px] font-black tracking-[0.2em] opacity-40">Sin registros encontrados</p>
-                                                            </div>
-                                                        </td>
+                                    <div className="glass-panel rounded-[3rem] border-white/5 overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.6)]">
+                                        <div className="overflow-x-auto">
+                                            <table className="w-full text-left border-collapse">
+                                                <thead>
+                                                    <tr className="bg-white/5 text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 border-b border-white/5">
+                                                        <th className="px-8 py-8 w-16">
+                                                            <button onClick={toggleAllProducts} className="text-slate-700 hover:text-secondary transition-colors">
+                                                                {selectedProducts.length === products.length && products.length > 0 ? <CheckSquare size={20} /> : <Square size={20} />}
+                                                            </button>
+                                                        </th>
+                                                        <th className="px-8 py-8">Entidad / Identificador</th>
+                                                        <th className="px-8 py-8">Segmentación</th>
+                                                        <th className="px-8 py-8">Stock Disponible</th>
+                                                        <th className="px-8 py-8">Valor de Mercado</th>
+                                                        <th className="px-8 py-8 text-right pr-12">Acciones</th>
                                                     </tr>
-                                                ) : (
-                                                    products.map((p) => (
-                                                        <tr key={p.id} className={`hover:bg-neutral-50/30 transition-colors group ${selectedProducts.includes(p.id) ? 'bg-orange-50/20' : ''}`}>
-                                                            <td className="px-6 py-5">
-                                                                <button onClick={() => toggleProductSelection(p.id)} className={`${selectedProducts.includes(p.id) ? 'text-orange-600' : 'text-neutral-200 group-hover:text-neutral-400'} transition-colors`}>
-                                                                    {selectedProducts.includes(p.id) ? <CheckSquare size={16} /> : <Square size={16} />}
-                                                                </button>
-                                                            </td>
-                                                            <td className="px-6 py-5">
-                                                                <div className="flex items-center space-x-4">
-                                                                    <div className="w-12 h-12 bg-neutral-100 border border-neutral-100 overflow-hidden flex items-center justify-center relative group-hover:border-orange-200 transition-colors">
-                                                                        {p.images && p.images !== 'null' && safeParseArray(p.images).length > 0 ? (
-                                                                            <img src={safeParseArray(p.images)[0]} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                                                                        ) : (
-                                                                            <ImageIcon size={16} className="text-neutral-300" />
-                                                                        )}
-                                                                    </div>
-                                                                    <div className="max-w-xs">
-                                                                        <p className="text-sm font-bold text-neutral-800 line-clamp-1 group-hover:text-orange-600 transition-colors">{p.name}</p>
-                                                                        <p className="text-[9px] text-neutral-400 font-black uppercase tracking-widest mt-0.5">{p.sku || 'N/A'}</p>
-                                                                    </div>
-                                                                </div>
-                                                            </td>
-                                                            <td className="px-6 py-5">
-                                                                <span className="text-[10px] font-black uppercase tracking-widest text-neutral-500 bg-neutral-50 px-2 py-1 border border-neutral-100">
-                                                                    {p.category?.name || 'Varios'}
-                                                                </span>
-                                                            </td>
-                                                            <td className="px-6 py-5">
-                                                                <span className={`text-xs font-black ${p.stock < 5 ? 'text-red-500' : 'text-neutral-700'}`}>
-                                                                    {p.stock} <span className="text-[10px] opacity-40 uppercase font-black">uds.</span>
-                                                                </span>
-                                                            </td>
-                                                            <td className="px-6 py-5">
-                                                                <p className="text-sm font-black text-neutral-900 font-mono italic">${p.price.toFixed(2)}</p>
-                                                            </td>
-                                                            <td className="px-6 py-5">
-                                                                <div className="flex items-center justify-end space-x-1">
-                                                                    {isTrashView ? (
-                                                                        <button onClick={() => handleRestore(p.id)} className="px-3 py-1.5 bg-green-50 text-green-600 hover:bg-green-600 hover:text-white transition-all text-[9px] font-black uppercase tracking-widest border border-green-100">
-                                                                            Restaurar
-                                                                        </button>
-                                                                    ) : (
-                                                                        <>
-                                                                            <button onClick={() => handleEdit(p)} className="p-2 text-neutral-300 hover:text-orange-600 transition-colors">
-                                                                                <Edit size={16} />
-                                                                            </button>
-                                                                            <button onClick={() => handleDelete(p.id)} className="p-2 text-neutral-300 hover:text-red-600 transition-colors">
-                                                                                <Trash2 size={16} />
-                                                                            </button>
-                                                                        </>
-                                                                    )}
+                                                </thead>
+                                                <tbody className="divide-y divide-white/5">
+                                                    {products.length === 0 ? (
+                                                        <tr>
+                                                            <td colSpan={6} className="py-40 text-center">
+                                                                <div className="flex flex-col items-center space-y-6 opacity-20">
+                                                                    <ShoppingBag size={80} className="text-slate-500" />
+                                                                    <p className="uppercase text-xs font-black tracking-[0.5em] text-slate-500">Cámara de Inventario Vacía</p>
                                                                 </div>
                                                             </td>
                                                         </tr>
-                                                    ))
-                                                )}
-                                            </tbody>
-                                        </table>
-                                        {/* Pagination */}
-                                        <div className="px-6 py-6 border-t border-neutral-50 flex items-center justify-between bg-white">
-                                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-300">Pág {currentPage} de {Math.ceil(totalProducts / pageSize) || 1} — {totalProducts} ítems</p>
-                                            <div className="flex items-center space-x-2">
+                                                    ) : (
+                                                        products.map((p) => (
+                                                            <tr key={p.id} className={`hover:bg-white/[0.03] transition-all group ${selectedProducts.includes(p.id) ? 'bg-secondary/10' : ''}`}>
+                                                                <td className="px-8 py-6">
+                                                                    <button onClick={() => toggleProductSelection(p.id)} className={`${selectedProducts.includes(p.id) ? 'text-secondary' : 'text-slate-800 group-hover:text-slate-600'} transition-all`}>
+                                                                        {selectedProducts.includes(p.id) ? <CheckSquare size={20} /> : <Square size={20} />}
+                                                                    </button>
+                                                                </td>
+                                                                <td className="px-8 py-6">
+                                                                    <div className="flex items-center space-x-6">
+                                                                        <div className="w-16 h-16 bg-slate-900 border border-white/5 rounded-2xl overflow-hidden flex items-center justify-center relative group-hover:border-secondary/30 transition-all shadow-2xl">
+                                                                            {p.images && p.images !== 'null' && safeParseArray(p.images).length > 0 ? (
+                                                                                <img src={safeParseArray(p.images)[0]} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                                                                            ) : (
+                                                                                <ImageIcon size={24} className="text-slate-800" />
+                                                                            )}
+                                                                        </div>
+                                                                        <div className="max-w-sm">
+                                                                            <p className="text-[13px] font-black text-white line-clamp-1 group-hover:text-secondary transition-colors italic uppercase tracking-tighter">{p.name}</p>
+                                                                            <p className="text-[9px] text-slate-500 font-black uppercase tracking-[0.2em] mt-1.5">{p.sku || 'N/A — IDENTIFICADOR GLOBAL'}</p>
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                                <td className="px-8 py-6">
+                                                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white bg-slate-900 px-4 py-2 rounded-xl border border-white/5 shadow-inner italic">
+                                                                        {p.category?.name || 'GENÉRICO'}
+                                                                    </span>
+                                                                </td>
+                                                                <td className="px-8 py-6">
+                                                                    <div className="flex items-center gap-3">
+                                                                        <div className={`w-2 h-2 rounded-full ${p.stock < 5 ? 'bg-red-500 animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.8)]' : 'bg-emerald-500'}`}></div>
+                                                                        <span className={`text-sm font-black italic tracking-tighter ${p.stock < 5 ? 'text-red-500' : 'text-slate-300'}`}>
+                                                                            {p.stock} <span className="text-[10px] opacity-40 uppercase font-black tracking-widest not-italic ml-1">Uds.</span>
+                                                                        </span>
+                                                                    </div>
+                                                                </td>
+                                                                <td className="px-8 py-6">
+                                                                    <p className="text-lg font-black text-white italic tracking-tighter group-hover:text-emerald-400 transition-colors drop-shadow-2xl">
+                                                                        <span className="text-slate-500 text-xs not-italic mr-1">$</span>
+                                                                        {p.price.toLocaleString('es-EC', { minimumFractionDigits: 2 })}
+                                                                    </p>
+                                                                </td>
+                                                                <td className="px-8 py-6">
+                                                                    <div className="flex items-center justify-end space-x-2">
+                                                                        {isTrashView ? (
+                                                                            <button onClick={() => handleRestore(p.id)} className="px-6 py-2.5 bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-white transition-all text-[10px] font-black uppercase tracking-widest border border-emerald-500/20 rounded-xl shadow-2xl">
+                                                                                Restaurar
+                                                                            </button>
+                                                                        ) : (
+                                                                            <>
+                                                                                <button onClick={() => handleEdit(p)} className="p-3 text-slate-700 hover:text-secondary transition-all rounded-xl hover:bg-white/5 border border-transparent hover:border-white/5">
+                                                                                    <Edit size={20} />
+                                                                                </button>
+                                                                                <button onClick={() => handleDelete(p.id)} className="p-3 text-slate-700 hover:text-red-500 transition-all rounded-xl hover:bg-white/5 border border-transparent hover:border-white/5">
+                                                                                    <Trash2 size={20} />
+                                                                                </button>
+                                                                            </>
+                                                                        )}
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        ))
+                                                    )}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        {/* Futuristic Pagination */}
+                                        <div className="px-12 py-10 border-t border-white/5 flex flex-col md:flex-row items-center justify-between bg-black/20 gap-8 backdrop-blur-2xl">
+                                            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-600 italic">SEGMENTO {currentPage} <span className="text-slate-800 mx-2">/</span> {Math.ceil(totalProducts / pageSize) || 1} <span className="text-secondary mx-4">|</span> TOTAL {totalProducts} DESPLIEGUES</p>
+                                            <div className="flex items-center space-x-4">
                                                 <button 
                                                     disabled={currentPage <= 1}
                                                     onClick={() => setCurrentPage(prev => prev - 1)}
-                                                    className="px-6 py-2 border border-neutral-100 text-neutral-400 hover:text-orange-600 hover:border-orange-600 disabled:opacity-20 transition-all font-black uppercase tracking-widest text-[9px]"
+                                                    className="px-10 py-4 glass-panel border-white/5 text-slate-500 hover:text-white hover:bg-white/5 disabled:opacity-5 transition-all font-black uppercase tracking-[0.3em] text-[10px] rounded-2xl active:scale-95 shadow-2xl"
                                                 >
-                                                    Anterior
+                                                    Retorno
                                                 </button>
                                                 <button 
                                                     disabled={currentPage >= Math.ceil(totalProducts / pageSize)}
                                                     onClick={() => setCurrentPage(prev => prev + 1)}
-                                                    className="px-6 py-2 border border-neutral-100 text-neutral-400 hover:text-orange-600 hover:border-orange-600 disabled:opacity-20 transition-all font-black uppercase tracking-widest text-[9px]"
+                                                    className="px-10 py-4 bg-white/5 border border-white/10 text-slate-300 hover:text-secondary hover:border-secondary/30 disabled:opacity-5 transition-all font-black uppercase tracking-[0.3em] text-[10px] rounded-2xl active:scale-95 shadow-2xl"
                                                 >
-                                                    Siguiente
+                                                    Avance
                                                 </button>
                                             </div>
                                         </div>
                                     </div>
 
-                                    {/* Bulk Actions Bar */}
+                                    {/* Elevated Bulk Actions Bar */}
                                     {selectedProducts.length > 0 && (
-                                        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-neutral-900 text-white px-8 py-4 flex items-center space-x-8 shadow-2xl z-50 animate-in slide-in-from-bottom-4 duration-300">
-                                            <div className="flex items-center space-x-2 border-r border-neutral-700 pr-8">
-                                                <span className="text-orange-500 font-bold">{selectedProducts.length}</span>
-                                                <span className="text-[10px] font-black uppercase tracking-widest text-neutral-400">Seleccionados</span>
+                                        <div className="fixed bottom-12 left-1/2 -translate-x-1/2 glass-panel !bg-slate-950/90 text-white px-12 py-6 flex flex-wrap items-center justify-center gap-10 shadow-[0_50px_100px_rgba(0,0,0,0.8)] z-[500] animate-in slide-in-from-bottom-10 duration-700 rounded-[3rem] border border-white/10 backdrop-blur-3xl">
+                                            <div className="flex items-center space-x-4 border-r border-white/10 pr-10">
+                                                <div className="w-12 h-12 bg-secondary text-white rounded-full flex items-center justify-center font-black text-xl italic shadow-[0_0_20px_rgba(255,99,71,0.4)]">{selectedProducts.length}</div>
+                                                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500">Seleccionados</span>
                                             </div>
-                                            <div className="flex items-center space-x-4">
+                                            <div className="flex items-center gap-6">
                                                 {!isTrashView ? (
                                                     <>
                                                         <button 
                                                             onClick={() => setShowBulkEdit(true)}
-                                                            className="flex items-center space-x-2 bg-neutral-800 text-white hover:bg-neutral-700 px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all"
+                                                            className="flex items-center space-x-4 bg-white/5 text-white hover:bg-white/10 px-8 py-4 text-[10px] font-black uppercase tracking-[0.2em] transition-all rounded-2xl border border-white/5"
                                                         >
-                                                            <Edit size={14} />
-                                                            <span>Edición en Masa</span>
+                                                            <Edit size={16} className="text-secondary" />
+                                                            <span>Edición Táctica</span>
                                                         </button>
                                                         <button 
                                                             onClick={handleBulkDeleteProducts}
-                                                            className="flex items-center space-x-2 bg-red-600/10 text-red-500 hover:bg-red-600 hover:text-white px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all"
+                                                            className="flex items-center space-x-4 bg-red-600/10 text-red-500 hover:bg-red-600 hover:text-white px-8 py-4 text-[10px] font-black uppercase tracking-[0.2em] transition-all rounded-2xl border border-red-500/20"
                                                         >
-                                                            <Trash2 size={14} />
-                                                            <span>Mover a Papelera</span>
+                                                            <Trash2 size={16} />
+                                                            <span>Poda Masiva</span>
                                                         </button>
                                                     </>
                                                 ) : (
                                                     <>
                                                         <button 
                                                             onClick={handleBulkRestore}
-                                                            className="flex items-center space-x-2 bg-green-600/10 text-green-500 hover:bg-green-600 hover:text-white px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all"
+                                                            className="flex items-center space-x-4 bg-emerald-600/10 text-emerald-500 hover:bg-emerald-600 hover:text-white px-8 py-4 text-[10px] font-black uppercase tracking-[0.2em] transition-all rounded-2xl border border-emerald-500/20"
                                                         >
-                                                            <Layers size={14} />
-                                                            <span>Restaurar Selección</span>
+                                                            <Layers size={16} />
+                                                            <span>Restaurar Segmento</span>
                                                         </button>
                                                         <button 
                                                             onClick={handleBulkPermanentDelete}
-                                                            className="flex items-center space-x-2 bg-red-600/10 text-red-500 hover:bg-red-600 hover:text-white px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all"
+                                                            className="flex items-center space-x-4 bg-red-600/10 text-red-500 hover:bg-red-600 hover:text-white px-8 py-4 text-[10px] font-black uppercase tracking-[0.2em] transition-all rounded-2xl border border-red-500/20"
                                                         >
-                                                            <Trash2 size={14} />
-                                                            <span>Eliminar Definitivamente</span>
+                                                            <Trash2 size={16} />
+                                                            <span>Eliminación Terminal</span>
                                                         </button>
                                                     </>
                                                 )}
                                                 <button 
                                                     onClick={() => setSelectedProducts([])}
-                                                    className="text-neutral-400 hover:text-white transition-colors"
+                                                    className="w-12 h-12 flex items-center justify-center text-slate-500 hover:text-white transition-all hover:bg-white/5 rounded-full"
                                                 >
-                                                    <X size={18} />
+                                                    <X size={24} />
                                                 </button>
                                             </div>
                                         </div>
@@ -517,89 +561,103 @@ export default function ShopConfigPage() {
                     )}
 
                     {activeTab === 'catalogs' && (
-                        <div className="space-y-8">
+                        <div className="space-y-12 animate-in fade-in slide-in-from-bottom-5 duration-700">
                             {/* Quick Category/Collection Creation */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-neutral-50 p-8 border border-neutral-100">
+                            <div className="grid grid-cols-1 xl:grid-cols-2 gap-10 bg-slate-950/40 p-10 rounded-[3rem] border border-white/5 backdrop-blur-3xl shadow-2xl">
                                 <QuickCreate
-                                    label="Nueva Categoría"
-                                    icon={<TagIcon size={16} />}
+                                    label="Arquitectura de Categoría"
+                                    icon={<TagIcon size={20} className="text-secondary" />}
                                     onSave={async (name) => { await createCategory(name); refreshData(); }}
                                 />
                                 <QuickCreate
-                                    label="Nueva Colección"
-                                    icon={<Layers size={16} />}
+                                    label="Definición de Colección"
+                                    icon={<Layers size={20} className="text-primary" />}
                                     onSave={async (name) => { await createCollection(name); refreshData(); }}
                                 />
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                <div className="bg-white border text-sm border-neutral-100 p-6">
-                                    <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-800 mb-4 border-b pb-4">Categorías Actuales</h3>
-                                    <ul className="space-y-2">
+                            <div className="grid grid-cols-1 xl:grid-cols-2 gap-12">
+                                <div className="glass-panel p-10 rounded-[3rem] border-white/5 relative overflow-hidden">
+                                    <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/5 blur-3xl -mr-16 -mt-16 rounded-full"></div>
+                                    <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-white italic mb-10 border-b border-white/5 pb-8 flex items-center gap-3">
+                                        <TagIcon size={18} className="text-secondary" />
+                                        Jerarquía de Categorías
+                                    </h3>
+                                    <ul className="space-y-4">
                                         {metadata.categories.map(c => (
-                                            <li key={c.id} className="flex justify-between items-center py-2 px-3 bg-neutral-50 hover:bg-neutral-100 transition-colors group">
+                                            <li key={c.id} className="flex justify-between items-center p-5 bg-slate-900/50 hover:bg-white/5 transition-all group rounded-2xl border border-white/5 hover:border-secondary/20">
                                                 <div>
-                                                    <span className="font-medium text-neutral-700">{c.name}</span>
-                                                    <span className="text-[10px] text-neutral-400 font-bold uppercase ml-2">/{c.slug}</span>
+                                                    <span className="font-black text-white italic text-sm uppercase tracking-tighter group-hover:text-secondary transition-colors">{c.name}</span>
+                                                    <span className="text-[9px] text-slate-500 font-black uppercase tracking-[0.2em] ml-4 opacity-50">/ {c.slug}</span>
                                                 </div>
-                                                <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                                                    <button onClick={() => setEditingTaxonomy({ type: 'category', data: c })} className="p-1.5 text-neutral-400 hover:text-orange-600 transition-colors">
-                                                        <Edit size={14} />
+                                                <div className="opacity-0 group-hover:opacity-100 transition-all scale-90 group-hover:scale-100">
+                                                    <button onClick={() => setEditingTaxonomy({ type: 'category', data: c })} className="p-3 text-slate-400 hover:text-secondary transition-colors bg-white/5 rounded-xl">
+                                                        <Edit size={16} />
                                                     </button>
                                                 </div>
                                             </li>
                                         ))}
                                     </ul>
                                 </div>
-                                <div className="bg-white border text-sm border-neutral-100 p-6">
-                                    <div className="flex justify-between items-center mb-4 border-b pb-4">
-                                        <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-800">Colecciones Especiales</h3>
+                                <div className="glass-panel p-10 rounded-[3rem] border-white/5 relative overflow-hidden">
+                                    <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-3xl -mr-16 -mt-16 rounded-full"></div>
+                                    <div className="flex justify-between items-center mb-10 border-b border-white/5 pb-8">
+                                        <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-white italic flex items-center gap-3">
+                                            <Layers size={18} className="text-primary" />
+                                            Colecciones Estratégicas
+                                        </h3>
                                         {selectedCollections.length > 0 && (
                                             <button 
                                                 onClick={handleBulkDeleteCollections}
-                                                className="flex items-center space-x-2 text-red-500 hover:text-red-700 text-[10px] font-black uppercase tracking-widest transition-colors"
+                                                className="flex items-center space-x-3 text-red-500 hover:text-white hover:bg-red-500 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-2xl shadow-red-500/20"
                                             >
-                                                <Trash2 size={12} />
-                                                <span>Eliminar ({selectedCollections.length})</span>
+                                                <Trash2 size={14} />
+                                                <span>Poda ({selectedCollections.length})</span>
                                             </button>
                                         )}
                                     </div>
-                                    <ul className="space-y-2">
+                                    <ul className="space-y-4">
                                         {metadata.collections.length === 0 ? (
-                                            <p className="text-center py-8 text-neutral-300 text-[10px] font-bold uppercase tracking-widest">No hay colecciones creadas</p>
+                                            <div className="py-20 text-center opacity-20 flex flex-col items-center gap-4">
+                                                <Layers size={48} className="text-slate-500" />
+                                                <p className="text-[10px] font-black uppercase tracking-[0.4em]">Sin Colecciones Definidas</p>
+                                            </div>
                                         ) : (
                                             metadata.collections.map(c => {
                                                 const productCount = products.filter(p => p.collectionId === c.id).length;
                                                 const isSelected = selectedCollections.includes(c.id);
                                                 return (
-                                                    <li key={c.id} className={`flex justify-between items-center py-3 px-4 transition-colors group ${isSelected ? 'bg-orange-50 border border-orange-100' : 'bg-neutral-50 hover:bg-neutral-100'}`}>
-                                                        <div className="flex items-center space-x-3">
+                                                    <li key={c.id} className={`flex justify-between items-center p-5 transition-all group rounded-2xl border ${isSelected ? 'bg-secondary/10 border-secondary/30 shadow-2xl shadow-secondary/10' : 'bg-slate-900/50 border-white/5 hover:border-primary/20 hover:bg-white/5'}`}>
+                                                        <div className="flex items-center space-x-5">
                                                             <button 
                                                                 onClick={() => setSelectedCollections(prev => isSelected ? prev.filter(id => id !== c.id) : [...prev, c.id])}
-                                                                className={`${isSelected ? 'text-orange-600' : 'text-neutral-200 group-hover:text-neutral-400'}`}
+                                                                className={`${isSelected ? 'text-secondary' : 'text-slate-800 group-hover:text-slate-600'} transition-all`}
                                                             >
-                                                                {isSelected ? <CheckSquare size={16} /> : <Square size={16} />}
+                                                                {isSelected ? <CheckSquare size={20} /> : <Square size={20} />}
                                                             </button>
                                                             <div>
-                                                                <span className="font-bold text-neutral-800">{c.name}</span>
-                                                                <div className="flex items-center space-x-2 mt-0.5">
-                                                                    <span className="text-[9px] text-neutral-400 font-bold uppercase tracking-widest">/{c.slug}</span>
-                                                                    <span className="text-[9px] text-orange-600 font-black uppercase tracking-widest">• {productCount} productos</span>
+                                                                <span className="font-black text-white italic text-sm uppercase tracking-tighter group-hover:text-primary transition-colors">{c.name}</span>
+                                                                <div className="flex items-center space-x-4 mt-2">
+                                                                    <span className="text-[9px] text-slate-500 font-black uppercase tracking-[0.2em] opacity-50">/ {c.slug}</span>
+                                                                    <span className="text-[9px] text-primary font-black uppercase tracking-[0.2em] flex items-center gap-1.5">
+                                                                        <div className="w-1 h-1 bg-primary rounded-full"></div>
+                                                                        {productCount} Despliegues
+                                                                    </span>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                        <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-all scale-90 group-hover:scale-100">
                                                             <button 
                                                                 onClick={() => setEditingTaxonomy({ type: 'collection', data: c })}
-                                                                className="p-1.5 text-neutral-400 hover:text-orange-600 transition-colors"
+                                                                className="p-3 text-slate-400 hover:text-primary transition-colors bg-white/5 rounded-xl"
                                                             >
-                                                                <Edit size={14} />
+                                                                <Edit size={16} />
                                                             </button>
                                                             <button 
                                                                 onClick={() => handleDeleteCollection(c.id)}
-                                                                className="p-1.5 text-neutral-400 hover:text-red-600 transition-colors"
+                                                                className="p-3 text-slate-400 hover:text-red-500 transition-colors bg-white/5 rounded-xl"
                                                             >
-                                                                <Trash2 size={14} />
+                                                                <Trash2 size={16} />
                                                             </button>
                                                         </div>
                                                     </li>
@@ -613,45 +671,46 @@ export default function ShopConfigPage() {
                     )}
 
                     {activeTab === 'settings' && (
-                        <div className="space-y-10">
-
+                        <div className="space-y-16 animate-in fade-in slide-in-from-bottom-5 duration-1000">
+                            {/* Previous settings content was already added, but I need to make sure the Mantenimiento is inside or handled neatly */}
+                            
                             {/* ═══════════════════════════════════════════════════
                                 SECCIÓN: BANNERS DE PÁGINA PRINCIPAL
                             ═══════════════════════════════════════════════════ */}
-                            <div className="space-y-6">
-                                <div className="flex items-center gap-4 pb-4 border-b-2 border-neutral-900">
-                                    <div className="w-10 h-10 bg-neutral-900 flex items-center justify-center">
-                                        <Layout size={20} className="text-orange-500" />
+                            <div className="space-y-10">
+                                <div className="flex items-center gap-6 pb-8 border-b border-white/5">
+                                    <div className="w-14 h-14 bg-secondary flex items-center justify-center rounded-2xl shadow-2xl shadow-secondary/20">
+                                        <Layout size={28} className="text-white" />
                                     </div>
                                     <div>
-                                        <h3 className="text-sm font-black uppercase tracking-[0.2em] text-neutral-900">Banners de Página Principal</h3>
-                                        <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mt-0.5">Configura los 3 banners hero de tu web pública</p>
+                                        <h3 className="text-lg font-black uppercase tracking-[0.3em] text-white italic">Arquitectura Hero Visual</h3>
+                                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.4em] mt-1">Configuración técnica de narrativa visual en el frontend público</p>
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                                <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
                                     <BannerConfigPanel
                                         bannerKey="software"
-                                        label="Software & Desarrollo"
-                                        icon={<Monitor size={18} className="text-blue-500" />}
-                                        accentColor="blue"
+                                        label="División Software"
+                                        icon={<Monitor size={20} className="text-secondary" />}
+                                        accentColor="secondary"
                                         data={storeSettings.banners?.software || {}}
                                         allProducts={products}
                                         onChange={(d: any) => setStoreSettings((prev: any) => ({ ...prev, banners: { ...prev.banners, software: d } }))}
                                     />
                                     <BannerConfigPanel
                                         bannerKey="automation"
-                                        label="Automatización"
-                                        icon={<Cpu size={18} className="text-emerald-500" />}
-                                        accentColor="emerald"
+                                        label="División Industria"
+                                        icon={<Cpu size={20} className="text-primary" />}
+                                        accentColor="primary"
                                         data={storeSettings.banners?.automation || {}}
                                         allProducts={products}
                                         onChange={(d: any) => setStoreSettings((prev: any) => ({ ...prev, banners: { ...prev.banners, automation: d } }))}
                                     />
                                     <BannerConfigPanel
                                         bannerKey="gaming"
-                                        label="Gaming & Consolas"
-                                        icon={<Gamepad2 size={18} className="text-purple-500" />}
+                                        label="División Consumo"
+                                        icon={<Gamepad2 size={20} className="text-purple-500" />}
                                         accentColor="purple"
                                         data={storeSettings.banners?.gaming || {}}
                                         allProducts={products}
@@ -663,84 +722,129 @@ export default function ShopConfigPage() {
                             {/* ═══════════════════════════════════════════════════
                                 SECCIÓN: LOGÍSTICA Y NOTIFICACIÓN
                             ═══════════════════════════════════════════════════ */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                <div className="bg-white border border-neutral-100 p-8 space-y-6">
-                                    <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-800 mb-6 flex items-center gap-2"><Box size={16} className="text-orange-600" /> Logística y Globales</h3>
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase text-neutral-400 tracking-wider">Moneda Principal</label>
+                            <div className="grid grid-cols-1 xl:grid-cols-2 gap-10">
+                                <div className="glass-panel p-10 rounded-[3rem] border-white/5 space-y-10 relative overflow-hidden">
+                                    <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/5 blur-3xl -mr-16 -mt-16 rounded-full"></div>
+                                    <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-white italic flex items-center gap-4">
+                                        <Box size={20} className="text-secondary" /> 
+                                        Parámetros de Transacción
+                                    </h3>
+                                    
+                                    <div className="space-y-4">
+                                        <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.3em] ml-2">Divisa Operativa Global</label>
                                         <select
                                             value={storeSettings.currency}
                                             onChange={(e) => setStoreSettings({ ...storeSettings, currency: e.target.value })}
-                                            className="w-full bg-neutral-50 border-none px-6 py-4 text-sm font-bold uppercase outline-none"
+                                            className="w-full bg-slate-900 border border-white/5 px-8 py-5 text-xs font-black uppercase tracking-widest text-white outline-none rounded-2xl focus:border-secondary transition-all appearance-none"
                                         >
-                                            <option value="USD">Dólares (USD)</option>
+                                            <option value="USD">Dólares Americanos (USD)</option>
                                             <option value="COP">Pesos Colombianos (COP)</option>
                                             <option value="MXN">Pesos Mexicanos (MXN)</option>
                                             <option value="EUR">Euros (EUR)</option>
                                         </select>
                                     </div>
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase text-neutral-400 tracking-wider">Costo de Envío Estándar</label>
-                                        <input type="number" value={storeSettings.shippingCost} onChange={(e) => setStoreSettings({ ...storeSettings, shippingCost: Number(e.target.value) })} className="w-full bg-neutral-50 border-none px-6 py-4 text-sm font-bold outline-none text-orange-600" />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase text-neutral-400 tracking-wider">Envío Gratis Desde (Monto)</label>
-                                        <input type="number" value={storeSettings.freeShippingThreshold} onChange={(e) => setStoreSettings({ ...storeSettings, freeShippingThreshold: Number(e.target.value) })} className="w-full bg-neutral-50 border-none px-6 py-4 text-sm outline-none" />
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                        <div className="space-y-4">
+                                            <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.3em] ml-2 text-wrap">Costo de Envío Base</label>
+                                            <div className="relative">
+                                                <div className="absolute left-6 top-1/2 -translate-y-1/2 text-secondary font-black">$</div>
+                                                <input type="number" value={storeSettings.shippingCost} onChange={(e) => setStoreSettings({ ...storeSettings, shippingCost: Number(e.target.value) })} className="w-full bg-slate-900 border border-white/5 pl-12 pr-8 py-5 text-sm font-black text-white outline-none rounded-2xl focus:border-secondary transition-all" />
+                                            </div>
+                                        </div>
+                                        <div className="space-y-4">
+                                            <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.3em] ml-2 text-wrap">Umbral Popular (Envío Gratis)</label>
+                                            <div className="relative">
+                                                <div className="absolute left-6 top-1/2 -translate-y-1/2 text-primary font-black">$</div>
+                                                <input type="number" value={storeSettings.freeShippingThreshold} onChange={(e) => setStoreSettings({ ...storeSettings, freeShippingThreshold: Number(e.target.value) })} className="w-full bg-slate-900 border border-white/5 pl-12 pr-8 py-5 text-sm font-black text-white outline-none rounded-2xl focus:border-primary transition-all" />
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div className="bg-white border border-neutral-100 p-8 space-y-6">
-                                    <div className="flex justify-between items-center mb-6">
-                                        <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-800 flex items-center gap-2"><Star size={16} className="text-yellow-500" /> Notificación Superior</h3>
-                                        <Toggle label="Activar" icon="" checked={storeSettings.bannerActive} onChange={(v) => setStoreSettings({ ...storeSettings, bannerActive: v })} />
+                                <div className="glass-panel p-10 rounded-[3rem] border-white/5 space-y-10 relative overflow-hidden">
+                                    <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-500/5 blur-3xl -mr-16 -mt-16 rounded-full"></div>
+                                    <div className="flex justify-between items-center border-b border-white/5 pb-8">
+                                        <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-white italic flex items-center gap-4">
+                                            <Star size={20} className="text-yellow-500 shadow-[0_0_10px_rgba(234,179,8,0.4)]" /> 
+                                            Difusión de Alertas Hero
+                                        </h3>
+                                        <Toggle label="Activo" icon="" checked={storeSettings.bannerActive} onChange={(v) => setStoreSettings({ ...storeSettings, bannerActive: v })} />
                                     </div>
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase text-neutral-400 tracking-wider">Texto del Banner</label>
-                                        <textarea rows={3} disabled={!storeSettings.bannerActive} value={storeSettings.bannerText} onChange={(e) => setStoreSettings({ ...storeSettings, bannerText: e.target.value })} className="w-full bg-neutral-50 border-none px-6 py-4 text-sm outline-none resize-none disabled:opacity-50" placeholder="Ej: ¡Envío Gratis por compras superiores a $100!" />
+                                    <div className="space-y-4">
+                                        <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.3em] ml-2">Protocolo de Mensajería Superior</label>
+                                        <textarea 
+                                            rows={4} 
+                                            disabled={!storeSettings.bannerActive} 
+                                            value={storeSettings.bannerText} 
+                                            onChange={(e) => setStoreSettings({ ...storeSettings, bannerText: e.target.value })} 
+                                            className="w-full bg-slate-900 border border-white/5 px-8 py-6 text-xs font-bold text-white outline-none resize-none rounded-[2rem] focus:border-yellow-500 transition-all disabled:opacity-20 placeholder:text-slate-800 italic" 
+                                            placeholder="Ej: DISPONIBILIDAD TÁCTICA PARA ENVÍOS NACIONALES — ATOMIC DELIVERY PROTOCOL" 
+                                        />
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Payment Methods */}
-                            <div className="bg-white border border-neutral-100 p-8 space-y-6">
-                                <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-800 mb-6 flex items-center gap-2"><CreditCard size={16} className="text-orange-600" /> Pasarelas de Pago</h3>
-                                <div className="flex flex-col md:flex-row gap-6">
-                                    <div className={`flex-1 border p-6 flex items-center justify-between transition-colors ${storeSettings.paymentMethods?.bankTransfer ? 'border-orange-600 bg-orange-50/10' : 'border-neutral-100'}`}>
-                                        <div><p className="font-bold text-neutral-800">Transferencia Bancaria</p><p className="text-xs text-neutral-500 mt-1">Manual offline</p></div>
-                                        <Toggle label="" icon="" checked={storeSettings.paymentMethods?.bankTransfer ?? true} onChange={(v) => setStoreSettings({ ...storeSettings, paymentMethods: { ...storeSettings.paymentMethods, bankTransfer: v } })} />
+                            {/* ═══════════════════════════════════════════════════
+                                SECCIÓN: MANTENIMIENTO TÉCNICO
+                            ═══════════════════════════════════════════════════ */}
+                            <div className="glass-panel p-10 rounded-[4rem] border-white/5 relative overflow-hidden">
+                                <div className="absolute top-0 left-0 w-64 h-64 bg-red-500/5 blur-[100px] -ml-32 -mt-32 rounded-full"></div>
+                                <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-white italic flex items-center gap-4 border-b border-white/5 pb-8 mb-12">
+                                    <ShieldAlert size={20} className="text-red-500" /> 
+                                    Zona de Mantenimiento Crítico
+                                </h3>
+                                <div className="grid grid-cols-1 xl:grid-cols-2 gap-16">
+                                    <div className="space-y-8">
+                                        <div className="flex items-center space-x-4 text-red-500">
+                                            <Trash2 size={24} />
+                                            <div>
+                                                <span className="text-[11px] uppercase font-black tracking-[0.2em] block">Saneamiento de Duplicados</span>
+                                                <span className="text-[9px] text-slate-500 font-bold uppercase tracking-widest italic leading-relaxed mt-1 block">Protocolo de eliminación masiva por redundancia de metadatos.</span>
+                                            </div>
+                                        </div>
+                                        <button 
+                                            onClick={async () => { if(confirm("¿Seguro que quieres ejecutar la poda de duplicados?")) { setIsCleaning(true); try { await cleanupDuplicateProducts(); await refreshData(); alert("Catálogo saneado."); } finally { setIsCleaning(false); } } }} 
+                                            disabled={isCleaning} 
+                                            className="w-full bg-red-600/10 text-red-500 border border-red-500/30 px-10 py-6 text-[10px] font-black uppercase tracking-[0.3em] hover:bg-red-600 hover:text-white transition-all shadow-2xl shadow-red-600/10 rounded-2xl active:scale-95 disabled:opacity-20"
+                                        >
+                                            {isCleaning ? 'Ejecutando Poda...' : 'Iniciar Poda de Redundancia'}
+                                        </button>
                                     </div>
-                                    <div className={`flex-1 border p-6 flex items-center justify-between transition-colors ${storeSettings.paymentMethods?.cashOnDelivery ? 'border-orange-600 bg-orange-50/10' : 'border-neutral-100'}`}>
-                                        <div><p className="font-bold text-neutral-800">Pago Contra Entrega</p><p className="text-xs text-neutral-500 mt-1">Efectivo al recibir</p></div>
-                                        <Toggle label="" icon="" checked={storeSettings.paymentMethods?.cashOnDelivery ?? false} onChange={(v) => setStoreSettings({ ...storeSettings, paymentMethods: { ...storeSettings.paymentMethods, cashOnDelivery: v } })} />
-                                    </div>
-                                    <div className={`flex-1 border p-6 flex items-center justify-between transition-colors ${storeSettings.paymentMethods?.creditCard ? 'border-orange-600 bg-orange-50/10' : 'border-neutral-100'}`}>
-                                        <div><p className="font-bold text-neutral-800">Tarjetas y Pasarela</p><p className="text-xs text-neutral-500 mt-1">Stripe / Webpay</p></div>
-                                        <Toggle label="" icon="" checked={storeSettings.paymentMethods?.creditCard ?? false} onChange={(v) => setStoreSettings({ ...storeSettings, paymentMethods: { ...storeSettings.paymentMethods, creditCard: v } })} />
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Mantenimiento */}
-                            <div className="bg-white border border-neutral-100 p-8">
-                                <h3 className="text-xs font-black uppercase tracking-[0.2em] text-neutral-800 mb-8 flex items-center gap-3"><Settings size={18} className="text-red-600" /> Mantenimiento Automático del Catálogo</h3>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                                    <div className="space-y-6">
-                                        <div className="flex items-center space-x-2 text-rose-600"><Trash2 size={16} /><span className="text-[10px] uppercase font-black tracking-widest">Poda de Duplicados Pro</span></div>
-                                        <p className="text-[11px] text-neutral-500 leading-relaxed font-bold uppercase tracking-tighter italic opacity-70">Elimina productos 100% idénticos (Nombre, Precio, Imágenes). El sistema mantendrá solo la entrada más reciente.</p>
-                                        <button onClick={async () => { if(confirm("¿Seguro que quieres eliminar duplicados exactos?")) { setIsCleaning(true); try { await cleanupDuplicateProducts(); await refreshData(); alert("Catálogo saneado con éxito."); } finally { setIsCleaning(false); } } }} disabled={isCleaning} className="w-full bg-rose-50 text-rose-600 border border-rose-100 px-8 py-5 text-[10px] font-black uppercase tracking-widest hover:bg-rose-600 hover:text-white transition-all disabled:opacity-50 shadow-sm">{isCleaning ? 'Limpiando...' : 'Borrar Productos Duplicados'}</button>
-                                    </div>
-                                    <div className="space-y-6">
-                                        <div className="flex items-center space-x-2 text-indigo-600"><ShoppingBag size={16} /><span className="text-[10px] uppercase font-black tracking-widest">Proveedores en Catálogo</span></div>
-                                        <div className="bg-white border border-neutral-100 divide-y divide-neutral-100 max-h-48 overflow-y-auto">
-                                            {providerStats.length > 0 ? providerStats.map((s, i) => (<div key={i} className="p-4 flex justify-between items-center hover:bg-neutral-50 transition-colors"><span className="text-[11px] font-black text-neutral-800 uppercase tracking-tight truncate">{s.name}</span><span className="bg-indigo-600 text-white px-2 py-0.5 text-[9px] font-black">{s.count} uds.</span></div>)) : (<div className="p-8 text-center text-[10px] text-neutral-400 font-bold uppercase italic">Detectando orígenes...</div>)}
+                                    <div className="space-y-8">
+                                        <div className="flex items-center space-x-4 text-primary">
+                                            <ShoppingBag size={24} />
+                                            <div>
+                                                <span className="text-[11px] uppercase font-black tracking-[0.2em] block">Analítica de Origen</span>
+                                                <span className="text-[9px] text-slate-500 font-bold uppercase tracking-widest italic leading-relaxed mt-1 block">Distribución cuantitativa por vector de suministro.</span>
+                                            </div>
+                                        </div>
+                                        <div className="bg-slate-950/60 rounded-[2rem] border border-white/5 overflow-hidden divide-y divide-white/5 max-h-56 overflow-y-auto custom-scrollbar">
+                                            {providerStats.length > 0 ? providerStats.map((s, i) => (
+                                                <div key={i} className="p-5 flex justify-between items-center hover:bg-white/5 transition-colors group">
+                                                    <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest group-hover:text-primary transition-colors">{s.name}</span>
+                                                    <span className="bg-primary/20 text-primary border border-primary/20 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter italic">
+                                                        {s.count} <span className="text-[7px] ml-1">UNIDADES</span>
+                                                    </span>
+                                                </div>
+                                            )) : (
+                                                <div className="py-12 text-center opacity-20">
+                                                    <p className="text-[9px] font-black uppercase tracking-[0.4em]">Escaneando Orígenes...</p>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="flex justify-end pt-4">
-                                <button onClick={saveSettings} disabled={loading} className="bg-neutral-900 text-white px-10 py-4 font-bold uppercase tracking-widest text-[10px] hover:bg-orange-600 transition-colors shadow-lg">
-                                    Guardar Todos los Ajustes
+                            <div className="flex justify-end pt-10">
+                                <button 
+                                    onClick={saveSettings} 
+                                    disabled={loading} 
+                                    className="bg-white text-black px-20 py-8 font-black uppercase tracking-[0.5em] text-[11px] hover:bg-secondary hover:text-white transition-all shadow-[0_0_100px_rgba(255,255,255,0.05)] hover:shadow-secondary/20 rounded-[2rem] active:scale-95 flex items-center gap-4"
+                                >
+                                    <Save size={20} />
+                                    <span>Comprometer Protocolo</span>
                                 </button>
                             </div>
                         </div>
@@ -771,23 +875,23 @@ export default function ShopConfigPage() {
 function QuickCreate({ label, icon, onSave }: { label: string, icon: any, onSave: (name: string) => void }) {
     const [name, setName] = useState('')
     return (
-        <div className="space-y-3">
-            <label className="text-[10px] font-black uppercase text-neutral-400 tracking-widest flex items-center space-x-2">
+        <div className="space-y-6">
+            <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] flex items-center space-x-3 ml-2">
                 {icon} <span>{label}</span>
             </label>
-            <div className="flex space-x-2">
+            <div className="flex gap-4">
                 <input
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="Escribe nombre..."
-                    className="flex-1 bg-white border border-neutral-100 px-4 py-2.5 text-xs outline-none focus:border-orange-200"
+                    placeholder="IDENTIFICADOR DE SEGMENTO..."
+                    className="flex-1 bg-slate-900 border border-white/5 px-8 py-5 text-[11px] font-black uppercase tracking-widest text-white outline-none focus:border-secondary transition-all rounded-2xl placeholder:text-slate-800"
                 />
                 <button
                     onClick={() => { if (name) { onSave(name); setName(''); } }}
-                    className="bg-neutral-800 text-white px-4 py-2 text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all"
+                    className="bg-white text-black px-10 py-5 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-secondary hover:text-white transition-all rounded-2xl shadow-xl active:scale-95"
                 >
-                    Crear
+                    Inyectar
                 </button>
             </div>
         </div>
@@ -795,14 +899,14 @@ function QuickCreate({ label, icon, onSave }: { label: string, icon: any, onSave
 }
 
 // ─── BannerConfigPanel ────────────────────────────────────────────────────────
-function BannerConfigPanel({ bannerKey, label, icon, accentColor, data, allProducts, onChange }: {
-    bannerKey: string
-    label: string
-    icon: any
-    accentColor: string
-    data: any
-    allProducts: any[]
-    onChange: (d: any) => void
+function BannerConfigPanel({ bannerKey, label, icon, accentColor, data, allProducts, onChange }: { 
+    bannerKey: string, 
+    label: string, 
+    icon: any, 
+    accentColor: 'secondary' | 'primary' | 'purple', 
+    data: any, 
+    allProducts: any[], 
+    onChange: (d: any) => void 
 }) {
     const fileInputRef = useRef<HTMLInputElement>(null)
     const [uploading, setUploading] = useState(false)
@@ -814,13 +918,14 @@ function BannerConfigPanel({ bannerKey, label, icon, accentColor, data, allProdu
     const selectedProductIds: string[] = data.productIds || []
 
     const accentMap: Record<string, string> = {
-        blue: 'border-blue-500 bg-blue-50',
-        emerald: 'border-emerald-500 bg-emerald-50',
-        purple: 'border-purple-500 bg-purple-50',
+        secondary: 'border-secondary/30 text-secondary shadow-secondary/5',
+        primary: 'border-primary/30 text-primary shadow-primary/5',
+        purple: 'border-purple-500/30 text-purple-500 shadow-purple-500/5'
     }
+
     const dotMap: Record<string, string> = {
-        blue: 'bg-blue-500',
-        emerald: 'bg-emerald-500',
+        secondary: 'bg-secondary',
+        primary: 'bg-primary',
         purple: 'bg-purple-500',
     }
 
@@ -865,13 +970,20 @@ function BannerConfigPanel({ bannerKey, label, icon, accentColor, data, allProdu
     const displayList = searchTerm.length >= 2 ? searchResults : allProducts.slice(0, 40)
 
     return (
-        <div className={`border-l-4 ${accentMap[accentColor] || 'border-orange-500 bg-orange-50'} bg-white border border-neutral-100`}>
+        <div className={`glass-panel p-8 rounded-[3rem] border transition-all duration-700 relative overflow-hidden group ${accentMap[accentColor] || accentMap.secondary} bg-slate-950/20 backdrop-blur-3xl`}>
+            <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 blur-3xl -mr-16 -mt-16 group-hover:bg-white/10 transition-all duration-1000 rounded-full"></div>
+            
             {/* Header */}
-            <div className="flex items-center justify-between p-5 border-b border-neutral-100">
-                <div className="flex items-center gap-3">
-                    <div className={`w-2 h-2 rounded-full ${dotMap[accentColor] || 'bg-orange-500'}`}></div>
-                    {icon}
-                    <span className="text-[11px] font-black uppercase tracking-widest text-neutral-800">{label}</span>
+            <div className="flex items-center justify-between pb-8 border-b border-white/5 mb-8">
+                <div className="flex items-center gap-4">
+                    <div className={`w-3 h-3 rounded-full animate-pulse ${dotMap[accentColor] || dotMap.secondary} shadow-[0_0_10px_currentColor]`}></div>
+                    <div className="p-3 bg-white/5 rounded-2xl group-hover:scale-110 transition-transform duration-500">
+                        {icon}
+                    </div>
+                    <div>
+                        <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-white italic">{label}</h4>
+                        <p className="text-[8px] font-bold text-slate-500 uppercase tracking-widest mt-1 italic">Protocolo Hero Unit</p>
+                    </div>
                 </div>
                 <Toggle
                     label=""
@@ -881,25 +993,25 @@ function BannerConfigPanel({ bannerKey, label, icon, accentColor, data, allProdu
                 />
             </div>
 
-            <div className="p-5 space-y-4">
+            <div className="space-y-8">
                 {/* Image Upload */}
-                <div className="space-y-2">
-                    <label className="text-[9px] font-black uppercase text-neutral-400 tracking-widest">Imagen de Fondo</label>
+                <div className="space-y-4">
+                    <label className="text-[9px] font-black uppercase text-slate-500 tracking-[0.3em] ml-2 italic">Vector de Origen Visual</label>
                     {data.imageUrl ? (
-                        <div className="relative group">
-                            <img src={data.imageUrl} alt="Banner" className="w-full h-28 object-cover" />
-                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                        <div className="relative group/img overflow-hidden rounded-[2rem] border border-white/10 aspect-video shadow-2xl">
+                            <img src={data.imageUrl} alt="Banner" className="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-1000" />
+                            <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm opacity-0 group-hover/img:opacity-100 transition-all duration-500 flex flex-col items-center justify-center gap-4">
                                 <button
                                     onClick={() => fileInputRef.current?.click()}
-                                    className="bg-white text-neutral-900 px-3 py-1.5 text-[9px] font-black uppercase tracking-widest hover:bg-orange-600 hover:text-white transition-all"
+                                    className="bg-white text-black px-8 py-3 text-[10px] font-black uppercase tracking-widest hover:bg-secondary hover:text-white transition-all rounded-xl active:scale-95"
                                 >
-                                    {uploading ? 'Subiendo...' : 'Cambiar'}
+                                    {uploading ? 'DESPLEGANDO...' : 'REEMPLAZAR'}
                                 </button>
                                 <button
                                     onClick={() => onChange({ ...data, imageUrl: '' })}
-                                    className="bg-red-600 text-white px-3 py-1.5 text-[9px] font-black uppercase tracking-widest"
+                                    className="text-red-500 text-[9px] font-black uppercase tracking-[0.4em] hover:text-white transition-colors italic"
                                 >
-                                    Quitar
+                                    Liberar Anclaje
                                 </button>
                             </div>
                         </div>
@@ -907,123 +1019,132 @@ function BannerConfigPanel({ bannerKey, label, icon, accentColor, data, allProdu
                         <button
                             onClick={() => fileInputRef.current?.click()}
                             disabled={uploading}
-                            className="w-full border-2 border-dashed border-neutral-200 py-6 flex flex-col items-center gap-2 hover:border-orange-400 hover:bg-orange-50/30 transition-all group"
+                            className="w-full border-4 border-dashed border-white/5 py-12 flex flex-col items-center gap-4 hover:border-secondary/20 hover:bg-secondary/5 transition-all group/upload rounded-[2.5rem]"
                         >
-                            <Upload size={20} className="text-neutral-300 group-hover:text-orange-500 transition-colors" />
-                            <span className="text-[9px] font-black uppercase tracking-widest text-neutral-400 group-hover:text-orange-500">
-                                {uploading ? 'Subiendo...' : 'Subir imagen (JPG/PNG/WebP)'}
+                            <div className="p-4 bg-white/5 rounded-2xl group-hover/upload:rotate-12 transition-transform duration-500">
+                                <Upload size={28} className="text-slate-600 group-hover/upload:text-secondary" />
+                            </div>
+                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-600 group-hover/upload:text-white transition-colors">
+                                {uploading ? 'Sincronizando...' : 'Inyectar Recurso Visual'}
                             </span>
                         </button>
                     )}
                     <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleUpload} />
-                    <div className="space-y-1">
-                        <label className="text-[9px] font-black uppercase text-neutral-400 tracking-widest">O URL externa</label>
+                    <div className="space-y-2">
                         <input
                             type="text"
                             value={data.imageUrl || ''}
                             onChange={(e) => onChange({ ...data, imageUrl: e.target.value })}
-                            placeholder="https://..."
-                            className="w-full bg-neutral-50 border-none px-3 py-2 text-xs outline-none font-mono"
+                            placeholder="VINCULAR DIRECCIÓN REMOTA (URL)..."
+                            className="w-full bg-slate-950 border border-white/5 px-6 py-4 text-[9px] font-mono text-slate-400 outline-none focus:border-secondary transition-all rounded-xl italic"
                         />
                     </div>
                 </div>
 
                 {/* Title */}
-                <div className="space-y-1">
-                    <label className="text-[9px] font-black uppercase text-neutral-400 tracking-widest">Título Central</label>
+                <div className="space-y-4">
+                    <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2 italic">Narrativa de Impacto</label>
                     <input
                         type="text"
                         value={data.title || ''}
                         onChange={(e) => onChange({ ...data, title: e.target.value })}
-                        className="w-full bg-neutral-50 border-none px-3 py-2.5 text-sm font-black outline-none border-b-2 border-transparent focus:border-orange-500 transition-all"
+                        placeholder="HEADER COMERCIAL..."
+                        className="w-full bg-slate-950 border border-white/5 px-8 py-5 text-[11px] font-black uppercase tracking-[0.2em] text-white outline-none focus:border-secondary transition-all rounded-2xl placeholder:text-slate-800"
                     />
                 </div>
 
                 {/* Description */}
-                <div className="space-y-1">
-                    <label className="text-[9px] font-black uppercase text-neutral-400 tracking-widest">Descripción</label>
+                <div className="space-y-4">
+                    <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2 italic">Argumento de Venta</label>
                     <textarea
                         rows={2}
                         value={data.description || ''}
                         onChange={(e) => onChange({ ...data, description: e.target.value })}
-                        className="w-full bg-neutral-50 border-none px-3 py-2.5 text-xs outline-none resize-none border-b-2 border-transparent focus:border-orange-500 transition-all"
+                        placeholder="BREVE DESCRIPCIÓN DE LA SECCIÓN..."
+                        className="w-full bg-slate-950 border border-white/5 px-8 py-5 text-[10px] font-bold text-slate-400 outline-none resize-none focus:border-secondary transition-all rounded-2xl leading-relaxed placeholder:text-slate-800 italic"
                     />
                 </div>
 
                 {/* Products for gallery */}
-                <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                        <label className="text-[9px] font-black uppercase text-neutral-400 tracking-widest">
-                            Productos del Banner
+                <div className="space-y-4">
+                    <div className="flex items-center justify-between px-2">
+                        <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] italic">
+                            Ecosistema de Productos
                         </label>
-                        <span className="text-[9px] font-black bg-neutral-900 text-white px-2 py-0.5">
-                            {selectedProductIds.length} sel.
+                        <span className="text-[9px] font-black bg-secondary/10 text-secondary border border-secondary/20 px-3 py-1 rounded-full italic">
+                            {selectedProductIds.length} NÚCLEOS
                         </span>
                     </div>
                     <button
                         onClick={() => setShowProductPicker(v => !v)}
-                        className="w-full border border-dashed border-neutral-200 py-2 text-[9px] font-black uppercase tracking-widest text-neutral-400 hover:text-orange-600 hover:border-orange-300 transition-all flex items-center justify-center gap-2"
+                        className="w-full border-2 border-dashed border-white/5 py-6 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 hover:text-white hover:bg-white/5 transition-all flex items-center justify-center gap-4 group/picker"
                     >
-                        <Box size={12} /> {showProductPicker ? 'Cerrar selector' : 'Seleccionar productos galería'}
+                        <Box size={16} className="group-hover/picker:text-secondary transition-colors" /> 
+                        <span>{showProductPicker ? 'ACEPTAR SELECCIÓN' : 'DESPLEGAR SELECTOR'}</span>
                     </button>
 
                     {showProductPicker && (
-                        <div className="border border-neutral-100 bg-neutral-50 space-y-2 p-3">
-                            <div className="relative">
-                                <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
+                        <div className="animate-in slide-in-from-top-4 duration-500 bg-slate-900 shadow-2xl rounded-[2rem] border border-white/5 overflow-hidden">
+                            <div className="relative group/search p-4">
+                                <Search size={14} className="absolute left-8 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within/search:text-primary transition-colors" />
                                 <input
                                     type="text"
-                                    placeholder="Buscar producto..."
+                                    placeholder="ESCANEAR CATÁLOGO..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full bg-neutral-900 text-white pl-8 pr-3 py-2 text-[10px] font-bold uppercase tracking-widest outline-none"
+                                    className="w-full bg-slate-950 border border-white/5 pl-12 pr-4 py-4 text-[10px] font-black uppercase tracking-widest text-white outline-none rounded-xl focus:border-primary transition-all"
                                 />
-                                {searching && <RefreshCw size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-orange-500 animate-spin" />}
+                                {searching && <RefreshCw size={12} className="absolute right-8 top-1/2 -translate-y-1/2 text-primary animate-spin" />}
                             </div>
-                            <div className="max-h-36 overflow-y-auto divide-y divide-neutral-100">
+                            <div className="max-h-56 overflow-y-auto divide-y divide-white/5 custom-scrollbar">
                                 {displayList.map((p: any) => {
                                     const sel = selectedProductIds.includes(p.id)
                                     return (
                                         <button
                                             key={p.id}
                                             onClick={() => toggleProduct(p)}
-                                            className={`w-full flex items-center gap-3 p-2 text-left transition-colors ${sel ? 'bg-orange-50' : 'bg-white hover:bg-neutral-50'}`}
+                                            className={`w-full flex items-center justify-between p-4 transition-all hover:bg-white/5 group/item ${sel ? 'bg-secondary/5' : ''}`}
                                         >
-                                            <div className="w-8 h-8 bg-neutral-100 overflow-hidden shrink-0">
-                                                {safeParseArray(p.images).length > 0 ? (
-                                                    <img src={safeParseArray(p.images)[0]} className="w-full h-full object-cover" />
-                                                ) : (
-                                                    <ImageIcon size={12} className="m-auto mt-2 text-neutral-300" />
-                                                )}
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-10 h-10 bg-slate-950 rounded-lg overflow-hidden border border-white/5">
+                                                    {safeParseArray(p.images).length > 0 ? (
+                                                        <img src={safeParseArray(p.images)[0]} className="w-full h-full object-cover scale-110 group-hover/item:scale-125 transition-transform duration-700" />
+                                                    ) : (
+                                                        <ImageIcon size={14} className="m-auto text-slate-700" />
+                                                    )}
+                                                </div>
+                                                <div className="text-left">
+                                                    <span className="text-[10px] font-black text-slate-300 uppercase line-clamp-1 block group-hover/item:text-white transition-colors">{p.name}</span>
+                                                    <span className="text-[8px] font-bold text-slate-600 block uppercase tracking-widest">{p.sku || 'N/A'}</span>
+                                                </div>
                                             </div>
-                                            <span className="text-[10px] font-bold text-neutral-700 line-clamp-1 flex-1">{p.name}</span>
-                                            <div className={sel ? 'text-orange-500' : 'text-neutral-200'}>
-                                                {sel ? <CheckSquare size={14} /> : <Square size={14} />}
+                                            <div className={`transition-all duration-500 ${sel ? 'text-secondary scale-110' : 'text-slate-800'}`}>
+                                                {sel ? <CheckSquare size={18} /> : <Square size={18} />}
                                             </div>
                                         </button>
                                     )
                                 })}
                                 {displayList.length === 0 && (
-                                    <p className="text-center py-4 text-[9px] text-neutral-400 font-bold uppercase">Sin resultados</p>
+                                    <p className="text-center py-12 text-[9px] text-slate-600 font-black uppercase tracking-[0.5em]">Sin Coincidencias</p>
                                 )}
                             </div>
                         </div>
                     )}
 
                     {/* Selected pills */}
-                    {selectedProductIds.length > 0 && (
-                        <div className="flex flex-wrap gap-1 pt-1">
+                    {selectedProductIds.length > 0 && !showProductPicker && (
+                        <div className="flex flex-wrap gap-2 pt-4">
                             {selectedProductIds.slice(0, 5).map((id: string) => {
                                 const p = allProducts.find((pr: any) => pr.id === id)
                                 return p ? (
-                                    <span key={id} className="bg-neutral-900 text-white text-[8px] font-black uppercase px-2 py-0.5 flex items-center gap-1">
-                                        {p.name.substring(0, 15)}…
-                                        <button onClick={() => toggleProduct(p)} className="hover:text-red-400"><X size={8} /></button>
+                                    <span key={id} className="bg-slate-900 border border-white/5 text-slate-300 text-[8px] font-black uppercase px-3 py-1 rounded-lg flex items-center gap-3 group/pill hover:bg-secondary/10 hover:border-secondary/30 transition-all">
+                                        <span className="truncate max-w-[80px]">{p.name}</span>
+                                        <button onClick={() => toggleProduct(p)} className="text-slate-600 hover:text-red-500 transition-colors"><X size={10} /></button>
                                     </span>
                                 ) : null
                             })}
                             {selectedProductIds.length > 5 && (
-                                <span className="text-[8px] font-black text-neutral-400 uppercase px-2 py-0.5">+{selectedProductIds.length - 5} más</span>
+                                <span className="text-[8px] font-bold text-slate-600 uppercase tracking-widest flex items-center px-2">+{selectedProductIds.length - 5} ADICIONALES</span>
                             )}
                         </div>
                     )}
@@ -1036,12 +1157,15 @@ function BannerConfigPanel({ bannerKey, label, icon, accentColor, data, allProdu
 
 function StatCard({ label, value, icon }: { label: string, value: any, icon: any }) {
     return (
-        <div className="bg-white border border-neutral-100 p-5 space-y-2">
-            <div className="flex items-center space-x-2 text-neutral-400">
-                {icon}
-                <span className="text-[9px] font-black uppercase tracking-widest">{label}</span>
+        <div className="glass-panel p-6 rounded-[2rem] border-white/5 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-white/5 blur-3xl -mr-12 -mt-12 group-hover:bg-primary/10 transition-all duration-700"></div>
+            <div className="flex items-center space-x-3 text-slate-500 mb-4">
+                <div className="p-2 bg-white/5 rounded-xl group-hover:text-primary transition-colors">
+                    {icon}
+                </div>
+                <span className="text-[9px] font-black uppercase tracking-[0.3em]">{label}</span>
             </div>
-            <p className="text-2xl font-black text-neutral-800 tracking-tighter">{value}</p>
+            <p className="text-3xl font-black text-white tracking-tighter italic">{value}</p>
         </div>
     )
 }
@@ -1095,230 +1219,256 @@ function ProductForm({ initialData, metadata, onCancel, onSaved }: { initialData
     const removeSpec = (index: number) => setTechSpecs(techSpecs.filter((_, i) => i !== index))
 
     return (
-        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+        <div className="space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-700 max-w-[1600px] mx-auto">
+            <div className="flex justify-between items-center bg-slate-950/40 p-8 rounded-[2.5rem] border border-white/5 backdrop-blur-3xl">
+                <div className="flex items-center gap-6">
+                    <div className="w-12 h-12 bg-secondary/10 flex items-center justify-center rounded-2xl border border-secondary/20">
+                        <Box size={24} className="text-secondary" />
+                    </div>
+                    <div>
+                        <h2 className="text-xl font-black uppercase tracking-tighter text-white italic">
+                            {formData.id ? 'Refactorización de Activo' : 'Creación de Nueva Entidad'}
+                        </h2>
+                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.3em] mt-1">Configuración técnica de especificaciones comerciales</p>
+                    </div>
+                </div>
+                <div className="flex gap-4">
+                    <button onClick={onCancel} className="px-8 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-white transition-all bg-white/5 hover:bg-white/10 rounded-2xl border border-white/5">Descartar</button>
+                    <button onClick={handleSubmit} disabled={loading} className="bg-white text-black px-10 py-4 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-secondary hover:text-white transition-all rounded-2xl shadow-2xl shadow-white/5 flex items-center gap-3">
+                        <Save size={16} />
+                        <span>{loading ? 'Sincronizando...' : 'Consolidar Cambios'}</span>
+                    </button>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-12">
 
                 {/* Main Info Column */}
-                <div className="lg:col-span-2 space-y-8">
-                    <section className="bg-white border border-neutral-100 p-8 space-y-6">
-                        <div className="flex items-center space-x-3 border-b border-neutral-50 pb-4 mb-6">
-                            <LayoutGrid size={18} className="text-orange-600" />
-                            <h2 className="text-[11px] font-black uppercase tracking-[0.2em] text-neutral-800">Cuerpo del Producto</h2>
+                <div className="xl:col-span-2 space-y-12">
+                    <section className="glass-panel p-10 rounded-[3rem] border-white/5 space-y-10 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/5 blur-3xl -mr-16 -mt-16 rounded-full"></div>
+                        <div className="flex items-center space-x-4 border-b border-white/5 pb-8">
+                            <LayoutGrid size={20} className="text-secondary" />
+                            <h2 className="text-[11px] font-black uppercase tracking-[0.4em] text-white italic">Manifiesto Técnico Principal</h2>
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase text-neutral-400 tracking-wider">Nombre Comercial</label>
+                        <div className="space-y-4">
+                            <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Denominación del Activo</label>
                             <input
                                 type="text"
                                 value={formData.name}
                                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                placeholder="Ej: Minibar Industrial Pro X"
-                                className="w-full bg-neutral-50 border-none px-6 py-5 text-sm font-medium focus:ring-2 focus:ring-orange-500/10 outline-none transition-all"
+                                placeholder="IDENTIFICADOR COMERCIAL..."
+                                className="w-full bg-slate-900 border border-white/5 px-8 py-6 text-sm font-black uppercase tracking-widest text-white outline-none focus:border-secondary transition-all rounded-2xl placeholder:text-slate-800"
                             />
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase text-neutral-400 tracking-wider">SKU / Modelo</label>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                            <div className="space-y-4">
+                                <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">ID Operativo (SKU)</label>
                                 <input
                                     type="text"
                                     value={formData.sku}
                                     onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
-                                    placeholder="ATS-100-PRO"
-                                    className="w-full bg-neutral-50 border-none px-6 py-5 text-sm outline-none"
+                                    placeholder="SERIAL-CODE..."
+                                    className="w-full bg-slate-900 border border-white/5 px-8 py-6 text-sm font-black text-white outline-none focus:border-secondary transition-all rounded-2xl placeholder:text-slate-800"
                                 />
                             </div>
-                            <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase text-neutral-400 tracking-wider">Precio Actual (USD)</label>
-                                <input
-                                    type="number"
-                                    value={formData.price}
-                                    onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                                    placeholder="0.00"
-                                    className="w-full bg-neutral-50 border-none px-6 py-5 text-sm outline-none font-black text-orange-600"
-                                />
+                            <div className="space-y-4">
+                                <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Valor Actual (USD)</label>
+                                <div className="relative">
+                                    <div className="absolute left-6 top-1/2 -translate-y-1/2 text-secondary font-black bg-slate-900 pr-2">$</div>
+                                    <input
+                                        type="number"
+                                        value={formData.price}
+                                        onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                                        placeholder="0.00"
+                                        className="w-full bg-slate-900 border border-white/5 pl-12 pr-8 py-6 text-sm font-black text-secondary outline-none focus:border-secondary transition-all rounded-2xl"
+                                    />
+                                </div>
                             </div>
-                            <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase text-neutral-400 tracking-wider">Precio Antes</label>
+                            <div className="space-y-4">
+                                <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2 text-wrap">Referencial Anterior</label>
                                 <input
                                     type="number"
                                     value={formData.compareAtPrice}
                                     onChange={(e) => setFormData({ ...formData, compareAtPrice: e.target.value })}
                                     placeholder="0.00"
-                                    className="w-full bg-neutral-50 border-none px-6 py-5 text-sm outline-none line-through"
+                                    className="w-full bg-slate-900 border border-white/5 px-8 py-6 text-sm font-black text-slate-600 outline-none focus:border-white/20 transition-all line-through rounded-2xl"
                                 />
                             </div>
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase text-neutral-400 tracking-wider">Descripción del Producto</label>
+                        <div className="space-y-4">
+                            <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Narrativa del Producto</label>
                             <textarea
                                 rows={8}
                                 value={formData.description}
                                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                placeholder="Describe el producto para el cliente..."
-                                className="w-full bg-neutral-50 border-none px-6 py-5 text-sm outline-none resize-none font-medium text-neutral-600 leading-relaxed"
+                                placeholder="ESPECIFICACIONES NARRATIVAS Y ARGUMENTO DE VENTA..."
+                                className="w-full bg-slate-900 border border-white/5 px-8 py-8 text-xs font-bold text-slate-300 outline-none resize-none focus:border-secondary transition-all rounded-[2.5rem] leading-relaxed placeholder:text-slate-800 italic"
                             />
                         </div>
                     </section>
 
-                    <section className="bg-white border border-neutral-100 p-8 space-y-6">
-                        <div className="flex items-center space-x-3 border-b border-neutral-50 pb-4 mb-6">
-                            <FileText size={18} className="text-orange-600" />
-                            <h2 className="text-[11px] font-black uppercase tracking-[0.2em] text-neutral-800">Ficha de Especificaciones</h2>
+                    <section className="glass-panel p-10 rounded-[3rem] border-white/5 space-y-10 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-3xl -mr-16 -mt-16 rounded-full"></div>
+                        <div className="flex items-center space-x-4 border-b border-white/5 pb-8">
+                            <FileText size={20} className="text-primary" />
+                            <h2 className="text-[11px] font-black uppercase tracking-[0.4em] text-white italic">Protocolo de Ficha Técnica</h2>
                         </div>
 
-                        <div className="space-y-4">
+                        <div className="space-y-6">
                             {techSpecs.map((spec, index) => (
-                                <div key={index} className="flex space-x-4 animate-in slide-in-from-left-2 duration-300">
-                                    <input
-                                        type="text"
-                                        value={spec.label}
-                                        placeholder="Característica (Ej: Capacidad)"
-                                        className="flex-1 bg-neutral-50 border-none px-6 py-4 text-[11px] font-bold uppercase outline-none"
-                                        onChange={(e) => {
-                                            const newSpecs = [...techSpecs]
-                                            newSpecs[index].label = e.target.value
-                                            setTechSpecs(newSpecs)
-                                        }}
-                                    />
-                                    <input
-                                        type="text"
-                                        value={spec.value}
-                                        placeholder="Valor (Ej: 50 Litros)"
-                                        className="flex-1 bg-neutral-50 border-none px-6 py-4 text-[11px] outline-none"
-                                        onChange={(e) => {
-                                            const newSpecs = [...techSpecs]
-                                            newSpecs[index].value = e.target.value
-                                            setTechSpecs(newSpecs)
-                                        }}
-                                    />
-                                    <button onClick={() => removeSpec(index)} className="p-3 text-neutral-200 hover:text-red-500 transition-colors">
+                                <div key={index} className="flex gap-6 animate-in slide-in-from-left-4 duration-300 items-center">
+                                    <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-900/50 p-6 rounded-2xl border border-white/5 hover:border-primary/30 transition-all">
+                                        <input
+                                            type="text"
+                                            value={spec.label}
+                                            placeholder="NODO TÉCNICO (Ej: POTENCIA)"
+                                            className="bg-transparent border-none px-4 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-primary outline-none placeholder:text-slate-700"
+                                            onChange={(e) => {
+                                                const newSpecs = [...techSpecs]
+                                                newSpecs[index].label = e.target.value
+                                                setTechSpecs(newSpecs)
+                                            }}
+                                        />
+                                        <input
+                                            type="text"
+                                            value={spec.value}
+                                            placeholder="VALOR DE SEGMENTO (Ej: 2.5KW)"
+                                            className="bg-transparent border-none px-4 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-white outline-none placeholder:text-slate-700"
+                                            onChange={(e) => {
+                                                const newSpecs = [...techSpecs]
+                                                newSpecs[index].value = e.target.value
+                                                setTechSpecs(newSpecs)
+                                            }}
+                                        />
+                                    </div>
+                                    <button onClick={() => removeSpec(index)} className="p-4 text-slate-500 hover:text-red-500 transition-colors bg-white/5 rounded-2xl border border-white/5">
                                         <Trash2 size={18} />
                                     </button>
                                 </div>
                             ))}
                             <button
                                 onClick={addSpec}
-                                className="w-full border-2 border-dashed border-neutral-100 py-4 text-[10px] font-black uppercase text-neutral-400 hover:text-orange-600 hover:border-orange-100 transition-all flex items-center justify-center space-x-2"
+                                className="w-full border-2 border-dashed border-white/5 py-8 rounded-[2rem] text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 hover:text-primary hover:border-primary/20 transition-all flex items-center justify-center space-x-4 bg-white/2 hover:bg-primary/5"
                             >
-                                <PlusCircle size={14} /> <span>Añadir Especificación Técnica</span>
+                                <PlusCircle size={20} /> <span>Añadir Especificación de Segmento</span>
                             </button>
                         </div>
                     </section>
                 </div>
 
                 {/* Side Column */}
-                <div className="space-y-8">
-                    <section className="bg-white border border-neutral-100 p-8 space-y-6">
-                        <div className="flex items-center space-x-3 border-b border-neutral-50 pb-4 mb-6">
-                            <ImageIcon size={18} className="text-orange-600" />
-                            <h2 className="text-[11px] font-black uppercase tracking-[0.2em] text-neutral-800">Galería de Imágenes</h2>
+                <div className="space-y-12">
+                    <section className="glass-panel p-10 rounded-[3rem] border-white/5 space-y-10 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/5 blur-3xl -mr-16 -mt-16 rounded-full"></div>
+                        <div className="flex items-center space-x-4 border-b border-white/5 pb-8">
+                            <ImageIcon size={20} className="text-secondary" />
+                            <h2 className="text-[11px] font-black uppercase tracking-[0.4em] text-white italic">Galería de Despliegue</h2>
                         </div>
 
-                        <div className="border-2 border-dashed border-neutral-100 p-12 text-center space-y-4 hover:border-orange-200 transition-all cursor-pointer group bg-neutral-50/20">
-                            <div className="bg-orange-50 w-16 h-16 rounded-none flex items-center justify-center mx-auto group-hover:bg-orange-100 transition-all">
-                                <Plus size={32} className="text-orange-600" />
+                        <div className="border-4 border-dashed border-white/5 p-16 text-center space-y-6 hover:border-secondary/20 transition-all cursor-pointer group bg-slate-900/30 rounded-[3rem]">
+                            <div className="bg-secondary/10 w-24 h-24 rounded-[2rem] flex items-center justify-center mx-auto group-hover:bg-secondary/20 transition-all border border-secondary/10 group-hover:scale-110 duration-500">
+                                <Plus size={40} className="text-secondary" />
                             </div>
                             <div>
-                                <p className="text-[10px] font-black uppercase text-neutral-800 tracking-wider">Soltar imágenes aquí</p>
-                                <p className="text-[9px] font-bold text-neutral-400 mt-1 uppercase">Máximo 5MB por archivo</p>
+                                <p className="text-[11px] font-black uppercase text-slate-300 tracking-[0.3em]">Carga de Activos Visuales</p>
+                                <p className="text-[9px] font-bold text-slate-600 mt-2 uppercase tracking-widest leading-relaxed">Arrastra recursos optimizados<br/>para renderizado web</p>
                             </div>
                         </div>
 
-                        <div className="space-y-4 pt-4">
-                            <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase text-neutral-400 tracking-wider">Ficha Técnica PDF</label>
-                                <button className="w-full flex items-center justify-between bg-neutral-800 text-white px-6 py-4 text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all">
-                                    <span>Vincular Documento</span>
-                                    <FileText size={16} />
+                        <div className="space-y-6 pt-6">
+                            <div className="space-y-4">
+                                <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Ficha Técnica PDF</label>
+                                <button className="w-full flex items-center justify-between bg-slate-900 border border-white/5 text-white px-8 py-6 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] hover:bg-secondary hover:border-secondary transition-all shadow-2xl active:scale-95 group">
+                                    <span className="group-hover:text-white">Anclaje de Documentación</span>
+                                    <FileText size={18} className="text-secondary group-hover:text-white" />
                                 </button>
                             </div>
                         </div>
                     </section>
 
-                    <section className="bg-white border border-neutral-100 p-8 space-y-6">
-                        <div className="flex items-center space-x-3 border-b border-neutral-50 pb-4 mb-6">
-                            <Globe size={18} className="text-orange-600" />
-                            <h2 className="text-[11px] font-black uppercase tracking-[0.2em] text-neutral-800">Visibilidad & SEO</h2>
+                    <section className="glass-panel p-10 rounded-[3rem] border-white/5 space-y-10 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-3xl -mr-16 -mt-16 rounded-full"></div>
+                        <div className="flex items-center space-x-4 border-b border-white/5 pb-8">
+                            <Globe size={20} className="text-primary" />
+                            <h2 className="text-[11px] font-black uppercase tracking-[0.4em] text-white italic">Visibilidad & SEO</h2>
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase text-neutral-400 tracking-wider">Categoría Principal</label>
-                            <select
-                                value={formData.categoryId}
-                                onChange={(e) => setFormData({ ...formData, categoryId: e.target.value })}
-                                className="w-full bg-neutral-50 border-none px-6 py-4 text-[10px] font-bold uppercase outline-none appearance-none cursor-pointer"
-                            >
-                                <option value="">Sin Categoría</option>
-                                {metadata.categories.map((c: any) => (
-                                    <option key={c.id} value={c.id}>{c.name}</option>
-                                ))}
-                            </select>
+                        <div className="space-y-4">
+                            <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Categoría Maestra</label>
+                            <div className="relative">
+                                <select
+                                    value={formData.categoryId}
+                                    onChange={(e) => setFormData({ ...formData, categoryId: e.target.value })}
+                                    className="w-full bg-slate-900 border border-white/5 px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-white outline-none appearance-none cursor-pointer rounded-2xl focus:border-primary transition-all pr-12"
+                                >
+                                    <option value="">SIN CATEGORÍA DEFINIDA</option>
+                                    {metadata.categories.map((c: any) => (
+                                        <option key={c.id} value={c.id}>{c.name.toUpperCase()}</option>
+                                    ))}
+                                </select>
+                                <ChevronDown size={14} className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-600 pointer-events-none" />
+                            </div>
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase text-neutral-400 tracking-wider">Colección / TAG</label>
-                            <select
-                                value={formData.collectionId}
-                                onChange={(e) => setFormData({ ...formData, collectionId: e.target.value })}
-                                className="w-full bg-neutral-50 border-none px-6 py-4 text-[10px] font-bold uppercase outline-none appearance-none cursor-pointer"
-                            >
-                                <option value="">Sin Colección</option>
-                                {metadata.collections.map((c: any) => (
-                                    <option key={c.id} value={c.id}>{c.name}</option>
-                                ))}
-                            </select>
+                        <div className="space-y-4">
+                            <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Colección Estratégica</label>
+                            <div className="relative">
+                                <select
+                                    value={formData.collectionId}
+                                    onChange={(e) => setFormData({ ...formData, collectionId: e.target.value })}
+                                    className="w-full bg-slate-900 border border-white/5 px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-white outline-none appearance-none cursor-pointer rounded-2xl focus:border-primary transition-all pr-12"
+                                >
+                                    <option value="">SIN COLECCIÓN ASIGNADA</option>
+                                    {metadata.collections.map((c: any) => (
+                                        <option key={c.id} value={c.id}>{c.name.toUpperCase()}</option>
+                                    ))}
+                                </select>
+                                <ChevronDown size={14} className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-600 pointer-events-none" />
+                            </div>
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase text-neutral-400 tracking-wider">Etiquetas SEO</label>
+                        <div className="space-y-4">
+                            <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Etiquetas SEO (Vectores)</label>
                             <input
                                 type="text"
                                 value={formData.keywords}
                                 onChange={(e) => setFormData({ ...formData, keywords: e.target.value })}
-                                placeholder="Ej: refrigeracion, industrial, ahorro..."
-                                className="w-full bg-neutral-50 border-none px-6 py-4 text-[10px] font-bold uppercase outline-none"
+                                placeholder="EJ: INDUSTRIA, AUTOMATIZACIÓN, PRO..."
+                                className="w-full bg-slate-900 border border-white/5 px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-300 outline-none rounded-2xl focus:border-primary transition-all placeholder:text-slate-800"
                             />
                         </div>
 
-                        <div className="space-y-6 pt-6 border-t border-neutral-50">
+                        <div className="space-y-10 pt-10 border-t border-white/5">
                             <Toggle
-                                label="Visibilidad en Web"
-                                icon={< Globe size={14} />}
+                                label="Disponibilidad Web"
+                                icon={<Globe size={18} className="text-secondary" />}
                                 checked={formData.isActive}
                                 onChange={(v) => setFormData({ ...formData, isActive: v })}
                             />
                             <Toggle
-                                label="Marcar como Destacado"
-                                icon={<Star size={14} />}
+                                label="Activo Destacado"
+                                icon={<Star size={18} className="text-yellow-500" />}
                                 checked={formData.featured}
                                 onChange={(v) => setFormData({ ...formData, featured: v })}
                             />
                         </div>
                     </section>
-                </div>
-            </div>
 
-            <div className="flex justify-end space-x-4 pt-12 border-t border-neutral-100">
-                <button
-                    disabled={loading}
-                    onClick={onCancel}
-                    className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-neutral-400 hover:text-neutral-800 transition-all"
-                >
-                    Descartar
-                </button>
-                <button
-                    disabled={loading}
-                    onClick={handleSubmit}
-                    className="flex items-center space-x-3 bg-neutral-900 text-white px-12 py-5 text-[10px] font-black uppercase tracking-widest hover:bg-orange-600 transition-all shadow-2xl shadow-neutral-200"
-                >
-                    {loading ? (
-                        <span>Guardando...</span>
-                    ) : (
-                        <><Save size={18} /> <span>Guardar Cambios</span></>
-                    )}
-                </button>
+                    <div className="pt-6">
+                        <button 
+                            disabled={loading}
+                            onClick={handleSubmit} 
+                            className="w-full bg-secondary text-white py-8 rounded-[2.5rem] font-black uppercase tracking-[0.4em] text-[11px] hover:bg-white hover:text-black transition-all shadow-2xl shadow-secondary/20 active:scale-95 duration-500 flex items-center justify-center gap-4 group"
+                        >
+                            <Save size={24} className="group-hover:scale-110 transition-transform" />
+                            <span>{loading ? 'SINCRONIZANDO...' : 'ALINEAR ARCHIVO'}</span>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     )
@@ -1326,16 +1476,16 @@ function ProductForm({ initialData, metadata, onCancel, onSaved }: { initialData
 
 function Toggle({ label, checked, onChange, icon }: { label: string, checked: boolean, onChange: (v: boolean) => void, icon: any }) {
     return (
-        <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2 text-neutral-600">
+        <div className="flex items-center justify-between gap-6">
+            <div className="flex items-center space-x-3 text-slate-400">
                 {icon}
-                <span className="text-[10px] font-black uppercase tracking-widest">{label}</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.3em]">{label}</span>
             </div>
             <button
                 onClick={() => onChange(!checked)}
-                className={`w-12 h-6 flex items-center px-1 transition-all ${checked ? 'bg-orange-600' : 'bg-neutral-200'}`}
+                className={`w-14 h-7 flex items-center px-1.5 transition-all rounded-full border ${checked ? 'bg-secondary border-secondary shadow-lg shadow-secondary/20' : 'bg-slate-900 border-white/10'}`}
             >
-                <div className={`w-4 h-4 bg-white shadow-sm transition-transform ${checked ? 'translate-x-6' : 'translate-x-0'}`}></div>
+                <div className={`w-4 h-4 bg-white shadow-2xl transition-transform duration-300 rounded-full ${checked ? 'translate-x-7' : 'translate-x-0'}`}></div>
             </button>
         </div>
     )
@@ -1352,108 +1502,111 @@ function BulkEditModal({ selectedCount, categories, collections, onClose, onSave
     })
 
     return (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-            <div className="bg-white max-w-lg w-full p-8 space-y-8 animate-in zoom-in-95 duration-300">
-                <div className="flex justify-between items-start">
+        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-3xl z-[200] flex items-center justify-center p-8 animate-in fade-in duration-500">
+            <div className="glass-panel max-w-2xl w-full p-12 rounded-[4rem] border-white/5 space-y-12 animate-in zoom-in-95 duration-700 relative overflow-hidden shadow-[0_0_100px_rgba(0,0,0,0.5)]">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-secondary/10 blur-[120px] -mr-32 -mt-32 rounded-full"></div>
+                
+                <div className="flex justify-between items-start border-b border-white/5 pb-10">
                     <div>
-                        <h2 className="text-2xl font-black text-neutral-900 uppercase tracking-tighter italic">Edición en Masa</h2>
-                        <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mt-1">Modificando <span className="text-orange-600">{selectedCount}</span> productos seleccionados</p>
+                        <h2 className="text-2xl font-black text-white uppercase tracking-tighter italic">Protocolo de Edición Masiva</h2>
+                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.4em] mt-2 italic leading-relaxed">Afectando a <span className="text-secondary">{selectedCount}</span> núcleos de activos comerciales en paralelo.</p>
                     </div>
-                    <button onClick={onClose} className="p-2 hover:bg-neutral-100 transition-colors">
-                        <X size={20} className="text-neutral-400" />
+                    <button onClick={onClose} className="w-12 h-12 bg-white/5 hover:bg-white/10 flex items-center justify-center rounded-2xl border border-white/5 transition-all active:scale-90 duration-300">
+                        <X size={20} className="text-slate-400" />
                     </button>
                 </div>
 
-                <div className="space-y-6">
-                    <div className="space-y-2">
-                        <label className="text-[9px] font-black uppercase text-neutral-400 tracking-wider">Nuevo Nombre Común</label>
+                <div className="space-y-10">
+                    <div className="space-y-4">
+                        <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Denominación Unificada</label>
                         <input 
                             type="text"
-                            placeholder="Dejar vacío para no cambiar"
-                            className="w-full bg-neutral-50 border-none px-4 py-3 text-sm font-bold outline-none border-b-2 border-transparent focus:border-orange-500 transition-all"
+                            placeholder="MANTENER IDENTIFICADORES ORIGINALES..."
+                            className="w-full bg-slate-950 border border-white/5 px-8 py-6 text-xs font-black uppercase tracking-widest text-white outline-none focus:border-secondary transition-all rounded-2xl placeholder:text-slate-800"
                             onChange={(e) => setData({ ...data, name: e.target.value || undefined })}
                         />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <label className="text-[9px] font-black uppercase text-neutral-400 tracking-wider">Nuevo Precio (USD)</label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                        <div className="space-y-4">
+                            <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Nuevo Valor Operativo (USD)</label>
                             <input 
                                 type="number"
-                                placeholder="Sin cambios"
-                                className="w-full bg-neutral-50 border-none px-4 py-3 text-sm font-bold outline-none border-b-2 border-transparent focus:border-orange-500 transition-all"
+                                placeholder="SIN CAMBIOS"
+                                className="w-full bg-slate-950 border border-white/5 px-8 py-6 text-sm font-black text-secondary outline-none focus:border-secondary transition-all rounded-2xl placeholder:text-slate-800"
                                 onChange={(e) => setData({ ...data, price: e.target.value || undefined })}
                             />
                         </div>
-                        <div className="space-y-2">
-                            <label className="text-[9px] font-black uppercase text-neutral-400 tracking-wider">Nuevo Stock</label>
+                        <div className="space-y-4">
+                            <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Capacidad de Stock</label>
                             <input 
                                 type="number"
-                                placeholder="Sin cambios"
-                                className="w-full bg-neutral-50 border-none px-4 py-3 text-sm font-bold outline-none border-b-2 border-transparent focus:border-orange-500 transition-all"
+                                placeholder="SIN CAMBIOS"
+                                className="w-full bg-slate-950 border border-white/5 px-8 py-6 text-sm font-black text-primary outline-none focus:border-primary transition-all rounded-2xl placeholder:text-slate-800"
                                 onChange={(e) => setData({ ...data, stock: e.target.value || undefined })}
                             />
                         </div>
                     </div>
 
-                    <div className="space-y-2">
-                        <label className="text-[9px] font-black uppercase text-neutral-400 tracking-wider">Cambiar Categoría</label>
-                        <select 
-                            className="w-full bg-neutral-50 border-none px-4 py-3 text-xs font-bold uppercase outline-none"
-                            onChange={(e) => setData({ ...data, categoryId: e.target.value || undefined })}
-                        >
-                            <option value="">Mantener actuales</option>
-                            {categories.map(c => (
-                                <option key={c.id} value={c.id}>{c.name}</option>
-                            ))}
-                        </select>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                        <div className="space-y-4">
+                            <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Reasignar Categoría</label>
+                            <select 
+                                className="w-full bg-slate-950 border border-white/5 px-8 py-6 text-[10px] font-black uppercase tracking-widest text-white outline-none focus:border-white/20 transition-all rounded-2xl appearance-none"
+                                onChange={(e) => setData({ ...data, categoryId: e.target.value || undefined })}
+                            >
+                                <option value="">SIN CAMBIOS</option>
+                                {categories.map(c => (
+                                    <option key={c.id} value={c.id}>{c.name.toUpperCase()}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="space-y-4">
+                            <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Flujo de Colección</label>
+                            <select 
+                                className="w-full bg-slate-950 border border-white/5 px-8 py-6 text-[10px] font-black uppercase tracking-widest text-white outline-none focus:border-white/20 transition-all rounded-2xl appearance-none"
+                                onChange={(e) => setData({ ...data, collectionId: e.target.value || undefined })}
+                            >
+                                <option value="">SIN CAMBIOS</option>
+                                <option value="none">LIBERAR DE TODAS</option>
+                                {collections.map(c => (
+                                    <option key={c.id} value={c.id}>{c.name.toUpperCase()}</option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
 
-                    <div className="space-y-2">
-                        <label className="text-[9px] font-black uppercase text-neutral-400 tracking-wider">Cambiar Colección</label>
-                        <select 
-                            className="w-full bg-neutral-50 border-none px-4 py-3 text-xs font-bold uppercase outline-none"
-                            onChange={(e) => setData({ ...data, collectionId: e.target.value || undefined })}
-                        >
-                            <option value="">Mantener actuales</option>
-                            <option value="none">Quitar de todas</option>
-                            {collections.map(c => (
-                                <option key={c.id} value={c.id}>{c.name}</option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <div className="flex items-center justify-between p-4 bg-orange-50/50 border border-orange-100">
-                        <span className="text-[10px] font-black uppercase text-neutral-600 tracking-widest">Visibilidad en Web</span>
-                        <div className="flex gap-2">
+                    <div className="glass-panel p-8 rounded-[2.5rem] border-white/10 flex items-center justify-between bg-slate-950/40">
+                        <span className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em]">Visibilidad Estratégica</span>
+                        <div className="flex gap-4">
                             <button 
                                 onClick={() => setData({ ...data, isActive: true })}
-                                className={`px-4 py-1.5 text-[9px] font-black uppercase tracking-widest transition-all ${data.isActive === true ? 'bg-orange-600 text-white' : 'bg-white text-neutral-400'}`}
+                                className={`px-6 py-3 text-[9px] font-black uppercase tracking-widest transition-all rounded-xl ${data.isActive === true ? 'bg-secondary text-white shadow-lg shadow-secondary/20' : 'bg-white/5 text-slate-500 border border-white/5'}`}
                             > Activar </button>
                             <button 
                                 onClick={() => setData({ ...data, isActive: false })}
-                                className={`px-4 py-1.5 text-[9px] font-black uppercase tracking-widest transition-all ${data.isActive === false ? 'bg-red-600 text-white' : 'bg-white text-neutral-400'}`}
-                            > Desactivar </button>
+                                className={`px-6 py-3 text-[9px] font-black uppercase tracking-widest transition-all rounded-xl ${data.isActive === false ? 'bg-red-500 text-white shadow-lg shadow-red-500/20' : 'bg-white/5 text-slate-500 border border-white/5'}`}
+                            > Inactivar </button>
                             <button 
                                 onClick={() => setData({ ...data, isActive: undefined })}
-                                className={`px-4 py-1.5 text-[9px] font-black uppercase tracking-widest transition-all ${data.isActive === undefined ? 'bg-neutral-800 text-white' : 'bg-white text-neutral-400'}`}
-                            > S/C </button>
+                                className={`px-6 py-3 text-[9px] font-black uppercase tracking-widest transition-all rounded-xl ${data.isActive === undefined ? 'bg-slate-700 text-white shadow-lg' : 'bg-white/5 text-slate-500 border border-white/5'}`}
+                            > OMITIR </button>
                         </div>
                     </div>
                 </div>
 
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-6 pt-10 border-t border-white/5">
                     <button 
                         onClick={() => onSave(data)}
-                        className="w-full bg-neutral-900 text-white py-4 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-orange-600 transition-all shadow-xl shadow-neutral-200"
+                        className="w-full bg-white text-black py-10 rounded-[2.5rem] font-black uppercase tracking-[0.5em] text-[11px] hover:bg-secondary hover:text-white transition-all shadow-2xl active:scale-95 duration-500"
                     >
-                        Aplicar Cambios en Masa
+                        Ejecutar Transmutación Masiva
                     </button>
                     <button 
                         onClick={onClose}
-                        className="w-full text-[9px] font-black uppercase text-neutral-400 hover:text-neutral-800 transition-all tracking-widest"
+                        className="w-full text-[9px] font-black uppercase text-slate-500 hover:text-white transition-all tracking-[0.4em] italic"
                     >
-                        Cancelar Proceso
+                        Desestimar Operación
                     </button>
                 </div>
             </div>
@@ -1476,11 +1629,9 @@ function TaxonomyModal({ type, initialData, allProducts, onClose, onSaved }: { t
         isVisible: initialData?.isVisible ?? true
     })
     
-    // Find products currently assigned to this category/collection from the initial list
     const assignedProducts = allProducts.filter(p => type === 'category' ? p.categoryId === data.id : p.collectionId === data.id)
     const [selectedProducts, setSelectedProducts] = useState<any[]>(assignedProducts)
     
-    // Debounced Search
     useEffect(() => {
         const delayDebounceFn = setTimeout(async () => {
             if (searchTerm.length >= 2) {
@@ -1498,7 +1649,6 @@ function TaxonomyModal({ type, initialData, allProducts, onClose, onSaved }: { t
                 setSearchResults([])
             }
         }, 500)
-
         return () => clearTimeout(delayDebounceFn)
     }, [searchTerm])
 
@@ -1531,123 +1681,121 @@ function TaxonomyModal({ type, initialData, allProducts, onClose, onSaved }: { t
     }
 
     return (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-            <div className="bg-white max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col animate-in zoom-in-95 duration-300">
+        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-3xl z-[200] flex items-center justify-center p-8 animate-in fade-in duration-500">
+            <div className="glass-panel max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col rounded-[4rem] border-white/5 animate-in zoom-in-95 duration-700 shadow-[0_0_150px_rgba(0,0,0,0.6)] relative">
+                <div className="absolute top-0 left-0 w-64 h-64 bg-primary/10 blur-[120px] -ml-32 -mt-32 rounded-full"></div>
+                
                 {/* Header */}
-                <div className="bg-white border-b border-neutral-100 p-6 flex justify-between items-center shrink-0">
+                <div className="bg-white/2 border-b border-white/5 p-10 flex justify-between items-center shrink-0">
                     <div>
-                        <h2 className="text-xl font-black text-neutral-900 uppercase tracking-tighter">Editar {type === 'category' ? 'Categoría' : 'Colección'}</h2>
-                        <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mt-1">Gestión de Productos Avanzada</p>
+                        <h2 className="text-2xl font-black text-white uppercase tracking-tighter italic">Reconfiguración de {type === 'category' ? 'Categoría' : 'Colección'}</h2>
+                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.4em] mt-2 italic">Anclaje de activos a nodos taxonómicos</p>
                     </div>
-                    <button onClick={onClose} className="p-2 hover:bg-neutral-100 transition-colors">
-                        <X size={20} className="text-neutral-400" />
+                    <button onClick={onClose} className="w-12 h-12 bg-white/5 hover:bg-white/10 flex items-center justify-center rounded-2xl border border-white/5 transition-all active:scale-90 duration-300">
+                        <X size={20} className="text-slate-400" />
                     </button>
                 </div>
 
                 {/* Form Body - Scrollable */}
-                <div className="flex-1 overflow-y-auto p-8 space-y-8 custom-scrollbar">
-                    <div className="space-y-6">
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase text-neutral-400 tracking-wider">Nombre</label>
-                            <input 
-                                type="text"
-                                value={data.name}
-                                onChange={(e) => setData({ ...data, name: e.target.value })}
-                                className="w-full bg-neutral-50 border-none px-6 py-4 text-sm font-bold outline-none border-b-2 border-transparent focus:border-orange-500 transition-all"
-                            />
-                        </div>
+                <div className="flex-1 overflow-y-auto p-12 space-y-12 custom-scrollbar">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                        <div className="space-y-10">
+                            <div className="space-y-4">
+                                <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Denominación del Nodo</label>
+                                <input 
+                                    type="text"
+                                    value={data.name}
+                                    onChange={(e) => setData({ ...data, name: e.target.value })}
+                                    className="w-full bg-slate-950 border border-white/5 px-8 py-6 text-sm font-black uppercase tracking-widest text-white outline-none focus:border-secondary transition-all rounded-2xl"
+                                />
+                            </div>
 
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase text-neutral-400 tracking-wider">Breve Descripción</label>
-                            <textarea 
-                                rows={2}
-                                value={data.description}
-                                onChange={(e) => setData({ ...data, description: e.target.value })}
-                                placeholder="Descripción opcional..."
-                                className="w-full bg-neutral-50 border-none px-6 py-4 text-sm font-medium outline-none border-b-2 border-transparent focus:border-orange-500 transition-all resize-none"
-                            />
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
-                            <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase text-neutral-400 tracking-wider">URL de Imagen</label>
+                            <div className="space-y-4">
+                                <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Referencia Visual (URL)</label>
                                 <input 
                                     type="text"
                                     value={data.image}
                                     onChange={(e) => setData({ ...data, image: e.target.value })}
-                                    placeholder="https://ejemplo.com/imagen.jpg"
-                                    className="w-full bg-neutral-50 border-none px-6 py-4 text-sm outline-none border-b-2 border-transparent focus:border-orange-500 transition-all font-mono"
+                                    placeholder="https://cloud.atomic.shop/resources/..."
+                                    className="w-full bg-slate-950 border border-white/5 px-8 py-6 text-[10px] font-mono text-slate-400 outline-none focus:border-primary transition-all rounded-2xl"
                                 />
                             </div>
-                            <div className="pb-2">
+                        </div>
+
+                        <div className="space-y-10">
+                            <div className="space-y-4">
+                                <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Descripción Conceptual</label>
+                                <textarea 
+                                    rows={3}
+                                    value={data.description}
+                                    onChange={(e) => setData({ ...data, description: e.target.value })}
+                                    className="w-full bg-slate-950 border border-white/5 px-8 py-6 text-xs font-bold text-slate-300 outline-none resize-none focus:border-secondary transition-all rounded-2xl leading-relaxed italic"
+                                />
+                            </div>
+
+                            <div className="flex items-center justify-between bg-white/2 p-6 rounded-2xl border border-white/5">
                                 <Toggle 
-                                    label="Visible en Web" 
-                                    icon={<Globe size={14} />} 
+                                    label="Estado Público" 
+                                    icon={<Globe size={18} className="text-primary" />} 
                                     checked={data.isVisible} 
                                     onChange={(v) => setData({ ...data, isVisible: v })} 
                                 />
                             </div>
                         </div>
-
-                        {data.image && (
-                            <div className="border border-neutral-100 w-24 h-24 overflow-hidden flex items-center justify-center bg-neutral-50">
-                                <img src={data.image} alt="Preview" className="w-full h-full object-cover" />
-                            </div>
-                        )}
                     </div>
 
                     {/* PRODUCT SELECTOR AREA */}
-                    <div className="pt-8 border-t border-neutral-100 border-dashed space-y-6">
+                    <div className="pt-12 border-t border-white/5 border-dashed space-y-10">
                         <div className="flex items-center justify-between">
-                            <label className="text-[10px] font-black uppercase text-neutral-800 tracking-[0.2em] flex items-center gap-2">
-                                <Box size={14} className="text-orange-600" /> 
-                                Asignación de Productos
-                            </label>
-                            <span className="text-[9px] font-black bg-orange-600 text-white px-2 py-0.5 uppercase tracking-widest">
-                                {selectedProducts.length} Seleccionados
+                            <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-white italic flex items-center gap-4">
+                                <Box size={20} className="text-secondary" /> 
+                                Vínculo de Activos Relacionados
+                            </h3>
+                            <span className="text-[9px] font-black bg-secondary/10 text-secondary border border-secondary/20 px-4 py-2 rounded-full uppercase tracking-widest italic">
+                                {selectedProducts.length} NÚCLEOS SINCRONIZADOS
                             </span>
                         </div>
 
-                        {/* Search Input */}
-                        <div className="relative group">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400 group-focus-within:text-orange-600" size={16} />
+                        <div className="relative group/search">
+                            <Search className="absolute left-8 top-1/2 -translate-y-1/2 text-slate-600 transition-colors group-focus-within/search:text-primary" size={20} />
                             <input 
                                 type="text"
-                                placeholder="Buscar productos por nombre o SKU..."
+                                placeholder="ESCANEAR CATÁLOGO (NOMBRE / SKU / MODELO)..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full bg-neutral-900 text-white pl-12 pr-4 py-4 text-xs font-bold uppercase tracking-widest outline-none focus:ring-4 focus:ring-orange-600/20"
+                                className="w-full bg-slate-950 border border-white/5 pl-20 pr-8 py-8 text-xs font-black uppercase tracking-[0.2em] text-white outline-none focus:border-primary transition-all rounded-[2rem] placeholder:text-slate-800"
                             />
                             {searching && (
-                                <RefreshCw className="absolute right-4 top-1/2 -translate-y-1/2 text-orange-600 animate-spin" size={16} />
+                                <RefreshCw className="absolute right-8 top-1/2 -translate-y-1/2 text-primary animate-spin" size={20} />
                             )}
                         </div>
 
-                        {/* Selector Tabs */}
-                        <div className="flex border-b border-neutral-100">
+                        <div className="flex border-b border-white/5">
                             <button 
                                 onClick={() => setActiveSection('assigned')}
-                                className={`px-4 py-3 text-[9px] font-black uppercase tracking-widest transition-all ${activeSection === 'assigned' ? 'border-b-2 border-orange-600 text-orange-600' : 'text-neutral-400'}`}
+                                className={`px-10 py-5 text-[10px] font-black uppercase tracking-[0.3em] transition-all relative ${activeSection === 'assigned' ? 'text-white' : 'text-slate-600 hover:text-slate-400'}`}
                             >
                                 Asignados ({selectedProducts.length})
+                                {activeSection === 'assigned' && <div className="absolute bottom-0 left-10 right-10 h-1 bg-secondary rounded-full shadow-[0_0_15px_rgba(255,99,71,0.5)]"></div>}
                             </button>
                             <button 
                                 onClick={() => setActiveSection('search')}
-                                className={`px-4 py-3 text-[9px] font-black uppercase tracking-widest transition-all ${activeSection === 'search' ? 'border-b-2 border-orange-600 text-orange-600' : 'text-neutral-400'}`}
+                                className={`px-10 py-5 text-[10px] font-black uppercase tracking-[0.3em] transition-all relative ${activeSection === 'search' ? 'text-white' : 'text-slate-600 hover:text-slate-400'}`}
                             >
-                                {searchTerm ? 'Resultados de Búsqueda' : 'Catálogo Reciente'}
+                                {searchTerm ? 'Resultados' : 'Catálogo Maestro'}
+                                {activeSection === 'search' && <div className="absolute bottom-0 left-10 right-10 h-1 bg-primary rounded-full shadow-[0_0_15px_rgba(45,212,191,0.5)]"></div>}
                             </button>
                         </div>
 
-                        <div className="bg-neutral-50 border border-neutral-100 min-h-[300px] max-h-[300px] overflow-y-auto custom-scrollbar">
+                        <div className="bg-slate-950/60 border border-white/5 rounded-[3rem] min-h-[400px] max-h-[400px] overflow-y-auto custom-scrollbar overflow-x-hidden">
                             {activeSection === 'assigned' ? (
                                 selectedProducts.length === 0 ? (
-                                    <div className="flex flex-col items-center justify-center py-20 opacity-30">
-                                        <Box size={32} />
-                                        <p className="text-[9px] font-black uppercase tracking-widest mt-4">Sin productos asignados</p>
+                                    <div className="flex flex-col items-center justify-center py-32 opacity-10">
+                                        <Box size={48} />
+                                        <p className="text-[10px] font-black uppercase tracking-[0.5em] mt-8">Sin unidades vinculadas</p>
                                     </div>
                                 ) : (
-                                    <ul className="divide-y divide-neutral-100">
+                                    <div className="divide-y divide-white/5">
                                         {selectedProducts.map(p => (
                                             <ProductItem 
                                                 key={p.id} 
@@ -1656,54 +1804,52 @@ function TaxonomyModal({ type, initialData, allProducts, onClose, onSaved }: { t
                                                 onClick={() => toggleProduct(p)} 
                                             />
                                         ))}
-                                    </ul>
+                                    </div>
                                 )
                             ) : (
-                                <>
-                                    <ul className="divide-y divide-neutral-100">
-                                        {(searchTerm.length >= 2 ? searchResults : allProducts.slice(0, 50)).map(p => {
-                                            const isSelected = !!selectedProducts.find(sp => sp.id === p.id)
-                                            return (
-                                                <ProductItem 
-                                                    key={p.id} 
-                                                    product={p} 
-                                                    isSelected={isSelected} 
-                                                    onClick={() => toggleProduct(p)} 
-                                                />
-                                            )
-                                        })}
-                                        {searchTerm.length < 2 && searchTerm.length > 0 && (
-                                            <div className="p-12 text-center text-[10px] font-bold text-neutral-400 uppercase tracking-widest">
-                                                Escribe al menos 2 caracteres...
-                                            </div>
-                                        )}
-                                        {searchTerm.length >= 2 && searchResults.length === 0 && !searching && (
-                                            <div className="p-12 text-center text-[10px] font-bold text-neutral-400 uppercase tracking-widest">
-                                                No se encontraron coincidencias
-                                            </div>
-                                        )}
-                                    </ul>
-                                </>
+                                <div className="divide-y divide-white/5">
+                                    {(searchTerm.length >= 2 ? searchResults : allProducts.slice(0, 50)).map(p => {
+                                        const isSelected = !!selectedProducts.find(sp => sp.id === p.id)
+                                        return (
+                                            <ProductItem 
+                                                key={p.id} 
+                                                product={p} 
+                                                isSelected={isSelected} 
+                                                onClick={() => toggleProduct(p)} 
+                                            />
+                                        )
+                                    })}
+                                    {searchTerm.length < 2 && searchTerm.length > 0 && (
+                                        <div className="py-24 text-center opacity-20">
+                                            <p className="text-[10px] font-black uppercase tracking-[0.5em]">Escriba protocolo de búsqueda...</p>
+                                        </div>
+                                    )}
+                                    {searchTerm.length >= 2 && searchResults.length === 0 && !searching && (
+                                        <div className="py-24 text-center opacity-20">
+                                            <p className="text-[10px] font-black uppercase tracking-[0.5em]">Sin coincidencias en el registro</p>
+                                        </div>
+                                    )}
+                                </div>
                             )}
                         </div>
                     </div>
                 </div>
 
                 {/* Footer */}
-                <div className="shrink-0 bg-white border-t border-neutral-100 p-6 flex gap-3">
+                <div className="shrink-0 bg-white/2 border-t border-white/5 p-10 flex gap-8">
                     <button 
                         disabled={loading}
                         onClick={onClose}
-                        className="flex-1 px-4 py-4 text-[10px] font-black uppercase tracking-widest text-neutral-400 hover:text-neutral-800 transition-all bg-neutral-100 hover:bg-neutral-200"
+                        className="flex-1 px-8 py-6 text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 hover:text-white transition-all bg-white/5 hover:bg-white/10 rounded-2xl border border-white/5 shadow-2xl"
                     >
-                        Cancelar
+                        Abortar
                     </button>
                     <button 
                         disabled={loading}
                         onClick={handleSubmit}
-                        className="flex-1 bg-neutral-900 text-white py-4 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-orange-600 transition-all shadow-xl shadow-neutral-200"
+                        className="flex-1 bg-white text-black py-6 rounded-2xl font-black uppercase tracking-[0.5em] text-[11px] hover:bg-secondary hover:text-white transition-all shadow-2xl active:scale-95 duration-500"
                     >
-                        {loading ? 'Guardando...' : 'Aplicar Cambios'}
+                        {loading ? 'SINCRONIZANDO...' : 'Comprometer Nodo'}
                     </button>
                 </div>
             </div>
@@ -1713,26 +1859,26 @@ function TaxonomyModal({ type, initialData, allProducts, onClose, onSaved }: { t
 
 function ProductItem({ product, isSelected, onClick }: { product: any, isSelected: boolean, onClick: () => void }) {
     return (
-        <li 
-            className={`flex items-center justify-between p-4 cursor-pointer transition-colors ${isSelected ? 'bg-orange-50 hover:bg-orange-100' : 'hover:bg-white bg-white'}`} 
+        <div 
+            className={`flex items-center justify-between px-8 py-6 cursor-pointer transition-all duration-300 group border-b border-white/5 ${isSelected ? 'bg-secondary/10' : 'hover:bg-white/5 bg-transparent'}`} 
             onClick={onClick}
         >
-            <div className="flex items-center space-x-4">
-                <div className="w-10 h-10 bg-neutral-100 overflow-hidden flex items-center justify-center shrink-0">
+            <div className="flex items-center space-x-6">
+                <div className="w-12 h-12 bg-slate-900 rounded-xl overflow-hidden flex items-center justify-center shrink-0 border border-white/5 group-hover:scale-110 transition-transform duration-500 shadow-2xl">
                     {product.images && safeParseArray(product.images).length > 0 ? (
                         <img src={safeParseArray(product.images)[0]} className="w-full h-full object-cover" />
                     ) : (
-                        <ImageIcon size={14} className="text-neutral-300" />
+                        <ImageIcon size={18} className="text-slate-600" />
                     )}
                 </div>
                 <div>
-                    <p className="text-xs font-bold text-neutral-800 line-clamp-1">{product.name}</p>
-                    <p className="text-[9px] text-neutral-400 font-black uppercase tracking-widest">{product.sku || 'S/N'}</p>
+                    <p className="text-xs font-black text-white uppercase tracking-tighter line-clamp-1 italic">{product.name}</p>
+                    <p className="text-[9px] text-slate-500 font-bold uppercase tracking-[0.3em] mt-1">{product.sku || 'N/A PROTOCOL'}</p>
                 </div>
             </div>
-            <div className={`${isSelected ? 'text-orange-600' : 'text-neutral-200'}`}>
-                {isSelected ? <CheckSquare size={18} /> : <Square size={18} />}
+            <div className={`transition-all duration-500 ${isSelected ? 'text-secondary scale-110' : 'text-slate-800'}`}>
+                {isSelected ? <CheckSquare size={22} className="shadow-[0_0_15px_rgba(255,99,71,0.3)]" /> : <Square size={22} />}
             </div>
-        </li>
+        </div>
     )
 }

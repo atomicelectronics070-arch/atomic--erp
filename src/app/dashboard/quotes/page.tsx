@@ -432,104 +432,104 @@ export default function QuotationGenerator() {
     }
 
     return (
-        <div className="space-y-12 pb-24">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div className="space-y-12 pb-24 animate-in fade-in duration-1000">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
                 <div>
-                    <h1 className="text-4xl font-bold tracking-tight text-neutral-900 uppercase">
-                        Cotizador <span className="text-orange-600">Enterprise</span>
+                    <h1 className="text-5xl font-black tracking-tighter text-white italic uppercase flex items-center gap-4">
+                        Cotizador <span className="text-secondary">Enterprise</span>
                     </h1>
-                    <p className="text-neutral-400 font-medium text-sm mt-1">Generación automática de propuestas PROP-MM-NNN con integración de inventario.</p>
+                    <p className="text-slate-500 font-bold text-xs uppercase tracking-[0.3em] mt-3">Generación Táctica de Propuestas PROP-MM-NNN con Integración de Inventario.</p>
                 </div>
-                <div className="flex gap-4">
+                <div className="flex flex-wrap gap-4">
                     <button
                         onClick={() => setIsHistoryOpen(true)}
-                        className="bg-white border border-neutral-300 text-neutral-600 px-6 py-5 font-bold uppercase tracking-widest text-[10px] flex items-center space-x-2 hover:bg-neutral-50 transition-all shadow-sm"
+                        className="glass-panel text-slate-400 px-8 py-5 font-black uppercase tracking-widest text-[10px] flex items-center space-x-3 hover:text-white hover:bg-white/5 transition-all shadow-xl rounded-2xl border-white/5"
                     >
-                        <History size={16} />
-                        <span>Historial ({quoteHistory.length})</span>
+                        <History size={18} />
+                        <span>Archivo Histórico ({quoteHistory.length})</span>
                     </button>
                     <button
                         onClick={handleGeneratePDF}
-                        className="bg-neutral-900 text-white px-10 py-5 font-bold uppercase tracking-[0.3em] text-[10px] flex items-center space-x-3 hover:bg-orange-600 transition-all shadow-2xl shadow-neutral-200"
+                        className="bg-secondary text-white px-12 py-5 font-black uppercase tracking-[0.3em] text-[10px] flex items-center space-x-4 hover:bg-white hover:text-secondary transition-all shadow-[0_20px_50px_-5px_rgba(255,99,71,0.5)] rounded-2xl active:scale-[0.98]"
                     >
-                        <FileOutput size={18} />
+                        <FileOutput size={20} />
                         <span>Emitir Propuesta Final</span>
                     </button>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
 
                 {/* Left Panel: Configuration */}
-                <div className="lg:col-span-2 space-y-10">
+                <div className="lg:col-span-2 space-y-12">
 
                     {/* Client Data Card */}
-                    <div className="bg-white border border-neutral-200 p-10 shadow-sm relative overflow-hidden">
-                        <div className="absolute top-0 left-0 w-1 h-full bg-orange-600"></div>
-                        <div className="flex items-center space-x-3 mb-10 border-b border-neutral-50 pb-6">
-                            <User size={22} className="text-neutral-900" />
-                            <h2 className="text-xl font-bold text-neutral-900 uppercase tracking-tight">Identificación de Cliente</h2>
+                    <div className="glass-panel p-12 shadow-2xl relative overflow-hidden rounded-[3rem] border-white/5">
+                        <div className="absolute top-0 left-0 w-2 h-full bg-secondary"></div>
+                        <div className="flex items-center space-x-4 mb-12 border-b border-white/5 pb-8">
+                            <User size={28} className="text-secondary" />
+                            <h2 className="text-2xl font-black text-white uppercase tracking-tighter italic">Identificación de Cliente Corporativo</h2>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <div className="md:col-span-2">
-                                <label className="block text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-2">Nombre Completo o Razón Social</label>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                            <div className="md:col-span-2 space-y-3">
+                                <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-1">Nombre Completo / Razón Social</label>
                                 <input
                                     type="text"
                                     value={clientName}
                                     onChange={(e) => setClientName(e.target.value)}
                                     placeholder="EJ: CORPORACIÓN INDUSTRIAL SUR"
-                                    className="w-full px-5 py-4 border border-neutral-100 bg-neutral-50 text-sm font-bold uppercase focus:border-orange-600 outline-none transition-all"
+                                    className="w-full px-6 py-5 bg-slate-900 border border-white/5 rounded-2xl text-[11px] font-black uppercase tracking-widest text-white focus:ring-2 focus:ring-secondary/50 outline-none transition-all placeholder:text-slate-800"
                                 />
                             </div>
-                            <div>
-                                <label className="block text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-2">Canal de Contacto (Email)</label>
-                                <div className="relative">
-                                    <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-neutral-300" size={16} />
+                            <div className="space-y-3">
+                                <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-1">Canal de Contacto (Email)</label>
+                                <div className="relative group">
+                                    <Mail className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-700 group-focus-within:text-secondary transition-colors" size={18} />
                                     <input
                                         type="email"
                                         value={clientEmail}
                                         onChange={(e) => setClientEmail(e.target.value)}
                                         placeholder="CORREO@CORPORATIVO.COM"
-                                        className="w-full pl-14 pr-5 py-4 border border-neutral-100 bg-neutral-50 text-sm font-bold uppercase focus:border-orange-600 outline-none"
+                                        className="w-full pl-16 pr-6 py-5 bg-slate-900 border border-white/5 rounded-2xl text-[11px] font-black uppercase tracking-widest text-white focus:ring-2 focus:ring-secondary/50 outline-none transition-all placeholder:text-slate-800"
                                     />
                                 </div>
                             </div>
-                            <div>
-                                <label className="block text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-2">Terminal Telefónica / WhatsApp</label>
-                                <div className="relative">
-                                    <Phone className="absolute left-5 top-1/2 -translate-y-1/2 text-neutral-300" size={16} />
+                            <div className="space-y-3">
+                                <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-1">Terminal Telefónica / WhatsApp</label>
+                                <div className="relative group">
+                                    <Phone className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-700 group-focus-within:text-secondary transition-colors" size={18} />
                                     <input
                                         type="text"
                                         value={clientPhone}
                                         onChange={(e) => setClientPhone(e.target.value)}
                                         placeholder="09XXXXXXXX"
-                                        className="w-full pl-14 pr-5 py-4 border border-neutral-100 bg-neutral-50 text-sm font-bold uppercase focus:border-orange-600 outline-none"
+                                        className="w-full pl-16 pr-6 py-5 bg-slate-900 border border-white/5 rounded-2xl text-[11px] font-black uppercase tracking-widest text-white focus:ring-2 focus:ring-secondary/50 outline-none transition-all placeholder:text-slate-800"
                                     />
                                 </div>
                             </div>
-                            <div className="md:col-span-2">
-                                <label className="block text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-2">Dirección de Entrega / Logística</label>
-                                <div className="relative">
-                                    <MapPin className="absolute left-5 top-1/2 -translate-y-1/2 text-neutral-300" size={16} />
+                            <div className="md:col-span-2 space-y-3">
+                                <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-1">Dirección de Logística / Entrega</label>
+                                <div className="relative group">
+                                    <MapPin className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-700 group-focus-within:text-secondary transition-colors" size={18} />
                                     <input
                                         type="text"
                                         value={deliveryAddress}
                                         onChange={(e) => setDeliveryAddress(e.target.value)}
                                         placeholder="CALLE PRIMARIA, SECUNDARIA Y NRO..."
-                                        className="w-full pl-14 pr-5 py-4 border border-neutral-100 bg-neutral-50 text-sm font-bold uppercase focus:border-orange-600 outline-none"
+                                        className="w-full pl-16 pr-6 py-5 bg-slate-900 border border-white/5 rounded-2xl text-[11px] font-black uppercase tracking-widest text-white focus:ring-2 focus:ring-secondary/50 outline-none transition-all placeholder:text-slate-800"
                                     />
                                 </div>
                             </div>
-                            <div className="md:col-span-2">
-                                <label className="block text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-2">Vendedor Responsable (Se refleja en PDF)</label>
-                                <div className="relative">
-                                    <User className="absolute left-5 top-1/2 -translate-y-1/2 text-neutral-300" size={16} />
+                            <div className="md:col-span-2 space-y-3">
+                                <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-1">Vendedor Responsable (Se refleja en PDF)</label>
+                                <div className="relative group">
+                                    <User className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-700 group-focus-within:text-secondary transition-colors" size={18} />
                                     <input
                                         type="text"
                                         value={advisorName}
                                         onChange={(e) => setAdvisorName(e.target.value)}
                                         placeholder="EJ: JUAN PÉREZ / DEPARTAMENTO DE VENTAS"
-                                        className="w-full pl-14 pr-5 py-4 border border-neutral-100 bg-orange-50/10 text-sm font-bold uppercase focus:border-orange-600 outline-none transition-all"
+                                        className="w-full pl-16 pr-6 py-5 bg-slate-900 border border-white/5 rounded-2xl text-[11px] font-black uppercase tracking-widest text-white focus:ring-2 focus:ring-secondary/50 outline-none transition-all placeholder:text-slate-800 italic"
                                     />
                                 </div>
                             </div>
@@ -537,19 +537,19 @@ export default function QuotationGenerator() {
                     </div>
 
                     {/* Items Table Card */}
-                    <div className="bg-white border border-neutral-200 p-10 shadow-sm overflow-hidden">
-                        <div className="flex justify-between items-center mb-10 border-b border-neutral-50 pb-6">
-                            <h2 className="text-xl font-bold text-neutral-900 uppercase tracking-tight">Partidas Presupuestarias</h2>
+                    <div className="glass-panel p-12 shadow-2xl rounded-[3rem] border-white/5 overflow-hidden">
+                        <div className="flex justify-between items-center mb-12 border-b border-white/5 pb-8">
+                            <h2 className="text-2xl font-black text-white uppercase tracking-tighter italic">Partidas Presupuestarias</h2>
                             <button
                                 onClick={handleAddItem}
-                                className="text-[10px] font-bold text-orange-600 bg-orange-50 px-5 py-3 hover:bg-orange-600 hover:text-white transition-all uppercase tracking-widest border border-orange-100"
+                                className="text-[10px] font-black text-secondary bg-secondary/10 px-8 py-4 hover:bg-secondary hover:text-white transition-all uppercase tracking-[0.3em] border border-secondary/20 rounded-2xl shadow-2xl"
                             >
-                                <Plus size={16} className="mr-1 inline" /> Añadir Partida
+                                <Plus size={18} className="mr-2 inline" /> Añadir Partida
                             </button>
                         </div>
 
-                        <div className="space-y-6">
-                            <div className="hidden md:grid grid-cols-12 gap-5 px-4 text-[10px] font-bold text-neutral-400 uppercase tracking-[0.2em]">
+                        <div className="space-y-8">
+                            <div className="hidden md:grid grid-cols-12 gap-6 px-6 text-[9px] font-black text-slate-600 uppercase tracking-[0.4em]">
                                 <div className="col-span-2">SKU / COD</div>
                                 <div className="col-span-4">Descripción del Item</div>
                                 <div className="col-span-1 text-center">Cant.</div>
@@ -559,13 +559,13 @@ export default function QuotationGenerator() {
                             </div>
 
                             {items.map((item, index) => (
-                                <div key={item.id} className="grid grid-cols-1 md:grid-cols-12 gap-5 items-center bg-neutral-50/50 p-6 border border-neutral-100 hover:bg-white hover:border-orange-200 transition-all group relative">
+                                <div key={item.id} className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center bg-white/[0.02] p-8 border border-white/5 rounded-3xl hover:bg-white/[0.05] hover:border-secondary/30 transition-all group relative">
                                     <div className="col-span-2">
                                         <input
                                             type="text"
                                             value={item.productId}
                                             onChange={(e) => handleItemChange(item.id, "productId", e.target.value)}
-                                            className="w-full px-4 py-3 bg-white border border-neutral-100 text-[11px] font-bold focus:border-orange-600 outline-none uppercase"
+                                            className="w-full px-5 py-4 bg-slate-900 border border-white/5 rounded-xl text-[11px] font-black text-white focus:ring-2 focus:ring-secondary/50 outline-none uppercase tracking-widest"
                                         />
                                     </div>
                                     <div className="col-span-4 relative">
@@ -575,32 +575,32 @@ export default function QuotationGenerator() {
                                             onFocus={() => setShowProductList(item.id)}
                                             onChange={(e) => handleItemChange(item.id, "description", e.target.value)}
                                             placeholder="BUSCAR PRODUCTO..."
-                                            className="w-full px-4 py-3 bg-white border border-neutral-100 text-xs font-bold focus:border-orange-600 outline-none uppercase"
+                                            className="w-full px-5 py-4 bg-slate-900 border border-white/5 rounded-xl text-[11px] font-black text-white focus:ring-2 focus:ring-secondary/50 outline-none uppercase tracking-tight italic"
                                         />
                                         {/* Autocomplete Dropdown */}
                                         {showProductList === item.id && (
-                                            <div className="absolute top-full left-0 w-full bg-white border border-neutral-200 shadow-2xl z-50 mt-1 max-h-60 overflow-y-auto anima-in fade-in duration-300">
+                                            <div className="absolute top-full left-0 w-full glass-panel !bg-slate-950/90 shadow-[0_30px_60px_-12px_rgba(0,0,0,0.8)] z-50 mt-4 max-h-80 overflow-y-auto anima-in fade-in zoom-in-95 duration-300 rounded-[2rem] border border-white/10 scrollbar-hide">
                                                 {products
                                                     .filter(p => p.name.toLowerCase().includes(item.description.toLowerCase()) || (p.sku && p.sku.toLowerCase().includes(item.description.toLowerCase())))
                                                     .map(p => (
                                                         <button
                                                             key={p.id}
                                                             onClick={() => selectProduct(item.id, p)}
-                                                            className="w-full text-left px-5 py-4 border-b border-neutral-50 hover:bg-orange-50 transition-colors"
+                                                            className="w-full text-left px-8 py-6 border-b border-white/5 hover:bg-white/[0.05] transition-all group/opt"
                                                         >
-                                                            <p className="text-xs font-bold text-neutral-900 uppercase">{p.name}</p>
-                                                            <div className="flex justify-between items-center mt-1">
-                                                                <span className="text-[9px] font-bold text-orange-600 uppercase tracking-widest">{p.sku}</span>
-                                                                <span className="text-[10px] font-bold text-neutral-400">${p.price.toFixed(2)}</span>
+                                                            <p className="text-xs font-black text-white uppercase tracking-tight group-hover/opt:text-secondary transition-colors italic">{p.name}</p>
+                                                            <div className="flex justify-between items-center mt-3">
+                                                                <span className="text-[9px] font-black text-secondary uppercase tracking-[0.3em]">{p.sku}</span>
+                                                                <span className="text-[10px] font-black text-emerald-400 tracking-tighter">${p.price.toFixed(2)}</span>
                                                             </div>
                                                         </button>
                                                     ))
                                                 }
                                                 <button
                                                     onClick={() => setShowProductList(null)}
-                                                    className="w-full py-3 bg-neutral-900 text-white text-[9px] font-bold uppercase tracking-widest"
+                                                    className="w-full py-5 bg-white text-black text-[10px] font-black uppercase tracking-[0.4em] sticky bottom-0"
                                                 >
-                                                    Cerrar Lista
+                                                    Cerrar Nodo de Búsqueda
                                                 </button>
                                             </div>
                                         )}
@@ -610,7 +610,7 @@ export default function QuotationGenerator() {
                                             type="number"
                                             value={item.quantity}
                                             onChange={(e) => handleItemChange(item.id, "quantity", parseInt(e.target.value) || 0)}
-                                            className="w-full py-3 bg-white border border-neutral-100 text-xs text-center font-bold focus:border-orange-600 outline-none"
+                                            className="w-full py-4 bg-slate-900 border border-white/5 rounded-xl text-xs text-center font-black text-white focus:ring-2 focus:ring-secondary/50 outline-none"
                                         />
                                     </div>
                                     <div className="col-span-2">
@@ -618,20 +618,20 @@ export default function QuotationGenerator() {
                                             type="number"
                                             value={item.unitPrice}
                                             onChange={(e) => handleItemChange(item.id, "unitPrice", parseFloat(e.target.value) || 0)}
-                                            className="w-full py-3 px-4 bg-white border border-neutral-100 text-xs text-right font-bold focus:border-orange-600 outline-none"
+                                            className="w-full py-4 px-5 bg-slate-900 border border-white/5 rounded-xl text-xs text-right font-black text-white focus:ring-2 focus:ring-secondary/50 outline-none"
                                         />
                                     </div>
                                     <div className="col-span-2 text-right">
-                                        <span className="text-sm font-bold text-neutral-900 tracking-tight">
+                                        <span className="text-sm font-black text-white tracking-tighter group-hover:text-secondary transition-colors">
                                             ${(item.quantity * item.unitPrice).toLocaleString('es-EC', { minimumFractionDigits: 2 })}
                                         </span>
                                     </div>
                                     <div className="col-span-1 flex justify-end">
                                         <button
                                             onClick={() => handleRemoveItem(item.id)}
-                                            className="invisible group-hover:visible text-neutral-300 hover:text-red-600 transition-all p-2"
+                                            className="opacity-0 group-hover:opacity-100 text-slate-700 hover:text-red-500 transition-all p-3 glass-panel !bg-slate-950 rounded-xl border-white/5"
                                         >
-                                            <Trash2 size={16} />
+                                            <Trash2 size={18} />
                                         </button>
                                     </div>
                                 </div>
@@ -639,111 +639,120 @@ export default function QuotationGenerator() {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                        <div className="bg-white border border-neutral-200 p-10 shadow-sm relative">
-                            <h2 className="text-lg font-bold text-neutral-900 mb-6 uppercase tracking-tight flex items-center">
-                                <ShieldCheck size={20} className="mr-3 text-neutral-900" /> Documento de Garantía
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                        <div className="glass-panel p-12 shadow-2xl relative rounded-[3rem] border-white/5">
+                            <h2 className="text-xl font-black text-white mb-8 uppercase tracking-tighter flex items-center italic">
+                                <ShieldCheck size={24} className="mr-4 text-emerald-400" /> Documento de Garantía
                             </h2>
                             <textarea
                                 value={warrantyNote}
                                 onChange={(e) => setWarrantyNote(e.target.value)}
-                                rows={4}
-                                className="w-full p-5 bg-neutral-50 border border-neutral-100 text-xs font-bold uppercase focus:border-orange-600 outline-none resize-none leading-relaxed text-neutral-500"
+                                rows={5}
+                                className="w-full p-8 bg-slate-900 border border-white/5 rounded-[2rem] text-[11px] font-black uppercase tracking-widest focus:ring-2 focus:ring-secondary/50 outline-none resize-none leading-relaxed text-slate-500"
                             />
                         </div>
-                        <div className="bg-white border border-neutral-200 p-10 shadow-sm">
-                            <h2 className="text-lg font-bold text-neutral-900 mb-6 uppercase tracking-tight flex items-center">
-                                <MessageSquare size={20} className="mr-3 text-neutral-900" /> Comentarios Garantía
+                        <div className="glass-panel p-12 shadow-2xl rounded-[3rem] border-white/5 relative overflow-hidden">
+                            <h2 className="text-xl font-black text-white mb-8 uppercase tracking-tighter flex items-center italic">
+                                <MessageSquare size={24} className="mr-4 text-secondary" /> Comentarios Garantía
                             </h2>
                             <textarea
                                 value={warrantyComments}
                                 onChange={(e) => setWarrantyComments(e.target.value)}
                                 placeholder="NOTAS ADICIONALES SOBRE LA GARANTÍA..."
-                                rows={4}
-                                className="w-full p-5 bg-neutral-50 border border-neutral-100 text-xs font-bold uppercase focus:border-orange-600 outline-none resize-none leading-relaxed"
+                                rows={5}
+                                className="w-full p-8 bg-slate-900 border border-white/5 rounded-[2rem] text-[11px] font-black uppercase tracking-widest focus:ring-2 focus:ring-secondary/50 outline-none resize-none leading-relaxed text-white placeholder:text-slate-800"
                             />
                         </div>
                     </div>
                 </div>
 
                 {/* Right Panel: Totalization */}
-                <div className="lg:col-span-1">
-                    <div className="bg-neutral-950 text-white p-12 shadow-2xl sticky top-10 flex flex-col items-center text-center">
-                        <div className="w-20 h-2 bg-orange-600 mb-10"></div>
-                        <h2 className="text-2xl font-bold mb-10 flex flex-col items-center uppercase tracking-[0.3em] text-orange-500">
-                            <Calculator size={32} className="mb-4" /> Resumen Fiscal
+                <div className="lg:col-span-1 space-y-12">
+                    <div className="glass-panel text-white p-16 shadow-[0_50px_100px_rgba(0,0,0,0.6)] sticky top-28 flex flex-col items-center text-center rounded-[4rem] border-white/5">
+                        <div className="w-24 h-3 bg-secondary mb-12 rounded-full shadow-[0_0_30px_rgba(255,99,71,0.5)]"></div>
+                        <h2 className="text-3xl font-black mb-12 flex flex-col items-center uppercase tracking-[0.4em] text-secondary italic">
+                            <Calculator size={40} className="mb-6 drop-shadow-[0_0_15px_rgba(255,99,71,0.5)]" /> Resumen Fiscal
                         </h2>
 
-                        <div className="w-full space-y-8 text-sm font-bold">
-                            <div className="flex justify-between items-center text-neutral-500 border-b border-neutral-900 pb-4">
-                                <span className="uppercase tracking-widest text-[10px]">Subtotal Bruto</span>
-                                <span className="text-white text-xl">${subtotal.toLocaleString('es-EC', { minimumFractionDigits: 2 })}</span>
+                        <div className="w-full space-y-10 text-sm font-black">
+                            <div className="flex justify-between items-center text-slate-600 border-b border-white/5 pb-6">
+                                <span className="uppercase tracking-[0.3em] text-[10px]">Subtotal Bruto</span>
+                                <span className="text-white text-2xl tracking-tighter">${subtotal.toLocaleString('es-EC', { minimumFractionDigits: 2 })}</span>
                             </div>
 
-                            <div className="flex items-center justify-between py-6">
-                                <span className="text-neutral-500 uppercase text-[10px] tracking-widest text-left">Ajuste de Margen /<br />Descuento (%)</span>
-                                <input
-                                    type="number"
-                                    value={discountPercent}
-                                    onChange={(e) => setDiscountPercent(parseFloat(e.target.value) || 0)}
-                                    className="w-24 px-4 py-4 bg-neutral-900 border border-neutral-800 text-right focus:border-orange-600 outline-none text-orange-500 font-bold"
-                                />
+                            <div className="flex items-center justify-between py-4">
+                                <div className="text-left">
+                                    <span className="text-slate-600 uppercase text-[10px] tracking-[0.3em]">Ajuste / Descuento</span>
+                                    <p className="text-[9px] text-secondary/60 mt-1 uppercase font-light">Margen Estratégico</p>
+                                </div>
+                                <div className="relative group">
+                                    <input
+                                        type="number"
+                                        value={discountPercent}
+                                        onChange={(e) => setDiscountPercent(parseFloat(e.target.value) || 0)}
+                                        className="w-28 px-6 py-5 bg-slate-900 border border-white/10 rounded-2xl text-right focus:border-secondary outline-none text-secondary font-black text-xl shadow-inner"
+                                    />
+                                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-700 text-xs font-black">%</span>
+                                </div>
                             </div>
 
-                            <div className="space-y-4 pt-4 border-t border-neutral-900">
+                            <div className="space-y-6 pt-6 border-t border-white/5">
                                 {discountPercent > 0 && (
-                                    <div className="flex justify-between items-center text-orange-600">
-                                        <span className="text-[10px] tracking-widest uppercase">Bonificación</span>
-                                        <span>-${discountAmount.toFixed(2)}</span>
+                                    <div className="flex justify-between items-center text-secondary">
+                                        <span className="text-[10px] tracking-[0.3em] uppercase">Bonificación</span>
+                                        <span className="text-xl tracking-tighter">-${discountAmount.toLocaleString('es-EC', { minimumFractionDigits: 2 })}</span>
                                     </div>
                                 )}
-                                <div className="flex justify-between items-center text-neutral-400">
-                                    <span className="text-[10px] tracking-widest uppercase">Base Imponible</span>
-                                    <span>${taxableAmount.toFixed(2)}</span>
+                                <div className="flex justify-between items-center text-slate-500">
+                                    <span className="text-[10px] tracking-[0.3em] uppercase">Base Imponible</span>
+                                    <span className="text-xl tracking-tighter text-slate-300">${taxableAmount.toLocaleString('es-EC', { minimumFractionDigits: 2 })}</span>
                                 </div>
-                                <div className="flex justify-between items-center text-neutral-500">
-                                    <span className="text-[10px] tracking-widest uppercase">IVA Transferido (15%)</span>
-                                    <span>${taxAmount.toFixed(2)}</span>
-                                </div>
-                            </div>
-
-                            <div className="pt-12">
-                                <div className="flex flex-col items-center">
-                                    <span className="text-[11px] font-bold text-orange-600 uppercase tracking-[0.4em] mb-4">Total Liquidación</span>
-                                    <span className="text-5xl font-bold text-white tracking-tighter">${total.toLocaleString('es-EC', { minimumFractionDigits: 2 })}</span>
+                                <div className="flex justify-between items-center text-slate-600">
+                                    <span className="text-[10px] tracking-[0.3em] uppercase">IVA Transferido (15%)</span>
+                                    <span className="text-xl tracking-tighter text-slate-400">${taxAmount.toLocaleString('es-EC', { minimumFractionDigits: 2 })}</span>
                                 </div>
                             </div>
 
-                            <div className="mt-12 text-left bg-neutral-900/50 p-6 border border-neutral-800">
-                                <p className="text-[9px] text-neutral-600 uppercase tracking-widest leading-loose font-bold">
-                                    * Numero de Documento: {quoteNumber}<br />
-                                    * Vigencia Industrial Standard: 8 Días<br />
-                                    * Sujeto a disponibilidad de inventario
+                            <div className="pt-16 pb-6 relative">
+                                <div className="absolute top-1/2 left-0 w-full h-[2px] bg-white/5 -translate-y-1/2"></div>
+                                <div className="relative bg-transparent inline-block px-8 py-4 glass-panel !rounded-full border-secondary/20 shadow-2xl">
+                                    <span className="text-[12px] font-black text-secondary uppercase tracking-[0.5em] block mb-2">Total Liquidación</span>
+                                    <span className="text-6xl font-black text-white tracking-tighter drop-shadow-[0_0_30px_rgba(255,255,255,0.2)]">${total.toLocaleString('es-EC', { minimumFractionDigits: 2 })}</span>
+                                </div>
+                            </div>
+
+                            <div className="mt-12 text-left glass-panel !bg-slate-950/60 p-8 border-white/5 rounded-[2rem]">
+                                <p className="text-[9px] text-slate-700 uppercase tracking-[0.2em] leading-loose font-black">
+                                    <span className="text-secondary mr-2">/</span> Numero de Documento: {quoteNumber}<br />
+                                    <span className="text-secondary mr-2">/</span> Vigencia Industrial Standard: 8 Días<br />
+                                    <span className="text-secondary mr-2">/</span> Sujeto a disponibilidad de inventario
                                 </p>
                             </div>
                         </div>
                     </div>
 
-                    <div className="mt-8 bg-white border border-neutral-200 p-10 shadow-sm">
-                        <h3 className="text-[10px] font-bold text-neutral-400 uppercase tracking-[0.2em] mb-6 flex items-center">
-                            <ImageIcon size={16} className="mr-2" /> Portafolio de Producto
+                    <div className="glass-panel p-12 shadow-2xl rounded-[3rem] border-white/5 group overflow-hidden transition-all">
+                        <h3 className="text-[11px] font-black text-slate-500 uppercase tracking-[0.4em] mb-8 flex items-center italic">
+                            <ImageIcon size={20} className="mr-3 text-secondary" /> Portafolio de Producto
                         </h3>
                         <div
                             onClick={() => fileInputRef.current?.click()}
-                            className="w-full h-64 border-2 border-dashed border-neutral-200 bg-neutral-50 flex flex-col items-center justify-center cursor-pointer hover:border-orange-500 hover:bg-orange-50/20 transition-all overflow-hidden p-2 rounded"
+                            className="w-full h-80 border-2 border-dashed border-white/10 bg-slate-900/60 flex flex-col items-center justify-center cursor-pointer hover:border-secondary hover:bg-secondary/5 transition-all overflow-hidden p-4 rounded-[2rem] relative"
                         >
                             {productImage ? (
-                                <img src={productImage} alt="Preview" className="max-w-full max-h-full object-contain rounded shadow-sm" />
+                                <img src={productImage} alt="Preview" className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl" />
                             ) : (
                                 <>
-                                    <Plus size={32} className="text-neutral-200 mb-3" />
-                                    <span className="text-[9px] text-neutral-400 font-bold uppercase tracking-[0.3em]">Cargar Documentación Visual</span>
+                                    <div className="p-8 glass-panel !bg-slate-950 rounded-full mb-6 group-hover:scale-110 transition-transform border-white/5 shadow-2xl">
+                                        <Plus size={48} className="text-slate-800" />
+                                    </div>
+                                    <span className="text-[10px] text-slate-700 font-black uppercase tracking-[0.4em] text-center px-8">Inyectar Captura Visual / Documentación</span>
                                 </>
                             )}
                         </div>
                         <input type="file" ref={fileInputRef} onChange={handleImageUpload} className="hidden" accept="image/*" />
                         {productImage && (
-                            <button onClick={() => setProductImage(null)} className="mt-4 w-full text-center text-red-600 text-[9px] font-bold uppercase tracking-widest hover:underline">Eliminar Imagen de Propuesta</button>
+                            <button onClick={() => setProductImage(null)} className="mt-6 w-full text-center text-red-500 text-[10px] font-black uppercase tracking-[0.3em] hover:text-white transition-all">Eliminar Imagen de Propuesta</button>
                         )}
                     </div>
                 </div>
@@ -753,64 +762,64 @@ export default function QuotationGenerator() {
             {/* SIDE PANEL: HISTORIAL DE COTIZACIONES */}
             {isHistoryOpen && (
                 <>
-                    <div className="fixed inset-0 bg-neutral-900/60 backdrop-blur-sm z-40 transition-opacity" onClick={() => setIsHistoryOpen(false)} />
+                    <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-2xl z-[300] animate-in fade-in duration-500" onClick={() => setIsHistoryOpen(false)} />
 
-                    <div className={`fixed inset-y-0 right-0 w-full md:w-[600px] bg-neutral-50 shadow-2xl z-50 transform transition-transform duration-300 ease-in-out flex flex-col border-l border-neutral-200 ${isHistoryOpen ? 'translate-x-0' : 'translate-x-full'}`}>
-                        <div className="flex items-center justify-between p-6 border-b border-neutral-200 bg-white">
-                            <div className="flex items-center gap-3">
-                                <div className="bg-orange-100 p-2 text-orange-600 rounded"><History size={20} /></div>
+                    <div className={`fixed inset-y-0 right-0 w-full md:w-[700px] glass-panel !bg-slate-950 shadow-[-50px_0_100px_rgba(0,0,0,0.8)] z-[310] transform transition-transform duration-700 ease-in-out flex flex-col border-l border-white/10 rounded-l-[4rem] overflow-hidden ${isHistoryOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+                        <div className="flex items-center justify-between p-12 border-b border-white/5 bg-white/5">
+                            <div className="flex items-center gap-6">
+                                <div className="bg-secondary/10 p-5 text-secondary rounded-2xl shadow-2xl border border-secondary/20"><History size={28} /></div>
                                 <div>
-                                    <h2 className="text-sm font-black uppercase tracking-widest text-neutral-900">Historial de Propuestas</h2>
-                                    <p className="text-[10px] text-neutral-500 font-bold uppercase mt-1">Archivo histórico y duplicación</p>
+                                    <h2 className="text-3xl font-black uppercase tracking-tighter text-white italic">Archivo Maestro</h2>
+                                    <p className="text-[10px] text-secondary font-black uppercase tracking-[0.4em] mt-3">Historial Táctico de Liquidación</p>
                                 </div>
                             </div>
-                            <button onClick={() => setIsHistoryOpen(false)} className="text-neutral-400 hover:text-neutral-900 transition-colors p-2 bg-neutral-100 rounded-full">
-                                <X size={20} />
+                            <button onClick={() => setIsHistoryOpen(false)} className="p-4 glass-panel !bg-slate-900 rounded-2xl text-slate-500 hover:text-white hover:rotate-90 transition-all duration-300 border-white/5">
+                                <X size={24} />
                             </button>
                         </div>
 
-                        <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                        <div className="flex-1 overflow-y-auto p-12 space-y-8 scrollbar-hide">
                             {quoteHistory.length === 0 ? (
-                                <div className="text-center py-20 text-neutral-400 flex flex-col items-center">
-                                    <Clock size={48} className="mb-4 opacity-50" />
-                                    <p className="text-sm font-bold uppercase tracking-widest">No hay cotizaciones históricas.</p>
+                                <div className="text-center py-40 text-slate-800 flex flex-col items-center">
+                                    <Clock size={80} className="mb-8 opacity-20" />
+                                    <p className="text-xs font-black uppercase tracking-[0.5em]">No se detectan registros históricos.</p>
                                 </div>
                             ) : (
                                 quoteHistory.map((quote) => (
-                                    <div key={quote.id} className="bg-white p-5 border border-neutral-200 shadow-sm hover:border-orange-300 transition-all group flex flex-col">
-                                        <div className="flex justify-between items-start mb-4">
+                                    <div key={quote.id} className="glass-panel !bg-white/[0.02] p-8 border border-white/5 shadow-2xl hover:border-secondary/30 transition-all group flex flex-col rounded-[2.5rem] relative overflow-hidden">
+                                        <div className="absolute top-0 left-0 w-1 h-full bg-slate-900 group-hover:bg-secondary transition-colors"></div>
+                                        <div className="flex justify-between items-start mb-8">
                                             <div>
-                                                <div className="flex items-center gap-2">
-                                                    <span className="text-xs font-black text-orange-600 uppercase tracking-widest bg-orange-50 px-2 py-1">{quote.quoteNumber}</span>
+                                                <div className="flex items-center gap-4">
+                                                    <span className="text-xs font-black text-secondary uppercase tracking-[0.2em] bg-secondary/10 px-4 py-2 rounded-xl border border-secondary/20">{quote.quoteNumber}</span>
                                                     {quote.globalQuoteNumber && (
-                                                        <span className="text-[9px] font-bold text-neutral-400 border border-neutral-200 uppercase tracking-widest px-1.5 py-0.5" title="Numeración Global de la Empresa">
+                                                        <span className="text-[10px] font-black text-slate-500 border border-white/5 uppercase tracking-[0.2em] px-3 py-1.5 rounded-lg" title="Numeración Global de la Empresa">
                                                             {quote.globalQuoteNumber}
                                                         </span>
                                                     )}
                                                 </div>
-                                                <h3 className="text-sm font-bold text-neutral-900 mt-2 uppercase">{quote.clientName || 'CLIENTE NO ESPECIFICADO'}</h3>
-                                                <span className="text-[9px] font-bold text-neutral-500 uppercase mt-1 block">
-                                                    Vendedor: <span className="text-neutral-800">{quote.advisorName || quote.salesperson?.name || "SISTEMA"}</span>
-                                                </span>
-                                                <span className="text-[9px] font-mono text-neutral-400 uppercase mt-0.5 block">
-                                                    Emitida: {new Date(quote.createdAt).toLocaleDateString()} a las {new Date(quote.createdAt).toLocaleTimeString()}
-                                                </span>
+                                                <h3 className="text-xl font-black text-white mt-6 uppercase italic tracking-tight">{quote.clientName || 'CLIENTE NO ESPECIFICADO'}</h3>
+                                                <div className="space-y-2 mt-4">
+                                                    <span className="text-[9px] font-black text-slate-600 uppercase tracking-[0.2em] block">
+                                                        Responsable: <span className="text-slate-400 italic">{quote.advisorName || quote.salesperson?.name || "SISTEMA CENTRAL"}</span>
+                                                    </span>
+                                                    <span className="text-[9px] font-black text-slate-600 uppercase tracking-[0.2em] block">
+                                                        Fecha: <span className="text-slate-500">{new Date(quote.createdAt).toLocaleDateString()} — {new Date(quote.createdAt).toLocaleTimeString()}</span>
+                                                    </span>
+                                                </div>
                                             </div>
                                             <div className="text-right">
-                                                <p className="text-lg font-black text-neutral-900">${quote.total ? quote.total.toFixed(2) : "0.00"}</p>
-                                                <span className={`text-[9px] uppercase font-bold px-2 py-0.5 mt-1 border inline-block ${quote.status === 'SAVED' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-neutral-100 text-neutral-500 border-neutral-200'}`}>
-                                                    {quote.status}
-                                                </span>
+                                                <p className="text-3xl font-black text-white tracking-tighter group-hover:text-emerald-400 transition-colors">${quote.total ? quote.total.toLocaleString('es-EC', { minimumFractionDigits: 2 }) : "0.00"}</p>
+                                                <div className="flex flex-col gap-3 mt-6 items-end">
+                                                    <button
+                                                        onClick={() => handleDuplicateQuote(quote)}
+                                                        className="px-6 py-2.5 glass-panel !bg-slate-900 text-slate-400 hover:text-secondary hover:bg-white transition-all text-center uppercase text-[10px] font-black tracking-widest rounded-xl border-white/5 flex items-center justify-center gap-3 w-full"
+                                                    >
+                                                        <Copy size={14} />
+                                                        <span>Clonar</span>
+                                                    </button>
+                                                </div>
                                             </div>
-                                        </div>
-
-                                        <div className="pt-4 border-t border-neutral-100 flex justify-end">
-                                            <button
-                                                onClick={() => handleDuplicateQuote(quote)}
-                                                className="flex items-center text-[10px] font-bold uppercase tracking-widest text-neutral-600 hover:text-orange-600 bg-neutral-50 hover:bg-orange-50 px-4 py-2 border border-neutral-200 transition-all"
-                                            >
-                                                <Copy size={12} className="mr-2" /> Clonar Cotización
-                                            </button>
                                         </div>
                                     </div>
                                 ))

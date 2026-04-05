@@ -117,188 +117,191 @@ export default function AdvancedCRMPage() {
     const avgPurchases = totalClients > 0 ? (clients.reduce((acc, c) => acc + (c.purchaseCount || 0), 0) / totalClients).toFixed(1) : 0
 
     return (
-        <div className="space-y-6 lg:min-h-[85vh] flex flex-col relative w-full overflow-hidden pb-10">
+        <div className="space-y-10 lg:min-h-[85vh] flex flex-col relative w-full overflow-hidden pb-10 animate-in fade-in duration-1000">
             {/* HEADERS & METRICS */}
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 border-b border-white/5 pb-10">
                 <div>
-                    <div className="flex items-center gap-3">
-                        <div className="bg-neutral-900 p-2 text-white"><Briefcase size={20} className="text-orange-500" /></div>
-                        <h1 className="text-3xl font-black tracking-tighter text-neutral-900 uppercase">
-                            ATOMIC <span className="text-neutral-400 font-light">|</span> <span className="text-orange-600 border-b-4 border-orange-600">PRO CRM</span>
+                    <div className="flex items-center gap-4">
+                        <div className="glass-panel !bg-slate-900 p-3 text-white rounded-2xl border-white/10">
+                            <Briefcase size={24} className="text-secondary" />
+                        </div>
+                        <h1 className="text-4xl font-black tracking-tighter text-white uppercase italic leading-none">
+                            ATOMIC <span className="text-slate-600 font-light">|</span> <span className="text-secondary">PRO CRM</span>
                         </h1>
                     </div>
-                    <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-[0.3em] mt-2">Enterprise Customer Relationship Management v1.0.5</p>
+                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] mt-3">Enterprise Customer Relationship Management v1.0.8 Stable</p>
                 </div>
-                <div className="flex flex-wrap gap-2">
-                    <button className="bg-white border text-neutral-600 border-neutral-300 font-bold py-2 px-4 text-xs uppercase tracking-widest flex items-center shadow-sm">
-                        <Download size={14} className="mr-2" /> Exportar CSV
+                <div className="flex flex-wrap gap-4">
+                    <button className="glass-panel border-white/5 text-slate-400 font-black py-3 px-6 text-[10px] uppercase tracking-widest flex items-center hover:text-white hover:bg-white/5 transition-all rounded-xl">
+                        <Download size={14} className="mr-2" /> Exportar Inteligencia
                     </button>
                     <button
                         onClick={openCreatePanel}
-                        className="bg-neutral-900 hover:bg-orange-600 text-white font-bold py-2 px-6 text-xs uppercase tracking-widest flex items-center transition-colors shadow-lg shadow-neutral-900/20"
+                        className="bg-secondary hover:bg-white hover:text-secondary text-white font-black py-3 px-8 text-[10px] uppercase tracking-[0.2em] flex items-center transition-all shadow-[0_10px_30px_-5px_rgba(255,99,71,0.4)] rounded-xl active:scale-[0.98]"
                     >
-                        <UserPlus size={16} className="mr-2" /> Nuevo Registro
+                        <UserPlus size={18} className="mr-3" /> Nuevo Registro
                     </button>
                 </div>
             </div>
 
             {/* HIGH LEVEL KPI BAR */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-1">
-                <div className="bg-white p-5 border border-neutral-200 shadow-sm flex items-center justify-between">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div className="glass-panel p-6 border-white/5 flex items-center justify-between rounded-3xl hover:border-white/20 transition-all">
                     <div>
-                        <p className="text-[9px] font-bold text-neutral-400 uppercase tracking-widest">Base de Datos</p>
-                        <p className="text-2xl font-black text-neutral-900">{totalClients}</p>
+                        <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Base de Datos</p>
+                        <p className="text-3xl font-black text-white tracking-tighter">{totalClients}</p>
                     </div>
-                    <Users className="text-neutral-200" size={32} />
+                    <Users className="text-slate-800" size={32} />
                 </div>
-                <div className="bg-white p-5 border border-neutral-200 shadow-sm flex items-center justify-between border-l-4 border-l-orange-500">
+                <div className="glass-panel p-6 border-secondary/20 flex items-center justify-between border-l-4 border-l-secondary rounded-3xl shadow-[0_10px_40px_-10px_rgba(255,99,71,0.1)]">
                     <div>
-                        <p className="text-[9px] font-bold text-orange-600 uppercase tracking-widest">Cartera Activa</p>
-                        <p className="text-2xl font-black text-orange-600">{activeClients}</p>
+                        <p className="text-[9px] font-black text-secondary uppercase tracking-widest mb-1">Cartera Activa</p>
+                        <p className="text-3xl font-black text-white tracking-tighter">{activeClients}</p>
                     </div>
-                    <TrendingUp className="text-orange-200" size={32} />
+                    <TrendingUp className="text-secondary/20" size={32} />
                 </div>
-                <div className="bg-white p-5 border border-neutral-200 shadow-sm flex items-center justify-between">
+                <div className="glass-panel p-6 border-white/5 flex items-center justify-between rounded-3xl">
                     <div>
-                        <p className="text-[9px] font-bold text-neutral-400 uppercase tracking-widest">Ticket Retención</p>
-                        <p className="text-2xl font-black text-neutral-900">{avgPurchases}</p>
+                        <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Ticket Retención</p>
+                        <p className="text-3xl font-black text-white tracking-tighter">{avgPurchases}</p>
                     </div>
-                    <BarChart3 className="text-neutral-200" size={32} />
+                    <BarChart3 className="text-slate-800" size={32} />
                 </div>
-                <div className="bg-white p-5 border border-neutral-200 shadow-sm flex items-center justify-between bg-neutral-900 text-white">
+                <div className="glass-panel !bg-slate-950/60 p-6 border-white/5 flex items-center justify-between text-white rounded-3xl ring-1 ring-white/5 shadow-2xl">
                     <div>
-                        <p className="text-[9px] font-bold text-neutral-400 uppercase tracking-widest">Tasa Conversión</p>
-                        <p className="text-2xl font-black text-white">{totalClients > 0 ? Math.round((activeClients / totalClients) * 100) : 0}%</p>
+                        <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Tasa Conversión</p>
+                        <p className="text-3xl font-black text-white tracking-tighter">{totalClients > 0 ? Math.round((activeClients / totalClients) * 100) : 0}%</p>
                     </div>
-                    <CheckCircle2 className="text-orange-500" size={32} />
+                    <CheckCircle2 className="text-secondary" size={32} />
                 </div>
             </div>
 
             {/* DATA GRID */}
-            <div className="flex-1 bg-white border border-neutral-200 shadow-xl overflow-hidden flex flex-col relative z-10">
+            <div className="flex-1 glass-panel border-white/5 shadow-2xl overflow-hidden flex flex-col relative z-10 rounded-[2rem]">
                 {/* Grid Toolbar */}
-                <div className="p-4 border-b border-neutral-200 bg-neutral-50 flex flex-col lg:flex-row justify-between items-center gap-4">
-                    <div className="relative w-full lg:w-1/3">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" size={16} />
+                <div className="p-6 border-b border-white/5 bg-white/[0.02] flex flex-col lg:flex-row justify-between items-center gap-6">
+                    <div className="relative w-full lg:w-1/2">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600" size={16} />
                         <input
                             type="text"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            placeholder="Buscar por nombre, email, ciudad o requerimiento..."
-                            className="w-full pl-9 pr-4 py-2 border border-neutral-300 bg-white text-xs font-mono focus:ring-2 focus:ring-orange-500 outline-none"
+                            placeholder="Buscar en el ecosistema de clientes..."
+                            className="w-full pl-11 pr-6 py-3.5 bg-slate-900/40 border border-white/5 text-white text-[11px] font-black uppercase tracking-wider focus:ring-2 focus:ring-secondary/50 outline-none rounded-xl transition-all placeholder:text-slate-700"
                         />
                     </div>
-                    <div className="flex w-full lg:w-auto items-center space-x-2">
-                        <span className="text-[10px] uppercase font-bold text-neutral-400">Filtrar Estado:</span>
+                    <div className="flex w-full lg:w-auto items-center space-x-4">
+                        <span className="text-[10px] uppercase font-black text-slate-600 tracking-widest">Filtrar Estatus:</span>
                         <select
                             value={statusFilter}
                             onChange={(e) => setStatusFilter(e.target.value)}
-                            className="w-full lg:w-48 px-3 py-2 border border-neutral-300 bg-white text-xs font-bold uppercase tracking-wider text-neutral-700 focus:ring-2 focus:ring-orange-500 outline-none"
+                            className="w-full lg:w-56 px-5 py-3.5 bg-slate-900/60 border border-white/10 text-white text-[10px] font-black uppercase tracking-[0.2em] focus:ring-2 focus:ring-secondary/50 outline-none rounded-xl cursor-pointer hover:bg-slate-800/80 transition-all"
                         >
-                            <option value="all">TODOS LOS ESTADOS</option>
-                            <option value="activo">ACTIVOS</option>
+                            <option value="all">TODOS LOS REGISTROS</option>
+                            <option value="activo">NODOS ACTIVOS</option>
                             <option value="prospecto">PROSPECTOS</option>
-                            <option value="inactivo">INACTIVOS</option>
+                            <option value="inactivo">RECHAZADOS</option>
                         </select>
                     </div>
                 </div>
 
                 {/* Desktop Grid View */}
-                <div className="flex-1 overflow-auto">
+                <div className="flex-1 overflow-auto scrollbar-hide">
                     <table className="w-full text-sm text-left border-collapse whitespace-nowrap">
-                        <thead className="text-[9px] text-neutral-400 bg-neutral-900 uppercase font-black tracking-widest sticky top-0 z-10">
+                        <thead className="text-[9px] text-slate-500 bg-slate-950/40 uppercase font-black tracking-[0.4em] sticky top-0 z-20 backdrop-blur-md border-b border-white/5">
                             <tr>
-                                <th className="px-6 py-4">ID / Nombre Cliente</th>
-                                <th className="px-6 py-4">Contacto</th>
-                                <th className="px-6 py-4">Ubicación</th>
-                                <th className="px-6 py-4 max-w-[200px]">Requerimiento Industrial</th>
-                                <th className="px-6 py-4 text-center">Fidelidad</th>
-                                <th className="px-6 py-4 text-center">Estado</th>
-                                <th className="px-6 py-4 text-right"></th>
+                                <th className="px-8 py-5">Identificador / Nombre</th>
+                                <th className="px-8 py-5">Contacto Central</th>
+                                <th className="px-8 py-5">Ubicación Geo</th>
+                                <th className="px-8 py-5 max-w-[250px]">Requerimiento Industrial</th>
+                                <th className="px-8 py-5 text-center">Fidelidad</th>
+                                <th className="px-8 py-5 text-center">Estado</th>
+                                <th className="px-8 py-5 text-right"></th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-neutral-100">
+                        <tbody className="divide-y divide-white/[0.03]">
                             {loading && clients.length === 0 && (
-                                <tr><td colSpan={7} className="p-10 text-center text-xs text-neutral-400 uppercase font-bold animate-pulse">Analizando base de datos...</td></tr>
+                                <tr><td colSpan={7} className="p-20 text-center text-[10px] text-secondary font-black uppercase tracking-[0.5em] animate-pulse">Sincronizando Base de Inteligencia...</td></tr>
                             )}
                             {!loading && filteredClients.length === 0 && (
-                                <tr><td colSpan={7} className="p-20 text-center text-xs text-neutral-400 uppercase font-bold">Sin resultados.</td></tr>
+                                <tr><td colSpan={7} className="p-32 text-center text-[10px] text-slate-700 font-black uppercase tracking-[0.5em]">Sin registros coincidentes en el sistema.</td></tr>
                             )}
                             {filteredClients.map((client) => (
                                 <tr key={client.id}
                                     onClick={() => openEditPanel(client)}
-                                    className="hover:bg-orange-50/50 transition-colors cursor-pointer group"
+                                    className="hover:bg-white/[0.03] transition-colors cursor-pointer group relative"
                                 >
                                     {/* Name & Date */}
-                                    <td className="px-6 py-4">
+                                    <td className="px-8 py-6">
                                         <div className="flex flex-col">
-                                            <span className="font-bold text-neutral-900 text-sm">
+                                            <span className="font-black text-white text-sm uppercase tracking-tight group-hover:text-secondary transition-colors">
                                                 {client.firstName || client.lastName ? `${client.firstName || ''} ${client.lastName || ''}`.trim() : client.name}
                                             </span>
-                                            <span className="text-[9px] font-mono text-neutral-400 mt-1 uppercase">Ingreso: {new Date(client.createdAt).toLocaleDateString()}</span>
+                                            <span className="text-[9px] font-black text-slate-600 mt-1 uppercase tracking-[0.2em]">Registro: {new Date(client.createdAt).toLocaleDateString()}</span>
                                         </div>
                                     </td>
 
                                     {/* Contact */}
-                                    <td className="px-6 py-4">
-                                        <div className="flex flex-col space-y-1">
-                                            <span className="flex items-center text-xs text-neutral-600 font-mono"><Mail size={10} className="mr-2 text-orange-400" /> {client.email || 'N/A'}</span>
-                                            <span className="flex items-center text-[11px] font-bold text-neutral-800"><Phone size={10} className="mr-2 text-orange-400" /> {client.phone || 'N/A'}</span>
+                                    <td className="px-8 py-6">
+                                        <div className="flex flex-col space-y-1.5">
+                                            <span className="flex items-center text-[10px] text-slate-400 font-black"><Mail size={12} className="mr-3 text-secondary/60" /> {client.email || 'N/A'}</span>
+                                            <span className="flex items-center text-[11px] font-black text-white tracking-widest"><Phone size={12} className="mr-3 text-secondary/60" /> {client.phone || 'N/A'}</span>
                                         </div>
                                     </td>
 
                                     {/* Location */}
-                                    <td className="px-6 py-4">
-                                        <span className="flex items-center text-xs text-neutral-500 uppercase tracking-wider font-bold">
-                                            <MapPin size={12} className="mr-1 text-neutral-300" /> {client.city || 'NO ESPECIFICADA'}
+                                    <td className="px-8 py-6">
+                                        <span className="flex items-center text-[10px] text-slate-500 uppercase tracking-[0.2em] font-black">
+                                            <MapPin size={14} className="mr-2 text-slate-700" /> {client.city || 'GLOBAL'}
                                         </span>
                                     </td>
 
                                     {/* Requirement */}
-                                    <td className="px-6 py-4 max-w-[200px]">
-                                        <p className="text-[10px] text-neutral-500 truncate leading-relaxed">
-                                            {client.requirement || '-'}
+                                    <td className="px-8 py-6 max-w-[250px]">
+                                        <p className="text-[10px] text-slate-600 truncate leading-relaxed font-bold italic">
+                                            "{client.requirement || 'Sin detalles'}"
                                         </p>
                                     </td>
 
                                     {/* Metrics */}
-                                    <td className="px-6 py-4">
-                                        <div className="flex flex-col items-center justify-center space-y-1">
-                                            <span className="text-[10px] font-bold px-2 py-0.5 bg-neutral-100 text-neutral-600 border border-neutral-200">
-                                                {client.purchaseCount} <span className="text-neutral-400 font-normal">COMPRAS</span>
+                                    <td className="px-8 py-6">
+                                        <div className="flex flex-col items-center justify-center space-y-1.5">
+                                            <span className="text-[9px] font-black px-3 py-1 bg-white/5 text-slate-400 border border-white/5 rounded-full uppercase tracking-widest group-hover:border-secondary/20 transition-all">
+                                                {client.purchaseCount} TRANSACCIONES
                                             </span>
-                                            <span className="text-[9px] font-bold text-neutral-400 uppercase tracking-widest">
+                                            <span className="text-[8px] font-black text-slate-700 uppercase tracking-[0.3em]">
                                                 {client.campaignsSent} Campañas
                                             </span>
                                         </div>
                                     </td>
 
                                     {/* Status */}
-                                    <td className="px-6 py-4 text-center">
-                                        <span className={`px-3 py-1 text-[9px] font-black uppercase tracking-[0.2em] border ${client.status === 'ACTIVO' ? 'bg-green-500 text-white border-green-600 shadow-sm shadow-green-500/20' :
-                                            client.status === 'PROSPECTO' ? 'bg-orange-100 text-orange-700 border-orange-200' :
-                                                'bg-neutral-100 text-neutral-500 border-neutral-200'
+                                    <td className="px-8 py-6 text-center">
+                                        <span className={`px-4 py-1.5 text-[9px] font-black uppercase tracking-[0.25em] border rounded-lg shadow-2xl ${
+                                            client.status === 'ACTIVO' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 shadow-emerald-500/5' :
+                                            client.status === 'PROSPECTO' ? 'bg-secondary/10 text-secondary border-secondary/20 shadow-secondary/5' :
+                                            'bg-slate-800/10 text-slate-500 border-white/5'
                                             }`}>
                                             {client.status}
                                         </span>
                                     </td>
 
                                     {/* Actions */}
-                                    <td className="px-6 py-4 text-right">
-                                        <div className="flex justify-end gap-1 opacity-20 group-hover:opacity-100 transition-opacity">
+                                    <td className="px-8 py-6 text-right">
+                                        <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0">
                                             <button
                                                 onClick={(e) => handleDeleteClient(client.id, e)}
-                                                className="p-2 text-neutral-400 hover:text-red-500 hover:bg-neutral-100 transition-colors"
-                                                title="Eliminar"
+                                                className="p-3 text-slate-600 hover:text-red-500 hover:bg-red-500/10 transition-all rounded-xl"
+                                                title="Eliminar Registro"
                                             >
-                                                <Trash2 size={16} />
+                                                <Trash2 size={18} />
                                             </button>
                                             <button
                                                 onClick={(e) => { e.stopPropagation(); openEditPanel(client); }}
-                                                className="p-2 text-orange-600 bg-orange-50 hover:bg-orange-600 hover:text-white transition-colors"
-                                                title="Ver Detalles"
+                                                className="p-3 text-white bg-white/5 hover:bg-secondary hover:text-white transition-all rounded-xl border border-white/5 shadow-xl"
+                                                title="Analizar Detalles"
                                             >
-                                                <ChevronRight size={16} />
+                                                <ChevronRight size={18} />
                                             </button>
                                         </div>
                                     </td>
@@ -311,87 +314,85 @@ export default function AdvancedCRMPage() {
 
             {/* SIDE PANEL: ADVANCED EDIT/CREATE */}
             {isPanelOpen && (
-                <>
-                    {/* Backdrop */}
-                    <div className="fixed inset-0 bg-neutral-900/40 backdrop-blur-sm z-40 transition-opacity" onClick={closePanel} />
+                <div className="fixed inset-0 z-[100] flex items-center justify-end">
+                    <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-xl transition-opacity animate-in fade-in duration-500" onClick={closePanel} />
 
-                    {/* Sliding Panel */}
-                    <div className={`fixed inset-y-0 right-0 w-full md:w-[500px] bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-out flex flex-col border-l border-neutral-200 ${isPanelOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+                    <div className={`fixed inset-y-0 right-0 w-full md:w-[550px] glass-panel !bg-slate-950/80 !border-l !border-white/10 z-50 shadow-[0_0_100px_rgba(0,0,0,0.8)] animate-in slide-in-from-right duration-500 flex flex-col`}>
 
-                        <div className="flex items-center justify-between p-6 border-b border-neutral-100 bg-neutral-900 text-white shrink-0">
-                            <div className="flex items-center gap-3">
-                                <div className="bg-orange-600 p-2"><UserPlus size={16} /></div>
-                                <h2 className="text-sm font-black uppercase tracking-[0.2em]">
-                                    {editingId ? "Expediente del Cliente" : "Nuevo Ingreso CRM"}
+                        <div className="flex items-center justify-between p-10 border-b border-white/5 bg-white/5 shrink-0">
+                            <div className="flex items-center gap-4">
+                                <div className="bg-secondary p-3 rounded-2xl shadow-[0_5px_20px_rgba(255,99,71,0.4)]"><UserPlus size={20} className="text-white" /></div>
+                                <h2 className="text-2xl font-black uppercase tracking-tighter text-white italic">
+                                    {editingId ? "Expediente Central" : "Nuevo Registro Nodo"}
                                 </h2>
                             </div>
-                            <button onClick={closePanel} className="text-neutral-400 hover:text-white transition-colors p-2">
-                                <X size={20} />
+                            <button onClick={closePanel} className="text-slate-500 hover:text-white hover:rotate-90 transition-all duration-300 p-3 glass-panel !bg-slate-900 border-white/10 rounded-xl">
+                                <X size={24} />
                             </button>
                         </div>
 
-                        <div className="flex-1 overflow-y-auto p-8 space-y-8 bg-neutral-50">
+                        <div className="flex-1 overflow-y-auto p-12 space-y-12 scrollbar-hide">
 
                             {/* SECTION 1: Personal Data */}
-                            <div className="space-y-4">
-                                <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-orange-600 border-b border-orange-200 pb-2">Información Personal</h3>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-1">
-                                        <label className="text-[9px] font-bold text-neutral-500 uppercase tracking-widest">Nombres</label>
+                            <div className="space-y-6">
+                                <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-secondary border-b border-white/5 pb-4">Identidad Corporativa</h3>
+                                <div className="grid grid-cols-2 gap-6">
+                                    <div className="space-y-2">
+                                        <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] ml-1">Nombres</label>
                                         <input
                                             type="text"
                                             value={formData.firstName}
                                             onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                                            className="w-full p-3 bg-white border border-neutral-200 text-xs focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none transition-all"
-                                            placeholder="Ej. Juan Carlos"
+                                            className="w-full p-4 bg-slate-900/60 border border-white/5 text-white text-xs font-black uppercase tracking-widest focus:border-secondary focus:ring-1 focus:ring-secondary/30 outline-none transition-all rounded-xl placeholder:text-slate-800"
+                                            placeholder="JUAN CARLOS"
                                         />
                                     </div>
-                                    <div className="space-y-1">
-                                        <label className="text-[9px] font-bold text-neutral-500 uppercase tracking-widest">Apellidos</label>
+                                    <div className="space-y-2">
+                                        <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] ml-1">Apellidos</label>
                                         <input
                                             type="text"
                                             value={formData.lastName}
                                             onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                                            className="w-full p-3 bg-white border border-neutral-200 text-xs focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none transition-all"
-                                            placeholder="Ej. Pérez"
+                                            className="w-full p-4 bg-slate-900/60 border border-white/5 text-white text-xs font-black uppercase tracking-widest focus:border-secondary focus:ring-1 focus:ring-secondary/30 outline-none transition-all rounded-xl placeholder:text-slate-800"
+                                            placeholder="PÉREZ"
                                         />
                                     </div>
                                 </div>
                             </div>
 
                             {/* SECTION 2: Contact & Location */}
-                            <div className="space-y-4">
-                                <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-orange-600 border-b border-orange-200 pb-2">Contacto y Ubicación</h3>
-                                <div className="space-y-4">
-                                    <div className="space-y-1">
-                                        <label className="text-[9px] font-bold text-neutral-500 uppercase tracking-widest flex items-center gap-1"><Mail size={10} /> Correo Electrónico <span className="text-red-500">*</span></label>
+                            <div className="space-y-6">
+                                <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-secondary border-b border-white/5 pb-4">Conectividad y Nodo</h3>
+                                <div className="space-y-6">
+                                    <div className="space-y-2">
+                                        <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] flex items-center gap-2 ml-1"><Mail size={12} /> Email de Red <span className="text-secondary">*</span></label>
                                         <input
                                             type="email"
                                             value={formData.email}
                                             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                            className="w-full p-3 bg-white border border-neutral-200 text-xs focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none transition-all font-mono"
-                                            placeholder="correo@empresa.com"
+                                            className="w-full p-4 bg-slate-900/60 border border-white/5 text-white text-xs font-black tracking-[0.15em] focus:border-secondary outline-none rounded-xl placeholder:text-slate-800"
+                                            placeholder="CORREO@ATOMIC.COM"
                                         />
                                     </div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="space-y-1">
-                                            <label className="text-[9px] font-bold text-neutral-500 uppercase tracking-widest flex items-center gap-1"><Phone size={10} /> Teléfono/WA <span className="text-red-500">*</span></label>
+                                    <div className="grid grid-cols-2 gap-6">
+                                        <div className="space-y-2">
+                                            <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] flex items-center gap-2 ml-1"><Phone size={12} /> Enlace Móvil <span className="text-secondary">*</span></label>
                                             <input
                                                 type="text"
                                                 value={formData.phone}
                                                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                                className="w-full p-3 bg-white border border-neutral-200 text-xs focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none transition-all font-mono"
-                                                placeholder="+52 123 456..."
+                                                className="w-full p-4 bg-slate-900/60 border border-white/5 text-white text-xs font-black tracking-widest focus:border-secondary outline-none rounded-xl"
+                                                placeholder="+52 XXX XXX..."
                                             />
                                         </div>
-                                        <div className="space-y-1">
-                                            <label className="text-[9px] font-bold text-neutral-500 uppercase tracking-widest flex items-center gap-1"><MapPin size={10} /> Ciudad Base</label>
+                                        <div className="space-y-2">
+                                            <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] flex items-center gap-2 ml-1"><MapPin size={12} /> Ciudad Base</label>
                                             <input
                                                 type="text"
                                                 value={formData.city}
                                                 onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                                                className="w-full p-3 bg-white border border-neutral-200 text-xs focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none transition-all uppercase"
-                                                placeholder="Ej. Monterrey"
+                                                className="w-full p-4 bg-slate-900/60 border border-white/5 text-white text-xs font-black uppercase tracking-widest focus:border-secondary outline-none rounded-xl"
+                                                placeholder="MONTERREY"
                                             />
                                         </div>
                                     </div>
@@ -399,47 +400,46 @@ export default function AdvancedCRMPage() {
                             </div>
 
                             {/* SECTION 3: Business & Metrics */}
-                            <div className="space-y-4">
-                                <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-orange-600 border-b border-orange-200 pb-2">Inteligencia de Negocios</h3>
+                            <div className="space-y-6">
+                                <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-secondary border-b border-white/5 pb-4">Inteligencia Operativa</h3>
 
-                                <div className="space-y-1">
-                                    <label className="text-[9px] font-bold text-neutral-500 uppercase tracking-widest">Requerimiento de Ingreso</label>
+                                <div className="space-y-2">
+                                    <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] ml-1">Análisis de Requerimiento</label>
                                     <textarea
                                         value={formData.requirement}
                                         onChange={(e) => setFormData({ ...formData, requirement: e.target.value })}
-                                        className="w-full p-3 bg-white border border-neutral-200 text-xs focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none transition-all resize-none"
-                                        rows={3}
-                                        placeholder="Escriba las necesidades exactas reportadas por el cliente..."
+                                        className="w-full p-5 bg-slate-900/60 border border-white/5 text-white text-[11px] font-bold tracking-wide focus:border-secondary outline-none rounded-2xl resize-none min-h-[120px] placeholder:text-slate-800"
+                                        placeholder="ESPECIFICACIONES TÉCNICAS Y NECESIDADES DEL CLIENTE..."
                                     />
                                 </div>
 
-                                <div className="grid grid-cols-3 gap-3">
-                                    <div className="space-y-1">
-                                        <label className="text-[9px] font-bold text-neutral-500 uppercase tracking-widest">Compras</label>
+                                <div className="grid grid-cols-3 gap-4">
+                                    <div className="space-y-2">
+                                        <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] text-center block">Compras</label>
                                         <input
                                             type="number"
                                             value={formData.purchaseCount}
                                             onChange={(e) => setFormData({ ...formData, purchaseCount: parseInt(e.target.value) || 0 })}
-                                            className="w-full p-3 bg-white border border-neutral-200 text-xs font-bold text-center focus:border-orange-500 outline-none"
+                                            className="w-full p-4 bg-slate-900/60 border border-white/5 text-white text-sm font-black text-center focus:border-secondary outline-none rounded-xl"
                                             min="0"
                                         />
                                     </div>
-                                    <div className="space-y-1">
-                                        <label className="text-[9px] font-bold text-neutral-500 uppercase tracking-widest">Campañas</label>
+                                    <div className="space-y-2">
+                                        <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] text-center block">Campañas</label>
                                         <input
                                             type="number"
                                             value={formData.campaignsSent}
                                             onChange={(e) => setFormData({ ...formData, campaignsSent: parseInt(e.target.value) || 0 })}
-                                            className="w-full p-3 bg-white border border-neutral-200 text-xs font-bold text-center focus:border-orange-500 outline-none"
+                                            className="w-full p-4 bg-slate-900/60 border border-white/5 text-white text-sm font-black text-center focus:border-secondary outline-none rounded-xl"
                                             min="0"
                                         />
                                     </div>
-                                    <div className="space-y-1">
-                                        <label className="text-[9px] font-bold text-neutral-500 uppercase tracking-widest">Estado</label>
+                                    <div className="space-y-2">
+                                        <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] text-center block">Estatus</label>
                                         <select
                                             value={formData.status}
                                             onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                                            className="w-full p-3 bg-white border border-neutral-200 text-[10px] font-black uppercase text-center focus:border-orange-500 outline-none h-[42px]"
+                                            className="w-full p-4 bg-slate-900/60 border border-white/5 text-[10px] font-black uppercase text-white text-center focus:border-secondary outline-none rounded-xl h-[53px] cursor-pointer"
                                         >
                                             <option value="PROSPECTO">PROSPECTO</option>
                                             <option value="ACTIVO">ACTIVO</option>
@@ -450,23 +450,23 @@ export default function AdvancedCRMPage() {
                             </div>
                         </div>
 
-                        <div className="p-6 border-t border-neutral-200 bg-white grid grid-cols-2 gap-4 shrink-0">
+                        <div className="p-10 border-t border-white/5 bg-white/5 grid grid-cols-2 gap-6 shrink-0">
                             <button
                                 onClick={closePanel}
-                                className="py-4 text-xs font-black uppercase tracking-widest bg-neutral-100 text-neutral-500 hover:bg-neutral-200 transition-colors"
+                                className="py-5 text-[10px] font-black uppercase tracking-[0.3em] bg-white/5 text-slate-400 hover:text-white hover:bg-white/10 transition-all rounded-2xl border border-white/5"
                             >
-                                Descartar
+                                Descartar Cambios
                             </button>
                             <button
                                 onClick={handleSaveClient}
-                                className="py-4 text-xs font-black uppercase tracking-[0.2em] bg-orange-600 text-white hover:bg-neutral-900 transition-colors shadow-lg shadow-orange-500/30 flex justify-center items-center gap-2"
+                                className="py-5 text-[10px] font-black uppercase tracking-[0.3em] bg-secondary text-white hover:bg-white hover:text-secondary transition-all shadow-[0_10px_40px_-10px_rgba(255,99,71,0.5)] flex justify-center items-center gap-3 rounded-2xl active:scale-[0.98]"
                             >
-                                <Save size={14} /> {editingId ? "Actualizar" : "Registrar"}
+                                <Save size={18} /> {editingId ? "Actualizar Nodo" : "Finalizar Registro"}
                             </button>
                         </div>
 
                     </div>
-                </>
+                </div>
             )}
 
         </div>

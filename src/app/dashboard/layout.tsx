@@ -70,25 +70,31 @@ export default function DashboardLayout({
     }
 
     return (
-        <div className="flex h-screen bg-[#fcfcfc] text-neutral-900 overflow-hidden font-sans relative">
+        <div className="flex h-screen bg-mesh text-white overflow-hidden font-sans relative">
+            {/* Background Orbs */}
+            <div className="fixed inset-0 z-0 pointer-events-none">
+                <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] rounded-full bg-azure-500/5 blur-[120px]" />
+                <div className="absolute bottom-[-10%] left-[-5%] w-[40%] h-[40%] rounded-full bg-tomato-500/5 blur-[120px]" />
+            </div>
+
             {/* Sidebar Overlay for Mobile */}
             {sidebarOpen && (
                 <div
-                    className="fixed inset-0 bg-neutral-900/40 backdrop-blur-sm z-30 lg:hidden animate-in fade-in duration-300"
+                    className="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 lg:hidden animate-in fade-in duration-300"
                     onClick={() => setSidebarOpen(false)}
                 />
             )}
 
             {/* Sidebar */}
             <aside className={`
-                fixed inset-y-0 left-0 w-64 flex flex-col bg-white border-r border-neutral-100/50 shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-40
+                fixed inset-y-0 left-0 w-72 flex flex-col glass-panel !bg-slate-950/40 !border-r !border-white/5 z-40
                 transition-transform duration-500 ease-in-out lg:translate-x-0 lg:static
                 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
             `}>
-                <div className="h-32 flex flex-col items-center justify-center px-8 border-b border-neutral-50 relative">
+                <div className="h-32 flex flex-col items-center justify-center px-8 border-b border-white/5 relative bg-white/5">
                     <button
                         onClick={() => setSidebarOpen(false)}
-                        className="absolute top-6 right-6 lg:hidden text-neutral-300 hover:text-orange-600 transition-colors"
+                        className="absolute top-6 right-6 lg:hidden text-slate-400 hover:text-secondary transition-colors"
                     >
                         <X size={20} />
                     </button>
@@ -96,13 +102,13 @@ export default function DashboardLayout({
                         <img
                             src="/logo_atomic.jpg"
                             alt="ATOMIC Logo"
-                            className="w-32 h-auto object-contain mb-3 grayscale hover:grayscale-0 transition-all duration-500"
+                            className="w-32 h-auto object-contain mb-3 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]"
                         />
-                        <span className="text-[8px] font-bold text-neutral-400 uppercase tracking-[0.4em] ml-1">INDUSTRIES</span>
+                        <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] ml-1">INDUSTRIES</span>
                     </div>
                 </div>
 
-                <nav className="flex-1 overflow-y-auto px-4 py-8 space-y-1.5">
+                <nav className="flex-1 overflow-y-auto px-6 py-10 space-y-2 scrollbar-hide">
                     <NavLink href="/dashboard" icon={<LayoutDashboard size={18} />} label="Centro de Control" />
 
                     {(role === "ADMIN" || role === "MANAGEMENT" || role === "SALESPERSON") && (
@@ -150,12 +156,12 @@ export default function DashboardLayout({
                         >
                             <Link
                                 href="/dashboard/messages"
-                                className="flex items-center space-x-3 px-4 py-3 rounded-none text-xs font-bold text-neutral-400 hover:bg-neutral-50 hover:text-neutral-900 transition-all group relative"
+                                className="flex items-center space-x-3 px-4 py-3 rounded-xl text-xs font-bold text-slate-400 hover:bg-white/5 hover:text-white transition-all group relative"
                             >
-                                <span className="text-neutral-300 group-hover:text-orange-600 transition-colors uppercase"><Mail size={18} /></span>
+                                <span className="text-slate-500 group-hover:text-secondary transition-colors uppercase"><Mail size={18} /></span>
                                 <span className="tracking-wide uppercase font-bold text-[10px]">Mensajería Interna</span>
                                 {unreadCount > 0 && (
-                                    <span className="absolute right-4 top-1/2 -translate-y-1/2 bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow-lg animate-pulse">
+                                    <span className="absolute right-4 top-1/2 -translate-y-1/2 bg-secondary text-white text-[9px] font-black px-2 py-0.5 rounded-full shadow-[0_0_15px_rgba(255,99,71,0.5)] animate-pulse">
                                         {unreadCount}
                                     </span>
                                 )}
@@ -168,10 +174,10 @@ export default function DashboardLayout({
                             <Link
                                 href="/web"
                                 target="_blank"
-                                className="flex items-center space-x-3 px-4 py-3 rounded-none text-xs font-bold text-orange-600 hover:bg-orange-50 transition-all group border border-orange-100/30 mt-2"
+                                className="flex items-center space-x-3 px-4 py-3 rounded-xl text-xs font-black text-secondary hover:bg-secondary/10 transition-all group border border-secondary/20 mt-4 bg-secondary/5"
                             >
-                                <ExternalLink size={18} className="uppercase text-orange-600" />
-                                <span className="tracking-wide uppercase font-bold text-[10px]">Página Web</span>
+                                <ExternalLink size={18} className="uppercase text-secondary" />
+                                <span className="tracking-widest uppercase font-bold text-[10px]">Página Web Pública</span>
                             </Link>
                         </CollapsibleSection>
                     )}
@@ -199,45 +205,45 @@ export default function DashboardLayout({
                     )}
                 </nav>
 
-                <div className="p-6 bg-neutral-50/30 border-t border-neutral-50">
-                    <div className="flex items-center space-x-3 mb-6 px-1">
-                        <div className="w-10 h-10 rounded-none bg-neutral-900 shadow-lg shadow-neutral-200 text-white flex items-center justify-center font-bold text-xs">
+                <div className="p-8 bg-white/5 border-t border-white/5 mt-auto">
+                    <div className="flex items-center space-x-4 mb-8 px-1">
+                        <div className="w-12 h-12 rounded-2xl glass-panel !bg-slate-900 border-white/10 shadow-xl text-white flex items-center justify-center font-black text-sm uppercase tracking-tighter shadow-azure-500/10">
                             {session.user?.name?.[0] || "U"}
                         </div>
                         <div className="flex-1 overflow-hidden">
-                            <p className="text-xs font-bold text-neutral-800 truncate">{session.user?.name}</p>
-                            <p className="text-[9px] font-bold text-orange-600 uppercase tracking-widest">
+                            <p className="text-xs font-black text-white truncate uppercase tracking-tight">{session.user?.name}</p>
+                            <p className="text-[9px] font-black text-secondary uppercase tracking-[0.2em] mt-0.5">
                                 {role === "COORD_ASSISTANT" ? "ASIST. COORDINACIÓN" : role === "ADMIN" ? "ADMINISTRADOR" : role === "MANAGEMENT" ? "GERENCIA" : role === "COORDINATOR" ? "COORDINADOR" : role === "SALESPERSON" ? "VENDEDOR" : role === "EDITOR" ? "EDITOR" : role}
                             </p>
                         </div>
                     </div>
-                    <Link href="/api/auth/signout" className="flex items-center space-x-3 px-3 py-2.5 text-xs font-bold text-neutral-400 hover:text-red-500 rounded-none transition-all hover:bg-red-50">
-                        <LogOut size={16} />
-                        <span>Finalizar Sesión</span>
+                    <Link href="/api/auth/signout" className="flex items-center space-x-3 px-4 py-3 text-xs font-black text-slate-500 hover:text-red-400 rounded-xl transition-all hover:bg-red-500/5 group">
+                        <LogOut size={16} className="group-hover:translate-x-[-2px] transition-transform" />
+                        <span className="uppercase tracking-widest">Cerrar Sesión</span>
                     </Link>
                 </div>
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 flex flex-col h-full overflow-hidden relative">
+            <main className="flex-1 flex flex-col h-full overflow-hidden relative z-10">
                 {/* Top Header */}
-                <header className="h-16 bg-white/80 backdrop-blur-md border-b border-neutral-100/50 flex items-center justify-between px-6 lg:px-10 shrink-0 z-10">
-                    <div className="flex items-center space-x-4">
+                <header className="h-20 glass-panel !bg-slate-950/40 !border-b !border-white/5 flex items-center justify-between px-8 lg:px-12 shrink-0 z-10">
+                    <div className="flex items-center space-x-6">
                         <button
                             onClick={() => setSidebarOpen(true)}
-                            className="lg:hidden p-2 text-neutral-400 hover:text-orange-600 transition-colors"
+                            className="lg:hidden p-3 glass-panel text-slate-400 hover:text-white transition-colors rounded-xl"
                         >
                             <Menu size={24} />
                         </button>
-                        <div className="hidden sm:flex items-center space-x-3">
-                            <div className="w-1.5 h-1.5 rounded-none bg-orange-600 shadow-[0_0_8px_rgba(234,88,12,0.6)]"></div>
-                            <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-[0.25em]">Plataforma Operativa v2.6.4</span>
+                        <div className="hidden sm:flex items-center space-x-4">
+                            <div className="w-2 h-2 rounded-full bg-secondary shadow-[0_0_15px_rgba(255,99,71,0.6)] animate-pulse"></div>
+                            <span className="text-[11px] font-black text-slate-500 uppercase tracking-[0.3em]">Sector Operativo v4.0.2 Stable</span>
                         </div>
                     </div>
-                    <div className="flex items-center space-x-4">
+                    <div className="flex items-center space-x-6">
                         <NotificationBell />
                         {(role === "ADMIN" || role === "MANAGEMENT") && (
-                            <Link href="/dashboard/admin/settings" className="p-2 rounded-none text-neutral-300 hover:text-orange-600 hover:bg-neutral-50 transition-all">
+                            <Link href="/dashboard/admin/settings" className="p-3 glass-panel text-slate-400 hover:text-secondary transition-all rounded-xl hover:scale-105">
                                 <Settings size={20} />
                             </Link>
                         )}
@@ -245,8 +251,8 @@ export default function DashboardLayout({
                 </header>
 
                 {/* Scrollable Content Area */}
-                <div className="flex-1 overflow-y-auto bg-[#fcfcfc] relative z-0">
-                    <div className="mx-auto max-w-7xl p-10 lg:p-14">
+                <div className="flex-1 overflow-y-auto relative z-0 scrollbar-hide">
+                    <div className="mx-auto max-w-7xl p-8 lg:p-12 min-h-full">
                         {children}
                     </div>
                 </div>
@@ -257,16 +263,16 @@ export default function DashboardLayout({
 
 function CollapsibleSection({ label, children, isOpen, onToggle }: { label: string; children: React.ReactNode; isOpen: boolean; onToggle: () => void }) {
     return (
-        <div className="space-y-0.5">
+        <div className="space-y-1 mt-6">
             <button
                 onClick={onToggle}
-                className="w-full flex items-center justify-between px-4 pt-6 pb-2 text-[9px] font-bold text-neutral-300 uppercase tracking-[0.2em] hover:text-neutral-500 transition-colors group"
+                className="w-full flex items-center justify-between px-4 py-2 text-[10px] font-black text-slate-600 uppercase tracking-[0.3em] hover:text-slate-400 transition-colors group"
             >
                 <span>{label}</span>
-                {isOpen ? <ChevronDown size={10} /> : <ChevronRight size={10} />}
+                {isOpen ? <ChevronDown size={12} className="text-slate-700" /> : <ChevronRight size={12} className="text-slate-700" />}
             </button>
-            <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
-                <div className="space-y-1">
+            <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isOpen ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                <div className="space-y-1 pt-2">
                     {children}
                 </div>
             </div>
@@ -278,10 +284,10 @@ function NavLink({ href, icon, label }: { href: string; icon: React.ReactNode; l
     return (
         <Link
             href={href}
-            className="flex items-center space-x-3 px-4 py-3 rounded-none text-xs font-bold text-neutral-400 hover:bg-neutral-50 hover:text-neutral-900 transition-all group"
+            className="flex items-center space-x-4 px-4 py-3.5 rounded-xl text-xs font-black text-slate-400 hover:bg-white/5 hover:text-white transition-all group border border-transparent hover:border-white/5 shadow-sm hover:shadow-azure-500/5"
         >
-            <span className="text-neutral-300 group-hover:text-orange-600 transition-colors uppercase">{icon}</span>
-            <span className="tracking-wide uppercase font-bold text-[10px]">{label}</span>
+            <span className="text-slate-500 group-hover:text-primary transition-colors">{icon}</span>
+            <span className="tracking-widest uppercase font-bold text-[10px]">{label}</span>
         </Link>
     )
 }
