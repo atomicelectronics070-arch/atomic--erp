@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JUEGOS EN CASA - Catálogo Atómico</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700;900&display=swap');
+        body { font-family: 'Outfit', sans-serif; background: #020617; color: #fff; overflow-x: hidden; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .neon-amber { color: #f59e0b; text-shadow: 0 0 20px rgba(245, 158, 11, 0.6); }
+        .card-hover:hover { transform: translateY(-10px); border-color: rgba(245, 158, 11, 0.4); box-shadow: 0 0 40px rgba(245, 158, 11, 0.1); }
+        .btn-play { background: #f59e0b; color: #000; box-shadow: 0 0 30px rgba(245, 158, 11, 0.4); }
+        .btn-play:hover { background: #fbbf24; transform: scale(1.05); }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Navbar -->
+    <nav class="p-8 flex justify-between items-center relative z-20">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-amber-500 rounded-2xl flex items-center justify-center rotate-12">
+                <i class="fas fa-gamepad text-black text-xl"></i>
+            </div>
+            <h1 class="text-2xl font-black uppercase tracking-tighter">JUEGOS <span class="text-amber-500">EN CASA</span></h1>
+        </div>
+        <div class="flex gap-8 text-[10px] font-black uppercase tracking-widest text-white/40">
+            <a href="#" class="text-amber-500 underline decoration-2 underline-offset-8">Explorar</a>
+            <a href="#" class="hover:text-white transition-colors">Populares</a>
+            <a href="#" class="hover:text-white transition-colors">Favoritos</a>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="relative px-8 pt-10 pb-20 z-10 overflow-hidden">
+        <!-- Background Orbs -->
+        <div class="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] bg-amber-600/10 blur-[150px] rounded-full"></div>
+        <div class="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-purple-600/10 blur-[150px] rounded-full"></div>
+
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-16 relative z-10">
+            <div class="flex-1 space-y-8">
+                <div class="inline-flex items-center gap-3 px-4 py-2 bg-amber-500/10 border border-amber-500/30 rounded-full">
+                    <span class="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></span>
+                    <span class="text-[9px] font-black uppercase tracking-[0.3em] text-amber-500">Modo Familiar Activado</span>
+                </div>
+                <h2 class="text-5xl md:text-7xl font-black uppercase tracking-tighter leading-[0.9]">
+                    La Diversión <br />
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500">No Tiene Límites.</span>
+                </h2>
+                <p class="text-white/50 text-lg leading-relaxed max-w-lg font-medium">
+                    Explora nuestra colección curada de juegos lúdicos diseñados para unir a la familia y crear momentos memorables desde la comodidad del hogar.
+                </p>
+                <div class="flex gap-6">
+                    <button class="btn-play px-10 py-4 rounded-2xl font-black uppercase tracking-widest text-sm transition-all flex items-center gap-3">
+                        Comenzar Ahora <i class="fas fa-play text-xs"></i>
+                    </button>
+                    <button class="glass px-10 py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] border-white/10 hover:bg-white/10 transition-all">
+                        Ver Catálogo
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex-1 relative">
+                <!-- Mockup Grid -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="glass p-4 rounded-3xl card-hover transition-all duration-500 mt-12 bg-white/5 border border-white/10">
+                        <div class="aspect-square bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl mb-4 flex items-center justify-center">
+                            <i class="fas fa-chess text-4xl text-white/50"></i>
+                        </div>
+                        <p class="text-[9px] font-black text-amber-500 uppercase tracking-widest">Estrategia</p>
+                        <h4 class="font-black uppercase text-sm">Torre Galáctica</h4>
+                    </div>
+                    <div class="glass p-4 rounded-3xl card-hover transition-all duration-500 bg-white/5 border border-white/10">
+                        <div class="aspect-square bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl mb-4 flex items-center justify-center">
+                            <i class="fas fa-puzzle-piece text-4xl text-white/50"></i>
+                        </div>
+                        <p class="text-[9px] font-black text-blue-400 uppercase tracking-widest">Puzzle</p>
+                        <h4 class="font-black uppercase text-sm">Nexus Mind</h4>
+                    </div>
+                    <div class="glass p-4 rounded-3xl card-hover transition-all duration-500 bg-white/5 border border-white/10">
+                        <div class="aspect-square bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl mb-4 flex items-center justify-center">
+                            <i class="fas fa-dice text-4xl text-white/50"></i>
+                        </div>
+                        <p class="text-[9px] font-black text-green-400 uppercase tracking-widest">Azar</p>
+                        <h4 class="font-black uppercase text-sm">Fortuna Real</h4>
+                    </div>
+                    <div class="glass p-4 rounded-3xl card-hover transition-all duration-500 mt-[-48px] bg-white/5 border border-white/10">
+                        <div class="aspect-square bg-gradient-to-br from-pink-500 to-red-600 rounded-2xl mb-4 flex items-center justify-center">
+                            <i class="fas fa-users text-4xl text-white/50"></i>
+                        </div>
+                        <p class="text-[9px] font-black text-pink-400 uppercase tracking-widest">Cooperativo</p>
+                        <h4 class="font-black uppercase text-sm">Eco World</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Stats -->
+    <footer class="p-10 border-t border-white/5 mt-20 bg-white/[0.02]">
+        <div class="max-w-6xl mx-auto flex justify-between items-center opacity-50">
+            <div class="flex gap-12">
+                <div class="text-center">
+                    <p class="text-3xl font-black tabular-nums">+500</p>
+                    <p class="text-[8px] uppercase tracking-[0.3em] font-black">Juegos</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-3xl font-black tabular-nums">12K</p>
+                    <p class="text-[8px] uppercase tracking-[0.3em] font-black">Familias</p>
+                </div>
+            </div>
+            <div class="text-[10px] font-black uppercase tracking-widest">Atomic Entertainment Division</div>
+        </div>
+    </footer>
+</body>
+</html>

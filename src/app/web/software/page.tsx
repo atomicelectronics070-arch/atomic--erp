@@ -64,6 +64,26 @@ const PORTFOLIO_ITEMS = [
     },
     {
         id: 5,
+        title: "SOFT3 Logistics",
+        category: "ERP de Logística",
+        description: "Sistema robusto de gestión de inventarios y cadena de suministro desarrollado en Laravel para alta escalabilidad.",
+        imagePlaceholderbg: "bg-blue-900/40",
+        accent: "#3b82f6",
+        delay: false,
+        previewUrl: "/soft3.html"
+    },
+    {
+        id: 6,
+        title: "Juegos en Casa",
+        category: "Catálogo Interactivo",
+        description: "Plataforma de entretenimiento familiar diseñada para facilitar el acceso a juegos lúdicos en el hogar.",
+        imagePlaceholderbg: "bg-amber-900/40",
+        accent: "#f59e0b",
+        delay: true,
+        previewUrl: "/juegos_en_casa.html"
+    },
+    {
+        id: 7,
         title: "Atomic ERP Admin",
         category: "Ecosistema Central",
         description: "El núcleo operativo de ATOMIC. Simulación en vivo de nuestro panel de control de Ultra-Rendimiento.",
