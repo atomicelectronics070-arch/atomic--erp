@@ -3,7 +3,7 @@
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { Home, Users, FileText, Settings, LogOut, CheckSquare, Sun, Moon, LayoutDashboard, Tag, Database, MessageSquare, ExternalLink, ShoppingBag, Menu, X, Calendar, Edit3, Mail, BrainCircuit, Bot } from "lucide-react"
+import { Home, Users, FileText, Settings, LogOut, CheckSquare, Sun, Moon, LayoutDashboard, Tag, Database, MessageSquare, ExternalLink, ShoppingBag, Menu, X, Calendar, Edit3, Mail, BrainCircuit, Bot, Globe, BarChart3 } from "lucide-react"
 import { useState, useEffect } from "react"
 import { ChevronDown, ChevronRight } from "lucide-react"
 import NotificationBell from "@/components/NotificationBell"
@@ -119,8 +119,9 @@ export default function DashboardLayout({
                 </div>
 
                 <nav className="flex-1 overflow-y-auto px-8 py-12 space-y-4 custom-scrollbar relative">
-                    <div className="mb-10">
-                        <NavLink href="/dashboard" icon={<LayoutDashboard size={20} />} label="Centro de Control" isActive={router.pathname === '/dashboard'} />
+                    <div className="mb-10 space-y-4">
+                        <NavLink href="/dashboard" icon={<Globe size={20} />} label="Red Corporativa" isActive={router.pathname === '/dashboard'} />
+                        <NavLink href="/dashboard/analytics" icon={<LayoutDashboard size={20} />} label="Centro de Análisis" isActive={router.pathname === '/dashboard/analytics'} />
                     </div>
 
                     <div className="space-y-10">

@@ -55,7 +55,14 @@ model User {
   webOrders        WebOrder[]         @relation("WebOrderAssignee")
   // canCreateBlogs   Boolean            @default(false)
   // blogs            Blog[]             @relation("UserBlogs")
+
+  // --- SOCIAL NETWORK RELATIONS ---
+  socialPosts      SocialPost[]       @relation("UserPosts")
+  socialComments   SocialComment[]    @relation("UserComments")
+  socialLikes      SocialLike[]       @relation("UserLikes")
+  socialTags       SocialTag[]        @relation("UserTags")
 }
+
 
 model Team {
   id          String   @id @default(cuid())
@@ -523,4 +530,62 @@ model Blog {
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// --- SOCIAL NETWORK MODULE ---
+
+model SocialPost {
+  id        String   @id @default(cuid())
+  content   String?  @db.Text
+  mediaUrls String?  // JSON array of base64 strings or media URLs
+  
+  authorId  String
+  author    User     @relation("UserPosts", fields: [authorId], references: [id])
+  
+  likes     SocialLike[]
+  comments  SocialComment[]
+  tags      SocialTag[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SocialComment {
+  id        String   @id @default(cuid())
+  content   String   @db.Text
+  
+  postId    String
+  post      SocialPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  
+  authorId  String
+  author    User     @relation("UserComments", fields: [authorId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SocialLike {
+  id        String   @id @default(cuid())
+  
+  postId    String
+  post      SocialPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  
+  userId    String
+  user      User     @relation("UserLikes", fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  
+  @@unique([postId, userId])
+}
+
+model SocialTag {
+  id        String   @id @default(cuid())
+  
+  postId    String
+  post      SocialPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  
+  userId    String
+  user      User     @relation("UserTags", fields: [userId], references: [id])
+
+  @@unique([postId, userId])
 }
