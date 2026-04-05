@@ -255,6 +255,9 @@ export default function ShopConfigPage() {
                         <button
                             onClick={() => setActiveTab('settings')}
                             className={`skew-x-[6deg] px-10 py-5 text-[10px] font-black uppercase tracking-widest transition-all rounded-[1.8rem] flex items-center gap-3 ${activeTab === 'settings' ? 'bg-white/10 text-white shadow-2xl' : 'text-slate-600 hover:text-slate-300 hover:bg-white/5'}`}
+                        >
+                            <Settings size={18} />
+                            Frontend_CMD
                         </button>
                     </div>
 
