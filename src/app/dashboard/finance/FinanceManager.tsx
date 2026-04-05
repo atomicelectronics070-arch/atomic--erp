@@ -1,11 +1,13 @@
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
+import { motion, AnimatePresence } from "framer-motion"
 import {
     Plus, Search, Edit3, Trash2, Filter,
     DollarSign, Calendar, Users,
     ChevronDown, X, Check, Save,
-    ArrowUpRight, ArrowDownRight, Info, Clock
+    ArrowUpRight, ArrowDownRight, Info, Clock,
+    Target, Briefcase, FileText, PieChart
 } from "lucide-react"
 
 interface Transaction {
@@ -38,7 +40,6 @@ export default function FinanceManager() {
         type: "Venta Directa"
     })
 
-    // Fetch transactions from API
     useEffect(() => {
         fetchTransactions()
     }, [])
@@ -47,8 +48,10 @@ export default function FinanceManager() {
         setLoading(true)
         try {
             const res = await fetch("/api/finance")
-            const data = await res.json()
-            setData(Array.isArray(data) ? data : [])
+            if (res.ok) {
+                const data = await res.json()
+                setData(Array.isArray(data) ? data : [])
+            }
         } catch (e) {
             console.error("Error loading transactions", e)
         } finally {
@@ -80,7 +83,7 @@ export default function FinanceManager() {
                 return itemDate.getFullYear() === currentYear && itemDate.getMonth() === currentMonth
             }
 
-            return true // TODOS
+            return true
         })
     }, [data, searchTerm, periodFilter])
 
@@ -132,7 +135,7 @@ export default function FinanceManager() {
     }
 
     const handleDelete = async (id: string) => {
-        if (confirm("¿Está seguro de eliminar este registro permanentemente?")) {
+        if (confirm("⚠️ Confirmación Crítica: ¿Eliminar este registro permanentemente del ecosistema?")) {
             try {
                 const res = await fetch(`/api/finance/${id}`, { method: "DELETE" })
                 if (res.ok) fetchTransactions()
@@ -143,99 +146,105 @@ export default function FinanceManager() {
     }
 
     return (
-        <div className="space-y-10 pb-12 animate-in fade-in duration-1000">
+        <div className="space-y-16 animate-in fade-in duration-1000 relative z-10">
             {/* Period Filters and Search */}
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 glass-panel p-6 border-white/5 shadow-2xl rounded-[2rem]">
-                <div className="flex flex-wrap items-center gap-2 glass-panel !bg-slate-900/40 p-1.5 rounded-2xl border-white/5 ring-1 ring-white/5">
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-10 glass-panel p-8 border-white/5 shadow-[0_40px_80px_-20px_rgba(0,0,0,0.6)] rounded-[3rem] backdrop-blur-3xl">
+                <div className="flex flex-wrap items-center gap-4 glass-panel !bg-slate-950/60 p-2.5 rounded-2xl border-white/5 ring-1 ring-white/5">
                     {(["TODOS", "ANUAL", "TRIMESTRAL", "MENSUAL"] as const).map(p => (
                         <button 
                             key={p}
                             onClick={() => setPeriodFilter(p)}
-                            className={`px-6 py-2.5 text-[10px] font-black uppercase tracking-widest transition-all rounded-xl ${periodFilter === p ? 'bg-secondary text-white shadow-[0_5px_15px_rgba(255,99,71,0.3)]' : 'text-slate-500 hover:text-white'}`}
+                            className={`px-8 py-3.5 text-[10px] font-black uppercase tracking-[0.3em] transition-all rounded-xl relative italic ${periodFilter === p ? 'bg-secondary text-white shadow-[0_10px_30px_-5px_rgba(255,99,71,0.5)] z-10' : 'text-slate-600 hover:text-white'}`}
                         >
-                            {p === "TODOS" ? "Histórico Total" : p === "ANUAL" ? "Año Actual" : p === p ? p : p}
+                            {p === "TODOS" ? "HISTÓRICO" : p === "ANUAL" ? "ANUAL" : p === "TRIMESTRAL" ? "TRIMESTRE" : "MENSUAL"}
                         </button>
                     ))}
                 </div>
 
-                <div className="flex flex-col md:flex-row items-center gap-6 w-full lg:w-auto">
+                <div className="flex flex-col md:flex-row items-center gap-8 w-full lg:w-auto">
                     <div className="relative w-full md:w-96 group">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-secondary transition-colors" size={18} />
+                        <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-700 group-focus-within:text-secondary transition-colors" size={20} />
                         <input
                             type="text"
-                            placeholder="Buscar cliente o identificador..."
+                            placeholder="FILTRAR NODO O CLIENTE..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full bg-slate-900/40 border border-white/5 rounded-xl py-3.5 pl-12 pr-6 text-[11px] font-black uppercase tracking-wider text-white outline-none focus:ring-2 focus:ring-secondary/50 transition-all placeholder:text-slate-700"
+                            className="w-full bg-slate-950/40 border border-white/5 rounded-2xl py-4.5 pl-16 pr-8 text-[11px] font-black uppercase tracking-[0.4em] text-white outline-none focus:border-secondary transition-all placeholder:text-slate-800 shadow-inner"
                         />
                     </div>
                     <button
                         onClick={() => handleOpenModal()}
-                        className="w-full md:w-auto bg-secondary text-white px-8 py-3.5 rounded-xl font-black uppercase tracking-[0.2em] text-[10px] flex items-center justify-center space-x-3 hover:bg-white hover:text-secondary transition-all shadow-[0_10px_30px_-5px_rgba(255,99,71,0.4)] active:scale-95"
+                        className="w-full md:w-auto bg-secondary text-white px-10 py-4.5 rounded-2xl font-black uppercase tracking-[0.4em] text-[10px] flex items-center justify-center space-x-4 hover:bg-white hover:text-secondary transition-all shadow-[0_15px_40px_-5px_rgba(255,99,71,0.5)] active:scale-95 group italic skew-x-[-12deg]"
                     >
-                        <Plus size={18} />
-                        <span>Nuevo Registro</span>
+                        <div className="skew-x-[12deg] flex items-center gap-4">
+                            <Plus size={20} className="group-hover:rotate-90 transition-transform" />
+                            <span>Inyectar Registro</span>
+                        </div>
                     </button>
                 </div>
             </div>
 
             {/* Summary Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <StatSummary label={`Ventas (${periodFilter})`} value={totalSales} icon={<DollarSign size={24} />} trend={periodFilter} color="secondary" />
-                <StatSummary label="Utilidad Estimada" value={totalProfit} icon={<Info size={24} />} trend="Post-Costos" color="azure" />
-                <StatSummary label="Comisiones Netas" value={totalCommission} icon={<ArrowUpRight size={24} />} trend="Liquidables" color="emerald" />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+                <StatSummary label={`VENTAS BRUTAS (${periodFilter})`} value={totalSales} icon={<DollarSign size={28} />} trend="FLUJO ENTRANTE" color="secondary" />
+                <StatSummary label="UTILIDAD NETA ESTIMADA" value={totalProfit} icon={<Target size={28} />} trend="RETENCIÓN DE VALOR" color="azure" />
+                <StatSummary label="LIQUIDACIÓN DE COMISIONES" value={totalCommission} icon={<ArrowUpRight size={28} />} trend="PASIVO OPERATIVO" color="emerald" />
             </div>
 
             {/* Data Table */}
-            <div className="glass-panel border-white/5 shadow-2xl overflow-hidden rounded-[2.5rem]">
-                <div className="overflow-x-auto scrollbar-hide">
+            <div className="glass-panel border-white/5 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.7)] overflow-hidden rounded-[3.5rem] backdrop-blur-3xl">
+                <div className="overflow-x-auto custom-scrollbar">
                     <table className="w-full text-left border-collapse whitespace-nowrap">
                         <thead>
                             <tr className="border-b border-white/5 bg-white/[0.02]">
-                                <th className="px-10 py-6 text-[10px] font-black text-slate-500 uppercase tracking-[0.4em]">ID / Cronología</th>
-                                <th className="px-10 py-6 text-[10px] font-black text-slate-500 uppercase tracking-[0.4em]">Cliente / Segmento</th>
-                                <th className="px-10 py-6 text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] text-right">Monto Bruto</th>
-                                <th className="px-10 py-6 text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] text-right">Inversión</th>
-                                <th className="px-10 py-6 text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] text-right">Utilidad Neta</th>
-                                <th className="px-10 py-6 text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] text-center">Estado</th>
-                                <th className="px-10 py-6 text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] text-right">Acciones</th>
+                                <th className="px-12 py-8 text-[10px] font-black text-slate-500 uppercase tracking-[0.6em] italic">IDENTIFICACIÓN / CRONO</th>
+                                <th className="px-12 py-8 text-[10px] font-black text-slate-500 uppercase tracking-[0.6em] italic">CLIENTE / SEGMENTO</th>
+                                <th className="px-12 py-8 text-[10px] font-black text-slate-500 uppercase tracking-[0.6em] italic text-right">MONTO BRUTO</th>
+                                <th className="px-12 py-8 text-[10px] font-black text-slate-500 uppercase tracking-[0.6em] italic text-right">OPERACIÓN</th>
+                                <th className="px-12 py-8 text-[10px] font-black text-slate-500 uppercase tracking-[0.6em] italic text-right underline decoration-secondary decoration-2 underline-offset-8">UTILIDAD</th>
+                                <th className="px-12 py-8 text-[10px] font-black text-slate-500 uppercase tracking-[0.6em] italic text-center">ESTATUS</th>
+                                <th className="px-12 py-8 text-[10px] font-black text-slate-500 uppercase tracking-[0.6em] italic text-right">MOD</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-white/[0.03]">
                             {filteredData.map((item) => (
-                                <tr key={item.id} className="hover:bg-white/[0.03] transition-all group relative">
-                                    <td className="px-10 py-6">
-                                        <div className="text-xs font-black text-white mb-1.5 uppercase group-hover:text-secondary transition-colors">{item.id}</div>
-                                        <div className="text-[10px] text-slate-600 font-black flex items-center tracking-widest"><Calendar size={12} className="mr-2 text-slate-700" /> {item.date}</div>
+                                <tr key={item.id} className="hover:bg-white/[0.04] transition-all group relative">
+                                    <td className="px-12 py-8 relative">
+                                        <div className="absolute left-0 top-0 w-1.5 h-full bg-secondary/0 group-hover:bg-secondary transition-colors" />
+                                        <div className="text-sm font-black text-white mb-2 uppercase tracking-tighter group-hover:translate-x-2 transition-transform italic">{item.id.slice(0,10)}</div>
+                                        <div className="text-[9px] text-slate-600 font-black flex items-center tracking-[0.3em] uppercase italic group-hover:translate-x-2 transition-transform delay-75"><Calendar size={12} className="mr-3 text-slate-800" /> {new Date(item.date).toLocaleDateString()}</div>
                                     </td>
-                                    <td className="px-10 py-6">
-                                        <div className="text-sm font-black text-white mb-1.5 tracking-tight uppercase italic">{item.client}</div>
-                                        <div className="text-[10px] font-black text-secondary uppercase tracking-[0.2em]">{item.type}</div>
+                                    <td className="px-12 py-8">
+                                        <div className="text-base font-black text-white mb-2 tracking-tighter uppercase italic">{item.client}</div>
+                                        <div className="flex items-center gap-3">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-azure-500 animate-pulse" />
+                                            <div className="text-[9px] font-black text-slate-500 uppercase tracking-[0.4em] italic">{item.type}</div>
+                                        </div>
                                     </td>
-                                    <td className="px-10 py-6 text-right text-sm font-black text-white tracking-tighter">${item.amount.toLocaleString()}</td>
-                                    <td className="px-10 py-6 text-right text-sm font-black text-slate-600 tracking-tighter">-${item.cost.toLocaleString()}</td>
-                                    <td className="px-10 py-6 text-right text-sm font-black text-emerald-400 tracking-tighter shadow-emerald-500/10">${item.profit.toLocaleString()}</td>
-                                    <td className="px-10 py-6 text-center">
-                                        <span className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-[0.2em] border shadow-2xl ${
+                                    <td className="px-12 py-8 text-right text-lg font-black text-white tracking-tighter italic">${item.amount.toLocaleString()}</td>
+                                    <td className="px-12 py-8 text-right text-xs font-black text-slate-700 tracking-[0.2em] italic">-${item.cost.toLocaleString()}</td>
+                                    <td className="px-12 py-8 text-right text-xl font-black text-emerald-400 tracking-tighter italic drop-shadow-[0_0_10px_rgba(52,211,153,0.2)]">${item.profit.toLocaleString()}</td>
+                                    <td className="px-12 py-8 text-center">
+                                        <span className={`px-6 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-[0.4em] border italic shadow-2xl ${
                                             item.status === 'PAGADO' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 shadow-emerald-500/10' : 
                                             'bg-secondary/10 text-secondary border-secondary/20 shadow-secondary/10'
                                             }`}>
-                                            {item.status}
+                                            {item.status === 'PAGADO' ? 'LIQUIDADO' : 'PENDIENTE'}
                                         </span>
                                     </td>
-                                    <td className="px-10 py-6 text-right">
-                                        <div className="flex justify-end space-x-3 opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0">
+                                    <td className="px-12 py-8 text-right">
+                                        <div className="flex justify-end space-x-3 opacity-0 group-hover:opacity-100 transition-all translate-x-10 group-hover:translate-x-0">
                                             <button
                                                 onClick={() => handleOpenModal(item)}
-                                                className="p-3 glass-panel !bg-slate-900 text-slate-500 hover:text-secondary hover:bg-white transition-all rounded-xl border-white/5"
+                                                className="p-4 glass-panel !bg-slate-900 text-slate-600 hover:text-secondary hover:bg-white transition-all rounded-2xl border-white/5 shadow-2xl"
                                             >
-                                                <Edit3 size={18} />
+                                                <Edit3 size={20} />
                                             </button>
                                             <button
                                                 onClick={() => handleDelete(item.id)}
-                                                className="p-3 glass-panel !bg-slate-900 text-slate-500 hover:text-red-500 hover:bg-red-500/10 transition-all rounded-xl border-white/5"
+                                                className="p-4 glass-panel !bg-slate-900 text-slate-600 hover:text-red-500 hover:bg-red-500/10 transition-all rounded-2xl border-white/5 shadow-2xl"
                                             >
-                                                <Trash2 size={18} />
+                                                <Trash2 size={20} />
                                             </button>
                                         </div>
                                     </td>
@@ -243,9 +252,12 @@ export default function FinanceManager() {
                             ))}
                             {filteredData.length === 0 && (
                                 <tr>
-                                    <td colSpan={7} className="px-10 py-32 text-center">
-                                        <Clock className="mx-auto text-slate-900 mb-8" size={60} />
-                                        <p className="text-slate-600 font-black text-xs uppercase tracking-[0.4em]">Sin registros tácticos detectados en el periodo.</p>
+                                    <td colSpan={7} className="px-12 py-52 text-center text-slate-800">
+                                        <div className="w-24 h-24 bg-slate-900/60 rounded-full flex items-center justify-center mx-auto mb-10 border border-white/5 shadow-inner group">
+                                            <Clock className="text-slate-800 group-hover:scale-110 transition-transform" size={48} />
+                                        </div>
+                                        <p className="text-slate-700 font-black text-[11px] uppercase tracking-[0.6em] italic">Sin registros autorizados en el periodo seleccionado.</p>
+                                        <p className="text-[9px] text-slate-900 font-black uppercase tracking-[0.4em] mt-4">Protocolo de búsqueda activo</p>
                                     </td>
                                 </tr>
                             )}
@@ -254,153 +266,190 @@ export default function FinanceManager() {
                 </div>
             </div>
 
-            {/* CRUD Modal remains same logic, just keeping it here for consistency */}
-            {isModalOpen && (
-                <div className="fixed inset-0 z-[200] flex items-center justify-center p-8">
-                    <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-2xl animate-in fade-in duration-500" onClick={() => setIsModalOpen(false)} />
-                    <div className="glass-panel !bg-slate-950/80 w-full max-w-2xl shadow-[0_0_100px_rgba(0,0,0,0.8)] border-white/10 overflow-hidden animate-in zoom-in-95 duration-500 rounded-[3rem] relative z-10">
-                        <div className="p-12 border-b border-white/5 flex justify-between items-center bg-white/5">
-                            <div>
-                                <h3 className="text-3xl font-black text-white uppercase tracking-tighter italic">
-                                    {editingItem ? 'Modificar Registro' : 'Nueva Operación'}
-                                </h3>
-                                <p className="text-[11px] font-black text-secondary mt-3 uppercase tracking-[0.4em]">Control de Flujo de Caja Corporativo</p>
+            {/* CRUD Modal */}
+            <AnimatePresence>
+                {isModalOpen && (
+                    <div className="fixed inset-0 z-[200] flex items-center justify-center p-8">
+                        <motion.div 
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="absolute inset-0 bg-slate-950/90 backdrop-blur-3xl" 
+                            onClick={() => setIsModalOpen(false)} 
+                        />
+                        <motion.div 
+                            initial={{ opacity: 0, scale: 0.9, y: 30 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, y: 30 }}
+                            className="glass-panel !bg-slate-950/60 w-full max-w-3xl shadow-[0_0_150px_rgba(0,0,0,1)] border-white/10 overflow-hidden rounded-[4rem] relative z-10 backdrop-blur-3xl border"
+                        >
+                            <div className="p-14 border-b border-white/5 flex justify-between items-center bg-white/[0.01]">
+                                <div className="flex items-center gap-8">
+                                    <div className="p-5 bg-secondary text-white rounded-2xl shadow-2xl shadow-secondary/30">
+                                        {editingItem ? <Edit3 size={32} /> : <Plus size={32} />}
+                                    </div>
+                                    <div>
+                                        <h3 className="text-4xl font-black text-white uppercase tracking-tighter italic">
+                                            {editingItem ? 'MODIFICAR <span className="text-secondary">NODO</span>' : 'INYECTAR <span className="text-secondary">OPERACIÓN</span>'}
+                                        </h3>
+                                        <p className="text-[10px] font-black text-slate-500 mt-3 uppercase tracking-[0.6em] italic">Protocolo de Tesorería Industrial</p>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => setIsModalOpen(false)}
+                                    className="p-5 bg-slate-900 border border-white/10 rounded-2xl text-slate-600 hover:text-white hover:rotate-90 transition-all duration-500 shadow-2xl"
+                                >
+                                    <X size={32} />
+                                </button>
                             </div>
-                            <button
-                                onClick={() => setIsModalOpen(false)}
-                                className="p-4 glass-panel !bg-slate-900 rounded-2xl text-slate-500 hover:text-white hover:rotate-90 transition-all duration-300 border-white/5"
-                            >
-                                <X size={24} />
-                            </button>
-                        </div>
 
-                        <form onSubmit={handleSave} className="p-12 space-y-8 scrollbar-hide max-h-[70vh] overflow-y-auto">
-                            <div className="grid grid-cols-2 gap-8">
-                                <div className="col-span-2 space-y-3">
-                                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] ml-1">Cliente Corporativo / Nodo</label>
-                                    <div className="relative group">
-                                        <Users className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-700 group-focus-within:text-secondary transition-colors" size={18} />
+                            <form onSubmit={handleSave} className="p-14 space-y-12 custom-scrollbar max-h-[70vh] overflow-y-auto">
+                                <div className="grid grid-cols-2 gap-12">
+                                    <div className="col-span-2 space-y-4">
+                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] ml-2 italic">Entidad Corporativa / Cliente Nodo</label>
+                                        <div className="relative group">
+                                            <Users className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-700 group-focus-within:text-secondary transition-colors" size={20} />
+                                            <input
+                                                required
+                                                value={formData.client}
+                                                onChange={(e) => setFormData({ ...formData, client: e.target.value.toUpperCase() })}
+                                                className="w-full bg-slate-950/60 border border-white/5 rounded-2xl py-6 pl-16 pr-8 text-[12px] font-black uppercase tracking-widest text-white focus:border-secondary outline-none transition-all placeholder:text-slate-900 shadow-inner italic"
+                                                placeholder="IDENTIFICAR DESTINATARIO..."
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] ml-2 italic">Fecha de Despliegue</label>
                                         <input
+                                            type="date"
                                             required
-                                            value={formData.client}
-                                            onChange={(e) => setFormData({ ...formData, client: e.target.value })}
-                                            className="w-full bg-slate-900 border border-white/5 rounded-2xl py-4.5 pl-14 pr-6 text-xs font-black uppercase tracking-widest text-white focus:ring-2 focus:ring-secondary/50 outline-none transition-all placeholder:text-slate-800"
-                                            placeholder="NOMBRE DEL ENTE CORPORATIVO..."
+                                            value={formData.date}
+                                            onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                                            className="w-full bg-slate-950/60 border border-white/5 rounded-2xl py-6 px-10 text-[12px] font-black uppercase tracking-widest text-white focus:border-secondary outline-none transition-all shadow-inner"
                                         />
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] ml-2 italic">Segmentación de Valor</label>
+                                        <select
+                                            value={formData.type}
+                                            onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                                            className="w-full bg-slate-950/60 border border-white/5 rounded-2xl py-6 px-10 text-[11px] font-black uppercase tracking-[0.3em] text-white focus:border-secondary outline-none transition-all cursor-pointer h-[75px] shadow-inner italic"
+                                        >
+                                            <option value="Venta Directa">VENTA DIRECTA</option>
+                                            <option value="Equipos">EQUIPOS TÉCNICOS</option>
+                                            <option value="Servicio">SERVICIOS PROF.</option>
+                                            <option value="Proyectos">PROYECTOS I+D</option>
+                                            <option value="Ticket de Pago">TICKET DE LIQUIDACIÓN</option>
+                                        </select>
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] ml-2 italic">Precio Maestro ($)</label>
+                                        <div className="relative group">
+                                            <DollarSign className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-800" size={24} />
+                                            <input
+                                                type="number"
+                                                required
+                                                value={formData.amount}
+                                                onChange={(e) => setFormData({ ...formData, amount: parseFloat(e.target.value) })}
+                                                className="w-full bg-slate-950/60 border border-white/5 rounded-2xl py-6 pl-16 pr-8 text-2xl font-black text-white focus:border-secondary outline-none transition-all shadow-inner italic"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] ml-2 italic">Inversión Operativa ($)</label>
+                                        <div className="relative group">
+                                            <Briefcase className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-800" size={20} />
+                                            <input
+                                                type="number"
+                                                required
+                                                value={formData.cost}
+                                                onChange={(e) => setFormData({ ...formData, cost: parseFloat(e.target.value) })}
+                                                className="w-full bg-slate-950/60 border border-white/5 rounded-2xl py-6 pl-16 pr-8 text-xl font-black text-slate-400 focus:border-secondary outline-none transition-all shadow-inner italic"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        <label className="text-[10px] font-black text-secondary uppercase tracking-[0.5em] ml-2 italic">Incentivo Base</label>
+                                        <input
+                                            type="number"
+                                            required
+                                            value={formData.commission}
+                                            onChange={(e) => setFormData({ ...formData, commission: parseFloat(e.target.value) })}
+                                            className="w-full bg-secondary/5 border border-secondary/20 rounded-2xl py-6 px-10 text-2xl font-black text-secondary focus:border-secondary outline-none transition-all shadow-2xl shadow-secondary/5 italic"
+                                        />
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] ml-2 italic">Fase de Liquidación</label>
+                                        <select
+                                            value={formData.status}
+                                            onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
+                                            className={`w-full border rounded-2xl py-6 px-10 text-[11px] font-black uppercase tracking-[0.4em] transition-all cursor-pointer h-[75px] shadow-2xl italic ${
+                                                formData.status === 'PAGADO' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-slate-950/60 text-slate-600 border-white/10'
+                                                }`}
+                                        >
+                                            <option value="PENDIENTE">EN ESPERA</option>
+                                            <option value="PAGADO">CONSOLIDADO</option>
+                                        </select>
                                     </div>
                                 </div>
 
-                                <div className="space-y-3">
-                                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] ml-1">Cronología</label>
-                                    <input
-                                        type="date"
-                                        required
-                                        value={formData.date}
-                                        onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                                        className="w-full bg-slate-900 border border-white/5 rounded-2xl py-4.5 px-8 text-xs font-black uppercase tracking-widest text-white focus:ring-2 focus:ring-secondary/50 outline-none transition-all"
-                                    />
-                                </div>
-
-                                <div className="space-y-3">
-                                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] ml-1">Segmento</label>
-                                    <select
-                                        value={formData.type}
-                                        onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                                        className="w-full bg-slate-900 border border-white/5 rounded-2xl py-4.5 px-8 text-[10px] font-black uppercase tracking-[0.2em] text-white focus:ring-2 focus:ring-secondary/50 outline-none transition-all cursor-pointer h-[57px]"
+                                <div className="pt-16 flex space-x-8">
+                                    <button
+                                        type="submit"
+                                        className="flex-1 bg-secondary text-white font-black py-8 rounded-[2rem] text-[12px] uppercase tracking-[0.6em] shadow-[0_25px_60px_-10px_rgba(255,99,71,0.6)] hover:bg-white hover:text-secondary transition-all flex items-center justify-center space-x-6 active:scale-[0.98] italic skew-x-[-8deg] group"
                                     >
-                                        <option value="Venta Directa">VENTA DIRECTA</option>
-                                        <option value="Equipos">EQUIPOS TÉCNICOS</option>
-                                        <option value="Servicio">SERVICIOS PROF.</option>
-                                        <option value="Proyectos">PROYECTOS I+D</option>
-                                        <option value="Distribución">LOGÍSTICA / DIST.</option>
-                                        <option value="Ticket de Pago">TICKET DE LIQUIDACIÓN</option>
-                                    </select>
+                                        <div className="skew-x-[8deg] flex items-center gap-6">
+                                            <Save size={24} className="group-hover:translate-y-[-2px] transition-transform" />
+                                            <span>{editingItem ? 'ACTUALIZAR NODO' : 'AUTORIZAR REGISTRO'}</span>
+                                        </div>
+                                    </button>
                                 </div>
-
-                                <div className="space-y-3">
-                                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] ml-1">Precio Bruto ($)</label>
-                                    <input
-                                        type="number"
-                                        required
-                                        value={formData.amount}
-                                        onChange={(e) => setFormData({ ...formData, amount: parseFloat(e.target.value) })}
-                                        className="w-full bg-slate-900 border border-white/5 rounded-2xl py-4.5 px-8 text-sm font-black text-white focus:ring-2 focus:ring-secondary/50 outline-none transition-all"
-                                    />
-                                </div>
-
-                                <div className="space-y-3">
-                                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] ml-1">Costo Operativo ($)</label>
-                                    <input
-                                        type="number"
-                                        required
-                                        value={formData.cost}
-                                        onChange={(e) => setFormData({ ...formData, cost: parseFloat(e.target.value) })}
-                                        className="w-full bg-slate-900 border border-white/5 rounded-2xl py-4.5 px-8 text-sm font-black text-slate-400 focus:ring-2 focus:ring-secondary/50 outline-none transition-all"
-                                    />
-                                </div>
-
-                                <div className="space-y-3">
-                                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] ml-1">Incentivo / Comisión ($)</label>
-                                    <input
-                                        type="number"
-                                        required
-                                        value={formData.commission}
-                                        onChange={(e) => setFormData({ ...formData, commission: parseFloat(e.target.value) })}
-                                        className="w-full bg-slate-900 border border-white/5 rounded-2xl py-4.5 px-8 text-sm font-black text-emerald-400 focus:ring-2 focus:ring-secondary/50 outline-none transition-all"
-                                    />
-                                </div>
-
-                                <div className="space-y-3">
-                                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] ml-1">Estatus del Ciclo</label>
-                                    <select
-                                        value={formData.status}
-                                        onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
-                                        className={`w-full border border-white/5 rounded-2xl py-4.5 px-8 text-[10px] font-black uppercase tracking-[0.2em] transition-all cursor-pointer h-[57px] ${
-                                            formData.status === 'PAGADO' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-secondary/10 text-secondary'
-                                            }`}
-                                    >
-                                        <option value="PENDIENTE">PENDIENTE DE LIQUIDACIÓN</option>
-                                        <option value="PAGADO">OPERACIÓN FINALIZADA</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div className="pt-10 flex space-x-6">
-                                <button
-                                    type="submit"
-                                    className="flex-1 bg-secondary text-white font-black py-6 rounded-2xl text-[11px] uppercase tracking-[0.3em] shadow-[0_15px_40px_-5px_rgba(255,99,71,0.5)] hover:bg-white hover:text-secondary transition-all flex items-center justify-center space-x-4 active:scale-[0.98]"
-                                >
-                                    <Save size={20} />
-                                    <span>{editingItem ? 'Sincronizar Cambios' : 'Confirmar Operación'}</span>
-                                </button>
-                            </div>
-                        </form>
+                            </form>
+                        </motion.div>
                     </div>
-                </div>
-            )}
+                )}
+            </AnimatePresence>
         </div>
     )
 }
 
 function StatSummary({ label, value, icon, trend, color }: any) {
     const colors = {
-        secondary: "text-secondary bg-secondary/10 border-secondary/20 shadow-secondary/5",
-        azure: "text-primary bg-primary/10 border-primary/20 shadow-primary/5",
-        emerald: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20 shadow-emerald-500/5"
+        secondary: "text-secondary bg-secondary/10 border-secondary/20 shadow-secondary/10",
+        azure: "text-primary bg-primary/10 border-primary/20 shadow-primary/10",
+        emerald: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20 shadow-emerald-500/10"
     }
 
     const colorKey = (color || 'secondary') as keyof typeof colors;
 
     return (
-        <div className="glass-panel p-10 relative overflow-hidden group hover:scale-[1.02] transition-all rounded-[2.5rem] border-white/5 shadow-2xl">
-            <div className="flex justify-between items-start mb-8">
-                <div className={`p-4 glass-panel border shadow-2xl rounded-2xl ${colors[colorKey]}`}>
+        <div className="glass-panel p-12 relative overflow-hidden group hover:scale-[1.03] transition-all duration-700 rounded-[3.5rem] border-white/5 shadow-[0_40px_80px_-20px_rgba(0,0,0,0.6)] backdrop-blur-3xl">
+            <div className="absolute right-[-20px] top-[-20px] opacity-[0.03] group-hover:opacity-[0.08] group-hover:scale-125 transition-all text-white blur-sm">
+                {icon}
+                <div className="w-40 h-40" />
+            </div>
+            <div className="flex justify-between items-start mb-12">
+                <div className={`p-6 glass-panel border shadow-2xl rounded-2xl group-hover:rotate-12 transition-transform duration-500 ${colors[colorKey]}`}>
                     {icon}
                 </div>
-                <div className="text-[9px] font-black text-slate-700 uppercase tracking-[0.4em] pt-3">{trend}</div>
+                <div className="text-[9px] font-black text-slate-700 uppercase tracking-[0.6em] pt-4 italic group-hover:text-white transition-colors">{trend}</div>
             </div>
-            <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-2">{label}</h4>
-            <p className="text-4xl font-black tracking-tighter text-white">${value.toLocaleString()}</p>
+            <h4 className="text-[11px] font-black text-slate-500 uppercase tracking-[0.5em] mb-4 italic leading-relaxed">{label}</h4>
+            <p className="text-5xl font-black tracking-tighter text-white italic drop-shadow-[0_0_20px_rgba(255,255,255,0.2)] group-hover:translate-x-2 transition-transform">${value.toLocaleString()}</p>
+            <div className="mt-10 h-1.5 w-full bg-slate-900/60 rounded-full overflow-hidden border border-white/5">
+                <motion.div 
+                    initial={{ width: 0 }}
+                    whileInView={{ width: '70%' }}
+                    transition={{ duration: 2, ease: "easeOut" }}
+                    className={`h-full bg-gradient-to-r from-transparent to-current opacity-60 ${colors[colorKey].split(' ')[0]}`}
+                />
+            </div>
         </div>
     )
 }

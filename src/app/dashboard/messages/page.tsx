@@ -2,7 +2,12 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { useSession } from "next-auth/react"
-import { Send, Inbox, UploadCloud, AlertCircle, CheckCircle2, Clock, Mail, MailOpen, Users, RefreshCw, MessageSquarePlus } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
+import { 
+    Send, Inbox, UploadCloud, AlertCircle, CheckCircle2, 
+    Clock, Mail, MailOpen, Users, RefreshCw, MessageSquarePlus,
+    Target, Zap, ShieldCheck, ArrowRight, LayoutGrid, X
+} from "lucide-react"
 
 type Message = {
     id: string
@@ -43,7 +48,6 @@ export default function MessagesPage() {
     const [isSending, setIsSending] = useState(false)
     const [feedback, setFeedback] = useState({ text: "", type: "" })
 
-    // Fetch users (all approved users excluding self) — called once on mount
     const fetchUsers = useCallback(async () => {
         setUsersLoading(true)
         setUsersError("")
@@ -51,17 +55,15 @@ export default function MessagesPage() {
             const res = await fetch("/api/admin/users")
             if (res.ok) {
                 const data = await res.json()
-                // Exclude current user from the list
                 const others = (data.users as User[]).filter(
                     (u) => u.id !== (session?.user as any)?.id
                 )
                 setUsers(others)
             } else {
-                setUsersError("No se pudo cargar la lista de usuarios.")
+                setUsersError("NODE_AUTH_FAILURE: No se pudo cargar la lista de usuarios.")
             }
         } catch (error) {
-            console.error("fetchUsers error:", error)
-            setUsersError("Error de red al cargar usuarios.")
+            setUsersError("CON_ERROR: Error de red al cargar usuarios.")
         } finally {
             setUsersLoading(false)
         }
@@ -76,13 +78,12 @@ export default function MessagesPage() {
                 setMessages(data.messages || [])
             }
         } catch (error) {
-            console.error("fetchMessages error:", error)
+            console.error(error)
         } finally {
             setIsLoading(false)
         }
     }
 
-    // Load users on mount (so the dropdown is ready when user clicks "Redactar")
     useEffect(() => {
         if (session) {
             fetchUsers()
@@ -98,7 +99,7 @@ export default function MessagesPage() {
     const handleSend = async (e: React.FormEvent) => {
         e.preventDefault()
         if (composeData.receiverIds.length === 0 || !composeData.subject || !composeData.content) {
-            setFeedback({ text: "Selecciona al menos un destinatario y completa el asunto y mensaje.", type: "error" })
+            setFeedback({ text: "ASIGNACIÓN_FALLIDA: Completa todos los vectores requeridos.", type: "error" })
             return
         }
         setIsSending(true)
@@ -110,16 +111,16 @@ export default function MessagesPage() {
                 body: JSON.stringify(composeData),
             })
             if (res.ok) {
-                setFeedback({ text: "Mensaje(s) enviado(s) con éxito.", type: "success" })
+                setFeedback({ text: "NUCLEO_SYNC: Mensajes emitidos con éxito.", type: "success" })
                 setComposeData({ receiverIds: [], subject: "", type: "Mensaje Simple", content: "" })
                 fetchMessages("outbox")
                 setTimeout(() => setActiveTab("outbox"), 1500)
             } else {
                 const err = await res.json()
-                setFeedback({ text: err.error || "Error al enviar el mensaje.", type: "error" })
+                setFeedback({ text: err.error || "PROTOCOLO_ERROR: Fallo en la emisión.", type: "error" })
             }
         } catch (error) {
-            setFeedback({ text: "Error de red.", type: "error" })
+            setFeedback({ text: "NETWORK_DROP: Error de conexión.", type: "error" })
         } finally {
             setIsSending(false)
         }
@@ -142,34 +143,34 @@ export default function MessagesPage() {
                 )
             }
         } catch (error) {
-            console.error("handleStatusUpdate error:", error)
+            console.error(error)
         }
     }
 
     const getTypeColor = (type: string) => {
         switch (type) {
-            case "URGENTE": return "bg-red-600 text-white"
-            case "Notificacion": return "bg-blue-600 text-white"
-            case "Tarea": return "bg-purple-600 text-white"
-            default: return "bg-neutral-800 text-white"
+            case "URGENTE": return "bg-red-500 text-white shadow-[0_0_15px_rgba(239,68,68,0.4)]"
+            case "Notificacion": return "bg-azure-500 text-slate-950 shadow-[0_0_15px_rgba(45,212,191,0.4)]"
+            case "Tarea": return "bg-primary text-white shadow-[0_0_15px_rgba(255,99,71,0.4)]"
+            default: return "bg-slate-800 text-slate-200"
         }
     }
 
     const getStatusColor = (status: string) => {
         switch (status) {
-            case "Completado": return "text-green-600 bg-green-50"
-            case "En proceso": return "text-orange-600 bg-orange-50"
-            default: return "text-neutral-500 bg-neutral-100"
+            case "Completado": return "text-emerald-400 bg-emerald-500/10 border-emerald-500/20 shadow-[0_0_10px_rgba(52,211,153,0.2)]"
+            case "En proceso": return "text-secondary bg-secondary/10 border-secondary/20 shadow-[0_0_10px_rgba(255,99,71,0.2)]"
+            default: return "text-slate-500 bg-slate-900 border-white/5"
         }
     }
 
     const getRoleLabel = (role: string) => {
         const labels: Record<string, string> = {
-            ADMIN: "Admin",
-            SALESPERSON: "Vendedor",
-            COORDINATOR: "Coordinador",
-            MANAGER: "Gerente",
-            EDITOR: "Editor",
+            ADMIN: "ADMIN",
+            SALESPERSON: "VENDEDOR",
+            COORDINATOR: "COORDINADOR",
+            MANAGER: "GERENTE",
+            EDITOR: "EDITOR",
         }
         return labels[role] || role
     }
@@ -177,426 +178,395 @@ export default function MessagesPage() {
     const unreadCount = messages.filter((m) => !m.isRead).length
 
     return (
-        <div className="space-y-8 pb-24 max-w-6xl mx-auto">
-            {/* Header */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                <div>
-                    <h1 className="text-4xl font-bold tracking-tight text-neutral-900 uppercase">
-                        Mensajería <span className="text-orange-600">Interna</span>
-                    </h1>
-                    <p className="text-neutral-400 font-medium text-sm mt-1">
-                        Comunicación oficial departamental. &nbsp;
-                        {users.length > 0 && (
-                            <span className="text-neutral-500">
-                                <Users size={12} className="inline mr-1" />
-                                {users.length} usuarios disponibles
-                            </span>
-                        )}
-                    </p>
-                </div>
-                <button
-                    onClick={() => setActiveTab("compose")}
-                    className="bg-orange-600 text-white px-6 py-3 font-bold uppercase tracking-widest text-[10px] flex items-center space-x-2 transition-all hover:bg-neutral-900 shadow-lg shadow-orange-600/20"
-                >
-                    <MessageSquarePlus size={16} />
-                    <span>Redactar</span>
-                </button>
+        <div className="space-y-12 pb-32 animate-in fade-in duration-1000 relative">
+            {/* Background Orbs */}
+            <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+                <div className="absolute top-[10%] right-[-10%] w-[45%] h-[45%] rounded-full bg-secondary/5 blur-[120px]" />
+                <div className="absolute bottom-[20%] left-[-10%] w-[35%] h-[35%] rounded-full bg-azure-500/5 blur-[100px]" />
             </div>
 
-            <div className="bg-white border border-neutral-200 shadow-sm overflow-hidden flex flex-col md:flex-row min-h-[600px]">
-                {/* Sidebar Navigation */}
-                <div className="w-full md:w-64 bg-neutral-50 border-b md:border-b-0 md:border-r border-neutral-200 p-6 flex flex-col gap-2 shrink-0">
-                    <button
-                        onClick={() => setActiveTab("inbox")}
-                        className={`flex items-center justify-between p-4 w-full text-left transition-colors ${activeTab === "inbox"
-                            ? "bg-white border border-neutral-200 text-orange-600 shadow-sm font-bold"
-                            : "text-neutral-600 hover:bg-neutral-100 font-medium"
-                            }`}
-                    >
-                        <span className="flex items-center space-x-3">
-                            <Inbox size={18} />
-                            <span className="text-xs uppercase tracking-widest">Entrada</span>
-                        </span>
-                        {unreadCount > 0 && activeTab !== "inbox" && (
-                            <span className="bg-orange-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-                                {unreadCount}
-                            </span>
-                        )}
-                    </button>
-                    <button
-                        onClick={() => setActiveTab("outbox")}
-                        className={`flex items-center space-x-3 p-4 w-full text-left transition-colors ${activeTab === "outbox"
-                            ? "bg-white border border-neutral-200 text-orange-600 shadow-sm font-bold"
-                            : "text-neutral-600 hover:bg-neutral-100 font-medium"
-                            }`}
-                    >
-                        <UploadCloud size={18} />
-                        <span className="text-xs uppercase tracking-widest">Enviados</span>
-                    </button>
+            {/* Header */}
+            <header className="flex flex-col lg:flex-row lg:items-end justify-between border-b border-white/5 pb-16 relative z-10 gap-10">
+                <div>
+                     <div className="flex items-center space-x-4 mb-4 text-secondary">
+                        <Mail size={20} className="drop-shadow-[0_0_8px_rgba(255,99,71,0.5)]" />
+                        <span className="text-[10px] uppercase font-black tracking-[0.6em] italic">Communications Hub v4.0</span>
+                    </div>
+                    <h1 className="text-6xl font-black text-white uppercase tracking-tighter leading-none italic">
+                        MENSAJERÍA <span className="text-secondary underline decoration-secondary/30 underline-offset-8">INTERNA</span>
+                    </h1>
+                    <p className="text-slate-500 font-bold text-xs uppercase tracking-[0.3em] mt-5 max-w-xl italic leading-relaxed">
+                        Despliegue de comunicados oficiales, asignaciones tácticas y coordinación de alto rendimiento entre departamentos.
+                    </p>
+                </div>
 
-                    {/* Users list preview in sidebar */}
-                    {users.length > 0 && (
-                        <div className="mt-6 pt-4 border-t border-neutral-200">
-                            <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 mb-3 flex items-center justify-between">
-                                <span><Users size={12} className="inline mr-1" />Equipo</span>
-                                <button
-                                    onClick={fetchUsers}
-                                    title="Actualizar lista"
-                                    className="hover:text-orange-600 transition-colors"
-                                >
-                                    <RefreshCw size={11} />
-                                </button>
-                            </p>
-                            <div className="space-y-1 max-h-60 overflow-y-auto">
-                                {users.map((u) => (
-                                    <button
-                                        key={u.id}
-                                        onClick={() => {
-                                            setComposeData((prev) => ({
-                                                ...prev,
-                                                receiverIds: prev.receiverIds.includes(u.id) ? prev.receiverIds : [...prev.receiverIds, u.id]
-                                            }))
-                                            setActiveTab("compose")
-                                        }}
-                                        className="w-full text-left px-3 py-2 text-xs hover:bg-orange-50 hover:text-orange-700 rounded transition-colors flex items-center gap-2"
-                                        title={`Enviar mensaje a ${u.name}`}
-                                    >
-                                        <span className="w-6 h-6 rounded-full bg-orange-100 text-orange-700 font-bold text-[10px] flex items-center justify-center shrink-0 uppercase">
-                                            {(u.name || u.email || "?")[0]}
-                                        </span>
-                                        <div className="min-w-0">
-                                            <div className="font-medium text-neutral-800 truncate">{u.name || u.email}</div>
-                                            <div className="text-[10px] text-neutral-400 uppercase tracking-widest">{getRoleLabel(u.role)}</div>
-                                        </div>
-                                    </button>
-                                ))}
-                            </div>
+                <div className="flex items-center gap-6">
+                    <button
+                        onClick={() => setActiveTab("compose")}
+                        className="bg-secondary text-white px-12 py-5 font-black uppercase tracking-[0.3em] text-[10px] flex items-center shadow-[0_20px_50px_-10px_rgba(255,99,71,0.5)] transition-all hover:bg-white hover:text-secondary rounded-2xl active:scale-95 group italic skew-x-[-12deg]"
+                    >
+                         <div className="skew-x-[12deg] flex items-center gap-4">
+                            <MessageSquarePlus size={20} className="group-hover:rotate-12 transition-transform" />
+                            <span>Redactar</span>
                         </div>
-                    )}
+                    </button>
+                </div>
+            </header>
+
+            <div className="flex flex-col lg:flex-row gap-12 relative z-10 min-h-[700px]">
+                {/* Sidebar Navigation */}
+                <div className="w-full lg:w-80 flex flex-col gap-6 shrink-0">
+                    <div className="glass-panel !bg-slate-950/40 p-4 rounded-[2.5rem] border-white/5 shadow-2xl backdrop-blur-3xl space-y-2">
+                        <button
+                            onClick={() => setActiveTab("inbox")}
+                            className={`flex items-center justify-between p-6 w-full text-left transition-all rounded-2xl border-white/5 group ${activeTab === "inbox"
+                                ? "bg-white/[0.03] border-white/10 text-secondary shadow-inner"
+                                : "text-slate-500 hover:text-white"
+                                }`}
+                        >
+                            <span className="flex items-center space-x-4">
+                                <Inbox size={20} className={activeTab === "inbox" ? "text-secondary" : "text-slate-700"} />
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] italic">Bandeja Entrada</span>
+                            </span>
+                            {unreadCount > 0 && (
+                                <span className="bg-secondary text-white text-[9px] font-black px-2.5 py-1 rounded-full shadow-[0_0_15px_rgba(255,99,71,0.5)] animate-pulse">
+                                    {unreadCount}
+                                </span>
+                            )}
+                        </button>
+                        <button
+                            onClick={() => setActiveTab("outbox")}
+                            className={`flex items-center space-x-4 p-6 w-full text-left transition-all rounded-2xl border-white/5 group ${activeTab === "outbox"
+                                ? "bg-white/[0.03] border-white/10 text-secondary shadow-inner"
+                                : "text-slate-500 hover:text-white"
+                                }`}
+                        >
+                            <UploadCloud size={20} className={activeTab === "outbox" ? "text-secondary" : "text-slate-700"} />
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] italic">Comunicados Enviados</span>
+                        </button>
+                    </div>
+
+                    <div className="glass-panel !bg-slate-950/40 p-8 rounded-[2.5rem] border-white/5 shadow-2xl backdrop-blur-3xl flex-1 max-h-[500px] overflow-hidden flex flex-col relative">
+                        <div className="absolute top-0 right-0 p-6 opacity-5 text-secondary pointer-events-none -rotate-12"><Users size={80} /></div>
+                        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 mb-8 flex items-center justify-between shrink-0 italic border-b border-white/5 pb-4">
+                            <span className="flex items-center gap-3"><Users size={14} className="text-secondary" /> Equipo Conectado</span>
+                            <button onClick={fetchUsers} className="hover:text-secondary transition-colors"><RefreshCw size={12} /></button>
+                        </p>
+                        <div className="space-y-3 overflow-y-auto custom-scrollbar flex-1 pr-2">
+                            {usersLoading ? (
+                                <div className="flex justify-center py-10 opacity-20"><RefreshCw className="animate-spin" /></div>
+                            ) : users.map((u) => (
+                                <button
+                                    key={u.id}
+                                    onClick={() => {
+                                        setComposeData((prev) => ({
+                                            ...prev,
+                                            receiverIds: prev.receiverIds.includes(u.id) ? prev.receiverIds : [...prev.receiverIds, u.id]
+                                        }))
+                                        setActiveTab("compose")
+                                    }}
+                                    className="w-full text-left p-4 hover:bg-white/[0.03] border border-transparent hover:border-white/5 rounded-2xl transition-all flex items-center gap-4 group/user"
+                                >
+                                    <div className="w-10 h-10 rounded-xl bg-slate-950 border border-white/5 text-secondary font-black text-[12px] flex items-center justify-center shrink-0 uppercase italic shadow-inner group-hover/user:scale-110 transition-transform">
+                                        {(u.name?.[0] || u.email?.[0] || "?")}
+                                    </div>
+                                    <div className="min-w-0">
+                                        <div className="font-black text-white text-[11px] truncate uppercase italic tracking-tighter group-hover/user:text-secondary transition-colors">{u.name || (u.email.split('@')[0])}</div>
+                                        <div className="text-[8px] text-slate-600 uppercase font-black tracking-widest">{getRoleLabel(u.role)}</div>
+                                    </div>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
                 </div>
 
                 {/* Main Content Area */}
-                <div className="flex-1 p-0 md:p-8 bg-white">
-
-                    {/* COMPOSE VIEW */}
-                    {activeTab === "compose" && (
-                        <div className="max-w-2xl mx-auto p-6 md:p-0">
-                            <h2 className="text-xl font-bold uppercase tracking-tight mb-8 flex items-center">
-                                <Send className="mr-3 text-orange-600" size={20} /> Nuevo Comunicado
-                            </h2>
-
-                            {feedback.text && (
-                                <div
-                                    className={`mb-6 p-4 flex items-center space-x-3 text-sm font-bold uppercase tracking-widest ${feedback.type === "success"
-                                        ? "bg-green-50 text-green-700"
-                                        : "bg-red-50 text-red-700"
-                                        }`}
+                <div className="flex-1 glass-panel !bg-slate-950/40 rounded-[3.5rem] border-white/5 shadow-2xl backdrop-blur-3xl overflow-hidden relative flex flex-col">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-azure-500/5 blur-[100px] -mr-32 -mt-32 rounded-full"></div>
+                    
+                    <div className="flex-1 overflow-y-auto p-12 custom-scrollbar relative z-10">
+                        {/* COMPOSE VIEW */}
+                        <AnimatePresence mode="wait">
+                            {activeTab === "compose" && (
+                                <motion.div 
+                                    initial={{ opacity: 0, x: 20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    exit={{ opacity: 0, x: -20 }}
+                                    className="max-w-3xl mx-auto space-y-12"
                                 >
-                                    {feedback.type === "success" ? (
-                                        <CheckCircle2 size={18} />
-                                    ) : (
-                                        <AlertCircle size={18} />
-                                    )}
-                                    <span>{feedback.text}</span>
-                                </div>
-                            )}
-
-                            <form onSubmit={handleSend} className="space-y-6">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    {/* Destinatario */}
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] uppercase font-bold tracking-widest text-neutral-500 flex items-center gap-2">
-                                            <Users size={12} /> Destinatario
-                                        </label>
-                                        {usersLoading ? (
-                                            <div className="w-full bg-neutral-50 border border-neutral-200 p-4 text-sm text-neutral-400 flex items-center gap-2">
-                                                <div className="w-4 h-4 border-2 border-orange-200 border-t-orange-600 rounded-full animate-spin" />
-                                                Cargando usuarios...
-                                            </div>
-                                        ) : usersError ? (
-                                            <div className="space-y-2">
-                                                <div className="w-full bg-red-50 border border-red-200 p-4 text-sm text-red-600 flex items-center gap-2">
-                                                    <AlertCircle size={14} />
-                                                    {usersError}
-                                                </div>
-                                                <button
-                                                    type="button"
-                                                    onClick={fetchUsers}
-                                                    className="text-xs text-orange-600 hover:underline flex items-center gap-1"
-                                                >
-                                                    <RefreshCw size={12} /> Reintentar
-                                                </button>
-                                            </div>
-                                        ) : users.length === 0 ? (
-                                            <div className="w-full bg-neutral-50 border border-neutral-200 p-4 text-sm text-neutral-400">
-                                                No hay otros usuarios aprobados disponibles.
-                                            </div>
-                                        ) : (
-                                            <div className="space-y-2">
-                                                <div className="w-full bg-neutral-50 border border-neutral-200 p-2 min-h-[56px] flex flex-wrap gap-2 items-center">
-                                                    {composeData.receiverIds.map(id => {
-                                                        const user = users.find(u => u.id === id)
-                                                        if (!user) return null
-                                                        return (
-                                                            <div key={id} className="bg-white border border-neutral-200 text-xs px-3 py-1.5 flex items-center gap-2 font-medium">
-                                                                <span>{user.name || user.email}</span>
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={() => setComposeData(prev => ({ ...prev, receiverIds: prev.receiverIds.filter(userId => userId !== id) }))}
-                                                                    className="text-neutral-400 hover:text-red-500"
-                                                                >
-                                                                    &times;
-                                                                </button>
-                                                            </div>
-                                                        )
-                                                    })}
-                                                    <select
-                                                        value=""
-                                                        onChange={(e) => {
-                                                            const val = e.target.value;
-                                                            if (val && !composeData.receiverIds.includes(val)) {
-                                                                setComposeData(prev => ({ ...prev, receiverIds: [...prev.receiverIds, val] }))
-                                                            }
-                                                        }}
-                                                        className="flex-1 min-w-[150px] bg-transparent border-none text-sm outline-none px-2 py-1"
-                                                    >
-                                                        <option value="">Añadir destinatario...</option>
-                                                        {users.filter(u => !composeData.receiverIds.includes(u.id)).map((u) => (
-                                                            <option key={u.id} value={u.id}>
-                                                                {u.name || u.email} · {getRoleLabel(u.role)}
-                                                            </option>
-                                                        ))}
-                                                    </select>
-                                                </div>
-                                                <p className="text-[10px] text-neutral-400">* Puedes seleccionar múltiples usuarios.</p>
-                                            </div>
-                                        )}
+                                    <div className="flex items-center gap-6 border-b border-white/5 pb-10">
+                                        <div className="p-4 bg-secondary/10 border border-secondary/20 text-secondary rounded-2xl shadow-inner">
+                                            <MessageSquarePlus size={28} />
+                                        </div>
+                                        <div>
+                                            <h2 className="text-3xl font-black uppercase tracking-tighter text-white italic">REDACTAR <span className="text-secondary">COMUNICADO</span></h2>
+                                            <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] mt-2 italic">Vector de emisión de información estratégica</p>
+                                        </div>
                                     </div>
 
-                                    {/* Clasificación */}
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] uppercase font-bold tracking-widest text-neutral-500">
-                                            Clasificación
-                                        </label>
-                                        <select
-                                            value={composeData.type}
-                                            onChange={(e) =>
-                                                setComposeData({ ...composeData, type: e.target.value })
-                                            }
-                                            className="w-full bg-neutral-50 border border-neutral-200 p-4 text-sm focus:ring-2 focus:ring-orange-500 outline-none"
-                                            required
+                                    {feedback.text && (
+                                        <motion.div
+                                            initial={{ opacity: 0, scale: 0.95 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            className={`p-6 rounded-2xl border flex items-center gap-6 italic tracking-widest font-black uppercase text-[10px] ${feedback.type === "success"
+                                                ? "bg-emerald-500/5 border-emerald-500/20 text-emerald-400 shadow-[0_0_30px_rgba(52,211,153,0.1)]"
+                                                : "bg-red-500/5 border-red-500/20 text-red-400 shadow-[0_0_30px_rgba(239,68,68,0.1)]"
+                                                }`}
                                         >
-                                            <option value="Mensaje Simple">Mensaje Simple</option>
-                                            <option value="Notificacion">Notificación</option>
-                                            <option value="Tarea">Asignación de Tarea</option>
-                                            <option value="URGENTE">🔴 Urgente</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                {/* Asunto */}
-                                <div className="space-y-2">
-                                    <label className="text-[10px] uppercase font-bold tracking-widest text-neutral-500">
-                                        Asunto
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={composeData.subject}
-                                        onChange={(e) =>
-                                            setComposeData({ ...composeData, subject: e.target.value })
-                                        }
-                                        className="w-full bg-neutral-50 border border-neutral-200 p-4 text-sm font-bold focus:ring-2 focus:ring-orange-500 outline-none"
-                                        required
-                                        placeholder="Ej: Revisión de métricas semanales"
-                                    />
-                                </div>
-
-                                {/* Mensaje */}
-                                <div className="space-y-2">
-                                    <label className="text-[10px] uppercase font-bold tracking-widest text-neutral-500">
-                                        Mensaje
-                                    </label>
-                                    <textarea
-                                        value={composeData.content}
-                                        onChange={(e) =>
-                                            setComposeData({ ...composeData, content: e.target.value })
-                                        }
-                                        rows={8}
-                                        className="w-full bg-neutral-50 border border-neutral-200 p-4 text-sm focus:ring-2 focus:ring-orange-500 outline-none resize-y"
-                                        required
-                                        placeholder="Escribe tu mensaje aquí..."
-                                    />
-                                </div>
-
-                                <button
-                                    type="submit"
-                                    disabled={isSending || users.length === 0 || usersLoading}
-                                    className="w-full bg-neutral-900 text-white p-4 font-bold uppercase tracking-widest text-xs hover:bg-orange-600 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
-                                >
-                                    <Send size={14} />
-                                    {isSending ? "Enviando..." : "Emitir Comunicado"}
-                                </button>
-                            </form>
-                        </div>
-                    )}
-
-                    {/* INBOX & OUTBOX VIEW */}
-                    {(activeTab === "inbox" || activeTab === "outbox") && (
-                        <div className="h-full">
-                            {isLoading ? (
-                                <div className="flex justify-center items-center h-48">
-                                    <div className="w-8 h-8 border-2 border-orange-200 border-t-orange-600 rounded-full animate-spin" />
-                                </div>
-                            ) : messages.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center p-20 text-neutral-400">
-                                    <Mail size={48} className="mb-4 text-neutral-200" />
-                                    <p className="text-xs font-bold uppercase tracking-widest">Bandeja Vacía</p>
-                                    {activeTab === "inbox" && (
-                                        <p className="text-xs text-neutral-300 mt-2">No tienes mensajes recibidos.</p>
+                                            {feedback.type === "success" ? <CheckCircle2 size={24} /> : <AlertCircle size={24} />}
+                                            <span>{feedback.text}</span>
+                                        </motion.div>
                                     )}
-                                </div>
-                            ) : (
-                                <div className="divide-y divide-neutral-100">
-                                    {messages.map((msg) => (
-                                        <div
-                                            key={msg.id}
-                                            className={`p-6 transition-colors hover:bg-neutral-50 ${!msg.isRead && activeTab === "inbox" ? "bg-orange-50/30" : ""}`}
-                                        >
-                                            <div className="flex flex-col xl:flex-row gap-6 justify-between">
-                                                <div className="flex-1 space-y-3">
-                                                    <div className="flex items-center space-x-3">
-                                                        <span
-                                                            className={`text-[9px] font-bold uppercase tracking-widest px-2 py-1 ${getTypeColor(msg.type)}`}
-                                                        >
-                                                            {msg.type}
-                                                        </span>
-                                                        <h3
-                                                            className={`text-lg tracking-tight ${!msg.isRead && activeTab === "inbox"
-                                                                ? "font-bold text-neutral-900"
-                                                                : "font-medium text-neutral-800"
-                                                                }`}
-                                                        >
-                                                            {msg.subject}
-                                                        </h3>
-                                                    </div>
 
-                                                    <div className="flex items-center space-x-4 text-xs font-bold text-neutral-500 uppercase tracking-widest">
-                                                        {activeTab === "inbox" ? (
-                                                            <span>
-                                                                De:{" "}
-                                                                <span className="text-orange-600">
-                                                                    {msg.sender?.name || "Desconocido"}
-                                                                </span>
-                                                                {msg.sender?.role && (
-                                                                    <span className="text-neutral-400 normal-case font-normal">
-                                                                        {" "}· {getRoleLabel(msg.sender.role)}
-                                                                    </span>
-                                                                )}
-                                                            </span>
-                                                        ) : (
-                                                            <span>
-                                                                Para:{" "}
-                                                                <span className="text-orange-600">
-                                                                    {msg.receiver?.name || "Desconocido"}
-                                                                </span>
-                                                                {msg.receiver?.role && (
-                                                                    <span className="text-neutral-400 normal-case font-normal">
-                                                                        {" "}· {getRoleLabel(msg.receiver.role)}
-                                                                    </span>
-                                                                )}
-                                                            </span>
-                                                        )}
-                                                        <span>•</span>
-                                                        <span>
-                                                            {new Date(msg.createdAt).toLocaleDateString("es-CO", {
-                                                                day: "2-digit",
-                                                                month: "short",
-                                                                year: "numeric",
-                                                            })}{" "}
-                                                            {new Date(msg.createdAt).toLocaleTimeString([], {
-                                                                hour: "2-digit",
-                                                                minute: "2-digit",
-                                                            })}
-                                                        </span>
-                                                    </div>
-
-                                                    <div className="text-sm text-neutral-600 bg-neutral-50 p-4 border-l-4 border-neutral-200 whitespace-pre-wrap mt-4">
-                                                        {msg.content}
-                                                    </div>
-                                                </div>
-
-                                                <div className="xl:w-64 flex flex-col justify-between shrink-0 border-t xl:border-t-0 xl:border-l border-neutral-100 pt-4 xl:pt-0 xl:pl-6 space-y-4">
-                                                    <div>
-                                                        <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 mb-2">
-                                                            Estado del Mensaje
-                                                        </p>
-
-                                                        {activeTab === "inbox" ? (
-                                                            <div className="space-y-2">
-                                                                <select
-                                                                    value={msg.status}
-                                                                    onChange={(e) =>
-                                                                        handleStatusUpdate(msg.id, e.target.value, true)
-                                                                    }
-                                                                    className={`w-full text-xs font-bold uppercase tracking-widest border border-neutral-200 p-3 outline-none transition-colors ${getStatusColor(msg.status)}`}
-                                                                >
-                                                                    <option value="Recibido" className="bg-white text-neutral-900">
-                                                                        Recibido
-                                                                    </option>
-                                                                    <option
-                                                                        value="En proceso"
-                                                                        className="bg-white text-neutral-900"
-                                                                    >
-                                                                        En proceso
-                                                                    </option>
-                                                                    <option
-                                                                        value="Completado"
-                                                                        className="bg-white text-neutral-900"
-                                                                    >
-                                                                        Completado
-                                                                    </option>
-                                                                </select>
-
-                                                                {!msg.isRead && (
+                                    <form onSubmit={handleSend} className="space-y-10">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                                            {/* Destinatario */}
+                                            <div className="space-y-4">
+                                                <label className="text-[10px] uppercase font-black tracking-[0.4em] text-slate-500 ml-2 italic flex items-center gap-3">
+                                                    <Target size={14} className="text-secondary" /> Vector Destino
+                                                </label>
+                                                <div className="space-y-3">
+                                                    <div className="w-full bg-slate-950 border border-white/5 p-3 min-h-[64px] flex flex-wrap gap-3 items-center rounded-[2rem] shadow-inner">
+                                                        {composeData.receiverIds.map(id => {
+                                                            const user = users.find(u => u.id === id)
+                                                            if (!user) return null
+                                                            return (
+                                                                <div key={id} className="bg-secondary/10 border border-secondary/30 text-secondary text-[9px] font-black px-4 py-2 flex items-center gap-3 rounded-full uppercase italic shadow-2xl">
+                                                                    <span>{user.name || (user.email.split('@')[0])}</span>
                                                                     <button
-                                                                        onClick={() =>
-                                                                            handleStatusUpdate(msg.id, msg.status, true)
-                                                                        }
-                                                                        className="w-full flex items-center justify-center space-x-2 bg-orange-600 text-white p-2 text-[10px] font-bold uppercase tracking-widest hover:bg-neutral-900 transition-colors"
+                                                                        type="button"
+                                                                        onClick={() => setComposeData(prev => ({ ...prev, receiverIds: prev.receiverIds.filter(userId => userId !== id) }))}
+                                                                        className="text-secondary/60 hover:text-white transition-colors"
                                                                     >
-                                                                        <MailOpen size={14} />
-                                                                        <span>Marcar como Leído</span>
+                                                                        <X size={14} />
                                                                     </button>
-                                                                )}
-                                                            </div>
-                                                        ) : (
-                                                            <div className="space-y-2 mt-2">
-                                                                <div
-                                                                    className={`text-[10px] font-bold uppercase tracking-widest px-3 py-2 text-center border ${getStatusColor(msg.status)} border-current`}
-                                                                >
-                                                                    {msg.status}
                                                                 </div>
-                                                                <div className="flex items-center space-x-2 text-[10px] font-bold text-neutral-500 uppercase tracking-widest justify-center mt-2">
-                                                                    {msg.isRead ? (
-                                                                        <CheckCircle2 size={14} className="text-green-500" />
-                                                                    ) : (
-                                                                        <Clock size={14} className="text-orange-500" />
-                                                                    )}
-                                                                    <span>
-                                                                        {msg.isRead ? "Visto por el destinatario" : "No Visto aún"}
-                                                                    </span>
-                                                                </div>
-                                                            </div>
-                                                        )}
+                                                            )
+                                                        })}
+                                                        <select
+                                                            value=""
+                                                            onChange={(e) => {
+                                                                const val = e.target.value;
+                                                                if (val && !composeData.receiverIds.includes(val)) {
+                                                                    setComposeData(prev => ({ ...prev, receiverIds: [...prev.receiverIds, val] }))
+                                                                }
+                                                            }}
+                                                            className="flex-1 min-w-[200px] bg-transparent border-none text-xs font-black uppercase tracking-widest text-white outline-none px-4 py-2 italic cursor-pointer italic"
+                                                        >
+                                                            <option value="" className="bg-slate-950">SELECCIONE NODOS...</option>
+                                                            {users.filter(u => !composeData.receiverIds.includes(u.id)).map((u) => (
+                                                                <option key={u.id} value={u.id} className="bg-slate-950">
+                                                                    {u.name || u.email} [{getRoleLabel(u.role)}]
+                                                                </option>
+                                                            ))}
+                                                        </select>
                                                     </div>
+                                                    <p className="text-[9px] text-slate-700 italic uppercase font-black tracking-widest ml-4">* Despliegue multi-vector habilitado.</p>
                                                 </div>
+                                            </div>
+
+                                            {/* Clasificación */}
+                                            <div className="space-y-4">
+                                                <label className="text-[10px] uppercase font-black tracking-[0.4em] text-slate-500 ml-2 italic flex items-center gap-3">
+                                                    <Zap size={14} className="text-azure-400" /> Clasificación
+                                                </label>
+                                                <select
+                                                    value={composeData.type}
+                                                    onChange={(e) =>
+                                                        setComposeData({ ...composeData, type: e.target.value })
+                                                    }
+                                                    className="w-full bg-slate-950 border border-white/5 p-6 text-xs font-black uppercase tracking-widest text-azure-400 outline-none rounded-[2rem] focus:border-azure-500 transition-all shadow-inner italic appearance-none"
+                                                    required
+                                                >
+                                                    <option value="Mensaje Simple">Mensaje Simple</option>
+                                                    <option value="Notificacion">Notificación</option>
+                                                    <option value="Tarea">Asignación de Tarea</option>
+                                                    <option value="URGENTE">🔥 Prioridad Crítica</option>
+                                                </select>
                                             </div>
                                         </div>
-                                    ))}
-                                </div>
+
+                                        {/* Asunto */}
+                                        <div className="space-y-4">
+                                            <label className="text-[10px] uppercase font-black tracking-[0.4em] text-slate-500 ml-2 italic">Asunto del Comunicado</label>
+                                            <input
+                                                type="text"
+                                                value={composeData.subject}
+                                                onChange={(e) =>
+                                                    setComposeData({ ...composeData, subject: e.target.value.toUpperCase() })
+                                                }
+                                                className="w-full bg-slate-950 border border-white/5 p-6 text-sm font-black uppercase tracking-widest text-white outline-none rounded-[2rem] focus:border-secondary transition-all shadow-inner placeholder:text-slate-900 italic"
+                                                required
+                                                placeholder="EJ: REVISIÓN DE MÉTRICAS SEMANALES_S14"
+                                            />
+                                        </div>
+
+                                        {/* Mensaje */}
+                                        <div className="space-y-4">
+                                            <label className="text-[10px] uppercase font-black tracking-[0.4em] text-slate-500 ml-2 italic">Metadata del Mensaje</label>
+                                            <textarea
+                                                value={composeData.content}
+                                                onChange={(e) =>
+                                                    setComposeData({ ...composeData, content: e.target.value.toUpperCase() })
+                                                }
+                                                rows={8}
+                                                className="w-full bg-slate-950 border border-white/5 p-8 text-sm font-bold text-slate-400 outline-none rounded-[3rem] focus:border-secondary transition-all shadow-inner resize-none uppercase tracking-widest leading-relaxed placeholder:text-slate-900 italic custom-scrollbar"
+                                                required
+                                                placeholder="DESCRIBA LOS DETALLES TÁCTICOS AQUÍ..."
+                                            />
+                                        </div>
+
+                                        <button
+                                            type="submit"
+                                            disabled={isSending || users.length === 0 || usersLoading}
+                                            className="w-full bg-secondary text-white p-8 font-black uppercase tracking-[0.5em] text-[11px] flex items-center justify-center gap-6 shadow-[0_25px_60px_-10px_rgba(255,99,71,0.6)] transition-all hover:bg-white hover:text-secondary rounded-[3rem] active:scale-95 disabled:opacity-20 italic skew-x-[-8deg] group"
+                                        >
+                                            <div className="skew-x-[8deg] flex items-center gap-4">
+                                                <Send size={24} className="group-hover:translate-x-2 group-hover:-translate-y-2 transition-transform" />
+                                                <span>{isSending ? "EMITIENDO..." : "EMITIR COMUNICADO"}</span>
+                                            </div>
+                                        </button>
+                                    </form>
+                                </motion.div>
                             )}
+
+                            {/* INBOX & OUTBOX VIEW */}
+                            {(activeTab === "inbox" || activeTab === "outbox") && (
+                                <motion.div 
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    exit={{ opacity: 0, x: 20 }}
+                                    className="h-full"
+                                >
+                                    {isLoading ? (
+                                        <div className="flex flex-col items-center justify-center py-40 gap-8 animate-pulse">
+                                            <div className="w-20 h-20 border-4 border-secondary/10 border-t-secondary rounded-full animate-spin shadow-2xl" />
+                                            <p className="text-[10px] font-black uppercase tracking-[0.6em] text-slate-700 italic">Extrayendo Archivo de Mensajes...</p>
+                                        </div>
+                                    ) : messages.length === 0 ? (
+                                        <div className="flex flex-col items-center justify-center py-40 gap-8 text-slate-800 italic uppercase font-black text-xs">
+                                            <div className="w-32 h-32 bg-slate-950 border border-white/5 rounded-[3rem] flex items-center justify-center shadow-inner opacity-20">
+                                                <Inbox size={60} />
+                                            </div>
+                                            <p className="tracking-[0.8em]">Cámara de Mensajes Vacía</p>
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-8 animate-in fade-in duration-700">
+                                            {messages.map((msg) => (
+                                                <motion.div
+                                                    layout
+                                                    key={msg.id}
+                                                    className={`glass-panel border-white/5 p-10 rounded-[3rem] transition-all group relative overflow-hidden ${!msg.isRead && activeTab === "inbox" ? "bg-white/[0.04] shadow-[0_0_50px_rgba(255,99,71,0.05)] border-secondary/20" : "bg-slate-950/20 hover:bg-white/[0.02]"}`}
+                                                >
+                                                     <div 
+                                                        className="absolute left-0 top-0 w-1.5 h-full opacity-40 group-hover:opacity-100 transition-opacity" 
+                                                        style={{ backgroundColor: msg.type === 'URGENTE' ? '#ef4444' : msg.type === 'Notificacion' ? '#2dd4bf' : '#ff6347' }}
+                                                    />
+
+                                                    <div className="flex flex-col xl:flex-row gap-10 justify-between relative z-10">
+                                                        <div className="flex-1 space-y-6">
+                                                            <div className="flex flex-wrap items-center gap-6">
+                                                                <span
+                                                                    className={`text-[9px] font-black uppercase tracking-[0.3em] px-4 py-2 rounded-xl italic border border-white/5 ${getTypeColor(msg.type)}`}
+                                                                >
+                                                                    {msg.type}
+                                                                </span>
+                                                                <h3 className={`text-2xl tracking-tighter uppercase italic ${!msg.isRead && activeTab === "inbox" ? "font-black text-white" : "font-black text-slate-400 group-hover:text-white"} transition-colors`}>{msg.subject}</h3>
+                                                            </div>
+
+                                                            <div className="flex flex-wrap items-center gap-6 text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] italic">
+                                                                {activeTab === "inbox" ? (
+                                                                    <div className="flex items-center gap-3">
+                                                                        <span className="text-slate-700">ORIGEN:</span>
+                                                                        <span className="text-secondary">{msg.sender?.name || "SYS_NODE"}</span>
+                                                                        {msg.sender?.role && <span className="px-3 py-1 bg-slate-900 border border-white/5 rounded-lg text-[8px] text-slate-400 tracking-widest">{getRoleLabel(msg.sender.role)}</span>}
+                                                                    </div>
+                                                                ) : (
+                                                                    <div className="flex items-center gap-3">
+                                                                        <span className="text-slate-700">DESTINO:</span>
+                                                                        <span className="text-secondary">{msg.receiver?.name || "SYS_NODE"}</span>
+                                                                        {msg.receiver?.role && <span className="px-3 py-1 bg-slate-900 border border-white/5 rounded-lg text-[8px] text-slate-400 tracking-widest">{getRoleLabel(msg.receiver.role)}</span>}
+                                                                    </div>
+                                                                )}
+                                                                <div className="flex items-center gap-3">
+                                                                    <Clock size={14} className="text-slate-700" />
+                                                                    <span>{new Date(msg.createdAt).toLocaleDateString("es-EC")} {new Date(msg.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
+                                                                </div>
+                                                            </div>
+
+                                                            <div className="text-[11px] text-slate-400 bg-slate-950/80 p-8 rounded-[2.5rem] border border-white/5 whitespace-pre-wrap italic font-bold leading-relaxed uppercase tracking-widest shadow-inner group-hover:text-slate-300 transition-colors">
+                                                                {msg.content}
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="xl:w-80 flex flex-col justify-between shrink-0 border-t xl:border-t-0 xl:border-l border-white/5 pt-10 xl:pt-0 xl:pl-10 space-y-8">
+                                                            <div className="space-y-6">
+                                                                <p className="text-[9px] font-black uppercase tracking-[0.5em] text-slate-700 mb-4 italic">Metadata de Estado</p>
+
+                                                                {activeTab === "inbox" ? (
+                                                                    <div className="space-y-4">
+                                                                        <select
+                                                                            value={msg.status}
+                                                                            onChange={(e) =>
+                                                                                handleStatusUpdate(msg.id, e.target.value, true)
+                                                                            }
+                                                                            className={`w-full text-[10px] font-black uppercase tracking-[0.4em] border px-6 py-4 rounded-2xl outline-none transition-all italic shadow-inner bg-slate-950 ${getStatusColor(msg.status)}`}
+                                                                        >
+                                                                            <option value="Recibido" className="bg-slate-950">RECIBIDO</option>
+                                                                            <option value="En proceso" className="bg-slate-950">PROCESANDO</option>
+                                                                            <option value="Completado" className="bg-slate-950">COMPLETADO</option>
+                                                                        </select>
+
+                                                                        {!msg.isRead && (
+                                                                            <button
+                                                                                onClick={() =>
+                                                                                    handleStatusUpdate(msg.id, msg.status, true)
+                                                                                }
+                                                                                className="w-full flex items-center justify-center gap-4 bg-secondary text-white py-4 text-[10px] font-black uppercase tracking-[0.4em] hover:bg-white hover:text-secondary transition-all rounded-2xl shadow-2xl italic group/read"
+                                                                            >
+                                                                                <MailOpen size={16} className="group-hover/read:scale-110 transition-transform" />
+                                                                                <span>Marcar Leído</span>
+                                                                            </button>
+                                                                        )}
+                                                                    </div>
+                                                                ) : (
+                                                                    <div className="space-y-4">
+                                                                        <div
+                                                                            className={`text-[10px] font-black uppercase tracking-[0.4em] px-6 py-4 text-center border rounded-2xl italic ${getStatusColor(msg.status)}`}
+                                                                        >
+                                                                            {msg.status.toUpperCase()}
+                                                                        </div>
+                                                                        <div className="flex items-center gap-4 text-[9px] font-black uppercase tracking-widest justify-center italic">
+                                                                            {msg.isRead ? (
+                                                                                <><CheckCircle2 size={16} className="text-emerald-500 shadow-[0_0_10px_rgba(52,211,153,0.3)]" /><span className="text-emerald-500">Nodo Visualizado</span></>
+                                                                            ) : (
+                                                                                <><Clock size={16} className="text-secondary animate-pulse" /><span className="text-secondary">En Cola de Lectura</span></>
+                                                                            )}
+                                                                        </div>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </motion.div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
+
+                    {/* Bottom Status Bar */}
+                    <div className="h-14 bg-slate-950/80 border-t border-white/5 flex items-center justify-between px-10 relative z-10">
+                        <div className="flex items-center gap-6">
+                            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                            <span className="text-[9px] font-black text-slate-600 uppercase tracking-[0.4em] italic leading-none">Canal de Enlace Directo Activo</span>
                         </div>
-                    )}
+                        <div className="flex items-center gap-6 text-slate-800 font-black italic uppercase text-[8px] tracking-[0.5em]">
+                            <ShieldCheck size={14} /> SECURITY:_ROOT_SYNC
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

@@ -2,7 +2,13 @@
 
 import { useState, useRef, useEffect } from "react"
 import { useSession } from "next-auth/react"
-import { Plus, Trash2, FileOutput, Calculator, Image as ImageIcon, User, ShieldCheck, Mail, Phone, Search, MapPin, MessageSquare, History, Copy, X, Clock } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
+import { 
+    Plus, Trash2, FileOutput, Calculator, Image as ImageIcon, 
+    User, ShieldCheck, Mail, Phone, Search, MapPin, 
+    MessageSquare, History, Copy, X, Clock, ChevronRight,
+    TrendingUp, FileText, Target, Briefcase, Save
+} from "lucide-react"
 import jsPDF from "jspdf"
 import autoTable from "jspdf-autotable"
 
@@ -28,7 +34,7 @@ export default function QuotationGenerator() {
     const [clientEmail, setClientEmail] = useState("")
     const [clientPhone, setClientPhone] = useState("")
     const [deliveryAddress, setDeliveryAddress] = useState("")
-    const [quoteNumber, setQuoteNumber] = useState("Cargando...")
+    const [quoteNumber, setQuoteNumber] = useState("Sincronizando...")
     const [globalQuoteNumber, setGlobalQuoteNumber] = useState("")
     const [advisorName, setAdvisorName] = useState("NOMBRE DEL ASESOR")
 
@@ -37,7 +43,8 @@ export default function QuotationGenerator() {
             setAdvisorName(session.user.name.toUpperCase())
         }
     }, [session, advisorName])
-    const [warrantyNote, setWarrantyNote] = useState("Garantía de 12 meses contra defectos de fábrica. No cubre daños por mal uso or variaciones de voltaje.")
+
+    const [warrantyNote, setWarrantyNote] = useState("Garantía de 12 meses contra defectos de fábrica. No cubre daños por mal uso o variaciones de voltaje.")
     const [warrantyComments, setWarrantyComments] = useState("")
     const [items, setItems] = useState<QuoteItem[]>([
         { id: "1", productId: "", description: "", quantity: 1, unitPrice: 0 }
@@ -84,8 +91,10 @@ export default function QuotationGenerator() {
 
     const fetchProducts = async () => {
         const res = await fetch("/api/products")
-        const data = await res.json()
-        setProducts(data)
+        if (res.ok) {
+            const data = await res.json()
+            setProducts(data)
+        }
     }
 
     const calculateSubtotal = () => {
@@ -140,7 +149,6 @@ export default function QuotationGenerator() {
                 const imgData = reader.result as string
                 setProductImage(imgData)
 
-                // Get original dimensions to prevent PDF distortion
                 const img = new Image()
                 img.onload = () => {
                     setImageDimensions({ width: img.width, height: img.height })
@@ -153,11 +161,10 @@ export default function QuotationGenerator() {
 
     const handleGeneratePDF = async () => {
         if (!clientName.trim() || !clientEmail.trim() || !clientPhone.trim()) {
-            alert("⚠️ Error: El Nombre, Email y Teléfono del cliente son OBLIGATORIOS.")
+            alert("⚠️ Protocolo Fallido: Identificadores de Cliente Obligatorios (Nombre, Email, Teléfono).")
             return
         }
 
-        // --- BACKGROUND SAVE TO DATABASE ---
         try {
             const quoteData = {
                 quoteNumber,
@@ -175,18 +182,18 @@ export default function QuotationGenerator() {
                 items: items.filter(i => i.description.trim() !== "")
             };
 
-            await fetch("/api/quotes", {
+            const res = await fetch("/api/quotes", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(quoteData)
             });
 
-            // Refresh history and get next number for the future
-            fetchHistory()
-            fetchNextNumber()
-
+            if (res.ok) {
+                fetchHistory()
+                fetchNextNumber()
+            }
         } catch (e) {
-            console.error("⚠️ Background Save Error:", e)
+            console.error("⚠️ Database Error:", e)
         }
 
         const doc = new jsPDF()
@@ -199,7 +206,8 @@ export default function QuotationGenerator() {
             doc.addImage('/logo_atomic.jpg', 'JPEG', 14, 10, 45, 25)
         } catch (e) {
             doc.setFontSize(24)
-            doc.setTextColor(234, 88, 12)
+            doc.setTextColor(255, 99, 71) // Tomato
+            doc.setFont("helvetica", "bold")
             doc.text("ATOMIC INDUSTRIES", 14, 25)
         }
 
@@ -304,7 +312,7 @@ export default function QuotationGenerator() {
 
             doc.setFontSize(14)
             doc.setFont("helvetica", "bold")
-            doc.setTextColor(234, 88, 12)
+            doc.setTextColor(255, 99, 71) // Tomato
             doc.text(`TOTAL NETO:`, calcX, finalY + 42)
             doc.text(`$${total.toFixed(2)}`, 195, finalY + 42, { align: 'right' })
             finalY += 45
@@ -314,19 +322,19 @@ export default function QuotationGenerator() {
 
             doc.setFontSize(14)
             doc.setFont("helvetica", "bold")
-            doc.setTextColor(234, 88, 12)
+            doc.setTextColor(255, 99, 71) // Tomato
             doc.text(`TOTAL NETO:`, calcX, finalY + 31)
             doc.text(`$${total.toFixed(2)}`, 195, finalY + 31, { align: 'right' })
             finalY += 35
         }
 
-        // --- Image Section (Separated/Spaced/Proportional) ---
+        // --- Image Section ---
         if (productImage) {
             if (finalY + 90 > 280) {
                 doc.addPage()
                 finalY = 20
             } else {
-                finalY += 20 // Space between totals and image
+                finalY += 20
             }
 
             doc.setFontSize(9)
@@ -334,7 +342,6 @@ export default function QuotationGenerator() {
             doc.setTextColor(0)
             doc.text("DOCUMENTACIÓN VISUAL / FOTO REFERENCIAL:", 14, finalY)
 
-            // Calculate proportional dimensions to avoid distortion
             const maxWidth = 100
             const maxHeight = 70
             let printW = maxWidth
@@ -350,12 +357,7 @@ export default function QuotationGenerator() {
                     printW = maxHeight * ratio
                 }
             }
-
-            // Optional: indent image slightly for aesthetics
-            const xPos = 14;
-
-            // Format fallback to prevent crashes if not JPEG (jsPDF usually handles base64 directly)
-            doc.addImage(productImage, 'JPEG', xPos, finalY + 5, printW, printH)
+            doc.addImage(productImage, 'JPEG', 14, finalY + 5, printW, printH)
             finalY += (printH + 15)
         }
 
@@ -369,7 +371,7 @@ export default function QuotationGenerator() {
 
         doc.setFontSize(9)
         doc.setFont("helvetica", "bold")
-        doc.setTextColor(234, 88, 12)
+        doc.setTextColor(255, 99, 71) // Tomato
         doc.text("DOCUMENTO DE GARANTÍA:", 14, finalY)
 
         doc.setFont("helvetica", "normal")
@@ -402,9 +404,8 @@ export default function QuotationGenerator() {
 
     const handleDuplicateQuote = (quote: any) => {
         setClientName(quote.clientName || "")
-        // Attempt to extract email via the API later, for now leave blank if not saved in UI fields
-        setClientEmail("")
-        setClientPhone("")
+        setClientEmail(quote.clientEmail || "")
+        setClientPhone(quote.clientPhone || "")
         setDeliveryAddress(quote.deliveryAddress || "")
         setWarrantyComments(quote.warrantyComments || "")
         setDiscountPercent(quote.discountPercent || 0)
@@ -414,7 +415,6 @@ export default function QuotationGenerator() {
             if (quote.itemsData) {
                 const parsedItems = JSON.parse(quote.itemsData)
                 if (Array.isArray(parsedItems) && parsedItems.length > 0) {
-                    // Generate new IDs for the cloned items so React keys don't clash
                     const clonedItems = parsedItems.map((item: any, i: number) => ({
                         ...item,
                         id: Date.now().toString() + i
@@ -428,61 +428,74 @@ export default function QuotationGenerator() {
 
         setIsHistoryOpen(false)
         window.scrollTo({ top: 0, behavior: 'smooth' })
-        alert("✅ Cotización base cargada exitosamente.")
     }
 
     return (
-        <div className="space-y-12 pb-24 animate-in fade-in duration-1000">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
+        <div className="space-y-12 pb-32 animate-in fade-in duration-1000 relative">
+            {/* Background Orbs */}
+            <div className="fixed inset-0 pointer-events-none z-0">
+                <div className="absolute top-[10%] right-[-10%] w-[35%] h-[35%] rounded-full bg-azure-500/5 blur-[120px]" />
+                <div className="absolute bottom-[20%] left-[-10%] w-[30%] h-[30%] rounded-full bg-tomato-500/5 blur-[100px]" />
+            </div>
+
+            {/* Header section */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-10 border-b border-white/5 pb-16 relative z-10">
                 <div>
-                    <h1 className="text-5xl font-black tracking-tighter text-white italic uppercase flex items-center gap-4">
-                        Cotizador <span className="text-secondary">Enterprise</span>
-                    </h1>
-                    <p className="text-slate-500 font-bold text-xs uppercase tracking-[0.3em] mt-3">Generación Táctica de Propuestas PROP-MM-NNN con Integración de Inventario.</p>
+                    <div className="flex items-center space-x-4 mb-4 text-secondary">
+                        <Briefcase size={20} className="drop-shadow-[0_0_8px_rgba(255,99,71,0.5)]" />
+                        <span className="text-[10px] uppercase font-black tracking-[0.6em]">ECOSISTEMA DE VENTAS</span>
+                    </div>
+                    <h1 className="text-6xl font-black text-white tracking-tighter uppercase italic">Cotizador <span className="text-secondary">Enterprise</span></h1>
+                    <p className="text-slate-500 font-bold text-xs uppercase tracking-[0.3em] mt-4 max-w-2xl leading-relaxed italic">Generación táctica de propuestas comerciales PROP-MM-NNN con integración de inventario en tiempo real.</p>
                 </div>
-                <div className="flex flex-wrap gap-4">
+                <div className="flex flex-wrap items-center gap-6">
                     <button
                         onClick={() => setIsHistoryOpen(true)}
-                        className="glass-panel text-slate-400 px-8 py-5 font-black uppercase tracking-widest text-[10px] flex items-center space-x-3 hover:text-white hover:bg-white/5 transition-all shadow-xl rounded-2xl border-white/5"
+                        className="p-6 glass-panel text-slate-500 hover:text-white transition-all rounded-2xl border-white/5 group flex items-center gap-4"
                     >
-                        <History size={18} />
-                        <span>Archivo Histórico ({quoteHistory.length})</span>
+                        <History size={24} className="group-hover:rotate-180 transition-transform duration-500" />
+                        <span className="text-[10px] font-black uppercase tracking-widest hidden md:block">Archivo Histórico ({quoteHistory.length})</span>
                     </button>
                     <button
                         onClick={handleGeneratePDF}
-                        className="bg-secondary text-white px-12 py-5 font-black uppercase tracking-[0.3em] text-[10px] flex items-center space-x-4 hover:bg-white hover:text-secondary transition-all shadow-[0_20px_50px_-5px_rgba(255,99,71,0.5)] rounded-2xl active:scale-[0.98]"
+                        className="flex items-center space-x-6 bg-secondary text-white px-12 py-6 font-black uppercase tracking-[0.2em] text-[10px] hover:bg-white hover:text-secondary transition-all shadow-[0_20px_50px_-10px_rgba(255,99,71,0.5)] rounded-2xl active:scale-[0.98] group italic skew-x-[-12deg]"
                     >
-                        <FileOutput size={20} />
-                        <span>Emitir Propuesta Final</span>
+                        <div className="skew-x-[12deg] flex items-center gap-6">
+                            <FileOutput size={24} className="group-hover:translate-x-1 transition-transform" />
+                            <span>Emitir Propuesta Final</span>
+                        </div>
                     </button>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 relative z-10">
                 {/* Left Panel: Configuration */}
                 <div className="lg:col-span-2 space-y-12">
 
                     {/* Client Data Card */}
-                    <div className="glass-panel p-12 shadow-2xl relative overflow-hidden rounded-[3rem] border-white/5">
-                        <div className="absolute top-0 left-0 w-2 h-full bg-secondary"></div>
-                        <div className="flex items-center space-x-4 mb-12 border-b border-white/5 pb-8">
-                            <User size={28} className="text-secondary" />
-                            <h2 className="text-2xl font-black text-white uppercase tracking-tighter italic">Identificación de Cliente Corporativo</h2>
+                    <div className="glass-panel p-12 shadow-2xl relative overflow-hidden rounded-[3.5rem] border backdrop-blur-3xl border-white/5">
+                        <div className="flex items-center space-x-6 mb-12 border-b border-white/5 pb-10">
+                            <div className="p-4 bg-slate-900 rounded-2xl border border-white/10 shadow-2xl">
+                                <User size={28} className="text-secondary" />
+                            </div>
+                            <div>
+                                <h2 className="text-3xl font-black text-white uppercase tracking-tighter italic">NODO DE CLIENTE</h2>
+                                <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] mt-1">Identificación Corporativa</p>
+                            </div>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                            <div className="md:col-span-2 space-y-3">
-                                <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-1">Nombre Completo / Razón Social</label>
+                            <div className="md:col-span-2 space-y-4">
+                                <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-2 italic">Razón Social / Identidad Maestro</label>
                                 <input
                                     type="text"
                                     value={clientName}
                                     onChange={(e) => setClientName(e.target.value)}
-                                    placeholder="EJ: CORPORACIÓN INDUSTRIAL SUR"
-                                    className="w-full px-6 py-5 bg-slate-900 border border-white/5 rounded-2xl text-[11px] font-black uppercase tracking-widest text-white focus:ring-2 focus:ring-secondary/50 outline-none transition-all placeholder:text-slate-800"
+                                    placeholder="EJ: CORPORACIÓN INDUSTRIAL SUR S.A."
+                                    className="w-full px-8 py-6 bg-slate-950/40 border border-white/5 rounded-2xl text-[12px] font-black uppercase tracking-widest text-white focus:border-secondary outline-none transition-all placeholder:text-slate-800 shadow-inner"
                                 />
                             </div>
-                            <div className="space-y-3">
-                                <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-1">Canal de Contacto (Email)</label>
+                            <div className="space-y-4">
+                                <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-2 italic">Enlace de Comunicación (Email)</label>
                                 <div className="relative group">
                                     <Mail className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-700 group-focus-within:text-secondary transition-colors" size={18} />
                                     <input
@@ -490,46 +503,46 @@ export default function QuotationGenerator() {
                                         value={clientEmail}
                                         onChange={(e) => setClientEmail(e.target.value)}
                                         placeholder="CORREO@CORPORATIVO.COM"
-                                        className="w-full pl-16 pr-6 py-5 bg-slate-900 border border-white/5 rounded-2xl text-[11px] font-black uppercase tracking-widest text-white focus:ring-2 focus:ring-secondary/50 outline-none transition-all placeholder:text-slate-800"
+                                        className="w-full pl-16 pr-8 py-6 bg-slate-950/40 border border-white/5 rounded-2xl text-[12px] font-black uppercase tracking-widest text-white focus:border-secondary outline-none transition-all placeholder:text-slate-800 shadow-inner"
                                     />
                                 </div>
                             </div>
-                            <div className="space-y-3">
-                                <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-1">Terminal Telefónica / WhatsApp</label>
+                            <div className="space-y-4">
+                                <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-2 italic">Terminal Telefónica</label>
                                 <div className="relative group">
                                     <Phone className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-700 group-focus-within:text-secondary transition-colors" size={18} />
                                     <input
                                         type="text"
                                         value={clientPhone}
                                         onChange={(e) => setClientPhone(e.target.value)}
-                                        placeholder="09XXXXXXXX"
-                                        className="w-full pl-16 pr-6 py-5 bg-slate-900 border border-white/5 rounded-2xl text-[11px] font-black uppercase tracking-widest text-white focus:ring-2 focus:ring-secondary/50 outline-none transition-all placeholder:text-slate-800"
+                                        placeholder="+593 9XXXXXXXX"
+                                        className="w-full pl-16 pr-8 py-6 bg-slate-950/40 border border-white/5 rounded-2xl text-[12px] font-black uppercase tracking-widest text-white focus:border-secondary outline-none transition-all placeholder:text-slate-800 shadow-inner"
                                     />
                                 </div>
                             </div>
-                            <div className="md:col-span-2 space-y-3">
-                                <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-1">Dirección de Logística / Entrega</label>
+                            <div className="md:col-span-2 space-y-4">
+                                <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-2 italic">Dirección de Logística Industrial</label>
                                 <div className="relative group">
                                     <MapPin className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-700 group-focus-within:text-secondary transition-colors" size={18} />
                                     <input
                                         type="text"
                                         value={deliveryAddress}
                                         onChange={(e) => setDeliveryAddress(e.target.value)}
-                                        placeholder="CALLE PRIMARIA, SECUNDARIA Y NRO..."
-                                        className="w-full pl-16 pr-6 py-5 bg-slate-900 border border-white/5 rounded-2xl text-[11px] font-black uppercase tracking-widest text-white focus:ring-2 focus:ring-secondary/50 outline-none transition-all placeholder:text-slate-800"
+                                        placeholder="CALLE PRIMARIA, SECUNDARIA Y REFERENCIAS..."
+                                        className="w-full pl-16 pr-8 py-6 bg-slate-950/40 border border-white/5 rounded-2xl text-[12px] font-black uppercase tracking-widest text-white focus:border-secondary outline-none transition-all placeholder:text-slate-800 shadow-inner"
                                     />
                                 </div>
                             </div>
-                            <div className="md:col-span-2 space-y-3">
-                                <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-1">Vendedor Responsable (Se refleja en PDF)</label>
+                            <div className="md:col-span-2 space-y-4">
+                                <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-2 italic">Vendedor Responsable (SISTEMA_ORIGIN)</label>
                                 <div className="relative group">
-                                    <User className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-700 group-focus-within:text-secondary transition-colors" size={18} />
+                                    <ShieldCheck className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-700 group-focus-within:text-secondary transition-colors" size={18} />
                                     <input
                                         type="text"
                                         value={advisorName}
-                                        onChange={(e) => setAdvisorName(e.target.value)}
+                                        onChange={(e) => setAdvisorName(e.target.value.toUpperCase())}
                                         placeholder="EJ: JUAN PÉREZ / DEPARTAMENTO DE VENTAS"
-                                        className="w-full pl-16 pr-6 py-5 bg-slate-900 border border-white/5 rounded-2xl text-[11px] font-black uppercase tracking-widest text-white focus:ring-2 focus:ring-secondary/50 outline-none transition-all placeholder:text-slate-800 italic"
+                                        className="w-full pl-16 pr-8 py-6 bg-slate-950/40 border border-white/5 rounded-2xl text-[12px] font-black uppercase tracking-widest text-white focus:border-secondary outline-none transition-all placeholder:text-slate-800 italic shadow-inner"
                                     />
                                 </div>
                             </div>
@@ -537,35 +550,39 @@ export default function QuotationGenerator() {
                     </div>
 
                     {/* Items Table Card */}
-                    <div className="glass-panel p-12 shadow-2xl rounded-[3rem] border-white/5 overflow-hidden">
-                        <div className="flex justify-between items-center mb-12 border-b border-white/5 pb-8">
-                            <h2 className="text-2xl font-black text-white uppercase tracking-tighter italic">Partidas Presupuestarias</h2>
+                    <div className="glass-panel p-12 shadow-2xl rounded-[3.5rem] border border-white/5 overflow-hidden backdrop-blur-3xl">
+                        <div className="flex justify-between items-end mb-12 border-b border-white/5 pb-10">
+                            <div>
+                                <h2 className="text-3xl font-black text-white uppercase tracking-tighter italic">Partidas Presupuestarias</h2>
+                                <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] mt-2">Desglose de Productos y Servicios</p>
+                            </div>
                             <button
                                 onClick={handleAddItem}
-                                className="text-[10px] font-black text-secondary bg-secondary/10 px-8 py-4 hover:bg-secondary hover:text-white transition-all uppercase tracking-[0.3em] border border-secondary/20 rounded-2xl shadow-2xl"
+                                className="text-[10px] font-black text-secondary bg-secondary/10 px-10 py-5 hover:bg-secondary hover:text-white transition-all uppercase tracking-[0.3em] border border-secondary/20 rounded-2xl shadow-2xl active:scale-95 italic"
                             >
-                                <Plus size={18} className="mr-2 inline" /> Añadir Partida
+                                <Plus size={20} className="mr-3 inline" /> Inyectar Partida
                             </button>
                         </div>
 
-                        <div className="space-y-8">
-                            <div className="hidden md:grid grid-cols-12 gap-6 px-6 text-[9px] font-black text-slate-600 uppercase tracking-[0.4em]">
-                                <div className="col-span-2">SKU / COD</div>
-                                <div className="col-span-4">Descripción del Item</div>
-                                <div className="col-span-1 text-center">Cant.</div>
-                                <div className="col-span-2 text-right">P. Unitario</div>
-                                <div className="col-span-2 text-right">Monto Total</div>
+                        <div className="space-y-10">
+                            <div className="hidden md:grid grid-cols-12 gap-8 px-8 text-[9px] font-black text-slate-600 uppercase tracking-[0.5em] italic">
+                                <div className="col-span-2">CÓDIGO</div>
+                                <div className="col-span-4">REQUERIMIENTO / ÍTEM</div>
+                                <div className="col-span-1 text-center">CANT.</div>
+                                <div className="col-span-2 text-right">P. UNIT</div>
+                                <div className="col-span-2 text-right underline decoration-secondary">TOTAL</div>
                                 <div className="col-span-1"></div>
                             </div>
 
                             {items.map((item, index) => (
-                                <div key={item.id} className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center bg-white/[0.02] p-8 border border-white/5 rounded-3xl hover:bg-white/[0.05] hover:border-secondary/30 transition-all group relative">
+                                <div key={item.id} className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center bg-slate-900/40 p-8 border border-white/5 rounded-[2.5rem] hover:bg-white/[0.04] hover:border-secondary/30 transition-all group relative shadow-inner">
                                     <div className="col-span-2">
                                         <input
                                             type="text"
                                             value={item.productId}
                                             onChange={(e) => handleItemChange(item.id, "productId", e.target.value)}
-                                            className="w-full px-5 py-4 bg-slate-900 border border-white/5 rounded-xl text-[11px] font-black text-white focus:ring-2 focus:ring-secondary/50 outline-none uppercase tracking-widest"
+                                            className="w-full px-6 py-5 bg-slate-950/60 border border-white/5 rounded-xl text-[11px] font-black text-white focus:border-secondary outline-none uppercase tracking-widest shadow-inner text-center"
+                                            placeholder="SKU"
                                         />
                                     </div>
                                     <div className="col-span-4 relative">
@@ -574,43 +591,54 @@ export default function QuotationGenerator() {
                                             value={item.description}
                                             onFocus={() => setShowProductList(item.id)}
                                             onChange={(e) => handleItemChange(item.id, "description", e.target.value)}
-                                            placeholder="BUSCAR PRODUCTO..."
-                                            className="w-full px-5 py-4 bg-slate-900 border border-white/5 rounded-xl text-[11px] font-black text-white focus:ring-2 focus:ring-secondary/50 outline-none uppercase tracking-tight italic"
+                                            placeholder="IDENTIFICAR ITEM..."
+                                            className="w-full px-6 py-5 bg-slate-950/60 border border-white/5 rounded-xl text-[12px] font-black text-white focus:border-secondary outline-none uppercase tracking-tight italic shadow-inner"
                                         />
-                                        {/* Autocomplete Dropdown */}
-                                        {showProductList === item.id && (
-                                            <div className="absolute top-full left-0 w-full glass-panel !bg-slate-950/90 shadow-[0_30px_60px_-12px_rgba(0,0,0,0.8)] z-50 mt-4 max-h-80 overflow-y-auto anima-in fade-in zoom-in-95 duration-300 rounded-[2rem] border border-white/10 scrollbar-hide">
-                                                {products
-                                                    .filter(p => p.name.toLowerCase().includes(item.description.toLowerCase()) || (p.sku && p.sku.toLowerCase().includes(item.description.toLowerCase())))
-                                                    .map(p => (
-                                                        <button
-                                                            key={p.id}
-                                                            onClick={() => selectProduct(item.id, p)}
-                                                            className="w-full text-left px-8 py-6 border-b border-white/5 hover:bg-white/[0.05] transition-all group/opt"
-                                                        >
-                                                            <p className="text-xs font-black text-white uppercase tracking-tight group-hover/opt:text-secondary transition-colors italic">{p.name}</p>
-                                                            <div className="flex justify-between items-center mt-3">
-                                                                <span className="text-[9px] font-black text-secondary uppercase tracking-[0.3em]">{p.sku}</span>
-                                                                <span className="text-[10px] font-black text-emerald-400 tracking-tighter">${p.price.toFixed(2)}</span>
-                                                            </div>
-                                                        </button>
-                                                    ))
-                                                }
-                                                <button
-                                                    onClick={() => setShowProductList(null)}
-                                                    className="w-full py-5 bg-white text-black text-[10px] font-black uppercase tracking-[0.4em] sticky bottom-0"
+                                        <AnimatePresence>
+                                            {showProductList === item.id && (
+                                                <motion.div 
+                                                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                                                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                                    className="absolute top-full left-0 w-full glass-panel !bg-slate-900/95 shadow-[0_40px_80px_rgba(0,0,0,1)] z-[100] mt-6 max-h-96 overflow-y-auto rounded-[2.5rem] border border-white/10 custom-scrollbar"
                                                 >
-                                                    Cerrar Nodo de Búsqueda
-                                                </button>
-                                            </div>
-                                        )}
+                                                    {products
+                                                        .filter(p => p.name.toLowerCase().includes(item.description.toLowerCase()) || (p.sku && p.sku.toLowerCase().includes(item.description.toLowerCase())))
+                                                        .map(p => (
+                                                            <button
+                                                                key={p.id}
+                                                                onClick={() => selectProduct(item.id, p)}
+                                                                className="w-full text-left px-10 py-8 border-b border-white/5 hover:bg-white/[0.05] transition-all group/opt relative overflow-hidden"
+                                                            >
+                                                                <div className="absolute left-0 top-0 w-1 h-full bg-secondary/0 group-hover/opt:bg-secondary transition-all" />
+                                                                <p className="text-sm font-black text-white uppercase tracking-tighter group-hover/opt:text-secondary transition-colors italic">{p.name}</p>
+                                                                <div className="flex justify-between items-center mt-4">
+                                                                    <span className="text-[9px] font-black text-secondary bg-secondary/5 px-3 py-1 rounded border border-secondary/10 uppercase tracking-[0.3em]">{p.sku}</span>
+                                                                    <span className="text-lg font-black text-white tracking-tighter underline underline-offset-4 decoration-emerald-500/30">${p.price.toFixed(2)}</span>
+                                                                </div>
+                                                            </button>
+                                                        ))
+                                                    }
+                                                    {products.length === 0 && (
+                                                        <div className="p-12 text-center text-[10px] text-slate-700 font-black uppercase tracking-[0.5em] italic">No se detectan nodos de inventario compatibles</div>
+                                                    )}
+                                                    <button
+                                                        onClick={() => setShowProductList(null)}
+                                                        className="w-full py-6 bg-slate-950 text-slate-500 text-[10px] font-black uppercase tracking-[0.6em] hover:text-white transition-all sticky bottom-0 border-t border-white/5"
+                                                    >
+                                                        Abortar Selección
+                                                    </button>
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
                                     </div>
                                     <div className="col-span-1 text-center">
                                         <input
                                             type="number"
                                             value={item.quantity}
                                             onChange={(e) => handleItemChange(item.id, "quantity", parseInt(e.target.value) || 0)}
-                                            className="w-full py-4 bg-slate-900 border border-white/5 rounded-xl text-xs text-center font-black text-white focus:ring-2 focus:ring-secondary/50 outline-none"
+                                            className="w-full py-5 bg-slate-950/60 border border-white/5 rounded-xl text-base text-center font-black text-white focus:border-secondary outline-none shadow-inner"
+                                            min="1"
                                         />
                                     </div>
                                     <div className="col-span-2">
@@ -618,20 +646,20 @@ export default function QuotationGenerator() {
                                             type="number"
                                             value={item.unitPrice}
                                             onChange={(e) => handleItemChange(item.id, "unitPrice", parseFloat(e.target.value) || 0)}
-                                            className="w-full py-4 px-5 bg-slate-900 border border-white/5 rounded-xl text-xs text-right font-black text-white focus:ring-2 focus:ring-secondary/50 outline-none"
+                                            className="w-full py-5 px-6 bg-slate-950/60 border border-white/5 rounded-xl text-base text-right font-black text-white focus:border-secondary outline-none shadow-inner italic"
                                         />
                                     </div>
                                     <div className="col-span-2 text-right">
-                                        <span className="text-sm font-black text-white tracking-tighter group-hover:text-secondary transition-colors">
+                                        <span className="text-xl font-black text-white tracking-tighter group-hover:text-secondary transition-colors italic">
                                             ${(item.quantity * item.unitPrice).toLocaleString('es-EC', { minimumFractionDigits: 2 })}
                                         </span>
                                     </div>
                                     <div className="col-span-1 flex justify-end">
                                         <button
                                             onClick={() => handleRemoveItem(item.id)}
-                                            className="opacity-0 group-hover:opacity-100 text-slate-700 hover:text-red-500 transition-all p-3 glass-panel !bg-slate-950 rounded-xl border-white/5"
+                                            className="opacity-0 group-hover:opacity-100 text-slate-700 hover:text-red-500 transition-all p-4 bg-slate-950 rounded-2xl border border-white/5 shadow-2xl"
                                         >
-                                            <Trash2 size={18} />
+                                            <Trash2 size={24} />
                                         </button>
                                     </div>
                                 </div>
@@ -640,27 +668,27 @@ export default function QuotationGenerator() {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                        <div className="glass-panel p-12 shadow-2xl relative rounded-[3rem] border-white/5">
-                            <h2 className="text-xl font-black text-white mb-8 uppercase tracking-tighter flex items-center italic">
-                                <ShieldCheck size={24} className="mr-4 text-emerald-400" /> Documento de Garantía
+                        <div className="glass-panel p-12 shadow-2xl rounded-[3rem] border border-white/5 relative overflow-hidden group">
+                            <h2 className="text-xl font-black text-white mb-10 uppercase tracking-tighter flex items-center italic">
+                                <ShieldCheck size={28} className="mr-5 text-emerald-400 drop-shadow-[0_0_10px_rgba(52,211,153,0.3)]" /> Cláusula de Garantía Industrial
                             </h2>
                             <textarea
                                 value={warrantyNote}
                                 onChange={(e) => setWarrantyNote(e.target.value)}
-                                rows={5}
-                                className="w-full p-8 bg-slate-900 border border-white/5 rounded-[2rem] text-[11px] font-black uppercase tracking-widest focus:ring-2 focus:ring-secondary/50 outline-none resize-none leading-relaxed text-slate-500"
+                                rows={6}
+                                className="w-full p-8 bg-slate-950/40 border border-white/5 rounded-[2.5rem] text-[12px] font-black uppercase tracking-widest focus:border-emerald-500/50 outline-none resize-none leading-relaxed text-slate-500 italic shadow-inner"
                             />
                         </div>
-                        <div className="glass-panel p-12 shadow-2xl rounded-[3rem] border-white/5 relative overflow-hidden">
-                            <h2 className="text-xl font-black text-white mb-8 uppercase tracking-tighter flex items-center italic">
-                                <MessageSquare size={24} className="mr-4 text-secondary" /> Comentarios Garantía
+                        <div className="glass-panel p-12 shadow-2xl rounded-[3rem] border border-white/5 relative overflow-hidden group">
+                            <h2 className="text-xl font-black text-white mb-10 uppercase tracking-tighter flex items-center italic">
+                                <MessageSquare size={28} className="mr-5 text-secondary drop-shadow-[0_0_10px_rgba(255,99,71,0.3)]" /> Notas de Implementación
                             </h2>
                             <textarea
                                 value={warrantyComments}
                                 onChange={(e) => setWarrantyComments(e.target.value)}
-                                placeholder="NOTAS ADICIONALES SOBRE LA GARANTÍA..."
-                                rows={5}
-                                className="w-full p-8 bg-slate-900 border border-white/5 rounded-[2rem] text-[11px] font-black uppercase tracking-widest focus:ring-2 focus:ring-secondary/50 outline-none resize-none leading-relaxed text-white placeholder:text-slate-800"
+                                placeholder="NOTAS ADICIONALES PARA EL DESPLIEGUE FINAL..."
+                                rows={6}
+                                className="w-full p-8 bg-slate-950/40 border border-white/5 rounded-[2.5rem] text-[12px] font-black uppercase tracking-widest focus:border-secondary/50 outline-none resize-none leading-relaxed text-white placeholder:text-slate-800 italic shadow-inner"
                             />
                         </div>
                     </div>
@@ -668,172 +696,205 @@ export default function QuotationGenerator() {
 
                 {/* Right Panel: Totalization */}
                 <div className="lg:col-span-1 space-y-12">
-                    <div className="glass-panel text-white p-16 shadow-[0_50px_100px_rgba(0,0,0,0.6)] sticky top-28 flex flex-col items-center text-center rounded-[4rem] border-white/5">
-                        <div className="w-24 h-3 bg-secondary mb-12 rounded-full shadow-[0_0_30px_rgba(255,99,71,0.5)]"></div>
-                        <h2 className="text-3xl font-black mb-12 flex flex-col items-center uppercase tracking-[0.4em] text-secondary italic">
-                            <Calculator size={40} className="mb-6 drop-shadow-[0_0_15px_rgba(255,99,71,0.5)]" /> Resumen Fiscal
+                    <div className="glass-panel text-white p-16 shadow-[0_60px_120px_-20px_rgba(0,0,0,0.8)] sticky top-32 flex flex-col items-center text-center rounded-[4rem] border border-white/5 backdrop-blur-3xl">
+                        <div className="w-28 h-2.5 bg-secondary mb-14 rounded-full shadow-[0_0_30px_rgba(255,99,71,0.6)] animate-pulse"></div>
+                        <h2 className="text-4xl font-black mb-14 flex flex-col items-center uppercase tracking-[0.5em] text-secondary italic">
+                            <Calculator size={48} className="mb-8 drop-shadow-[0_0_15px_rgba(255,99,71,0.6)] group-hover:scale-110 transition-transform" /> Resumen Fiscal
                         </h2>
 
-                        <div className="w-full space-y-10 text-sm font-black">
-                            <div className="flex justify-between items-center text-slate-600 border-b border-white/5 pb-6">
-                                <span className="uppercase tracking-[0.3em] text-[10px]">Subtotal Bruto</span>
-                                <span className="text-white text-2xl tracking-tighter">${subtotal.toLocaleString('es-EC', { minimumFractionDigits: 2 })}</span>
+                        <div className="w-full space-y-12 text-sm font-black">
+                            <div className="flex justify-between items-center text-slate-600 border-b border-white/5 pb-8 relative group">
+                                <span className="uppercase tracking-[0.4em] text-[10px] italic">Subtotal Bruto</span>
+                                <span className="text-white text-3xl tracking-tighter italic group-hover:text-secondary transition-colors">${subtotal.toLocaleString('es-EC', { minimumFractionDigits: 2 })}</span>
                             </div>
 
-                            <div className="flex items-center justify-between py-4">
+                            <div className="flex items-center justify-between py-6">
                                 <div className="text-left">
-                                    <span className="text-slate-600 uppercase text-[10px] tracking-[0.3em]">Ajuste / Descuento</span>
-                                    <p className="text-[9px] text-secondary/60 mt-1 uppercase font-light">Margen Estratégico</p>
+                                    <span className="text-slate-600 uppercase text-[10px] tracking-[0.4em] italic leading-none">Ajuste Estratégico</span>
+                                    <p className="text-[9px] text-secondary/40 mt-3 uppercase font-black tracking-widest italic animate-pulse">Incentivo aplicado</p>
                                 </div>
                                 <div className="relative group">
                                     <input
                                         type="number"
                                         value={discountPercent}
                                         onChange={(e) => setDiscountPercent(parseFloat(e.target.value) || 0)}
-                                        className="w-28 px-6 py-5 bg-slate-900 border border-white/10 rounded-2xl text-right focus:border-secondary outline-none text-secondary font-black text-xl shadow-inner"
+                                        className="w-32 px-6 py-6 bg-slate-900 border border-white/10 rounded-2xl text-right focus:border-secondary outline-none text-secondary font-black text-2xl shadow-inner skew-x-[-8deg] group-hover:skew-x-0 transition-all duration-500"
                                     />
                                     <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-700 text-xs font-black">%</span>
                                 </div>
                             </div>
 
-                            <div className="space-y-6 pt-6 border-t border-white/5">
+                            <div className="space-y-8 pt-8 border-t border-white/5 relative">
                                 {discountPercent > 0 && (
-                                    <div className="flex justify-between items-center text-secondary">
-                                        <span className="text-[10px] tracking-[0.3em] uppercase">Bonificación</span>
-                                        <span className="text-xl tracking-tighter">-${discountAmount.toLocaleString('es-EC', { minimumFractionDigits: 2 })}</span>
+                                    <div className="flex justify-between items-center text-secondary relative z-10">
+                                        <span className="text-[10px] tracking-[0.4em] uppercase italic">Impacto Bonificación</span>
+                                        <span className="text-2xl tracking-tighter italic shadow-[0_0_20px_rgba(255,99,71,0.2)]">-${discountAmount.toLocaleString('es-EC', { minimumFractionDigits: 2 })}</span>
                                     </div>
                                 )}
-                                <div className="flex justify-between items-center text-slate-500">
-                                    <span className="text-[10px] tracking-[0.3em] uppercase">Base Imponible</span>
-                                    <span className="text-xl tracking-tighter text-slate-300">${taxableAmount.toLocaleString('es-EC', { minimumFractionDigits: 2 })}</span>
+                                <div className="flex justify-between items-center text-slate-500 relative z-10">
+                                    <span className="text-[10px] tracking-[0.4em] uppercase italic">Base Imponible</span>
+                                    <span className="text-2xl tracking-tighter text-slate-300 italic">${taxableAmount.toLocaleString('es-EC', { minimumFractionDigits: 2 })}</span>
                                 </div>
-                                <div className="flex justify-between items-center text-slate-600">
-                                    <span className="text-[10px] tracking-[0.3em] uppercase">IVA Transferido (15%)</span>
-                                    <span className="text-xl tracking-tighter text-slate-400">${taxAmount.toLocaleString('es-EC', { minimumFractionDigits: 2 })}</span>
-                                </div>
-                            </div>
-
-                            <div className="pt-16 pb-6 relative">
-                                <div className="absolute top-1/2 left-0 w-full h-[2px] bg-white/5 -translate-y-1/2"></div>
-                                <div className="relative bg-transparent inline-block px-8 py-4 glass-panel !rounded-full border-secondary/20 shadow-2xl">
-                                    <span className="text-[12px] font-black text-secondary uppercase tracking-[0.5em] block mb-2">Total Liquidación</span>
-                                    <span className="text-6xl font-black text-white tracking-tighter drop-shadow-[0_0_30px_rgba(255,255,255,0.2)]">${total.toLocaleString('es-EC', { minimumFractionDigits: 2 })}</span>
+                                <div className="flex justify-between items-center text-slate-600 relative z-10">
+                                    <span className="text-[10px] tracking-[0.4em] uppercase italic">IVA Liquidado (15%)</span>
+                                    <span className="text-2xl tracking-tighter text-slate-500 italic">${taxAmount.toLocaleString('es-EC', { minimumFractionDigits: 2 })}</span>
                                 </div>
                             </div>
 
-                            <div className="mt-12 text-left glass-panel !bg-slate-950/60 p-8 border-white/5 rounded-[2rem]">
-                                <p className="text-[9px] text-slate-700 uppercase tracking-[0.2em] leading-loose font-black">
-                                    <span className="text-secondary mr-2">/</span> Numero de Documento: {quoteNumber}<br />
-                                    <span className="text-secondary mr-2">/</span> Vigencia Industrial Standard: 8 Días<br />
-                                    <span className="text-secondary mr-2">/</span> Sujeto a disponibilidad de inventario
+                            <div className="pt-20 pb-8 relative group">
+                                <div className="absolute top-1/2 left-0 w-full h-[1px] bg-white/5 -translate-y-1/2"></div>
+                                <div className="relative bg-slate-950 inline-block px-12 py-8 rounded-[3rem] border border-secondary/30 shadow-[0_0_60px_rgba(255,99,71,0.25)] group-hover:shadow-[0_0_100px_rgba(255,99,71,0.4)] transition-all duration-700">
+                                    <span className="text-[14px] font-black text-secondary uppercase tracking-[0.6em] block mb-4 italic">Total Liquidación</span>
+                                    <span className="text-7xl font-black text-white tracking-tighter italic drop-shadow-[0_0_35px_rgba(255,255,255,0.3)] group-hover:scale-105 transition-transform block">${total.toLocaleString('es-EC', { minimumFractionDigits: 2 })}</span>
+                                </div>
+                            </div>
+
+                            <div className="mt-16 text-left glass-panel !bg-slate-950/60 p-10 border-white/5 rounded-[2.5rem] relative overflow-hidden group">
+                                <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                                    <ShieldCheck size={100} />
+                                </div>
+                                <p className="text-[10px] text-slate-500 uppercase tracking-[0.3em] leading-loose font-black italic relative z-10">
+                                    <span className="text-secondary mr-3 text-lg leading-none inline-block pb-1">•</span> <span className="text-slate-400">ID Auditoría:</span> {quoteNumber}<br />
+                                    <span className="text-secondary mr-3 text-lg leading-none inline-block pb-1">•</span> <span className="text-slate-400">Numeración Global:</span> {globalQuoteNumber}<br />
+                                    <span className="text-secondary mr-3 text-lg leading-none inline-block pb-1">•</span> <span className="text-slate-400">Ventana de Emisión:</span> 8 Días<br />
+                                    <span className="text-secondary mr-3 text-lg leading-none inline-block pb-1">•</span> <span className="text-slate-400">Stock:</span> Sujeto a Validación IA
                                 </p>
                             </div>
                         </div>
                     </div>
 
-                    <div className="glass-panel p-12 shadow-2xl rounded-[3rem] border-white/5 group overflow-hidden transition-all">
-                        <h3 className="text-[11px] font-black text-slate-500 uppercase tracking-[0.4em] mb-8 flex items-center italic">
-                            <ImageIcon size={20} className="mr-3 text-secondary" /> Portafolio de Producto
+                    <div className="glass-panel p-12 shadow-2xl rounded-[3rem] border border-white/5 group overflow-hidden transition-all relative">
+                        <h3 className="text-[11px] font-black text-slate-500 uppercase tracking-[0.5em] mb-10 flex items-center italic">
+                            <ImageIcon size={24} className="mr-5 text-secondary group-hover:scale-110 transition-transform" /> Portafolio Visión
                         </h3>
                         <div
                             onClick={() => fileInputRef.current?.click()}
-                            className="w-full h-80 border-2 border-dashed border-white/10 bg-slate-900/60 flex flex-col items-center justify-center cursor-pointer hover:border-secondary hover:bg-secondary/5 transition-all overflow-hidden p-4 rounded-[2rem] relative"
+                            className="w-full h-96 border-4 border-dashed border-white/5 bg-slate-950/40 flex flex-col items-center justify-center cursor-pointer hover:border-secondary/50 hover:bg-secondary/5 transition-all overflow-hidden p-6 rounded-[3rem] relative shadow-inner group"
                         >
                             {productImage ? (
-                                <img src={productImage} alt="Preview" className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl" />
+                                <img src={productImage} alt="Preview" className="max-w-full max-h-full object-contain rounded-3xl shadow-2xl transform group-hover:scale-105 transition-transform duration-700" />
                             ) : (
                                 <>
-                                    <div className="p-8 glass-panel !bg-slate-950 rounded-full mb-6 group-hover:scale-110 transition-transform border-white/5 shadow-2xl">
-                                        <Plus size={48} className="text-slate-800" />
+                                    <div className="p-10 bg-slate-900/60 rounded-full mb-8 group-hover:scale-110 group-hover:rotate-12 transition-all border border-white/5 shadow-2xl">
+                                        <Plus size={56} className="text-secondary" />
                                     </div>
-                                    <span className="text-[10px] text-slate-700 font-black uppercase tracking-[0.4em] text-center px-8">Inyectar Captura Visual / Documentación</span>
+                                    <span className="text-[11px] text-slate-600 font-black uppercase tracking-[0.5em] text-center px-12 italic">Inyectar Captura Visual / Documentación Nodo</span>
                                 </>
                             )}
                         </div>
                         <input type="file" ref={fileInputRef} onChange={handleImageUpload} className="hidden" accept="image/*" />
                         {productImage && (
-                            <button onClick={() => setProductImage(null)} className="mt-6 w-full text-center text-red-500 text-[10px] font-black uppercase tracking-[0.3em] hover:text-white transition-all">Eliminar Imagen de Propuesta</button>
+                            <button onClick={() => setProductImage(null)} className="mt-8 w-full text-center text-red-500 text-[10px] font-black uppercase tracking-[0.4em] hover:text-white transition-all italic hover:bg-red-500/10 py-4 rounded-xl border border-red-500/10">Abortar Archivo Visual</button>
                         )}
                     </div>
                 </div>
-
             </div>
 
             {/* SIDE PANEL: HISTORIAL DE COTIZACIONES */}
-            {isHistoryOpen && (
-                <>
-                    <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-2xl z-[300] animate-in fade-in duration-500" onClick={() => setIsHistoryOpen(false)} />
+            <AnimatePresence>
+                {isHistoryOpen && (
+                    <div className="fixed inset-0 z-[300] flex items-center justify-end p-0 md:p-8">
+                        <motion.div 
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="absolute inset-0 bg-slate-950/90 backdrop-blur-3xl" 
+                            onClick={() => setIsHistoryOpen(false)} 
+                        />
 
-                    <div className={`fixed inset-y-0 right-0 w-full md:w-[700px] glass-panel !bg-slate-950 shadow-[-50px_0_100px_rgba(0,0,0,0.8)] z-[310] transform transition-transform duration-700 ease-in-out flex flex-col border-l border-white/10 rounded-l-[4rem] overflow-hidden ${isHistoryOpen ? 'translate-x-0' : 'translate-x-full'}`}>
-                        <div className="flex items-center justify-between p-12 border-b border-white/5 bg-white/5">
-                            <div className="flex items-center gap-6">
-                                <div className="bg-secondary/10 p-5 text-secondary rounded-2xl shadow-2xl border border-secondary/20"><History size={28} /></div>
-                                <div>
-                                    <h2 className="text-3xl font-black uppercase tracking-tighter text-white italic">Archivo Maestro</h2>
-                                    <p className="text-[10px] text-secondary font-black uppercase tracking-[0.4em] mt-3">Historial Táctico de Liquidación</p>
+                        <motion.div 
+                            initial={{ x: '100%' }}
+                            animate={{ x: 0 }}
+                            exit={{ x: '100%' }}
+                            transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+                            className="w-full md:w-[750px] h-full glass-panel !bg-slate-950/60 shadow-[0_0_150px_rgba(0,0,0,1)] relative flex flex-col border-l border-white/10 md:rounded-l-[4.5rem] overflow-hidden"
+                        >
+                            <div className="flex items-center justify-between p-14 border-b border-white/5 bg-white/[0.01] shrink-0">
+                                <div className="flex items-center gap-8">
+                                    <div className="bg-secondary p-5 text-white rounded-2xl shadow-2xl shadow-secondary/30 group hover:rotate-12 transition-transform">
+                                        <History size={32} />
+                                    </div>
+                                    <div>
+                                        <h2 className="text-4xl font-black uppercase tracking-tighter text-white italic">Archivo <span className="text-secondary">Maestro</span></h2>
+                                        <p className="text-[10px] text-slate-500 font-black uppercase tracking-[0.6em] mt-3 italic">Protocolo Táctico de Liquidación</p>
+                                    </div>
                                 </div>
+                                <button 
+                                    onClick={() => setIsHistoryOpen(false)} 
+                                    className="p-5 bg-slate-900 border border-white/10 rounded-2xl text-slate-500 hover:text-white hover:rotate-90 transition-all duration-500 shadow-2xl"
+                                >
+                                    <X size={32} />
+                                </button>
                             </div>
-                            <button onClick={() => setIsHistoryOpen(false)} className="p-4 glass-panel !bg-slate-900 rounded-2xl text-slate-500 hover:text-white hover:rotate-90 transition-all duration-300 border-white/5">
-                                <X size={24} />
-                            </button>
-                        </div>
 
-                        <div className="flex-1 overflow-y-auto p-12 space-y-8 scrollbar-hide">
-                            {quoteHistory.length === 0 ? (
-                                <div className="text-center py-40 text-slate-800 flex flex-col items-center">
-                                    <Clock size={80} className="mb-8 opacity-20" />
-                                    <p className="text-xs font-black uppercase tracking-[0.5em]">No se detectan registros históricos.</p>
-                                </div>
-                            ) : (
-                                quoteHistory.map((quote) => (
-                                    <div key={quote.id} className="glass-panel !bg-white/[0.02] p-8 border border-white/5 shadow-2xl hover:border-secondary/30 transition-all group flex flex-col rounded-[2.5rem] relative overflow-hidden">
-                                        <div className="absolute top-0 left-0 w-1 h-full bg-slate-900 group-hover:bg-secondary transition-colors"></div>
-                                        <div className="flex justify-between items-start mb-8">
-                                            <div>
-                                                <div className="flex items-center gap-4">
-                                                    <span className="text-xs font-black text-secondary uppercase tracking-[0.2em] bg-secondary/10 px-4 py-2 rounded-xl border border-secondary/20">{quote.quoteNumber}</span>
-                                                    {quote.globalQuoteNumber && (
-                                                        <span className="text-[10px] font-black text-slate-500 border border-white/5 uppercase tracking-[0.2em] px-3 py-1.5 rounded-lg" title="Numeración Global de la Empresa">
-                                                            {quote.globalQuoteNumber}
-                                                        </span>
-                                                    )}
+                            <div className="flex-1 overflow-y-auto p-12 space-y-10 custom-scrollbar relative">
+                                {quoteHistory.length === 0 ? (
+                                    <div className="text-center py-52 text-slate-800 flex flex-col items-center">
+                                        <Clock size={100} className="mb-10 opacity-10 animate-pulse" />
+                                        <p className="text-xs font-black uppercase tracking-[0.6em] italic">No se detectan registros históricos autorizados.</p>
+                                        <p className="text-[9px] text-slate-900 font-black uppercase tracking-[0.4em] mt-4">Protocolo Cero: Estado Activo</p>
+                                    </div>
+                                ) : (
+                                    quoteHistory.map((quote) => (
+                                        <div key={quote.id} className="glass-panel !bg-slate-900/40 p-10 border border-white/5 shadow-2xl hover:border-secondary/40 hover:bg-white/[0.02] transition-all group flex flex-col rounded-[3rem] relative overflow-hidden">
+                                            <div className="absolute top-0 left-0 w-2 h-full bg-slate-950 group-hover:bg-secondary transition-colors" />
+                                            <div className="flex justify-between items-start mb-10 overflow-hidden">
+                                                <div className="max-w-[70%]">
+                                                    <div className="flex items-center gap-5 flex-wrap">
+                                                        <span className="text-[11px] font-black text-secondary bg-secondary/10 px-5 py-2.5 rounded-xl border border-secondary/20 shadow-2xl shadow-secondary/5 italic">{quote.quoteNumber}</span>
+                                                        {quote.globalQuoteNumber && (
+                                                            <span className="text-[9px] font-black text-slate-600 bg-slate-950 px-4 py-2 rounded-xl border border-white/5 uppercase tracking-[0.2em] shadow-inner">
+                                                                GLOB-ID: {quote.globalQuoteNumber}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <h3 className="text-2xl font-black text-white mt-8 uppercase italic tracking-tighter group-hover:text-secondary transition-colors truncate">{quote.clientName || 'CLIENTE_ID: INDEFINIDO'}</h3>
+                                                    <div className="space-y-3 mt-6">
+                                                        <div className="flex items-center gap-3">
+                                                            <Target size={14} className="text-slate-700" />
+                                                            <span className="text-[10px] font-black text-slate-600 uppercase tracking-[0.3em] inline-block pt-0.5">Responsable: <span className="text-slate-400 italic">{quote.advisorName || quote.salesperson?.name || "ESTACIÓN CENTRAL"}</span></span>
+                                                        </div>
+                                                        <div className="flex items-center gap-3">
+                                                            <Clock size={14} className="text-slate-700" />
+                                                            <span className="text-[10px] font-black text-slate-600 uppercase tracking-[0.3em] inline-block pt-0.5">Emitido: <span className="text-slate-500 italic">{new Date(quote.createdAt).toLocaleDateString()} — {new Date(quote.createdAt).toLocaleTimeString()}</span></span>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <h3 className="text-xl font-black text-white mt-6 uppercase italic tracking-tight">{quote.clientName || 'CLIENTE NO ESPECIFICADO'}</h3>
-                                                <div className="space-y-2 mt-4">
-                                                    <span className="text-[9px] font-black text-slate-600 uppercase tracking-[0.2em] block">
-                                                        Responsable: <span className="text-slate-400 italic">{quote.advisorName || quote.salesperson?.name || "SISTEMA CENTRAL"}</span>
-                                                    </span>
-                                                    <span className="text-[9px] font-black text-slate-600 uppercase tracking-[0.2em] block">
-                                                        Fecha: <span className="text-slate-500">{new Date(quote.createdAt).toLocaleDateString()} — {new Date(quote.createdAt).toLocaleTimeString()}</span>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <div className="text-right">
-                                                <p className="text-3xl font-black text-white tracking-tighter group-hover:text-emerald-400 transition-colors">${quote.total ? quote.total.toLocaleString('es-EC', { minimumFractionDigits: 2 }) : "0.00"}</p>
-                                                <div className="flex flex-col gap-3 mt-6 items-end">
-                                                    <button
-                                                        onClick={() => handleDuplicateQuote(quote)}
-                                                        className="px-6 py-2.5 glass-panel !bg-slate-900 text-slate-400 hover:text-secondary hover:bg-white transition-all text-center uppercase text-[10px] font-black tracking-widest rounded-xl border-white/5 flex items-center justify-center gap-3 w-full"
-                                                    >
-                                                        <Copy size={14} />
-                                                        <span>Clonar</span>
-                                                    </button>
+                                                <div className="text-right flex flex-col items-end">
+                                                    <p className="text-4xl font-black text-white tracking-tighter group-hover:scale-105 transition-transform italic">${quote.total ? quote.total.toLocaleString('es-EC', { minimumFractionDigits: 2 }) : "0.00"}</p>
+                                                    <div className="flex flex-col gap-4 mt-10 items-end w-full">
+                                                        <button
+                                                            onClick={() => handleDuplicateQuote(quote)}
+                                                            className="px-8 py-4 bg-slate-950 text-slate-500 hover:text-white hover:bg-secondary transition-all text-center uppercase text-[10px] font-black tracking-[0.4em] rounded-2xl border-2 border-white/5 group/btn flex items-center justify-center gap-4 w-full md:w-auto min-w-[200px] shadow-2xl"
+                                                        >
+                                                            <Copy size={16} className="group-hover/btn:rotate-12 transition-transform" />
+                                                            <span>Clonar Nodo</span>
+                                                        </button>
+                                                        <button className="text-[9px] text-slate-700 font-black uppercase tracking-[0.5em] hover:text-secondary transition-colors italic group-hover:translate-x-[-10px] flex items-center gap-2">
+                                                            <span>Auditar Registro Completo</span>
+                                                            <ChevronRight size={12} />
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                ))
-                            )}
-                        </div>
+                                    ))
+                                )}
+                            </div>
+
+                            <div className="p-12 border-t border-white/5 bg-white/[0.01] shrink-0">
+                                <button 
+                                    onClick={() => setIsHistoryOpen(false)}
+                                    className="w-full py-8 bg-white/5 text-slate-500 hover:text-white hover:bg-red-500 text-[11px] font-black uppercase tracking-[0.6em] italic rounded-3xl transition-all duration-700 border border-white/5 flex items-center justify-center gap-6 group shadow-2xl active:scale-95"
+                                >
+                                    <X size={20} className="group-hover:rotate-180 transition-transform duration-500" />
+                                    <span>Suspender Auditoría Histórica</span>
+                                </button>
+                            </div>
+                        </motion.div>
                     </div>
-                </>
-            )}
+                )}
+            </AnimatePresence>
         </div>
     )
 }
-
-
-
-
-
-

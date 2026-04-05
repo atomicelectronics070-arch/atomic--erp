@@ -1,7 +1,12 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Tag, Plus, Search, Edit2, Trash2, Save, X, Package } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
+import { 
+    Tag, Plus, Search, Edit2, Trash2, Save, X, 
+    Package, Sparkles, Target, Zap, ShieldCheck, 
+    ArrowRight, LayoutGrid, DollarSign 
+} from "lucide-react"
 
 interface Product {
     id: string
@@ -63,7 +68,7 @@ export default function PricesPage() {
     }
 
     const handleDelete = async (id: string) => {
-        if (!confirm("¿Eliminar producto de la lista oficial?")) return
+        if (!confirm("⚠️ Alerta de Seguridad: ¿Eliminar este activo de la base de datos maestra?")) return
         try {
             const res = await fetch(`/api/products/${id}`, { method: "DELETE" })
             if (res.ok) fetchProducts()
@@ -78,14 +83,26 @@ export default function PricesPage() {
     )
 
     return (
-        <div className="space-y-12 pb-24">
+        <div className="space-y-12 pb-32 animate-in fade-in duration-1000 relative">
+             {/* Background Orbs */}
+            <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+                <div className="absolute top-[15%] right-[-5%] w-[40%] h-[40%] rounded-full bg-secondary/5 blur-[120px]" />
+                <div className="absolute bottom-[20%] left-[-5%] w-[35%] h-[35%] rounded-full bg-azure-500/5 blur-[100px]" />
+            </div>
+
             {/* Header */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-10 border-b border-white/5 pb-16 relative z-10">
                 <div>
-                    <h1 className="text-4xl font-bold tracking-tight text-neutral-900 uppercase">
-                        Lista de <span className="text-orange-600">Precios</span>
+                    <div className="flex items-center space-x-4 mb-4 text-secondary">
+                        <Tag size={20} className="drop-shadow-[0_0_8px_rgba(255,99,71,0.5)]" />
+                        <span className="text-[10px] uppercase font-black tracking-[0.6em] italic">Catálogo de Activos Dinámicos</span>
+                    </div>
+                    <h1 className="text-6xl font-black text-white tracking-tighter uppercase italic leading-none">
+                        LISTA DE <span className="text-secondary underline decoration-secondary/30 underline-offset-8">PRECIOS</span>
                     </h1>
-                    <p className="text-neutral-400 font-medium text-sm mt-1">Control maestro de productos, SKU y tarifas industriales.</p>
+                    <p className="text-slate-500 font-bold text-xs uppercase tracking-[0.3em] mt-5 max-w-xl italic leading-relaxed">
+                        Control maestro de inventario, nomenclaturas SKU y valorización estratégica de activos industriales.
+                    </p>
                 </div>
                 <button
                     onClick={() => {
@@ -93,84 +110,100 @@ export default function PricesPage() {
                         setFormData({ name: "", description: "", price: 0, sku: "" })
                         setIsModalOpen(true)
                     }}
-                    className="bg-neutral-900 text-white px-8 py-4 font-bold uppercase tracking-widest text-[10px] flex items-center space-x-3 hover:bg-orange-600 transition-all shadow-xl shadow-neutral-200"
+                    className="bg-secondary text-white px-12 py-5 font-black uppercase tracking-[0.3em] text-[10px] flex items-center shadow-[0_20px_50px_-10px_rgba(255,99,71,0.5)] transition-all hover:bg-white hover:text-secondary rounded-2xl active:scale-95 group italic skew-x-[-12deg]"
                 >
-                    <Plus size={18} />
-                    <span>Añadir Producto</span>
+                    <div className="skew-x-[12deg] flex items-center gap-4">
+                        <Plus size={20} className="group-hover:rotate-90 transition-transform" />
+                        <span>Inyectar Activo</span>
+                    </div>
                 </button>
             </div>
 
-            {/* Content Card */}
-            <div className="bg-white border border-neutral-200 shadow-sm relative overflow-hidden">
-                <div className="p-8 border-b border-neutral-100 flex flex-col md:flex-row justify-between items-center gap-6 bg-neutral-50/50">
-                    <div className="relative w-full md:w-96">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-300" size={18} />
+            {/* Main Content Container */}
+            <div className="glass-panel border-white/5 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] overflow-hidden rounded-[3.5rem] backdrop-blur-3xl relative z-10">
+                
+                {/* Dashboard Search & Stats */}
+                <div className="p-10 border-b border-white/5 flex flex-col lg:flex-row justify-between items-center gap-10 bg-white/[0.01]">
+                    <div className="relative w-full lg:w-[450px] group">
+                        <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-700 group-focus-within:text-secondary transition-colors" size={20} />
                         <input
                             type="text"
-                            placeholder="BUSCAR POR NOMBRE O SKU..."
+                            placeholder="ESCANEANDO SKU O IDENTIFICADOR..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-12 pr-4 py-4 border border-neutral-100 bg-white text-xs font-bold uppercase focus:ring-2 focus:ring-orange-500 outline-none transition-all"
+                            className="w-full pl-16 pr-8 py-5 bg-slate-950 border border-white/5 text-xs font-black uppercase tracking-widest text-white outline-none rounded-2xl focus:border-secondary transition-all shadow-inner placeholder:text-slate-900 italic"
                         />
                     </div>
-                    <div className="flex items-center space-x-3 text-[10px] font-bold text-neutral-400 uppercase tracking-widest">
-                        <Package size={14} />
-                        <span>Total: {products.length} Items</span>
+                    <div className="flex items-center gap-8 glass-panel !bg-slate-900/40 px-10 py-5 rounded-2xl border-white/5 shadow-inner">
+                        <div className="flex items-center space-x-4">
+                            <div className="p-2 bg-azure-500/10 text-azure-400 rounded-lg"><Package size={18} /></div>
+                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest italic">Inventory_Core: <span className="text-white ml-2">{products.length} ACTIVOS</span></span>
+                        </div>
                     </div>
                 </div>
 
+                {/* Database Table */}
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
-                        <thead className="text-[10px] text-neutral-400 uppercase font-bold tracking-[0.2em] bg-white">
+                        <thead className="text-[10px] text-slate-600 uppercase font-black tracking-[0.4em] bg-white/[0.02]">
                             <tr>
-                                <th className="px-8 py-6">Producto / Referencia</th>
-                                <th className="px-6 py-6">Descripción</th>
-                                <th className="px-6 py-6 text-right">Precio Unitario</th>
-                                <th className="px-8 py-6 text-right">Acciones</th>
+                                <th className="px-12 py-10 italic">Activo / Referencia_SKU</th>
+                                <th className="px-10 py-10 italic">Especificaciones</th>
+                                <th className="px-10 py-10 text-right italic">Valor_Unitario</th>
+                                <th className="px-12 py-10 text-right italic">Comandos</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-neutral-100">
+                        <tbody className="divide-y divide-white/5">
                             {isLoading ? (
-                                <tr><td colSpan={4} className="px-8 py-20 text-center font-bold text-neutral-300 uppercase animate-pulse">Cargando base de datos...</td></tr>
+                                <tr>
+                                    <td colSpan={4} className="px-12 py-32 text-center text-[10px] font-black text-slate-500 uppercase tracking-[0.8em] animate-pulse italic">
+                                        Sincronizando Base de Datos...
+                                    </td>
+                                </tr>
                             ) : filteredProducts.length === 0 ? (
-                                <tr><td colSpan={4} className="px-8 py-20 text-center font-bold text-neutral-300 uppercase">Sin resultados encontrados</td></tr>
+                                <tr>
+                                    <td colSpan={4} className="px-12 py-32 text-center text-[10px] font-black text-slate-800 uppercase tracking-[0.8em] italic">
+                                        Zero Nodos Encontrados
+                                    </td>
+                                </tr>
                             ) : (
                                 filteredProducts.map((p) => (
-                                    <tr key={p.id} className="hover:bg-neutral-50 transition-colors group">
-                                        <td className="px-8 py-6">
-                                            <div className="flex items-center space-x-4">
-                                                <div className="w-12 h-12 bg-neutral-900 flex items-center justify-center text-orange-600 group-hover:bg-orange-600 group-hover:text-white transition-all">
-                                                    <Tag size={20} />
+                                    <tr key={p.id} className="hover:bg-white/[0.03] transition-all group">
+                                        <td className="px-12 py-8">
+                                            <div className="flex items-center space-x-6">
+                                                <div className="w-16 h-16 bg-slate-950 border border-white/5 flex items-center justify-center text-secondary group-hover:bg-secondary group-hover:text-white transition-all rounded-2xl shadow-inner group-hover:scale-105 duration-500">
+                                                    <Tag size={24} className="group-hover:rotate-12 transition-transform" />
                                                 </div>
                                                 <div>
-                                                    <p className="font-bold text-neutral-900 text-sm tracking-tight">{p.name}</p>
-                                                    <p className="text-[10px] font-bold text-orange-600 uppercase tracking-widest">{p.sku || "SIN SKU"}</p>
+                                                    <p className="font-black text-white text-base tracking-tighter uppercase italic group-hover:text-secondary transition-colors">{p.name}</p>
+                                                    <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.3em] mt-1 group-hover:text-azure-400 transition-colors">SKU: {p.sku || "N/A"}</p>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-6 text-xs text-neutral-500 font-medium max-w-xs truncate">
-                                            {p.description || "Sin descripción"}
+                                        <td className="px-10 py-8 text-[11px] text-slate-500 font-bold max-w-sm italic uppercase tracking-tighter line-clamp-2">
+                                            {p.description || "N/A — Sin metadata descriptiva"}
                                         </td>
-                                        <td className="px-6 py-6 text-right font-bold text-neutral-900 text-lg">
-                                            ${p.price.toLocaleString('es-EC', { minimumFractionDigits: 2 })}
+                                        <td className="px-10 py-8 text-right font-black text-white text-2xl italic tracking-tighter">
+                                            <span className="text-secondary text-sm mr-2 not-italic">$</span>
+                                            {p.price.toLocaleString('es-EC', { minimumFractionDigits: 2 })}
                                         </td>
-                                        <td className="px-8 py-6 text-right">
-                                            <div className="flex justify-end space-x-2">
+                                        <td className="px-12 py-8 text-right">
+                                            <div className="flex justify-end space-x-3">
                                                 <button
                                                     onClick={() => {
                                                         setEditingId(p.id)
                                                         setFormData(p)
                                                         setIsModalOpen(true)
                                                     }}
-                                                    className="p-3 bg-neutral-50 text-neutral-400 hover:text-orange-600 hover:bg-white border border-transparent hover:border-neutral-100 transition-all"
+                                                    className="p-4 bg-slate-900 text-slate-600 hover:text-white hover:bg-azure-500 transition-all rounded-2xl border border-white/5 shadow-2xl hover:scale-110"
                                                 >
-                                                    <Edit2 size={16} />
+                                                    <Edit2 size={18} />
                                                 </button>
                                                 <button
                                                     onClick={() => handleDelete(p.id)}
-                                                    className="p-3 bg-neutral-50 text-neutral-400 hover:text-red-600 hover:bg-white border border-transparent hover:border-neutral-100 transition-all"
+                                                    className="p-4 bg-slate-900 text-slate-600 hover:text-white hover:bg-red-500 transition-all rounded-2xl border border-white/5 shadow-2xl hover:scale-110"
                                                 >
-                                                    <Trash2 size={16} />
+                                                    <Trash2 size={18} />
                                                 </button>
                                             </div>
                                         </td>
@@ -182,76 +215,109 @@ export default function PricesPage() {
                 </div>
             </div>
 
-            {/* Modal */}
-            {isModalOpen && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-white/90 backdrop-blur-md p-6">
-                    <div className="bg-white w-full max-w-xl border border-neutral-200 shadow-2xl p-12">
-                        <div className="flex justify-between items-center mb-10 pb-6 border-b border-neutral-100">
-                            <div>
-                                <h3 className="text-xl font-bold uppercase tracking-tight">Configuración de Producto</h3>
-                                <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mt-1 italic">Industrial Standards v1.0</p>
+            {/* Modal Rebuilt with Glassmorphism */}
+            <AnimatePresence>
+                {isModalOpen && (
+                    <div className="fixed inset-0 z-[500] flex items-center justify-center p-8">
+                         <motion.div 
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="absolute inset-0 bg-slate-950/98 backdrop-blur-3xl" 
+                            onClick={() => setIsModalOpen(false)} 
+                        />
+                        <motion.div 
+                            initial={{ opacity: 0, scale: 0.95, y: 40 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 40 }}
+                            className="glass-panel !bg-slate-950/60 w-full max-w-2xl border border-white/10 shadow-[0_0_150px_rgba(0,0,0,1)] p-14 rounded-[4rem] relative z-10 backdrop-blur-3xl"
+                        >
+                            <div className="flex justify-between items-start mb-14 border-b border-white/5 pb-10">
+                                <div className="space-y-4">
+                                     <div className="flex items-center space-x-4 text-secondary">
+                                        <ShieldCheck size={20} />
+                                        <span className="text-[10px] uppercase font-black tracking-[0.6em] italic">Protocolo de Inyección</span>
+                                    </div>
+                                    <h3 className="text-4xl font-black text-white uppercase tracking-tighter italic">CONFIGURACIÓN <span className="text-secondary">PRO_ACTIVO</span></h3>
+                                    <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.4em] italic">Industrial Standard Core v2.4.1 Stable</p>
+                                </div>
+                                <button onClick={() => setIsModalOpen(false)} className="p-5 bg-slate-900 border border-white/10 rounded-2xl text-slate-600 hover:text-white transition-all shadow-2xl">
+                                    <X size={28} />
+                                </button>
                             </div>
-                            <button onClick={() => setIsModalOpen(false)} className="p-2 hover:bg-neutral-50 rounded-none transition-all">
-                                <X size={24} className="text-neutral-300 hover:text-neutral-900" />
-                            </button>
-                        </div>
 
-                        <form onSubmit={handleSave} className="space-y-8">
-                            <div className="grid grid-cols-2 gap-8">
-                                <div className="space-y-2 col-span-2">
-                                    <label className="text-[10px] font-bold text-neutral-400 uppercase tracking-[0.2em]">Nombre del Producto</label>
-                                    <input
-                                        required
-                                        type="text"
-                                        value={formData.name}
-                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                        className="w-full bg-neutral-50 border border-neutral-100 p-5 text-sm font-bold uppercase focus:ring-2 focus:ring-orange-600 outline-none transition-all"
-                                        placeholder="EJ: MONITOR INDUSTRIAL 4K"
-                                    />
+                            <form onSubmit={handleSave} className="space-y-10">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                                    <div className="space-y-4 md:col-span-2">
+                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-2 italic">Identificador del Producto</label>
+                                        <input
+                                            required
+                                            type="text"
+                                            value={formData.name}
+                                            onChange={(e) => setFormData({ ...formData, name: e.target.value.toUpperCase() })}
+                                            className="w-full bg-slate-950 border border-white/5 p-6 text-[15px] font-black uppercase tracking-widest text-white outline-none rounded-[2rem] focus:border-secondary transition-all shadow-inner placeholder:text-slate-900 italic"
+                                            placeholder="EJ: MONITOR INDUSTRIAL 4K_MAESTRO"
+                                        />
+                                    </div>
+                                    <div className="space-y-4">
+                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-2 italic">SKU de Referencia</label>
+                                        <input
+                                            type="text"
+                                            value={formData.sku || ""}
+                                            onChange={(e) => setFormData({ ...formData, sku: e.target.value.toUpperCase() })}
+                                            className="w-full bg-slate-950 border border-white/5 p-6 text-sm font-black uppercase tracking-widest text-azure-400 outline-none rounded-[2rem] focus:border-azure-500 transition-all shadow-inner placeholder:text-slate-900 italic"
+                                            placeholder="AT-G-500-BK"
+                                        />
+                                    </div>
+                                    <div className="space-y-4">
+                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-2 italic">Valoración Comercial (USD)</label>
+                                        <div className="relative">
+                                            <div className="absolute left-6 top-1/2 -translate-y-1/2 text-secondary font-black italic">$</div>
+                                            <input
+                                                required
+                                                type="number"
+                                                step="0.01"
+                                                value={formData.price}
+                                                onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })}
+                                                className="w-full bg-slate-950 border border-white/5 pl-12 pr-6 py-6 text-xl font-black text-white outline-none rounded-[2rem] focus:border-secondary transition-all shadow-inner italic"
+                                                placeholder="0.00"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-4 md:col-span-2">
+                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-2 italic">Metadata Descriptiva</label>
+                                        <textarea
+                                            value={formData.description || ""}
+                                            onChange={(e) => setFormData({ ...formData, description: e.target.value.toUpperCase() })}
+                                            className="w-full bg-slate-950 border border-white/5 p-8 text-sm font-bold text-slate-400 h-40 outline-none rounded-[2.5rem] focus:border-secondary transition-all resize-none shadow-inner uppercase tracking-widest leading-relaxed placeholder:text-slate-900 italic custom-scrollbar"
+                                            placeholder="ESPECIFICACIONES TÉCNICAS, GARANTÍAS O VARIABLES OPERATIVAS..."
+                                        />
+                                    </div>
                                 </div>
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-bold text-neutral-400 uppercase tracking-[0.2em]">SKU / Referencia</label>
-                                    <input
-                                        type="text"
-                                        value={formData.sku || ""}
-                                        onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
-                                        className="w-full bg-neutral-50 border border-neutral-100 p-5 text-sm font-bold uppercase focus:ring-2 focus:ring-orange-600 outline-none transition-all"
-                                        placeholder="AT-500-BK"
-                                    />
+                                
+                                <div className="flex gap-6 items-center pt-8">
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsModalOpen(false)}
+                                        className="flex-1 text-[10px] font-black uppercase tracking-[0.4em] text-slate-600 hover:text-white transition-all italic"
+                                    >
+                                        Abortar_Config
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        className="flex-[2] bg-secondary text-white font-black py-7 uppercase tracking-[0.3em] text-[11px] flex items-center justify-center gap-6 hover:bg-white hover:text-secondary transition-all shadow-[0_20px_60px_-10px_rgba(255,99,71,0.6)] rounded-[2.5rem] skew-x-[-12deg] group"
+                                    >
+                                        <div className="skew-x-[12deg] flex items-center gap-4">
+                                            <Save size={24} className="group-hover:scale-110 transition-transform" />
+                                            <span>Sincronizar Base de Datos</span>
+                                        </div>
+                                    </button>
                                 </div>
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-bold text-neutral-400 uppercase tracking-[0.2em]">Precio (USD)</label>
-                                    <input
-                                        required
-                                        type="number"
-                                        step="0.01"
-                                        value={formData.price}
-                                        onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })}
-                                        className="w-full bg-neutral-50 border border-neutral-100 p-5 text-sm font-bold focus:ring-2 focus:ring-orange-600 outline-none transition-all"
-                                        placeholder="0.00"
-                                    />
-                                </div>
-                                <div className="space-y-2 col-span-2">
-                                    <label className="text-[10px] font-bold text-neutral-400 uppercase tracking-[0.2em]">Descripción Técnica</label>
-                                    <textarea
-                                        value={formData.description || ""}
-                                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                        className="w-full bg-neutral-50 border border-neutral-100 p-5 text-sm font-medium h-32 outline-none focus:ring-2 focus:ring-orange-600 transition-all resize-none"
-                                        placeholder="Detalles adicionales del producto..."
-                                    />
-                                </div>
-                            </div>
-                            <button
-                                type="submit"
-                                className="w-full bg-neutral-900 text-white font-bold py-6 uppercase tracking-[0.3em] text-[10px] flex items-center justify-center space-x-3 hover:bg-orange-600 transition-all shadow-xl shadow-orange-600/10"
-                            >
-                                <Save size={20} />
-                                <span>Guardar en Base de Datos</span>
-                            </button>
-                        </form>
+                            </form>
+                        </motion.div>
                     </div>
-                </div>
-            )}
+                )}
+            </AnimatePresence>
         </div>
     )
 }

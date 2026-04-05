@@ -54,7 +54,10 @@ export default function DashboardLayout({
     }, [session])
 
     if (status === "loading" || !session) {
-        return <div className="h-screen w-screen flex items-center justify-center bg-white  font-bold text-orange-600 uppercase tracking-widest animate-pulse">ATOMIC...</div>
+        return <div className="h-screen w-screen flex flex-col items-center justify-center bg-[#020617] gap-8">
+            <div className="w-24 h-24 border-4 border-secondary/20 border-t-secondary rounded-full animate-spin shadow-[0_0_50px_rgba(255,99,71,0.2)]"></div>
+            <div className="font-black text-secondary uppercase tracking-[0.8em] animate-pulse text-xs">Sincronizando Nodo Central...</div>
+        </div>
     }
 
     const role = session.user?.role

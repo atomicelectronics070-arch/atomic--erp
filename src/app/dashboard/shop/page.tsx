@@ -195,29 +195,41 @@ export default function ShopConfigPage() {
     }
 
     return (
-        <div className="p-8 max-w-[1600px] mx-auto animate-in fade-in duration-1000 pb-32">
-            <header className="flex flex-col xl:flex-row xl:items-end justify-between mb-16 gap-10">
-                <div>
-                    <div className="flex items-center space-x-3 text-secondary mb-4">
+        <div className="space-y-12 pb-32 animate-in fade-in duration-1000 relative">
+            {/* Background Orbs */}
+            <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+                <div className="absolute top-[10%] left-[-10%] w-[45%] h-[45%] rounded-full bg-secondary/5 blur-[120px]" />
+                <div className="absolute bottom-[10%] right-[-5%] w-[35%] h-[35%] rounded-full bg-azure-500/5 blur-[100px]" />
+            </div>
+
+            <header className="flex flex-col lg:flex-row lg:items-end justify-between mb-16 gap-10 border-b border-white/5 pb-16 relative z-10">
+                <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
+                    <div className="flex items-center space-x-4 mb-4 text-secondary">
                         <ShoppingBag size={20} className="drop-shadow-[0_0_8px_rgba(255,99,71,0.5)]" />
-                        <span className="text-[10px] uppercase font-black tracking-[0.4em]">SISTEMA DE GESTIÓN E-COMMERCE</span>
+                        <span className="text-[10px] uppercase font-black tracking-[0.6em] italic">E-Commerce Protocol v6.2</span>
                     </div>
-                    <h1 className="text-6xl font-black text-white tracking-tighter uppercase italic">Centro de <span className="text-secondary">Catálogo</span></h1>
-                    <p className="text-slate-500 font-bold text-xs uppercase tracking-[0.3em] mt-4 max-w-2xl leading-relaxed">Administración táctica de inventario digital, arquitecturas de taxonomía y despliegue de colecciones estratégicas para la plataforma pública.</p>
-                </div>
-                <div className="flex items-center gap-6">
+                    <h1 className="text-6xl font-black text-white uppercase tracking-tighter leading-none italic">
+                        CENTRO DE <span className="text-secondary underline decoration-secondary/30 underline-offset-8">CATÁLOGO</span>
+                    </h1>
+                    <p className="text-slate-500 font-bold text-xs uppercase tracking-[0.3em] mt-5 max-w-xl italic leading-relaxed">
+                        Administración táctica de inventario digital, arquitecturas de taxonomía y despliegue de colecciones estratégicas para la plataforma comercial global.
+                    </p>
+                </motion.div>
+                <div className="flex items-center gap-6 relative z-10">
                     <button
                         onClick={() => { setEditingProduct(null); setView(view === 'list' ? 'add' : 'list') }}
-                        className="flex items-center space-x-4 bg-secondary text-white px-12 py-5 font-black uppercase tracking-[0.2em] text-[10px] hover:bg-white hover:text-secondary transition-all shadow-[0_20px_50px_-10px_rgba(255,99,71,0.4)] rounded-2xl active:scale-[0.98]"
+                        className="bg-secondary text-white px-12 py-5 font-black uppercase tracking-[0.4em] text-[10px] hover:bg-white hover:text-secondary transition-all shadow-[0_25px_60px_-10px_rgba(255,99,71,0.6)] rounded-2xl active:scale-95 italic skew-x-[-12deg] group"
                     >
-                        {view === 'list' ? (
-                            <><Plus size={20} /> <span>Inyectar Producto</span></>
-                        ) : (
-                            <><List size={20} /> <span>Retorno al Listado</span></>
-                        )}
+                        <div className="skew-x-[12deg] flex items-center gap-4">
+                            {view === 'list' ? (
+                                <><Plus size={20} className="group-hover:rotate-90 transition-transform" /> <span>Inyectar Producto_CMD</span></>
+                            ) : (
+                                <><List size={20} /> <span>Retorno al Listado_Vect</span></>
+                            )}
+                        </div>
                     </button>
-                    <button className="p-5 glass-panel text-slate-500 hover:text-white transition-all rounded-2xl border-white/5">
-                        <Settings size={22} />
+                    <button className="p-5 glass-panel text-slate-600 hover:text-white transition-all rounded-2xl border-white/5 shadow-2xl skew-x-[-12deg]">
+                         <div className="skew-x-[12deg]"><Settings size={22} /></div>
                     </button>
                 </div>
             </header>
@@ -225,75 +237,72 @@ export default function ShopConfigPage() {
             {view === 'list' ? (
                 <div className="space-y-12 animate-in fade-in duration-700">
                     {/* High-End Horizontal Tabs */}
-                    <div className="flex gap-4 p-2 glass-panel !bg-slate-950/40 rounded-[2rem] border-white/5 w-fit">
+                    <div className="flex gap-4 p-3 glass-panel !bg-slate-950/40 rounded-[2.5rem] border-white/5 w-fit relative z-10 backdrop-blur-3xl shadow-3xl skew-x-[-6deg]">
                         <button
                             onClick={() => setActiveTab('products')}
-                            className={`px-10 py-5 text-[10px] font-black uppercase tracking-widest transition-all rounded-[1.5rem] flex items-center gap-3 ${activeTab === 'products' ? 'bg-secondary text-white shadow-2xl shadow-secondary/20' : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'}`}
+                            className={`skew-x-[6deg] px-10 py-5 text-[10px] font-black uppercase tracking-widest transition-all rounded-[1.8rem] flex items-center gap-3 ${activeTab === 'products' ? 'bg-secondary text-white shadow-[0_15px_30px_-5px_rgba(255,99,71,0.4)]' : 'text-slate-600 hover:text-slate-300 hover:bg-white/5'}`}
                         >
                             <ShoppingBag size={18} />
                             Inventario Maestro
                         </button>
                         <button
                             onClick={() => setActiveTab('catalogs')}
-                            className={`px-10 py-5 text-[10px] font-black uppercase tracking-widest transition-all rounded-[1.5rem] flex items-center gap-3 ${activeTab === 'catalogs' ? 'bg-secondary text-white shadow-2xl shadow-secondary/20' : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'}`}
+                            className={`skew-x-[6deg] px-10 py-5 text-[10px] font-black uppercase tracking-widest transition-all rounded-[1.8rem] flex items-center gap-3 ${activeTab === 'catalogs' ? 'bg-primary text-white shadow-[0_15px_30px_-5px_rgba(45,212,191,0.4)]' : 'text-slate-600 hover:text-slate-300 hover:bg-white/5'}`}
                         >
                             <Layers size={18} />
-                            Taxonomías & Arquitectura
+                            Arquitecturas
                         </button>
                         <button
                             onClick={() => setActiveTab('settings')}
-                            className={`px-10 py-5 text-[10px] font-black uppercase tracking-widest transition-all rounded-[1.5rem] flex items-center gap-3 ${activeTab === 'settings' ? 'bg-secondary text-white shadow-2xl shadow-secondary/20' : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'}`}
-                        >
-                            <Settings size={18} />
-                            Despliegue & Frontend
+                            className={`skew-x-[6deg] px-10 py-5 text-[10px] font-black uppercase tracking-widest transition-all rounded-[1.8rem] flex items-center gap-3 ${activeTab === 'settings' ? 'bg-white/10 text-white shadow-2xl' : 'text-slate-600 hover:text-slate-300 hover:bg-white/5'}`}
                         </button>
                     </div>
 
                     {activeTab === 'products' && (
-                        <div className="space-y-12">
+                        <div className="space-y-12 animate-in fade-in duration-700">
                             {/* Modern Stats Summary */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-8">
-                                <div className="glass-panel p-8 flex items-center gap-6 rounded-[2.5rem] border-white/5 relative overflow-hidden group">
-                                    <div className="absolute top-0 left-0 w-1 h-full bg-secondary"></div>
-                                    <div className="p-4 bg-secondary/10 text-secondary rounded-2xl group-hover:scale-110 transition-transform"><ShoppingBag size={24} /></div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-8 relative z-10">
+                                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="glass-panel p-10 flex items-center gap-8 rounded-[3rem] border-white/5 relative overflow-hidden group backdrop-blur-3xl shadow-2xl">
+                                    <div className="absolute top-0 left-0 w-2 h-full bg-secondary shadow-[0_0_20px_rgba(255,99,71,0.5)]"></div>
+                                    <div className="p-5 bg-secondary/10 text-secondary rounded-2xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-500"><ShoppingBag size={28} /></div>
                                     <div>
-                                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Items Catalogados</p>
-                                        <h4 className="text-3xl font-black text-white italic">{totalProducts}</h4>
+                                        <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.3em] mb-2 italic">Items Catalogados</p>
+                                        <h4 className="text-4xl font-black text-white italic tracking-tighter">{totalProducts}</h4>
                                     </div>
-                                </div>
-                                <div className="glass-panel p-8 flex items-center gap-6 rounded-[2.5rem] border-white/5 relative overflow-hidden group">
-                                    <div className="absolute top-0 left-0 w-1 h-full bg-emerald-500"></div>
-                                    <div className="p-4 bg-emerald-500/10 text-emerald-500 rounded-2xl group-hover:scale-110 transition-transform"><TagIcon size={24} /></div>
+                                </motion.div>
+                                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="glass-panel p-10 flex items-center gap-8 rounded-[3rem] border-white/5 relative overflow-hidden group backdrop-blur-3xl shadow-2xl">
+                                    <div className="absolute top-0 left-0 w-2 h-full bg-azure-500 shadow-[0_0_20px_rgba(45,212,191,0.5)]"></div>
+                                    <div className="p-5 bg-azure-500/10 text-azure-500 rounded-2xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-500"><TagIcon size={28} /></div>
                                     <div>
-                                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Nodos de Categoría</p>
-                                        <h4 className="text-3xl font-black text-white italic">{metadata.categories.length}</h4>
+                                        <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.3em] mb-2 italic">Nodos de Categoría</p>
+                                        <h4 className="text-4xl font-black text-white italic tracking-tighter">{metadata.categories.length}</h4>
                                     </div>
-                                </div>
-                                <div className="glass-panel p-8 flex items-center gap-6 rounded-[2.5rem] border-white/5 relative overflow-hidden group">
-                                    <div className="absolute top-0 left-0 w-1 h-full bg-primary"></div>
-                                    <div className="p-4 bg-primary/10 text-primary rounded-2xl group-hover:scale-110 transition-transform"><Globe size={24} /></div>
+                                </motion.div>
+                                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="glass-panel p-10 flex items-center gap-8 rounded-[3rem] border-white/5 relative overflow-hidden group backdrop-blur-3xl shadow-2xl">
+                                    <div className="absolute top-0 left-0 w-2 h-full bg-primary shadow-[0_0_20px_rgba(255,255,255,0.2)]"></div>
+                                    <div className="p-5 bg-primary/10 text-primary rounded-2xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-500"><Globe size={28} /></div>
                                     <div>
-                                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Fuentes de Suministro</p>
-                                        <h4 className="text-3xl font-black text-white italic">{providerStats.length}</h4>
+                                        <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.3em] mb-2 italic">Fuentes de Suministro</p>
+                                        <h4 className="text-4xl font-black text-white italic tracking-tighter">{providerStats.length}</h4>
                                     </div>
-                                </div>
-                                <div className="glass-panel p-8 flex items-center gap-6 rounded-[2.5rem] border-white/5 relative overflow-hidden group">
-                                    <div className="absolute top-0 left-0 w-1 h-full bg-purple-500"></div>
-                                    <div className="p-4 bg-purple-500/10 text-purple-500 rounded-2xl group-hover:scale-110 transition-transform"><Power size={24} /></div>
+                                </motion.div>
+                                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="glass-panel p-10 flex items-center gap-8 rounded-[3rem] border-white/5 relative overflow-hidden group backdrop-blur-3xl shadow-2xl">
+                                    <div className="absolute top-0 left-0 w-2 h-full bg-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.5)]"></div>
+                                    <div className="p-5 bg-emerald-500/10 text-emerald-500 rounded-2xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-500"><CheckCircle size={28} /></div>
                                     <div>
-                                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Tráfico de Despliegue</p>
-                                        <h4 className="text-3xl font-black text-white italic">5.2K</h4>
+                                        <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.3em] mb-2 italic">En Stock_Live</p>
+                                        <h4 className="text-4xl font-black text-emerald-400 italic tracking-tighter">{products.filter(p => p.stock > 0).length}</h4>
                                     </div>
-                                </div>
+                                </motion.div>
                             </div>
 
-                            <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
+                            <div className="grid grid-cols-1 lg:grid-cols-4 gap-12 items-start">
                                 {/* Sidebar: Insights & Maintenance */}
-                                <div className="lg:col-span-1 space-y-8">
-                                    <div className="glass-panel p-10 rounded-[3rem] border-white/5 relative overflow-hidden">
+                                <div className="lg:col-span-1 space-y-8 sticky top-32">
+                                    <div className="glass-panel p-10 rounded-[3rem] border-white/5 relative overflow-hidden backdrop-blur-3xl">
                                         <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/5 blur-3xl -mr-16 -mt-16 rounded-full"></div>
                                         <div className="flex items-center space-x-3 text-secondary border-b border-white/5 pb-8 mb-8">
-                                            <Store size={22} />
+                                            <Store size={22} className="drop-shadow-[0_0_8px_rgba(255,99,71,0.3)]" />
                                             <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-white italic">Estructura de Origen</h3>
                                         </div>
                                         <div className="space-y-4 max-h-[400px] overflow-y-auto pr-4 custom-scrollbar">
@@ -312,154 +321,176 @@ export default function ShopConfigPage() {
                                         <div className="pt-8 border-t border-white/5 mt-8">
                                             <button 
                                                 onClick={() => setActiveTab('settings')}
-                                                className="w-full text-center text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 hover:text-secondary transition-all flex items-center justify-center gap-3"
+                                                className="w-full text-center text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 hover:text-secondary transition-all flex items-center justify-center gap-3 italic"
                                             >
                                                 Protocolo de Mantenimiento <ChevronRight size={14} />
                                             </button>
                                         </div>
                                     </div>
 
-                                    <div className="glass-panel p-10 rounded-[3rem] border-white/5 relative overflow-hidden group">
+                                    <div className="glass-panel p-10 rounded-[3rem] border-white/5 relative overflow-hidden group backdrop-blur-3xl">
                                         <div className="absolute inset-0 bg-gradient-to-br from-secondary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                                         <div className="flex items-center space-x-4 mb-8">
                                             <div className="p-3 bg-secondary/10 text-secondary rounded-xl"><Trash2 size={24} /></div>
-                                            <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-white">Saneamiento Maestro</h3>
+                                            <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-white italic">Saneamiento Maestro</h3>
                                         </div>
-                                        <p className="text-[11px] font-bold uppercase italic text-slate-500 leading-relaxed mb-10">
-                                            Ejecución intensiva de eliminación de colisiones de datos y duplicidad de nodos para optimizar el rendimiento del frontend.
+                                        <p className="text-[10px] font-bold uppercase italic text-slate-500 leading-relaxed mb-10">
+                                            Ejecución intensiva de eliminación de colisiones de datos y duplicidad de nodos para optimizar el rendimiento.
                                         </p>
                                         <button 
                                             onClick={async () => {
-                                                if(confirm("¿Ejecutar limpieza de duplicados exactos ahora?")) {
+                                                if(confirm("\u00bfEjecutar limpieza de duplicados exactos ahora?")) {
                                                     setIsCleaning(true);
                                                     try {
                                                         await cleanupDuplicateProducts();
                                                         await refreshData();
-                                                        alert("Catálogo saneado correctamente.");
+                                                        alert("Cat\u00e1logo saneado correctamente.");
                                                     } finally {
                                                         setIsCleaning(false);
                                                     }
                                                 }
                                             }}
                                             disabled={isCleaning}
-                                            className="w-full bg-secondary text-white py-5 text-[10px] font-black uppercase tracking-[0.3em] hover:bg-white hover:text-secondary transition-all shadow-[0_20px_50px_-10px_rgba(255,99,71,0.5)] rounded-[2rem] disabled:opacity-50"
+                                            className="w-full bg-secondary/10 text-secondary border border-secondary/30 py-5 text-[10px] font-black uppercase tracking-[0.3em] hover:bg-secondary hover:text-white transition-all shadow-2xl rounded-2xl disabled:opacity-50"
                                         >
-                                            {isCleaning ? 'Saneando Arquitectura...' : 'Saneamiento de Catálogo'}
+                                            {isCleaning ? 'Saneando Arquitectura...' : 'Saneamiento de Cat\u00e1logo'}
                                         </button>
                                     </div>
                                 </div>
 
                                 {/* Main Content: Search & Table */}
-                                <div className="lg:col-span-3 space-y-10">
-                                    <div className="flex flex-col md:flex-row gap-8 items-center bg-slate-950/40 p-4 rounded-[2.5rem] border border-white/5 shadow-2xl backdrop-blur-3xl">
+                                <div className="lg:col-span-3 space-y-12 relative z-10">
+                                    <div className="flex flex-col md:flex-row gap-8 items-center glass-panel !bg-slate-950/40 p-6 rounded-[3rem] border border-white/5 shadow-3xl backdrop-blur-3xl relative overflow-hidden group">
+                                        <div className="absolute top-0 left-0 w-1.5 h-full bg-secondary shadow-[0_0_15px_rgba(255,99,71,0.4)] transition-all group-focus-within:h-full"></div>
                                         <div className="flex-1 relative group w-full">
-                                            <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-700 group-focus-within:text-secondary transition-colors" size={20} />
+                                            <Search className="absolute left-8 top-1/2 -translate-y-1/2 text-slate-700 group-focus-within:text-secondary transition-colors" size={20} />
                                             <input 
                                                 type="text"
-                                                placeholder="BÚSQUEDA TÁCTICA POR SKU, NOMBRE O SEGMENTO..."
+                                                placeholder="B\u00daSQUEDA T\u00c1CTICA POR SKU, NOMBRE O SEGMENTO_VECT..."
                                                 value={dashboardSearch}
                                                 onChange={(e) => { setDashboardSearch(e.target.value); setCurrentPage(1); }}
-                                                className="w-full bg-slate-900/50 border border-white/5 pl-16 pr-8 py-5 text-[11px] font-black uppercase tracking-widest text-white outline-none focus:border-secondary focus:ring-4 focus:ring-secondary/10 transition-all rounded-2xl placeholder:text-slate-800"
+                                                className="w-full bg-slate-950 border border-white/5 pl-20 pr-10 py-6 text-[11px] font-black uppercase tracking-[0.2em] text-white outline-none focus:border-secondary focus:ring-8 focus:ring-secondary/5 transition-all rounded-[2rem] placeholder:text-slate-800 italic"
                                             />
                                         </div>
-                                        <div className="flex bg-slate-900/80 p-2 rounded-2xl border border-white/10 w-full md:w-fit whitespace-nowrap">
+                                        <div className="flex bg-slate-950 border border-white/5 p-2 rounded-[2rem] w-full md:w-fit whitespace-nowrap shadow-inner skew-x-[-12deg]">
                                             <button 
                                                 onClick={() => { setIsTrashView(false); setCurrentPage(1); }}
-                                                className={`px-8 py-3 text-[10px] font-black uppercase tracking-widest transition-all rounded-xl ${!isTrashView ? 'bg-secondary text-white shadow-xl shadow-secondary/20' : 'text-slate-500 hover:text-slate-300'}`}
+                                                className={`skew-x-[12deg] px-10 py-4 text-[10px] font-black uppercase tracking-widest transition-all rounded-[1.5rem] ${!isTrashView ? 'bg-secondary text-white shadow-xl shadow-secondary/20' : 'text-slate-600 hover:text-slate-300'}`}
                                             >
-                                                Catálogo Activo
+                                                Activo_OPS
                                             </button>
                                             <button 
                                                 onClick={() => { setIsTrashView(true); setCurrentPage(1); }}
-                                                className={`px-8 py-3 text-[10px] font-black uppercase tracking-widest transition-all rounded-xl flex items-center gap-2 ${isTrashView ? 'bg-red-500 text-white shadow-xl shadow-red-500/20' : 'text-slate-500 hover:text-red-400'}`}
+                                                className={`skew-x-[12deg] px-10 py-4 text-[10px] font-black uppercase tracking-widest transition-all rounded-[1.5rem] flex items-center gap-3 ${isTrashView ? 'bg-red-500 text-white shadow-xl shadow-red-500/20' : 'text-slate-600 hover:text-red-400'}`}
                                             >
-                                                <Trash2 size={14} /> Papelera
+                                                <Trash2 size={16} /> Papelera
                                             </button>
                                         </div>
                                     </div>
 
-                                    <div className="glass-panel rounded-[3rem] border-white/5 overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.6)]">
+                                    <div className="glass-panel rounded-[3.5rem] border-white/5 shadow-3xl overflow-hidden backdrop-blur-3xl relative">
                                         <div className="overflow-x-auto">
-                                            <table className="w-full text-left border-collapse">
+                                            <table className="w-full text-left">
                                                 <thead>
-                                                    <tr className="bg-white/5 text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 border-b border-white/5">
-                                                        <th className="px-8 py-8 w-16">
-                                                            <button onClick={toggleAllProducts} className="text-slate-700 hover:text-secondary transition-colors">
-                                                                {selectedProducts.length === products.length && products.length > 0 ? <CheckSquare size={20} /> : <Square size={20} />}
+                                                    <tr className="bg-white/[0.02] text-[10px] font-black uppercase tracking-[0.4em] text-slate-600 border-b border-white/5 italic">
+                                                        <th className="px-10 py-10 w-20">
+                                                            <button onClick={toggleAllProducts} className="text-slate-800 hover:text-secondary transition-colors">
+                                                                {selectedProducts.length === products.length && products.length > 0 ? <CheckSquare size={22} className="text-secondary shadow-[0_0_10px_rgba(255,99,71,0.5)]" /> : <Square size={22} />}
                                                             </button>
                                                         </th>
-                                                        <th className="px-8 py-8">Entidad / Identificador</th>
-                                                        <th className="px-8 py-8">Segmentación</th>
-                                                        <th className="px-8 py-8">Stock Disponible</th>
-                                                        <th className="px-8 py-8">Valor de Mercado</th>
-                                                        <th className="px-8 py-8 text-right pr-12">Acciones</th>
+                                                        <th className="px-10 py-10">Entidad / Identificador</th>
+                                                        <th className="px-10 py-10">Segmentaci\u00f3n_Vect</th>
+                                                        <th className="px-10 py-10">Stock Disponible</th>
+                                                        <th className="px-10 py-10">Valor de Mercado</th>
+                                                        <th className="px-10 py-10 text-right pr-16">Acciones_CMD</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody className="divide-y divide-white/5">
                                                     {products.length === 0 ? (
                                                         <tr>
-                                                            <td colSpan={6} className="py-40 text-center">
-                                                                <div className="flex flex-col items-center space-y-6 opacity-20">
-                                                                    <ShoppingBag size={80} className="text-slate-500" />
-                                                                    <p className="uppercase text-xs font-black tracking-[0.5em] text-slate-500">Cámara de Inventario Vacía</p>
+                                                            <td colSpan={6} className="py-48 text-center">
+                                                                <div className="flex flex-col items-center space-y-8 opacity-20 group">
+                                                                    <div className="p-8 bg-white/5 rounded-full group-hover:scale-110 transition-transform duration-700">
+                                                                        <ShoppingBag size={80} className="text-slate-500" />
+                                                                    </div>
+                                                                    <p className="uppercase text-xs font-black tracking-[0.6em] text-slate-500 italic">C\u00e1mara de Inventario Vac\u00eda</p>
                                                                 </div>
                                                             </td>
                                                         </tr>
                                                     ) : (
                                                         products.map((p) => (
-                                                            <tr key={p.id} className={`hover:bg-white/[0.03] transition-all group ${selectedProducts.includes(p.id) ? 'bg-secondary/10' : ''}`}>
-                                                                <td className="px-8 py-6">
-                                                                    <button onClick={() => toggleProductSelection(p.id)} className={`${selectedProducts.includes(p.id) ? 'text-secondary' : 'text-slate-800 group-hover:text-slate-600'} transition-all`}>
-                                                                        {selectedProducts.includes(p.id) ? <CheckSquare size={20} /> : <Square size={20} />}
+                                                            <tr key={p.id} className={`hover:bg-white/[0.04] transition-all group ${selectedProducts.includes(p.id) ? 'bg-secondary/5' : ''}`}>
+                                                                <td className="px-10 py-8">
+                                                                    <button 
+                                                                        onClick={() => toggleProductSelection(p.id)} 
+                                                                        className={`transition-all duration-300 ${selectedProducts.includes(p.id) ? 'text-secondary scale-110 drop-shadow-[0_0_8px_rgba(255,99,71,0.4)]' : 'text-slate-800 hover:text-slate-600'}`}
+                                                                    >
+                                                                        {selectedProducts.includes(p.id) ? <CheckSquare size={22} /> : <Square size={22} />}
                                                                     </button>
                                                                 </td>
-                                                                <td className="px-8 py-6">
+                                                                <td className="px-10 py-8">
                                                                     <div className="flex items-center space-x-6">
-                                                                        <div className="w-16 h-16 bg-slate-900 border border-white/5 rounded-2xl overflow-hidden flex items-center justify-center relative group-hover:border-secondary/30 transition-all shadow-2xl">
+                                                                        <div className="w-20 h-20 bg-slate-950 border border-white/5 rounded-2xl overflow-hidden flex items-center justify-center relative group-hover:border-secondary/30 transition-all shadow-2xl">
+                                                                            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 to-transparent opacity-40"></div>
                                                                             {p.images && p.images !== 'null' && safeParseArray(p.images).length > 0 ? (
-                                                                                <img src={safeParseArray(p.images)[0]} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                                                                                <img src={safeParseArray(p.images)[0]} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
                                                                             ) : (
-                                                                                <ImageIcon size={24} className="text-slate-800" />
+                                                                                <ImageIcon size={28} className="text-slate-800" />
                                                                             )}
                                                                         </div>
-                                                                        <div className="max-w-sm">
-                                                                            <p className="text-[13px] font-black text-white line-clamp-1 group-hover:text-secondary transition-colors italic uppercase tracking-tighter">{p.name}</p>
-                                                                            <p className="text-[9px] text-slate-500 font-black uppercase tracking-[0.2em] mt-1.5">{p.sku || 'N/A — IDENTIFICADOR GLOBAL'}</p>
+                                                                        <div className="max-w-md">
+                                                                            <p className="text-[14px] font-black text-white line-clamp-1 group-hover:text-secondary transition-colors italic uppercase tracking-tighter mb-1">{p.name}</p>
+                                                                            <div className="flex items-center gap-4">
+                                                                                <span className="text-[9px] text-slate-500 font-black uppercase tracking-[0.3em]">{p.sku || 'N/A \u2014 PROTOCOL_ID'}</span>
+                                                                                {p.featured && <span className="bg-yellow-500/10 text-yellow-500 text-[8px] font-black uppercase tracking-[0.4em] px-3 py-1 rounded-full border border-yellow-500/20 shadow-[0_0_10px_rgba(234,179,8,0.2)]">DESTACADO</span>}
+                                                                            </div>
                                                                         </div>
                                                                     </div>
                                                                 </td>
-                                                                <td className="px-8 py-6">
-                                                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white bg-slate-900 px-4 py-2 rounded-xl border border-white/5 shadow-inner italic">
-                                                                        {p.category?.name || 'GENÉRICO'}
+                                                                <td className="px-10 py-8">
+                                                                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white bg-slate-950 px-5 py-2.5 rounded-[1.2rem] border border-white/10 shadow-3xl italic group-hover:border-primary/30 transition-all">
+                                                                        {p.category?.name || 'GEN\u00c9RICO_Vect'}
                                                                     </span>
                                                                 </td>
-                                                                <td className="px-8 py-6">
-                                                                    <div className="flex items-center gap-3">
-                                                                        <div className={`w-2 h-2 rounded-full ${p.stock < 5 ? 'bg-red-500 animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.8)]' : 'bg-emerald-500'}`}></div>
-                                                                        <span className={`text-sm font-black italic tracking-tighter ${p.stock < 5 ? 'text-red-500' : 'text-slate-300'}`}>
-                                                                            {p.stock} <span className="text-[10px] opacity-40 uppercase font-black tracking-widest not-italic ml-1">Uds.</span>
-                                                                        </span>
+                                                                <td className="px-10 py-8">
+                                                                    <div className="flex items-center gap-4">
+                                                                        <div className={`w-2.5 h-2.5 rounded-full ${p.stock < 10 ? 'bg-red-500 animate-pulse shadow-[0_0_12px_rgba(239,68,68,0.8)]' : (p.stock < 50 ? 'bg-yellow-500 shadow-[0_0_10px_rgba(234,179,8,0.6)]' : 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.6)]')}`}></div>
+                                                                        <div>
+                                                                            <p className="text-sm font-black text-white italic tracking-tighter">{p.stock} <span className="text-[9px] text-slate-600 ml-1 uppercase">Uds</span></p>
+                                                                            <p className="text-[8px] font-bold text-slate-500 uppercase tracking-widest mt-1">Disp. Inmediata</p>
+                                                                        </div>
                                                                     </div>
                                                                 </td>
-                                                                <td className="px-8 py-6">
-                                                                    <p className="text-lg font-black text-white italic tracking-tighter group-hover:text-emerald-400 transition-colors drop-shadow-2xl">
-                                                                        <span className="text-slate-500 text-xs not-italic mr-1">$</span>
-                                                                        {p.price.toLocaleString('es-EC', { minimumFractionDigits: 2 })}
-                                                                    </p>
+                                                                <td className="px-10 py-8">
+                                                                    <div className="flex flex-col">
+                                                                        <span className="text-lg font-black text-secondary italic tracking-tighter">${parseFloat(p.price).toLocaleString()}</span>
+                                                                        {p.compareAtPrice && parseFloat(p.compareAtPrice) > 0 && (
+                                                                            <span className="text-[10px] text-slate-600 line-through font-bold opacity-50 tracking-widest">${parseFloat(p.compareAtPrice).toLocaleString()}</span>
+                                                                        )}
+                                                                    </div>
                                                                 </td>
-                                                                <td className="px-8 py-6">
-                                                                    <div className="flex items-center justify-end space-x-2">
+                                                                <td className="px-10 py-8 text-right pr-16">
+                                                                    <div className="flex items-center justify-end gap-5">
                                                                         {isTrashView ? (
-                                                                            <button onClick={() => handleRestore(p.id)} className="px-6 py-2.5 bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-white transition-all text-[10px] font-black uppercase tracking-widest border border-emerald-500/20 rounded-xl shadow-2xl">
-                                                                                Restaurar
+                                                                            <button 
+                                                                                onClick={() => handleRestore(p.id)}
+                                                                                className="px-8 py-4 bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 hover:bg-emerald-500 hover:text-white transition-all text-[10px] font-black uppercase tracking-[0.3em] rounded-xl shadow-2xl active:scale-95 italic skew-x-[-12deg]"
+                                                                            >
+                                                                                <span className="skew-x-[12deg] block">Restaurar_Vect</span>
                                                                             </button>
                                                                         ) : (
                                                                             <>
-                                                                                <button onClick={() => handleEdit(p)} className="p-3 text-slate-700 hover:text-secondary transition-all rounded-xl hover:bg-white/5 border border-transparent hover:border-white/5">
-                                                                                    <Edit size={20} />
+                                                                                <button 
+                                                                                    onClick={() => { setEditingProduct(p); setView('edit'); }}
+                                                                                    className="p-4 bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all rounded-xl border border-white/5 shadow-2xl active:scale-90 group/btn"
+                                                                                >
+                                                                                    <Edit size={18} className="group-hover/btn:rotate-12 transition-transform" />
                                                                                 </button>
-                                                                                <button onClick={() => handleDelete(p.id)} className="p-3 text-slate-700 hover:text-red-500 transition-all rounded-xl hover:bg-white/5 border border-transparent hover:border-white/5">
-                                                                                    <Trash2 size={20} />
+                                                                                <button 
+                                                                                    onClick={() => handleDelete(p.id)}
+                                                                                    className="p-4 bg-red-500/5 hover:bg-red-500 text-red-500 hover:text-white transition-all rounded-xl border border-red-500/20 shadow-2xl active:scale-90 group/del"
+                                                                                >
+                                                                                    <Trash2 size={18} className="group-hover/del:scale-110 transition-transform" />
                                                                                 </button>
                                                                             </>
                                                                         )}
@@ -471,23 +502,24 @@ export default function ShopConfigPage() {
                                                 </tbody>
                                             </table>
                                         </div>
+
                                         {/* Futuristic Pagination */}
                                         <div className="px-12 py-10 border-t border-white/5 flex flex-col md:flex-row items-center justify-between bg-black/20 gap-8 backdrop-blur-2xl">
                                             <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-600 italic">SEGMENTO {currentPage} <span className="text-slate-800 mx-2">/</span> {Math.ceil(totalProducts / pageSize) || 1} <span className="text-secondary mx-4">|</span> TOTAL {totalProducts} DESPLIEGUES</p>
-                                            <div className="flex items-center space-x-4">
+                                            <div className="flex items-center space-x-6">
                                                 <button 
                                                     disabled={currentPage <= 1}
                                                     onClick={() => setCurrentPage(prev => prev - 1)}
-                                                    className="px-10 py-4 glass-panel border-white/5 text-slate-500 hover:text-white hover:bg-white/5 disabled:opacity-5 transition-all font-black uppercase tracking-[0.3em] text-[10px] rounded-2xl active:scale-95 shadow-2xl"
+                                                    className="px-12 py-5 glass-panel border-white/5 text-slate-500 hover:text-white hover:bg-white/5 disabled:opacity-5 transition-all font-black uppercase tracking-[0.4em] text-[10px] rounded-2xl active:scale-95 shadow-2xl skew-x-[-12deg]"
                                                 >
-                                                    Retorno
+                                                    <span className="skew-x-[12deg] block">Retorno_Vect</span>
                                                 </button>
                                                 <button 
                                                     disabled={currentPage >= Math.ceil(totalProducts / pageSize)}
                                                     onClick={() => setCurrentPage(prev => prev + 1)}
-                                                    className="px-10 py-4 bg-white/5 border border-white/10 text-slate-300 hover:text-secondary hover:border-secondary/30 disabled:opacity-5 transition-all font-black uppercase tracking-[0.3em] text-[10px] rounded-2xl active:scale-95 shadow-2xl"
+                                                    className="px-12 py-5 bg-white/5 border border-white/10 text-slate-300 hover:text-secondary hover:border-secondary/30 disabled:opacity-5 transition-all font-black uppercase tracking-[0.4em] text-[10px] rounded-2xl active:scale-95 shadow-2xl skew-x-[-12deg]"
                                                 >
-                                                    Avance
+                                                    <span className="skew-x-[12deg] block">Avance_Vect</span>
                                                 </button>
                                             </div>
                                         </div>
@@ -495,52 +527,48 @@ export default function ShopConfigPage() {
 
                                     {/* Elevated Bulk Actions Bar */}
                                     {selectedProducts.length > 0 && (
-                                        <div className="fixed bottom-12 left-1/2 -translate-x-1/2 glass-panel !bg-slate-950/90 text-white px-12 py-6 flex flex-wrap items-center justify-center gap-10 shadow-[0_50px_100px_rgba(0,0,0,0.8)] z-[500] animate-in slide-in-from-bottom-10 duration-700 rounded-[3rem] border border-white/10 backdrop-blur-3xl">
-                                            <div className="flex items-center space-x-4 border-r border-white/10 pr-10">
-                                                <div className="w-12 h-12 bg-secondary text-white rounded-full flex items-center justify-center font-black text-xl italic shadow-[0_0_20px_rgba(255,99,71,0.4)]">{selectedProducts.length}</div>
-                                                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500">Seleccionados</span>
+                                        <div className="fixed bottom-12 left-1/2 -translate-x-1/2 glass-panel !bg-slate-950/90 text-white px-12 py-8 flex flex-wrap items-center justify-center gap-12 shadow-[0_50px_100px_rgba(0,0,0,0.8)] z-[500] animate-in slide-in-from-bottom-10 duration-700 rounded-[3.5rem] border border-white/10 backdrop-blur-3xl">
+                                            <div className="flex items-center space-x-6 border-r border-white/10 pr-12">
+                                                <div className="w-14 h-14 bg-secondary text-white rounded-full flex items-center justify-center font-black text-2xl italic shadow-[0_0_25px_rgba(255,99,71,0.5)]">{selectedProducts.length}</div>
+                                                <span className="text-[11px] font-black uppercase tracking-[0.5em] text-slate-500 italic">Seleccionados</span>
                                             </div>
-                                            <div className="flex items-center gap-6">
+                                            <div className="flex items-center gap-8">
                                                 {!isTrashView ? (
                                                     <>
                                                         <button 
                                                             onClick={() => setShowBulkEdit(true)}
-                                                            className="flex items-center space-x-4 bg-white/5 text-white hover:bg-white/10 px-8 py-4 text-[10px] font-black uppercase tracking-[0.2em] transition-all rounded-2xl border border-white/5"
+                                                            className="flex items-center space-x-4 bg-white/5 text-white hover:bg-white/10 px-10 py-5 text-[10px] font-black uppercase tracking-[0.3em] transition-all rounded-2xl border border-white/5 skew-x-[-12deg]"
                                                         >
-                                                            <Edit size={16} className="text-secondary" />
-                                                            <span>Edición Táctica</span>
+                                                            <div className="skew-x-[12deg] flex items-center gap-4"><Edit size={16} className="text-secondary" /> <span>Edici\u00f3n T\u00e1ctica</span></div>
                                                         </button>
                                                         <button 
                                                             onClick={handleBulkDeleteProducts}
-                                                            className="flex items-center space-x-4 bg-red-600/10 text-red-500 hover:bg-red-600 hover:text-white px-8 py-4 text-[10px] font-black uppercase tracking-[0.2em] transition-all rounded-2xl border border-red-500/20"
+                                                            className="flex items-center space-x-4 bg-red-600/10 text-red-500 hover:bg-red-600 hover:text-white px-10 py-5 text-[10px] font-black uppercase tracking-[0.3em] transition-all rounded-2xl border border-red-500/20 skew-x-[-12deg]"
                                                         >
-                                                            <Trash2 size={16} />
-                                                            <span>Poda Masiva</span>
+                                                            <div className="skew-x-[12deg] flex items-center gap-4"><Trash2 size={16} /> <span>Poda Masiva</span></div>
                                                         </button>
                                                     </>
                                                 ) : (
                                                     <>
                                                         <button 
                                                             onClick={handleBulkRestore}
-                                                            className="flex items-center space-x-4 bg-emerald-600/10 text-emerald-500 hover:bg-emerald-600 hover:text-white px-8 py-4 text-[10px] font-black uppercase tracking-[0.2em] transition-all rounded-2xl border border-emerald-500/20"
+                                                            className="flex items-center space-x-4 bg-emerald-600/10 text-emerald-500 hover:bg-emerald-600 hover:text-white px-10 py-5 text-[10px] font-black uppercase tracking-[0.3em] transition-all rounded-2xl border border-emerald-500/20 skew-x-[-12deg]"
                                                         >
-                                                            <Layers size={16} />
-                                                            <span>Restaurar Segmento</span>
+                                                            <div className="skew-x-[12deg] flex items-center gap-4"><Layers size={16} /> <span>Restaurar Segmento</span></div>
                                                         </button>
                                                         <button 
                                                             onClick={handleBulkPermanentDelete}
-                                                            className="flex items-center space-x-4 bg-red-600/10 text-red-500 hover:bg-red-600 hover:text-white px-8 py-4 text-[10px] font-black uppercase tracking-[0.2em] transition-all rounded-2xl border border-red-500/20"
+                                                            className="flex items-center space-x-4 bg-red-600/10 text-red-500 hover:bg-red-600 hover:text-white px-10 py-5 text-[10px] font-black uppercase tracking-[0.3em] transition-all rounded-2xl border border-red-500/20 skew-x-[-12deg]"
                                                         >
-                                                            <Trash2 size={16} />
-                                                            <span>Eliminación Terminal</span>
+                                                            <div className="skew-x-[12deg] flex items-center gap-4"><Trash2 size={16} /> <span>Eliminaci\u00f3n Terminal</span></div>
                                                         </button>
                                                     </>
                                                 )}
                                                 <button 
                                                     onClick={() => setSelectedProducts([])}
-                                                    className="w-12 h-12 flex items-center justify-center text-slate-500 hover:text-white transition-all hover:bg-white/5 rounded-full"
+                                                    className="w-14 h-14 flex items-center justify-center text-slate-600 hover:text-white transition-all hover:bg-white/5 rounded-full"
                                                 >
-                                                    <X size={24} />
+                                                    <X size={28} />
                                                 </button>
                                             </div>
                                         </div>

@@ -2,7 +2,13 @@
 
 import { useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
-import { Plus, Edit, Trash2, Shield, Eye, FileText, Check, X, Image as ImageIcon } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
+import { 
+    Plus, Edit, Trash2, Shield, Eye, FileText, 
+    Check, X, Image as ImageIcon, BookOpen, 
+    Sparkles, Key, Settings, UserCheck, Layout,
+    ExternalLink, Trash
+} from "lucide-react"
 
 export default function BlogsDashboard() {
   const { data: session } = useSession()
@@ -30,20 +36,29 @@ export default function BlogsDashboard() {
 
   const fetchBlogs = async () => {
     setLoading(true)
-    const res = await fetch("/api/blogs")
-    if (res.ok) {
-        const data = await res.json()
-        setBlogs(data)
+    try {
+        const res = await fetch("/api/blogs")
+        if (res.ok) {
+            const data = await res.json()
+            setBlogs(data)
+        }
+    } catch (e) {
+        console.error(e)
+    } finally {
+        setLoading(false)
     }
-    setLoading(false)
   }
 
   const fetchUsers = async () => {
     if (!isAdmin) return
-    const res = await fetch("/api/admin/blog-permissions")
-    if (res.ok) {
-        const data = await res.json()
-        setUsers(data)
+    try {
+        const res = await fetch("/api/admin/blog-permissions")
+        if (res.ok) {
+            const data = await res.json()
+            setUsers(data)
+        }
+    } catch (e) {
+        console.error(e)
     }
   }
 
@@ -56,7 +71,7 @@ export default function BlogsDashboard() {
     e.preventDefault()
     
     const method = editingBlog ? "PUT" : "POST"
-    const body: any = { title, excerpt, content, imageUrl, published }
+    const body: any = { title: title.toUpperCase(), excerpt, content, imageUrl, published }
     if (editingBlog) body.id = editingBlog.id
 
     const res = await fetch("/api/blogs", {
@@ -72,7 +87,7 @@ export default function BlogsDashboard() {
   }
 
   const handleDelete = async (id: string) => {
-    if (!confirm("¿Está seguro de eliminar este blog?")) return
+    if (!confirm("⚠️ Confirmación Crítica: ¿Eliminar este artículo permanentemente?")) return
     const res = await fetch(`/api/blogs?id=${id}`, { method: "DELETE" })
     if (res.ok) fetchBlogs()
   }
@@ -112,211 +127,297 @@ export default function BlogsDashboard() {
 
   if (!isAdmin && !canPublish) {
     return (
-        <div className="flex flex-col items-center justify-center p-20 text-center">
-            <Shield size={48} className="text-orange-500 mb-6" />
-            <h2 className="text-2xl font-black uppercase tracking-tight text-neutral-800 mb-2">Acceso Denegado</h2>
-            <p className="text-neutral-500 font-medium">No tienes permisos para redactar artículos en el blog corporativo. Contacta a administración.</p>
+        <div className="flex flex-col items-center justify-center p-40 text-center animate-in zoom-in duration-700">
+            <div className="w-24 h-24 bg-red-500/10 rounded-full flex items-center justify-center mb-10 border border-red-500/20 shadow-[0_0_50px_rgba(239,68,68,0.2)]">
+                <Shield size={48} className="text-red-500" />
+            </div>
+            <h2 className="text-4xl font-black uppercase tracking-tighter text-white mb-4 italic">ACCESO RESTRINGIDO</h2>
+            <p className="text-slate-500 font-bold uppercase tracking-[0.4em] text-[10px] max-w-sm italic">Privilegios insuficientes para el subsistema de redacción corporativa. Contacte al nodo de administración.</p>
         </div>
     )
   }
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
-      
+    <div className="space-y-16 animate-in fade-in duration-1000 relative">
+      {/* Background Orbs */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+          <div className="absolute top-[10%] left-[-5%] w-[40%] h-[40%] rounded-full bg-secondary/5 blur-[120px]" />
+          <div className="absolute bottom-[20%] right-[-5%] w-[35%] h-[35%] rounded-full bg-azure-500/5 blur-[100px]" />
+      </div>
+
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-neutral-200 pb-6">
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-10 border-b border-white/5 pb-16 relative z-10">
           <div>
-              <h1 className="text-2xl font-black uppercase tracking-tighter text-neutral-900">Corporate Blog</h1>
-              <p className="text-xs font-bold text-neutral-400 mt-1 uppercase tracking-widest">Gestión de Publicaciones</p>
+              <div className="flex items-center space-x-4 mb-4 text-secondary">
+                  <BookOpen size={20} className="drop-shadow-[0_0_8px_rgba(255,99,71,0.5)]" />
+                  <span className="text-[10px] uppercase font-black tracking-[0.6em] italic">Red de Contenidos Estratégicos</span>
+              </div>
+              <h1 className="text-6xl font-black text-white uppercase tracking-tighter leading-none italic">CORPORATE <span className="text-secondary underline decoration-secondary/30 underline-offset-8">BLOG</span></h1>
+              <p className="text-xs text-slate-500 font-bold uppercase tracking-[0.3em] mt-5 italic leading-relaxed max-w-xl">
+                  Gestión y auditoría de publicaciones tácticas para el ecosistema digital Atomic Industries.
+              </p>
           </div>
           {isAdmin && (
-              <div className="flex space-x-2">
+              <div className="flex glass-panel !bg-slate-950/40 p-2 rounded-2xl border-white/5 shadow-inner ring-1 ring-white/5 backdrop-blur-3xl">
                   <button 
                       onClick={() => setActiveTab("mis_blogs")}
-                      className={`px-6 py-3 text-[10px] font-black uppercase tracking-widest border transition-colors ${activeTab === 'mis_blogs' ? 'bg-neutral-900 text-white border-neutral-900' : 'bg-white text-neutral-500 border-neutral-200 hover:border-neutral-400'}`}
+                      className={`px-8 py-3 text-[10px] font-black uppercase tracking-[0.4em] transition-all rounded-xl italic skew-x-[-12deg] ${activeTab === 'mis_blogs' ? 'bg-secondary text-white shadow-2xl' : 'text-slate-600 hover:text-white'}`}
                   >
-                      Publicaciones
+                      <div className="skew-x-[12deg] flex items-center gap-3"><Layout size={14} /> PUBLICACIONES</div>
                   </button>
                   <button 
                       onClick={() => setActiveTab("permisos")}
-                      className={`px-6 py-3 text-[10px] font-black uppercase tracking-widest border transition-colors ${activeTab === 'permisos' ? 'bg-orange-600 text-white border-orange-600' : 'bg-white text-neutral-500 border-neutral-200 hover:border-orange-600 hover:text-orange-600'}`}
+                      className={`px-8 py-3 text-[10px] font-black uppercase tracking-[0.4em] transition-all rounded-xl italic skew-x-[-12deg] ${activeTab === 'permisos' ? 'bg-azure-500 text-white shadow-2xl' : 'text-slate-600 hover:text-white'}`}
                   >
-                      Permisos
+                      <div className="skew-x-[12deg] flex items-center gap-3"><Key size={14} /> PERMISOS</div>
                   </button>
               </div>
           )}
       </div>
 
       {activeTab === "mis_blogs" && (
-          <div className="space-y-6">
-            <div className="flex justify-end">
+          <div className="space-y-12 animate-in slide-in-from-bottom-6 duration-700 relative z-10">
+            <div className="flex justify-between items-center bg-white/[0.01] p-8 border border-white/5 rounded-[2.5rem] backdrop-blur-xl">
+                <div>
+                   <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] italic">Catálogo de Activos Narrativos</h3>
+                </div>
                 <button 
                     onClick={() => openModal()}
-                    className="flex items-center space-x-2 bg-orange-600 text-white px-6 py-3 text-xs font-black uppercase tracking-widest hover:bg-neutral-900 transition-colors shadow-lg shadow-orange-600/20"
+                    className="flex items-center space-x-6 bg-secondary text-white px-12 py-5 text-[10px] font-black uppercase tracking-[0.3em] hover:bg-white hover:text-secondary transition-all shadow-[0_20px_50px_-10px_rgba(255,99,71,0.5)] rounded-2xl active:scale-95 italic skew-x-[-12deg] group"
                 >
-                    <Plus size={16} />
-                    <span>Redactar Artículo</span>
+                    <div className="skew-x-[12deg] flex items-center gap-4">
+                        <Plus size={20} className="group-hover:rotate-90 transition-transform" />
+                        <span>Redactar Nodo</span>
+                    </div>
                 </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
                 {blogs.length === 0 && !loading && (
-                    <div className="col-span-full py-20 text-center bg-white border border-dashed border-neutral-300">
-                        <p className="text-neutral-500 font-medium">No hay blogs creados aún.</p>
+                    <div className="col-span-full py-48 text-center glass-panel border border-dashed border-white/5 rounded-[4rem] flex flex-col items-center justify-center">
+                        <div className="w-20 h-20 bg-slate-900/60 rounded-full flex items-center justify-center mb-8 border border-white/5 shadow-inner">
+                            <ImageIcon size={32} className="text-slate-800" />
+                        </div>
+                        <p className="text-slate-700 font-black uppercase tracking-[0.6em] text-[11px] italic">Canal desierto: Sin publicaciones detectadas.</p>
                     </div>
                 )}
                 {blogs.map(blog => (
-                    <div key={blog.id} className="bg-white border border-neutral-200 overflow-hidden flex flex-col group hover:shadow-xl hover:border-orange-500/50 transition-all">
+                    <motion.div 
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        key={blog.id} 
+                        className="glass-panel border-white/5 overflow-hidden flex flex-col group hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.8)] hover:border-secondary/30 transition-all rounded-[3rem] backdrop-blur-3xl relative"
+                    >
                         {blog.imageUrl ? (
-                            <img src={blog.imageUrl} alt={blog.title} className="w-full h-48 object-cover border-b border-neutral-100 group-hover:scale-105 transition-transform duration-500" />
+                            <div className="relative h-64 overflow-hidden">
+                                <img src={blog.imageUrl} alt={blog.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[1.5s]" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent opacity-60" />
+                            </div>
                         ) : (
-                            <div className="w-full h-48 bg-neutral-50 flex items-center justify-center border-b border-neutral-100">
-                                <ImageIcon size={32} className="text-neutral-300" />
+                            <div className="w-full h-64 bg-slate-900/60 flex items-center justify-center border-b border-white/5 shadow-inner">
+                                <ImageIcon size={48} className="text-slate-800 animate-pulse" />
                             </div>
                         )}
-                        <div className="p-6 flex-1 flex flex-col relative bg-white z-10">
-                            <div className="flex items-center space-x-2 mb-3">
-                                <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-1 ${blog.published ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}`}>
-                                    {blog.published ? 'Publicado' : 'Borrador'}
+                        <div className="p-10 flex-1 flex flex-col relative z-20 bg-slate-950/20">
+                            <div className="flex items-center space-x-3 mb-6">
+                                <span className={`text-[9px] font-black uppercase tracking-[0.4em] px-4 py-1.5 rounded-full border italic shadow-2xl ${blog.published ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-secondary/10 text-secondary border-secondary/20'}`}>
+                                    {blog.published ? 'CONSOLIDADO' : 'BORRADOR'}
                                 </span>
                             </div>
-                            <h3 className="text-lg font-black text-neutral-900 line-clamp-2 leading-tight mb-2">{blog.title}</h3>
-                            <p className="text-xs text-neutral-500 line-clamp-3 mb-6 flex-1">{blog.excerpt || 'Sin extracto'}</p>
+                            <h3 className="text-2xl font-black text-white line-clamp-2 leading-tight mb-4 italic group-hover:text-secondary transition-colors uppercase tracking-tighter drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">{blog.title}</h3>
+                            <p className="text-[11px] text-slate-500 font-bold line-clamp-3 mb-10 flex-1 italic leading-relaxed uppercase tracking-tight opacity-60 group-hover:opacity-100 transition-opacity">{blog.excerpt || 'SIN EXTRACTO DISPONIBLE'}</p>
                             
-                            <div className="flex items-center justify-between mt-auto pt-4 border-t border-neutral-100">
-                                <span className="text-[10px] font-black text-neutral-400 uppercase">Por {blog.author?.name || 'Usuario'}</span>
-                                <div className="flex space-x-2">
-                                    <button onClick={() => openModal(blog)} className="p-2 text-neutral-400 hover:text-blue-600 transition-colors bg-neutral-50 hover:bg-blue-50">
-                                        <Edit size={14} />
+                            <div className="flex items-center justify-between mt-auto pt-8 border-t border-white/5">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-8 h-8 rounded-full bg-slate-900 border border-white/10 flex items-center justify-center text-[10px] font-black text-slate-500 italic">
+                                        {blog.author?.name?.[0] || 'U'}
+                                    </div>
+                                    <span className="text-[9px] font-black text-slate-600 uppercase tracking-widest italic">{blog.author?.name || 'OPERADOR'}</span>
+                                </div>
+                                <div className="flex space-x-4 opacity-0 group-hover:opacity-100 transition-all translate-x-10 group-hover:translate-x-0">
+                                    <button onClick={() => openModal(blog)} className="p-4 glass-panel !bg-slate-900 text-slate-600 hover:text-azure-400 hover:rotate-6 transition-all rounded-2xl border-white/5">
+                                        <Edit size={16} />
                                     </button>
-                                    <button onClick={() => handleDelete(blog.id)} className="p-2 text-neutral-400 hover:text-red-600 transition-colors bg-neutral-50 hover:bg-red-50">
-                                        <Trash2 size={14} />
+                                    <button onClick={() => handleDelete(blog.id)} className="p-4 glass-panel !bg-slate-900 text-slate-600 hover:text-red-500 hover:-rotate-6 transition-all rounded-2xl border-white/5">
+                                        <Trash2 size={16} />
                                     </button>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </motion.div>
                 ))}
             </div>
           </div>
       )}
 
       {activeTab === "permisos" && isAdmin && (
-          <div className="bg-white border border-neutral-200 overflow-hidden">
-            <table className="w-full text-left border-collapse">
-                <thead>
-                    <tr className="border-b border-neutral-200 bg-neutral-50">
-                        <th className="p-4 text-[10px] font-black uppercase tracking-widest text-neutral-500">Usuario</th>
-                        <th className="p-4 text-[10px] font-black uppercase tracking-widest text-neutral-500">Rol Sistema</th>
-                        <th className="p-4 text-[10px] font-black uppercase tracking-widest text-neutral-500">Permiso de Escritura</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {users.map(u => (
-                        <tr key={u.id} className="border-b border-neutral-100 hover:bg-neutral-50">
-                            <td className="p-4">
-                                <div className="font-bold text-neutral-900 text-sm">{u.name || 'Sin Nombre'}</div>
-                                <div className="text-xs text-neutral-500">{u.email}</div>
-                            </td>
-                            <td className="p-4 text-xs font-bold text-neutral-600">{u.role}</td>
-                            <td className="p-4">
-                                <button 
-                                    onClick={() => handleTogglePermission(u.id, u.canCreateBlogs)}
-                                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${u.canCreateBlogs ? 'bg-orange-600' : 'bg-neutral-300'}`}
-                                >
-                                    <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${u.canCreateBlogs ? 'translate-x-6' : 'translate-x-1'}`} />
-                                </button>
-                            </td>
+          <div className="glass-panel border-white/5 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] overflow-hidden rounded-[4rem] backdrop-blur-3xl relative z-10">
+            <div className="p-10 border-b border-white/5 bg-white/[0.01]">
+                 <h3 className="text-[11px] font-black text-slate-500 uppercase tracking-[0.6em] italic">Auditoría de Privilegios de Redacción</h3>
+            </div>
+            <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                    <thead>
+                        <tr className="border-b border-white/5 bg-white/[0.02]">
+                            <th className="px-12 py-8 text-[10px] font-black uppercase tracking-[0.6em] text-slate-600 italic">IDENTIDAD_NODO</th>
+                            <th className="px-12 py-8 text-[10px] font-black uppercase tracking-[0.6em] text-slate-600 italic">RANGO_SISTEMA</th>
+                            <th className="px-12 py-8 text-[10px] font-black uppercase tracking-[0.6em] text-slate-600 italic text-center">PRIVILEGIO_BLOG</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody className="divide-y divide-white/[0.02]">
+                        {users.map(u => (
+                            <tr key={u.id} className="hover:bg-white/[0.02] transition-colors group">
+                                <td className="px-12 py-8">
+                                    <div className="flex items-center gap-6">
+                                        <div className="w-12 h-12 rounded-2xl bg-slate-950 border border-white/5 flex items-center justify-center font-black text-slate-700 italic group-hover:border-azure-500/40 transition-colors">
+                                            {u.name?.[0] || 'N'}
+                                        </div>
+                                        <div>
+                                            <div className="font-black text-white text-base uppercase tracking-tighter italic group-hover:text-azure-400 transition-colors">{u.name || 'ANÓNIMO'}</div>
+                                            <div className="text-[10px] text-slate-600 font-bold uppercase tracking-widest">{u.email}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td className="px-12 py-8">
+                                    <span className="text-[10px] font-black text-slate-500 uppercase border border-white/5 px-4 py-1.5 rounded-xl bg-slate-900 italic shadow-inner">
+                                        {u.role}
+                                    </span>
+                                </td>
+                                <td className="px-12 py-8">
+                                    <div className="flex items-center justify-center">
+                                        <button 
+                                            onClick={() => handleTogglePermission(u.id, u.canCreateBlogs)}
+                                            className={`relative inline-flex h-8 w-16 items-center rounded-full transition-all duration-500 shadow-2xl ${u.canCreateBlogs ? 'bg-emerald-500/20 border border-emerald-500/40' : 'bg-slate-900 border border-white/5'}`}
+                                        >
+                                            <span className={`inline-block h-5 w-5 transform rounded-full transition-all duration-500 shadow-inner ${u.canCreateBlogs ? 'translate-x-9 bg-emerald-400' : 'translate-x-2 bg-slate-700'}`} />
+                                            <div className="absolute inset-0 flex items-center justify-between px-3 pointer-events-none">
+                                                 <Check size={10} className={`${u.canCreateBlogs ? 'opacity-100' : 'opacity-0'} text-emerald-400 transition-opacity`} />
+                                                 <X size={10} className={`${!u.canCreateBlogs ? 'opacity-100' : 'opacity-0'} text-slate-700 transition-opacity`} />
+                                            </div>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
           </div>
       )}
 
       {/* Editor Modal */}
-      {isModalOpen && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-neutral-900/50 backdrop-blur-sm">
-            <div className="bg-white w-full max-w-4xl max-h-[90vh] overflow-y-auto border border-neutral-200 shadow-2xl">
-                <div className="sticky top-0 bg-white border-b border-neutral-200 px-8 py-5 flex items-center justify-between z-10">
-                    <h2 className="text-lg font-black uppercase tracking-tight text-neutral-900">
-                        {editingBlog ? 'Editar Artículo' : 'Nuevo Artículo'}
-                    </h2>
-                    <button onClick={closeModal} className="text-neutral-400 hover:text-red-500">
-                        <X size={24} />
-                    </button>
-                </div>
+      <AnimatePresence>
+          {isModalOpen && (
+              <div className="fixed inset-0 z-[400] flex items-center justify-center p-8">
+                <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="absolute inset-0 bg-slate-950/95 backdrop-blur-3xl" 
+                    onClick={closeModal} 
+                />
+                <motion.div 
+                    initial={{ opacity: 0, scale: 0.9, y: 30 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.9, y: 30 }}
+                    className="glass-panel !bg-slate-950/60 w-full max-w-6xl max-h-[90vh] overflow-y-auto border border-white/10 shadow-[0_0_150px_rgba(0,0,0,1)] rounded-[4rem] relative z-10 backdrop-blur-3xl p-14 custom-scrollbar"
+                >
+                    <div className="flex items-center justify-between mb-16 border-b border-white/5 pb-10">
+                        <div className="flex items-center gap-8">
+                            <div className="p-5 bg-secondary text-white rounded-2xl shadow-2xl shadow-secondary/30">
+                                <Plus size={32} />
+                            </div>
+                            <div>
+                                <h2 className="text-4xl font-black uppercase tracking-tighter text-white italic">
+                                    {editingBlog ? 'EDITAR <span className="text-secondary">ACTIVO</span>' : 'REDACTAR <span className="text-secondary">NODO</span>'}
+                                </h2>
+                                <p className="text-[10px] font-black text-slate-500 mt-3 uppercase tracking-[0.6em] italic">Subsistema de Publicación Corporativa</p>
+                            </div>
+                        </div>
+                        <button onClick={closeModal} className="p-5 bg-slate-900 border border-white/10 rounded-2xl text-slate-600 hover:text-white hover:rotate-90 transition-all duration-500 shadow-2xl">
+                            <X size={32} />
+                        </button>
+                    </div>
 
-                <form onSubmit={handleSaveBlog} className="p-8 space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-neutral-500">Título</label>
-                            <input 
-                                required 
-                                type="text"
-                                className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-sm focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none"
-                                value={title}
-                                onChange={e => setTitle(e.target.value)}
+                    <form onSubmit={handleSaveBlog} className="space-y-12">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                            <div className="space-y-4">
+                                <label className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-500 ml-2 italic">Identificador Maestro / Título</label>
+                                <input 
+                                    required 
+                                    type="text"
+                                    className="w-full bg-slate-950/60 border border-white/5 p-6 rounded-[2rem] text-[15px] font-black uppercase tracking-widest text-white shadow-inner focus:border-secondary transition-all outline-none italic placeholder:text-slate-900"
+                                    value={title}
+                                    onChange={e => setTitle(e.target.value.toUpperCase())}
+                                    placeholder="ESPECIFICAR TÍTULO DEL CONTENIDO..."
+                                />
+                            </div>
+                            <div className="space-y-4">
+                                <label className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-500 ml-2 italic">Punto de Origen Multimedia (URL)</label>
+                                <input 
+                                    type="text"
+                                    className="w-full bg-slate-950/60 border border-white/5 p-6 rounded-[2rem] text-[12px] font-black text-azure-400 shadow-inner focus:border-azure-500 transition-all outline-none italic placeholder:text-slate-900"
+                                    value={imageUrl}
+                                    onChange={e => setImageUrl(e.target.value)}
+                                    placeholder="https://cdn.atomic.com/node/..."
+                                />
+                            </div>
+                        </div>
+
+                        <div className="space-y-4">
+                            <label className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-500 ml-2 italic">Extracto Ejecutivo (Resumen Corporativo)</label>
+                            <textarea 
+                                className="w-full bg-slate-950/60 border border-white/5 p-8 rounded-[2.5rem] text-[12px] font-black text-white shadow-inner focus:border-secondary transition-all outline-none resize-none h-32 italic uppercase tracking-widest leading-relaxed placeholder:text-slate-900"
+                                value={excerpt}
+                                onChange={e => setExcerpt(e.target.value)}
+                                placeholder="BREVE SÍNTESIS DEL IMPACTO DEL ARTÍCULO..."
                             />
                         </div>
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-neutral-500">URL Imagen Portada</label>
-                            <input 
-                                type="text"
-                                className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-sm focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none"
-                                value={imageUrl}
-                                onChange={e => setImageUrl(e.target.value)}
-                                placeholder="https://..."
+
+                        <div className="space-y-4">
+                            <label className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-500 ml-2 italic flex items-center justify-between pr-4">
+                                <span>Cuerpo Estructurado del Activo</span>
+                                <span className="text-[9px] text-slate-700 font-black normal-case tracking-[0.4em] italic uppercase">FORMATO_NATIVO: HTML_SUPPORTED</span>
+                            </label>
+                            <textarea 
+                                required
+                                className="w-full bg-slate-950/40 border border-white/5 p-10 rounded-[3rem] text-[13px] font-black text-slate-300 shadow-inner focus:border-secondary transition-all outline-none font-mono h-[500px] leading-loose custom-scrollbar"
+                                value={content}
+                                onChange={e => setContent(e.target.value)}
+                                placeholder="<h1>Title</h1><p>Operational Data...</p>"
                             />
                         </div>
-                    </div>
 
-                    <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-neutral-500">Extracto (Resumen corto)</label>
-                        <textarea 
-                            className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-sm focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none resize-none h-20"
-                            value={excerpt}
-                            onChange={e => setExcerpt(e.target.value)}
-                        />
-                    </div>
-
-                    <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-neutral-500 flex items-center justify-between">
-                            <span>Contenido del Artículo</span>
-                            <span className="text-[9px] text-neutral-400 font-medium normal-case tracking-normal">Soporta HTML/Cuerpo estructurado</span>
-                        </label>
-                        <textarea 
-                            required
-                            className="w-full bg-neutral-50 border border-neutral-200 px-4 py-4 text-sm focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none font-mono h-96"
-                            value={content}
-                            onChange={e => setContent(e.target.value)}
-                            placeholder="<h1>Blog Title</h1><p>Contenido principal...</p>"
-                        />
-                    </div>
-
-                    <div className="flex items-center space-x-3 pt-4">
-                        <button
-                            type="button"
-                            onClick={() => setPublished(!published)}
-                            className={`flex items-center space-x-2 px-4 py-2 border text-xs font-black uppercase tracking-widest transition-colors ${published ? 'bg-green-600 text-white border-green-600' : 'bg-neutral-100 text-neutral-500 border-neutral-200'}`}
-                        >
-                            <Check size={14} className={published ? 'opacity-100' : 'opacity-0'} />
-                            <span>{published ? 'Publicado (Público)' : 'Borrador (Oculto)'}</span>
-                        </button>
-                    </div>
-
-                    <div className="flex justify-end pt-6 border-t border-neutral-100 space-x-4">
-                        <button type="button" onClick={closeModal} className="px-6 py-3 text-xs font-black uppercase tracking-widest text-neutral-500 hover:text-neutral-900 transition-colors">
-                            Cancelar
-                        </button>
-                        <button type="submit" className="bg-orange-600 text-white px-8 py-3 text-xs font-black uppercase tracking-widest hover:bg-neutral-900 transition-colors shadow-lg shadow-orange-600/20">
-                            Guardar Artículo
-                        </button>
-                    </div>
-                </form>
-            </div>
-          </div>
-      )}
+                        <div className="flex flex-wrap items-center gap-8 pt-10 border-t border-white/5">
+                            <button
+                                type="button"
+                                onClick={() => setPublished(!published)}
+                                className={`flex items-center space-x-6 px-10 py-5 border rounded-2xl text-[10px] font-black uppercase tracking-[0.4em] transition-all italic skew-x-[-12deg] shadow-2xl ${published ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-slate-900 text-slate-600 border-white/5'}`}
+                            >
+                                <div className="skew-x-[12deg] flex items-center gap-4">
+                                    <Check size={18} className={published ? 'opacity-100 scale-100' : 'opacity-0 scale-50 transition-all'} />
+                                    <span>{published ? 'ESTADO: CONSOLIDADO (PÚBLICO)' : 'ESTADO: BORRADOR (NODO_INTERNO)'}</span>
+                                </div>
+                            </button>
+                            
+                             <div className="ms-auto flex items-center gap-8">
+                                <button type="button" onClick={closeModal} className="px-10 py-5 text-[10px] font-black uppercase tracking-[0.4em] text-slate-700 hover:text-white transition-all italic">
+                                    CANCELAR_AUD
+                                </button>
+                                <button type="submit" className="bg-secondary text-white px-14 py-6 text-[11px] font-black uppercase tracking-[0.4em] shadow-[0_20px_50px_-10px_rgba(255,99,71,0.6)] hover:bg-white hover:text-secondary rounded-[2rem] active:scale-95 italic skew-x-[-12deg] group transition-all">
+                                    <div className="skew-x-[12deg] flex items-center gap-6">
+                                        <ShieldCheck size={24} className="group-hover/btn:scale-110 transition-transform" />
+                                        <span>AUTORIZAR Y PUBLICAR</span>
+                                    </div>
+                                </button>
+                             </div>
+                        </div>
+                    </form>
+                </motion.div>
+              </div>
+          )}
+      </AnimatePresence>
     </div>
   )
 }
