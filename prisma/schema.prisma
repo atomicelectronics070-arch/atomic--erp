@@ -53,8 +53,8 @@ model User {
   transactions     Transaction[]      @relation("UserTransactions")
   // Web and Content
   webOrders        WebOrder[]         @relation("WebOrderAssignee")
-  canCreateBlogs   Boolean            @default(false)
-  blogs            Blog[]             @relation("UserBlogs")
+  // canCreateBlogs   Boolean            @default(false)
+  // blogs            Blog[]             @relation("UserBlogs")
 }
 
 model Team {
@@ -519,7 +519,7 @@ model Blog {
   published Boolean  @default(false)
   
   authorId  String
-  author    User     @relation("UserBlogs", fields: [authorId], references: [id])
+  // author    User     @relation("UserBlogs", fields: [authorId], references: [id])
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
