@@ -12,10 +12,10 @@ export const authOptions: NextAuthOptions = {
                 password: { label: "Password", type: "password" }
             },
             async authorize(credentials) {
-                console.log("[AUTH] Attempting login for:", credentials?.email)
+                console.error("[AUTH] Attempting login for:", credentials?.email)
                 
                 if (!credentials?.email || !credentials?.password) {
-                    console.log("[AUTH] Missing credentials")
+                    console.error("[AUTH] Missing credentials")
                     throw new Error("Credenciales incompletas")
                 }
 
@@ -26,14 +26,14 @@ export const authOptions: NextAuthOptions = {
                 })
 
                 if (!user) {
-                    console.log("[AUTH] User not found in DB for email:", email)
+                    console.error("[AUTH] User not found in DB for email:", email)
                     throw new Error("Credenciales inválidas")
                 }
 
-                console.log("[AUTH] User found:", user.email, "Status:", user.status)
+                console.error("[AUTH] User found:", user.email, "Status:", user.status)
 
                 if (!user.passwordHash) {
-                    console.log("[AUTH] User has no password hash")
+                    console.error("[AUTH] User has no password hash")
                     throw new Error("Credenciales inválidas")
                 }
 
@@ -42,18 +42,18 @@ export const authOptions: NextAuthOptions = {
                     user.passwordHash
                 )
 
-                console.log("[AUTH] Password match result:", isCorrectPassword)
+                console.error("[AUTH] Password match result:", isCorrectPassword)
 
                 if (!isCorrectPassword) {
                     throw new Error("Credenciales inválidas")
                 }
 
                 if (user.status !== "APPROVED" && user.status !== "ACTIVE") {
-                    console.log("[AUTH] User status not allowed:", user.status)
+                    console.error("[AUTH] User status not allowed:", user.status)
                     throw new Error("Su cuenta está pendiente de aprobación o inactiva.")
                 }
 
-                console.log("[AUTH] Login successful for:", user.email)
+                console.error("[AUTH] Login successful for:", user.email)
                 return {
                     id: user.id,
                     email: user.email,
