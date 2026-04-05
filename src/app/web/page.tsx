@@ -85,34 +85,34 @@ export default function PublicWebPage() {
             key: 'software',
             defaultTitle: 'Software & Desarrollo',
             defaultDesc: 'Licencias, herramientas y soluciones para llevar tu negocio al siguiente nivel.',
-            defaultBg: 'from-slate-900 via-blue-950 to-slate-900',
-            accent: '#3b82f6',
-            accentDark: '#1d4ed8',
+            defaultBg: 'from-slate-900 via-indigo-950 to-slate-900',
+            accent: '#6366f1',
+            accentDark: '#4338ca',
             icon: <Monitor size={14} />,
             tag: 'Software',
-            tagBg: 'bg-blue-600',
+            tagBg: 'bg-indigo-600',
         },
         {
             key: 'automation',
             defaultTitle: 'Automatización Industrial',
             defaultDesc: 'Sistemas de control, PLCs y soluciones de automatización de última generación.',
-            defaultBg: 'from-emerald-950 via-teal-900 to-slate-900',
-            accent: '#10b981',
-            accentDark: '#047857',
+            defaultBg: 'from-slate-900 via-pink-950 to-slate-900',
+            accent: '#ec4899',
+            accentDark: '#be185d',
             icon: <Cpu size={14} />,
             tag: 'Automatización',
-            tagBg: 'bg-emerald-600',
+            tagBg: 'bg-pink-600',
         },
         {
             key: 'gaming',
             defaultTitle: 'Gaming & Consolas',
             defaultDesc: 'El mejor equipamiento gamer, consolas y accesorios para la experiencia definitiva.',
-            defaultBg: 'from-purple-950 via-violet-900 to-slate-900',
-            accent: '#a855f7',
-            accentDark: '#7c3aed',
+            defaultBg: 'from-slate-900 via-violet-950 to-slate-900',
+            accent: '#8b5cf6',
+            accentDark: '#6d28d9',
             icon: <Gamepad2 size={14} />,
             tag: 'Gaming',
-            tagBg: 'bg-purple-600',
+            tagBg: 'bg-violet-600',
         },
     ]
 
@@ -166,7 +166,7 @@ export default function PublicWebPage() {
                         { icon: <Star />, title: "Soporte 24/7", desc: "Asistencia real" }
                     ].map((f, i) => (
                         <div key={i} className="flex items-center space-x-5 text-white/90">
-                            <div className="text-orange-500">{f.icon}</div>
+                            <div className="text-indigo-500">{f.icon}</div>
                             <div>
                                 <p className="text-[10px] font-black uppercase tracking-widest">{f.title}</p>
                                 <p className="text-xs text-white/50">{f.desc}</p>
@@ -177,17 +177,17 @@ export default function PublicWebPage() {
             </section>
 
             {/* Products Section */}
-            <section id="productos" className="bg-neutral-50 py-24">
+            <section id="productos" className="bg-slate-950 py-32">
                 <div className="max-w-7xl mx-auto px-6">
                     <div className="text-center space-y-4 mb-16">
-                        <p className="text-orange-600 text-[10px] font-black uppercase tracking-[0.3em]">Catálogo Real</p>
-                        <h2 className="text-5xl font-light text-neutral-800">Equipos <span className="font-black text-neutral-900">Disponibles</span></h2>
+                        <p className="text-indigo-500 text-[10px] font-black uppercase tracking-[0.3em]">Catálogo Real</p>
+                        <h2 className="text-5xl font-light text-neutral-200 uppercase tracking-tighter">Equipos <span className="font-black text-white italic">Disponibles</span></h2>
                     </div>
 
                     <div className="mb-16 max-w-2xl mx-auto relative group">
-                        <div className={`absolute inset-y-0 left-6 flex items-center pointer-events-none transition-all duration-300 ${isSearching ? 'text-orange-600 scale-110' : 'text-neutral-400 group-focus-within:text-orange-600'}`}>
+                        <div className={`absolute inset-y-0 left-6 flex items-center pointer-events-none transition-all duration-300 ${isSearching ? 'text-indigo-500 scale-110' : 'text-neutral-500 group-focus-within:text-indigo-500'}`}>
                             {isSearching ? (
-                                <div className="animate-spin rounded-full h-5 w-5 border-2 border-orange-600 border-t-transparent shadow-lg shadow-orange-100"></div>
+                                <div className="animate-spin rounded-full h-5 w-5 border-2 border-indigo-500 border-t-transparent shadow-lg shadow-indigo-100"></div>
                             ) : (
                                 <Search size={22} className="group-focus-within:scale-110 transition-transform" />
                             )}
@@ -197,7 +197,7 @@ export default function PublicWebPage() {
                             placeholder="Buscar en el catálogo tecnológico..."
                             value={localSearch}
                             onChange={(e) => setLocalSearch(e.target.value)}
-                            className="w-full bg-white border-b-2 border-neutral-100 px-16 py-8 text-[11px] font-black uppercase tracking-[0.2em] focus:outline-none focus:border-orange-600 transition-all shadow-2xl shadow-neutral-100/30 hover:shadow-orange-100/10 placeholder:text-neutral-300 placeholder:italic"
+                            className="w-full bg-slate-900/50 border-b-2 border-white/5 px-16 py-8 text-[11px] font-black uppercase tracking-[0.2em] focus:outline-none focus:border-indigo-500 transition-all shadow-2xl shadow-black/30 hover:shadow-indigo-500/10 placeholder:text-neutral-500 placeholder:italic text-white"
                         />
                         {localSearch && !isSearching && (
                             <button onClick={() => setLocalSearch("")} className="absolute inset-y-0 right-6 flex items-center text-neutral-300 hover:text-red-500 transition-colors">
@@ -219,33 +219,33 @@ export default function PublicWebPage() {
                                 <Link
                                     key={p.id}
                                     href={`/web/product/${p.id}`}
-                                    className="bg-white group cursor-pointer border border-neutral-100 hover:border-orange-500/20 transition-all flex flex-col h-full hover:shadow-2xl shadow-neutral-100/50 hover:shadow-orange-100/20"
+                                    className="bg-white/5 group cursor-pointer border border-white/5 hover:border-indigo-500/40 transition-all flex flex-col h-full hover:shadow-2xl shadow-black/50 hover:shadow-indigo-500/10 rounded-2xl overflow-hidden"
                                 >
-                                    <div className="aspect-square bg-neutral-50 relative overflow-hidden flex items-center justify-center p-8 border-b border-neutral-50">
+                                    <div className="aspect-square bg-slate-900/50 relative overflow-hidden flex items-center justify-center p-8 border-b border-white/5">
                                         {(() => {
                                             const imgs = safeParseArr(p.images)
                                             return imgs.length > 0 ? (
-                                                <img src={imgs[0]} alt={p.name} referrerPolicy="no-referrer" className="w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-700 ease-out" />
+                                                <img src={imgs[0]} alt={p.name} referrerPolicy="no-referrer" className="w-full h-full object-contain opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700 ease-out" />
                                             ) : (
-                                                <div className="text-neutral-200 uppercase font-black text-[10px] text-center">Sin imagen</div>
+                                                <div className="text-neutral-600 uppercase font-black text-[10px] text-center">Sin imagen</div>
                                             )
                                         })()}
                                         {p.featured && (
-                                            <div className="absolute top-4 right-4 bg-orange-600 text-white text-[8px] font-black uppercase px-2 py-1 shadow-lg">Destacado</div>
+                                            <div className="absolute top-4 right-4 bg-indigo-600 text-white text-[8px] font-black uppercase px-2 py-1 shadow-lg shadow-indigo-500/30">Destacado</div>
                                         )}
-                                        <div className="absolute inset-x-0 bottom-0 bg-neutral-900 text-white py-4 text-[9px] font-black uppercase tracking-[0.3em] translate-y-full group-hover:translate-y-0 transition-transform flex items-center justify-center space-x-2">
+                                        <div className="absolute inset-x-0 bottom-0 bg-indigo-600 text-white py-4 text-[9px] font-black uppercase tracking-[0.3em] translate-y-full group-hover:translate-y-0 transition-transform flex items-center justify-center space-x-2">
                                             <span>Ver detalles</span> <ChevronRight size={12} />
                                         </div>
                                     </div>
-                                    <div className="p-6 space-y-3 flex-1 flex flex-col group-hover:bg-neutral-50/50 transition-colors">
+                                    <div className="p-6 space-y-3 flex-1 flex flex-col group-hover:bg-white/5 transition-colors">
                                         <div className="flex items-center justify-between">
-                                            <span className="text-[10px] font-black text-orange-600 uppercase tracking-[0.2em]">{p.category?.name || 'Varios'}</span>
-                                            {p.specSheetUrl && <Download size={12} className="text-neutral-300" />}
+                                            <span className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.2em]">{p.category?.name || 'Varios'}</span>
+                                            {p.specSheetUrl && <Download size={12} className="text-white/20" />}
                                         </div>
-                                        <h4 className="text-xs font-black uppercase tracking-wide text-neutral-800 line-clamp-2 leading-[1.1] flex-1 group-hover:text-orange-600 transition-colors italic">{p.name}</h4>
-                                        <div className="pt-4 border-t border-neutral-50 flex items-center justify-between">
-                                            <p className="text-lg font-black text-neutral-900 font-mono tracking-tighter">${p.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
-                                            {p.compareAtPrice && <p className="text-[10px] text-neutral-300 line-through font-bold">${p.compareAtPrice.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>}
+                                        <h4 className="text-sm font-black uppercase tracking-wide text-white line-clamp-2 leading-[1.1] flex-1 group-hover:text-indigo-400 transition-colors italic">{p.name}</h4>
+                                        <div className="pt-4 border-t border-white/5 flex items-center justify-between">
+                                            <p className="text-xl font-black text-white font-mono tracking-tighter">${p.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
+                                            {p.compareAtPrice && <p className="text-[10px] text-white/20 line-through font-bold">${p.compareAtPrice.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>}
                                         </div>
                                     </div>
                                 </Link>
@@ -261,18 +261,18 @@ export default function PublicWebPage() {
                     {!loading && totalProducts > 0 && (
                         <div className="mt-24 flex flex-col items-center space-y-8">
                             <div className="flex items-center space-x-2">
-                                <button onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))} disabled={currentPage === 1} className="w-12 h-12 flex items-center justify-center border-2 border-neutral-100 text-neutral-400 hover:border-orange-600 hover:text-orange-600 disabled:opacity-30 transition-all font-black">&lt;</button>
+                                <button onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))} disabled={currentPage === 1} className="w-12 h-12 flex items-center justify-center border-2 border-white/5 text-white/30 hover:border-indigo-500 hover:text-indigo-500 disabled:opacity-10 transition-all font-black rounded-xl">&lt;</button>
                                 {[...Array(totalPages)].map((_, i) => {
                                     const page = i + 1
                                     if (totalPages > 7 && page !== 1 && page !== totalPages && Math.abs(page - currentPage) > 1) {
-                                        if (page === 2 || page === totalPages - 1) return <span key={page} className="text-neutral-300">...</span>
+                                        if (page === 2 || page === totalPages - 1) return <span key={page} className="text-white/10">...</span>
                                         return null
                                     }
                                     return (
-                                        <button key={page} onClick={() => setCurrentPage(page)} className={`w-12 h-12 flex items-center justify-center border-2 font-black text-xs transition-all ${currentPage === page ? "bg-neutral-900 border-neutral-900 text-white shadow-lg" : "bg-white border-neutral-100 text-neutral-400 hover:border-orange-600 hover:text-orange-600"}`}>{page}</button>
+                                        <button key={page} onClick={() => setCurrentPage(page)} className={`w-12 h-12 flex items-center justify-center border-2 font-black text-xs transition-all rounded-xl ${currentPage === page ? "bg-indigo-600 border-indigo-600 text-white shadow-lg shadow-indigo-500/40" : "bg-white/5 border-white/5 text-white/30 hover:border-indigo-500 hover:text-indigo-500"}`}>{page}</button>
                                     )
                                 })}
-                                <button onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))} disabled={currentPage === totalPages} className="w-12 h-12 flex items-center justify-center border-2 border-neutral-100 text-neutral-400 hover:border-orange-600 hover:text-orange-600 disabled:opacity-30 transition-all font-black">&gt;</button>
+                                <button onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))} disabled={currentPage === totalPages} className="w-12 h-12 flex items-center justify-center border-2 border-white/5 text-white/30 hover:border-indigo-500 hover:text-indigo-500 disabled:opacity-10 transition-all font-black rounded-xl">&gt;</button>
                             </div>
                             <p className="text-[10px] font-black text-neutral-300 uppercase tracking-widest">Página {currentPage} de {totalPages} — {totalProducts} resultados</p>
                         </div>
@@ -282,16 +282,16 @@ export default function PublicWebPage() {
 
             {/* Removed Newsletter and Footer (Newsletter stays in home, footer goes to layout) */}
             {/* Newsletter */}
-            <section className="bg-orange-600 py-24 relative overflow-hidden">
-                <div className="absolute right-0 top-0 h-full w-1/3 bg-orange-500/20 -skew-x-12 translate-x-20"></div>
+            <section className="bg-gradient-to-r from-indigo-900 to-pink-900 py-32 relative overflow-hidden">
+                <div className="absolute right-0 top-0 h-full w-1/3 bg-white/5 -skew-x-12 translate-x-20"></div>
                 <div className="max-w-7xl mx-auto px-6 relative z-10 flex flex-col md:flex-row items-center justify-between gap-12 text-white">
-                    <div className="max-w-xl space-y-4">
-                        <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter leading-none">Únete a la <br />Comunidad ATOMIC</h2>
-                        <p className="text-white/80 font-medium">Suscríbete para recibir ofertas exclusivas, lanzamientos y consejos de tecnología.</p>
+                    <div className="max-w-xl space-y-6">
+                        <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter leading-none italic">Únete a la <br />Comunidad <span className="text-indigo-400">ATOMIC</span></h2>
+                        <p className="text-white/60 font-medium text-lg">Suscríbete para recibir ofertas exclusivas, lanzamientos y consejos de tecnología industrial.</p>
                     </div>
                     <form className="w-full max-w-md flex flex-col sm:flex-row gap-4">
-                        <input type="email" placeholder="Tu correo electrónico" className="flex-1 bg-white/10 border-2 border-white/20 px-6 py-5 text-white placeholder-white/50 focus:outline-none focus:border-white transition-all font-bold" />
-                        <button className="bg-white text-orange-600 px-10 py-5 text-xs font-black uppercase tracking-widest shadow-2xl hover:bg-neutral-900 hover:text-white transition-all">Suscribirme</button>
+                        <input type="email" placeholder="Tu correo electrónico" className="flex-1 bg-white/10 border-2 border-white/20 px-6 py-5 text-white placeholder-white/30 focus:outline-none focus:border-indigo-400 transition-all font-bold rounded-2xl" />
+                        <button className="bg-white text-indigo-900 px-10 py-5 text-[10px] font-black uppercase tracking-widest shadow-2xl hover:bg-slate-900 hover:text-white transition-all rounded-2xl">Suscribirme</button>
                     </form>
                 </div>
             </section>
@@ -483,40 +483,40 @@ function CategoriesBanner({ categories }: { categories: any[] }) {
     const visible = categories.filter((c: any) => c.isVisible !== false)
 
     return (
-        <section id="categorias" className="w-full bg-neutral-950 relative overflow-hidden">
+        <section id="categorias" className="w-full bg-slate-950 relative overflow-hidden">
             {/* Diagonal grid texture */}
             <div
                 className="absolute inset-0 opacity-[0.025]"
                 style={{ backgroundImage: 'repeating-linear-gradient(45deg, #fff 0, #fff 1px, transparent 0, transparent 50%)', backgroundSize: '14px 14px' }}
             ></div>
 
-            {/* Top orange line */}
-            <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-orange-600 to-transparent"></div>
+            {/* Top divider glow */}
+            <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent"></div>
 
-            <div className="relative z-10 py-10 pb-8">
+            <div className="relative z-10 py-20 pb-12">
                 {/* Header row */}
-                <div className="max-w-7xl mx-auto px-6 mb-7 flex items-end justify-between">
+                <div className="max-w-7xl mx-auto px-6 mb-12 flex items-end justify-between">
                     <div className="space-y-1">
-                        <p className="text-orange-500 text-[9px] font-black uppercase tracking-[0.4em]">Explorar por sección</p>
-                        <h2 className="text-3xl md:text-4xl font-black text-white uppercase tracking-tighter leading-none">
-                            Todas las <span className="text-orange-500">Categorías</span>
+                        <p className="text-indigo-500 text-[9px] font-black uppercase tracking-[0.4em]">Explorar por sección</p>
+                        <h2 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tighter leading-none">
+                            Todas las <span className="text-indigo-400 italic">Categorías</span>
                         </h2>
-                        <p className="text-white/25 text-[10px] font-bold uppercase tracking-widest pt-1">
-                            {visible.length} categoría{visible.length !== 1 ? 's' : ''} disponible{visible.length !== 1 ? 's' : ''} — arrastra para explorar
+                        <p className="text-white/20 text-[10px] font-bold uppercase tracking-widest pt-2">
+                            {visible.length} sección{visible.length !== 1 ? 'es' : ''} disponible{visible.length !== 1 ? 's' : ''} — ingeniería modular
                         </p>
                     </div>
                     <div className="flex items-center gap-2 pb-1">
                         <button
                             onClick={() => scroll('left')}
                             disabled={!canScrollLeft}
-                            className="w-10 h-10 border border-white/10 flex items-center justify-center text-white/30 hover:text-white hover:border-orange-600 hover:bg-orange-600/10 transition-all disabled:opacity-20 disabled:cursor-not-allowed"
+                            className="w-12 h-12 border border-white/10 flex items-center justify-center text-white/30 hover:text-white hover:border-indigo-500 hover:bg-indigo-500/10 transition-all disabled:opacity-10 rounded-xl"
                         >
                             <ChevronLeft size={16} />
                         </button>
                         <button
                             onClick={() => scroll('right')}
                             disabled={!canScrollRight}
-                            className="w-10 h-10 border border-white/10 flex items-center justify-center text-white/30 hover:text-white hover:border-orange-600 hover:bg-orange-600/10 transition-all disabled:opacity-20 disabled:cursor-not-allowed"
+                            className="w-12 h-12 border border-white/10 flex items-center justify-center text-white/30 hover:text-white hover:border-indigo-500 hover:bg-indigo-500/10 transition-all disabled:opacity-10 rounded-xl"
                         >
                             <ChevronRight size={16} />
                         </button>
@@ -525,17 +525,6 @@ function CategoriesBanner({ categories }: { categories: any[] }) {
 
                 {/* Cards track */}
                 <div className="relative">
-                    {/* Left fade gradient */}
-                    <div
-                        className={`absolute left-0 top-0 bottom-4 w-20 z-10 pointer-events-none transition-opacity duration-400 ${canScrollLeft ? 'opacity-100' : 'opacity-0'}`}
-                        style={{ background: 'linear-gradient(90deg, #030712 0%, transparent 100%)' }}
-                    ></div>
-                    {/* Right fade gradient */}
-                    <div
-                        className={`absolute right-0 top-0 bottom-4 w-20 z-10 pointer-events-none transition-opacity duration-400 ${canScrollRight ? 'opacity-100' : 'opacity-0'}`}
-                        style={{ background: 'linear-gradient(270deg, #030712 0%, transparent 100%)' }}
-                    ></div>
-
                     <div
                         ref={scrollRef}
                         onScroll={checkScroll}
@@ -543,13 +532,10 @@ function CategoriesBanner({ categories }: { categories: any[] }) {
                         onMouseMove={onMouseMove}
                         onMouseUp={onMouseUp}
                         onMouseLeave={onMouseUp}
-                        className="flex gap-3 overflow-x-auto pl-6 pr-6 pb-3"
+                        className="flex gap-4 overflow-x-auto pl-6 pr-6 pb-6 hide-scrollbar"
                         style={{
-                            scrollbarWidth: 'none',
-                            msOverflowStyle: 'none',
                             cursor: isDragging ? 'grabbing' : 'grab',
                             userSelect: 'none',
-                            WebkitOverflowScrolling: 'touch',
                         }}
                     >
                         {visible.map((cat: any, i: number) => (
@@ -557,86 +543,66 @@ function CategoriesBanner({ categories }: { categories: any[] }) {
                                 key={cat.id}
                                 href="#productos"
                                 draggable={false}
-                                className="group shrink-0 relative overflow-hidden transition-all duration-300 hover:-translate-y-1"
+                                className="group shrink-0 relative overflow-hidden transition-all duration-500 hover:-translate-y-2 rounded-3xl"
                                 style={{
                                     width: `${CARD_W}px`,
                                     minWidth: `${CARD_W}px`,
-                                    border: '1px solid rgba(255,255,255,0.07)',
-                                    boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
+                                    border: '1px solid rgba(255,255,255,0.05)',
+                                    boxShadow: '0 10px 40px rgba(0,0,0,0.4)',
                                 }}
                             >
                                 {/* Category image */}
-                                <div className="h-40 overflow-hidden bg-neutral-900 relative">
+                                <div className="h-48 overflow-hidden bg-slate-900 relative">
                                     {cat.image ? (
                                         <img
                                             src={cat.image}
                                             alt={cat.name}
                                             draggable={false}
-                                            className="w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700 ease-out"
+                                            className="w-full h-full object-cover opacity-40 group-hover:opacity-80 group-hover:scale-110 transition-all duration-1000 ease-out"
                                         />
                                     ) : (
                                         <div className="absolute inset-0 flex items-center justify-center">
-                                            <span className="text-6xl font-black uppercase select-none"
-                                                style={{ color: 'rgba(255,255,255,0.05)' }}>
+                                            <span className="text-7xl font-black uppercase select-none opacity-5">
                                                 {cat.name[0]}
                                             </span>
                                         </div>
                                     )}
                                     {/* Scrim */}
-                                    <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/20 to-transparent"></div>
-                                    {/* Orange bottom bar on hover */}
-                                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-orange-600 scale-x-0 group-hover:scale-x-100 transition-transform duration-400 origin-left"></div>
-                                    {/* Category number */}
-                                    <div className="absolute top-3 right-3 text-[9px] font-black text-white/20 group-hover:text-orange-500/70 transition-colors">
-                                        {String(i + 1).padStart(2, '0')}
-                                    </div>
+                                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
+                                    {/* Accent line on hover */}
+                                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-indigo-500 scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
                                 </div>
 
                                 {/* Info */}
-                                <div className="p-3.5 bg-neutral-900/90 backdrop-blur-sm">
-                                    <h3 className="text-white text-[12px] font-black uppercase tracking-wide line-clamp-1 group-hover:text-orange-400 transition-colors duration-200">
+                                <div className="p-5 bg-slate-900/90 backdrop-blur-md">
+                                    <h3 className="text-white text-xs font-black uppercase tracking-[0.1em] line-clamp-1 group-hover:text-indigo-400 transition-colors">
                                         {cat.name}
                                     </h3>
-                                    {cat.description ? (
-                                        <p className="text-white/35 text-[9px] font-medium mt-0.5 line-clamp-1 leading-relaxed">
-                                            {cat.description}
-                                        </p>
-                                    ) : (
-                                        <p className="text-white/20 text-[9px] font-medium mt-0.5 italic">Ver productos →</p>
-                                    )}
-                                    <div className="flex items-center gap-1 mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                        <span className="text-[8px] font-black uppercase tracking-widest text-orange-500">Explorar</span>
-                                        <ArrowRight size={8} className="text-orange-500" />
-                                    </div>
+                                    <p className="text-white/30 text-[9px] font-bold mt-1 uppercase tracking-widest italic">Explorar →</p>
                                 </div>
                             </a>
                         ))}
                     </div>
                 </div>
 
-                {/* Dots progress bar */}
-                <div className="flex justify-center items-center gap-1.5 mt-5">
+                {/* Progress bar info */}
+                <div className="flex justify-center items-center gap-1.5 mt-8">
                     {visible.slice(0, Math.min(visible.length, 12)).map((_: any, i: number) => (
-                        <button
+                        <div
                             key={i}
-                            onClick={() => goToIdx(i)}
-                            className="transition-all duration-300 rounded-none"
-                            title={visible[i]?.name}
+                            className="transition-all duration-500"
                             style={{
-                                height: '3px',
-                                width: activeIdx === i ? '24px' : '6px',
-                                backgroundColor: activeIdx === i ? '#ea580c' : 'rgba(255,255,255,0.15)',
+                                height: '2px',
+                                width: activeIdx === i ? '32px' : '4px',
+                                backgroundColor: activeIdx === i ? '#6366f1' : 'rgba(255,255,255,0.1)',
                             }}
                         />
                     ))}
-                    {visible.length > 12 && (
-                        <span className="text-white/20 text-[8px] font-black uppercase ml-1">+{visible.length - 12}</span>
-                    )}
                 </div>
             </div>
 
             {/* Bottom line */}
-            <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-orange-600/25 to-transparent"></div>
+            <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-indigo-500/10 to-transparent"></div>
         </section>
     )
 }

@@ -1,7 +1,7 @@
 "use client"
 
 import { useRef, useState, useEffect } from "react"
-import { ArrowRight, ChevronLeft, ChevronRight, Code, Database, Sparkles, Smartphone } from "lucide-react"
+import { ArrowRight, ChevronLeft, ChevronRight, Code, Database, Sparkles, Smartphone, X } from "lucide-react"
 
 // Custom CSS for floating animations and scroll hiding
 const styles = `
@@ -88,7 +88,7 @@ const PORTFOLIO_ITEMS = [
         category: "Ecosistema Central",
         description: "El núcleo operativo de ATOMIC. Simulación en vivo de nuestro panel de control de Ultra-Rendimiento.",
         imagePlaceholderbg: "bg-orange-900/40",
-        accent: "#ea580c",
+        accent: "#6366f1",
         delay: false,
         previewUrl: "/dashboard"
     }
@@ -133,7 +133,7 @@ export default function SoftwareLandingPage() {
     }, [])
 
     return (
-        <div className="min-h-screen bg-neutral-950 text-white selection:bg-orange-500/30 overflow-hidden relative">
+        <div className="min-h-screen bg-neutral-950 text-white selection:bg-indigo-500/30 overflow-hidden relative">
             <style dangerouslySetInnerHTML={{ __html: styles }} />
             
             {/* INICIO MODAL DE SOFTWARE INTERACTIVO (OS WINDOW) */}
@@ -205,9 +205,9 @@ export default function SoftwareLandingPage() {
             {/* FIN MODAL */}
 
             {/* Background Effects */}
-            <div className="absolute top-0 inset-x-0 h-[500px] bg-gradient-to-b from-orange-900/20 via-neutral-950 to-neutral-950 pointer-events-none"></div>
-            <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full bg-orange-600/5 blur-[150px] pointer-events-none"></div>
-            <div className="absolute top-[20%] right-[-10%] w-[40%] h-[50%] rounded-full bg-blue-600/5 blur-[120px] pointer-events-none"></div>
+            <div className="absolute top-0 inset-x-0 h-[500px] bg-gradient-to-b from-indigo-900/20 via-neutral-950 to-neutral-950 pointer-events-none"></div>
+            <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full bg-indigo-600/5 blur-[150px] pointer-events-none"></div>
+            <div className="absolute top-[20%] right-[-10%] w-[40%] h-[50%] rounded-full bg-pink-600/5 blur-[120px] pointer-events-none"></div>
             
             {/* Grid Texture */}
             <div className="absolute inset-0 opacity-[0.015] pointer-events-none" style={{ backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 49px, #fff 49px, #fff 50px), repeating-linear-gradient(-90deg, transparent, transparent 49px, #fff 49px, #fff 50px)', backgroundSize: '50px 50px' }}></div>
@@ -215,14 +215,14 @@ export default function SoftwareLandingPage() {
             <div className="relative z-10 pt-40 pb-20">
                 {/* HERO SECTION */}
                 <section className="max-w-7xl mx-auto px-6 mb-32 flex flex-col items-center text-center">
-                    <div className="inline-flex items-center gap-3 px-4 py-2 border border-orange-500/30 bg-orange-500/10 backdrop-blur-md rounded-full mb-8">
-                        <Code size={14} className="text-orange-500" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-orange-400">Atomic Software Labs</span>
+                    <div className="inline-flex items-center gap-3 px-4 py-2 border border-indigo-500/30 bg-indigo-500/10 backdrop-blur-md rounded-full mb-8">
+                        <Code size={14} className="text-indigo-400" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-300">Atomic Software Labs</span>
                     </div>
 
                     <h1 className="text-5xl md:text-7xl lg:text-8xl font-black uppercase tracking-tighter leading-[0.85] mb-8">
                         Ingeniería en <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-orange-600 to-red-600">Desarrollo</span>
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-indigo-600 to-pink-600">Desarrollo</span>
                     </h1>
 
                     <p className="max-w-3xl text-lg md:text-xl text-neutral-400 font-medium leading-relaxed">
@@ -247,7 +247,7 @@ export default function SoftwareLandingPage() {
                             <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter text-white">
                                 Interfaces Trabajadas <span className="text-neutral-600">Hasta Ahora</span>
                             </h2>
-                            <p className="text-[11px] font-bold uppercase tracking-widest text-orange-500">
+                            <p className="text-[11px] font-bold uppercase tracking-widest text-indigo-500">
                                 Desliza para explorar nuestro portafolio de ecosistemas
                             </p>
                         </div>
@@ -353,7 +353,7 @@ export default function SoftwareLandingPage() {
             </div>
             
             {/* Bottom Glow */}
-            <div className="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-orange-600/50 to-transparent"></div>
+            <div className="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-indigo-600/50 to-transparent"></div>
         </div>
     )
 }
