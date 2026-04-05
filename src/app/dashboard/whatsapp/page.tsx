@@ -81,235 +81,211 @@ export default function WhatsAppInbox() {
     }
 
     return (
-        <div className="flex h-[calc(100vh-14rem)] glass-panel border-white/5 shadow-[0_60px_120px_-20px_rgba(0,0,0,0.8)] overflow-hidden rounded-[3.5rem] relative z-10 backdrop-blur-3xl animate-in fade-in duration-1000">
-            {/* Sidebar Inbox */}
-            <div className="w-[380px] border-r border-white/5 flex flex-col bg-slate-950/40 relative">
-                <div className="p-10 border-b border-white/5 bg-white/[0.01]">
-                    <div className="flex items-center justify-between mb-8">
+        <div className="flex h-[calc(100vh-14rem)] glass-panel border-white/10 shadow-[0_80px_160px_-40px_rgba(0,0,0,0.9)] overflow-hidden rounded-[4rem] relative z-10 backdrop-blur-[40px] animate-in fade-in duration-1000 ring-1 ring-white/5">
+            {/* Sidebar Inbox - Redefined */}
+            <div className="w-[420px] border-r border-white/10 flex flex-col bg-slate-950/60 relative">
+                <div className="p-12 border-b border-white/10 bg-white/[0.02]">
+                    <div className="flex items-center justify-between mb-10">
                         <h2 className="text-[11px] font-black uppercase tracking-[0.6em] text-secondary flex items-center italic">
-                            <MessageSquare className="mr-3 drop-shadow-[0_0_8px_rgba(255,99,71,0.5)]" size={18} />
-                            Bandeja Central
+                            <MessageSquare className="mr-5 drop-shadow-[0_0_12px_rgba(255,99,71,0.6)]" size={20} />
+                            BANDEJA CENTRAL v4
                         </h2>
-                        <button className="text-slate-700 hover:text-white transition-colors">
-                            <Filter size={18} />
+                        <button className="text-slate-700 hover:text-white hover:rotate-90 transition-all duration-500">
+                            <Filter size={20} />
                         </button>
                     </div>
                     <div className="relative group">
-                        <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-700 group-focus-within:text-secondary transition-colors" size={18} />
+                        <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-700 group-focus-within:text-secondary group-hover:scale-110 transition-all font-black" size={18} />
                         <input
                             type="text"
-                            placeholder="FILTRAR CANALES..."
-                            className="w-full pl-14 pr-6 py-4 bg-slate-900 border border-white/5 text-[11px] font-black uppercase tracking-widest text-white focus:border-secondary outline-none transition-all placeholder:text-slate-800 rounded-2xl shadow-inner"
+                            placeholder="ESCANEAR CONVERSACIONES..."
+                            className="w-full pl-16 pr-8 py-6 bg-slate-900 border border-white/5 text-white text-[11px] font-black uppercase tracking-widest focus:border-secondary transition-all outline-none rounded-2xl placeholder:text-slate-800 italic"
                         />
                     </div>
                 </div>
 
-                <div className="flex-1 overflow-y-auto custom-scrollbar">
-                    {conversations.map((chat) => (
-                        <div
+                <div className="flex-1 overflow-y-auto custom-scrollbar-hidden p-4 space-y-4">
+                    {loading ? (
+                        <div className="flex flex-col items-center justify-center h-full gap-5 opacity-20">
+                            <div className="w-10 h-10 border-4 border-azure-500/20 border-t-azure-500 rounded-full animate-spin" />
+                            <p className="text-[10px] font-black uppercase tracking-[0.4em] italic">Sincronizando Nodo...</p>
+                        </div>
+                    ) : conversations.map((chat: any) => (
+                        <div 
                             key={chat.id}
                             onClick={() => selectChat(chat)}
-                            className={`p-8 border-b border-white/[0.02] cursor-pointer transition-all hover:bg-white/[0.03] group relative ${selectedChat?.id === chat.id ? 'bg-white/[0.05] border-l-4 border-l-secondary shadow-inner' : ''}`}
+                            className={`p-10 border border-transparent cursor-pointer transition-all hover:bg-white/[0.04] group relative rounded-3xl ${selectedChat?.id === chat.id ? 'bg-white/[0.06] border-white/5 shadow-inner' : ''}`}
                         >
-                            {selectedChat?.id === chat.id && <div className="absolute right-4 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-secondary shadow-[0_0_8px_rgba(255,99,71,1)] animate-pulse" />}
-                            
-                            <div className="flex justify-between items-start mb-3">
-                                <span className="text-[12px] font-black text-white uppercase tracking-tighter truncate w-44 italic group-hover:text-secondary transition-colors">
-                                    {chat.contact.name || chat.contact.whatsappId}
-                                </span>
-                                <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded border ${
-                                    chat.status === 'ACTIVE' ? 'text-emerald-400 border-emerald-500/20 bg-emerald-500/5' : 'text-slate-600 border-white/5 bg-white/5'
-                                }`}>
-                                    {chat.status}
-                                </span>
-                            </div>
-                            <p className="text-[10px] text-slate-500 truncate font-black uppercase tracking-tight italic opacity-60">
-                                {chat.messages?.[0]?.body || "SIN ACTIVIDAD RECIENTE"}
-                            </p>
-                            <div className="mt-4 flex items-center justify-between">
-                                {chat.owner ? (
-                                    <div className="flex items-center text-[8px] font-black text-slate-400 uppercase tracking-widest bg-slate-900 px-3 py-1.5 rounded-lg border border-white/5 shadow-inner">
-                                        <User size={10} className="mr-2 text-azure-400" /> {chat.owner.name}
+                            <div className="flex items-center gap-6">
+                                <div className={`w-16 h-16 rounded-2xl bg-slate-900 border border-white/5 flex items-center justify-center font-black text-xl group-hover:border-secondary/30 transition-all shadow-2xl relative overflow-hidden`}>
+                                    <div className="absolute inset-0 bg-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                    <span className="relative z-10">{(chat.contact?.name?.[0] || chat.customerName?.[0] || 'U').toUpperCase()}</span>
+                                </div>
+                                <div className="flex-1 min-w-0 space-y-2">
+                                    <div className="flex items-center justify-between">
+                                        <p className="text-sm font-black text-white uppercase tracking-tighter italic group-hover:text-secondary transition-colors truncate pr-4">{chat.contact?.name || chat.customerName || 'NODO DESCONOCIDO'}</p>
+                                        <span className="text-[9px] font-black text-slate-700 uppercase tracking-widest italic">{new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                                     </div>
-                                ) : (
-                                    <div className="text-[8px] font-black text-secondary uppercase bg-secondary/10 px-3 py-1.5 rounded-lg border border-secondary/20 shadow-2xl animate-pulse italic">
-                                        DESVINCULADO
+                                    <div className="flex items-center justify-between">
+                                        <p className="text-[11px] text-slate-500 uppercase tracking-widest truncate max-w-[180px] italic group-hover:text-slate-300 transition-colors">
+                                            {chat.owner ? `[ASIGNADO: ${chat.owner.name}]` : "SIN ASIGNACIÓN TÁCTICA"}
+                                        </p>
+                                        <div className={`px-4 py-1.5 rounded-lg border text-[9px] font-black uppercase tracking-widest italic ${
+                                            chat.status === 'ACTIVE' ? 'text-emerald-400 border-emerald-500/20 bg-emerald-500/5' : 'text-slate-600 border-white/10 bg-white/5'
+                                        }`}>
+                                            {chat.status}
+                                        </div>
                                     </div>
-                                )}
-                                <span className="text-[8px] font-black text-slate-700 tracking-widest uppercase italic">
-                                    {chat.messages?.[0] ? new Date(chat.messages[0].createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ""}
-                                </span>
+                                </div>
                             </div>
+                            {selectedChat?.id === chat.id && <div className="absolute left-2 top-10 bottom-10 w-1.5 bg-secondary rounded-full shadow-[0_0_12px_rgba(255,99,71,0.6)]" />}
                         </div>
                     ))}
-                    {conversations.length === 0 && !loading && (
-                        <div className="p-20 text-center text-slate-800 flex flex-col items-center">
-                            <MessageCircle size={40} className="mb-6 opacity-10" />
-                            <p className="text-[10px] font-black uppercase tracking-[0.4em] italic">Vacio: Nodo de comunicación inactivo</p>
-                        </div>
-                    )}
                 </div>
             </div>
 
-            {/* Chat View */}
+            {/* Chat View - Redefined */}
             <div className="flex-1 flex flex-col bg-slate-950/20 relative">
                 {selectedChat ? (
                     <>
                         {/* Chat Header */}
-                        <div className="h-24 px-10 border-b border-white/5 flex items-center justify-between bg-white/[0.01] shrink-0 relative z-20">
-                            <div className="flex items-center space-x-6">
-                                <div className="w-14 h-14 bg-slate-900 border border-white/10 text-white flex items-center justify-center font-black text-xl shadow-2xl rounded-2xl italic group hover:scale-105 transition-transform">
-                                    {selectedChat.contact.name?.[0] || "#"}
+                        <div className="h-32 p-12 border-b border-white/10 flex items-center justify-between bg-white/[0.03] shrink-0 relative z-20 backdrop-blur-xl">
+                            <div className="flex items-center gap-10">
+                                <div className="w-16 h-16 bg-slate-900 border border-white/10 rounded-2xl flex items-center justify-center font-black text-white text-xl shadow-2xl relative">
+                                    <div className="absolute top-[-4px] right-[-4px] w-4 h-4 bg-emerald-500 rounded-full border-2 border-slate-900 shadow-[0_0_10px_rgba(16,185,129,0.7)] animate-pulse" />
+                                    {selectedChat.contact?.name?.[0] || selectedChat.customerName?.[0]}
                                 </div>
                                 <div>
-                                    <h3 className="text-lg font-black text-white uppercase tracking-tighter italic leading-none mb-1">
-                                        {selectedChat.contact.name}
-                                    </h3>
-                                    <div className="flex items-center gap-3">
-                                        <span className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse" />
-                                        <p className="text-[10px] font-black text-slate-500 tracking-[0.3em] uppercase italic">
-                                            +{selectedChat.contact.whatsappId} <span className="mx-2 text-slate-800">|</span> <span className="text-secondary opacity-60">EN_LÍNEA</span>
-                                        </p>
+                                    <h3 className="text-2xl font-black text-white uppercase tracking-tighter italic leading-none">{selectedChat.contact?.name || selectedChat.customerName}</h3>
+                                    <div className="flex items-center gap-4 mt-3">
+                                        <span className="text-[10px] font-black text-secondary tracking-[0.4em] uppercase italic bg-secondary/10 px-4 py-1.5 rounded-xl border border-secondary/20 shadow-inner">WA_NODE_ACTIVE</span>
+                                        <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest italic">+{selectedChat.contact?.whatsappId || selectedChat.customerPhone}</span>
                                     </div>
                                 </div>
                             </div>
+                            
                             <div className="flex items-center gap-6">
                                 {!selectedChat.ownerId && (
                                     <button
                                         onClick={handleSelfAssign}
-                                        className="px-8 py-3 bg-secondary text-white text-[10px] font-black uppercase tracking-[0.3em] hover:bg-white hover:text-secondary transition-all shadow-2xl shadow-secondary/30 rounded-xl active:scale-95 italic skew-x-[-12deg]"
+                                        className="px-10 py-4 bg-secondary/80 text-white text-[11px] font-black uppercase tracking-[0.4em] hover:scale-[1.05] hover:bg-secondary hover:text-white transition-all shadow-[0_30px_70px_-15px_rgba(255,99,71,0.6)] rounded-[1.5rem] active:scale-95 italic skew-x-[-15deg] group border border-white/10"
                                     >
-                                        <div className="skew-x-[12deg]">Autoasignarme</div>
+                                        <span className="relative z-10 flex items-center gap-4">
+                                            <Target size={18} className="group-hover:rotate-45 transition-transform" />
+                                            AUTO_ASIGNACIÓN
+                                        </span>
                                     </button>
                                 )}
-                                <button className="p-4 glass-panel !bg-slate-900 text-slate-600 hover:text-white transition-all rounded-xl border-white/5 shadow-2xl">
-                                    <MoreVertical size={20} />
+                                <button className="p-5 bg-slate-900/80 border border-white/10 text-slate-500 hover:text-white rounded-[1.2rem] shadow-2xl transition-all">
+                                    <MoreVertical size={24} />
                                 </button>
                             </div>
                         </div>
 
                         {/* Messages Area */}
-                        <div className="flex-1 p-10 overflow-y-auto space-y-10 bg-slate-950/40 custom-scrollbar relative">
-                            {/* Inner Orb Overlay for Depth */}
-                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-secondary/5 blur-[120px] pointer-events-none" />
+                        <div className="flex-1 overflow-y-auto p-16 space-y-12 bg-white/[0.01] custom-scrollbar-hidden scroll-smooth relative">
+                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-secondary/5 blur-[150px] pointer-events-none" />
                             
-                            <div className="flex flex-col items-center mb-16 relative z-10">
-                                <div className="px-10 py-2.5 glass-panel !bg-slate-900/60 border-white/5 text-[9px] font-black text-slate-600 uppercase tracking-[0.6em] rounded-full shadow-2xl italic">
-                                    INICIO DEL PROTOCOLO DE CONVERSACIÓN
-                                </div>
-                            </div>
-
-                            {messages.map((msg) => (
-                                <div
-                                    key={msg.id}
-                                    className={`flex ${msg.direction === 'OUTBOUND' ? 'justify-end' : 'justify-start'} relative z-10`}
+                            {messages.map((msg, idx) => (
+                                <motion.div 
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    key={msg.id || idx}
+                                    className={`flex w-full ${msg.direction === 'OUTBOUND' || msg.fromMe ? 'justify-end' : 'justify-start'} relative z-10`}
                                 >
-                                    <div className={`max-w-[65%] p-8 rounded-[2.5rem] border shadow-[0_20px_40px_rgba(0,0,0,0.4)] ${msg.direction === 'OUTBOUND' ? 'bg-[#ff6347]/10 text-white border-[#ff6347]/20 rounded-tr-none' : 'bg-slate-900/60 text-slate-100 border-white/5 rounded-tl-none backdrop-blur-xl'}`}>
-                                        <p className="text-[13px] font-black leading-relaxed tracking-tight italic uppercase">{msg.body}</p>
-                                        <div className={`mt-6 flex items-center justify-end gap-3 ${msg.direction === 'OUTBOUND' ? 'text-secondary/50' : 'text-slate-700'}`}>
-                                            <span className="text-[9px] font-black uppercase tracking-widest italic">
-                                                {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                            </span>
-                                            {msg.direction === 'OUTBOUND' && <CheckCheck size={14} className={msg.status === 'READ' ? 'text-azure-400' : ''} />}
+                                    <div className={`max-w-[70%] p-10 rounded-[2.5rem] shadow-[0_30px_60px_-20px_rgba(0,0,0,0.5)] border relative ${
+                                        msg.direction === 'OUTBOUND' || msg.fromMe 
+                                        ? 'bg-secondary text-white border-white/10 rounded-tr-none italic' 
+                                        : 'bg-slate-900 text-slate-200 border-white/5 rounded-tl-none font-bold'
+                                    }`}>
+                                        <p className="text-[13px] leading-relaxed tracking-wide px-4 font-black uppercase italic">{msg.body || msg.text}</p>
+                                        <div className={`mt-6 px-4 flex items-center gap-4 text-[9px] font-black uppercase tracking-widest ${msg.direction === 'OUTBOUND' || msg.fromMe ? 'text-white/60' : 'text-slate-500'}`}>
+                                            {new Date(msg.createdAt || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                            {(msg.direction === 'OUTBOUND' || msg.fromMe) && <CheckCheck size={14} className={msg.status === 'READ' ? 'text-azure-400' : 'text-white/40'} />}
                                         </div>
                                     </div>
-                                </div>
+                                </motion.div>
                             ))}
                         </div>
 
                         {/* Input Area */}
-                        <div className="p-10 border-t border-white/5 bg-slate-950/60 shrink-0 relative z-20 backdrop-blur-3xl">
-                            <form onSubmit={handleSendMessage} className="flex items-center space-x-6">
-                                <button type="button" className="p-5 glass-panel !bg-slate-900 text-slate-700 hover:text-secondary transition-all rounded-2xl border-white/5 shadow-2xl">
-                                    <Paperclip size={24} />
+                        <div className="p-12 border-t border-white/10 bg-white/[0.03] shrink-0 backdrop-blur-2xl">
+                            <form onSubmit={handleSendMessage} className="flex items-center gap-8 glass-panel !bg-slate-950/60 p-4 border-white/10 rounded-[3.5rem] ring-1 ring-white/10 shadow-3xl">
+                                <button type="button" className="p-6 text-slate-600 hover:text-secondary hover:bg-white/5 transition-all rounded-full group">
+                                    <Paperclip size={24} className="group-hover:rotate-45 transition-transform" />
                                 </button>
-                                <div className="relative flex-1 group">
-                                    <input
-                                        type="text"
-                                        value={inputValue}
-                                        onChange={(e) => setInputValue(e.target.value)}
-                                        placeholder="INICIAR TRANSMISIÓN..."
-                                        className="w-full px-10 py-6 bg-slate-900 border border-white/5 text-[12px] font-black uppercase tracking-widest focus:border-secondary outline-none transition-all placeholder:text-slate-800 rounded-[2.5rem] shadow-inner text-white italic"
-                                    />
-                                    <div className="absolute right-6 top-1/2 -translate-y-1/2 flex items-center gap-4">
-                                        <Smile className="text-slate-800 hover:text-white cursor-pointer transition-colors" size={24} />
-                                    </div>
-                                </div>
+                                <input
+                                    type="text"
+                                    value={inputValue}
+                                    onChange={(e) => setInputValue(e.target.value)}
+                                    placeholder="MODULO DE RESPUESTA OPERATIVA..."
+                                    className="flex-1 bg-transparent border-none text-white text-[12px] font-black uppercase tracking-widest placeholder:text-slate-800 outline-none px-6 italic"
+                                />
+                                <button type="button" className="p-6 text-slate-600 hover:text-emerald-400 hover:bg-white/5 transition-all rounded-full">
+                                    <Smile size={24} />
+                                </button>
                                 <button
                                     type="submit"
-                                    disabled={!selectedChat.ownerId}
-                                    className="w-16 h-16 bg-secondary text-white flex items-center justify-center hover:bg-white hover:text-secondary transition-all shadow-[0_15px_40px_-5px_rgba(255,99,71,0.5)] rounded-2xl disabled:opacity-10 active:scale-95 group italic"
+                                    disabled={!inputValue.trim()}
+                                    className="w-20 h-20 bg-secondary/80 text-white flex items-center justify-center hover:scale-110 hover:bg-secondary hover:text-white transition-all shadow-[0_30px_60px_-15px_rgba(255,99,71,0.6)] rounded-[2.5rem] disabled:opacity-10 active:scale-95 group italic ring-1 ring-white/20"
                                 >
-                                    <Send size={28} className="group-hover:translate-x-1 group-hover:rotate-6 transition-transform" />
+                                    <Send size={28} className="group-hover:rotate-12 group-active:-translate-y-4 group-active:translate-x-4 transition-all" />
                                 </button>
                             </form>
-                            {!selectedChat.ownerId && (
-                                <p className="mt-8 text-[9px] font-black text-secondary uppercase text-center tracking-[0.5em] animate-pulse italic">
-                                    ERROR: DEBE VINCULAR EL NODO PARA HABILITAR LA RESPUESTA
-                                </p>
-                            )}
                         </div>
                     </>
                 ) : (
-                    <div className="flex-1 flex flex-col items-center justify-center text-center p-20 bg-slate-950/40 relative overflow-hidden">
-                         {/* Large Background Icon */}
-                        <MessageSquare className="absolute opacity-[0.02] text-white pointer-events-none" size={600} />
-                        
-                        <div className="w-24 h-24 bg-slate-900/60 rounded-[2.5rem] flex items-center justify-center mb-10 border border-white/5 shadow-inner">
-                            <MessageSquare className="text-slate-800" size={48} />
+                    <div className="flex-1 flex flex-col items-center justify-center opacity-30 gap-10 group">
+                        <div className="p-16 glass-panel !bg-slate-900 border-white/10 rounded-[5rem] group-hover:scale-110 group-hover:rotate-12 transition-all duration-1000 shadow-[0_100px_200px_-50px_rgba(0,0,0,0.9)] ring-1 ring-white/5">
+                            <MessageCircle size={100} className="text-secondary drop-shadow-[0_0_30px_rgba(255,99,71,0.5)]" />
                         </div>
-                        <h3 className="text-2xl font-black text-white uppercase tracking-[0.4em] mb-6 italic">SELECCIONAR CANAL</h3>
-                        <p className="text-[10px] text-slate-500 font-black uppercase tracking-[0.6em] max-w-sm leading-loose italic">
-                            Consola centralizada para la gestión estratégica de comunicaciones vía WhatsApp Business.
-                        </p>
-                        <div className="mt-16 flex items-center gap-4 text-slate-700 animate-pulse">
-                            <div className="w-2 h-2 rounded-full bg-slate-800" />
-                            <div className="w-2 h-2 rounded-full bg-slate-800" />
-                            <div className="w-2 h-2 rounded-full bg-slate-800" />
+                        <div className="text-center space-y-4">
+                            <h3 className="text-[12px] font-black uppercase tracking-[0.8em] text-white italic">Protocolo de Enlace Inactivo</h3>
+                            <p className="text-[10px] text-slate-600 font-black uppercase tracking-[0.5em] italic">Seleccione un nodo encriptado para iniciar auditoría</p>
                         </div>
                     </div>
                 )}
             </div>
 
-            {/* Side Detail Panel (Optional/Place-holder) */}
-            <div className="w-[320px] border-l border-white/5 bg-slate-950/60 p-10 hidden xl:block relative z-10 shadow-2xl">
-                <h3 className="text-[11px] font-black text-white uppercase tracking-[0.5em] mb-12 italic border-b border-white/5 pb-6 flex items-center gap-4">
-                    <Info size={16} className="text-secondary" /> DETALLES DEL NODO
+            {/* Side Detail Panel */}
+            <div className="w-[380px] border-l border-white/10 bg-slate-950/60 p-12 hidden 2xl:flex flex-col relative z-20">
+                <h3 className="text-[11px] font-black text-white uppercase tracking-[0.6em] mb-12 italic border-b border-white/10 pb-8 flex items-center gap-6">
+                    <Info size={20} className="text-secondary shadow-[0_0_10px_currentColor]" /> DETALLES DEL NODO
                 </h3>
                 {selectedChat ? (
-                    <div className="space-y-12 animate-in slide-in-from-right duration-700">
-                        <div className="p-8 glass-panel !bg-secondary/10 border border-secondary/20 rounded-[2rem] shadow-2xl relative overflow-hidden group">
-                             <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                                <ShieldCheck size={60} />
+                    <div className="space-y-16 animate-in slide-in-from-right duration-700">
+                        <div className="p-10 glass-panel !bg-secondary/5 border border-secondary/20 rounded-[3rem] shadow-2xl relative overflow-hidden group">
+                             <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity rotate-12">
+                                <ShieldCheck size={100} />
                             </div>
-                            <p className="text-[9px] font-black text-secondary uppercase tracking-[0.5em] mb-4 italic leading-none">STATUS DEL CANAL</p>
-                            <p className="text-xl font-black text-white uppercase tracking-tighter italic">{selectedChat.status}</p>
+                            <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.6em] mb-6 italic leading-none">STATUS DEL CANAL</p>
+                            <p className="text-3xl font-black text-white uppercase tracking-tighter italic drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">{selectedChat.status || 'READY'}</p>
                         </div>
                         
-                        <div className="space-y-6">
-                            <p className="text-[9px] font-black text-slate-600 uppercase tracking-[0.6em] mb-6 italic">ETIQUETAS_REG</p>
-                            <div className="flex flex-wrap gap-4">
-                                <span className="px-5 py-2.5 bg-slate-900 border border-white/5 text-[10px] font-black text-slate-500 uppercase rounded-xl italic shadow-inner">#NODO_NUEVO</span>
-                                <span className="px-5 py-2.5 bg-slate-900 border border-white/5 text-[10px] font-black text-slate-500 uppercase rounded-xl italic shadow-inner">#WHATSAPP</span>
+                        <div className="space-y-8">
+                            <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.8em] mb-8 italic">ETIQUETAS_AUDIT</p>
+                            <div className="flex flex-wrap gap-5">
+                                <span className="px-6 py-3 bg-slate-900/60 border border-white/10 text-[10px] font-black text-slate-500 uppercase rounded-2xl italic shadow-inner hover:text-white hover:border-secondary/30 transition-all cursor-crosshair">#WHATSAPP_BUSINESS</span>
+                                <span className="px-6 py-3 bg-slate-900/60 border border-white/10 text-[10px] font-black text-slate-500 uppercase rounded-2xl italic shadow-inner hover:text-white hover:border-azure-400/30 transition-all cursor-crosshair">#PRIORITY_A</span>
                             </div>
                         </div>
 
-                        <div className="space-y-6 pt-10 border-t border-white/5">
-                            <p className="text-[9px] font-black text-slate-600 uppercase tracking-[0.6em] mb-6 italic">AUDITORÍA VISITAS</p>
-                            <div className="text-[10px] text-slate-800 font-black uppercase tracking-[0.4em] italic border-l-4 border-slate-900 pl-6 py-4 bg-slate-900/20 rounded-r-2xl">
-                                SIN REGISTROS DE NAVEGACIÓN RECIENTE EN CATÁLOGO_ERP
+                        <div className="space-y-8 pt-12 border-t border-white/10">
+                            <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.8em] mb-8 italic">AUDITORÍA VISITAS</p>
+                            <div className="text-[11px] text-slate-500 font-black uppercase tracking-[0.4em] italic border-l-4 border-secondary/40 pl-8 py-6 bg-slate-900/40 rounded-r-3xl ring-1 ring-white/5">
+                                <span className="text-secondary/60">SYSTEM:</span> SIN REGISTROS DE NAVEGACIÓN RECIENTE DETECTADOS POR IA
                             </div>
                         </div>
 
-                        <button className="w-full mt-10 py-5 bg-slate-900 text-slate-500 hover:text-azure-400 border border-white/5 rounded-2xl text-[10px] font-black uppercase tracking-[0.4em] transition-all italic flex items-center justify-center gap-4 shadow-2xl group">
-                            <ExternalLink size={16} />
-                            <span>VER PERFIL COMPLETO</span>
+                        <button className="w-full mt-12 py-7 bg-slate-900 border border-white/10 text-slate-500 hover:text-azure-400 transition-all rounded-[2rem] text-[11px] font-black uppercase tracking-[0.5em] italic flex items-center justify-center gap-6 shadow-3xl group active:scale-95">
+                            <ExternalLink size={20} className="group-hover:translate-x-2 group-hover:-translate-y-2 transition-transform" />
+                            <span>VER PERFIL CORPORATIVO</span>
                         </button>
                     </div>
                 ) : (
-                    <div className="flex flex-col items-center justify-center h-80 text-slate-900 uppercase text-[10px] font-black tracking-[0.6em] italic animate-pulse">
-                        <div className="w-1.5 h-20 bg-slate-900 rounded-full mb-6" />
-                        SIN SELECCIÓN
+                    <div className="flex-1 flex flex-col items-center justify-center text-slate-800 uppercase text-[10px] font-black tracking-[1em] italic animate-pulse">
+                        <div className="w-1 h-32 bg-slate-900/60 rounded-full mb-10 shadow-[0_0_20px_rgba(0,0,0,0.5)]" />
+                        NODATA
                     </div>
                 )}
             </div>

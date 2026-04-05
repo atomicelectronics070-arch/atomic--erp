@@ -218,7 +218,7 @@ export default function ShopConfigPage() {
                 <div className="flex items-center gap-6 relative z-10">
                     <button
                         onClick={() => { setEditingProduct(null); setView(view === 'list' ? 'add' : 'list') }}
-                        className="bg-secondary text-white px-12 py-5 font-black uppercase tracking-[0.4em] text-[10px] hover:bg-white hover:text-secondary transition-all shadow-[0_25px_60px_-10px_rgba(255,99,71,0.6)] rounded-2xl active:scale-95 italic skew-x-[-12deg] group"
+                        className="bg-secondary/80 text-white px-12 py-5 font-black uppercase tracking-[0.4em] text-[10px] hover:bg-secondary transition-all shadow-[0_25px_60px_-10px_rgba(255,99,71,0.6)] rounded-2xl active:scale-95 italic skew-x-[-12deg] group border border-white/10"
                     >
                         <div className="skew-x-[12deg] flex items-center gap-4">
                             {view === 'list' ? (
@@ -872,7 +872,7 @@ export default function ShopConfigPage() {
                                 <button 
                                     onClick={saveSettings} 
                                     disabled={loading} 
-                                    className="bg-white text-black px-20 py-8 font-black uppercase tracking-[0.5em] text-[11px] hover:bg-secondary hover:text-white transition-all shadow-[0_0_100px_rgba(255,255,255,0.05)] hover:shadow-secondary/20 rounded-[2rem] active:scale-95 flex items-center gap-4"
+                                    className="bg-slate-900/80 text-white px-20 py-8 font-black uppercase tracking-[0.5em] text-[11px] hover:bg-secondary hover:text-white transition-all shadow-[0_0_100px_rgba(255,255,255,0.05)] hover:shadow-secondary/20 rounded-[2rem] active:scale-95 flex items-center gap-4 border border-white/10"
                                 >
                                     <Save size={20} />
                                     <span>Comprometer Protocolo</span>
@@ -920,7 +920,7 @@ function QuickCreate({ label, icon, onSave }: { label: string, icon: any, onSave
                 />
                 <button
                     onClick={() => { if (name) { onSave(name); setName(''); } }}
-                    className="bg-white text-black px-10 py-5 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-secondary hover:text-white transition-all rounded-2xl shadow-xl active:scale-95"
+                    className="bg-slate-900/80 text-white px-10 py-5 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-secondary hover:text-white transition-all rounded-2xl shadow-xl active:scale-95 border border-white/10"
                 >
                     Inyectar
                 </button>
@@ -1034,7 +1034,7 @@ function BannerConfigPanel({ bannerKey, label, icon, accentColor, data, allProdu
                             <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm opacity-0 group-hover/img:opacity-100 transition-all duration-500 flex flex-col items-center justify-center gap-4">
                                 <button
                                     onClick={() => fileInputRef.current?.click()}
-                                    className="bg-white text-black px-8 py-3 text-[10px] font-black uppercase tracking-widest hover:bg-secondary hover:text-white transition-all rounded-xl active:scale-95"
+                                    className="bg-slate-900/80 text-white px-8 py-3 text-[10px] font-black uppercase tracking-widest hover:bg-secondary hover:text-white transition-all rounded-xl active:scale-95 border border-white/10"
                                 >
                                     {uploading ? 'DESPLEGANDO...' : 'REEMPLAZAR'}
                                 </button>

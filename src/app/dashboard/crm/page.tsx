@@ -133,149 +133,141 @@ export default function AdvancedCRMPage() {
                     </div>
                     <h1 className="text-6xl font-black text-white tracking-tighter uppercase italic">Centro <span className="text-secondary">CRM</span></h1>
                     <p className="text-slate-500 font-bold text-xs uppercase tracking-[0.3em] mt-4 max-w-2xl leading-relaxed">Gestión táctica de prospectos, fidelización de nodos activos y análisis de conversión corporativa en tiempo real.</p>
-                </div>
-                <div className="flex flex-wrap items-center gap-6">
-                    <button className="p-5 glass-panel text-slate-500 hover:text-white transition-all rounded-2xl border-white/5 group">
-                        <Download size={22} className="group-hover:scale-110 transition-transform" />
+                             <div className="flex flex-wrap items-center gap-10">
+                    <button className="p-8 glass-panel text-slate-500 hover:text-secondary hover:bg-white/10 transition-all rounded-[1.5rem] group border-white/10 shadow-2xl">
+                        <Download size={26} className="group-hover:scale-125 transition-transform duration-500" />
                     </button>
                     <button
                         onClick={openCreatePanel}
-                        className="flex items-center space-x-5 bg-secondary text-white px-12 py-5 font-black uppercase tracking-[0.2em] text-[10px] hover:bg-white hover:text-secondary transition-all shadow-[0_20px_50px_-10px_rgba(255,99,71,0.4)] rounded-2xl active:scale-[0.98] group"
+                        className="flex items-center space-x-6 bg-secondary text-white px-14 py-6 font-black uppercase tracking-[0.4em] text-[11px] hover:scale-[1.05] transition-all shadow-[0_30px_70px_-15px_rgba(255,99,71,0.6)] rounded-[2.2rem] active:scale-95 group italic skew-x-[-12deg]"
                     >
-                        <UserPlus size={20} className="group-hover:translate-x-1 transition-transform" />
-                        <span>Inyectar Registro</span>
+                        <UserPlus size={24} className="group-hover:rotate-12 transition-transform" />
+                        <span>INYECTAR NODO</span>
                     </button>
                 </div>
             </div>
 
-            {/* KPI BAR */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 relative z-10">
-                <StatCard label="Base Maestros" value={totalClients.toString()} icon={<Users size={28} />} color="slate" />
-                <StatCard label="Cartera Activa" value={activeClients.toString()} icon={<TrendingUp size={28} />} color="secondary" />
-                <StatCard label="Retención Promedio" value={avgPurchases.toString()} icon={<BarChart3 size={28} />} color="azure" />
-                <StatCard label="Tasa Conversión" value={`${totalClients > 0 ? Math.round((activeClients / totalClients) * 100) : 0}%`} icon={<CheckCircle2 size={28} />} color="secondary" showPulse />
+            {/* KPI Mastery Bar */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 relative z-10">
+                <StatCard label="Base Maestros" value={totalClients.toString()} icon={<Users size={32} />} color="slate" />
+                <StatCard label="Cartera Activa" value={activeClients.toString()} icon={<TrendingUp size={32} />} color="secondary" />
+                <StatCard label="Retención Nodo" value={avgPurchases.toString()} icon={<BarChart3 size={32} />} color="azure" />
+                <StatCard label="Tasa Conversión" value={`${totalClients > 0 ? Math.round((activeClients / totalClients) * 100) : 0}%`} icon={<CheckCircle2 size={32} />} color="secondary" showPulse />
             </div>
 
-            {/* DATA GRID */}
-            <div className="flex-1 glass-panel !bg-slate-950/40 border-white/5 shadow-2xl overflow-hidden flex flex-col relative z-10 rounded-[3rem] border backdrop-blur-3xl">
-                {/* Toolbar */}
-                <div className="p-10 border-b border-white/5 bg-white/[0.01] flex flex-col lg:flex-row justify-between items-center gap-10">
-                    <div className="relative w-full lg:max-w-2xl group">
-                        <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-secondary transition-colors" size={18} />
+            {/* DATA COMMAND GRID */}
+            <div className="flex-1 glass-panel !bg-slate-950/70 border-white/10 shadow-[0_80px_160px_-40px_rgba(0,0,0,0.9)] overflow-hidden flex flex-col relative z-10 rounded-[4rem] ring-1 ring-white/5 backdrop-blur-[40px]">
+                {/* Protocol Toolbar */}
+                <div className="p-14 border-b border-white/10 bg-white/[0.02] flex flex-col xl:flex-row justify-between items-center gap-14">
+                    <div className="relative w-full xl:max-w-3xl group">
+                        <Search className="absolute left-8 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-secondary group-hover:scale-110 transition-all" size={22} />
                         <input
                             type="text"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            placeholder="ESCANEAR ECOSISTEMA DE CLIENTES..."
-                            className="w-full pl-16 pr-8 py-5 bg-slate-900 border border-white/5 text-white text-[11px] font-black uppercase tracking-[0.2em] focus:border-secondary transition-all outline-none rounded-2xl placeholder:text-slate-800"
+                            placeholder="ESCANEAR ECOSISTEMA DE CLIENTES v4.0..."
+                            className="w-full pl-20 pr-10 py-7 bg-slate-900/80 border border-white/5 text-white text-[12px] font-black uppercase tracking-[0.3em] focus:border-secondary/50 focus:ring-4 focus:ring-secondary/5 transition-all outline-none rounded-[2rem] placeholder:text-slate-800 italic"
                         />
                     </div>
-                    <div className="flex w-full lg:w-auto items-center space-x-6">
-                        <div className="flex items-center gap-3">
-                            <Filter size={14} className="text-slate-500" />
-                            <span className="text-[10px] uppercase font-black text-slate-500 tracking-widest italic">Protocolo Estatus:</span>
+                    <div className="flex w-full xl:w-auto items-center gap-10">
+                        <div className="flex items-center gap-5">
+                            <Filter size={18} className="text-secondary/60" />
+                            <span className="text-[11px] uppercase font-black text-slate-500 tracking-[0.4em] italic leading-none">STATUS NODE:</span>
                         </div>
                         <select
                             value={statusFilter}
                             onChange={(e) => setStatusFilter(e.target.value)}
-                            className="w-full lg:w-72 px-8 py-5 bg-slate-900 border border-white/10 text-white text-[10px] font-black uppercase tracking-[0.2em] focus:border-secondary outline-none rounded-2xl cursor-pointer hover:bg-slate-800 transition-all shadow-inner"
+                            className="w-full lg:w-80 px-10 py-6 bg-slate-900 border border-white/10 text-white text-[11px] font-black uppercase tracking-[0.3em] focus:border-secondary outline-none rounded-[1.8rem] cursor-pointer hover:bg-slate-800 transition-all shadow-inner italic"
                         >
-                            <option value="all">TODOS LOS NODOS</option>
-                            <option value="activo">DISEÑOS ACTIVOS</option>
-                            <option value="prospecto">FASES PROSPECTO</option>
-                            <option value="inactivo">PROTOCOLOS RECHAZADOS</option>
+                            <option value="all">Filtro: Todos los Nodos</option>
+                            <option value="activo">Estado: Diseños Activos</option>
+                            <option value="prospecto">Estado: Fases Prospecto</option>
+                            <option value="inactivo">Estado: Rechazados/Cancelados</option>
                         </select>
                     </div>
                 </div>
 
-                <div className="flex-1 overflow-auto custom-scrollbar">
+                <div className="flex-1 overflow-auto custom-scrollbar-hidden">
                     <table className="w-full text-sm text-left border-collapse whitespace-nowrap">
-                        <thead className="text-[9px] text-slate-500 bg-slate-950/60 uppercase font-black tracking-[0.5em] sticky top-0 z-20 backdrop-blur-xl border-b border-white/5">
+                        <thead className="text-[10px] text-slate-600 bg-slate-950/80 uppercase font-black tracking-[0.6em] sticky top-0 z-20 backdrop-blur-3xl border-b border-white/10 italic">
                             <tr>
-                                <th className="px-10 py-8 italic underline underline-offset-8 decoration-secondary/30">Identificador / Nombre</th>
-                                <th className="px-10 py-8">Contacto Central</th>
-                                <th className="px-10 py-8">Ubicación Geo</th>
-                                <th className="px-10 py-8 max-w-[300px]">Requerimiento Industrial</th>
-                                <th className="px-10 py-8 text-center">Protocolos</th>
-                                <th className="px-10 py-8 text-center">Estado</th>
-                                <th className="px-10 py-8 text-right"></th>
+                                <th className="px-14 py-10 border-r border-white/5">Protocolo / Identidad</th>
+                                <th className="px-14 py-10 border-r border-white/5">Nodo de Enlace</th>
+                                <th className="px-14 py-10 border-r border-white/5">Geolocalización</th>
+                                <th className="px-14 py-10 max-w-[350px] border-r border-white/5 text-center">Especificaciones</th>
+                                <th className="px-14 py-10 text-center border-r border-white/5">Actividad</th>
+                                <th className="px-14 py-10 text-center">Rango</th>
+                                <th className="px-14 py-10 text-right"></th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-white/[0.02]">
+                        <tbody className="divide-y divide-white/[0.04]">
                             {loading && clients.length === 0 && (
-                                <tr><td colSpan={7} className="p-32 text-center text-[11px] text-secondary font-black uppercase tracking-[0.8em] animate-pulse italic">SINCRONIZANDO BASE DE INTELIGENCIA CRM...</td></tr>
-                            )}
-                            {!loading && filteredClients.length === 0 && (
-                                <tr><td colSpan={7} className="p-40 text-center">
-                                    <div className="flex flex-col items-center gap-6 grayscale opacity-20">
-                                        <Users size={80} />
-                                        <p className="text-[11px] text-white font-black uppercase tracking-[0.6em]">Protocolo Cero: Sin Coincidencias</p>
-                                    </div>
-                                </td></tr>
+                                <tr><td colSpan={7} className="p-40 text-center text-[12px] text-secondary font-black uppercase tracking-[1em] animate-pulse italic">SINCRONIZANDO INTELIGENCIA CRM DE ALTO NIVEL...</td></tr>
                             )}
                             {filteredClients.map((client) => (
                                 <tr key={client.id}
                                     onClick={() => openEditPanel(client)}
-                                    className="hover:bg-white/[0.04] transition-all group relative border-b border-white/[0.02]"
+                                    className="hover:bg-white/[0.06] transition-all group relative border-b border-white/[0.02] cursor-pointer"
                                 >
-                                    <td className="px-10 py-8">
-                                        <div className="flex items-center gap-6">
-                                            <div className="w-12 h-12 bg-slate-900 rounded-xl flex items-center justify-center font-black text-xs border border-white/5 group-hover:border-secondary/30 transition-all shadow-2xl">
-                                                {(client.firstName?.[0] || client.name?.[0] || 'U').toUpperCase()}
+                                    <td className="px-14 py-10">
+                                        <div className="flex items-center gap-8">
+                                            <div className="w-16 h-16 bg-slate-900 rounded-2xl flex items-center justify-center font-black text-xl border border-white/10 group-hover:border-secondary transition-all shadow-2xl shadow-black/50 overflow-hidden relative">
+                                                <div className="absolute inset-0 bg-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                                <span className="relative z-10">{(client.firstName?.[0] || client.name?.[0] || 'U').toUpperCase()}</span>
                                             </div>
-                                            <div className="flex flex-col">
-                                                <span className="font-black text-white text-sm uppercase tracking-tighter group-hover:text-secondary transition-colors italic">
+                                            <div className="flex flex-col space-y-2">
+                                                <span className="font-black text-white text-xl uppercase tracking-tighter group-hover:text-secondary transition-all italic leading-none">
                                                     {client.firstName || client.lastName ? `${client.firstName || ''} ${client.lastName || ''}`.trim() : client.name}
                                                 </span>
-                                                <span className="text-[9px] font-bold text-slate-500 mt-1.5 uppercase tracking-[0.3em]">NÚCLEO: {new Date(client.createdAt).toLocaleDateString()}</span>
+                                                <span className="text-[10px] font-black text-slate-600 uppercase tracking-[0.4em] italic opacity-70">NÚCLEO: {new Date(client.createdAt).toLocaleDateString()}</span>
                                             </div>
                                         </div>
                                     </td>
-                                    <td className="px-10 py-8">
-                                        <div className="flex flex-col space-y-2">
-                                            <span className="flex items-center text-[10px] text-slate-400 font-black tracking-wider"><Mail size={14} className="mr-3 text-secondary/30" /> {client.email || 'N/A'}</span>
-                                            <span className="flex items-center text-[10px] font-black text-white uppercase tracking-[0.2em]"><Phone size={14} className="mr-3 text-secondary/30" /> {client.phone || 'N/A'}</span>
+                                    <td className="px-14 py-10">
+                                        <div className="flex flex-col space-y-3">
+                                            <span className="flex items-center text-[11px] text-slate-400 font-black tracking-widest italic group-hover:text-slate-200 transition-colors"><Mail size={16} className="mr-4 text-secondary/40" /> {client.email || 'NODATA@NULL'}</span>
+                                            <span className="flex items-center text-[11px] font-black text-white uppercase tracking-[0.3em] italic leading-none"><Phone size={16} className="mr-4 text-secondary/40" /> {client.phone || 'DISCONNECTED'}</span>
                                         </div>
                                     </td>
-                                    <td className="px-10 py-8">
-                                        <span className="flex items-center text-[10px] text-slate-400 uppercase tracking-[0.2em] font-black italic">
-                                            <Navigation size={14} className="mr-3 text-secondary" /> {client.city || 'GLOBAL PROTOCOL'}
+                                    <td className="px-14 py-10">
+                                        <span className="flex items-center text-[11px] text-slate-500 uppercase tracking-[0.3em] font-black italic group-hover:text-azure-400 transition-colors">
+                                            <MapPin size={16} className="mr-4 text-secondary" /> {client.city || 'GLOBAL PROTOCOL'}
                                         </span>
                                     </td>
-                                    <td className="px-10 py-8 max-w-[300px]">
-                                        <p className="text-[10px] text-slate-500 truncate leading-relaxed font-bold italic group-hover:text-slate-300 transition-colors">
-                                            {client.requirement || 'Sin especificaciones técnicas'}
+                                    <td className="px-14 py-10 max-w-[350px]">
+                                        <p className="text-[11px] text-slate-600 truncate leading-relaxed font-black italic group-hover:text-slate-300 transition-all border-l-2 border-white/5 pl-6 group-hover:border-secondary/30">
+                                            {client.requirement || 'SIN ESPECIFICACIONES TÉCNICAS AUTORIZADAS'}
                                         </p>
                                     </td>
-                                    <td className="px-10 py-8">
-                                        <div className="flex flex-col items-center justify-center space-y-2">
-                                            <span className="text-[9px] font-black px-4 py-1.5 bg-slate-900 text-white border border-white/5 rounded-xl uppercase tracking-widest group-hover:border-secondary/30 transition-all shadow-inner">
-                                                {client.purchaseCount} <span className="text-secondary/60 ml-1">TRANSACCIONES</span>
+                                    <td className="px-14 py-10">
+                                        <div className="flex flex-col items-center justify-center space-y-3">
+                                            <span className="text-[10px] font-black px-6 py-2 bg-slate-900/80 text-white border border-white/10 rounded-2xl uppercase tracking-[0.4em] group-hover:border-secondary/40 transition-all shadow-inner italic">
+                                                {client.purchaseCount} <span className="text-secondary/60">TX_UID</span>
                                             </span>
-                                            <span className="text-[8px] font-black text-slate-600 uppercase tracking-[0.4em]">
+                                            <span className="text-[9px] font-black text-slate-700 uppercase tracking-[0.5em] italic">
                                                 {client.campaignsSent} Impactos IA
                                             </span>
                                         </div>
                                     </td>
-                                    <td className="px-10 py-8 text-center">
-                                        <span className={`px-5 py-2 text-[9px] font-black uppercase tracking-[0.3em] border rounded-[0.75rem] shadow-2xl italic ${
-                                            client.status === 'ACTIVO' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 shadow-emerald-500/5' :
-                                            client.status === 'PROSPECTO' ? 'bg-secondary/10 text-secondary border-secondary/20 shadow-secondary/5' :
-                                            'bg-slate-800/10 text-slate-500 border-white/5'
+                                    <td className="px-14 py-10 text-center">
+                                        <span className={`px-8 py-3 text-[10px] font-black uppercase tracking-[0.4em] border rounded-[1.2rem] shadow-2xl italic leading-none inline-block ${
+                                            client.status === 'ACTIVO' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 shadow-emerald-500/10' :
+                                            client.status === 'PROSPECTO' ? 'bg-secondary/10 text-secondary border-secondary/20 shadow-secondary/10 ring-1 ring-secondary/20' :
+                                            'bg-slate-800/20 text-slate-600 border-white/10'
                                             }`}>
                                             {client.status}
                                         </span>
                                     </td>
-                                    <td className="px-10 py-8 text-right">
-                                        <div className="flex justify-end gap-3 opacity-0 group-hover:opacity-100 transition-all translate-x-10 group-hover:translate-x-0">
+                                    <td className="px-14 py-10 text-right">
+                                        <div className="flex justify-end gap-5 opacity-0 group-hover:opacity-100 transition-all translate-x-12 group-hover:translate-x-0 duration-500">
                                             <button
                                                 onClick={(e) => handleDeleteClient(client.id, e)}
-                                                className="p-4 bg-red-500/5 text-red-500 hover:bg-red-500 hover:text-white transition-all rounded-xl border border-red-500/10"
+                                                className="p-6 bg-red-500/5 text-red-500 hover:bg-red-500 hover:text-white transition-all rounded-2xl border border-red-500/20 shadow-2xl active:scale-90"
                                             >
-                                                <Trash2 size={20} />
+                                                <Trash2 size={24} />
                                             </button>
-                                            <button className="p-4 bg-secondary text-white hover:bg-white hover:text-secondary transition-all rounded-xl shadow-2xl shadow-secondary/20">
-                                                <ChevronRight size={20} />
+                                            <button className="p-6 glass-panel !bg-secondary text-white hover:scale-110 transition-all rounded-2xl shadow-3xl shadow-secondary/40 ring-1 ring-white/20 active:scale-95">
+                                                <ChevronRight size={28} />
                                             </button>
                                         </div>
                                     </td>
@@ -286,159 +278,225 @@ export default function AdvancedCRMPage() {
                 </div>
             </div>
 
-            {/* SIDE PANEL */}
-            {isPanelOpen && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-end p-0 md:p-8">
-                    <div className="absolute inset-0 bg-slate-950/90 backdrop-blur-3xl transition-opacity animate-in fade-in duration-700" onClick={closePanel} />
-                    <div className={`fixed inset-y-0 right-0 w-full md:w-[650px] glass-panel !bg-slate-950/60 !border-l !border-white/10 z-50 shadow-[0_0_150px_rgba(0,0,0,1)] animate-in slide-in-from-right duration-700 flex flex-col md:rounded-l-[4rem]`}>
-                        <div className="flex items-center justify-between p-12 border-b border-white/5 bg-white/[0.01] shrink-0">
-                            <div className="flex items-center gap-6">
-                                <div className="bg-secondary p-4 rounded-2xl shadow-2xl shadow-secondary/30"><UserPlus size={24} className="text-white" /></div>
-                                <div>
-                                    <h2 className="text-3xl font-black uppercase tracking-tighter text-white italic">
-                                        {editingId ? "Expediente Central" : "Nuevo Registro Nodo"}
-                                    </h2>
-                                    <p className="text-[10px] font-black text-slate-500 mt-2 uppercase tracking-[0.4em]">Protocolo de Identificación Industrial</p>
-                                </div>
-                            </div>
-                            <button onClick={closePanel} className="text-slate-500 hover:text-white hover:rotate-90 transition-all duration-500 p-4 glass-panel !bg-slate-900 border-white/10 rounded-2xl">
-                                <X size={28} />
-                            </button>
-                        </div>
-
-                        <div className="flex-1 overflow-y-auto p-16 space-y-16 custom-scrollbar">
-                            <div className="space-y-10 group/sec">
-                                <div className="flex items-center gap-4 border-b border-white/5 pb-6">
-                                    <div className="w-2 h-2 rounded-full bg-secondary shadow-[0_0_8px_currentColor]" />
-                                    <h3 className="text-xs font-black uppercase tracking-[0.4em] text-white italic">Identidad Corporativa</h3>
-                                </div>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                                    <div className="space-y-4">
-                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-2 italic">Nombres Maestro</label>
-                                        <input
-                                            type="text"
-                                            value={formData.firstName}
-                                            onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                                            className="w-full p-6 bg-slate-900 border border-white/5 text-white text-[11px] font-black uppercase tracking-widest focus:border-secondary transition-all outline-none rounded-2xl placeholder:text-slate-800"
-                                            placeholder="REGISTRAR NOMBRES..."
-                                        />
+            {/* SIDE COMMAND PANEL */}
+            <AnimatePresence>
+                {isPanelOpen && (
+                    <div className="fixed inset-0 z-[200] flex items-center justify-end p-0 md:p-12 overflow-hidden">
+                        <motion.div 
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="absolute inset-0 bg-slate-950/95 backdrop-blur-[60px]" 
+                            onClick={closePanel} 
+                        />
+                        <motion.div 
+                            initial={{ x: '100%', opacity: 0 }}
+                            animate={{ x: 0, opacity: 1 }}
+                            exit={{ x: '100%', opacity: 0 }}
+                            transition={{ type: 'spring', damping: 40, stiffness: 400, mass: 1 }}
+                            className="w-full md:w-[800px] h-full glass-panel !bg-slate-950/80 !border-l !border-white/20 z-[210] shadow-[0_0_250px_rgba(0,0,0,1)] flex flex-col md:rounded-l-[6rem] backdrop-blur-[120px]"
+                        >
+                            <div className="flex items-center justify-between p-16 border-b border-white/20 bg-white/[0.03] shrink-0">
+                                <div className="flex items-center gap-10">
+                                    <div className="bg-secondary p-7 rounded-[2rem] shadow-2xl shadow-secondary/40 animate-pulse">
+                                        <UserPlus size={36} className="text-white" />
                                     </div>
-                                    <div className="space-y-4">
-                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-2 italic">Apellidos Familiares</label>
-                                        <input
-                                            type="text"
-                                            value={formData.lastName}
-                                            onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                                            className="w-full p-6 bg-slate-900 border border-white/5 text-white text-[11px] font-black uppercase tracking-widest focus:border-secondary transition-all outline-none rounded-2xl placeholder:text-slate-800"
-                                            placeholder="REGISTRAR APELLIDOS..."
-                                        />
+                                    <div>
+                                        <h2 className="text-5xl font-black uppercase tracking-tighter text-white italic leading-tight">
+                                            {editingId ? "EXPEDIENTE <span className='text-secondary'>MAESTRO</span>" : "NUEVO <span className='text-secondary'>NODO</span>"}
+                                        </h2>
+                                        <p className="text-[11px] font-black text-slate-500 mt-2 uppercase tracking-[0.5em] italic opacity-80">Protocolo de Registro Industrial v4.0</p>
                                     </div>
                                 </div>
+                                <button 
+                                    onClick={closePanel} 
+                                    className="text-slate-600 hover:text-white hover:rotate-90 transition-all duration-700 p-6 bg-slate-900/80 border border-white/20 rounded-[1.5rem] shadow-2xl active:scale-90"
+                                >
+                                    <X size={40} />
+                                </button>
                             </div>
 
-                            <div className="space-y-10">
-                                <div className="flex items-center gap-4 border-b border-white/5 pb-6">
-                                    <div className="w-2 h-2 rounded-full bg-azure-500 shadow-[0_0_8px_currentColor]" />
-                                    <h3 className="text-xs font-black uppercase tracking-[0.4em] text-white italic">Conectividad y Nodo</h3>
-                                </div>
-                                <div className="space-y-10">
-                                    <div className="space-y-4">
-                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] flex items-center gap-3 ml-2 italic"><Mail size={14} className="text-secondary" /> Email de Enlace</label>
-                                        <input
-                                            type="email"
-                                            value={formData.email}
-                                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                            className="w-full p-6 bg-slate-900 border border-white/5 text-white text-[11px] font-black tracking-[0.2em] focus:border-secondary outline-none rounded-2xl placeholder:text-slate-800"
-                                            placeholder="DIRECCIÓN_MAESTRA@DOMINIO.COM"
-                                        />
+                            <div className="flex-1 overflow-y-auto p-20 space-y-20 custom-scrollbar-hidden scroll-smooth">
+                                {/* Form sections with enhanced styling */}
+                                <div className="space-y-14">
+                                    <div className="flex items-center gap-6 border-b border-white/10 pb-8">
+                                        <div className="w-3 h-3 rounded-full bg-secondary shadow-[0_0_15px_rgba(255,99,71,0.8)]" />
+                                        <h3 className="text-sm font-black uppercase tracking-[0.6em] text-white italic">01 // Identidad Corporativa</h3>
                                     </div>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                                        <div className="space-y-4">
-                                            <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] flex items-center gap-3 ml-2 italic"><Phone size={14} className="text-secondary" /> Telefonía Móvil</label>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-14">
+                                        <div className="space-y-6">
+                                            <label className="text-[11px] font-black text-slate-500 uppercase tracking-[0.5em] ml-2 italic flex items-center gap-3">
+                                                Nombres Maestro <span className="text-secondary/50">*</span>
+                                            </label>
                                             <input
                                                 type="text"
-                                                value={formData.phone}
-                                                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                                className="w-full p-6 bg-slate-900 border border-white/5 text-white text-[11px] font-black tracking-widest focus:border-secondary outline-none rounded-2xl"
-                                                placeholder="+52 XXX XXX XXXX"
+                                                value={formData.firstName}
+                                                onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                                                className="w-full p-8 bg-slate-900/60 border border-white/10 text-white text-[13px] font-black uppercase tracking-widest focus:border-secondary focus:ring-4 focus:ring-secondary/5 transition-all outline-none rounded-3xl placeholder:text-slate-800 italic"
+                                                placeholder="REGISTRAR CADENA..."
                                             />
                                         </div>
-                                        <div className="space-y-4">
-                                            <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] flex items-center gap-3 ml-2 italic"><MapPin size={14} className="text-secondary" /> Ciudad Operativa</label>
+                                        <div className="space-y-6">
+                                            <label className="text-[11px] font-black text-slate-500 uppercase tracking-[0.5em] ml-2 italic">Apellidos Legales</label>
                                             <input
                                                 type="text"
-                                                value={formData.city}
-                                                onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                                                className="w-full p-6 bg-slate-900 border border-white/5 text-white text-[11px] font-black uppercase tracking-widest focus:border-secondary outline-none rounded-2xl"
-                                                placeholder="METRÓPOLIS BASE"
+                                                value={formData.lastName}
+                                                onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                                                className="w-full p-8 bg-slate-900/60 border border-white/10 text-white text-[13px] font-black uppercase tracking-widest focus:border-secondary focus:ring-4 focus:ring-secondary/5 transition-all outline-none rounded-3xl placeholder:text-slate-800 italic"
+                                                placeholder="COMPLETAR REGISTRO..."
                                             />
                                         </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <div className="space-y-10">
-                                <div className="flex items-center gap-4 border-b border-white/5 pb-6">
-                                    <div className="w-2 h-2 rounded-full bg-orange-400 shadow-[0_0_8px_currentColor]" />
-                                    <h3 className="text-xs font-black uppercase tracking-[0.4em] text-white italic">Inteligencia Operativa</h3>
+                                <div className="space-y-14">
+                                    <div className="flex items-center gap-6 border-b border-white/10 pb-8">
+                                        <div className="w-3 h-3 rounded-full bg-azure-400 shadow-[0_0_15px_rgba(45,212,191,0.8)]" />
+                                        <h3 className="text-sm font-black uppercase tracking-[0.6em] text-white italic">02 // Conectividad Local</h3>
+                                    </div>
+                                    <div className="space-y-14">
+                                        <div className="space-y-6">
+                                            <label className="text-[11px] font-black text-slate-500 uppercase tracking-[0.5em] flex items-center gap-4 ml-2 italic group">
+                                                <Mail size={16} className="text-secondary group-hover:rotate-12 transition-transform" /> 
+                                                Email de Enlace <span className="text-secondary/50">*</span>
+                                            </label>
+                                            <input
+                                                type="email"
+                                                value={formData.email}
+                                                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                                className="w-full p-8 bg-slate-900/60 border border-white/10 text-white text-[13px] font-black tracking-[0.1em] focus:border-secondary focus:ring-4 focus:ring-secondary/5 outline-none rounded-3xl placeholder:text-slate-800 italic"
+                                                placeholder="DIRECCIÓN_MAESTRA@DOMINIO.GLOBAL"
+                                            />
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-14">
+                                            <div className="space-y-6">
+                                                <label className="text-[11px] font-black text-slate-500 uppercase tracking-[0.5em] flex items-center gap-4 ml-2 italic group">
+                                                    <Phone size={16} className="text-secondary group-hover:scale-125 transition-all" /> 
+                                                    Línea Crítica <span className="text-secondary/50">*</span>
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={formData.phone}
+                                                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                                    className="w-full p-8 bg-slate-900/60 border border-white/10 text-white text-[13px] font-black tracking-[0.2em] focus:border-secondary outline-none rounded-3xl transition-all"
+                                                    placeholder="+52 XXX XXX XXXX"
+                                                />
+                                            </div>
+                                            <div className="space-y-6">
+                                                <label className="text-[11px] font-black text-slate-500 uppercase tracking-[0.5em] flex items-center gap-4 ml-2 italic group">
+                                                    <MapPin size={16} className="text-secondary group-hover:translate-y-[-4px] transition-transform" /> 
+                                                    Coordenada Base
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={formData.city}
+                                                    onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                                                    className="w-full p-8 bg-slate-900/60 border border-white/10 text-white text-[13px] font-black uppercase tracking-widest focus:border-secondary outline-none rounded-3xl transition-all"
+                                                    placeholder="CIUDAD DE OPERACIÓN"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="space-y-4">
-                                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-2 italic">Análisis de Requerimiento Crítico</label>
-                                    <textarea
-                                        rows={4}
-                                        value={formData.requirement}
-                                        onChange={(e) => setFormData({ ...formData, requirement: e.target.value })}
-                                        className="w-full p-8 bg-slate-900 border border-white/5 text-white text-[11px] font-bold tracking-widest focus:border-secondary outline-none rounded-3xl resize-none placeholder:text-slate-800 leading-relaxed italic"
-                                        placeholder="DESGLOSE MAESTRO DE NECESIDADES TÉCNICAS E INDUSTRIALES..."
-                                    />
-                                </div>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                                    <div className="space-y-4">
-                                        <label className="text-[9px] font-black text-slate-600 uppercase tracking-[0.4em] text-center block italic">COMPRAS NETAS</label>
-                                        <input
-                                            type="number"
-                                            value={formData.purchaseCount}
-                                            onChange={(e) => setFormData({ ...formData, purchaseCount: parseInt(e.target.value) || 0 })}
-                                            className="w-full p-6 bg-slate-900 border border-white/5 text-white text-base font-black text-center focus:border-secondary outline-none rounded-2xl shadow-inner"
-                                            min="0"
+
+                                <div className="space-y-14">
+                                    <div className="flex items-center gap-6 border-b border-white/10 pb-8">
+                                        <div className="w-3 h-3 rounded-full bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.8)]" />
+                                        <h3 className="text-sm font-black uppercase tracking-[0.6em] text-white italic">03 // Análisis Operativo</h3>
+                                    </div>
+                                    <div className="space-y-6">
+                                        <label className="text-[11px] font-black text-slate-500 uppercase tracking-[0.5em] ml-2 italic flex items-center gap-4">
+                                            Requerimiento Estratégico
+                                        </label>
+                                        <textarea
+                                            rows={5}
+                                            value={formData.requirement}
+                                            onChange={(e) => setFormData({ ...formData, requirement: e.target.value })}
+                                            className="w-full p-10 bg-slate-900/60 border border-white/10 text-white text-[12px] font-black tracking-widest focus:border-secondary transition-all outline-none rounded-[2.5rem] resize-none placeholder:text-slate-800 leading-relaxed italic custom-scrollbar-hidden"
+                                            placeholder="DESGLOSE EL PROTOCOLO DE NECESIDADES INDUSTRIALES..."
                                         />
                                     </div>
-                                    <div className="space-y-4">
-                                        <label className="text-[9px] font-black text-slate-600 uppercase tracking-[0.4em] text-center block italic">CAMPAÑAS IA</label>
-                                        <input
-                                            type="number"
-                                            value={formData.campaignsSent}
-                                            onChange={(e) => setFormData({ ...formData, campaignsSent: parseInt(e.target.value) || 0 })}
-                                            className="w-full p-6 bg-slate-900 border border-white/5 text-white text-base font-black text-center focus:border-secondary outline-none rounded-2xl shadow-inner"
-                                            min="0"
-                                        />
-                                    </div>
-                                    <div className="space-y-4">
-                                        <label className="text-[9px] font-black text-slate-600 uppercase tracking-[0.4em] text-center block italic">ETAPA ACTUAL</label>
-                                        <select
-                                            value={formData.status}
-                                            onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                                            className="w-full p-6 bg-slate-900 border border-white/5 text-[10px] font-black uppercase text-white focus:border-secondary outline-none rounded-2xl h-[77px] cursor-pointer"
-                                        >
-                                            <option value="PROSPECTO">PROSPECTO</option>
-                                            <option value="ACTIVO">NODO ACTIVO</option>
-                                            <option value="INACTIVO">PROTOCOLO INACTIVO</option>
-                                        </select>
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+                                        <div className="glass-panel !bg-slate-900/40 p-8 rounded-3xl border-white/10 text-center space-y-4 group hover:!bg-slate-900/80 transition-all">
+                                            <label className="text-[10px] font-black text-slate-600 uppercase tracking-[0.4em] italic group-hover:text-white transition-colors">Volumen TX</label>
+                                            <input
+                                                type="number"
+                                                value={formData.purchaseCount}
+                                                onChange={(e) => setFormData({ ...formData, purchaseCount: parseInt(e.target.value) || 0 })}
+                                                className="w-full bg-transparent text-white text-4xl font-black text-center focus:text-secondary outline-none transition-all italic tracking-tighter"
+                                                min="0"
+                                            />
+                                        </div>
+                                        <div className="glass-panel !bg-slate-900/40 p-8 rounded-3xl border-white/10 text-center space-y-4 group hover:!bg-slate-900/80 transition-all">
+                                            <label className="text-[10px] font-black text-slate-600 uppercase tracking-[0.4em] italic group-hover:text-white transition-colors">Impactos IA</label>
+                                            <input
+                                                type="number"
+                                                value={formData.campaignsSent}
+                                                onChange={(e) => setFormData({ ...formData, campaignsSent: parseInt(e.target.value) || 0 })}
+                                                className="w-full bg-transparent text-white text-4xl font-black text-center focus:text-secondary outline-none transition-all italic tracking-tighter"
+                                                min="0"
+                                            />
+                                        </div>
+                                        <div className="glass-panel !bg-slate-900/40 p-8 rounded-3xl border-white/10 space-y-4 group hover:!bg-slate-900/80 transition-all flex flex-col justify-center">
+                                            <label className="text-[10px] font-black text-slate-600 uppercase tracking-[0.4em] italic text-center group-hover:text-white transition-colors">Nodo Status</label>
+                                            <select
+                                                value={formData.status}
+                                                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                                                className="w-full bg-transparent text-[11px] font-black uppercase text-white hover:text-secondary focus:text-secondary outline-none cursor-pointer text-center italic"
+                                            >
+                                                <option value="PROSPECTO">PROSPECTO</option>
+                                                <option value="ACTIVO">ACTIVO</option>
+                                                <option value="INACTIVO">CANCELADO</option>
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div className="p-12 border-t border-white/5 bg-white/[0.01] grid grid-cols-1 md:grid-cols-2 gap-8 shrink-0">
-                            <button onClick={closePanel} className="py-6 text-[10px] font-black uppercase tracking-[0.5em] bg-white/5 text-slate-500 hover:text-white hover:bg-white/10 transition-all rounded-3xl border border-white/5 active:scale-95 shadow-xl">
-                                ABORTAR OPERACIÓN
-                            </button>
-                            <button onClick={handleSaveClient} className="py-6 text-[10px] font-black uppercase tracking-[0.5em] bg-secondary text-white hover:bg-white hover:text-secondary transition-all shadow-[0_20px_50px_-10px_rgba(255,99,71,0.4)] flex justify-center items-center gap-4 rounded-3xl active:scale-[0.98]">
-                                <Save size={20} /> {editingId ? "COMPROMETER NODO" : "ENCRIPTAR REGISTRO"}
-                            </button>
-                        </div>
+                            <div className="p-16 border-t border-white/20 bg-white/[0.04] grid grid-cols-1 md:grid-cols-2 gap-10 shrink-0 backdrop-blur-3xl">
+                                <button 
+                                    onClick={closePanel} 
+                                    className="py-10 text-[11px] font-black uppercase tracking-[0.8em] bg-white/5 text-slate-500 hover:text-white hover:bg-white/10 transition-all rounded-[2.5rem] border border-white/10 active:scale-95 shadow-2xl italic skew-x-[-15deg] hover:skew-x-0"
+                                >
+                                    ABORTAR PROTOCOLO
+                                </button>
+                                <button 
+                                    onClick={handleSaveClient} 
+                                    className="py-10 text-[11px] font-black uppercase tracking-[0.8em] bg-secondary text-white hover:scale-105 transition-all shadow-[0_40px_100px_-20px_rgba(255,99,71,0.7)] flex justify-center items-center gap-6 rounded-[2.5rem] active:scale-[0.98] italic skew-x-[-15deg] hover:skew-x-0 group"
+                                >
+                                    <Save size={24} className="group-hover:rotate-12 transition-transform" /> 
+                                    <span>{editingId ? "COMMIT DATA" : "ENCRIPTAR NODO"}</span>
+                                </button>
+                            </div>
+                        </motion.div>
                     </div>
-                </div>
+                )}
+            </AnimatePresence>
+        </div>
+    )
+}
+
+function StatCard({ label, value, icon, color, showPulse = false }: any) {
+    const colorClasses: any = {
+        secondary: "text-secondary border-secondary/30 bg-secondary/5",
+        azure: "text-azure-400 border-azure-500/30 bg-azure-500/5",
+        slate: "text-white border-white/10 bg-white/5"
+    }
+
+    return (
+        <div className={`glass-panel p-12 border rounded-[4rem] flex items-center justify-between group hover:scale-[1.03] transition-all duration-700 relative overflow-hidden backdrop-blur-3xl shadow-[0_50px_100px_-25px_rgba(0,0,0,0.8)] ${colorClasses[color]}`}>
+            {showPulse && <div className="absolute top-6 right-6 w-3 h-3 rounded-full bg-secondary animate-pulse shadow-[0_0_15px_rgba(255,99,71,0.5)]" />}
+            <div className="relative z-10 space-y-4">
+                <p className="text-[11px] font-black text-slate-500 uppercase tracking-[0.5em] italic group-hover:text-white transition-colors">{label}</p>
+                <p className="text-7xl font-black text-white tracking-tighter italic leading-none drop-shadow-[0_0_25px_rgba(255,255,255,0.1)]">{value}</p>
+            </div>
+            <div className="p-7 bg-slate-900/80 rounded-[2rem] border border-white/10 shadow-3xl group-hover:rotate-[15deg] group-hover:scale-110 transition-all duration-700 text-slate-400 group-hover:text-white">
+                {icon}
+            </div>
+        </div>
+    )
+}
+    </div>
             )}
         </div>
     )
