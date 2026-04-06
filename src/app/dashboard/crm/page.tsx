@@ -496,29 +496,3 @@ function StatCard({ label, value, icon, color, showPulse = false }: any) {
         </div>
     )
 }
-    </div>
-            )}
-        </div>
-    )
-}
-
-function StatCard({ label, value, icon, color, showPulse = false }: any) {
-    const colorClasses: any = {
-        secondary: "text-secondary border-secondary/20 shadow-secondary/5",
-        azure: "text-azure-400 border-azure-500/20 shadow-azure-500/5",
-        slate: "text-white border-white/5 shadow-white/5"
-    }
-
-    return (
-        <div className={`glass-panel p-10 border rounded-[2.5rem] flex items-center justify-between group hover:scale-[1.02] transition-all duration-500 relative overflow-hidden ${colorClasses[color]}`}>
-            {showPulse && <div className="absolute top-4 right-4 w-2 h-2 rounded-full bg-secondary animate-ping" />}
-            <div className="relative z-10">
-                <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] mb-4 italic group-hover:text-white transition-colors">{label}</p>
-                <p className="text-5xl font-black text-white tracking-tighter italic leading-none">{value}</p>
-            </div>
-            <div className="p-5 bg-slate-900 rounded-2xl border border-white/5 shadow-2x group-hover:rotate-12 transition-transform duration-500 text-slate-500 group-hover:text-white">
-                {icon}
-            </div>
-        </div>
-    )
-}
