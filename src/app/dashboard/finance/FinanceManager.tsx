@@ -2,28 +2,42 @@
 
 import { useState, useMemo, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
+import { useSession } from "next-auth/react"
 import {
     Plus, Search, Edit3, Trash2, Filter,
     DollarSign, Calendar, Users,
     ChevronDown, X, Check, Save,
     ArrowUpRight, ArrowDownRight, Info, Clock,
-    Target, Briefcase, FileText, PieChart
+    Target, Briefcase, FileText, PieChart,
+    ExternalLink, Upload, ShieldCheck, AlertCircle
 } from "lucide-react"
 
 interface Transaction {
     id: string
+    trxId: string
     client: string
     date: string
     amount: number
+    pvp: number
     cost: number
     profit: number
     commission: number
-    status: "PAGADO" | "PENDIENTE"
+    status: "APROBADO" | "PENDIENTE" | "CANCELADO"
     type: string
+    proofUrl?: string
+    salespersonId: string
+    salesperson?: {
+        name: string
+        email: string
+    }
 }
 
 export default function FinanceManager() {
+    const { data: session } = useSession()
+    const isAdmin = session?.user?.role === "ADMIN" || session?.user?.role === "MANAGEMENT"
+    
     const [data, setData] = useState<Transaction[]>([])
+    const [users, setUsers] = useState<{id: string, name: string}[]>([])
     const [loading, setLoading] = useState(true)
     const [searchTerm, setSearchTerm] = useState("")
     const [periodFilter, setPeriodFilter] = useState("TODOS")
@@ -35,14 +49,18 @@ export default function FinanceManager() {
         date: new Date().toISOString().split('T')[0],
         amount: 0,
         cost: 0,
+        pvp: 0,
         commission: 0,
         status: "PENDIENTE",
-        type: "Venta Directa"
+        type: "Venta Directa",
+        proofUrl: "",
+        salespersonId: session?.user?.id || ""
     })
 
     useEffect(() => {
         fetchTransactions()
-    }, [])
+        if (isAdmin) fetchUsers()
+    }, [isAdmin])
 
     const fetchTransactions = async () => {
         setLoading(true)
@@ -59,6 +77,18 @@ export default function FinanceManager() {
         }
     }
 
+    const fetchUsers = async () => {
+        try {
+            const res = await fetch("/api/users") 
+            if (res.ok) {
+                const data = await res.json()
+                setUsers(data)
+            }
+        } catch (e) {
+            console.error("Error loading users", e)
+        }
+    }
+
     const filteredData = useMemo(() => {
         const now = new Date()
         const currentYear = now.getFullYear()
@@ -67,7 +97,7 @@ export default function FinanceManager() {
 
         return data.filter(item => {
             const itemDate = new Date(item.date)
-            const matchesSearch = (item.id || "").toLowerCase().includes(searchTerm.toLowerCase()) || 
+            const matchesSearch = (item.trxId || "").toLowerCase().includes(searchTerm.toLowerCase()) || 
                                  (item.client || "").toLowerCase().includes(searchTerm.toLowerCase())
             
             if (!matchesSearch) return false
@@ -102,18 +132,40 @@ export default function FinanceManager() {
                 date: new Date().toISOString().split('T')[0],
                 amount: 0,
                 cost: 0,
+                pvp: 0,
                 commission: 0,
                 status: "PENDIENTE",
-                type: "Venta Directa"
+                type: "Venta Directa",
+                proofUrl: "",
+                salespersonId: isAdmin ? "" : session?.user?.id || ""
             })
         }
         setIsModalOpen(true)
     }
 
+    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (file) {
+            const reader = new FileReader()
+            reader.onloadend = () => {
+                setFormData(prev => ({ ...prev, proofUrl: reader.result as string }))
+            }
+            reader.readAsDataURL(file)
+        }
+    }
+
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault()
-        const profit = (formData.amount || 0) - (formData.cost || 0)
-        const payload = { ...formData, profit }
+        
+        if (!isAdmin && !editingItem && !formData.proofUrl) {
+            alert("⚠️ ERROR DE SEGURIDAD: Es obligatorio subir la cotización correspondiente para registrar una venta.")
+            return
+        }
+
+        const payload = { ...formData }
+        if (isAdmin) {
+            payload.profit = (formData.amount || 0) - (formData.cost || 0)
+        }
 
         try {
             const url = editingItem ? `/api/finance/${editingItem.id}` : "/api/finance"
@@ -134,7 +186,13 @@ export default function FinanceManager() {
         }
     }
 
+    const handleApprove = async (item: Transaction) => {
+        if (!isAdmin) return
+        handleOpenModal(item) 
+    }
+
     const handleDelete = async (id: string) => {
+        if (!isAdmin) return
         if (confirm("⚠️ Confirmación Crítica: ¿Eliminar este registro permanentemente del ecosistema?")) {
             try {
                 const res = await fetch(`/api/finance/${id}`, { method: "DELETE" })
@@ -166,7 +224,7 @@ export default function FinanceManager() {
                         <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-700 group-focus-within:text-secondary transition-colors" size={20} />
                         <input
                             type="text"
-                            placeholder="FILTRAR NODO O CLIENTE..."
+                            placeholder="FILTRAR TRX O CLIENTE..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="w-full bg-slate-950/40 border border-white/5 rounded-2xl py-4.5 pl-16 pr-8 text-[11px] font-black uppercase tracking-[0.4em] text-white outline-none focus:border-secondary transition-all placeholder:text-slate-800 shadow-inner"
@@ -178,7 +236,7 @@ export default function FinanceManager() {
                     >
                         <div className="skew-x-[12deg] flex items-center gap-4">
                             <Plus size={20} className="group-hover:rotate-90 transition-transform" />
-                            <span>Inyectar Registro</span>
+                            <span>{isAdmin ? "Forzar Entrada" : "Registrar Venta"}</span>
                         </div>
                     </button>
                 </div>
@@ -186,9 +244,9 @@ export default function FinanceManager() {
 
             {/* Summary Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-                <StatSummary label={`VENTAS BRUTAS (${periodFilter})`} value={totalSales} icon={<DollarSign size={28} />} trend="FLUJO ENTRANTE" color="secondary" />
-                <StatSummary label="UTILIDAD NETA ESTIMADA" value={totalProfit} icon={<Target size={28} />} trend="RETENCIÓN DE VALOR" color="azure" />
-                <StatSummary label="LIQUIDACIÓN DE COMISIONES" value={totalCommission} icon={<ArrowUpRight size={28} />} trend="PASIVO OPERATIVO" color="emerald" />
+                <StatSummary label={`VENTAS PVP (${periodFilter})`} value={totalSales} icon={<DollarSign size={28} />} trend="FLUJO ENTRANTE" color="secondary" />
+                <StatSummary label="UTILIDAD BRUTA" value={totalProfit} icon={<Target size={28} />} trend="RETENCIÓN DE VALOR" color="azure" />
+                <StatSummary label="COMISIONES TOTALES" value={totalCommission} icon={<ArrowUpRight size={28} />} trend="PASIVO OPERATIVO" color="emerald" />
             </div>
 
             {/* Data Table */}
@@ -197,12 +255,12 @@ export default function FinanceManager() {
                     <table className="w-full text-left border-collapse whitespace-nowrap">
                         <thead>
                             <tr className="border-b border-white/5 bg-white/[0.02]">
-                                <th className="px-12 py-8 text-[10px] font-black text-slate-500 uppercase tracking-[0.6em] italic">IDENTIFICACIÓN / CRONO</th>
+                                <th className="px-12 py-8 text-[10px] font-black text-slate-500 uppercase tracking-[0.6em] italic">TRX / ASESOR</th>
                                 <th className="px-12 py-8 text-[10px] font-black text-slate-500 uppercase tracking-[0.6em] italic">CLIENTE / SEGMENTO</th>
-                                <th className="px-12 py-8 text-[10px] font-black text-slate-500 uppercase tracking-[0.6em] italic text-right">MONTO BRUTO</th>
-                                <th className="px-12 py-8 text-[10px] font-black text-slate-500 uppercase tracking-[0.6em] italic text-right">OPERACIÓN</th>
+                                <th className="px-12 py-8 text-[10px] font-black text-slate-500 uppercase tracking-[0.6em] italic text-right">VALOR PVP</th>
+                                <th className="px-12 py-8 text-[10px] font-black text-slate-500 uppercase tracking-[0.6em] italic text-right">INVERSIÓN</th>
                                 <th className="px-12 py-8 text-[10px] font-black text-slate-500 uppercase tracking-[0.6em] italic text-right underline decoration-secondary decoration-2 underline-offset-8">UTILIDAD</th>
-                                <th className="px-12 py-8 text-[10px] font-black text-slate-500 uppercase tracking-[0.6em] italic text-center">ESTATUS</th>
+                                <th className="px-12 py-8 text-[10px] font-black text-slate-500 uppercase tracking-[0.6em] italic text-center">FESTIÓN</th>
                                 <th className="px-12 py-8 text-[10px] font-black text-slate-500 uppercase tracking-[0.6em] italic text-right">MOD</th>
                             </tr>
                         </thead>
@@ -211,56 +269,67 @@ export default function FinanceManager() {
                                 <tr key={item.id} className="hover:bg-white/[0.04] transition-all group relative">
                                     <td className="px-12 py-8 relative">
                                         <div className="absolute left-0 top-0 w-1.5 h-full bg-secondary/0 group-hover:bg-secondary transition-colors" />
-                                        <div className="text-sm font-black text-white mb-2 uppercase tracking-tighter group-hover:translate-x-2 transition-transform italic">{item.id.slice(0,10)}</div>
+                                        <div className="text-sm font-black text-white mb-2 uppercase tracking-tighter group-hover:translate-x-2 transition-transform italic">{item.trxId}</div>
                                         <div className="text-[9px] text-slate-600 font-black flex items-center tracking-[0.3em] uppercase italic group-hover:translate-x-2 transition-transform delay-75"><Calendar size={12} className="mr-3 text-slate-800" /> {new Date(item.date).toLocaleDateString()}</div>
                                     </td>
                                     <td className="px-12 py-8">
                                         <div className="text-base font-black text-white mb-2 tracking-tighter uppercase italic">{item.client}</div>
                                         <div className="flex items-center gap-3">
                                             <span className="w-1.5 h-1.5 rounded-full bg-azure-500 animate-pulse" />
-                                            <div className="text-[9px] font-black text-slate-500 uppercase tracking-[0.4em] italic">{item.type}</div>
+                                            <div className="text-[9px] font-black text-slate-500 uppercase tracking-[0.4em] italic">{item.salesperson?.name || "ASESOR"} // {item.type}</div>
                                         </div>
                                     </td>
                                     <td className="px-12 py-8 text-right text-lg font-black text-white tracking-tighter italic">${item.amount.toLocaleString()}</td>
                                     <td className="px-12 py-8 text-right text-xs font-black text-slate-700 tracking-[0.2em] italic">-${item.cost.toLocaleString()}</td>
                                     <td className="px-12 py-8 text-right text-xl font-black text-emerald-400 tracking-tighter italic drop-shadow-[0_0_10px_rgba(52,211,153,0.2)]">${item.profit.toLocaleString()}</td>
                                     <td className="px-12 py-8 text-center">
-                                        <span className={`px-6 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-[0.4em] border italic shadow-2xl ${
-                                            item.status === 'PAGADO' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 shadow-emerald-500/10' : 
-                                            'bg-secondary/10 text-secondary border-secondary/20 shadow-secondary/10'
-                                            }`}>
-                                            {item.status === 'PAGADO' ? 'LIQUIDADO' : 'PENDIENTE'}
-                                        </span>
+                                        <div className="flex flex-col items-center gap-2">
+                                            <span className={`px-6 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-[0.4em] border italic shadow-2xl ${
+                                                item.status === 'APROBADO' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 shadow-emerald-500/10' : 
+                                                'bg-secondary/10 text-secondary border-secondary/20 shadow-secondary/10'
+                                                }`}>
+                                                {item.status === 'APROBADO' ? 'CONSOLIDADO' : 'PENDIENTE'}
+                                            </span>
+                                            {item.proofUrl && (
+                                                <button 
+                                                    onClick={() => window.open(item.proofUrl, '_blank')}
+                                                    className="flex items-center gap-2 text-[8px] font-black text-azure-400 hover:text-white transition-colors uppercase tracking-widest italic"
+                                                >
+                                                    <FileText size={10} /> VER COTIZACIÓN
+                                                </button>
+                                            )}
+                                        </div>
                                     </td>
                                     <td className="px-12 py-8 text-right">
                                         <div className="flex justify-end space-x-3 opacity-0 group-hover:opacity-100 transition-all translate-x-10 group-hover:translate-x-0">
-                                            <button
-                                                onClick={() => handleOpenModal(item)}
-                                                className="p-4 glass-panel !bg-slate-900 text-slate-600 hover:text-secondary hover:bg-white transition-all rounded-2xl border-white/5 shadow-2xl"
-                                            >
-                                                <Edit3 size={20} />
-                                            </button>
-                                            <button
-                                                onClick={() => handleDelete(item.id)}
-                                                className="p-4 glass-panel !bg-slate-900 text-slate-600 hover:text-red-500 hover:bg-red-500/10 transition-all rounded-2xl border-white/5 shadow-2xl"
-                                            >
-                                                <Trash2 size={20} />
-                                            </button>
+                                            {isAdmin && item.status === "PENDIENTE" && (
+                                                <button
+                                                    onClick={() => handleApprove(item)}
+                                                    className="p-4 glass-panel !bg-emerald-500/10 text-emerald-400 hover:text-white hover:bg-emerald-500 transition-all rounded-2xl border-white/5 shadow-2xl"
+                                                >
+                                                    <ShieldCheck size={20} />
+                                                </button>
+                                            )}
+                                            {isAdmin && (
+                                                <>
+                                                    <button
+                                                        onClick={() => handleOpenModal(item)}
+                                                        className="p-4 glass-panel !bg-slate-900 text-slate-600 hover:text-secondary hover:bg-white transition-all rounded-2xl border-white/5 shadow-2xl"
+                                                    >
+                                                        <Edit3 size={20} />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDelete(item.id)}
+                                                        className="p-4 glass-panel !bg-slate-900 text-slate-600 hover:text-red-500 hover:bg-red-500/10 transition-all rounded-2xl border-white/5 shadow-2xl"
+                                                    >
+                                                        <Trash2 size={20} />
+                                                    </button>
+                                                </>
+                                            )}
                                         </div>
                                     </td>
                                 </tr>
                             ))}
-                            {filteredData.length === 0 && (
-                                <tr>
-                                    <td colSpan={7} className="px-12 py-52 text-center text-slate-800">
-                                        <div className="w-24 h-24 bg-slate-900/60 rounded-full flex items-center justify-center mx-auto mb-10 border border-white/5 shadow-inner group">
-                                            <Clock className="text-slate-800 group-hover:scale-110 transition-transform" size={48} />
-                                        </div>
-                                        <p className="text-slate-700 font-black text-[11px] uppercase tracking-[0.6em] italic">Sin registros autorizados en el periodo seleccionado.</p>
-                                        <p className="text-[9px] text-slate-900 font-black uppercase tracking-[0.4em] mt-4">Protocolo de búsqueda activo</p>
-                                    </td>
-                                </tr>
-                            )}
                         </tbody>
                     </table>
                 </div>
@@ -281,18 +350,18 @@ export default function FinanceManager() {
                             initial={{ opacity: 0, scale: 0.9, y: 30 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.9, y: 30 }}
-                            className="glass-panel !bg-slate-950/60 w-full max-w-3xl shadow-[0_0_150px_rgba(0,0,0,1)] border-white/10 overflow-hidden rounded-[4rem] relative z-10 backdrop-blur-3xl border"
+                            className="glass-panel !bg-slate-950/60 w-full max-w-4xl shadow-[0_0_150px_rgba(0,0,0,1)] border-white/10 overflow-hidden rounded-[4rem] relative z-10 backdrop-blur-3xl border"
                         >
                             <div className="p-14 border-b border-white/5 flex justify-between items-center bg-white/[0.01]">
                                 <div className="flex items-center gap-8">
                                     <div className="p-5 bg-secondary text-white rounded-2xl shadow-2xl shadow-secondary/30">
-                                        {editingItem ? <Edit3 size={32} /> : <Plus size={32} />}
+                                        {isAdmin ? <ShieldCheck size={32} /> : <Plus size={32} />}
                                     </div>
                                     <div>
                                         <h3 className="text-4xl font-black text-white uppercase tracking-tighter italic">
-                                            {editingItem ? 'MODIFICAR <span className="text-secondary">NODO</span>' : 'INYECTAR <span className="text-secondary">OPERACIÓN</span>'}
+                                            {isAdmin ? (editingItem ? 'PROCESAR <span className="text-secondary">ORDEN</span>' : 'FORZAR <span className="text-secondary">ENTRADA</span>') : 'REGISTRAR <span className="text-secondary">VENTA</span>'}
                                         </h3>
-                                        <p className="text-[10px] font-black text-slate-500 mt-3 uppercase tracking-[0.6em] italic">Protocolo de Tesorería Industrial</p>
+                                        <p className="text-[10px] font-black text-slate-500 mt-3 uppercase tracking-[0.6em] italic">Consolidación de Activos Industriales</p>
                                     </div>
                                 </div>
                                 <button
@@ -305,98 +374,138 @@ export default function FinanceManager() {
 
                             <form onSubmit={handleSave} className="p-14 space-y-12 custom-scrollbar max-h-[70vh] overflow-y-auto">
                                 <div className="grid grid-cols-2 gap-12">
-                                    <div className="col-span-2 space-y-4">
-                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] ml-2 italic">Entidad Corporativa / Cliente Nodo</label>
+                                    <div className={`${isAdmin ? 'col-span-1' : 'col-span-2'} space-y-4`}>
+                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] ml-2 italic">Cliente Final / Proyecto</label>
                                         <div className="relative group">
                                             <Users className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-700 group-focus-within:text-secondary transition-colors" size={20} />
                                             <input
                                                 required
+                                                disabled={editingItem && !isAdmin}
                                                 value={formData.client}
                                                 onChange={(e) => setFormData({ ...formData, client: e.target.value.toUpperCase() })}
-                                                className="w-full bg-slate-950/60 border border-white/5 rounded-2xl py-6 pl-16 pr-8 text-[12px] font-black uppercase tracking-widest text-white focus:border-secondary outline-none transition-all placeholder:text-slate-900 shadow-inner italic"
-                                                placeholder="IDENTIFICAR DESTINATARIO..."
+                                                className="w-full bg-slate-950/60 border border-white/5 rounded-2xl py-6 pl-16 pr-8 text-[12px] font-black uppercase tracking-widest text-white focus:border-secondary outline-none transition-all placeholder:text-slate-900 shadow-inner italic disabled:opacity-50"
+                                                placeholder="NOMBRE DEL CLIENTE..."
                                             />
                                         </div>
                                     </div>
 
+                                    {isAdmin && (
+                                        <div className="space-y-4">
+                                            <label className="text-[10px] font-black text-secondary uppercase tracking-[0.5em] ml-2 italic">Asignar Asesor</label>
+                                            <select
+                                                required
+                                                value={formData.salespersonId}
+                                                onChange={(e) => setFormData({ ...formData, salespersonId: e.target.value })}
+                                                className="w-full bg-slate-950/60 border border-white/5 rounded-2xl py-6 px-10 text-[11px] font-black uppercase tracking-[0.3em] text-white focus:border-secondary outline-none h-[75px]"
+                                            >
+                                                <option value="">SELECCIONAR ASESOR...</option>
+                                                {users.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
+                                            </select>
+                                        </div>
+                                    )}
+
                                     <div className="space-y-4">
-                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] ml-2 italic">Fecha de Despliegue</label>
+                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] ml-2 italic">Fecha de Venta</label>
                                         <input
                                             type="date"
                                             required
+                                            disabled={editingItem && !isAdmin}
                                             value={formData.date}
                                             onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                                            className="w-full bg-slate-950/60 border border-white/5 rounded-2xl py-6 px-10 text-[12px] font-black uppercase tracking-widest text-white focus:border-secondary outline-none transition-all shadow-inner"
+                                            className="w-full bg-slate-950/60 border border-white/5 rounded-2xl py-6 px-10 text-[12px] font-black uppercase tracking-widest text-white focus:border-secondary transition-all shadow-inner disabled:opacity-50"
                                         />
                                     </div>
 
                                     <div className="space-y-4">
-                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] ml-2 italic">Segmentación de Valor</label>
+                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] ml-2 italic">Tipo de Operación</label>
                                         <select
+                                            disabled={editingItem && !isAdmin}
                                             value={formData.type}
                                             onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                                            className="w-full bg-slate-950/60 border border-white/5 rounded-2xl py-6 px-10 text-[11px] font-black uppercase tracking-[0.3em] text-white focus:border-secondary outline-none transition-all cursor-pointer h-[75px] shadow-inner italic"
+                                            className="w-full bg-slate-950/60 border border-white/5 rounded-2xl py-6 px-10 text-[11px] font-black uppercase tracking-[0.3em] text-white focus:border-secondary outline-none h-[75px] shadow-inner italic disabled:opacity-50"
                                         >
                                             <option value="Venta Directa">VENTA DIRECTA</option>
-                                            <option value="Equipos">EQUIPOS TÉCNICOS</option>
-                                            <option value="Servicio">SERVICIOS PROF.</option>
-                                            <option value="Proyectos">PROYECTOS I+D</option>
-                                            <option value="Ticket de Pago">TICKET DE LIQUIDACIÓN</option>
+                                            <option value="Servicio">SERVICIO PROF.</option>
+                                            <option value="Proyectos">PROYECTO INTEGRAL</option>
                                         </select>
                                     </div>
 
                                     <div className="space-y-4">
-                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] ml-2 italic">Precio Maestro ($)</label>
+                                        <label className="text-[10px] font-black text-white uppercase tracking-[0.5em] ml-2 italic">Valor Venta (PVP) ($)</label>
                                         <div className="relative group">
                                             <DollarSign className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-800" size={24} />
                                             <input
                                                 type="number"
                                                 required
+                                                disabled={editingItem && !isAdmin}
                                                 value={formData.amount}
                                                 onChange={(e) => setFormData({ ...formData, amount: parseFloat(e.target.value) })}
-                                                className="w-full bg-slate-950/60 border border-white/5 rounded-2xl py-6 pl-16 pr-8 text-2xl font-black text-white focus:border-secondary outline-none transition-all shadow-inner italic"
+                                                className="w-full bg-slate-950/60 border border-white/5 rounded-2xl py-6 pl-16 pr-8 text-2xl font-black text-white focus:border-secondary outline-none transition-all shadow-inner italic disabled:opacity-50"
                                             />
                                         </div>
                                     </div>
 
-                                    <div className="space-y-4">
-                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] ml-2 italic">Inversión Operativa ($)</label>
-                                        <div className="relative group">
-                                            <Briefcase className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-800" size={20} />
-                                            <input
-                                                type="number"
-                                                required
-                                                value={formData.cost}
-                                                onChange={(e) => setFormData({ ...formData, cost: parseFloat(e.target.value) })}
-                                                className="w-full bg-slate-950/60 border border-white/5 rounded-2xl py-6 pl-16 pr-8 text-xl font-black text-slate-400 focus:border-secondary outline-none transition-all shadow-inner italic"
-                                            />
+                                    <div className="col-span-2 space-y-4">
+                                        <label className="text-[10px] font-black text-azure-400 uppercase tracking-[0.5em] ml-2 italic">Cotización Correspondiente (PDF/Imagen)</label>
+                                        <div className="relative group flex items-center gap-6">
+                                            <label className="flex-1 cursor-pointer group bg-slate-950/60 border-2 border-dashed border-white/10 hover:border-azure-400/50 rounded-3xl p-10 transition-all flex flex-col items-center justify-center gap-4 group">
+                                                <Upload className="text-slate-700 group-hover:text-azure-400 transition-colors" size={40} />
+                                                <span className="text-[10px] font-black text-slate-600 group-hover:text-white uppercase tracking-[0.3em] italic">Suelte el archivo o haga clic para subir</span>
+                                                <input type="file" className="hidden" accept="image/*,.pdf,.doc,.docx" onChange={handleFileUpload} />
+                                            </label>
+                                            {formData.proofUrl && (
+                                                <div className="w-40 h-40 glass-panel rounded-3xl p-4 flex flex-col items-center justify-center gap-4 bg-emerald-500/5 border-emerald-500/20">
+                                                    <ShieldCheck className="text-emerald-400" size={32} />
+                                                    <span className="text-[7px] font-black text-emerald-400 uppercase text-center tracking-widest">ARCHIVO CARGADO</span>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
 
-                                    <div className="space-y-4">
-                                        <label className="text-[10px] font-black text-secondary uppercase tracking-[0.5em] ml-2 italic">Incentivo Base</label>
-                                        <input
-                                            type="number"
-                                            required
-                                            value={formData.commission}
-                                            onChange={(e) => setFormData({ ...formData, commission: parseFloat(e.target.value) })}
-                                            className="w-full bg-secondary/5 border border-secondary/20 rounded-2xl py-6 px-10 text-2xl font-black text-secondary focus:border-secondary outline-none transition-all shadow-2xl shadow-secondary/5 italic"
-                                        />
-                                    </div>
-
-                                    <div className="space-y-4">
-                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] ml-2 italic">Fase de Liquidación</label>
-                                        <select
-                                            value={formData.status}
-                                            onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
-                                            className={`w-full border rounded-2xl py-6 px-10 text-[11px] font-black uppercase tracking-[0.4em] transition-all cursor-pointer h-[75px] shadow-2xl italic ${
-                                                formData.status === 'PAGADO' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-slate-950/60 text-slate-600 border-white/10'
-                                                }`}
-                                        >
-                                            <option value="PENDIENTE">EN ESPERA</option>
-                                            <option value="PAGADO">CONSOLIDADO</option>
-                                        </select>
-                                    </div>
+                                    {isAdmin && (
+                                        <AnimatePresence>
+                                            <motion.div 
+                                                initial={{ opacity: 0, height: 0 }}
+                                                animate={{ opacity: 1, height: 'auto' }}
+                                                className="col-span-2 grid grid-cols-2 gap-12 pt-8 border-t border-white/5"
+                                            >
+                                                <div className="space-y-4">
+                                                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] ml-2 italic">Costo de Inversión ($)</label>
+                                                    <input
+                                                        type="number"
+                                                        required
+                                                        value={formData.cost}
+                                                        onChange={(e) => setFormData({ ...formData, cost: parseFloat(e.target.value) })}
+                                                        className="w-full bg-slate-950/60 border border-white/5 rounded-2xl py-6 px-10 text-xl font-black text-slate-400 focus:border-secondary outline-none italic"
+                                                    />
+                                                </div>
+                                                <div className="space-y-4">
+                                                    <label className="text-[10px] font-black text-secondary uppercase tracking-[0.5em] ml-2 italic">Comisión Acordada ($)</label>
+                                                    <input
+                                                        type="number"
+                                                        required
+                                                        value={formData.commission}
+                                                        onChange={(e) => setFormData({ ...formData, commission: parseFloat(e.target.value) })}
+                                                        className="w-full bg-secondary/5 border border-secondary/20 rounded-2xl py-6 px-10 text-2xl font-black text-secondary focus:border-secondary outline-none italic"
+                                                    />
+                                                </div>
+                                                <div className="col-span-2 space-y-4">
+                                                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] ml-2 italic">Estado de la Operación</label>
+                                                    <select
+                                                        value={formData.status}
+                                                        onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
+                                                        className={`w-full border rounded-2xl py-6 px-10 text-[11px] font-black uppercase tracking-[0.4em] transition-all cursor-pointer h-[75px] ${
+                                                            formData.status === 'APROBADO' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-slate-950/60 text-slate-600 border-white/10'
+                                                            }`}
+                                                    >
+                                                        <option value="PENDIENTE">PENDIENTE DE REVISIÓN</option>
+                                                        <option value="APROBADO">CONSOLIDAR Y NOTIFICAR</option>
+                                                        <option value="CANCELADO">RECHAZAR OPERACIÓN</option>
+                                                    </select>
+                                                </div>
+                                            </motion.div>
+                                        </AnimatePresence>
+                                    )}
                                 </div>
 
                                 <div className="pt-16 flex space-x-8">
@@ -405,8 +514,8 @@ export default function FinanceManager() {
                                         className="flex-1 bg-secondary text-white font-black py-8 rounded-[2rem] text-[12px] uppercase tracking-[0.6em] shadow-[0_25px_60px_-10px_rgba(255,99,71,0.6)] hover:bg-white hover:text-secondary transition-all flex items-center justify-center space-x-6 active:scale-[0.98] italic skew-x-[-8deg] group"
                                     >
                                         <div className="skew-x-[8deg] flex items-center gap-6">
-                                            <Save size={24} className="group-hover:translate-y-[-2px] transition-transform" />
-                                            <span>{editingItem ? 'ACTUALIZAR NODO' : 'AUTORIZAR REGISTRO'}</span>
+                                            {isAdmin ? <ShieldCheck size={24} /> : <Save size={24} />}
+                                            <span>{isAdmin ? (editingItem ? 'PROCESAR Y NOTIFICAR' : 'INYECTAR REGISTRO') : 'ENVIAR PARA APROBACIÓN'}</span>
                                         </div>
                                     </button>
                                 </div>

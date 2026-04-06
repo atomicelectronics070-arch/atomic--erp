@@ -203,12 +203,14 @@ model Transaction {
   trxId      String   @unique // Format: TRX-000
   client     String
   date       DateTime @default(now())
-  amount     Float
-  cost       Float
-  profit     Float
-  commission Float
-  status     String   @default("PENDIENTE") // PAGADO, PENDIENTE
+  amount     Float    // This will be used as the PVP for display after approval
+  pvp        Float    @default(0) // Explicit PVP field
+  cost       Float    @default(0)
+  profit     Float    @default(0)
+  commission Float    @default(0)
+  status     String   @default("PENDIENTE") // PENDIENTE, APROBADO, CANCELADO
   type       String   @default("Venta Directa")
+  proofUrl   String?  // URL/Base64 of the quote/attachment (cotizacion)
 
   salespersonId String?
   salesperson   User?    @relation("UserTransactions", fields: [salespersonId], references: [id])

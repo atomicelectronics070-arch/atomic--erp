@@ -119,3 +119,38 @@ export async function getUsersForTagging() {
         return { success: false, error: error.message }
     }
 }
+
+export async function getSalesRanking() {
+    try {
+        const users = await prisma.user.findMany({
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                transactions: {
+                    where: { status: "APROBADO" },
+                    select: { profit: true }
+                }
+            }
+        })
+
+        const ranking = users.map(user => {
+            const totalProfit = user.transactions.reduce((sum, tx) => sum + (tx.profit || 0), 0)
+            const salesCount = user.transactions.length
+            const score = totalProfit + salesCount
+            
+            return {
+                id: user.id,
+                name: user.name || user.email.split('@')[0],
+                salesCount,
+                totalProfit,
+                score
+            }
+        }).sort((a, b) => b.score - a.score)
+
+        return { success: true, ranking }
+    } catch (error: any) {
+        console.error("Error fetching ranking:", error)
+        return { success: false, error: error.message }
+    }
+}
