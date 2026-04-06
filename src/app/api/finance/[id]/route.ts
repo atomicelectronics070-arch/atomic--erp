@@ -65,6 +65,9 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
         const session = await getServerSession(authOptions)
         if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
+        const isAdmin = session.user.role === "ADMIN" || session.user.role === "MANAGEMENT"
+        if (!isAdmin) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+
         const resolvedParams = await params
         await prisma.transaction.delete({
             where: { id: resolvedParams.id }

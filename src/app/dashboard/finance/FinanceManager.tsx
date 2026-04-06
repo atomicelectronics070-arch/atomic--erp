@@ -260,7 +260,7 @@ export default function FinanceManager() {
                                 <th className="px-12 py-8 text-[10px] font-black text-slate-500 uppercase tracking-[0.6em] italic text-right">VALOR PVP</th>
                                 <th className="px-12 py-8 text-[10px] font-black text-slate-500 uppercase tracking-[0.6em] italic text-right">INVERSIÓN</th>
                                 <th className="px-12 py-8 text-[10px] font-black text-slate-500 uppercase tracking-[0.6em] italic text-right underline decoration-secondary decoration-2 underline-offset-8">UTILIDAD</th>
-                                <th className="px-12 py-8 text-[10px] font-black text-slate-500 uppercase tracking-[0.6em] italic text-center">FESTIÓN</th>
+                                <th className="px-12 py-8 text-[10px] font-black text-slate-500 uppercase tracking-[0.6em] italic text-center">GESTIÓN</th>
                                 <th className="px-12 py-8 text-[10px] font-black text-slate-500 uppercase tracking-[0.6em] italic text-right">MOD</th>
                             </tr>
                         </thead>
