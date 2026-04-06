@@ -144,6 +144,7 @@ export default function AdvancedCRMPage() {
                         <UserPlus size={24} className="group-hover:rotate-12 transition-transform" />
                         <span>INYECTAR NODO</span>
                     </button>
+                    </div>
                 </div>
             </div>
 

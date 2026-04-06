@@ -307,6 +307,7 @@ export default function EvaluationsPage() {
                                                 </tr>
                                             )
                                         })}
+                                    ))}
                                 </tbody>
                             </table>
                         </div>
