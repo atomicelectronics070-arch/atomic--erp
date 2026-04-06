@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { useSession } from "next-auth/react"
-import { Image as ImageIcon, Video, Send, Heart, MessageSquare, MoreHorizontal, Share2, AtSign } from "lucide-react"
+import { Image as ImageIcon, Video, Send, Heart, MessageSquare, MoreHorizontal, Share2, AtSign, Globe, X } from "lucide-react"
 import { fetchFeed, createPost, toggleLike, addComment } from "@/lib/actions/social"
 import { motion, AnimatePresence } from "framer-motion"
 
