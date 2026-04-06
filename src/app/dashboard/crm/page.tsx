@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Search, Plus, Phone, Mail, MoreVertical, UserPlus, Filter, Download, Trash2, Edit2, Globe, Users, Navigation, MapPin, Tag, Briefcase, Calendar, ChevronRight, X, BarChart3, TrendingUp, CheckCircle2, ShieldAlert, Save } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
 
 export default function AdvancedCRMPage() {
     const [clients, setClients] = useState<any[]>([])
@@ -120,26 +121,26 @@ export default function AdvancedCRMPage() {
         <div className="space-y-12 lg:min-h-screen flex flex-col relative w-full overflow-hidden pb-32 animate-in fade-in duration-1000">
             {/* Background Orbs */}
             <div className="fixed inset-0 pointer-events-none z-0">
-                <div className="absolute top-[10%] right-[-10%] w-[35%] h-[35%] rounded-full bg-azure-500/5 blur-[120px]" />
-                <div className="absolute bottom-[20%] left-[-10%] w-[30%] h-[30%] rounded-full bg-tomato-500/5 blur-[100px]" />
+                <div className="absolute top-[10%] right-[-10%] w-[35%] h-[35%] rounded-full bg-indigo-500/5 blur-[120px]" />
+                <div className="absolute bottom-[20%] left-[-10%] w-[30%] h-[30%] rounded-full bg-pink-500/5 blur-[100px]" />
             </div>
 
             {/* HEADERS & METRICS */}
             <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end gap-10 border-b border-white/5 pb-16 relative z-10">
                 <div>
-                    <div className="flex items-center space-x-4 mb-4 text-secondary">
-                        <Briefcase size={20} className="drop-shadow-[0_0_8px_rgba(255,99,71,0.5)]" />
+                    <div className="flex items-center space-x-4 mb-4 text-primary">
+                        <Briefcase size={20} className="drop-shadow-[0_0_8px_rgba(99,102,241,0.5)]" />
                         <span className="text-[10px] uppercase font-black tracking-[0.6em]">ECOSISTEMA DE RELACIONES</span>
                     </div>
-                    <h1 className="text-6xl font-black text-white tracking-tighter uppercase italic">Centro <span className="text-secondary">CRM</span></h1>
+                    <h1 className="text-6xl font-black text-white tracking-tighter uppercase italic">Centro <span className="text-primary">CRM</span></h1>
                     <p className="text-slate-500 font-bold text-xs uppercase tracking-[0.3em] mt-4 max-w-2xl leading-relaxed">Gestión táctica de prospectos, fidelización de nodos activos y análisis de conversión corporativa en tiempo real.</p>
                              <div className="flex flex-wrap items-center gap-10">
-                    <button className="p-8 glass-panel text-slate-500 hover:text-secondary hover:bg-white/10 transition-all rounded-[1.5rem] group border-white/10 shadow-2xl">
+                    <button className="p-8 glass-panel text-slate-500 hover:text-primary hover:bg-white/10 transition-all rounded-[1.5rem] group border-white/10 shadow-2xl">
                         <Download size={26} className="group-hover:scale-125 transition-transform duration-500" />
                     </button>
                     <button
                         onClick={openCreatePanel}
-                        className="flex items-center space-x-6 bg-secondary text-white px-14 py-6 font-black uppercase tracking-[0.4em] text-[11px] hover:scale-[1.05] transition-all shadow-[0_30px_70px_-15px_rgba(255,99,71,0.6)] rounded-[2.2rem] active:scale-95 group italic skew-x-[-12deg]"
+                        className="flex items-center space-x-6 bg-primary text-white px-14 py-6 font-black uppercase tracking-[0.4em] text-[11px] hover:scale-[1.05] transition-all shadow-[0_30px_70px_-15px_rgba(99,102,241,0.6)] rounded-[2.2rem] active:scale-95 group italic skew-x-[-12deg]"
                     >
                         <UserPlus size={24} className="group-hover:rotate-12 transition-transform" />
                         <span>INYECTAR NODO</span>
@@ -152,7 +153,7 @@ export default function AdvancedCRMPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 relative z-10">
                 <StatCard label="Base Maestros" value={totalClients.toString()} icon={<Users size={32} />} color="slate" />
                 <StatCard label="Cartera Activa" value={activeClients.toString()} icon={<TrendingUp size={32} />} color="secondary" />
-                <StatCard label="Retención Nodo" value={avgPurchases.toString()} icon={<BarChart3 size={32} />} color="azure" />
+                <StatCard label="Retención Nodo" value={avgPurchases.toString()} icon={<BarChart3 size={32} />} color="primary" />
                 <StatCard label="Tasa Conversión" value={`${totalClients > 0 ? Math.round((activeClients / totalClients) * 100) : 0}%`} icon={<CheckCircle2 size={32} />} color="secondary" showPulse />
             </div>
 
@@ -161,24 +162,24 @@ export default function AdvancedCRMPage() {
                 {/* Protocol Toolbar */}
                 <div className="p-14 border-b border-white/10 bg-white/[0.02] flex flex-col xl:flex-row justify-between items-center gap-14">
                     <div className="relative w-full xl:max-w-3xl group">
-                        <Search className="absolute left-8 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-secondary group-hover:scale-110 transition-all" size={22} />
+                        <Search className="absolute left-8 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-primary group-hover:scale-110 transition-all" size={22} />
                         <input
                             type="text"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             placeholder="ESCANEAR ECOSISTEMA DE CLIENTES v4.0..."
-                            className="w-full pl-20 pr-10 py-7 bg-slate-900/80 border border-white/5 text-white text-[12px] font-black uppercase tracking-[0.3em] focus:border-secondary/50 focus:ring-4 focus:ring-secondary/5 transition-all outline-none rounded-[2rem] placeholder:text-slate-800 italic"
+                            className="w-full pl-20 pr-10 py-7 bg-slate-900/80 border border-white/5 text-white text-[12px] font-black uppercase tracking-[0.3em] focus:border-primary/50 focus:ring-4 focus:ring-primary/5 transition-all outline-none rounded-[2rem] placeholder:text-slate-800 italic"
                         />
                     </div>
                     <div className="flex w-full xl:w-auto items-center gap-10">
                         <div className="flex items-center gap-5">
-                            <Filter size={18} className="text-secondary/60" />
+                            <Filter size={18} className="text-primary/60" />
                             <span className="text-[11px] uppercase font-black text-slate-500 tracking-[0.4em] italic leading-none">STATUS NODE:</span>
                         </div>
                         <select
                             value={statusFilter}
                             onChange={(e) => setStatusFilter(e.target.value)}
-                            className="w-full lg:w-80 px-10 py-6 bg-slate-900 border border-white/10 text-white text-[11px] font-black uppercase tracking-[0.3em] focus:border-secondary outline-none rounded-[1.8rem] cursor-pointer hover:bg-slate-800 transition-all shadow-inner italic"
+                            className="w-full lg:w-80 px-10 py-6 bg-slate-900 border border-white/10 text-white text-[11px] font-black uppercase tracking-[0.3em] focus:border-primary outline-none rounded-[1.8rem] cursor-pointer hover:bg-slate-800 transition-all shadow-inner italic"
                         >
                             <option value="all">Filtro: Todos los Nodos</option>
                             <option value="activo">Estado: Diseños Activos</option>
@@ -212,8 +213,8 @@ export default function AdvancedCRMPage() {
                                 >
                                     <td className="px-14 py-10">
                                         <div className="flex items-center gap-8">
-                                            <div className="w-16 h-16 bg-slate-900 rounded-2xl flex items-center justify-center font-black text-xl border border-white/10 group-hover:border-secondary transition-all shadow-2xl shadow-black/50 overflow-hidden relative">
-                                                <div className="absolute inset-0 bg-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                            <div className="w-16 h-16 bg-slate-900 rounded-2xl flex items-center justify-center font-black text-xl border border-white/10 group-hover:border-primary transition-all shadow-2xl shadow-black/50 overflow-hidden relative">
+                                                <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                                                 <span className="relative z-10">{(client.firstName?.[0] || client.name?.[0] || 'U').toUpperCase()}</span>
                                             </div>
                                             <div className="flex flex-col space-y-2">
@@ -231,8 +232,8 @@ export default function AdvancedCRMPage() {
                                         </div>
                                     </td>
                                     <td className="px-14 py-10">
-                                        <span className="flex items-center text-[11px] text-slate-500 uppercase tracking-[0.3em] font-black italic group-hover:text-azure-400 transition-colors">
-                                            <MapPin size={16} className="mr-4 text-secondary" /> {client.city || 'GLOBAL PROTOCOL'}
+                                        <span className="flex items-center text-[11px] text-slate-500 uppercase tracking-[0.3em] font-black italic group-hover:text-primary transition-colors">
+                                            <MapPin size={16} className="mr-4 text-primary" /> {client.city || 'GLOBAL PROTOCOL'}
                                         </span>
                                     </td>
                                     <td className="px-14 py-10 max-w-[350px]">
@@ -267,7 +268,7 @@ export default function AdvancedCRMPage() {
                                             >
                                                 <Trash2 size={24} />
                                             </button>
-                                            <button className="p-6 glass-panel !bg-secondary text-white hover:scale-110 transition-all rounded-2xl shadow-3xl shadow-secondary/40 ring-1 ring-white/20 active:scale-95">
+                                            <button className="p-6 glass-panel !bg-primary text-white hover:scale-110 transition-all rounded-2xl shadow-3xl shadow-primary/40 ring-1 ring-white/20 active:scale-95">
                                                 <ChevronRight size={28} />
                                             </button>
                                         </div>
@@ -304,7 +305,7 @@ export default function AdvancedCRMPage() {
                                     </div>
                                     <div>
                                         <h2 className="text-5xl font-black uppercase tracking-tighter text-white italic leading-tight">
-                                            {editingId ? "EXPEDIENTE <span className='text-secondary'>MAESTRO</span>" : "NUEVO <span className='text-secondary'>NODO</span>"}
+                                            {editingId ? "EXPEDIENTE <span className='text-primary'>MAESTRO</span>" : "NUEVO <span className='text-primary'>NODO</span>"}
                                         </h2>
                                         <p className="text-[11px] font-black text-slate-500 mt-2 uppercase tracking-[0.5em] italic opacity-80">Protocolo de Registro Industrial v4.0</p>
                                     </div>
@@ -333,7 +334,7 @@ export default function AdvancedCRMPage() {
                                                 type="text"
                                                 value={formData.firstName}
                                                 onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                                                className="w-full p-8 bg-slate-900/60 border border-white/10 text-white text-[13px] font-black uppercase tracking-widest focus:border-secondary focus:ring-4 focus:ring-secondary/5 transition-all outline-none rounded-3xl placeholder:text-slate-800 italic"
+                                                className="w-full p-8 bg-slate-900/60 border border-white/10 text-white text-[13px] font-black uppercase tracking-widest focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all outline-none rounded-3xl placeholder:text-slate-800 italic"
                                                 placeholder="REGISTRAR CADENA..."
                                             />
                                         </div>
@@ -343,7 +344,7 @@ export default function AdvancedCRMPage() {
                                                 type="text"
                                                 value={formData.lastName}
                                                 onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                                                className="w-full p-8 bg-slate-900/60 border border-white/10 text-white text-[13px] font-black uppercase tracking-widest focus:border-secondary focus:ring-4 focus:ring-secondary/5 transition-all outline-none rounded-3xl placeholder:text-slate-800 italic"
+                                                className="w-full p-8 bg-slate-900/60 border border-white/10 text-white text-[13px] font-black uppercase tracking-widest focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all outline-none rounded-3xl placeholder:text-slate-800 italic"
                                                 placeholder="COMPLETAR REGISTRO..."
                                             />
                                         </div>
@@ -352,7 +353,7 @@ export default function AdvancedCRMPage() {
 
                                 <div className="space-y-14">
                                     <div className="flex items-center gap-6 border-b border-white/10 pb-8">
-                                        <div className="w-3 h-3 rounded-full bg-azure-400 shadow-[0_0_15px_rgba(45,212,191,0.8)]" />
+                                        <div className="w-3 h-3 rounded-full bg-primary shadow-[0_0_15px_rgba(99,102,241,0.8)]" />
                                         <h3 className="text-sm font-black uppercase tracking-[0.6em] text-white italic">02 // Conectividad Local</h3>
                                     </div>
                                     <div className="space-y-14">
@@ -365,7 +366,7 @@ export default function AdvancedCRMPage() {
                                                 type="email"
                                                 value={formData.email}
                                                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                                className="w-full p-8 bg-slate-900/60 border border-white/10 text-white text-[13px] font-black tracking-[0.1em] focus:border-secondary focus:ring-4 focus:ring-secondary/5 outline-none rounded-3xl placeholder:text-slate-800 italic"
+                                                className="w-full p-8 bg-slate-900/60 border border-white/10 text-white text-[13px] font-black tracking-[0.1em] focus:border-primary focus:ring-4 focus:ring-primary/5 outline-none rounded-3xl placeholder:text-slate-800 italic"
                                                 placeholder="DIRECCIÓN_MAESTRA@DOMINIO.GLOBAL"
                                             />
                                         </div>
@@ -413,7 +414,7 @@ export default function AdvancedCRMPage() {
                                             rows={5}
                                             value={formData.requirement}
                                             onChange={(e) => setFormData({ ...formData, requirement: e.target.value })}
-                                            className="w-full p-10 bg-slate-900/60 border border-white/10 text-white text-[12px] font-black tracking-widest focus:border-secondary transition-all outline-none rounded-[2.5rem] resize-none placeholder:text-slate-800 leading-relaxed italic custom-scrollbar-hidden"
+                                            className="w-full p-10 bg-slate-900/60 border border-white/10 text-white text-[12px] font-black tracking-widest focus:border-primary transition-all outline-none rounded-[2.5rem] resize-none placeholder:text-slate-800 leading-relaxed italic custom-scrollbar-hidden"
                                             placeholder="DESGLOSE EL PROTOCOLO DE NECESIDADES INDUSTRIALES..."
                                         />
                                     </div>
@@ -463,7 +464,7 @@ export default function AdvancedCRMPage() {
                                 </button>
                                 <button 
                                     onClick={handleSaveClient} 
-                                    className="py-10 text-[11px] font-black uppercase tracking-[0.8em] bg-secondary text-white hover:scale-105 transition-all shadow-[0_40px_100px_-20px_rgba(255,99,71,0.7)] flex justify-center items-center gap-6 rounded-[2.5rem] active:scale-[0.98] italic skew-x-[-15deg] hover:skew-x-0 group"
+                                    className="py-10 text-[11px] font-black uppercase tracking-[0.8em] bg-primary text-white hover:scale-105 transition-all shadow-[0_40px_100px_-20px_rgba(99,102,241,0.7)] flex justify-center items-center gap-6 rounded-[2.5rem] active:scale-[0.98] italic skew-x-[-15deg] hover:skew-x-0 group"
                                 >
                                     <Save size={24} className="group-hover:rotate-12 transition-transform" /> 
                                     <span>{editingId ? "COMMIT DATA" : "ENCRIPTAR NODO"}</span>
@@ -480,7 +481,7 @@ export default function AdvancedCRMPage() {
 function StatCard({ label, value, icon, color, showPulse = false }: any) {
     const colorClasses: any = {
         secondary: "text-secondary border-secondary/30 bg-secondary/5",
-        azure: "text-azure-400 border-azure-500/30 bg-azure-500/5",
+        primary: "text-primary border-primary/30 bg-primary/5",
         slate: "text-white border-white/10 bg-white/5"
     }
 

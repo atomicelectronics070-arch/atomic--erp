@@ -100,8 +100,8 @@ export default function SocialFeed() {
         <div className="max-w-[1600px] mx-auto px-4 lg:px-10 space-y-12 pb-32 animate-in fade-in duration-1000 relative z-10">
             {/* Background Orbs */}
             <div className="fixed inset-0 pointer-events-none z-0">
-                <div className="absolute top-[20%] left-[-10%] w-[40%] h-[40%] rounded-full bg-secondary/10 blur-[150px] animate-pulse" />
-                <div className="absolute bottom-[20%] right-[-10%] w-[35%] h-[35%] rounded-full bg-azure-500/10 blur-[130px] animate-pulse" style={{ animationDelay: '2s' }} />
+                <div className="absolute top-[20%] left-[-10%] w-[40%] h-[40%] rounded-full bg-primary/10 blur-[150px] animate-pulse" />
+                <div className="absolute bottom-[20%] right-[-10%] w-[35%] h-[35%] rounded-full bg-indigo-500/10 blur-[130px] animate-pulse" style={{ animationDelay: '2s' }} />
             </div>
 
             <div className="flex flex-col lg:flex-row gap-12 items-start relative z-10">
@@ -111,12 +111,12 @@ export default function SocialFeed() {
                     {/* Header */}
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-10 border-b border-white/5 pb-12">
                         <div className="space-y-4">
-                            <div className="flex items-center space-x-4 text-secondary">
-                                <Globe size={24} className="drop-shadow-[0_0_12px_rgba(255,99,71,0.6)]" />
+                            <div className="flex items-center space-x-4 text-primary">
+                                <Globe size={24} className="drop-shadow-[0_0_12px_rgba(99,102,241,0.6)]" />
                                 <span className="text-[11px] uppercase font-black tracking-[0.6em] italic">CENTRAL DE ACTIVOS v5.0 // RANKING ACTIVO</span>
                             </div>
                             <h1 className="text-6xl font-black tracking-tighter text-white uppercase italic leading-none">
-                                FEED <span className="text-secondary">SOCIAL</span>
+                                FEED <span className="text-primary">SOCIAL</span>
                             </h1>
                             <p className="text-slate-500 font-bold text-xs uppercase tracking-[0.3em] max-w-xl italic leading-relaxed">
                                 Transmisión corporativa de alto rendimiento. Resultados y actualizaciones globales.
@@ -157,18 +157,18 @@ export default function SocialFeed() {
                                         <input type="file" accept="video/*" hidden ref={videoInputRef} onChange={(e) => handleFileChange(e, "video")} />
                                         
                                         <button onClick={() => fileInputRef.current?.click()} className="flex items-center gap-3 px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-white hover:bg-white/5 bg-slate-900/50 border border-white/5 transition-all group italic">
-                                            <ImageIcon size={16} className="group-hover:text-azure-400 transition-colors" /> IMAGEN
+                                            <ImageIcon size={16} className="group-hover:text-primary transition-colors" /> IMAGEN
                                         </button>
                                         <button onClick={() => videoInputRef.current?.click()} className="flex items-center gap-3 px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-white hover:bg-white/5 bg-slate-900/50 border border-white/5 transition-all group italic">
-                                            <Video size={16} className="group-hover:text-emerald-400 transition-colors" /> VIDEO
+                                            <Video size={16} className="group-hover:text-pink-400 transition-colors" /> VIDEO
                                         </button>
                                     </div>
                                     <button 
                                         onClick={handleCreatePost}
                                         disabled={!newPostContent.trim() && !mediaFile}
-                                        className="bg-secondary text-white px-10 py-5 font-black uppercase tracking-[0.3em] text-[10px] flex items-center gap-4 shadow-[0_20px_50px_-10px_rgba(255,99,71,0.6)] transition-all hover:scale-105 rounded-2xl active:scale-95 group italic skew-x-[-12deg] disabled:opacity-50 disabled:hover:scale-100"
+                                        className="bg-primary text-white px-10 py-5 font-black uppercase tracking-[0.3em] text-[10px] flex items-center gap-4 shadow-[0_20px_50px_-10px_rgba(99,102,241,0.6)] transition-all hover:scale-105 rounded-2xl active:scale-95 group italic skew-x-[-15deg] disabled:opacity-50 disabled:hover:scale-100"
                                     >
-                                        <div className="skew-x-[12deg] flex items-center gap-4">
+                                        <div className="skew-x-[15deg] flex items-center gap-4">
                                             <Send size={18} className="group-hover:translate-x-1 group-active:translate-x-4 transition-transform" /> PUBLICAR
                                         </div>
                                     </button>
@@ -181,7 +181,7 @@ export default function SocialFeed() {
                     <div className="space-y-10">
                         {loading ? (
                             <div className="flex justify-center py-20">
-                                 <div className="w-16 h-16 border-4 border-white/5 border-t-secondary rounded-full animate-spin shadow-[0_0_30px_rgba(255,99,71,0.3)]"></div>
+                                 <div className="w-16 h-16 border-4 border-white/5 border-t-primary rounded-full animate-spin shadow-[0_0_30px_rgba(99,102,241,0.3)]"></div>
                             </div>
                         ) : posts.length === 0 ? (
                             <div className="text-center py-20 opacity-30">
@@ -202,14 +202,14 @@ export default function SocialFeed() {
                                     >
                                         <div className="flex items-center justify-between mb-8">
                                             <div className="flex items-center gap-6">
-                                                <div className="w-14 h-14 rounded-2xl bg-slate-900 border border-white/10 flex items-center justify-center font-black text-xl text-white shadow-inner shadow-secondary/10 italic">
+                                                <div className="w-14 h-14 rounded-2xl bg-slate-900 border border-white/10 flex items-center justify-center font-black text-xl text-white shadow-inner shadow-primary/10 italic">
                                                     {post.author.name[0]}
                                                 </div>
                                                 <div>
                                                     <p className="text-xl font-black text-white uppercase tracking-tighter italic">{post.author.name}</p>
                                                     <div className="flex items-center gap-3 mt-1">
-                                                        <span className="text-[9px] font-black text-secondary uppercase tracking-[0.3em] inline-flex items-center gap-2">
-                                                            <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
+                                                        <span className="text-[9px] font-black text-primary uppercase tracking-[0.3em] inline-flex items-center gap-2">
+                                                            <div className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse" />
                                                             {post.author.role}
                                                         </span>
                                                         <span className="text-slate-600 px-2">•</span>
@@ -239,9 +239,9 @@ export default function SocialFeed() {
                                         <div className="flex items-center gap-8 py-6 border-y border-white/5 mt-4">
                                             <button 
                                                 onClick={() => handleLike(post.id)}
-                                                className={`flex items-center gap-3 px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${isLiked ? 'bg-secondary/10 text-secondary border border-secondary/20 shadow-inner' : 'text-slate-500 hover:bg-white/5 hover:text-white border border-transparent'}`}
+                                                className={`flex items-center gap-3 px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${isLiked ? 'bg-primary/10 text-primary border border-primary/20 shadow-inner' : 'text-slate-500 hover:bg-white/5 hover:text-white border border-transparent'}`}
                                             >
-                                                <Heart size={20} className={isLiked ? 'fill-secondary' : ''} /> 
+                                                <Heart size={20} className={isLiked ? 'fill-primary' : ''} /> 
                                                 {post.likes.length}
                                             </button>
                                             <button 
@@ -281,7 +281,7 @@ export default function SocialFeed() {
                                                         ))}
 
                                                         <div className="flex gap-5 mt-6 items-center">
-                                                            <div className="w-10 h-10 rounded-xl bg-slate-900 border border-white/10 flex items-center justify-center font-black text-sm text-secondary shrink-0">
+                                                            <div className="w-10 h-10 rounded-xl bg-slate-900 border border-white/10 flex items-center justify-center font-black text-sm text-primary shrink-0">
                                                                 {session.user?.name?.[0]}
                                                             </div>
                                                             <div className="flex-1 relative">
@@ -291,11 +291,11 @@ export default function SocialFeed() {
                                                                     onChange={(e) => setCommentTexts(prev => ({ ...prev, [post.id]: e.target.value }))}
                                                                     placeholder="ESCRIBE UN COMENTARIO..."
                                                                     onKeyDown={(e) => e.key === 'Enter' && handleComment(post.id)}
-                                                                    className="w-full bg-slate-900/60 border border-white/10 rounded-2xl py-4 pl-6 pr-14 text-xs font-black text-white italic placeholder:text-slate-600 focus:border-secondary transition-all outline-none"
+                                                                    className="w-full bg-slate-900/60 border border-white/10 rounded-2xl py-4 pl-6 pr-14 text-xs font-black text-white italic placeholder:text-slate-600 focus:border-primary transition-all outline-none"
                                                                 />
                                                                 <button 
                                                                     onClick={() => handleComment(post.id)}
-                                                                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-slate-500 hover:text-secondary disabled:opacity-30"
+                                                                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-slate-500 hover:text-primary disabled:opacity-30"
                                                                     disabled={!commentTexts[post.id]?.trim()}
                                                                 >
                                                                     <Send size={16} />
@@ -315,10 +315,10 @@ export default function SocialFeed() {
 
                 {/* Performance Ranking (Right Sidebar) */}
                 <div className="w-full lg:w-[400px] space-y-8 sticky top-32">
-                    <div className="glass-panel !bg-slate-950/80 border-secondary/20 shadow-[0_50px_100px_-20px_rgba(255,99,71,0.15)] rounded-[3rem] p-10 backdrop-blur-3xl ring-1 ring-secondary/10">
+                    <div className="glass-panel !bg-slate-950/80 border-primary/20 shadow-[0_50px_100px_-20px_rgba(99,102,241,0.15)] rounded-[3rem] p-10 backdrop-blur-3xl ring-1 ring-primary/10">
                         <div className="flex items-center justify-between mb-10">
                             <div className="flex items-center gap-4">
-                                <Trophy className="text-secondary drop-shadow-[0_0_15px_rgba(255,99,71,0.5)]" size={32} />
+                                <Trophy className="text-primary drop-shadow-[0_0_15px_rgba(99,102,241,0.5)]" size={32} />
                                 <div>
                                     <h3 className="text-2xl font-black text-white uppercase italic tracking-tighter">RANKING</h3>
                                     <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.4em] italic">TOP ASESORES // GLOBAL</p>
@@ -340,15 +340,15 @@ export default function SocialFeed() {
                                         transition={{ delay: index * 0.1 }}
                                         key={user.id} 
                                         className={`group relative flex items-center gap-6 p-6 rounded-3xl border transition-all duration-500 ${
-                                            isTop1 ? 'bg-secondary/10 border-secondary/30 shadow-[0_15px_30px_-5px_rgba(255,99,71,0.2)]' : 
-                                            isTop2 ? 'bg-azure-500/5 border-azure-500/20' :
+                                            isTop1 ? 'bg-primary/10 border-primary/30 shadow-[0_15px_30px_-5px_rgba(99,102,241,0.2)]' : 
+                                            isTop2 ? 'bg-pink-500/5 border-pink-500/20' :
                                             isTop3 ? 'bg-emerald-500/5 border-emerald-500/20' :
                                             'bg-white/[0.02] border-white/5 hover:bg-white/5'
                                         }`}
                                     >
                                         <div className="relative shrink-0">
                                             <div className={`w-14 h-14 rounded-2xl flex items-center justify-center font-black text-xl italic shadow-2xl ${
-                                                isTop1 ? 'bg-secondary text-white' : 
+                                                isTop1 ? 'bg-primary text-white' : 
                                                 isTop2 ? 'bg-slate-300 text-slate-900 scale-90' :
                                                 isTop3 ? 'bg-amber-700 text-white scale-90' :
                                                 'bg-slate-900 text-slate-600 scale-90'
@@ -360,22 +360,22 @@ export default function SocialFeed() {
 
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center justify-between mb-1">
-                                                <p className="text-sm font-black text-white uppercase italic tracking-tight truncate group-hover:text-secondary transition-colors">{user.name}</p>
-                                                <p className="text-[10px] font-black text-secondary italic">${user.totalProfit.toLocaleString()}</p>
+                                                <p className="text-sm font-black text-white uppercase italic tracking-tight truncate group-hover:text-primary transition-colors">{user.name}</p>
+                                                <p className="text-[10px] font-black text-primary italic">${user.totalProfit.toLocaleString()}</p>
                                             </div>
                                             <div className="flex items-center gap-3">
                                                 <div className="flex-1 h-1.5 bg-slate-900 rounded-full overflow-hidden">
                                                     <motion.div 
                                                         initial={{ width: 0 }}
                                                         animate={{ width: `${Math.min((user.score / (ranking[0]?.score || 1)) * 100, 100)}%` }}
-                                                        className={`h-full ${isTop1 ? 'bg-secondary' : isTop2 ? 'bg-azure-400' : 'bg-slate-600'}`}
+                                                        className={`h-full ${isTop1 ? 'bg-primary' : isTop2 ? 'bg-pink-400' : 'bg-slate-600'}`}
                                                     />
                                                 </div>
                                                 <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">{user.salesCount} VTAS</span>
                                             </div>
                                         </div>
 
-                                        <Star className={`opacity-0 group-hover:opacity-100 transition-opacity ${isTop1 ? 'text-secondary' : 'text-slate-700'}`} size={16} />
+                                        <Star className={`opacity-0 group-hover:opacity-100 transition-opacity ${isTop1 ? 'text-primary' : 'text-slate-700'}`} size={16} />
                                     </motion.div>
                                 )
                             })}
@@ -383,10 +383,10 @@ export default function SocialFeed() {
                             <div className="pt-6 border-t border-white/5">
                                 <div className="p-6 bg-slate-900/50 rounded-2xl border border-white/5 flex items-center justify-between group cursor-help">
                                     <div className="flex items-center gap-4">
-                                        <Activity className="text-azure-400" size={18} />
+                                        <Activity className="text-primary" size={18} />
                                         <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.4em] italic">Tu Rendimiento Global</span>
                                     </div>
-                                    <span className="text-[10px] font-black text-white italic group-hover:text-azure-400 transition-colors">ESTABLE // +12%</span>
+                                    <span className="text-[10px] font-black text-white italic group-hover:text-primary transition-colors">ESTABLE // +12%</span>
                                 </div>
                             </div>
                         </div>

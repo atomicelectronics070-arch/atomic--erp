@@ -1,29 +1,31 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: #020617;
+  --color-background: #000103;
   --color-foreground: #f8fafc;
-  --color-primary: #2dd4bf;
-  --color-secondary: #ff6347;
-  --color-azure-400: #2dd4bf;
-  --color-azure-500: #14b8a6;
+  --color-primary: #6366f1;
+  --color-secondary: #ec4899;
+  --color-accent-indigo: #6366f1;
+  --color-accent-pink: #ec4899;
+  --color-accent-violet: #8b5cf6;
   
   --font-sans: "Inter", ui-sans-serif, system-ui;
   --font-heading: "Plus Jakarta Sans", ui-sans-serif, system-ui;
 }
 
 :root {
-  --background: #020617;
+  --background: #000103;
   --foreground: #f8fafc;
-  --primary: #2dd4bf;
-  --secondary: #ff6347;
-  --accent: #2dd4bf;
+  --primary: #6366f1;
+  --secondary: #ec4899;
+  --accent: #8b5cf6;
   
-  /* Atomic Premium Design System (Tomato & Azure) */
-  --glass-bg: rgba(15, 23, 42, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --accent-tomato: #ff6347;
-  --accent-azure: #2dd4bf;
+  /* Atomic Premium Design System (Indigo/Pink/Violet) */
+  --glass-bg: rgba(3, 7, 18, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --accent-indigo: #6366f1;
+  --accent-pink: #ec4899;
+  --accent-violet: #8b5cf6;
 }
 
 body {
@@ -56,10 +58,10 @@ body {
 }
 
 .bg-mesh {
-  background-color: #020617;
+  background-color: #000103;
   background-image: 
-    radial-gradient(at 0% 0%, rgba(45, 212, 191, 0.15) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, rgba(255, 99, 71, 0.1) 0px, transparent 50%);
+    radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(236, 72, 153, 0.1) 0px, transparent 50%);
 }
 
 h1, h2, h3, h4, h5, h6 {

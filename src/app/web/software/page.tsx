@@ -133,13 +133,13 @@ export default function SoftwareLandingPage() {
     }, [])
 
     return (
-        <div className="min-h-screen bg-neutral-950 text-white selection:bg-indigo-500/30 overflow-hidden relative">
+        <div className="min-h-screen bg-mesh text-white selection:bg-indigo-500/30 overflow-hidden relative">
             <style dangerouslySetInnerHTML={{ __html: styles }} />
             
             {/* INICIO MODAL DE SOFTWARE INTERACTIVO (OS WINDOW) */}
             {activePreview && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-neutral-950/90 backdrop-blur-xl p-4 md:p-12 animate-in fade-in duration-300">
-                    <div className="relative w-full h-full max-w-7xl flex flex-col bg-[#030712] rounded-3xl border border-white/20 shadow-[0_0_100px_rgba(0,0,0,0.5)] overflow-hidden scale-in-center">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-xl p-4 md:p-12 animate-in fade-in duration-300">
+                    <div className="relative w-full h-full max-w-7xl flex flex-col bg-slate-950 rounded-3xl border border-white/20 shadow-[0_0_100px_rgba(0,0,0,0.5)] overflow-hidden scale-in-center">
                         
                         {/* OS Header Bar (IMPROVED CONTROLS) */}
                         <div className="h-16 bg-neutral-900 border-b border-white/10 flex items-center justify-between px-6 shrink-0 z-50">

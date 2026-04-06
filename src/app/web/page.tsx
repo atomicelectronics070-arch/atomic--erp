@@ -117,7 +117,7 @@ export default function PublicWebPage() {
     ]
 
     return (
-        <div className="min-h-screen bg-white text-neutral-900 font-sans">
+        <div className="min-h-screen bg-mesh text-neutral-900 font-sans">
             {/* Minimalist Navbar removido - Controlado por layout.tsx */}
 
             {/* ══════════════════════════════════════════

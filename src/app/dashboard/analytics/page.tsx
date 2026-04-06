@@ -63,8 +63,8 @@ export default function DashboardOverview() {
         return (
             <div className="h-full flex flex-col items-center justify-center space-y-12 py-40">
                 <div className="relative">
-                    <div className="w-24 h-24 border-4 border-azure-500/10 border-t-azure-500 rounded-full animate-spin shadow-[0_0_50px_rgba(45,212,191,0.2)]" />
-                    <div className="absolute inset-0 w-24 h-24 border-4 border-secondary/10 border-b-secondary rounded-full animate-reverse-spin opacity-40 shadow-[0_0_50px_rgba(255,99,71,0.2)]" />
+                    <div className="w-24 h-24 border-4 border-primary/10 border-t-primary rounded-full animate-spin shadow-[0_0_50px_rgba(99,102,241,0.2)]" />
+                    <div className="absolute inset-0 w-24 h-24 border-4 border-pink-500/10 border-b-pink-500 rounded-full animate-reverse-spin opacity-40 shadow-[0_0_50px_rgba(236,72,153,0.2)]" />
                 </div>
                 <div className="flex flex-col items-center gap-6">
                     <p className="font-black text-white tracking-[0.8em] uppercase text-xs animate-pulse italic">Sincronizando Nodo Central</p>
@@ -87,8 +87,8 @@ export default function DashboardOverview() {
         <div className="space-y-16 pb-32 animate-in fade-in duration-1000 relative z-10">
             {/* Background Orbs - Visual Depth */}
             <div className="fixed inset-0 pointer-events-none z-0">
-                <div className="absolute top-[10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-azure-500/5 blur-[150px]" />
-                <div className="absolute bottom-[20%] left-[-10%] w-[45%] h-[45%] rounded-full bg-tomato-500/5 blur-[130px]" />
+                <div className="absolute top-[10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-indigo-500/5 blur-[150px]" />
+                <div className="absolute bottom-[20%] left-[-10%] w-[45%] h-[45%] rounded-full bg-pink-500/5 blur-[130px]" />
             </div>
 
             {/* Header Section - Industrial Command Center */}
@@ -99,9 +99,9 @@ export default function DashboardOverview() {
                         <span className="text-[11px] uppercase font-black tracking-[0.6em] italic">ECOSISTEMA DE CONTROL v4.0</span>
                     </div>
                     <h1 className="text-7xl font-black tracking-tighter text-white uppercase italic leading-[0.8] transition-all">
-                        CENTRO DE <span className="text-secondary drop-shadow-[0_0_15px_rgba(255,99,71,0.3)]">MANDO</span>
+                        CENTRO DE <span className="text-primary drop-shadow-[0_0_15px_rgba(99,102,241,0.3)]">MANDO</span>
                     </h1>
-                    <p className="text-slate-500 font-bold text-xs uppercase tracking-[0.4em] max-w-2xl leading-relaxed italic opacity-80 border-l-2 border-secondary/30 pl-6">
+                    <p className="text-slate-500 font-bold text-xs uppercase tracking-[0.4em] max-w-2xl leading-relaxed italic opacity-80 border-l-2 border-primary/30 pl-6">
                         Visualización táctica de métricas corporativas, eficiencia operativa y proyecciones de escalado comercial industrial.
                     </p>
                 </div>
@@ -114,11 +114,11 @@ export default function DashboardOverview() {
                         <RefreshCw size={28} className={loading ? "animate-spin" : "group-hover:rotate-180 transition-transform duration-700"} />
                     </button>
                     <div className="flex items-center gap-8 glass-panel !bg-slate-950/60 p-6 border-white/10 shadow-[0_40px_80px_-20px_rgba(0,0,0,0.7)] rounded-[2.5rem] ring-1 ring-white/5 backdrop-blur-3xl group">
-                        <div className="w-20 h-20 bg-slate-900 border border-white/10 text-white flex items-center justify-center font-black text-3xl shadow-2xl shadow-azure-500/20 rounded-2xl uppercase tracking-tighter italic group-hover:scale-105 transition-transform duration-500 border-l-4 border-l-secondary">
+                        <div className="w-20 h-20 bg-slate-900 border border-white/10 text-white flex items-center justify-center font-black text-3xl shadow-2xl shadow-indigo-500/20 rounded-2xl uppercase tracking-tighter italic group-hover:scale-105 transition-transform duration-500 border-l-4 border-l-primary">
                             {session.user?.name?.[0]}
                         </div>
                         <div className="pr-6">
-                            <p className="text-[10px] font-black text-secondary uppercase tracking-[0.5em] mb-2 opacity-80 italic">{role === "ADMIN" ? "ADMINISTRADOR" : role}</p>
+                            <p className="text-[10px] font-black text-primary uppercase tracking-[0.5em] mb-2 opacity-80 italic">{role === "ADMIN" ? "ADMINISTRADOR" : role}</p>
                             <p className="text-2xl font-black text-white uppercase tracking-tighter italic">{session.user?.name}</p>
                         </div>
                     </div>
@@ -128,21 +128,21 @@ export default function DashboardOverview() {
             {/* KPI Mastery Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 relative z-10">
                 <KPITile 
-                    icon={<TrendingUp size={36} className="text-secondary" />}
+                    icon={<TrendingUp size={36} className="text-primary" />}
                     label="Volumen Transaccional GBL"
                     value={fmt(data.annualSales)}
                     meta="Eje Fiscal 2026"
                     progress={72}
-                    accent="tomato"
+                    accent="pink"
                 />
 
                 <KPITile 
-                    icon={<Calendar size={36} className="text-azure-400" />}
+                    icon={<Calendar size={36} className="text-indigo-400" />}
                     label="Facturación Nodo Q1"
                     value={fmt(data.quarterSales)}
                     meta={`${data.quarterCount} Ventas Liquidadas`}
                     progress={45}
-                    accent="azure"
+                    accent="indigo"
                 />
 
                 <button 
@@ -161,7 +161,7 @@ export default function DashboardOverview() {
                     <p className="text-8xl font-black text-white tracking-tighter drop-shadow-[0_0_35px_rgba(255,255,255,0.3)] italic leading-none">{data.quotesCount}</p>
                     <div className="mt-14 flex items-center gap-6 text-[12px] font-black uppercase tracking-[0.4em] text-slate-500 group-hover:text-white transition-all italic">
                         <span>Acceder Al Escáner</span>
-                        <ArrowRight size={22} className="group-hover:translate-x-4 transition-transform text-secondary font-black" />
+                        <ArrowRight size={22} className="group-hover:translate-x-4 transition-transform text-primary font-black" />
                     </div>
                 </button>
 
@@ -180,11 +180,11 @@ export default function DashboardOverview() {
                 <div className="p-16 border-b border-white/10 flex flex-col xl:flex-row justify-between items-center gap-14 bg-white/[0.03]">
                     <div className="text-center xl:text-left space-y-4">
                         <div className="flex items-center justify-center xl:justify-start gap-8">
-                             <div className="p-6 bg-slate-900 rounded-3xl border border-white/10 shadow-2xl shadow-secondary/20 group-hover:scale-110 transition-transform duration-500">
-                                <BarChart3 className="text-secondary" size={42} />
+                             <div className="p-6 bg-slate-900 rounded-3xl border border-white/10 shadow-2xl shadow-primary/20 group-hover:scale-110 transition-transform duration-500">
+                                <BarChart3 className="text-primary" size={42} />
                             </div>
                             <h2 className="text-5xl font-black text-white uppercase tracking-tighter italic">
-                                PROTOCOLO DE ANÁLISIS <span className="text-secondary underline decoration-secondary/40 underline-offset-[12px]">GLOBAL</span>
+                                PROTOCOLO DE ANÁLISIS <span className="text-primary underline decoration-primary/40 underline-offset-[12px]">GLOBAL</span>
                             </h2>
                         </div>
                         <p className="text-[12px] font-black text-slate-500 uppercase tracking-[0.5em] ml-2 italic opacity-60">Matriz de eficiencia neta vs Proyecciones de escalado industrial v4</p>
@@ -195,7 +195,7 @@ export default function DashboardOverview() {
                             <button 
                                 key={p}
                                 onClick={() => setChartPeriod(p)}
-                                className={`px-12 py-5 text-[11px] font-black uppercase tracking-[0.3em] transition-all rounded-[1.5rem] relative ${chartPeriod === p ? 'bg-secondary text-white shadow-[0_20px_40px_-10px_rgba(255,99,71,0.6)] italic z-10 scale-105' : 'text-slate-600 hover:text-white hover:bg-white/5'}`}
+                                className={`px-12 py-5 text-[11px] font-black uppercase tracking-[0.3em] transition-all rounded-[1.5rem] relative ${chartPeriod === p ? 'bg-primary text-white shadow-[0_20px_40px_-10px_rgba(99,102,241,0.6)] italic z-10 scale-105' : 'text-slate-600 hover:text-white hover:bg-white/5'}`}
                             >
                                 {p === "weekly" ? "Protocolo Semanal" : p === "monthly" ? "Análisis Mensual" : "Auditoría Anual"}
                             </button>
@@ -211,9 +211,9 @@ export default function DashboardOverview() {
                             <AreaChart data={currentChartData}>
                                 <defs>
                                     <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#ff6347" stopOpacity={0.5} />
-                                        <stop offset="50%" stopColor="#ff6347" stopOpacity={0.15} />
-                                        <stop offset="95%" stopColor="#ff6347" stopOpacity={0} />
+                                        <stop offset="5%" stopColor="#6366f1" stopOpacity={0.5} />
+                                        <stop offset="50%" stopColor="#6366f1" stopOpacity={0.15} />
+                                        <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
                                     </linearGradient>
                                     <filter id="premium-glow" height="200%">
                                         <feGaussianBlur in="SourceAlpha" stdDeviation="15" />
@@ -230,7 +230,7 @@ export default function DashboardOverview() {
                                     dataKey="name" 
                                     axisLine={false} 
                                     tickLine={false} 
-                                    tick={{ fontSize: 11, fontWeight: '900', fill: "#475569", textTransform: 'uppercase', letterSpacing: '0.3em' }} 
+                                    tick={{ fontSize: 11, fontWeight: '900', fill: "#475569", letterSpacing: '0.3em' }} 
                                     dy={35} 
                                 />
                                 <YAxis 
@@ -250,14 +250,14 @@ export default function DashboardOverview() {
                                         boxShadow: '0 50px 100px rgba(0,0,0,0.9)',
                                         fontFamily: 'inherit'
                                     }}
-                                    itemStyle={{ fontSize: '16px', fontWeight: '900', color: '#ff6347', textTransform: 'uppercase', letterSpacing: '0.15em' }}
+                                    itemStyle={{ fontSize: '16px', fontWeight: '900', color: '#6366f1', textTransform: 'uppercase', letterSpacing: '0.15em' }}
                                     labelStyle={{ color: '#64748b', fontSize: '11px', fontWeight: '900', marginBottom: '15px', textTransform: 'uppercase', letterSpacing: '0.4em' }}
-                                    cursor={{ stroke: 'rgba(255,99,71,0.4)', strokeWidth: 3, strokeDasharray: '12 12' }}
+                                    cursor={{ stroke: 'rgba(99,102,241,0.4)', strokeWidth: 3, strokeDasharray: '12 12' }}
                                 />
                                 <Area 
                                     type="monotone" 
                                     dataKey="total" 
-                                    stroke="#ff6347" 
+                                    stroke="#6366f1" 
                                     strokeWidth={8} 
                                     fillOpacity={1} 
                                     fill="url(#colorTotal)" 
@@ -270,8 +270,8 @@ export default function DashboardOverview() {
                 </div>
                 
                 <div className="p-12 bg-slate-950/80 border-t border-white/10 flex flex-wrap justify-center gap-20 text-[11px] font-black uppercase tracking-[0.5em] text-slate-500 italic backdrop-blur-3xl">
-                    <div className="flex items-center gap-5 group cursor-default text-white/40 hover:text-secondary transition-colors"><div className="w-3.5 h-3.5 rounded-full bg-secondary shadow-[0_0_12px_rgba(255,99,71,0.7)] group-hover:scale-125 transition-transform" /> Volumen Operativo</div>
-                    <div className="flex items-center gap-5 group cursor-default text-white/40 hover:text-azure-400 transition-colors"><div className="w-3.5 h-3.5 rounded-full bg-azure-500 shadow-[0_0_12px_rgba(45,212,191,0.7)] group-hover:scale-125 transition-transform" /> Sincronía IA</div>
+                    <div className="flex items-center gap-5 group cursor-default text-white/40 hover:text-primary transition-colors"><div className="w-3.5 h-3.5 rounded-full bg-primary shadow-[0_0_12px_rgba(99,102,241,0.7)] group-hover:scale-125 transition-transform" /> Volumen Operativo</div>
+                    <div className="flex items-center gap-5 group cursor-default text-white/40 hover:text-indigo-400 transition-colors"><div className="w-3.5 h-3.5 rounded-full bg-indigo-500 shadow-[0_0_12px_rgba(99,102,241,0.7)] group-hover:scale-125 transition-transform" /> Sincronía IA</div>
                     <div className="flex items-center gap-5 group cursor-default text-white/40 hover:text-emerald-400 transition-colors"><div className="w-3.5 h-3.5 rounded-full bg-emerald-500" /> Auditoría GBL</div>
                 </div>
             </div>
@@ -296,11 +296,11 @@ export default function DashboardOverview() {
                         >
                             <div className="p-16 border-b border-white/10 flex justify-between items-center bg-white/[0.02] shrink-0">
                                 <div className="flex items-center gap-10">
-                                    <div className="p-7 bg-secondary text-white rounded-[2rem] shadow-2xl shadow-secondary/40 animate-pulse">
+                                    <div className="p-7 bg-primary text-white rounded-[2rem] shadow-2xl shadow-primary/40 animate-pulse">
                                         <FileText size={36} />
                                     </div>
                                     <div>
-                                        <h2 className="text-5xl font-black uppercase tracking-tighter text-white italic leading-tight">ARCHIVO <span className="text-secondary">MAESTRO</span></h2>
+                                        <h2 className="text-5xl font-black uppercase tracking-tighter text-white italic leading-tight">ARCHIVO <span className="text-primary">MAESTRO</span></h2>
                                         <p className="text-[12px] font-black text-slate-500 uppercase tracking-[0.6em] mt-3 italic opacity-80">
                                             {isAdmin ? "PROTOCOLOS OPERATIVOS CONSOLIDADOS v4" : "REGISTROS PERSONALES DE EMISIÓN TÁCTICA"}
                                         </p>
@@ -360,7 +360,7 @@ export default function DashboardOverview() {
                             <div className="p-14 border-t border-white/15 bg-white/[0.03] shrink-0 backdrop-blur-3xl">
                                 <button 
                                     onClick={() => setShowQuotesOverlay(false)}
-                                    className="w-full py-8 bg-secondary text-white font-black uppercase tracking-[0.8em] text-[11px] italic skew-x-[-15deg] hover:skew-x-0 transition-all duration-700 shadow-[0_30px_70px_-15px_rgba(255,99,71,0.7)] rounded-[2rem] active:scale-95 group overflow-hidden relative"
+                                    className="w-full py-8 bg-primary text-white font-black uppercase tracking-[0.8em] text-[11px] italic skew-x-[-15deg] hover:skew-x-0 transition-all duration-700 shadow-[0_30px_70px_-15px_rgba(99,102,241,0.7)] rounded-[2rem] active:scale-95 group overflow-hidden relative"
                                 >
                                     <span className="relative z-10 group-hover:tracking-[1em] transition-all">TERMINAR AUDITORÍA DE ARCHIVO</span>
                                     <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -374,10 +374,10 @@ export default function DashboardOverview() {
     )
 }
 
-function KPITile({ icon, label, value, meta, progress, accent }: { icon: any, label: string, value: string, meta: string, progress: number, accent: 'tomato' | 'azure' | 'emerald' }) {
-    const accentColor = accent === 'tomato' ? 'secondary' : accent === 'azure' ? 'azure-400' : 'emerald-400'
-    const shadowColor = accent === 'tomato' ? 'rgba(255,99,71,0.5)' : accent === 'azure' ? 'rgba(45,212,191,0.5)' : 'rgba(16,185,129,0.5)'
-    const barGradient = accent === 'tomato' ? 'from-secondary to-orange-400' : accent === 'azure' ? 'from-azure-500 to-cyan-400' : 'from-emerald-500 to-teal-400'
+function KPITile({ icon, label, value, meta, progress, accent }: { icon: any, label: string, value: string, meta: string, progress: number, accent: 'pink' | 'indigo' | 'emerald' }) {
+    const accentColor = accent === 'pink' ? 'secondary' : accent === 'indigo' ? 'primary' : 'emerald-400'
+    const shadowColor = accent === 'pink' ? 'rgba(236,72,153,0.5)' : accent === 'indigo' ? 'rgba(99,102,241,0.5)' : 'rgba(16,185,129,0.5)'
+    const barGradient = accent === 'pink' ? 'from-secondary to-pink-400' : accent === 'indigo' ? 'from-primary to-indigo-400' : 'from-emerald-500 to-teal-400'
 
     return (
         <div className="glass-panel p-12 relative overflow-hidden group hover:scale-[1.03] transition-all duration-700 rounded-[3rem] border-white/5 shadow-2xl backdrop-blur-3xl ring-1 ring-white/5">
@@ -429,7 +429,7 @@ function QuoteRow({ quote }: { quote: any }) {
                 </div>
                 <div className={`text-[10px] font-black px-8 py-3.5 rounded-2xl border-2 uppercase tracking-[0.5em] italic shadow-2xl transition-all duration-500 group-hover:scale-105 ${
                     quote.status === "ACCEPTED" ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20 shadow-emerald-500/10" :
-                    quote.status === "SENT" ? "bg-azure-500/10 text-azure-400 border-azure-500/20 shadow-azure-500/10" :
+                    quote.status === "SENT" ? "bg-primary/10 text-primary border-primary/20 shadow-primary/10" :
                     "bg-slate-800/10 text-slate-600 border-white/10"
                 }`}>
                     {quote.status}
