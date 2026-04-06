@@ -102,7 +102,7 @@ export default function SocialFeed() {
                 <div className="space-y-4">
                      <div className="flex items-center space-x-4 text-secondary">
                         <Globe size={24} className="drop-shadow-[0_0_12px_rgba(255,99,71,0.6)]" />
-                        <span className="text-[11px] uppercase font-black tracking-[0.6em] italic">COMUNICACIÓN GLOBAL</span>
+                        <span className="text-[11px] uppercase font-black tracking-[0.6em] italic">RED CORPORATIVA v5.0 // SISTEMA INTEGRADO</span>
                     </div>
                     <h1 className="text-6xl font-black tracking-tighter text-white uppercase italic leading-none">
                         RED <span className="text-secondary">CORPORATIVA</span>
