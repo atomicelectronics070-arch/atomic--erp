@@ -1,4 +1,5 @@
 "use client"
+// Social Core Integration - v5.0.2
 
 import { useState, useEffect, useRef } from "react"
 import { useSession } from "next-auth/react"

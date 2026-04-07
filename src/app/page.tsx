@@ -1,4 +1,5 @@
 "use client"
+// Atomic Industries Unified Core - v5.0.2
 
 import Link from "next/link"
 import { motion } from "framer-motion"
