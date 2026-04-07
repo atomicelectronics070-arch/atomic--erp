@@ -25,7 +25,8 @@ import {
     Zap,
     LayoutGrid,
     Activity,
-    ClipboardCheck
+    ClipboardCheck,
+    ArrowRight
 } from "lucide-react"
 import { getAllUsersWithActiveCycle, activateWorkCycle, deactivateWorkCycle, saveDailyLog, getActiveWorkCycle } from "@/lib/actions/evaluations"
 import { useSession } from "next-auth/react"

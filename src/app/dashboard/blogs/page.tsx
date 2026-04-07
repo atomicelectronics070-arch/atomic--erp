@@ -7,7 +7,7 @@ import {
     Plus, Edit, Trash2, Shield, Eye, FileText, 
     Check, X, Image as ImageIcon, BookOpen, 
     Sparkles, Key, Settings, UserCheck, Layout,
-    ExternalLink, Trash
+    ExternalLink, Trash, ShieldCheck
 } from "lucide-react"
 
 export default function BlogsDashboard() {

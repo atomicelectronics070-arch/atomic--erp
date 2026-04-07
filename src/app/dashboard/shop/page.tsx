@@ -1,7 +1,8 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { ShoppingBag, Plus, Save, Image as ImageIcon, FileText, Trash2, X, PlusCircle, Globe, LayoutGrid, List, Layers, Tag as TagIcon, Edit, Power, Star, Settings, CreditCard, Box, CheckSquare, Square, ChevronRight, Search, Store, Upload, RefreshCw, Monitor, Cpu, Gamepad2, Layout } from "lucide-react"
+import { motion } from "framer-motion"
+import { ShoppingBag, Plus, Save, Image as ImageIcon, FileText, Trash2, X, PlusCircle, Globe, LayoutGrid, List, Layers, Tag as TagIcon, Edit, Power, Star, Settings, CreditCard, Box, CheckSquare, Square, ChevronRight, ChevronDown, Search, Store, Upload, RefreshCw, Monitor, Cpu, Gamepad2, Layout, CheckCircle, ShieldAlert } from "lucide-react"
 import { saveProduct, getProducts, deleteProduct, getShopMetadata, createCategory, saveCategory, createCollection, saveCollection, deleteCollection, deleteManyCollections, updateCollection, deleteManyProducts, updateProductsCollection, restoreProduct, restoreManyProducts, permanentDeleteManyProducts, bulkUpdateProducts, cleanupDuplicateProducts, getProviderStats, searchProductsForTaxonomy } from "@/lib/actions/shop"
 
 const safeParseArray = (str: any, fallback: any = []) => {

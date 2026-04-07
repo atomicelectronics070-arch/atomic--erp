@@ -3,10 +3,11 @@
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { 
-    Folder, FileText, ChevronRight, Upload, FolderPlus, 
+    Folder, FileText, ChevronRight, Upload, FolderPlus, Plus,
     ArrowLeft, Database, MoreVertical, Trash2, Search,
     Filter, LayoutGrid, List, HardDrive, ShieldCheck
 } from "lucide-react"
+
 
 type FolderType = { id: string; name: string; parentId: string | null }
 type FileType = { id: string; name: string; url: string; size: number; createdAt: string; uploader: { name: string } }

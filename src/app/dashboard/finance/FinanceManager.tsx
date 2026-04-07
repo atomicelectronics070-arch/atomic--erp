@@ -380,7 +380,7 @@ export default function FinanceManager() {
                                             <Users className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-700 group-focus-within:text-secondary transition-colors" size={20} />
                                             <input
                                                 required
-                                                disabled={editingItem && !isAdmin}
+                                                disabled={!!(editingItem && !isAdmin)}
                                                 value={formData.client}
                                                 onChange={(e) => setFormData({ ...formData, client: e.target.value.toUpperCase() })}
                                                 className="w-full bg-slate-950/60 border border-white/5 rounded-2xl py-6 pl-16 pr-8 text-[12px] font-black uppercase tracking-widest text-white focus:border-secondary outline-none transition-all placeholder:text-slate-900 shadow-inner italic disabled:opacity-50"
@@ -409,7 +409,7 @@ export default function FinanceManager() {
                                         <input
                                             type="date"
                                             required
-                                            disabled={editingItem && !isAdmin}
+                                            disabled={!!(editingItem && !isAdmin)}
                                             value={formData.date}
                                             onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                                             className="w-full bg-slate-950/60 border border-white/5 rounded-2xl py-6 px-10 text-[12px] font-black uppercase tracking-widest text-white focus:border-secondary transition-all shadow-inner disabled:opacity-50"
@@ -419,7 +419,7 @@ export default function FinanceManager() {
                                     <div className="space-y-4">
                                         <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] ml-2 italic">Tipo de Operación</label>
                                         <select
-                                            disabled={editingItem && !isAdmin}
+                                            disabled={!!(editingItem && !isAdmin)}
                                             value={formData.type}
                                             onChange={(e) => setFormData({ ...formData, type: e.target.value })}
                                             className="w-full bg-slate-950/60 border border-white/5 rounded-2xl py-6 px-10 text-[11px] font-black uppercase tracking-[0.3em] text-white focus:border-secondary outline-none h-[75px] shadow-inner italic disabled:opacity-50"
@@ -437,7 +437,7 @@ export default function FinanceManager() {
                                             <input
                                                 type="number"
                                                 required
-                                                disabled={editingItem && !isAdmin}
+                                                disabled={!!(editingItem && !isAdmin)}
                                                 value={formData.amount}
                                                 onChange={(e) => setFormData({ ...formData, amount: parseFloat(e.target.value) })}
                                                 className="w-full bg-slate-950/60 border border-white/5 rounded-2xl py-6 pl-16 pr-8 text-2xl font-black text-white focus:border-secondary outline-none transition-all shadow-inner italic disabled:opacity-50"

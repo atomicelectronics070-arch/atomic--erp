@@ -179,7 +179,7 @@ export default function ScraperPage() {
                 </div>
                 <div className="flex items-center gap-3">
                     <button
-                        onClick={() => { checkBackend(); setResults([]); setError(''); setSuccess(''); }}
+                        onClick={() => { checkBackendStatus(); setResults([]); setError(''); setSuccess(''); }}
                         className="flex items-center gap-1.5 text-[9px] font-bold text-slate-500 hover:text-slate-300 uppercase tracking-widest border border-slate-700 px-3 py-1.5 hover:border-slate-500 transition-all rounded-lg"
                     >
                         <RefreshCw size={10} />
@@ -278,8 +278,8 @@ export default function ScraperPage() {
                     <div className="space-y-2">
                         <Accordion id="general" title="Configuración General" icon={<Settings size={16} />} isOpen={openSection === 'general'} toggle={() => setOpenSection(openSection === 'general' ? null : 'general')}>
                             <div className="space-y-4">
-                                <Toggle label="Paginación Automática" checked={config.fullScrap} onChange={v => setConfig({ ...config, fullScrap: v })} description="Navega por páginas 'Siguiente' automáticamente." />
-                                <Toggle label="Desplazamiento Infinito" checked={config.infiniteScroll} onChange={v => setConfig({ ...config, infiniteScroll: v })} description="Hace scroll automático antes de leer." />
+                                <Toggle label="Paginación Automática" checked={config.fullScrap} onChange={(v: boolean) => setConfig({ ...config, fullScrap: v })} description="Navega por páginas 'Siguiente' automáticamente." />
+                                <Toggle label="Desplazamiento Infinito" checked={config.infiniteScroll} onChange={(v: boolean) => setConfig({ ...config, infiniteScroll: v })} description="Hace scroll automático antes de leer." />
                                 <div>
                                     <label className="text-[10px] font-bold text-indigo-400 uppercase tracking-tighter block mb-2">Campos a extraer</label>
                                     <div className="grid grid-cols-3 gap-1.5">
@@ -295,8 +295,8 @@ export default function ScraperPage() {
 
                         <Accordion id="store" title="Tienda (Supabase)" icon={<Store size={16} />} isOpen={openSection === 'store'} toggle={() => setOpenSection(openSection === 'store' ? null : 'store')}>
                             <div className="space-y-3">
-                                <Field label="Project URL" value={config.supabaseUrl} placeholder="https://xyz.supabase.co" onChange={v => setConfig({ ...config, supabaseUrl: v })} />
-                                <Field label="Service Role Key" value={config.supabaseKey} placeholder="Secret key..." type="password" onChange={v => setConfig({ ...config, supabaseKey: v })} />
+                                <Field label="Project URL" value={config.supabaseUrl} placeholder="https://xyz.supabase.co" onChange={(v: string) => setConfig({ ...config, supabaseUrl: v })} />
+                                <Field label="Service Role Key" value={config.supabaseKey} placeholder="Secret key..." type="password" onChange={(v: string) => setConfig({ ...config, supabaseKey: v })} />
                                 <div>
                                     <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">Multiplicador de Precio (%)</label>
                                     <div className="relative">
@@ -317,7 +317,7 @@ export default function ScraperPage() {
                                         onChange={e => setConfig({ ...config, aiInstruction: e.target.value })} />
                                 </div>
                                 <div className="border-t border-white/5 pt-3">
-                                    <Toggle label="Activar Login / Cookies" checked={config.auth.enabled} onChange={v => setConfig({ ...config, auth: { ...config.auth, enabled: v } })} description="Usa tu sesión de navegador." />
+                                    <Toggle label="Activar Login / Cookies" checked={config.auth.enabled} onChange={(v: boolean) => setConfig({ ...config, auth: { ...config.auth, enabled: v } })} description="Usa tu sesión de navegador." />
                                     <AnimatePresence>
                                         {config.auth.enabled && (
                                             <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden mt-3 space-y-2">
@@ -543,7 +543,7 @@ function Accordion({ id, title, icon, children, isOpen, toggle }: any) {
     );
 }
 
-function Toggle({ label, checked, onChange, description }: any) {
+function Toggle({ label, checked, onChange, description }: { label: string; checked: boolean; onChange: (v: boolean) => void; description?: string }) {
     return (
         <label className="flex items-start justify-between gap-4 p-3 rounded-xl hover:bg-white/[0.03] transition-all cursor-pointer group">
             <div>
@@ -558,7 +558,7 @@ function Toggle({ label, checked, onChange, description }: any) {
     );
 }
 
-function Field({ label, value, onChange, placeholder, type = 'text' }: any) {
+function Field({ label, value, onChange, placeholder, type = 'text' }: { label: string; value: string; onChange: (v: string) => void; placeholder?: string; type?: string }) {
     return (
         <div>
             <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">{label}</label>
