@@ -31,8 +31,12 @@ export default function SocialFeed() {
             getSalesRanking()
         ])
         
-        if (feedRes.success) setPosts(feedRes.posts)
-        if (rankRes.success) setRanking(rankRes.ranking)
+        if (feedRes.success && feedRes.posts) {
+            setPosts(feedRes.posts as any[])
+        }
+        if (rankRes.success && rankRes.ranking) {
+            setRanking(rankRes.ranking as any[])
+        }
         setLoading(false)
     }
 
