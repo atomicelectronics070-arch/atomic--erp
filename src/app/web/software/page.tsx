@@ -138,8 +138,23 @@ export default function SoftwareLandingPage() {
             
             {/* INICIO MODAL DE SOFTWARE INTERACTIVO (OS WINDOW) */}
             {activePreview && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-xl p-4 md:p-12 animate-in fade-in duration-300">
-                    <div className="relative w-full h-full max-w-7xl flex flex-col bg-slate-950 rounded-3xl border border-white/20 shadow-[0_0_100px_rgba(0,0,0,0.5)] overflow-hidden scale-in-center">
+                <div
+                    className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-xl p-4 md:p-12 animate-in fade-in duration-300"
+                    onClick={() => setActivePreview(null)}
+                >
+                    {/* Big X button always visible */}
+                    <button
+                        onClick={(e) => { e.stopPropagation(); setActivePreview(null) }}
+                        className="absolute top-4 right-4 z-[200] w-12 h-12 bg-red-600 hover:bg-red-500 rounded-full flex items-center justify-center shadow-2xl shadow-red-900/50 transition-all hover:scale-110"
+                        aria-label="Cerrar preview"
+                    >
+                        <X size={22} className="text-white" />
+                    </button>
+
+                    <div
+                        className="relative w-full h-full max-w-7xl flex flex-col bg-slate-950 rounded-3xl border border-white/20 shadow-[0_0_100px_rgba(0,0,0,0.5)] overflow-hidden scale-in-center"
+                        onClick={(e) => e.stopPropagation()}
+                    >
                         
                         {/* OS Header Bar (IMPROVED CONTROLS) */}
                         <div className="h-16 bg-neutral-900 border-b border-white/10 flex items-center justify-between px-6 shrink-0 z-50">
