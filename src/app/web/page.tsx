@@ -127,62 +127,8 @@ export default function PublicWebPage() {
             {/* Minimalist Navbar removido - Controlado por layout.tsx */}
 
             {/* ══════════════════════════════════════════
-                 BANNERS HERO (Software / Auto / Gaming)
+                 PRODUCTOS — PRIMERO
               ══════════════════════════════════════════ */}
-            {BANNER_CONFIGS.map((cfg) => {
-                const bData = banners[cfg.key] || {}
-                if (bData.active === false) return null
-                const title = bData.title || cfg.defaultTitle
-                const desc = bData.description || cfg.defaultDesc
-                const bg = bData.imageUrl
-                const prodIds: string[] = bData.productIds || []
-                const bannerProducts = prodIds.map((id: string) => allProductsMap[id]).filter(Boolean)
-
-                return (
-                    <HeroBanner
-                        key={cfg.key}
-                        title={title}
-                        description={desc}
-                        backgroundImage={bg}
-                        gradientClass={cfg.defaultBg}
-                        accent={cfg.accent}
-                        accentDark={cfg.accentDark}
-                        tag={cfg.tag}
-                        tagBg={cfg.tagBg}
-                        icon={cfg.icon}
-                        products={bannerProducts}
-                        linkUrl={cfg.key === 'software' ? '/web/software' : '#productos'}
-                        linkText={cfg.key === 'software' ? 'Ver Portafolio' : 'Ver Catálogo'}
-                    />
-                )
-            })}
-
-            {/* ══════════════════════════════════════════
-                 BANNER 4 — CATEGORÍAS SCROLLABLES
-              ══════════════════════════════════════════ */}
-            <CategoriesBanner categories={metadata.categories} />
-
-            {/* Features Bar */}
-            <section className="bg-neutral-900 py-12">
-                <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-8">
-                    {[
-                        { icon: <Truck />, title: "Envíos Gratis", desc: "Todo el país" },
-                        { icon: <Shield />, title: "Garantía Total", desc: "Cobertura ATOMIC" },
-                        { icon: <Zap />, title: "Pago Seguro", desc: "Confianza total" },
-                        { icon: <Star />, title: "Soporte 24/7", desc: "Asistencia real" }
-                    ].map((f, i) => (
-                        <div key={i} className="flex items-center space-x-5 text-white/90">
-                            <div className="text-indigo-500">{f.icon}</div>
-                            <div>
-                                <p className="text-[10px] font-black uppercase tracking-widest">{f.title}</p>
-                                <p className="text-xs text-white/50">{f.desc}</p>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </section>
-
-            {/* Products Section */}
             <section id="productos" className="bg-slate-950 py-32">
                 <div className="max-w-7xl mx-auto px-6">
                     <div className="text-center space-y-4 mb-16">
@@ -286,7 +232,62 @@ export default function PublicWebPage() {
                 </div>
             </section>
 
-            {/* Removed Newsletter and Footer (Newsletter stays in home, footer goes to layout) */}
+            {/* ══════════════════════════════════════════
+                 CATEGORÍAS SCROLLABLES
+              ══════════════════════════════════════════ */}
+            <CategoriesBanner categories={metadata.categories} />
+
+            {/* Features Bar */}
+            <section className="bg-neutral-900 py-12">
+                <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-8">
+                    {[
+                        { icon: <Truck />, title: "Envíos Gratis", desc: "Todo el país" },
+                        { icon: <Shield />, title: "Garantía Total", desc: "Cobertura ATOMIC" },
+                        { icon: <Zap />, title: "Pago Seguro", desc: "Confianza total" },
+                        { icon: <Star />, title: "Soporte 24/7", desc: "Asistencia real" }
+                    ].map((f, i) => (
+                        <div key={i} className="flex items-center space-x-5 text-white/90">
+                            <div className="text-indigo-500">{f.icon}</div>
+                            <div>
+                                <p className="text-[10px] font-black uppercase tracking-widest">{f.title}</p>
+                                <p className="text-xs text-white/50">{f.desc}</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </section>
+
+            {/* ══════════════════════════════════════════
+                 BANNERS HERO (Software / Auto / Gaming)
+              ══════════════════════════════════════════ */}
+            {BANNER_CONFIGS.map((cfg) => {
+                const bData = banners[cfg.key] || {}
+                if (bData.active === false) return null
+                const title = bData.title || cfg.defaultTitle
+                const desc = bData.description || cfg.defaultDesc
+                const bg = bData.imageUrl
+                const prodIds: string[] = bData.productIds || []
+                const bannerProducts = prodIds.map((id: string) => allProductsMap[id]).filter(Boolean)
+
+                return (
+                    <HeroBanner
+                        key={cfg.key}
+                        title={title}
+                        description={desc}
+                        backgroundImage={bg}
+                        gradientClass={cfg.defaultBg}
+                        accent={cfg.accent}
+                        accentDark={cfg.accentDark}
+                        tag={cfg.tag}
+                        tagBg={cfg.tagBg}
+                        icon={cfg.icon}
+                        products={bannerProducts}
+                        linkUrl={cfg.key === 'software' ? '/web/software' : '#productos'}
+                        linkText={cfg.key === 'software' ? 'Ver Portafolio' : 'Ver Catálogo'}
+                    />
+                )
+            })}
+
             {/* Newsletter */}
             <section className="bg-gradient-to-r from-indigo-900 to-pink-900 py-32 relative overflow-hidden">
                 <div className="absolute right-0 top-0 h-full w-1/3 bg-white/5 -skew-x-12 translate-x-20"></div>
@@ -302,7 +303,6 @@ export default function PublicWebPage() {
                 </div>
             </section>
         </div>
-    )
 }
 
 // ══════════════════════════════════════════════════════════════
