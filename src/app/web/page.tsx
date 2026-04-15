@@ -303,6 +303,7 @@ export default function PublicWebPage() {
                 </div>
             </section>
         </div>
+    )
 }
 
 // ══════════════════════════════════════════════════════════════
