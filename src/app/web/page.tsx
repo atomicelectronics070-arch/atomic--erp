@@ -1,8 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { ShoppingBag, ChevronRight, Star, ArrowRight, Shield, Zap, Truck, Search, ShoppingCart, User, Download, ExternalLink, Power, X, ChevronLeft, Monitor, Cpu, Gamepad2 } from "lucide-react"
-import { getProducts, getShopMetadata } from "@/lib/actions/shop"
+import { ShoppingBag, ChevronRight, Star, ArrowRight, Shield, Zap, Truck, Search, Download, X, ChevronLeft, Monitor, Cpu, Gamepad2 } from "lucide-react"
 import Link from "next/link"
 
 const safeParseArr = (str: any) => {
@@ -25,11 +24,11 @@ export default function PublicWebPage() {
     // Load metadata + settings
     useEffect(() => {
         const init = async () => {
-            const [m, s] = await Promise.all([
-                getShopMetadata(),
+            const [mRes, s] = await Promise.all([
+                fetch("/api/web/metadata").then(r => r.json()).catch(() => ({ categories: [], collections: [] })),
                 fetch("/api/shop/settings").then(r => r.json()).catch(() => ({}))
             ])
-            setMetadata(m)
+            setMetadata(mRes)
             if (s?.settings) setShopSettings(s.settings)
         }
         init()
@@ -47,13 +46,20 @@ export default function PublicWebPage() {
         const load = async () => {
             setIsSearching(true)
             try {
-                const res = await getProducts({ page: currentPage, pageSize: itemsPerPage, search: searchQuery })
-                setProducts(res.products)
-                setTotalProducts(res.total)
+                const params = new URLSearchParams({
+                    page: String(currentPage),
+                    pageSize: String(itemsPerPage),
+                    search: searchQuery
+                })
+                const res = await fetch(`/api/web/products?${params}`).then(r => r.json())
+                setProducts(res.products || [])
+                setTotalProducts(res.total || 0)
                 // Build map for banner product lookup
                 const map: Record<string, any> = {}
-                res.products.forEach((p: any) => { map[p.id] = p })
+                ;(res.products || []).forEach((p: any) => { map[p.id] = p })
                 setAllProductsMap(prev => ({ ...prev, ...map }))
+            } catch(e) {
+                console.error('Error loading products:', e)
             } finally { setIsSearching(false); setLoading(false) }
         }
         load()
@@ -70,9 +76,9 @@ export default function PublicWebPage() {
         if (allIds.length === 0) return
         const missing = allIds.filter((id: string) => !allProductsMap[id])
         if (missing.length === 0) return
-        getProducts({ page: 1, pageSize: 200, search: '' }).then(res => {
+        fetch('/api/web/products?page=1&pageSize=200&search=').then(r => r.json()).then(res => {
             const map: Record<string, any> = {}
-            res.products.forEach((p: any) => { map[p.id] = p })
+            ;(res.products || []).forEach((p: any) => { map[p.id] = p })
             setAllProductsMap(prev => ({ ...prev, ...map }))
         })
     }, [shopSettings])
