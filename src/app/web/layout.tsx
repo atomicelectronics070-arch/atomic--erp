@@ -6,36 +6,53 @@ import { Search, ShoppingCart, User, Shield, Zap, CheckCircle2 } from "lucide-re
 
 export default function WebLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname()
-    
-    // Todo el portal público (/web/*) ahora usa el Dark Theme para coherencia con el ERP
-    const isDarkGlobal = pathname.startsWith('/web')
 
     return (
-        <div className={`min-h-screen font-sans bg-neutral-950 text-white selection:bg-indigo-500/30`}>
-            {/* Navbar Global */}
-            <nav className="sticky top-0 w-full z-50 px-6 py-4 border-b border-white/5 bg-slate-950/40 backdrop-blur-xl">
-                <div className="max-w-7xl mx-auto flex items-center justify-between">
+        <div className="min-h-screen font-sans bg-[#FAFAF8] text-[#0F1923] selection:bg-red-200/60">
+
+            {/* ── Navbar ── */}
+            <nav className="sticky top-0 w-full z-50 bg-white/90 backdrop-blur-xl border-b border-[#E8341A]/10 shadow-sm shadow-[#E8341A]/5">
+                <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+
+                    {/* Logo + Links */}
                     <div className="flex items-center space-x-12">
-                        <Link href="/web" className="text-2xl font-black tracking-tighter uppercase italic text-white group">
-                            ATOMIC<span className="text-indigo-500 group-hover:text-pink-500 transition-colors">.</span>
+                        <Link href="/web" className="text-2xl font-black tracking-tighter uppercase italic text-[#0F1923] group">
+                            ATOMIC<span className="text-[#E8341A] group-hover:text-[#C0280F] transition-colors">.</span>
                         </Link>
-                        <div className="hidden md:flex space-x-8 text-[10px] font-black uppercase tracking-[0.2em] text-white/50">
-                            <Link href="/web" className={pathname === '/web' ? 'text-white border-b-2 border-indigo-500 pb-1' : 'hover:text-indigo-400 transition-colors'}>Inicio</Link>
-                            <Link href="/web#productos" className={pathname.includes('/product') ? 'text-white border-b-2 border-indigo-500 pb-1' : 'hover:text-indigo-400 transition-colors'}>Productos</Link>
-                            <Link href="/web#categorias" className="hover:text-indigo-400 transition-colors">Categorías</Link>
-                            <Link href="/web/software" className={pathname === '/web/software' ? 'text-white border-b-2 border-indigo-500 pb-1' : 'hover:text-indigo-400 transition-colors'}>Desarrollo</Link>
-                            <Link href="/web/blogs" className={pathname.startsWith('/web/blogs') ? 'text-white border-b-2 border-indigo-500 pb-1' : 'hover:text-indigo-400 transition-colors'}>Blog</Link>
+                        <div className="hidden md:flex space-x-8 text-[10px] font-black uppercase tracking-[0.2em] text-[#0F1923]/40">
+                            <Link
+                                href="/web"
+                                className={pathname === '/web' ? 'text-[#E8341A] border-b-2 border-[#E8341A] pb-1' : 'hover:text-[#E8341A] transition-colors'}
+                            >Inicio</Link>
+                            <Link
+                                href="/web#productos"
+                                className={pathname.includes('/product') ? 'text-[#E8341A] border-b-2 border-[#E8341A] pb-1' : 'hover:text-[#E8341A] transition-colors'}
+                            >Productos</Link>
+                            <Link href="/web#categorias" className="hover:text-[#E8341A] transition-colors">Categorías</Link>
+                            <Link
+                                href="/web/software"
+                                className={pathname === '/web/software' ? 'text-[#2563EB] border-b-2 border-[#2563EB] pb-1' : 'hover:text-[#2563EB] transition-colors'}
+                            >Desarrollo</Link>
+                            <Link
+                                href="/web/blogs"
+                                className={pathname.startsWith('/web/blogs') ? 'text-[#2563EB] border-b-2 border-[#2563EB] pb-1' : 'hover:text-[#2563EB] transition-colors'}
+                            >Blog</Link>
                         </div>
                     </div>
-                    <div className="flex items-center space-x-6 text-white/60">
-                        <button className="hover:text-indigo-400 transition-colors"><Search size={18} /></button>
-                        <Link href="/login" className="hover:text-indigo-400 transition-colors"><User size={18} /></Link>
+
+                    {/* Actions */}
+                    <div className="flex items-center space-x-6 text-[#0F1923]/40">
+                        <button className="hover:text-[#E8341A] transition-colors"><Search size={18} /></button>
+                        <Link href="/login" className="hover:text-[#E8341A] transition-colors"><User size={18} /></Link>
                         <div className="relative">
-                            <button className="hover:text-indigo-400 transition-colors"><ShoppingCart size={18} /></button>
-                            <span className="absolute -top-1 -right-1 bg-indigo-600 text-white text-[8px] font-black w-3.5 h-3.5 flex items-center justify-center rounded-full shadow-[0_0_10px_rgba(99,102,241,0.5)]">0</span>
+                            <button className="hover:text-[#E8341A] transition-colors"><ShoppingCart size={18} /></button>
+                            <span className="absolute -top-1 -right-1 bg-[#E8341A] text-white text-[8px] font-black w-3.5 h-3.5 flex items-center justify-center rounded-full shadow-[0_0_8px_rgba(232,52,26,0.5)]">0</span>
                         </div>
                     </div>
                 </div>
+
+                {/* Tomato accent line at the very bottom of navbar */}
+                <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-[#E8341A]/30 to-transparent" />
             </nav>
 
             {/* Page Content */}
@@ -43,25 +60,36 @@ export default function WebLayout({ children }: { children: React.ReactNode }) {
                 {children}
             </main>
 
-            {/* Footer Global */}
-            <footer className="bg-slate-950/20 pt-32 pb-12 text-white border-t border-white/5">
-                <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-20 border-b border-white/5 pb-20">
-                    <div className="space-y-10">
+            {/* ── Footer ── */}
+            <footer className="bg-[#0F1923] pt-28 pb-12 text-white">
+
+                {/* Top section */}
+                <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-16 border-b border-white/8 pb-16">
+
+                    {/* Brand */}
+                    <div className="space-y-8">
                         <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 glass-panel flex items-center justify-center rounded-lg">
-                              <div className="w-2 h-2 bg-indigo-500" />
+                            <div className="w-8 h-8 bg-[#E8341A] flex items-center justify-center rounded-lg shadow-lg shadow-[#E8341A]/30">
+                                <div className="w-2 h-2 bg-white rounded-sm" />
                             </div>
                             <span className="text-xl font-black tracking-tighter uppercase italic text-white">
-                                ATOMIC<span className="text-indigo-500">.</span>
+                                ATOMIC<span className="text-[#E8341A]">.</span>
                             </span>
                         </div>
-                        <p className="text-xs text-white/30 leading-relaxed font-medium max-w-xs uppercase tracking-widest">
+                        <p className="text-xs text-white/25 leading-relaxed font-medium max-w-xs uppercase tracking-widest">
                             Infraestructura Modular de Alto Nivel para el mercado global corporativo.
                         </p>
+                        {/* Blue accent tag */}
+                        <div className="inline-flex items-center gap-2 bg-[#2563EB]/10 border border-[#2563EB]/20 rounded-full px-3 py-1.5">
+                            <div className="w-1.5 h-1.5 rounded-full bg-[#3B82F6] animate-pulse" />
+                            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-[#3B82F6]">Todos los sistemas online</span>
+                        </div>
                     </div>
-                    <div className="col-span-3 grid grid-cols-1 md:grid-cols-3 gap-12">
+
+                    {/* Links */}
+                    <div className="col-span-3 grid grid-cols-1 md:grid-cols-3 gap-10">
                         <div className="space-y-8">
-                            <h5 className="text-[10px] font-black uppercase tracking-[0.4em] text-indigo-500">Corporativo</h5>
+                            <h5 className="text-[10px] font-black uppercase tracking-[0.4em] text-[#E8341A]">Corporativo</h5>
                             <ul className="space-y-5 text-[10px] text-white/20 font-black uppercase tracking-widest">
                                 <li className="hover:text-white transition-colors"><Link href="/web">Visión Técnica</Link></li>
                                 <li className="hover:text-white transition-colors"><Link href="/web/software">Laboratorio de Software</Link></li>
@@ -69,25 +97,37 @@ export default function WebLayout({ children }: { children: React.ReactNode }) {
                             </ul>
                         </div>
                         <div className="space-y-8">
-                            <h5 className="text-[10px] font-black uppercase tracking-[0.4em] text-indigo-500">Soporte</h5>
+                            <h5 className="text-[10px] font-black uppercase tracking-[0.4em] text-[#2563EB]">Soporte</h5>
                             <ul className="space-y-5 text-[10px] text-white/20 font-black uppercase tracking-widest">
                                 <li className="hover:text-white transition-colors cursor-pointer">Centro de Ayuda</li>
                                 <li className="hover:text-white transition-colors cursor-pointer">API Docs</li>
                                 <li className="hover:text-white transition-colors cursor-pointer">Garantía ATOMIC</li>
                             </ul>
                         </div>
+                        <div className="space-y-8">
+                            <h5 className="text-[10px] font-black uppercase tracking-[0.4em] text-[#F5611A]">Plataformas</h5>
+                            <ul className="space-y-5 text-[10px] text-white/20 font-black uppercase tracking-widest">
+                                <li className="hover:text-white transition-colors"><Link href="/web#productos">Catálogo</Link></li>
+                                <li className="hover:text-white transition-colors"><Link href="/web#categorias">Categorías</Link></li>
+                                <li className="hover:text-white transition-colors"><Link href="/login">Portal ERP</Link></li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
-                <div className="max-w-7xl mx-auto px-6 pt-12 flex flex-col md:flex-row justify-between items-center gap-10">
+
+                {/* Bottom bar */}
+                <div className="max-w-7xl mx-auto px-6 pt-10 flex flex-col md:flex-row justify-between items-center gap-8">
                     <p className="text-[9px] font-black uppercase text-white/10 tracking-[0.4em]">© 2026 ATOMIC ELECTRONICS GMBH. Ingeniería y Precisión.</p>
-                    <div className="flex items-center space-x-8 opacity-10">
+                    <div className="flex items-center space-x-6 opacity-15">
                         <Shield size={16} />
                         <Zap size={16} />
                         <CheckCircle2 size={16} />
                     </div>
                 </div>
+
+                {/* Footer top tomato glow */}
+                <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#E8341A]/20 to-transparent pointer-events-none" />
             </footer>
         </div>
-
     )
 }

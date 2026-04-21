@@ -133,7 +133,7 @@ export default function SoftwareLandingPage() {
     }, [])
 
     return (
-        <div className="min-h-screen bg-mesh text-white selection:bg-indigo-500/30 overflow-hidden relative">
+        <div className="min-h-screen bg-[#FAFAF8] text-[#0F1923] overflow-hidden relative">
             <style dangerouslySetInnerHTML={{ __html: styles }} />
             
             {/* INICIO MODAL DE SOFTWARE INTERACTIVO (OS WINDOW) */}
@@ -220,9 +220,9 @@ export default function SoftwareLandingPage() {
             {/* FIN MODAL */}
 
             {/* Background Effects */}
-            <div className="absolute top-0 inset-x-0 h-[500px] bg-gradient-to-b from-indigo-900/20 via-neutral-950 to-neutral-950 pointer-events-none"></div>
-            <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full bg-indigo-600/5 blur-[150px] pointer-events-none"></div>
-            <div className="absolute top-[20%] right-[-10%] w-[40%] h-[50%] rounded-full bg-pink-600/5 blur-[120px] pointer-events-none"></div>
+            <div className="absolute top-0 inset-x-0 h-[500px] bg-gradient-to-b from-[#E8341A]/8 via-[#FAFAF8] to-[#FAFAF8] pointer-events-none"></div>
+            <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full bg-[#E8341A]/4 blur-[150px] pointer-events-none"></div>
+            <div className="absolute top-[20%] right-[-10%] w-[40%] h-[50%] rounded-full bg-[#2563EB]/4 blur-[120px] pointer-events-none"></div>
             
             {/* Grid Texture */}
             <div className="absolute inset-0 opacity-[0.015] pointer-events-none" style={{ backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 49px, #fff 49px, #fff 50px), repeating-linear-gradient(-90deg, transparent, transparent 49px, #fff 49px, #fff 50px)', backgroundSize: '50px 50px' }}></div>
@@ -230,27 +230,27 @@ export default function SoftwareLandingPage() {
             <div className="relative z-10 pt-40 pb-20">
                 {/* HERO SECTION */}
                 <section className="max-w-7xl mx-auto px-6 mb-32 flex flex-col items-center text-center">
-                    <div className="inline-flex items-center gap-3 px-4 py-2 border border-indigo-500/30 bg-indigo-500/10 backdrop-blur-md rounded-full mb-8">
-                        <Code size={14} className="text-indigo-400" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-300">Atomic Software Labs</span>
+                    <div className="inline-flex items-center gap-3 px-4 py-2 border border-[#E8341A]/25 bg-[#E8341A]/8 backdrop-blur-md rounded-full mb-8">
+                        <Code size={14} className="text-[#E8341A]" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#E8341A]">Atomic Software Labs</span>
                     </div>
 
-                    <h1 className="text-5xl md:text-7xl lg:text-8xl font-black uppercase tracking-tighter leading-[0.85] mb-8">
+                    <h1 className="text-5xl md:text-7xl lg:text-8xl font-black uppercase tracking-tighter leading-[0.85] mb-8 text-[#0F1923]">
                         Ingeniería en <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-indigo-600 to-pink-600">Desarrollo</span>
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#E8341A] via-[#F5611A] to-[#2563EB]">Desarrollo</span>
                     </h1>
 
-                    <p className="max-w-3xl text-lg md:text-xl text-neutral-400 font-medium leading-relaxed">
-                        Nuestra misión es brindar un <strong className="text-white">ecosistema digital integrado para toda la región</strong>, 
-                        proporcionando herramientas tecnológicas que acorten exponencialmente los tiempos de ejecución administrativa y 
+                    <p className="max-w-3xl text-lg md:text-xl text-[#0F1923]/50 font-medium leading-relaxed">
+                        Nuestra misión es brindar un <strong className="text-[#0F1923]">ecosistema digital integrado para toda la región</strong>,
+                        proporcionando herramientas tecnológicas que acorten exponencialmente los tiempos de ejecución administrativa y
                         mejoren drásticamente el rendimiento de todos los procesos operativos corporativos.
                     </p>
 
-                    <div className="mt-12 flex space-x-6 text-neutral-500">
+                    <div className="mt-12 flex space-x-6 text-[#0F1923]/30">
                         <div className="flex items-center gap-2"><Database size={16} /><span className="text-[10px] font-bold uppercase tracking-widest">Data</span></div>
-                        <div className="w-1 h-1 rounded-full bg-neutral-700 my-auto"></div>
+                        <div className="w-1 h-1 rounded-full bg-[#0F1923]/15 my-auto"></div>
                         <div className="flex items-center gap-2"><Sparkles size={16} /><span className="text-[10px] font-bold uppercase tracking-widest">Cognitive UI</span></div>
-                        <div className="w-1 h-1 rounded-full bg-neutral-700 my-auto"></div>
+                        <div className="w-1 h-1 rounded-full bg-[#0F1923]/15 my-auto"></div>
                         <div className="flex items-center gap-2"><Smartphone size={16} /><span className="text-[10px] font-bold uppercase tracking-widest">Mobile First</span></div>
                     </div>
                 </section>
@@ -259,18 +259,18 @@ export default function SoftwareLandingPage() {
                 <section className="w-full relative">
                     <div className="max-w-7xl mx-auto px-6 mb-10 flex flex-col md:flex-row items-end justify-between gap-6">
                         <div className="space-y-2">
-                            <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter text-white">
-                                Interfaces Trabajadas <span className="text-neutral-600">Hasta Ahora</span>
+                            <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter text-[#0F1923]">
+                                Interfaces Trabajadas <span className="text-[#0F1923]/25">Hasta Ahora</span>
                             </h2>
-                            <p className="text-[11px] font-bold uppercase tracking-widest text-indigo-500">
+                            <p className="text-[11px] font-bold uppercase tracking-widest text-[#E8341A]">
                                 Desliza para explorar nuestro portafolio de ecosistemas
                             </p>
                         </div>
                         <div className="flex gap-2">
-                            <button onClick={() => scroll(-400)} className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/5 transition-colors z-20">
+                            <button onClick={() => scroll(-400)} className="w-12 h-12 rounded-full border border-[#0F1923]/12 flex items-center justify-center text-[#0F1923]/40 hover:bg-[#E8341A]/8 hover:text-[#E8341A] hover:border-[#E8341A]/30 transition-colors z-20">
                                 <ChevronLeft size={18} />
                             </button>
-                            <button onClick={() => scroll(400)} className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/5 transition-colors z-20">
+                            <button onClick={() => scroll(400)} className="w-12 h-12 rounded-full border border-[#0F1923]/12 flex items-center justify-center text-[#0F1923]/40 hover:bg-[#E8341A]/8 hover:text-[#E8341A] hover:border-[#E8341A]/30 transition-colors z-20">
                                 <ChevronRight size={18} />
                             </button>
                         </div>
@@ -278,8 +278,8 @@ export default function SoftwareLandingPage() {
 
                     {/* Scrollable Container */}
                     <div className="relative w-full overflow-hidden pb-12 pt-8">
-                        <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-neutral-950 to-transparent z-20 pointer-events-none"></div>
-                        <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-neutral-950 to-transparent z-20 pointer-events-none"></div>
+                        <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#FAFAF8] to-transparent z-20 pointer-events-none"></div>
+                        <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#FAFAF8] to-transparent z-20 pointer-events-none"></div>
                         
                         <div 
                             ref={scrollRef}
@@ -351,12 +351,12 @@ export default function SoftwareLandingPage() {
                                     </div>
 
                                     {/* Card Info Below */}
-                                    <div className="mt-8 px-4 text-left border-l-2 pl-4 ml-6 transition-colors duration-500" style={{ borderColor: `${item.accent}40` }}>
+                                    <div className="mt-8 px-4 text-left border-l-2 pl-4 ml-6 transition-colors duration-500" style={{ borderColor: `${item.accent}50` }}>
                                         <p className="text-[10px] font-black uppercase tracking-[0.2em] mb-2" style={{ color: item.accent }}>
                                             [0{idx + 1}] // {item.category}
                                         </p>
-                                        <h3 className="text-xl md:text-2xl font-black uppercase tracking-tighter text-white mb-2">{item.title}</h3>
-                                        <p className="text-neutral-500 text-xs font-medium leading-relaxed max-w-[90%]">
+                                        <h3 className="text-xl md:text-2xl font-black uppercase tracking-tighter text-[#0F1923] mb-2">{item.title}</h3>
+                                        <p className="text-[#0F1923]/40 text-xs font-medium leading-relaxed max-w-[90%]">
                                             {item.description}
                                         </p>
                                     </div>
@@ -368,7 +368,7 @@ export default function SoftwareLandingPage() {
             </div>
             
             {/* Bottom Glow */}
-            <div className="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-indigo-600/50 to-transparent"></div>
+            <div className="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[#E8341A]/30 to-transparent"></div>
         </div>
     )
 }
