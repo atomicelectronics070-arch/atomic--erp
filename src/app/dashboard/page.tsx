@@ -23,6 +23,7 @@ export default function SocialFeed() {
     const videoInputRef = useRef<HTMLInputElement>(null)
     const [commentTexts, setCommentTexts] = useState<Record<string, string>>({})
     const [activeCommentPost, setActiveCommentPost] = useState<string | null>(null)
+    const [isSubmitting, setIsSubmitting] = useState(false)
 
     const loadData = async () => {
         setLoading(true)
@@ -60,12 +61,23 @@ export default function SocialFeed() {
         if (!newPostContent.trim() && !mediaFile) return
         if (!session?.user?.id) return
 
-        const res = await createPost(session.user.id, newPostContent, mediaFile || undefined)
-        if (res.success) {
-            setNewPostContent("")
-            setMediaFile(null)
-            setMediaType(null)
-            loadData() 
+        setIsSubmitting(true)
+        try {
+            const res = await createPost(session.user.id, newPostContent, mediaFile || undefined)
+            if (res.success) {
+                setNewPostContent("")
+                setMediaFile(null)
+                setMediaType(null)
+                loadData() 
+            } else {
+                alert("Error al publicar: " + res.error)
+                console.error(res.error)
+            }
+        } catch (err: any) {
+            alert("Error de red: " + err.message)
+            console.error(err)
+        } finally {
+            setIsSubmitting(false)
         }
     }
 
@@ -170,11 +182,16 @@ export default function SocialFeed() {
                                     </div>
                                     <button 
                                         onClick={handleCreatePost}
-                                        disabled={!newPostContent.trim() && !mediaFile}
+                                        disabled={(!newPostContent.trim() && !mediaFile) || isSubmitting}
                                         className="bg-primary text-white px-10 py-5 font-black uppercase tracking-[0.3em] text-[10px] flex items-center gap-4 shadow-[0_20px_50px_-10px_rgba(99,102,241,0.6)] transition-all hover:scale-105 rounded-none active:scale-95 group italic skew-x-[-15deg] disabled:opacity-50 disabled:hover:scale-100"
                                     >
                                         <div className="skew-x-[15deg] flex items-center gap-4">
-                                            <Send size={18} className="group-hover:translate-x-1 group-active:translate-x-4 transition-transform" /> PUBLICAR
+                                            {isSubmitting ? (
+                                                <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                                            ) : (
+                                                <Send size={18} className="group-hover:translate-x-1 group-active:translate-x-4 transition-transform" />
+                                            )}
+                                            {isSubmitting ? "PUBLICANDO..." : "PUBLICAR"}
                                         </div>
                                     </button>
                                 </div>
