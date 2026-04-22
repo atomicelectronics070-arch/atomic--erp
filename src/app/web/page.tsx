@@ -139,7 +139,7 @@ export default function PublicWebPage() {
                     <div className="mb-16 max-w-2xl mx-auto relative group">
                         <div className={`absolute inset-y-0 left-6 flex items-center pointer-events-none transition-all duration-300 ${isSearching ? 'text-[#E8341A] scale-110' : 'text-[#0F1923]/30 group-focus-within:text-[#E8341A]'}`}>
                             {isSearching ? (
-                                <div className="animate-spin rounded-full h-5 w-5 border-2 border-[#E8341A] border-t-transparent shadow-lg shadow-red-100"></div>
+                                <div className="animate-spin rounded-none h-5 w-5 border-2 border-[#E8341A] border-t-transparent shadow-lg shadow-red-100"></div>
                             ) : (
                                 <Search size={22} className="group-focus-within:scale-110 transition-transform" />
                             )}
@@ -161,8 +161,8 @@ export default function PublicWebPage() {
                     {loading ? (
                         <div className="py-32 text-center">
                             <div className="inline-block animate-pulse space-y-4">
-                                <div className="h-4 w-64 bg-[#E8341A]/10 mx-auto rounded"></div>
-                                <div className="h-12 w-96 bg-[#E8341A]/10 mx-auto rounded"></div>
+                                <div className="h-4 w-64 bg-[#E8341A]/10 mx-auto rounded-none"></div>
+                                <div className="h-12 w-96 bg-[#E8341A]/10 mx-auto rounded-none"></div>
                             </div>
                         </div>
                     ) : (
@@ -171,7 +171,7 @@ export default function PublicWebPage() {
                                 <Link
                                     key={p.id}
                                     href={`/web/product/${p.id}`}
-                                    className="bg-white group cursor-pointer border border-[#0F1923]/6 hover:border-[#E8341A]/30 transition-all flex flex-col h-full hover:shadow-2xl shadow-sm shadow-[#0F1923]/5 hover:shadow-[#E8341A]/10 rounded-2xl overflow-hidden"
+                                    className="bg-white group cursor-pointer border border-[#0F1923]/6 hover:border-[#E8341A]/30 transition-all flex flex-col h-full hover:shadow-2xl shadow-sm shadow-[#0F1923]/5 hover:shadow-[#E8341A]/10 rounded-none overflow-hidden"
                                 >
                                     <div className="aspect-square bg-[#F5F3F0] relative overflow-hidden flex items-center justify-center p-8 border-b border-[#0F1923]/6">
                                         {(() => {
@@ -207,7 +207,7 @@ export default function PublicWebPage() {
                     {!loading && totalProducts > 0 && (
                         <div className="mt-24 flex flex-col items-center space-y-8">
                             <div className="flex items-center space-x-2">
-                                <button onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))} disabled={currentPage === 1} className="w-12 h-12 flex items-center justify-center border-2 border-[#0F1923]/8 text-[#0F1923]/30 hover:border-[#E8341A] hover:text-[#E8341A] disabled:opacity-20 transition-all font-black rounded-xl">&lt;</button>
+                                <button onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))} disabled={currentPage === 1} className="w-12 h-12 flex items-center justify-center border-2 border-[#0F1923]/8 text-[#0F1923]/30 hover:border-[#E8341A] hover:text-[#E8341A] disabled:opacity-20 transition-all font-black rounded-none">&lt;</button>
                                 {[...Array(totalPages)].map((_, i) => {
                                     const page = i + 1
                                     if (totalPages > 7 && page !== 1 && page !== totalPages && Math.abs(page - currentPage) > 1) {
@@ -215,10 +215,10 @@ export default function PublicWebPage() {
                                         return null
                                     }
                                     return (
-                                        <button key={page} onClick={() => setCurrentPage(page)} className={`w-12 h-12 flex items-center justify-center border-2 font-black text-xs transition-all rounded-xl ${currentPage === page ? "bg-[#E8341A] border-[#E8341A] text-white shadow-lg shadow-[#E8341A]/30" : "bg-white border-[#0F1923]/8 text-[#0F1923]/30 hover:border-[#E8341A] hover:text-[#E8341A]"}`}>{page}</button>
+                                        <button key={page} onClick={() => setCurrentPage(page)} className={`w-12 h-12 flex items-center justify-center border-2 font-black text-xs transition-all rounded-none ${currentPage === page ? "bg-[#E8341A] border-[#E8341A] text-white shadow-lg shadow-[#E8341A]/30" : "bg-white border-[#0F1923]/8 text-[#0F1923]/30 hover:border-[#E8341A] hover:text-[#E8341A]"}`}>{page}</button>
                                     )
                                 })}
-                                <button onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))} disabled={currentPage === totalPages} className="w-12 h-12 flex items-center justify-center border-2 border-[#0F1923]/8 text-[#0F1923]/30 hover:border-[#E8341A] hover:text-[#E8341A] disabled:opacity-20 transition-all font-black rounded-xl">&gt;</button>
+                                <button onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))} disabled={currentPage === totalPages} className="w-12 h-12 flex items-center justify-center border-2 border-[#0F1923]/8 text-[#0F1923]/30 hover:border-[#E8341A] hover:text-[#E8341A] disabled:opacity-20 transition-all font-black rounded-none">&gt;</button>
                             </div>
                             <p className="text-[10px] font-black text-[#0F1923]/40 uppercase tracking-widest">Página {currentPage} de {totalPages} — {totalProducts} resultados</p>
                         </div>
@@ -285,16 +285,16 @@ export default function PublicWebPage() {
             {/* Newsletter */}
             <section className="bg-[#E8341A] py-32 relative overflow-hidden">
                 <div className="absolute right-0 top-0 h-full w-1/3 bg-white/8 -skew-x-12 translate-x-20"></div>
-                <div className="absolute left-0 bottom-0 w-64 h-64 bg-[#C0280F]/40 rounded-full blur-3xl"></div>
-                <div className="absolute right-1/4 top-0 w-48 h-48 bg-[#2563EB]/15 rounded-full blur-2xl"></div>
+                <div className="absolute left-0 bottom-0 w-64 h-64 bg-[#C0280F]/40 rounded-none blur-3xl"></div>
+                <div className="absolute right-1/4 top-0 w-48 h-48 bg-[#2563EB]/15 rounded-none blur-2xl"></div>
                 <div className="max-w-7xl mx-auto px-6 relative z-10 flex flex-col md:flex-row items-center justify-between gap-12 text-white">
                     <div className="max-w-xl space-y-6">
                         <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter leading-none italic">Únete a la <br />Comunidad <span className="text-white/70">ATOMIC</span></h2>
                         <p className="text-white/75 font-medium text-lg">Suscríbete para recibir ofertas exclusivas, lanzamientos y consejos de tecnología industrial.</p>
                     </div>
                     <form className="w-full max-w-md flex flex-col sm:flex-row gap-4">
-                        <input type="email" placeholder="Tu correo electrónico" className="flex-1 bg-white/15 border-2 border-white/25 px-6 py-5 text-white placeholder-white/40 focus:outline-none focus:border-white transition-all font-bold rounded-2xl" />
-                        <button className="bg-white text-[#E8341A] px-10 py-5 text-[10px] font-black uppercase tracking-widest shadow-2xl hover:bg-[#0F1923] hover:text-white transition-all rounded-2xl">Suscribirme</button>
+                        <input type="email" placeholder="Tu correo electrónico" className="flex-1 bg-white/15 border-2 border-white/25 px-6 py-5 text-white placeholder-white/40 focus:outline-none focus:border-white transition-all font-bold rounded-none" />
+                        <button className="bg-white text-[#E8341A] px-10 py-5 text-[10px] font-black uppercase tracking-widest shadow-2xl hover:bg-[#0F1923] hover:text-white transition-all rounded-none">Suscribirme</button>
                     </form>
                 </div>
             </section>
@@ -512,14 +512,14 @@ function CategoriesBanner({ categories }: { categories: any[] }) {
                         <button
                             onClick={() => scroll('left')}
                             disabled={!canScrollLeft}
-                            className="w-12 h-12 border border-[#0F1923]/12 flex items-center justify-center text-[#0F1923]/30 hover:text-[#E8341A] hover:border-[#E8341A] hover:bg-[#E8341A]/8 transition-all disabled:opacity-20 rounded-xl"
+                            className="w-12 h-12 border border-[#0F1923]/12 flex items-center justify-center text-[#0F1923]/30 hover:text-[#E8341A] hover:border-[#E8341A] hover:bg-[#E8341A]/8 transition-all disabled:opacity-20 rounded-none"
                         >
                             <ChevronLeft size={16} />
                         </button>
                         <button
                             onClick={() => scroll('right')}
                             disabled={!canScrollRight}
-                            className="w-12 h-12 border border-[#0F1923]/12 flex items-center justify-center text-[#0F1923]/30 hover:text-[#E8341A] hover:border-[#E8341A] hover:bg-[#E8341A]/8 transition-all disabled:opacity-20 rounded-xl"
+                            className="w-12 h-12 border border-[#0F1923]/12 flex items-center justify-center text-[#0F1923]/30 hover:text-[#E8341A] hover:border-[#E8341A] hover:bg-[#E8341A]/8 transition-all disabled:opacity-20 rounded-none"
                         >
                             <ChevronRight size={16} />
                         </button>
@@ -546,7 +546,7 @@ function CategoriesBanner({ categories }: { categories: any[] }) {
                                 key={cat.id}
                                 href="#productos"
                                 draggable={false}
-                                className="group shrink-0 relative overflow-hidden transition-all duration-500 hover:-translate-y-2 rounded-3xl"
+                                className="group shrink-0 relative overflow-hidden transition-all duration-500 hover:-translate-y-2 rounded-none"
                                 style={{
                                     width: `${CARD_W}px`,
                                     minWidth: `${CARD_W}px`,

@@ -16,15 +16,15 @@ export default async function BlogsGallery() {
     <div className="min-h-screen bg-[#030712] text-white">
       {/* Dynamic Background */}
       <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-pink-600/10 blur-[150px] rounded-full animate-pulse" />
-        <div className="absolute bottom-[-10%] left-[-5%] w-[40%] h-[40%] bg-indigo-600/10 blur-[150px] rounded-full animate-pulse" style={{ animationDelay: '2s' }} />
+        <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-pink-600/10 blur-[150px] rounded-none animate-pulse" />
+        <div className="absolute bottom-[-10%] left-[-5%] w-[40%] h-[40%] bg-indigo-600/10 blur-[150px] rounded-none animate-pulse" style={{ animationDelay: '2s' }} />
         <div className="absolute inset-0 bg-[#030712]/80 backdrop-blur-[1px]"></div>
         <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'repeating-linear-gradient(45deg, #fff 0, #fff 1px, transparent 0, transparent 50%)', backgroundSize: '24px 24px' }}></div>
       </div>
 
       <nav className="relative z-10 p-6 md:p-10 flex items-center justify-between pointer-events-auto">
           <Link href="/web" className="group flex items-center space-x-2 text-white/50 hover:text-white transition-colors">
-              <div className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center bg-white/5 group-hover:bg-white/10 transition-colors">
+              <div className="w-8 h-8 rounded-none border border-white/10 flex items-center justify-center bg-white/5 group-hover:bg-white/10 transition-colors">
                   <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
               </div>
               <span className="text-[10px] font-black uppercase tracking-[0.2em]">Volver a Tienda</span>
@@ -45,7 +45,7 @@ export default async function BlogsGallery() {
 
           {/* Floating Gallery */}
           {blogs.length === 0 ? (
-              <div className="text-center py-20 border border-white/5 bg-white/5 backdrop-blur-sm rounded-3xl">
+              <div className="text-center py-20 border border-white/5 bg-white/5 backdrop-blur-sm rounded-none">
                   <p className="text-white/50 text-sm font-medium">Próximamente estaremos publicando artículos. Vuelve pronto.</p>
               </div>
           ) : (
@@ -55,7 +55,7 @@ export default async function BlogsGallery() {
                         <Link 
                             href={`/web/blogs/${blog.id}`}
                             key={blog.id} 
-                            className="group relative flex flex-col h-[500px] overflow-hidden bg-white/5 border border-white/10 hover:border-indigo-500/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(99,102,241,0.1)] rounded-sm"
+                            className="group relative flex flex-col h-[500px] overflow-hidden bg-white/5 border border-white/10 hover:border-indigo-500/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(99,102,241,0.1)] rounded-none"
                             style={{
                                 transform: `translateY(${idx % 2 === 1 ? '40px' : '0px'})` // Staggered masonry effect vertically
                             }}
@@ -78,7 +78,7 @@ export default async function BlogsGallery() {
                             {/* Content */}
                             <div className="relative p-8 flex-1 flex flex-col bg-[#030712] group-hover:bg-[#030712]/90 transition-colors">
                                 <div className="flex items-center space-x-4 mb-4 text-[9px] font-black uppercase tracking-[0.2em] text-indigo-400">
-                                    <div className="flex items-center space-x-1 border border-indigo-500/30 bg-indigo-500/10 px-2 py-1 rounded-sm">
+                                    <div className="flex items-center space-x-1 border border-indigo-500/30 bg-indigo-500/10 px-2 py-1 rounded-none">
                                         <Clock size={10} />
                                         <span>{new Date(blog.createdAt).toLocaleDateString('es-CO')}</span>
                                     </div>
@@ -125,7 +125,7 @@ export default async function BlogsGallery() {
                                     <div className="text-[10px] font-black text-white/20 uppercase w-24">
                                         {new Date(blog.createdAt).toLocaleDateString('es-CO', { month: 'short', day: '2-digit', year: 'numeric' })}
                                     </div>
-                                    <div className="w-2 h-2 rounded-full bg-indigo-500/50 group-hover:bg-indigo-500 transition-colors"></div>
+                                    <div className="w-2 h-2 rounded-none bg-indigo-500/50 group-hover:bg-indigo-500 transition-colors"></div>
                                     <h3 className="text-sm font-bold text-white/70 group-hover:text-white transition-colors uppercase tracking-tight">{blog.title}</h3>
                                 </div>
                                 <div className="flex items-center space-x-4 opacity-0 group-hover:opacity-100 transition-opacity">

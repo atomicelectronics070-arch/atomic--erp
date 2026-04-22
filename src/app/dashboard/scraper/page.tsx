@@ -165,28 +165,28 @@ export default function ScraperPage() {
             {/* Sub-header */}
             <div className="flex items-center justify-between px-0 py-4 mb-8">
                 <div className="flex items-center gap-3">
-                    <div className="p-2.5 bg-indigo-500/10 border border-indigo-500/20 rounded-xl">
+                    <div className="p-2.5 bg-indigo-500/10 border border-indigo-500/20 rounded-none">
                         <Bot size={18} className="text-indigo-400" />
                     </div>
                     <div>
                         <span className="text-[11px] font-black text-slate-200 uppercase tracking-[0.2em] block">Scraper Pro AI</span>
                         <span className="text-[9px] text-slate-500 uppercase tracking-widest">Admin Direct · Puerto 5005</span>
                     </div>
-                    <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 border rounded-md flex items-center gap-1 ${backendOnline === true ? 'bg-green-500/10 text-green-400 border-green-500/20' : backendOnline === false ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-slate-800 text-slate-500 border-slate-700'}`}>
-                        <span className={`w-1.5 h-1.5 rounded-full ${backendOnline === true ? 'bg-green-400 animate-pulse' : backendOnline === false ? 'bg-red-500' : 'bg-slate-600'}`} />
+                    <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 border rounded-none flex items-center gap-1 ${backendOnline === true ? 'bg-green-500/10 text-green-400 border-green-500/20' : backendOnline === false ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-slate-800 text-slate-500 border-slate-700'}`}>
+                        <span className={`w-1.5 h-1.5 rounded-none ${backendOnline === true ? 'bg-green-400 animate-pulse' : backendOnline === false ? 'bg-red-500' : 'bg-slate-600'}`} />
                         {backendOnline === true ? 'ONLINE' : backendOnline === false ? 'OFFLINE' : '...'}
                     </span>
                 </div>
                 <div className="flex items-center gap-3">
                     <button
                         onClick={() => { checkBackendStatus(); setResults([]); setError(''); setSuccess(''); }}
-                        className="flex items-center gap-1.5 text-[9px] font-bold text-slate-500 hover:text-slate-300 uppercase tracking-widest border border-slate-700 px-3 py-1.5 hover:border-slate-500 transition-all rounded-lg"
+                        className="flex items-center gap-1.5 text-[9px] font-bold text-slate-500 hover:text-slate-300 uppercase tracking-widest border border-slate-700 px-3 py-1.5 hover:border-slate-500 transition-all rounded-none"
                     >
                         <RefreshCw size={10} />
                         Limpiar
                     </button>
                     <a href="/scraper/index.html" target="_blank" rel="noopener noreferrer"
-                        className="flex items-center gap-1.5 text-[9px] font-bold text-indigo-400 hover:text-indigo-300 uppercase tracking-widest border border-indigo-800 px-3 py-1.5 hover:border-indigo-600 transition-all rounded-lg"
+                        className="flex items-center gap-1.5 text-[9px] font-bold text-indigo-400 hover:text-indigo-300 uppercase tracking-widest border border-indigo-800 px-3 py-1.5 hover:border-indigo-600 transition-all rounded-none"
                     >
                         <ExternalLink size={10} />
                         Vista Legacy
@@ -198,12 +198,12 @@ export default function ScraperPage() {
             <AnimatePresence>
                 {backendOnline === false && (
                     <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}
-                        className="mb-6 bg-orange-500/10 border border-orange-500/20 text-orange-300 px-6 py-4 rounded-2xl flex items-start gap-3 overflow-hidden"
+                        className="mb-6 bg-orange-500/10 border border-orange-500/20 text-orange-300 px-6 py-4 rounded-none flex items-start gap-3 overflow-hidden"
                     >
                         <WifiOff size={18} className="mt-0.5 shrink-0" />
                         <div>
                             <p className="font-bold text-sm">Servidor Scraper no disponible (puerto 5005)</p>
-                            <p className="text-xs text-orange-400/70 mt-1">Inicia el servidor con: <code className="bg-black/30 px-2 py-0.5 rounded font-mono">cd scraper-pro/server && node index.js</code></p>
+                            <p className="text-xs text-orange-400/70 mt-1">Inicia el servidor con: <code className="bg-black/30 px-2 py-0.5 rounded-none font-mono">cd scraper-pro/server && node index.js</code></p>
                         </div>
                     </motion.div>
                 )}
@@ -213,7 +213,7 @@ export default function ScraperPage() {
             <AnimatePresence>
                 {error && (
                     <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}
-                        className="mb-4 bg-red-500/10 border border-red-500/20 text-red-400 px-6 py-4 rounded-2xl flex items-center gap-3 overflow-hidden"
+                        className="mb-4 bg-red-500/10 border border-red-500/20 text-red-400 px-6 py-4 rounded-none flex items-center gap-3 overflow-hidden"
                     >
                         <AlertCircle size={16} className="shrink-0" />
                         <span className="text-sm font-medium flex-1">{error}</span>
@@ -222,7 +222,7 @@ export default function ScraperPage() {
                 )}
                 {success && (
                     <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}
-                        className="mb-4 bg-green-500/10 border border-green-500/20 text-green-400 px-6 py-4 rounded-2xl flex items-center gap-3 overflow-hidden"
+                        className="mb-4 bg-green-500/10 border border-green-500/20 text-green-400 px-6 py-4 rounded-none flex items-center gap-3 overflow-hidden"
                     >
                         <CheckCircle2 size={16} className="shrink-0" />
                         <span className="text-sm font-medium flex-1">{success}</span>
@@ -234,7 +234,7 @@ export default function ScraperPage() {
             {/* Hero Header */}
             <div className="mb-10">
                 <div className="flex items-center gap-2 mb-3">
-                    <div className="p-1.5 bg-indigo-500/20 rounded-lg"><Sparkles className="text-indigo-400" size={16} /></div>
+                    <div className="p-1.5 bg-indigo-500/20 rounded-none"><Sparkles className="text-indigo-400" size={16} /></div>
                     <span className="text-xs font-bold tracking-[0.2em] text-indigo-400 uppercase">Atomic Suite</span>
                 </div>
                 <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-white mb-3">
@@ -250,7 +250,7 @@ export default function ScraperPage() {
                 {/* ── SIDEBAR col-span-1 ── */}
                 <aside className="lg:col-span-1 space-y-5">
                     {/* Action Panel */}
-                    <div className="bg-indigo-500/5 border border-indigo-500/20 rounded-3xl p-6">
+                    <div className="bg-indigo-500/5 border border-indigo-500/20 rounded-none p-6">
                         <div className="flex items-center gap-2 text-indigo-300 font-bold mb-5 text-xs uppercase tracking-widest">
                             <Activity size={16} />
                             Control de Extracción
@@ -259,16 +259,16 @@ export default function ScraperPage() {
                             <div className="relative group">
                                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-indigo-400 transition-colors" size={16} />
                                 <input type="text"
-                                    className="w-full bg-slate-950/40 border border-white/10 rounded-xl px-4 py-3 pl-11 text-sm text-white focus:border-indigo-500 focus:outline-none transition-all placeholder:text-slate-600"
+                                    className="w-full bg-slate-950/40 border border-white/10 rounded-none px-4 py-3 pl-11 text-sm text-white focus:border-indigo-500 focus:outline-none transition-all placeholder:text-slate-600"
                                     placeholder="https://tienda.com/productos"
                                     value={url} onChange={e => setUrl(e.target.value)}
                                     onKeyDown={e => e.key === 'Enter' && !isScraping && url && startScraping()}
                                 />
                             </div>
                             <button onClick={startScraping} disabled={isScraping || !url || backendOnline === false}
-                                className="w-full bg-gradient-to-r from-indigo-600 via-indigo-500 to-pink-500 py-4 rounded-xl font-bold text-white shadow-[0_0_20px_-5px_rgba(99,102,241,0.5)] hover:shadow-[0_0_30px_-5px_rgba(99,102,241,0.7)] disabled:opacity-50 disabled:cursor-not-allowed hover:translate-y-[-2px] active:translate-y-[0px] flex items-center justify-center gap-3 transition-all text-sm"
+                                className="w-full bg-gradient-to-r from-indigo-600 via-indigo-500 to-pink-500 py-4 rounded-none font-bold text-white shadow-[0_0_20px_-5px_rgba(99,102,241,0.5)] hover:shadow-[0_0_30px_-5px_rgba(99,102,241,0.7)] disabled:opacity-50 disabled:cursor-not-allowed hover:translate-y-[-2px] active:translate-y-[0px] flex items-center justify-center gap-3 transition-all text-sm"
                             >
-                                {isScraping ? <div className="animate-spin rounded-full h-5 w-5 border-2 border-white/30 border-t-white" /> : <Play size={18} fill="currentColor" />}
+                                {isScraping ? <div className="animate-spin rounded-none h-5 w-5 border-2 border-white/30 border-t-white" /> : <Play size={18} fill="currentColor" />}
                                 <span>{isScraping ? 'EXTRAYENDO...' : 'INICIAR EXTRACCIÓN'}</span>
                             </button>
                         </div>
@@ -285,7 +285,7 @@ export default function ScraperPage() {
                                     <div className="grid grid-cols-3 gap-1.5">
                                         {['title', 'price', 'description', 'images', 'catalog', 'brand'].map(f => (
                                             <button key={f} onClick={() => toggleField(f)}
-                                                className={`px-2 py-2 rounded-lg text-[10px] font-semibold border transition-all ${config.fields.includes(f) ? 'bg-indigo-500/20 border-indigo-500 text-indigo-300' : 'bg-slate-900/40 border-white/5 text-slate-500 hover:border-white/10'}`}
+                                                className={`px-2 py-2 rounded-none text-[10px] font-semibold border transition-all ${config.fields.includes(f) ? 'bg-indigo-500/20 border-indigo-500 text-indigo-300' : 'bg-slate-900/40 border-white/5 text-slate-500 hover:border-white/10'}`}
                                             >{f.charAt(0).toUpperCase() + f.slice(1)}</button>
                                         ))}
                                     </div>
@@ -301,7 +301,7 @@ export default function ScraperPage() {
                                     <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">Multiplicador de Precio (%)</label>
                                     <div className="relative">
                                         <Plus className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={12} />
-                                        <input type="number" className="w-full bg-slate-950/20 border border-white/10 rounded-xl px-4 py-2.5 pl-8 text-xs text-white focus:border-indigo-500 focus:outline-none"
+                                        <input type="number" className="w-full bg-slate-950/20 border border-white/10 rounded-none px-4 py-2.5 pl-8 text-xs text-white focus:border-indigo-500 focus:outline-none"
                                             placeholder="20" value={config.multiplier || ''} onChange={e => setConfig({ ...config, multiplier: parseFloat(e.target.value) || 0 })} />
                                     </div>
                                 </div>
@@ -312,7 +312,7 @@ export default function ScraperPage() {
                             <div className="space-y-4">
                                 <div>
                                     <label className="text-xs font-bold text-slate-400 flex items-center gap-1.5 mb-2"><Sparkles size={12} className="text-pink-400" />Instrucciones IA</label>
-                                    <textarea className="w-full bg-slate-950/20 border border-white/10 rounded-xl px-4 py-3 text-xs text-white resize-none min-h-[80px] focus:border-indigo-500 focus:outline-none"
+                                    <textarea className="w-full bg-slate-950/20 border border-white/10 rounded-none px-4 py-3 text-xs text-white resize-none min-h-[80px] focus:border-indigo-500 focus:outline-none"
                                         placeholder="Ej: Extraer solo talle M..." value={config.aiInstruction}
                                         onChange={e => setConfig({ ...config, aiInstruction: e.target.value })} />
                                 </div>
@@ -321,7 +321,7 @@ export default function ScraperPage() {
                                     <AnimatePresence>
                                         {config.auth.enabled && (
                                             <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden mt-3 space-y-2">
-                                                <textarea className="w-full bg-black/40 border border-indigo-500/20 rounded-xl px-4 py-3 min-h-[60px] text-[10px] text-indigo-100 font-mono focus:outline-none"
+                                                <textarea className="w-full bg-black/40 border border-indigo-500/20 rounded-none px-4 py-3 min-h-[60px] text-[10px] text-indigo-100 font-mono focus:outline-none"
                                                     placeholder='[{"name": "...", "value": "..."}, ...]'
                                                     value={config.auth.cookies} onChange={e => setConfig({ ...config, auth: { ...config.auth, cookies: e.target.value } })} />
                                                 <p className="text-[10px] text-indigo-200/50 italic">Exporta JSON de "EditThisCookie" para sitios con login.</p>
@@ -334,15 +334,15 @@ export default function ScraperPage() {
                     </div>
 
                     {/* Maintenance */}
-                    <div className="bg-red-500/5 border border-red-500/10 rounded-3xl p-5">
+                    <div className="bg-red-500/5 border border-red-500/10 rounded-none p-5">
                         <div className="flex items-center gap-2 text-red-400 font-bold mb-3 text-xs uppercase tracking-widest"><Trash2 size={14} />Mantenimiento</div>
                         <button onClick={handleCleanupDuplicates} disabled={isExporting || backendOnline === false}
-                            className="w-full py-2.5 text-[10px] font-black bg-red-600/10 hover:bg-red-600/20 border border-red-500/20 rounded-lg text-red-500 transition-all uppercase tracking-widest disabled:opacity-40"
+                            className="w-full py-2.5 text-[10px] font-black bg-red-600/10 hover:bg-red-600/20 border border-red-500/20 rounded-none text-red-500 transition-all uppercase tracking-widest disabled:opacity-40"
                         >LIMPIAR DUPLICADOS EXACTOS</button>
                     </div>
 
                     {/* Providers */}
-                    <div className="bg-slate-900/40 border border-white/5 rounded-3xl p-5">
+                    <div className="bg-slate-900/40 border border-white/5 rounded-none p-5">
                         <div className="flex items-center justify-between mb-3">
                             <div className="flex items-center gap-2 text-slate-400 font-bold text-xs uppercase tracking-widest"><Globe size={14} />Fuentes Activas</div>
                             <button onClick={fetchProviders} className="text-slate-600 hover:text-slate-400 transition-colors"><RefreshCw size={12} /></button>
@@ -352,9 +352,9 @@ export default function ScraperPage() {
                                 <div className="py-4 text-center text-xs text-slate-600">Cargando...</div>
                             ) : providers.length > 0 ? (
                                 providers.map((p, i) => (
-                                    <div key={i} className="flex items-center justify-between p-2 rounded-lg bg-slate-900/60 border border-white/5">
+                                    <div key={i} className="flex items-center justify-between p-2 rounded-none bg-slate-900/60 border border-white/5">
                                         <span className="text-[10px] font-bold text-slate-400 truncate uppercase">{p.name}</span>
-                                        <span className="text-[10px] bg-indigo-500/10 text-indigo-400 px-2 py-0.5 rounded-full font-bold">{p.count}</span>
+                                        <span className="text-[10px] bg-indigo-500/10 text-indigo-400 px-2 py-0.5 rounded-none font-bold">{p.count}</span>
                                     </div>
                                 ))
                             ) : (
@@ -369,21 +369,21 @@ export default function ScraperPage() {
                 {/* ── RESULTS col-span-2 ── */}
                 <section className="lg:col-span-2">
                     {results.length === 0 && !isScraping ? (
-                        <div className="bg-slate-900/30 border border-white/5 rounded-3xl p-16 flex flex-col items-center justify-center text-center min-h-[400px]">
-                            <div className="w-20 h-20 bg-indigo-500/10 rounded-full flex items-center justify-center mb-6 border border-indigo-500/20">
+                        <div className="bg-slate-900/30 border border-white/5 rounded-none p-16 flex flex-col items-center justify-center text-center min-h-[400px]">
+                            <div className="w-20 h-20 bg-indigo-500/10 rounded-none flex items-center justify-center mb-6 border border-indigo-500/20">
                                 <Search size={32} className="text-indigo-400 opacity-50" />
                             </div>
                             <h3 className="text-xl font-bold mb-2 text-white">Listo para extraer</h3>
                             <p className="text-slate-500 max-w-sm text-sm">Introduce una URL y configura los campos que deseas obtener desde la web.</p>
                             {backendOnline === false && (
-                                <div className="mt-6 p-4 bg-orange-500/10 border border-orange-500/20 rounded-2xl text-left max-w-sm">
+                                <div className="mt-6 p-4 bg-orange-500/10 border border-orange-500/20 rounded-none text-left max-w-sm">
                                     <p className="text-orange-300 text-xs font-bold mb-1">⚠ Backend no disponible</p>
                                     <p className="text-orange-400/70 text-[11px] font-mono">cd scraper-pro/server<br />node index.js</p>
                                 </div>
                             )}
                         </div>
                     ) : (
-                        <div className="bg-slate-900/30 border border-white/5 rounded-3xl overflow-hidden">
+                        <div className="bg-slate-900/30 border border-white/5 rounded-none overflow-hidden">
                             {/* Toolbar */}
                             <div className="p-6 border-b border-white/5">
                                 <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
@@ -391,11 +391,11 @@ export default function ScraperPage() {
                                         <h2 className="text-xl font-bold text-white flex items-center gap-2">
                                             <ChevronRight className="text-pink-500" size={20} />
                                             Resultados
-                                            <span className="text-xs bg-indigo-500/10 border border-indigo-500/20 px-3 py-1 rounded-full text-indigo-300 font-bold">{results.length} ÍTEMS</span>
+                                            <span className="text-xs bg-indigo-500/10 border border-indigo-500/20 px-3 py-1 rounded-none text-indigo-300 font-bold">{results.length} ÍTEMS</span>
                                         </h2>
-                                        <div className="flex bg-slate-900/60 p-1 rounded-xl border border-white/5">
-                                            <button onClick={() => setViewMode('table')} className={`p-1.5 rounded-lg transition-all ${viewMode === 'table' ? 'bg-indigo-500 text-white' : 'text-slate-500 hover:text-slate-300'}`}><List size={16} /></button>
-                                            <button onClick={() => setViewMode('grid')} className={`p-1.5 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-indigo-500 text-white' : 'text-slate-500 hover:text-slate-300'}`}><LayoutGrid size={16} /></button>
+                                        <div className="flex bg-slate-900/60 p-1 rounded-none border border-white/5">
+                                            <button onClick={() => setViewMode('table')} className={`p-1.5 rounded-none transition-all ${viewMode === 'table' ? 'bg-indigo-500 text-white' : 'text-slate-500 hover:text-slate-300'}`}><List size={16} /></button>
+                                            <button onClick={() => setViewMode('grid')} className={`p-1.5 rounded-none transition-all ${viewMode === 'grid' ? 'bg-indigo-500 text-white' : 'text-slate-500 hover:text-slate-300'}`}><LayoutGrid size={16} /></button>
                                         </div>
                                     </div>
                                     <div className="flex flex-wrap gap-2">
@@ -410,7 +410,7 @@ export default function ScraperPage() {
 
                                 {/* Field selector */}
                                 {results.length > 0 && (
-                                    <div className="mt-5 p-4 bg-white/[0.03] rounded-2xl border border-white/5">
+                                    <div className="mt-5 p-4 bg-white/[0.03] rounded-none border border-white/5">
                                         <div className="flex items-center gap-2 mb-3">
                                             <CheckCircle2 size={12} className="text-green-500" />
                                             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Columnas de exportación</span>
@@ -418,7 +418,7 @@ export default function ScraperPage() {
                                         <div className="flex flex-wrap gap-2">
                                             {config.fields.map(f => (
                                                 <button key={f} onClick={() => toggleExportField(f)}
-                                                    className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase border transition-all ${selectedFields.includes(f) ? 'bg-green-500/20 border-green-500/50 text-green-400' : 'bg-slate-900 border-white/10 text-slate-500 hover:border-white/20'}`}
+                                                    className={`px-3 py-1.5 rounded-none text-[10px] font-black uppercase border transition-all ${selectedFields.includes(f) ? 'bg-green-500/20 border-green-500/50 text-green-400' : 'bg-slate-900 border-white/10 text-slate-500 hover:border-white/20'}`}
                                                 >{f}</button>
                                             ))}
                                         </div>
@@ -430,7 +430,7 @@ export default function ScraperPage() {
                             <div className="p-6">
                                 {isScraping ? (
                                     <div className="flex flex-col items-center justify-center py-20 animate-pulse">
-                                        <div className="w-12 h-12 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin mb-4" />
+                                        <div className="w-12 h-12 border-4 border-indigo-500/30 border-t-indigo-500 rounded-none animate-spin mb-4" />
                                         <p className="text-indigo-400 font-bold uppercase tracking-widest text-sm">Escaneando sitio web...</p>
                                     </div>
                                 ) : viewMode === 'table' ? (
@@ -456,7 +456,7 @@ export default function ScraperPage() {
                                     <p className="text-sm font-bold uppercase tracking-widest">Sin extracciones previas</p>
                                 </div>
                             ) : history.map(item => (
-                                <div key={item.id} className="p-5 bg-slate-900/60 border border-white/5 hover:border-indigo-500/20 rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 transition-all">
+                                <div key={item.id} className="p-5 bg-slate-900/60 border border-white/5 hover:border-indigo-500/20 rounded-none flex flex-col md:flex-row justify-between items-start md:items-center gap-4 transition-all">
                                     <div>
                                         <div className="flex items-center gap-2 mb-1">
                                             <Database size={12} className="text-indigo-400" />
@@ -464,16 +464,16 @@ export default function ScraperPage() {
                                         </div>
                                         <div className="flex gap-3 items-center">
                                             <span className="text-[10px] text-slate-500 uppercase">{item.date}</span>
-                                            <span className="text-[10px] px-2 py-0.5 bg-green-500/10 text-green-500 border border-green-500/20 rounded font-black">{item.total} ÍTEMS</span>
+                                            <span className="text-[10px] px-2 py-0.5 bg-green-500/10 text-green-500 border border-green-500/20 rounded-none font-black">{item.total} ÍTEMS</span>
                                         </div>
                                     </div>
                                     <div className="flex gap-2">
                                         <button onClick={async () => { try { const r = await axios.post('/scraper-api/export', { format: 'xlsx', fields: selectedFields, historyId: item.id }); window.open(`/scraper-download${r.data.downloadUrl}`); } catch { setError('Error al exportar'); setShowHistory(false); }}}
-                                            className="p-2.5 border border-green-500/20 bg-green-500/10 text-green-400 hover:bg-green-500 hover:text-white rounded-xl transition-all" title="Excel"><FileSpreadsheet size={14} /></button>
+                                            className="p-2.5 border border-green-500/20 bg-green-500/10 text-green-400 hover:bg-green-500 hover:text-white rounded-none transition-all" title="Excel"><FileSpreadsheet size={14} /></button>
                                         <button onClick={async () => { try { const r = await axios.post('/scraper-api/export', { format: 'csv', fields: selectedFields, historyId: item.id }); window.open(`/scraper-download${r.data.downloadUrl}`); } catch { setError('Error al exportar'); setShowHistory(false); }}}
-                                            className="p-2.5 border border-blue-500/20 bg-blue-500/10 text-blue-400 hover:bg-blue-500 hover:text-white rounded-xl transition-all" title="CSV"><FileText size={14} /></button>
+                                            className="p-2.5 border border-blue-500/20 bg-blue-500/10 text-blue-400 hover:bg-blue-500 hover:text-white rounded-none transition-all" title="CSV"><FileText size={14} /></button>
                                         <button onClick={() => { handleExportStore(item.id); setShowHistory(false); }}
-                                            className="p-2.5 border border-indigo-500/20 bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500 hover:text-white rounded-xl transition-all" title="Exportar a Tienda"><Save size={14} /></button>
+                                            className="p-2.5 border border-indigo-500/20 bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500 hover:text-white rounded-none transition-all" title="Exportar a Tienda"><Save size={14} /></button>
                                     </div>
                                 </div>
                             ))}
@@ -487,15 +487,15 @@ export default function ScraperPage() {
                         onClose={() => setShowPreview(false)}
                         footer={
                             <div className="flex gap-3">
-                                <button onClick={() => setShowPreview(false)} className="px-5 py-2 bg-slate-800 text-slate-400 rounded-xl hover:bg-slate-700 text-xs font-bold uppercase">Cancelar</button>
+                                <button onClick={() => setShowPreview(false)} className="px-5 py-2 bg-slate-800 text-slate-400 rounded-none hover:bg-slate-700 text-xs font-bold uppercase">Cancelar</button>
                                 <button onClick={() => { handleExport('xlsx'); setShowPreview(false); }} disabled={isExporting}
-                                    className="px-5 py-2 bg-green-600 text-white rounded-xl hover:bg-green-500 flex items-center gap-2 text-xs font-bold uppercase disabled:opacity-50">
+                                    className="px-5 py-2 bg-green-600 text-white rounded-none hover:bg-green-500 flex items-center gap-2 text-xs font-bold uppercase disabled:opacity-50">
                                     <Download size={14} /> Descargar Excel
                                 </button>
                             </div>
                         }
                     >
-                        <div className="overflow-auto max-h-[55vh] rounded-xl border border-white/5">
+                        <div className="overflow-auto max-h-[55vh] rounded-none border border-white/5">
                             <table className="w-full text-left border-collapse">
                                 <thead className="bg-slate-900 border-b border-white/10 sticky top-0"><tr>
                                     {selectedFields.map(f => <th key={f} className="py-3 px-5 text-slate-500 font-bold text-[10px] uppercase tracking-widest">{f}</th>)}
@@ -505,7 +505,7 @@ export default function ScraperPage() {
                                         {selectedFields.map(f => (
                                             <td key={f} className="py-3 px-5 text-xs text-slate-300 max-w-[200px] truncate">
                                                 {f === 'images' && item[f] ? (
-                                                    <div className="flex -space-x-2">{(item[f] as string).split(', ').slice(0, 3).map((img, idx) => <img key={idx} src={img} className="h-7 w-7 rounded-lg ring-2 ring-slate-950 object-cover bg-slate-800" alt="" />)}</div>
+                                                    <div className="flex -space-x-2">{(item[f] as string).split(', ').slice(0, 3).map((img, idx) => <img key={idx} src={img} className="h-7 w-7 rounded-none ring-2 ring-slate-950 object-cover bg-slate-800" alt="" />)}</div>
                                                 ) : (item[f] || '-')}
                                             </td>
                                         ))}
@@ -524,7 +524,7 @@ export default function ScraperPage() {
 
 function Accordion({ id, title, icon, children, isOpen, toggle }: any) {
     return (
-        <div className={`bg-slate-900/40 border border-white/5 rounded-2xl overflow-hidden transition-all ${isOpen ? 'ring-1 ring-indigo-500/30' : ''}`}>
+        <div className={`bg-slate-900/40 border border-white/5 rounded-none overflow-hidden transition-all ${isOpen ? 'ring-1 ring-indigo-500/30' : ''}`}>
             <button onClick={toggle} className="w-full p-5 flex items-center justify-between text-slate-200 hover:bg-white/[0.03] transition-colors">
                 <div className="flex items-center gap-3">
                     <div className={`transition-colors ${isOpen ? 'text-indigo-400' : 'text-slate-500'}`}>{icon}</div>
@@ -545,14 +545,14 @@ function Accordion({ id, title, icon, children, isOpen, toggle }: any) {
 
 function Toggle({ label, checked, onChange, description }: { label: string; checked: boolean; onChange: (v: boolean) => void; description?: string }) {
     return (
-        <label className="flex items-start justify-between gap-4 p-3 rounded-xl hover:bg-white/[0.03] transition-all cursor-pointer group">
+        <label className="flex items-start justify-between gap-4 p-3 rounded-none hover:bg-white/[0.03] transition-all cursor-pointer group">
             <div>
                 <span className="text-xs font-bold text-slate-300 group-hover:text-white transition-colors block">{label}</span>
                 {description && <span className="text-[10px] text-slate-500 uppercase tracking-tighter">{description}</span>}
             </div>
             <div onClick={e => { e.preventDefault(); onChange(!checked); }}
-                className={`mt-1 relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors ${checked ? 'bg-indigo-500' : 'bg-slate-800'}`}>
-                <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition duration-200 ${checked ? 'translate-x-4' : 'translate-x-0'}`} />
+                className={`mt-1 relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-none border-2 border-transparent transition-colors ${checked ? 'bg-indigo-500' : 'bg-slate-800'}`}>
+                <span className={`inline-block h-4 w-4 transform rounded-none bg-white shadow transition duration-200 ${checked ? 'translate-x-4' : 'translate-x-0'}`} />
             </div>
         </label>
     );
@@ -562,7 +562,7 @@ function Field({ label, value, onChange, placeholder, type = 'text' }: { label: 
     return (
         <div>
             <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">{label}</label>
-            <input type={type} className="w-full bg-slate-950/20 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white focus:border-indigo-500 focus:outline-none"
+            <input type={type} className="w-full bg-slate-950/20 border border-white/10 rounded-none px-4 py-2.5 text-xs text-white focus:border-indigo-500 focus:outline-none"
                 placeholder={placeholder} value={value} onChange={e => onChange(e.target.value)} />
         </div>
     );
@@ -571,7 +571,7 @@ function Field({ label, value, onChange, placeholder, type = 'text' }: { label: 
 function ActionBtn({ icon, label, onClick, disabled }: any) {
     return (
         <button onClick={onClick} disabled={disabled}
-            className="flex items-center gap-1.5 px-3 py-2 bg-slate-900/60 border border-white/10 rounded-xl text-slate-400 hover:text-white hover:border-white/20 transition-all text-xs font-medium disabled:opacity-30 disabled:cursor-not-allowed">
+            className="flex items-center gap-1.5 px-3 py-2 bg-slate-900/60 border border-white/10 rounded-none text-slate-400 hover:text-white hover:border-white/20 transition-all text-xs font-medium disabled:opacity-30 disabled:cursor-not-allowed">
             {icon}<span>{label}</span>
         </button>
     );
@@ -585,8 +585,8 @@ function ExportBtn({ icon, label, color, onClick, loading, disabled, highlighted
     };
     return (
         <button onClick={onClick} disabled={disabled || loading}
-            className={`flex items-center gap-1.5 px-4 py-2 border rounded-xl transition-all text-xs font-bold uppercase tracking-wider ${colors[color]} ${highlighted ? 'ring-1 ring-purple-500/20' : ''} disabled:opacity-30 disabled:cursor-not-allowed active:scale-95`}>
-            {loading ? <div className="animate-spin rounded-full h-3 w-3 border-2 border-current border-t-transparent" /> : icon}
+            className={`flex items-center gap-1.5 px-4 py-2 border rounded-none transition-all text-xs font-bold uppercase tracking-wider ${colors[color]} ${highlighted ? 'ring-1 ring-purple-500/20' : ''} disabled:opacity-30 disabled:cursor-not-allowed active:scale-95`}>
+            {loading ? <div className="animate-spin rounded-none h-3 w-3 border-2 border-current border-t-transparent" /> : icon}
             <span>{label}</span>
         </button>
     );
@@ -594,7 +594,7 @@ function ExportBtn({ icon, label, color, onClick, loading, disabled, highlighted
 
 function TableView({ results, fields }: any) {
     return (
-        <div className="overflow-x-auto rounded-xl border border-white/5 bg-black/20">
+        <div className="overflow-x-auto rounded-none border border-white/5 bg-black/20">
             <table className="w-full text-left border-collapse">
                 <thead><tr className="bg-slate-950/40 border-b border-white/5">
                     {fields.map((f: string) => <th key={f} className="py-3 px-5 text-slate-500 font-bold text-[10px] uppercase tracking-widest">{f}</th>)}
@@ -606,7 +606,7 @@ function TableView({ results, fields }: any) {
                             <td key={f} className="py-3 px-5 text-xs text-slate-300 max-w-[220px] truncate">
                                 {f === 'images' && item[f] ? (
                                     <div className="flex -space-x-2">{(item[f] as string).split(', ').slice(0, 4).map((img: string, idx: number) => (
-                                        <img key={idx} src={img} referrerPolicy="no-referrer" className="h-8 w-8 rounded-lg ring-2 ring-slate-950 object-cover bg-slate-800" alt="" />
+                                        <img key={idx} src={img} referrerPolicy="no-referrer" className="h-8 w-8 rounded-none ring-2 ring-slate-950 object-cover bg-slate-800" alt="" />
                                     ))}</div>
                                 ) : (item[f] || <span className="opacity-20">—</span>)}
                             </td>
@@ -623,14 +623,14 @@ function GridView({ results, fields }: any) {
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
             {results.slice(0, 50).map((item: any, i: number) => (
                 <motion.div key={i} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.02 }}
-                    className="bg-slate-900/60 border border-white/5 hover:border-indigo-500/30 transition-all rounded-2xl overflow-hidden group">
+                    className="bg-slate-900/60 border border-white/5 hover:border-indigo-500/30 transition-all rounded-none overflow-hidden group">
                     <div className="relative h-44 bg-slate-950 overflow-hidden">
                         {item.images ? (
                             <img src={item.images.split(', ')[0]} referrerPolicy="no-referrer" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={item.title} />
                         ) : (
                             <div className="w-full h-full flex items-center justify-center opacity-20"><Activity size={28} className="text-white" /></div>
                         )}
-                        <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-md px-2 py-1 rounded text-xs font-bold border border-white/10 text-white">{item.price || 'N/A'}</div>
+                        <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-md px-2 py-1 rounded-none text-xs font-bold border border-white/10 text-white">{item.price || 'N/A'}</div>
                     </div>
                     <div className="p-4">
                         <h3 className="font-bold text-white text-sm line-clamp-1 mb-1">{item.title || 'Sin Título'}</h3>
@@ -651,11 +651,11 @@ function Modal({ title, subtitle, children, footer, onClose }: any) {
             className="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center z-[9999] p-4 lg:p-10"
             onClick={onClose}>
             <motion.div initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }}
-                className="bg-slate-900 border border-white/10 rounded-3xl w-full max-w-5xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+                className="bg-slate-900 border border-white/10 rounded-none w-full max-w-5xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
                 onClick={e => e.stopPropagation()}>
                 <div className="p-7 border-b border-white/5 flex justify-between items-center bg-indigo-500/5">
                     <div><h2 className="text-xl font-bold text-white">{title}</h2>{subtitle && <p className="text-slate-400 text-xs mt-1">{subtitle}</p>}</div>
-                    <button onClick={onClose} className="p-2.5 bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white rounded-xl transition-all"><X size={20} /></button>
+                    <button onClick={onClose} className="p-2.5 bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white rounded-none transition-all"><X size={20} /></button>
                 </div>
                 <div className="p-7 overflow-y-auto">{children}</div>
                 {footer && <div className="p-7 border-t border-white/5 flex justify-end bg-slate-950/20">{footer}</div>}

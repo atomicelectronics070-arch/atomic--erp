@@ -84,13 +84,13 @@ export default function NotificationBell() {
         <div className="relative">
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="relative p-2 text-neutral-400 hover:text-orange-600 transition-colors rounded-full hover:bg-neutral-50"
+                className="relative p-2 text-neutral-400 hover:text-orange-600 transition-colors rounded-none hover:bg-neutral-50"
             >
                 <Bell size={20} />
                 {unreadCount > 0 && (
                     <span className="absolute top-1 right-1 flex h-3 w-3">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 shadow-md border-2 border-white"></span>
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-none bg-red-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-none h-3 w-3 bg-red-500 shadow-md border-2 border-white"></span>
                     </span>
                 )}
             </button>
@@ -101,7 +101,7 @@ export default function NotificationBell() {
                     <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white border border-neutral-200 shadow-xl z-50 rounded-none overflow-hidden">
                         <div className="flex items-center justify-between px-4 py-3 bg-neutral-50 border-b border-neutral-100">
                             <h3 className="text-xs font-bold text-neutral-800 uppercase tracking-wider">Centro de Notificaciones</h3>
-                            <span className="text-[10px] font-bold bg-orange-100 text-orange-800 px-2 py-0.5 rounded-full">{unreadCount} nuevas</span>
+                            <span className="text-[10px] font-bold bg-orange-100 text-orange-800 px-2 py-0.5 rounded-none">{unreadCount} nuevas</span>
                         </div>
 
                         <div className="max-h-[60vh] overflow-y-auto">

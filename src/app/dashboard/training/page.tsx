@@ -12,8 +12,8 @@ export default function TrainingChatPage() {
         <div className="flex flex-col h-[calc(100vh-14rem)] w-full mx-auto relative overflow-hidden animate-in fade-in duration-1000 pb-16">
             {/* Background Orbs */}
             <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-                <div className="absolute top-[10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-secondary/5 blur-[120px]" />
-                <div className="absolute bottom-[10%] left-[-10%] w-[35%] h-[35%] rounded-full bg-azure-500/5 blur-[100px]" />
+                <div className="absolute top-[10%] right-[-10%] w-[40%] h-[40%] rounded-none bg-secondary/5 blur-[120px]" />
+                <div className="absolute bottom-[10%] left-[-10%] w-[35%] h-[35%] rounded-none bg-azure-500/5 blur-[100px]" />
             </div>
 
             {/* Header Global */}
@@ -30,10 +30,10 @@ export default function TrainingChatPage() {
                 </div>
 
                 {/* Tab Switcher */}
-                <div className="flex glass-panel !bg-slate-950/40 p-2 rounded-[2rem] border-white/5 shadow-inner ring-1 ring-white/5 backdrop-blur-3xl">
+                <div className="flex glass-panel !bg-slate-950/40 p-2 rounded-none-[2rem] border-white/5 shadow-inner ring-1 ring-white/5 backdrop-blur-3xl">
                     <button
                         onClick={() => setActiveTab("CAPACITADOR")}
-                        className={`px-10 py-4 rounded-3xl text-[10px] font-black uppercase tracking-[0.4em] transition-all flex items-center gap-4 italic skew-x-[-12deg] ${
+                        className={`px-10 py-4 rounded-none text-[10px] font-black uppercase tracking-[0.4em] transition-all flex items-center gap-4 italic skew-x-[-12deg] ${
                             activeTab === "CAPACITADOR" 
                             ? 'bg-secondary text-white shadow-2xl shadow-secondary/20' 
                             : 'text-slate-600 hover:text-white'
@@ -45,7 +45,7 @@ export default function TrainingChatPage() {
                     </button>
                     <button
                         onClick={() => setActiveTab("TUTOR")}
-                        className={`px-10 py-4 rounded-3xl text-[10px] font-black uppercase tracking-[0.4em] transition-all flex items-center gap-4 italic skew-x-[-12deg] ${
+                        className={`px-10 py-4 rounded-none text-[10px] font-black uppercase tracking-[0.4em] transition-all flex items-center gap-4 italic skew-x-[-12deg] ${
                             activeTab === "TUTOR" 
                             ? 'bg-azure-500 text-white shadow-2xl shadow-azure-500/20' 
                             : 'text-slate-600 hover:text-white'
@@ -111,9 +111,9 @@ export default function TrainingChatPage() {
                     <div className="h-px w-24 bg-gradient-to-l from-transparent to-slate-500"></div>
                 </div>
                 <div className="flex gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse" />
-                    <span className="w-1.5 h-1.5 rounded-full bg-azure-500 animate-pulse delay-75" />
-                    <span className="w-1.5 h-1.5 rounded-full bg-slate-800 animate-pulse delay-150" />
+                    <span className="w-1.5 h-1.5 rounded-none bg-secondary animate-pulse" />
+                    <span className="w-1.5 h-1.5 rounded-none bg-azure-500 animate-pulse delay-75" />
+                    <span className="w-1.5 h-1.5 rounded-none bg-slate-800 animate-pulse delay-150" />
                 </div>
             </div>
         </div>

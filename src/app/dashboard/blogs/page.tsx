@@ -128,7 +128,7 @@ export default function BlogsDashboard() {
   if (!isAdmin && !canPublish) {
     return (
         <div className="flex flex-col items-center justify-center p-40 text-center animate-in zoom-in duration-700">
-            <div className="w-24 h-24 bg-red-500/10 rounded-full flex items-center justify-center mb-10 border border-red-500/20 shadow-[0_0_50px_rgba(239,68,68,0.2)]">
+            <div className="w-24 h-24 bg-red-500/10 rounded-none flex items-center justify-center mb-10 border border-red-500/20 shadow-[0_0_50px_rgba(239,68,68,0.2)]">
                 <Shield size={48} className="text-red-500" />
             </div>
             <h2 className="text-4xl font-black uppercase tracking-tighter text-white mb-4 italic">ACCESO RESTRINGIDO</h2>
@@ -141,8 +141,8 @@ export default function BlogsDashboard() {
     <div className="space-y-16 animate-in fade-in duration-1000 relative">
       {/* Background Orbs */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-          <div className="absolute top-[10%] left-[-5%] w-[40%] h-[40%] rounded-full bg-secondary/5 blur-[120px]" />
-          <div className="absolute bottom-[20%] right-[-5%] w-[35%] h-[35%] rounded-full bg-azure-500/5 blur-[100px]" />
+          <div className="absolute top-[10%] left-[-5%] w-[40%] h-[40%] rounded-none bg-secondary/5 blur-[120px]" />
+          <div className="absolute bottom-[20%] right-[-5%] w-[35%] h-[35%] rounded-none bg-azure-500/5 blur-[100px]" />
       </div>
 
       {/* Header */}
@@ -158,16 +158,16 @@ export default function BlogsDashboard() {
               </p>
           </div>
           {isAdmin && (
-              <div className="flex glass-panel !bg-slate-950/40 p-2 rounded-2xl border-white/5 shadow-inner ring-1 ring-white/5 backdrop-blur-3xl">
+              <div className="flex glass-panel !bg-slate-950/40 p-2 rounded-none border-white/5 shadow-inner ring-1 ring-white/5 backdrop-blur-3xl">
                   <button 
                       onClick={() => setActiveTab("mis_blogs")}
-                      className={`px-8 py-3 text-[10px] font-black uppercase tracking-[0.4em] transition-all rounded-xl italic skew-x-[-12deg] ${activeTab === 'mis_blogs' ? 'bg-secondary text-white shadow-2xl' : 'text-slate-600 hover:text-white'}`}
+                      className={`px-8 py-3 text-[10px] font-black uppercase tracking-[0.4em] transition-all rounded-none italic skew-x-[-12deg] ${activeTab === 'mis_blogs' ? 'bg-secondary text-white shadow-2xl' : 'text-slate-600 hover:text-white'}`}
                   >
                       <div className="skew-x-[12deg] flex items-center gap-3"><Layout size={14} /> PUBLICACIONES</div>
                   </button>
                   <button 
                       onClick={() => setActiveTab("permisos")}
-                      className={`px-8 py-3 text-[10px] font-black uppercase tracking-[0.4em] transition-all rounded-xl italic skew-x-[-12deg] ${activeTab === 'permisos' ? 'bg-azure-500 text-white shadow-2xl' : 'text-slate-600 hover:text-white'}`}
+                      className={`px-8 py-3 text-[10px] font-black uppercase tracking-[0.4em] transition-all rounded-none italic skew-x-[-12deg] ${activeTab === 'permisos' ? 'bg-azure-500 text-white shadow-2xl' : 'text-slate-600 hover:text-white'}`}
                   >
                       <div className="skew-x-[12deg] flex items-center gap-3"><Key size={14} /> PERMISOS</div>
                   </button>
@@ -177,13 +177,13 @@ export default function BlogsDashboard() {
 
       {activeTab === "mis_blogs" && (
           <div className="space-y-12 animate-in slide-in-from-bottom-6 duration-700 relative z-10">
-            <div className="flex justify-between items-center bg-white/[0.01] p-8 border border-white/5 rounded-[2.5rem] backdrop-blur-xl">
+            <div className="flex justify-between items-center bg-white/[0.01] p-8 border border-white/5 rounded-none-[2.5rem] backdrop-blur-xl">
                 <div>
                    <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] italic">Catálogo de Activos Narrativos</h3>
                 </div>
                 <button 
                     onClick={() => openModal()}
-                    className="flex items-center space-x-6 bg-secondary text-white px-12 py-5 text-[10px] font-black uppercase tracking-[0.3em] hover:bg-white hover:text-secondary transition-all shadow-[0_20px_50px_-10px_rgba(255,99,71,0.5)] rounded-2xl active:scale-95 italic skew-x-[-12deg] group"
+                    className="flex items-center space-x-6 bg-secondary text-white px-12 py-5 text-[10px] font-black uppercase tracking-[0.3em] hover:bg-white hover:text-secondary transition-all shadow-[0_20px_50px_-10px_rgba(255,99,71,0.5)] rounded-none active:scale-95 italic skew-x-[-12deg] group"
                 >
                     <div className="skew-x-[12deg] flex items-center gap-4">
                         <Plus size={20} className="group-hover:rotate-90 transition-transform" />
@@ -194,8 +194,8 @@ export default function BlogsDashboard() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
                 {blogs.length === 0 && !loading && (
-                    <div className="col-span-full py-48 text-center glass-panel border border-dashed border-white/5 rounded-[4rem] flex flex-col items-center justify-center">
-                        <div className="w-20 h-20 bg-slate-900/60 rounded-full flex items-center justify-center mb-8 border border-white/5 shadow-inner">
+                    <div className="col-span-full py-48 text-center glass-panel border border-dashed border-white/5 rounded-none-[4rem] flex flex-col items-center justify-center">
+                        <div className="w-20 h-20 bg-slate-900/60 rounded-none flex items-center justify-center mb-8 border border-white/5 shadow-inner">
                             <ImageIcon size={32} className="text-slate-800" />
                         </div>
                         <p className="text-slate-700 font-black uppercase tracking-[0.6em] text-[11px] italic">Canal desierto: Sin publicaciones detectadas.</p>
@@ -207,7 +207,7 @@ export default function BlogsDashboard() {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         key={blog.id} 
-                        className="glass-panel border-white/5 overflow-hidden flex flex-col group hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.8)] hover:border-secondary/30 transition-all rounded-[3rem] backdrop-blur-3xl relative"
+                        className="glass-panel border-white/5 overflow-hidden flex flex-col group hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.8)] hover:border-secondary/30 transition-all rounded-none-[3rem] backdrop-blur-3xl relative"
                     >
                         {blog.imageUrl ? (
                             <div className="relative h-64 overflow-hidden">
@@ -221,7 +221,7 @@ export default function BlogsDashboard() {
                         )}
                         <div className="p-10 flex-1 flex flex-col relative z-20 bg-slate-950/20">
                             <div className="flex items-center space-x-3 mb-6">
-                                <span className={`text-[9px] font-black uppercase tracking-[0.4em] px-4 py-1.5 rounded-full border italic shadow-2xl ${blog.published ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-secondary/10 text-secondary border-secondary/20'}`}>
+                                <span className={`text-[9px] font-black uppercase tracking-[0.4em] px-4 py-1.5 rounded-none border italic shadow-2xl ${blog.published ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-secondary/10 text-secondary border-secondary/20'}`}>
                                     {blog.published ? 'CONSOLIDADO' : 'BORRADOR'}
                                 </span>
                             </div>
@@ -230,16 +230,16 @@ export default function BlogsDashboard() {
                             
                             <div className="flex items-center justify-between mt-auto pt-8 border-t border-white/5">
                                 <div className="flex items-center gap-4">
-                                    <div className="w-8 h-8 rounded-full bg-slate-900 border border-white/10 flex items-center justify-center text-[10px] font-black text-slate-500 italic">
+                                    <div className="w-8 h-8 rounded-none bg-slate-900 border border-white/10 flex items-center justify-center text-[10px] font-black text-slate-500 italic">
                                         {blog.author?.name?.[0] || 'U'}
                                     </div>
                                     <span className="text-[9px] font-black text-slate-600 uppercase tracking-widest italic">{blog.author?.name || 'OPERADOR'}</span>
                                 </div>
                                 <div className="flex space-x-4 opacity-0 group-hover:opacity-100 transition-all translate-x-10 group-hover:translate-x-0">
-                                    <button onClick={() => openModal(blog)} className="p-4 glass-panel !bg-slate-900 text-slate-600 hover:text-azure-400 hover:rotate-6 transition-all rounded-2xl border-white/5">
+                                    <button onClick={() => openModal(blog)} className="p-4 glass-panel !bg-slate-900 text-slate-600 hover:text-azure-400 hover:rotate-6 transition-all rounded-none border-white/5">
                                         <Edit size={16} />
                                     </button>
-                                    <button onClick={() => handleDelete(blog.id)} className="p-4 glass-panel !bg-slate-900 text-slate-600 hover:text-red-500 hover:-rotate-6 transition-all rounded-2xl border-white/5">
+                                    <button onClick={() => handleDelete(blog.id)} className="p-4 glass-panel !bg-slate-900 text-slate-600 hover:text-red-500 hover:-rotate-6 transition-all rounded-none border-white/5">
                                         <Trash2 size={16} />
                                     </button>
                                 </div>
@@ -252,7 +252,7 @@ export default function BlogsDashboard() {
       )}
 
       {activeTab === "permisos" && isAdmin && (
-          <div className="glass-panel border-white/5 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] overflow-hidden rounded-[4rem] backdrop-blur-3xl relative z-10">
+          <div className="glass-panel border-white/5 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] overflow-hidden rounded-none-[4rem] backdrop-blur-3xl relative z-10">
             <div className="p-10 border-b border-white/5 bg-white/[0.01]">
                  <h3 className="text-[11px] font-black text-slate-500 uppercase tracking-[0.6em] italic">Auditoría de Privilegios de Redacción</h3>
             </div>
@@ -270,7 +270,7 @@ export default function BlogsDashboard() {
                             <tr key={u.id} className="hover:bg-white/[0.02] transition-colors group">
                                 <td className="px-12 py-8">
                                     <div className="flex items-center gap-6">
-                                        <div className="w-12 h-12 rounded-2xl bg-slate-950 border border-white/5 flex items-center justify-center font-black text-slate-700 italic group-hover:border-azure-500/40 transition-colors">
+                                        <div className="w-12 h-12 rounded-none bg-slate-950 border border-white/5 flex items-center justify-center font-black text-slate-700 italic group-hover:border-azure-500/40 transition-colors">
                                             {u.name?.[0] || 'N'}
                                         </div>
                                         <div>
@@ -280,7 +280,7 @@ export default function BlogsDashboard() {
                                     </div>
                                 </td>
                                 <td className="px-12 py-8">
-                                    <span className="text-[10px] font-black text-slate-500 uppercase border border-white/5 px-4 py-1.5 rounded-xl bg-slate-900 italic shadow-inner">
+                                    <span className="text-[10px] font-black text-slate-500 uppercase border border-white/5 px-4 py-1.5 rounded-none bg-slate-900 italic shadow-inner">
                                         {u.role}
                                     </span>
                                 </td>
@@ -288,9 +288,9 @@ export default function BlogsDashboard() {
                                     <div className="flex items-center justify-center">
                                         <button 
                                             onClick={() => handleTogglePermission(u.id, u.canCreateBlogs)}
-                                            className={`relative inline-flex h-8 w-16 items-center rounded-full transition-all duration-500 shadow-2xl ${u.canCreateBlogs ? 'bg-emerald-500/20 border border-emerald-500/40' : 'bg-slate-900 border border-white/5'}`}
+                                            className={`relative inline-flex h-8 w-16 items-center rounded-none transition-all duration-500 shadow-2xl ${u.canCreateBlogs ? 'bg-emerald-500/20 border border-emerald-500/40' : 'bg-slate-900 border border-white/5'}`}
                                         >
-                                            <span className={`inline-block h-5 w-5 transform rounded-full transition-all duration-500 shadow-inner ${u.canCreateBlogs ? 'translate-x-9 bg-emerald-400' : 'translate-x-2 bg-slate-700'}`} />
+                                            <span className={`inline-block h-5 w-5 transform rounded-none transition-all duration-500 shadow-inner ${u.canCreateBlogs ? 'translate-x-9 bg-emerald-400' : 'translate-x-2 bg-slate-700'}`} />
                                             <div className="absolute inset-0 flex items-center justify-between px-3 pointer-events-none">
                                                  <Check size={10} className={`${u.canCreateBlogs ? 'opacity-100' : 'opacity-0'} text-emerald-400 transition-opacity`} />
                                                  <X size={10} className={`${!u.canCreateBlogs ? 'opacity-100' : 'opacity-0'} text-slate-700 transition-opacity`} />
@@ -321,11 +321,11 @@ export default function BlogsDashboard() {
                     initial={{ opacity: 0, scale: 0.9, y: 30 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.9, y: 30 }}
-                    className="glass-panel !bg-slate-950/60 w-full max-w-6xl max-h-[90vh] overflow-y-auto border border-white/10 shadow-[0_0_150px_rgba(0,0,0,1)] rounded-[4rem] relative z-10 backdrop-blur-3xl p-14 custom-scrollbar"
+                    className="glass-panel !bg-slate-950/60 w-full max-w-6xl max-h-[90vh] overflow-y-auto border border-white/10 shadow-[0_0_150px_rgba(0,0,0,1)] rounded-none-[4rem] relative z-10 backdrop-blur-3xl p-14 custom-scrollbar"
                 >
                     <div className="flex items-center justify-between mb-16 border-b border-white/5 pb-10">
                         <div className="flex items-center gap-8">
-                            <div className="p-5 bg-secondary text-white rounded-2xl shadow-2xl shadow-secondary/30">
+                            <div className="p-5 bg-secondary text-white rounded-none shadow-2xl shadow-secondary/30">
                                 <Plus size={32} />
                             </div>
                             <div>
@@ -335,7 +335,7 @@ export default function BlogsDashboard() {
                                 <p className="text-[10px] font-black text-slate-500 mt-3 uppercase tracking-[0.6em] italic">Subsistema de Publicación Corporativa</p>
                             </div>
                         </div>
-                        <button onClick={closeModal} className="p-5 bg-slate-900 border border-white/10 rounded-2xl text-slate-600 hover:text-white hover:rotate-90 transition-all duration-500 shadow-2xl">
+                        <button onClick={closeModal} className="p-5 bg-slate-900 border border-white/10 rounded-none text-slate-600 hover:text-white hover:rotate-90 transition-all duration-500 shadow-2xl">
                             <X size={32} />
                         </button>
                     </div>
@@ -347,7 +347,7 @@ export default function BlogsDashboard() {
                                 <input 
                                     required 
                                     type="text"
-                                    className="w-full bg-slate-950/60 border border-white/5 p-6 rounded-[2rem] text-[15px] font-black uppercase tracking-widest text-white shadow-inner focus:border-secondary transition-all outline-none italic placeholder:text-slate-900"
+                                    className="w-full bg-slate-950/60 border border-white/5 p-6 rounded-none-[2rem] text-[15px] font-black uppercase tracking-widest text-white shadow-inner focus:border-secondary transition-all outline-none italic placeholder:text-slate-900"
                                     value={title}
                                     onChange={e => setTitle(e.target.value.toUpperCase())}
                                     placeholder="ESPECIFICAR TÍTULO DEL CONTENIDO..."
@@ -357,7 +357,7 @@ export default function BlogsDashboard() {
                                 <label className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-500 ml-2 italic">Punto de Origen Multimedia (URL)</label>
                                 <input 
                                     type="text"
-                                    className="w-full bg-slate-950/60 border border-white/5 p-6 rounded-[2rem] text-[12px] font-black text-azure-400 shadow-inner focus:border-azure-500 transition-all outline-none italic placeholder:text-slate-900"
+                                    className="w-full bg-slate-950/60 border border-white/5 p-6 rounded-none-[2rem] text-[12px] font-black text-azure-400 shadow-inner focus:border-azure-500 transition-all outline-none italic placeholder:text-slate-900"
                                     value={imageUrl}
                                     onChange={e => setImageUrl(e.target.value)}
                                     placeholder="https://cdn.atomic.com/node/..."
@@ -368,7 +368,7 @@ export default function BlogsDashboard() {
                         <div className="space-y-4">
                             <label className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-500 ml-2 italic">Extracto Ejecutivo (Resumen Corporativo)</label>
                             <textarea 
-                                className="w-full bg-slate-950/60 border border-white/5 p-8 rounded-[2.5rem] text-[12px] font-black text-white shadow-inner focus:border-secondary transition-all outline-none resize-none h-32 italic uppercase tracking-widest leading-relaxed placeholder:text-slate-900"
+                                className="w-full bg-slate-950/60 border border-white/5 p-8 rounded-none-[2.5rem] text-[12px] font-black text-white shadow-inner focus:border-secondary transition-all outline-none resize-none h-32 italic uppercase tracking-widest leading-relaxed placeholder:text-slate-900"
                                 value={excerpt}
                                 onChange={e => setExcerpt(e.target.value)}
                                 placeholder="BREVE SÍNTESIS DEL IMPACTO DEL ARTÍCULO..."
@@ -382,7 +382,7 @@ export default function BlogsDashboard() {
                             </label>
                             <textarea 
                                 required
-                                className="w-full bg-slate-950/40 border border-white/5 p-10 rounded-[3rem] text-[13px] font-black text-slate-300 shadow-inner focus:border-secondary transition-all outline-none font-mono h-[500px] leading-loose custom-scrollbar"
+                                className="w-full bg-slate-950/40 border border-white/5 p-10 rounded-none-[3rem] text-[13px] font-black text-slate-300 shadow-inner focus:border-secondary transition-all outline-none font-mono h-[500px] leading-loose custom-scrollbar"
                                 value={content}
                                 onChange={e => setContent(e.target.value)}
                                 placeholder="<h1>Title</h1><p>Operational Data...</p>"
@@ -393,7 +393,7 @@ export default function BlogsDashboard() {
                             <button
                                 type="button"
                                 onClick={() => setPublished(!published)}
-                                className={`flex items-center space-x-6 px-10 py-5 border rounded-2xl text-[10px] font-black uppercase tracking-[0.4em] transition-all italic skew-x-[-12deg] shadow-2xl ${published ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-slate-900 text-slate-600 border-white/5'}`}
+                                className={`flex items-center space-x-6 px-10 py-5 border rounded-none text-[10px] font-black uppercase tracking-[0.4em] transition-all italic skew-x-[-12deg] shadow-2xl ${published ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-slate-900 text-slate-600 border-white/5'}`}
                             >
                                 <div className="skew-x-[12deg] flex items-center gap-4">
                                     <Check size={18} className={published ? 'opacity-100 scale-100' : 'opacity-0 scale-50 transition-all'} />
@@ -405,7 +405,7 @@ export default function BlogsDashboard() {
                                 <button type="button" onClick={closeModal} className="px-10 py-5 text-[10px] font-black uppercase tracking-[0.4em] text-slate-700 hover:text-white transition-all italic">
                                     CANCELAR_AUD
                                 </button>
-                                <button type="submit" className="bg-secondary text-white px-14 py-6 text-[11px] font-black uppercase tracking-[0.4em] shadow-[0_20px_50px_-10px_rgba(255,99,71,0.6)] hover:bg-white hover:text-secondary rounded-[2rem] active:scale-95 italic skew-x-[-12deg] group transition-all">
+                                <button type="submit" className="bg-secondary text-white px-14 py-6 text-[11px] font-black uppercase tracking-[0.4em] shadow-[0_20px_50px_-10px_rgba(255,99,71,0.6)] hover:bg-white hover:text-secondary rounded-none-[2rem] active:scale-95 italic skew-x-[-12deg] group transition-all">
                                     <div className="skew-x-[12deg] flex items-center gap-6">
                                         <ShieldCheck size={24} className="group-hover/btn:scale-110 transition-transform" />
                                         <span>AUTORIZAR Y PUBLICAR</span>

@@ -178,8 +178,8 @@ export default function EvaluationsPage() {
         <div className="space-y-12 pb-32 animate-in fade-in duration-1000 relative">
             {/* Background Orbs */}
             <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-                <div className="absolute top-[15%] left-[-5%] w-[40%] h-[40%] rounded-full bg-secondary/5 blur-[120px]" />
-                <div className="absolute bottom-[20%] right-[-5%] w-[35%] h-[35%] rounded-full bg-azure-500/5 blur-[100px]" />
+                <div className="absolute top-[15%] left-[-5%] w-[40%] h-[40%] rounded-none bg-secondary/5 blur-[120px]" />
+                <div className="absolute bottom-[20%] right-[-5%] w-[35%] h-[35%] rounded-none bg-azure-500/5 blur-[100px]" />
             </div>
 
             {/* Header */}
@@ -200,7 +200,7 @@ export default function EvaluationsPage() {
                 {isAdmin && view !== "list" && (
                     <button
                         onClick={() => setView("list")}
-                        className="bg-slate-900 text-white font-black text-[10px] uppercase tracking-[0.4em] px-10 py-5 hover:bg-secondary transition-all flex items-center gap-4 rounded-2xl border border-white/5 shadow-2xl skew-x-[-12deg] group"
+                        className="bg-slate-900 text-white font-black text-[10px] uppercase tracking-[0.4em] px-10 py-5 hover:bg-secondary transition-all flex items-center gap-4 rounded-none border border-white/5 shadow-2xl skew-x-[-12deg] group"
                     >
                          <div className="skew-x-[12deg] flex items-center gap-3">
                             <ChevronLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
@@ -217,7 +217,7 @@ export default function EvaluationsPage() {
                         initial={{ opacity: 0, scale: 0.98 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.98 }}
-                        className="glass-panel border-white/5 shadow-2xl overflow-hidden rounded-[3.5rem] relative z-10 backdrop-blur-3xl"
+                        className="glass-panel border-white/5 shadow-2xl overflow-hidden rounded-none-[3.5rem] relative z-10 backdrop-blur-3xl"
                     >
                         {/* List Header */}
                         <div className="p-10 border-b border-white/5 flex flex-col lg:flex-row justify-between items-center gap-10 bg-white/[0.01]">
@@ -232,7 +232,7 @@ export default function EvaluationsPage() {
                                     placeholder="LOCALIZAR COLABORADOR..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full pl-16 pr-8 py-5 bg-slate-950 border border-white/5 text-xs font-black uppercase tracking-widest text-white outline-none rounded-2xl focus:border-secondary transition-all shadow-inner placeholder:text-slate-900 italic"
+                                    className="w-full pl-16 pr-8 py-5 bg-slate-950 border border-white/5 text-xs font-black uppercase tracking-widest text-white outline-none rounded-none focus:border-secondary transition-all shadow-inner placeholder:text-slate-900 italic"
                                 />
                             </div>
                         </div>
@@ -260,7 +260,7 @@ export default function EvaluationsPage() {
                                                 <tr key={u.id} className="hover:bg-white/[0.03] transition-all group">
                                                     <td className="px-12 py-8">
                                                         <div className="flex items-center space-x-6">
-                                                            <div className="w-14 h-14 bg-slate-950 border border-white/5 flex items-center justify-center text-secondary font-black text-lg group-hover:bg-secondary group-hover:text-white transition-all rounded-2xl shadow-inner italic">
+                                                            <div className="w-14 h-14 bg-slate-950 border border-white/5 flex items-center justify-center text-secondary font-black text-lg group-hover:bg-secondary group-hover:text-white transition-all rounded-none shadow-inner italic">
                                                                 {u.name?.[0] || u.email?.[0]}
                                                             </div>
                                                             <div>
@@ -272,19 +272,19 @@ export default function EvaluationsPage() {
                                                     <td className="px-10 py-8">
                                                         {cycle ? (
                                                             <div className="flex flex-col gap-2">
-                                                                <span className="text-[10px] font-black text-azure-400 bg-azure-500/10 px-4 py-1.5 border border-azure-400/20 uppercase tracking-[0.3em] italic w-fit rounded-lg shadow-2xl shadow-azure-500/20">ACTIVO: {cycle.role}</span>
+                                                                <span className="text-[10px] font-black text-azure-400 bg-azure-500/10 px-4 py-1.5 border border-azure-400/20 uppercase tracking-[0.3em] italic w-fit rounded-none shadow-2xl shadow-azure-500/20">ACTIVO: {cycle.role}</span>
                                                                 <div className="flex items-center gap-3 text-[9px] text-slate-600 font-extrabold italic uppercase">
                                                                     <Calendar size={12} /> Sinc: {new Date(cycle.startDate).toLocaleDateString()}
                                                                 </div>
                                                             </div>
                                                         ) : (
-                                                            <span className="text-[10px] font-black text-slate-600 bg-slate-950 px-4 py-1.5 border border-white/5 uppercase tracking-[0.3em] italic w-fit rounded-lg opacity-40">ESTADO_IDLE</span>
+                                                            <span className="text-[10px] font-black text-slate-600 bg-slate-950 px-4 py-1.5 border border-white/5 uppercase tracking-[0.3em] italic w-fit rounded-none opacity-40">ESTADO_IDLE</span>
                                                         )}
                                                     </td>
                                                     <td className="px-10 py-8">
                                                         {cycle && (
                                                             <div className="flex items-center space-x-6">
-                                                                <div className="flex-1 h-3 bg-slate-950 border border-white/10 rounded-full w-32 overflow-hidden shadow-inner">
+                                                                <div className="flex-1 h-3 bg-slate-950 border border-white/10 rounded-none w-32 overflow-hidden shadow-inner">
                                                                     <div 
                                                                         className="h-full bg-secondary shadow-[0_0_20px_rgba(255,99,71,0.5)] transition-all duration-1000" 
                                                                         style={{ width: `${(cycle.dailyLogs.length / 30) * 100}%` }}
@@ -297,7 +297,7 @@ export default function EvaluationsPage() {
                                                     <td className="px-12 py-8 text-right">
                                                         <button
                                                             onClick={() => handleSelectUser(u)}
-                                                            className="bg-secondary text-white px-8 py-4 text-[10px] font-black uppercase tracking-[0.3em] hover:bg-white hover:text-secondary transition-all rounded-xl italic skew-x-[-12deg] shadow-2xl shadow-secondary/20 group"
+                                                            className="bg-secondary text-white px-8 py-4 text-[10px] font-black uppercase tracking-[0.3em] hover:bg-white hover:text-secondary transition-all rounded-none italic skew-x-[-12deg] shadow-2xl shadow-secondary/20 group"
                                                         >
                                                             <div className="skew-x-[12deg] flex items-center gap-3">
                                                                 <span>{cycle ? "Analizar Avances" : "Gestionar Ciclo"}</span>
@@ -319,7 +319,7 @@ export default function EvaluationsPage() {
                         initial={{ opacity: 0, y: 40 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -40 }}
-                        className="max-w-4xl mx-auto glass-panel border-white/10 p-16 rounded-[4rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] relative z-10 backdrop-blur-3xl overflow-hidden"
+                        className="max-w-4xl mx-auto glass-panel border-white/10 p-16 rounded-none-[4rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] relative z-10 backdrop-blur-3xl overflow-hidden"
                     >
                          <div className="absolute top-0 right-0 p-12 opacity-5 text-secondary pointer-events-none -rotate-12"><Briefcase size={200} /></div>
                         
@@ -343,7 +343,7 @@ export default function EvaluationsPage() {
                                     type="text"
                                     value={cycleForm.role}
                                     onChange={(e) => setCycleForm({...cycleForm, role: e.target.value.toUpperCase()})}
-                                    className="w-full bg-slate-950 border border-white/5 px-8 py-6 text-base font-black uppercase tracking-widest text-white outline-none rounded-3xl focus:border-secondary transition-all shadow-inner italic"
+                                    className="w-full bg-slate-950 border border-white/5 px-8 py-6 text-base font-black uppercase tracking-widest text-white outline-none rounded-none focus:border-secondary transition-all shadow-inner italic"
                                 />
                             </div>
                             <div className="grid grid-cols-2 gap-8">
@@ -353,7 +353,7 @@ export default function EvaluationsPage() {
                                         type="number"
                                         value={cycleForm.fixedPay}
                                         onChange={(e) => setCycleForm({...cycleForm, fixedPay: parseFloat(e.target.value) || 0})}
-                                        className="w-full bg-slate-950 border border-white/5 px-8 py-6 text-base font-black text-white outline-none rounded-3xl focus:border-secondary transition-all shadow-inner italic"
+                                        className="w-full bg-slate-950 border border-white/5 px-8 py-6 text-base font-black text-white outline-none rounded-none focus:border-secondary transition-all shadow-inner italic"
                                     />
                                 </div>
                                 <div className="space-y-4">
@@ -362,7 +362,7 @@ export default function EvaluationsPage() {
                                         type="number"
                                         value={cycleForm.commissionPct}
                                         onChange={(e) => setCycleForm({...cycleForm, commissionPct: parseFloat(e.target.value) || 0})}
-                                        className="w-full bg-slate-950 border border-white/5 px-8 py-6 text-base font-black text-secondary outline-none rounded-3xl focus:border-secondary transition-all shadow-inner italic"
+                                        className="w-full bg-slate-950 border border-white/5 px-8 py-6 text-base font-black text-secondary outline-none rounded-none focus:border-secondary transition-all shadow-inner italic"
                                     />
                                 </div>
                             </div>
@@ -372,7 +372,7 @@ export default function EvaluationsPage() {
                                     type="date"
                                     value={cycleForm.startDate}
                                     onChange={(e) => setCycleForm({...cycleForm, startDate: e.target.value})}
-                                    className="w-full bg-slate-950 border border-white/5 px-8 py-6 text-base font-black text-white outline-none rounded-3xl focus:border-secondary transition-all shadow-inner italic appearance-none"
+                                    className="w-full bg-slate-950 border border-white/5 px-8 py-6 text-base font-black text-white outline-none rounded-none focus:border-secondary transition-all shadow-inner italic appearance-none"
                                 />
                             </div>
                             <div className="space-y-4">
@@ -381,7 +381,7 @@ export default function EvaluationsPage() {
                                     type="date"
                                     value={cycleForm.endDate}
                                     onChange={(e) => setCycleForm({...cycleForm, endDate: e.target.value})}
-                                    className="w-full bg-slate-950 border border-white/5 px-8 py-6 text-base font-black text-white outline-none rounded-3xl focus:border-secondary transition-all shadow-inner italic appearance-none"
+                                    className="w-full bg-slate-950 border border-white/5 px-8 py-6 text-base font-black text-white outline-none rounded-none focus:border-secondary transition-all shadow-inner italic appearance-none"
                                 />
                             </div>
                         </div>
@@ -395,11 +395,11 @@ export default function EvaluationsPage() {
                                         value={newFunction}
                                         onChange={(e) => setNewFunction(e.target.value.toUpperCase())}
                                         placeholder="DEFINIR FUNCIÓN..."
-                                        className="bg-slate-950 border border-white/5 px-6 py-3 text-[10px] font-black uppercase tracking-widest outline-none rounded-xl focus:border-secondary transition-all w-60 shadow-inner italic placeholder:text-slate-900"
+                                        className="bg-slate-950 border border-white/5 px-6 py-3 text-[10px] font-black uppercase tracking-widest outline-none rounded-none focus:border-secondary transition-all w-60 shadow-inner italic placeholder:text-slate-900"
                                     />
                                     <button 
                                         onClick={() => { if(newFunction) { setCycleForm({...cycleForm, functions: [...cycleForm.functions, newFunction.toUpperCase()]}); setNewFunction(""); } }}
-                                        className="bg-secondary text-white p-3 hover:bg-white hover:text-secondary transition-all rounded-xl shadow-2xl shadow-secondary/20"
+                                        className="bg-secondary text-white p-3 hover:bg-white hover:text-secondary transition-all rounded-none shadow-2xl shadow-secondary/20"
                                     >
                                         <Plus size={20} />
                                     </button>
@@ -411,7 +411,7 @@ export default function EvaluationsPage() {
                                     <motion.div 
                                         layout
                                         key={i} 
-                                        className="flex items-center justify-between p-6 bg-slate-950/60 border border-white/5 rounded-2xl group hover:border-secondary/20 transition-all shadow-inner"
+                                        className="flex items-center justify-between p-6 bg-slate-950/60 border border-white/5 rounded-none group hover:border-secondary/20 transition-all shadow-inner"
                                     >
                                         <div className="flex items-center gap-4">
                                             <div className="w-1.5 h-6 bg-secondary/30 group-hover:bg-secondary transition-colors" />
@@ -432,7 +432,7 @@ export default function EvaluationsPage() {
                             <button 
                                 onClick={handleActivateCycle}
                                 disabled={!isAdmin}
-                                className={`flex-1 ${isAdmin ? 'bg-secondary' : 'bg-slate-900 opacity-20'} text-white px-16 py-7 text-[12px] font-black uppercase tracking-[0.5em] transition-all shadow-[0_25px_60px_-10px_rgba(255,99,71,0.6)] rounded-[2.5rem] skew-x-[-12deg] group`}
+                                className={`flex-1 ${isAdmin ? 'bg-secondary' : 'bg-slate-900 opacity-20'} text-white px-16 py-7 text-[12px] font-black uppercase tracking-[0.5em] transition-all shadow-[0_25px_60px_-10px_rgba(255,99,71,0.6)] rounded-none-[2.5rem] skew-x-[-12deg] group`}
                             >
                                 <div className="skew-x-[12deg] flex items-center justify-center gap-5">
                                     <ShieldCheck size={24} className="group-hover:rotate-12 transition-transform" />
@@ -441,7 +441,7 @@ export default function EvaluationsPage() {
                             </button>
                             <button 
                                 onClick={() => setView("list")}
-                                className="bg-slate-950 border border-white/5 text-slate-600 font-black text-[10px] uppercase tracking-[0.4em] px-12 py-7 hover:text-white transition-all rounded-[2.5rem] italic"
+                                className="bg-slate-950 border border-white/5 text-slate-600 font-black text-[10px] uppercase tracking-[0.4em] px-12 py-7 hover:text-white transition-all rounded-none-[2.5rem] italic"
                             >
                                 Descartar_CMD
                             </button>
@@ -455,7 +455,7 @@ export default function EvaluationsPage() {
                         exit={{ opacity: 0, x: -20 }}
                         className="space-y-12 relative z-10"
                     >
-                         <div className="glass-panel border-white/10 p-16 rounded-[4rem] shadow-2xl backdrop-blur-3xl overflow-hidden relative">
+                         <div className="glass-panel border-white/10 p-16 rounded-none-[4rem] shadow-2xl backdrop-blur-3xl overflow-hidden relative">
                             <div className="absolute top-0 right-0 p-12 opacity-5 text-secondary pointer-events-none -rotate-12"><Activity size={180} /></div>
                             
                             <div className="flex justify-between items-center mb-16 border-b border-white/5 pb-10">
@@ -463,14 +463,14 @@ export default function EvaluationsPage() {
                                     <h2 className="text-4xl font-black text-white uppercase tracking-tighter italic">HISTORIAL DE <span className="text-secondary">DESPLIEGUES</span></h2>
                                     <p className="text-[11px] font-black text-slate-500 uppercase tracking-[0.4em] mt-3 italic">Registros auditables de performance: <span className="text-secondary ml-2">{selectedUser?.name || selectedUser?.email}</span></p>
                                 </div>
-                                <button onClick={() => setView(activeCycle ? "dashboard" : "list")} className="p-5 bg-slate-900 border border-white/10 rounded-2xl text-slate-600 hover:text-white transition-all shadow-2xl">
+                                <button onClick={() => setView(activeCycle ? "dashboard" : "list")} className="p-5 bg-slate-900 border border-white/10 rounded-none text-slate-600 hover:text-white transition-all shadow-2xl">
                                     <ChevronLeft size={28} />
                                 </button>
                             </div>
 
                             {pastCycles.length === 0 ? (
                                 <div className="py-40 text-center space-y-8">
-                                    <div className="w-24 h-24 bg-slate-950 border border-white/5 rounded-3xl flex items-center justify-center mx-auto shadow-inner opacity-20">
+                                    <div className="w-24 h-24 bg-slate-950 border border-white/5 rounded-none flex items-center justify-center mx-auto shadow-inner opacity-20">
                                         <Clock size={48} className="text-secondary" />
                                     </div>
                                     <p className="text-slate-800 font-black text-xs uppercase tracking-[0.8em] italic">Cámara de registros histórica vacía</p>
@@ -478,9 +478,9 @@ export default function EvaluationsPage() {
                             ) : (
                                 <div className="grid grid-cols-1 gap-8">
                                     {pastCycles.map((cycle, idx) => (
-                                        <div key={cycle.id} className="glass-panel !bg-slate-950/60 border border-white/5 p-10 flex flex-col lg:flex-row justify-between items-center gap-10 group hover:border-secondary/20 transition-all rounded-[2.5rem] shadow-2xl">
+                                        <div key={cycle.id} className="glass-panel !bg-slate-950/60 border border-white/5 p-10 flex flex-col lg:flex-row justify-between items-center gap-10 group hover:border-secondary/20 transition-all rounded-none-[2.5rem] shadow-2xl">
                                             <div className="flex items-center gap-10">
-                                                <div className="w-16 h-16 bg-slate-950 border border-white/5 text-slate-800 flex items-center justify-center font-black text-2xl group-hover:text-secondary group-hover:scale-110 transition-all rounded-2xl italic shadow-inner">
+                                                <div className="w-16 h-16 bg-slate-950 border border-white/5 text-slate-800 flex items-center justify-center font-black text-2xl group-hover:text-secondary group-hover:scale-110 transition-all rounded-none italic shadow-inner">
                                                     {(pastCycles.length - idx).toString().padStart(2, '0')}
                                                 </div>
                                                 <div>
@@ -501,7 +501,7 @@ export default function EvaluationsPage() {
                                                 </div>
                                                 <button 
                                                     onClick={() => { setActiveCycle(cycle); setView("dashboard"); }}
-                                                    className="bg-slate-900 text-white px-8 py-4 text-[10px] font-black uppercase tracking-[0.3em] hover:bg-secondary transition-all rounded-xl border border-white/5 shadow-2xl skew-x-[-12deg]"
+                                                    className="bg-slate-900 text-white px-8 py-4 text-[10px] font-black uppercase tracking-[0.3em] hover:bg-secondary transition-all rounded-none border border-white/5 shadow-2xl skew-x-[-12deg]"
                                                 >
                                                     <span className="skew-x-[12deg] block">Cargar_DATA</span>
                                                 </button>
@@ -521,17 +521,17 @@ export default function EvaluationsPage() {
                         className="space-y-12 relative z-10"
                     >
                         {/* Status Bar */}
-                        <div className="glass-panel border-white/5 p-12 flex flex-col lg:flex-row justify-between items-center gap-10 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] rounded-[3.5rem] relative overflow-hidden backdrop-blur-3xl">
+                        <div className="glass-panel border-white/5 p-12 flex flex-col lg:flex-row justify-between items-center gap-10 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] rounded-none-[3.5rem] relative overflow-hidden backdrop-blur-3xl">
                             <div className="absolute top-0 left-0 w-2 h-full bg-secondary shadow-[0_0_20px_rgba(255,99,71,0.5)]"></div>
                             <div className="flex items-center gap-8">
-                                <div className="w-24 h-24 bg-slate-950 border border-white/5 text-secondary flex items-center justify-center text-4xl font-black shadow-inner rounded-3xl italic">
+                                <div className="w-24 h-24 bg-slate-950 border border-white/5 text-secondary flex items-center justify-center text-4xl font-black shadow-inner rounded-none italic">
                                     {selectedUser?.name?.[0] || selectedUser?.email?.[0]}
                                 </div>
                                 <div>
                                     <h2 className="text-4xl font-black text-white uppercase tracking-tighter leading-tight italic">{selectedUser?.name || (selectedUser?.email.split('@')[0])}</h2>
                                     <div className="flex items-center gap-6 mt-3">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-2 h-2 rounded-full bg-secondary animate-pulse" />
+                                            <div className="w-2 h-2 rounded-none bg-secondary animate-pulse" />
                                             <span className="text-[11px] font-black text-secondary uppercase tracking-[0.3em] italic">{activeCycle?.role}</span>
                                         </div>
                                         <div className="h-4 w-px bg-white/10"></div>
@@ -557,14 +557,14 @@ export default function EvaluationsPage() {
                                      {isAdmin && (
                                         <button 
                                             onClick={handleDeactivate}
-                                            className="bg-red-500/10 border border-red-500/30 text-red-500 px-8 py-4 text-[10px] font-black uppercase tracking-[0.3em] hover:bg-red-500 hover:text-white transition-all rounded-xl italic skew-x-[-12deg]"
+                                            className="bg-red-500/10 border border-red-500/30 text-red-500 px-8 py-4 text-[10px] font-black uppercase tracking-[0.3em] hover:bg-red-500 hover:text-white transition-all rounded-none italic skew-x-[-12deg]"
                                         >
                                            <span className="skew-x-[12deg] block">Abortar_Ciclo</span>
                                         </button>
                                     )}
                                     <button 
                                         onClick={() => setView("history")}
-                                        className="bg-slate-900 border border-white/10 text-white px-8 py-4 text-[10px] font-black uppercase tracking-[0.3em] hover:bg-secondary transition-all rounded-xl italic shadow-2xl skew-x-[-12deg]"
+                                        className="bg-slate-900 border border-white/10 text-white px-8 py-4 text-[10px] font-black uppercase tracking-[0.3em] hover:bg-secondary transition-all rounded-none italic shadow-2xl skew-x-[-12deg]"
                                     >
                                         <span className="skew-x-[12deg] block text-inherit">Archivo_LOG</span>
                                     </button>
@@ -573,7 +573,7 @@ export default function EvaluationsPage() {
                         </div>
 
                         {/* 30 Day Productivity Matrix */}
-                        <div className="glass-panel border-white/5 p-16 shadow-2xl rounded-[4rem] backdrop-blur-3xl relative overflow-hidden">
+                        <div className="glass-panel border-white/5 p-16 shadow-2xl rounded-none-[4rem] backdrop-blur-3xl relative overflow-hidden">
                              <div className="absolute top-0 right-0 p-12 opacity-5 text-azure-400 pointer-events-none -rotate-12"><LayoutGrid size={150} /></div>
                             
                             <div className="flex flex-col md:flex-row justify-between items-center mb-16 gap-8">
@@ -581,13 +581,13 @@ export default function EvaluationsPage() {
                                     <h3 className="text-2xl font-black text-white uppercase tracking-tighter italic">Matriz de Rendimiento Operativo</h3>
                                     <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.4em] mt-2 italic">Mapa térmico de despliegue de 30 días</p>
                                 </div>
-                                <div className="flex items-center gap-8 bg-slate-950/40 p-4 rounded-2xl border border-white/5 shadow-inner">
+                                <div className="flex items-center gap-8 bg-slate-950/40 p-4 rounded-none border border-white/5 shadow-inner">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-3 h-3 bg-secondary rounded-sm shadow-[0_0_10px_rgba(255,99,71,0.5)]"></div>
+                                        <div className="w-3 h-3 bg-secondary rounded-none shadow-[0_0_10px_rgba(255,99,71,0.5)]"></div>
                                         <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] italic">COMPLETADO</span>
                                     </div>
                                     <div className="flex items-center gap-3">
-                                        <div className="w-3 h-3 bg-slate-800 rounded-sm border border-white/5"></div>
+                                        <div className="w-3 h-3 bg-slate-800 rounded-none border border-white/5"></div>
                                         <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] italic">PENDIENTE</span>
                                     </div>
                                 </div>
@@ -609,7 +609,7 @@ export default function EvaluationsPage() {
                                             disabled={isLocked && !isAdmin}
                                             onClick={() => openDayLog(day)}
                                             className={`
-                                                aspect-square flex flex-col items-center justify-center border transition-all relative group rounded-2xl
+                                                aspect-square flex flex-col items-center justify-center border transition-all relative group rounded-none
                                                 ${hasLog ? 'bg-secondary border-secondary shadow-[0_15px_30px_-10px_rgba(255,99,71,0.5)] text-white' : 'bg-slate-950 border-white/5 text-slate-700 hover:border-secondary/40 hover:text-white shadow-inner'}
                                                 ${isSelected ? 'ring-4 ring-secondary/30 border-secondary scale-110 z-10 shadow-[0_0_50px_rgba(255,99,71,0.3)]' : ''}
                                                 ${isLocked && !isAdmin ? 'opacity-10 cursor-not-allowed grayscale' : ''}
@@ -625,7 +625,7 @@ export default function EvaluationsPage() {
                                             )}
                                             
                                             {/* Tooltip Industrial */}
-                                            <div className="absolute -top-16 left-1/2 -translate-x-1/2 px-4 py-2 bg-slate-900 border border-white/10 text-white text-[8px] font-black uppercase tracking-[0.4em] opacity-0 group-hover:opacity-100 pointer-events-none transition-all whitespace-nowrap shadow-2xl z-50 rounded-lg italic">
+                                            <div className="absolute -top-16 left-1/2 -translate-x-1/2 px-4 py-2 bg-slate-900 border border-white/10 text-white text-[8px] font-black uppercase tracking-[0.4em] opacity-0 group-hover:opacity-100 pointer-events-none transition-all whitespace-nowrap shadow-2xl z-50 rounded-none italic">
                                                 {isLocked && !isAdmin ? "VECT_DAY_LOCKED" : `OPERACIÓN_NODO_D${day}`}
                                             </div>
                                         </motion.button>
@@ -641,7 +641,7 @@ export default function EvaluationsPage() {
                                     initial={{ opacity: 0, y: 50 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, y: 50 }}
-                                    className="glass-panel !bg-slate-950/80 border border-secondary/20 p-16 rounded-[4rem] shadow-[0_0_150px_rgba(0,0,0,0.8)] relative z-20 backdrop-blur-3xl overflow-hidden"
+                                    className="glass-panel !bg-slate-950/80 border border-secondary/20 p-16 rounded-none-[4rem] shadow-[0_0_150px_rgba(0,0,0,0.8)] relative z-20 backdrop-blur-3xl overflow-hidden"
                                 >
                                     <div className="absolute top-0 left-0 w-full h-1.5 bg-secondary overflow-hidden">
                                         <motion.div 
@@ -663,7 +663,7 @@ export default function EvaluationsPage() {
                                             </h3>
                                             <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] mt-3 italic">Nodo de sincronización de avances operativos</p>
                                         </div>
-                                        <button onClick={() => setSelectedDay(null)} className="p-5 bg-slate-900 border border-white/10 rounded-2xl text-slate-600 hover:text-white transition-all shadow-2xl">
+                                        <button onClick={() => setSelectedDay(null)} className="p-5 bg-slate-900 border border-white/10 rounded-none text-slate-600 hover:text-white transition-all shadow-2xl">
                                             <X size={28} />
                                         </button>
                                     </div>
@@ -682,15 +682,15 @@ export default function EvaluationsPage() {
                                                         value={dayContent[func] || ""}
                                                         onChange={(e) => setDayContent({...dayContent, [func]: e.target.value.toUpperCase()})}
                                                         placeholder={`DESCRIPCIÓN DE AVANCES PARA ${func}...`}
-                                                        className="w-full bg-slate-950 border border-white/5 p-10 rounded-[3rem] text-[12px] font-black italic text-white shadow-inner focus:border-secondary transition-all h-48 outline-none resize-none uppercase tracking-widest leading-relaxed placeholder:text-slate-900 custom-scrollbar"
+                                                        className="w-full bg-slate-950 border border-white/5 p-10 rounded-none-[3rem] text-[12px] font-black italic text-white shadow-inner focus:border-secondary transition-all h-48 outline-none resize-none uppercase tracking-widest leading-relaxed placeholder:text-slate-900 custom-scrollbar"
                                                     />
                                                 </div>
                                             ));
                                         })()}
 
-                                        <div className="mt-16 flex flex-col md:flex-row justify-between items-center bg-slate-950/40 p-10 rounded-[3rem] border border-white/5 gap-10">
+                                        <div className="mt-16 flex flex-col md:flex-row justify-between items-center bg-slate-950/40 p-10 rounded-none-[3rem] border border-white/5 gap-10">
                                             <div className="flex items-center gap-6">
-                                                <div className="p-4 bg-azure-500/10 text-azure-400 rounded-2xl border border-azure-500/20 shadow-2xl shadow-azure-500/10">
+                                                <div className="p-4 bg-azure-500/10 text-azure-400 rounded-none border border-azure-500/20 shadow-2xl shadow-azure-500/10">
                                                     <ShieldCheck size={28} />
                                                 </div>
                                                 <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.3em] max-w-xs italic leading-relaxed">
@@ -700,7 +700,7 @@ export default function EvaluationsPage() {
                                             {!isAdmin && activeCycle.isActive && (
                                                 <button 
                                                     onClick={handleSaveDayLog}
-                                                    className="bg-secondary text-white px-16 py-7 text-[12px] font-black uppercase tracking-[0.4em] hover:bg-white hover:text-secondary transition-all shadow-[0_25px_60px_-10px_rgba(255,99,71,0.6)] rounded-[2.5rem] flex items-center gap-6 skew-x-[-12deg] group"
+                                                    className="bg-secondary text-white px-16 py-7 text-[12px] font-black uppercase tracking-[0.4em] hover:bg-white hover:text-secondary transition-all shadow-[0_25px_60px_-10px_rgba(255,99,71,0.6)] rounded-none-[2.5rem] flex items-center gap-6 skew-x-[-12deg] group"
                                                 >
                                                     <div className="skew-x-[12deg] flex items-center gap-5">
                                                         <Save size={24} className="group-hover:scale-110 transition-transform" />
@@ -715,8 +715,8 @@ export default function EvaluationsPage() {
                         </AnimatePresence>
 
                         {!selectedDay && (
-                            <div className="py-40 text-center space-y-10 bg-slate-950/20 rounded-[4rem] border border-dashed border-white/5 shadow-inner opacity-50 relative pointer-events-none">
-                                <div className="w-24 h-24 bg-slate-950 border border-white/10 rounded-[2.5rem] flex items-center justify-center mx-auto shadow-2xl">
+                            <div className="py-40 text-center space-y-10 bg-slate-950/20 rounded-none-[4rem] border border-dashed border-white/5 shadow-inner opacity-50 relative pointer-events-none">
+                                <div className="w-24 h-24 bg-slate-950 border border-white/10 rounded-none-[2.5rem] flex items-center justify-center mx-auto shadow-2xl">
                                     <Target className="text-slate-800" size={48} />
                                 </div>
                                 <p className="text-slate-800 font-extrabold text-xs uppercase tracking-[0.8em] italic">SELECCIONE UN NODO TEMPORAL PARA AUDITAR RENDIMIENTO</p>

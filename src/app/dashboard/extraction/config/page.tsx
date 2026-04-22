@@ -106,7 +106,7 @@ export default function ExtractionConfigPage() {
                         className="bg-orange-600 text-white px-8 py-4 font-bold uppercase tracking-widest text-xs flex items-center space-x-3 transition-all hover:bg-orange-700 disabled:opacity-50"
                     >
                         {isSaving ? (
-                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-none animate-spin"></div>
                         ) : (
                             <Save size={18} />
                         )}
@@ -197,13 +197,13 @@ export default function ExtractionConfigPage() {
 
                 {/* Preview / Interactive Editor Mock */}
                 <div className="lg:col-span-2 space-y-8">
-                    <div className="bg-neutral-900 border border-neutral-800 p-1 rounded-sm shadow-2xl relative">
+                    <div className="bg-neutral-900 border border-neutral-800 p-1 rounded-none shadow-2xl relative">
                         <div className="flex items-center justify-between px-6 py-4 bg-neutral-900">
                             <div className="flex items-center space-x-2">
                                 <div className="flex space-x-1.5">
-                                    <div className="w-2.5 h-2.5 rounded-full bg-neutral-700"></div>
-                                    <div className="w-2.5 h-2.5 rounded-full bg-neutral-700"></div>
-                                    <div className="w-2.5 h-2.5 rounded-full bg-neutral-700"></div>
+                                    <div className="w-2.5 h-2.5 rounded-none bg-neutral-700"></div>
+                                    <div className="w-2.5 h-2.5 rounded-none bg-neutral-700"></div>
+                                    <div className="w-2.5 h-2.5 rounded-none bg-neutral-700"></div>
                                 </div>
                                 <div className="ml-6 px-4 py-1.5 bg-neutral-800 border border-neutral-700 text-neutral-400 text-[10px] font-bold tracking-tight flex items-center w-[400px]">
                                     <Monitor size={12} className="mr-3" />
@@ -218,7 +218,7 @@ export default function ExtractionConfigPage() {
                         <div className="bg-white min-h-[600px] relative overflow-hidden">
                             {/* Placeholder for iframe / visual editor */}
                             <div className="absolute inset-0 flex flex-col items-center justify-center p-20 text-center space-y-6">
-                                <div className="w-32 h-32 bg-neutral-50 rounded-full flex items-center justify-center text-neutral-200">
+                                <div className="w-32 h-32 bg-neutral-50 rounded-none flex items-center justify-center text-neutral-200">
                                     <Globe size={64} />
                                 </div>
                                 <div>

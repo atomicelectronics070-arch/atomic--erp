@@ -57,8 +57,8 @@ export default function AgendaPage() {
         <div className="space-y-12 pb-32 animate-in fade-in duration-1000 relative">
             {/* Background Orbs */}
             <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-                <div className="absolute top-[10%] left-[-10%] w-[45%] h-[45%] rounded-full bg-secondary/5 blur-[120px]" />
-                <div className="absolute bottom-[20%] right-[-10%] w-[35%] h-[35%] rounded-full bg-azure-500/5 blur-[100px]" />
+                <div className="absolute top-[10%] left-[-10%] w-[45%] h-[45%] rounded-none bg-secondary/5 blur-[120px]" />
+                <div className="absolute bottom-[20%] right-[-10%] w-[35%] h-[35%] rounded-none bg-azure-500/5 blur-[100px]" />
             </div>
 
             {/* Header */}
@@ -77,14 +77,14 @@ export default function AgendaPage() {
                 </div>
 
                 <div className="flex items-center gap-8">
-                    <div className="flex items-center glass-panel !bg-slate-950/40 p-2 rounded-2xl border-white/5 shadow-inner ring-1 ring-white/5 backdrop-blur-3xl">
-                        <button onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1))} className="p-4 hover:bg-white hover:text-secondary rounded-xl transition-all text-slate-600"><ChevronLeft size={20} /></button>
+                    <div className="flex items-center glass-panel !bg-slate-950/40 p-2 rounded-none border-white/5 shadow-inner ring-1 ring-white/5 backdrop-blur-3xl">
+                        <button onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1))} className="p-4 hover:bg-white hover:text-secondary rounded-none transition-all text-slate-600"><ChevronLeft size={20} /></button>
                         <span className="px-10 text-[10px] font-black uppercase tracking-[0.4em] text-white italic">{monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}</span>
-                        <button onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1))} className="p-4 hover:bg-white hover:text-secondary rounded-xl transition-all text-slate-600"><ChevronRight size={20} /></button>
+                        <button onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1))} className="p-4 hover:bg-white hover:text-secondary rounded-none transition-all text-slate-600"><ChevronRight size={20} /></button>
                     </div>
                     <button
                         onClick={() => { setEditingEvent(null); setIsFormOpen(true); }}
-                        className="bg-secondary text-white px-12 py-5 font-black uppercase tracking-[0.3em] text-[10px] flex items-center shadow-[0_20px_50px_-10px_rgba(255,99,71,0.5)] transition-all hover:bg-white hover:text-secondary rounded-2xl active:scale-95 group italic skew-x-[-12deg]"
+                        className="bg-secondary text-white px-12 py-5 font-black uppercase tracking-[0.3em] text-[10px] flex items-center shadow-[0_20px_50px_-10px_rgba(255,99,71,0.5)] transition-all hover:bg-white hover:text-secondary rounded-none active:scale-95 group italic skew-x-[-12deg]"
                     >
                          <div className="skew-x-[12deg] flex items-center gap-4">
                             <Plus size={20} className="group-hover:rotate-90 transition-transform" />
@@ -95,7 +95,7 @@ export default function AgendaPage() {
             </header>
 
             {/* Calendar Grid Container */}
-            <div className="glass-panel border-white/5 shadow-[0_60px_120px_-20px_rgba(0,0,0,0.8)] overflow-hidden rounded-[4rem] relative z-10 backdrop-blur-3xl">
+            <div className="glass-panel border-white/5 shadow-[0_60px_120px_-20px_rgba(0,0,0,0.8)] overflow-hidden rounded-none-[4rem] relative z-10 backdrop-blur-3xl">
                 <div className="grid grid-cols-7 bg-white/[0.02] border-b border-white/5">
                     {["DOM", "LUN", "MAR", "MIÉ", "JUE", "VIE", "SÁB"].map(day => (
                         <div key={day} className="py-8 text-center text-[10px] font-black text-slate-600 uppercase tracking-[0.6em] italic border-r border-white/5 last:border-r-0">{day}</div>
@@ -116,17 +116,17 @@ export default function AgendaPage() {
                         return (
                             <div key={day} className="h-44 border-r border-b border-white/5 p-5 hover:bg-white/[0.02] transition-all group overflow-hidden relative last:border-r-0">
                                 <div className="flex justify-between items-start mb-4">
-                                     <span className={`text-[11px] font-black w-8 h-8 flex items-center justify-center rounded-xl italic transition-all group-hover:scale-110 ${isToday ? 'bg-secondary text-white shadow-[0_0_15px_rgba(255,99,71,0.5)] ring-2 ring-secondary/20' : 'text-slate-800 group-hover:text-white border border-transparent group-hover:border-white/10 group-hover:bg-slate-900 shadow-inner'}`}>
+                                     <span className={`text-[11px] font-black w-8 h-8 flex items-center justify-center rounded-none italic transition-all group-hover:scale-110 ${isToday ? 'bg-secondary text-white shadow-[0_0_15px_rgba(255,99,71,0.5)] ring-2 ring-secondary/20' : 'text-slate-800 group-hover:text-white border border-transparent group-hover:border-white/10 group-hover:bg-slate-900 shadow-inner'}`}>
                                         {day}
                                     </span>
-                                    {dayEvents.length > 0 && <div className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse mt-3 mr-1" />}
+                                    {dayEvents.length > 0 && <div className="w-1.5 h-1.5 rounded-none bg-secondary animate-pulse mt-3 mr-1" />}
                                 </div>
                                 <div className="space-y-3 relative z-10">
                                     {dayEvents.map(e => (
                                         <button
                                             key={e.id}
                                             onClick={() => { setEditingEvent(e); setIsFormOpen(true); }}
-                                            className="w-full text-left bg-slate-900 border border-white/5 px-4 py-2.5 rounded-xl border-l-[3px] hover:border-secondary transition-all truncate group/event relative overflow-hidden"
+                                            className="w-full text-left bg-slate-900 border border-white/5 px-4 py-2.5 rounded-none border-l-[3px] hover:border-secondary transition-all truncate group/event relative overflow-hidden"
                                             style={{ borderLeftColor: e.color || '#ff6347' }}
                                         >
                                             <div className="absolute inset-0 bg-white/[0.02] opacity-0 group-hover/event:opacity-100 transition-opacity" />
@@ -158,11 +158,11 @@ export default function AgendaPage() {
                             initial={{ opacity: 0, scale: 0.9, y: 30 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.9, y: 30 }}
-                            className="glass-panel !bg-slate-950/60 w-full max-w-2xl shadow-[0_0_150px_rgba(0,0,0,1)] border border-white/10 overflow-hidden rounded-[4rem] relative z-10 backdrop-blur-3xl p-14 border"
+                            className="glass-panel !bg-slate-950/60 w-full max-w-2xl shadow-[0_0_150px_rgba(0,0,0,1)] border border-white/10 overflow-hidden rounded-none-[4rem] relative z-10 backdrop-blur-3xl p-14 border"
                         >
                             <header className="mb-12 flex items-center justify-between border-b border-white/5 pb-8">
                                 <div className="flex items-center space-x-6">
-                                    <div className="p-4 bg-secondary/10 border border-secondary/20 text-secondary rounded-2xl shadow-2xl">
+                                    <div className="p-4 bg-secondary/10 border border-secondary/20 text-secondary rounded-none shadow-2xl">
                                         <CalendarIcon size={24} className="drop-shadow-[0_0_10px_rgba(255,99,71,0.5)]" />
                                     </div>
                                     <div>
@@ -172,7 +172,7 @@ export default function AgendaPage() {
                                         <p className="text-[10px] font-black text-slate-500 mt-2 uppercase tracking-[0.4em] italic leading-none">Subsistema de Agendamiento Estratégico</p>
                                     </div>
                                 </div>
-                                <button onClick={() => setIsFormOpen(false)} className="p-5 bg-slate-900 border border-white/10 rounded-2xl text-slate-600 hover:text-white transition-all shadow-2xl">
+                                <button onClick={() => setIsFormOpen(false)} className="p-5 bg-slate-900 border border-white/10 rounded-none text-slate-600 hover:text-white transition-all shadow-2xl">
                                     <X size={28} />
                                 </button>
                             </header>
@@ -211,7 +211,7 @@ function EventForm({ initialData, onClose, onSave, onDelete }: any) {
                     value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value.toUpperCase() })}
                     placeholder="REUNIÓN_VENTAS, ENTREGA_ACTIVOS..."
-                    className="w-full bg-slate-950 border border-white/5 p-6 rounded-[2rem] text-[15px] font-black uppercase tracking-widest text-white shadow-inner focus:border-secondary outline-none transition-all italic placeholder:text-slate-900"
+                    className="w-full bg-slate-950 border border-white/5 p-6 rounded-none-[2rem] text-[15px] font-black uppercase tracking-widest text-white shadow-inner focus:border-secondary outline-none transition-all italic placeholder:text-slate-900"
                 />
             </div>
             <div className="grid grid-cols-2 gap-8">
@@ -221,7 +221,7 @@ function EventForm({ initialData, onClose, onSave, onDelete }: any) {
                         type="datetime-local"
                         value={formData.start}
                         onChange={(e) => setFormData({ ...formData, start: e.target.value })}
-                        className="w-full bg-slate-950 border border-white/5 p-6 rounded-[2rem] text-xs font-black text-azure-400 outline-none shadow-inner focus:border-azure-500 transition-all italic"
+                        className="w-full bg-slate-950 border border-white/5 p-6 rounded-none-[2rem] text-xs font-black text-azure-400 outline-none shadow-inner focus:border-azure-500 transition-all italic"
                     />
                 </div>
                 <div className="space-y-4">
@@ -230,7 +230,7 @@ function EventForm({ initialData, onClose, onSave, onDelete }: any) {
                         type="datetime-local"
                         value={formData.end}
                         onChange={(e) => setFormData({ ...formData, end: e.target.value })}
-                        className="w-full bg-slate-950 border border-white/5 p-6 rounded-[2rem] text-xs font-black text-azure-400 outline-none shadow-inner focus:border-azure-500 transition-all italic"
+                        className="w-full bg-slate-950 border border-white/5 p-6 rounded-none-[2rem] text-xs font-black text-azure-400 outline-none shadow-inner focus:border-azure-500 transition-all italic"
                     />
                 </div>
             </div>
@@ -242,7 +242,7 @@ function EventForm({ initialData, onClose, onSave, onDelete }: any) {
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value.toUpperCase() })}
                     placeholder="DETALLES TÁCTICOS, UBICACIÓN, ACTORES INVOLUCRADOS..."
-                    className="w-full bg-slate-950 border border-white/5 p-8 rounded-[2.5rem] text-[12px] font-black text-white shadow-inner focus:border-secondary outline-none resize-none h-40 italic uppercase tracking-widest leading-relaxed placeholder:text-slate-900 custom-scrollbar"
+                    className="w-full bg-slate-950 border border-white/5 p-8 rounded-none-[2.5rem] text-[12px] font-black text-white shadow-inner focus:border-secondary outline-none resize-none h-40 italic uppercase tracking-widest leading-relaxed placeholder:text-slate-900 custom-scrollbar"
                 />
             </div>
 
@@ -250,7 +250,7 @@ function EventForm({ initialData, onClose, onSave, onDelete }: any) {
                 {formData.id && (
                     <button 
                         onClick={() => onDelete(formData.id)} 
-                        className="flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.4em] text-red-500 hover:text-white transition-all italic bg-red-500/5 px-6 py-3 rounded-full border border-red-500/10 group"
+                        className="flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.4em] text-red-500 hover:text-white transition-all italic bg-red-500/5 px-6 py-3 rounded-none border border-red-500/10 group"
                     >
                         <Trash2 size={16} className="group-hover:rotate-12 transition-transform" />
                         <span>PURGAR_ACTIVO</span>
@@ -260,7 +260,7 @@ function EventForm({ initialData, onClose, onSave, onDelete }: any) {
                     <button onClick={onClose} className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-700 hover:text-white transition-all italic">ABORTAR_CMD</button>
                     <button
                         onClick={() => onSave({ ...formData, start: new Date(formData.start), end: new Date(formData.end) })}
-                        className="bg-secondary text-white px-12 py-5 font-black uppercase tracking-[0.3em] text-[10px] flex items-center shadow-[0_15px_40px_-5px_rgba(255,99,71,0.5)] transition-all hover:bg-white hover:text-secondary rounded-2xl active:scale-95 group italic skew-x-[-12deg]"
+                        className="bg-secondary text-white px-12 py-5 font-black uppercase tracking-[0.3em] text-[10px] flex items-center shadow-[0_15px_40px_-5px_rgba(255,99,71,0.5)] transition-all hover:bg-white hover:text-secondary rounded-none active:scale-95 group italic skew-x-[-12deg]"
                     >
                          <div className="skew-x-[12deg] flex items-center gap-4">
                             <Save size={20} className="group-hover:scale-110 transition-transform" />

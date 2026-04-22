@@ -47,7 +47,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     return (
         <aside className="lg:col-span-1 space-y-6">
             {/* MAIN ACTION PANEL */}
-            <div className="glass-panel p-6 border-indigo-500/20 bg-indigo-500/5 rounded-3xl">
+            <div className="glass-panel p-6 border-indigo-500/20 bg-indigo-500/5 rounded-none">
                 <div className="flex items-center gap-2 text-indigo-300 font-bold mb-6 text-sm uppercase tracking-widest">
                     <Activity size={18} />
                     <span>Control de Extracción</span>
@@ -58,7 +58,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-indigo-400 transition-colors" size={18} />
                         <input 
                             type="text" 
-                            className="w-full bg-slate-950/40 border border-white/10 rounded-xl px-4 py-3 pl-12 text-white group-hover:border-white/20 focus:border-indigo-500 focus:outline-none transition-all placeholder:text-slate-600" 
+                            className="w-full bg-slate-950/40 border border-white/10 rounded-none px-4 py-3 pl-12 text-white group-hover:border-white/20 focus:border-indigo-500 focus:outline-none transition-all placeholder:text-slate-600" 
                             placeholder="https://tienda-ejemplo.com/productos"
                             value={url}
                             onChange={(e) => setUrl(e.target.value)}
@@ -68,10 +68,10 @@ const Sidebar: React.FC<SidebarProps> = ({
                     <button 
                         onClick={startScraping}
                         disabled={isScraping || !url}
-                        className="w-full bg-gradient-to-r from-indigo-600 via-indigo-500 to-pink-500 py-4 rounded-xl font-bold text-white shadow-[0_0_20px_-5px_rgba(99,102,241,0.5)] hover:shadow-[0_0_30px_-5px_rgba(99,102,241,0.6)] disabled:opacity-50 disabled:shadow-none hover:translate-y-[-2px] active:translate-y-[0px] flex items-center justify-center gap-3 transition-all"
+                        className="w-full bg-gradient-to-r from-indigo-600 via-indigo-500 to-pink-500 py-4 rounded-none font-bold text-white shadow-[0_0_20px_-5px_rgba(99,102,241,0.5)] hover:shadow-[0_0_30px_-5px_rgba(99,102,241,0.6)] disabled:opacity-50 disabled:shadow-none hover:translate-y-[-2px] active:translate-y-[0px] flex items-center justify-center gap-3 transition-all"
                     >
                         {isScraping ? (
-                            <div className="animate-spin rounded-full h-5 w-5 border-2 border-white/30 border-t-white"></div>
+                            <div className="animate-spin rounded-none h-5 w-5 border-2 border-white/30 border-t-white"></div>
                         ) : (
                             <Play size={20} fill="currentColor" />
                         )}
@@ -114,7 +114,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                                     <button 
                                         key={field}
                                         onClick={() => toggleField(field)}
-                                        className={`px-3 py-2 rounded-lg text-xs font-semibold border transition-all ${
+                                        className={`px-3 py-2 rounded-none text-xs font-semibold border transition-all ${
                                             config.fields.includes(field) 
                                             ? 'bg-indigo-500/20 border-indigo-500 text-indigo-300' 
                                             : 'bg-slate-900/40 border-white/5 text-slate-500 hover:border-white/10'
@@ -140,7 +140,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                             <label className="text-[10px] font-bold text-slate-500 uppercase">Project URL</label>
                             <input 
                                 type="text" 
-                                className="w-full bg-slate-950/20 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white focus:border-indigo-500 focus:outline-none" 
+                                className="w-full bg-slate-950/20 border border-white/10 rounded-none px-4 py-2.5 text-xs text-white focus:border-indigo-500 focus:outline-none" 
                                 placeholder="https://xyz.supabase.co"
                                 value={config.supabaseUrl || ''}
                                 onChange={(e) => setConfig({...config, supabaseUrl: e.target.value})}
@@ -150,7 +150,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                             <label className="text-[10px] font-bold text-slate-500 uppercase">Service Role Key</label>
                             <input 
                                 type="password" 
-                                className="w-full bg-slate-950/20 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white focus:border-indigo-500 focus:outline-none" 
+                                className="w-full bg-slate-950/20 border border-white/10 rounded-none px-4 py-2.5 text-xs text-white focus:border-indigo-500 focus:outline-none" 
                                 placeholder="Secret key..."
                                 value={config.supabaseKey || ''}
                                 onChange={(e) => setConfig({...config, supabaseKey: e.target.value})}
@@ -162,7 +162,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                                 <Plus className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={14} />
                                 <input 
                                     type="number" 
-                                    className="w-full bg-slate-950/20 border border-white/10 rounded-xl px-4 py-2.5 pl-8 text-xs text-white focus:border-indigo-500 focus:outline-none" 
+                                    className="w-full bg-slate-950/20 border border-white/10 rounded-none px-4 py-2.5 pl-8 text-xs text-white focus:border-indigo-500 focus:outline-none" 
                                     placeholder="20"
                                     value={config.multiplier || ''}
                                     onChange={(e) => setConfig({...config, multiplier: parseFloat(e.target.value) || 0})}
@@ -186,7 +186,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                                 Instrucciones IA
                             </label>
                             <textarea 
-                                className="w-full bg-slate-950/20 border border-white/10 rounded-xl px-4 py-3 text-xs text-white resize-none min-h-[100px] focus:border-indigo-500 focus:outline-none" 
+                                className="w-full bg-slate-950/20 border border-white/10 rounded-none px-4 py-3 text-xs text-white resize-none min-h-[100px] focus:border-indigo-500 focus:outline-none" 
                                 placeholder="Ej: Extraer solo talle M..."
                                 value={config.aiInstruction}
                                 onChange={(e) => setConfig({...config, aiInstruction: e.target.value})}
@@ -210,12 +210,12 @@ const Sidebar: React.FC<SidebarProps> = ({
                                         className="space-y-3 overflow-hidden"
                                     >
                                         <textarea 
-                                            className="w-full bg-black/40 border border-indigo-500/20 rounded-xl px-4 py-3 min-h-[60px] text-[10px] text-indigo-100 font-mono focus:outline-none" 
+                                            className="w-full bg-black/40 border border-indigo-500/20 rounded-none px-4 py-3 min-h-[60px] text-[10px] text-indigo-100 font-mono focus:outline-none" 
                                             placeholder='[{"name": "...", "value": "..."}, ...]'
                                             value={config.auth.cookies}
                                             onChange={(e) => setConfig({...config, auth: {...config.auth, cookies: e.target.value}})}
                                         />
-                                        <div className="p-3 bg-indigo-500/10 border border-indigo-500/20 rounded-xl text-[10px] text-indigo-200/60 leading-relaxed italic">
+                                        <div className="p-3 bg-indigo-500/10 border border-indigo-500/20 rounded-none text-[10px] text-indigo-200/60 leading-relaxed italic">
                                             Exporta el JSON de "EditThisCookie" para sitios con login.
                                         </div>
                                     </motion.div>
@@ -227,7 +227,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             </div>
 
             {/* MAINTENANCE TOOLS */}
-            <div className="glass-panel p-6 border-red-500/10 bg-red-500/5 rounded-3xl">
+            <div className="glass-panel p-6 border-red-500/10 bg-red-500/5 rounded-none">
                 <div className="flex items-center gap-2 text-red-400 font-bold mb-4 text-xs uppercase tracking-widest">
                     <Trash2 size={16} />
                     <span>Mantenimiento</span>
@@ -235,14 +235,14 @@ const Sidebar: React.FC<SidebarProps> = ({
                 <button 
                     onClick={handleCleanupDuplicates}
                     disabled={isExporting}
-                    className="w-full py-2.5 text-[10px] font-black bg-red-600/10 hover:bg-red-600/20 border border-red-500/20 rounded-lg text-red-500 transition-all uppercase tracking-widest disabled:opacity-50"
+                    className="w-full py-2.5 text-[10px] font-black bg-red-600/10 hover:bg-red-600/20 border border-red-500/20 rounded-none text-red-500 transition-all uppercase tracking-widest disabled:opacity-50"
                 >
                     LIMPIAR DUPLICADOS EXACTOS
                 </button>
             </div>
 
             {/* PROVIDERS LIST */}
-            <div className="glass-panel p-6 rounded-3xl">
+            <div className="glass-panel p-6 rounded-none">
                 <div className="flex items-center gap-2 text-slate-400 font-bold mb-4 text-xs uppercase tracking-widest">
                     <Globe size={16} />
                     <span>Fuentes activas</span>
@@ -252,9 +252,9 @@ const Sidebar: React.FC<SidebarProps> = ({
                         <div className="py-4 text-center text-xs text-slate-600">Cargando...</div>
                     ) : providers.length > 0 ? (
                         providers.map((p, i) => (
-                            <div key={i} className="flex items-center justify-between p-2 rounded-lg bg-slate-900/40 border border-white/5 hover:border-indigo-500/20 transition-all group">
+                            <div key={i} className="flex items-center justify-between p-2 rounded-none bg-slate-900/40 border border-white/5 hover:border-indigo-500/20 transition-all group">
                                 <span className="text-[10px] font-bold text-slate-400 group-hover:text-slate-200 truncate uppercase">{p.name}</span>
-                                <span className="text-[10px] bg-slate-800 text-indigo-400 px-2 py-0.5 rounded-full font-bold">{p.count}</span>
+                                <span className="text-[10px] bg-slate-800 text-indigo-400 px-2 py-0.5 rounded-none font-bold">{p.count}</span>
                             </div>
                         ))
                     ) : (
@@ -277,7 +277,7 @@ interface AccordionProps {
 }
 
 const ConfigAccordion: React.FC<AccordionProps> = ({ title, icon, children, isOpen, toggle }) => (
-    <div className={`glass-panel overflow-hidden transition-all duration-300 rounded-3xl ${isOpen ? 'ring-1 ring-indigo-500/30' : ''}`}>
+    <div className={`glass-panel overflow-hidden transition-all duration-300 rounded-none ${isOpen ? 'ring-1 ring-indigo-500/30' : ''}`}>
         <button 
             onClick={toggle}
             className="w-full p-6 flex items-center justify-between text-slate-200 hover:bg-white/5 transition-colors"
@@ -311,7 +311,7 @@ interface ToggleProps {
 }
 
 const ToggleItem: React.FC<ToggleProps> = ({ label, checked, onChange, description }) => (
-    <label className="flex items-start justify-between gap-4 p-3 rounded-xl hover:bg-white/5 border border-transparent hover:border-white/5 transition-all cursor-pointer group">
+    <label className="flex items-start justify-between gap-4 p-3 rounded-none hover:bg-white/5 border border-transparent hover:border-white/5 transition-all cursor-pointer group">
         <div className="flex flex-col gap-0.5">
             <span className="text-xs font-bold text-slate-300 group-hover:text-white transition-colors">{label}</span>
             {description && <span className="text-[10px] text-slate-500 uppercase tracking-tighter">{description}</span>}
@@ -321,9 +321,9 @@ const ToggleItem: React.FC<ToggleProps> = ({ label, checked, onChange, descripti
                 e.preventDefault();
                 onChange(!checked);
             }}
-            className={`mt-1 relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${checked ? 'bg-indigo-500' : 'bg-slate-800'}`}
+            className={`mt-1 relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-none border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${checked ? 'bg-indigo-500' : 'bg-slate-800'}`}
         >
-            <span className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${checked ? 'translate-x-4' : 'translate-x-0'}`} />
+            <span className={`pointer-events-none inline-block h-4 w-4 transform rounded-none bg-white shadow ring-0 transition duration-200 ease-in-out ${checked ? 'translate-x-4' : 'translate-x-0'}`} />
         </div>
     </label>
 );

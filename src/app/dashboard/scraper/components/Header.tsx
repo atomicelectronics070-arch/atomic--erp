@@ -17,7 +17,7 @@ const Header: React.FC<HeaderProps> = ({ isScraping }) => {
                     animate={{ opacity: 1, x: 0 }}
                     className="flex items-center gap-3 mb-2"
                 >
-                    <div className="p-2 bg-indigo-500/20 rounded-lg">
+                    <div className="p-2 bg-indigo-500/20 rounded-none">
                         <Sparkles className="text-indigo-400" size={24} />
                     </div>
                     <span className="text-xs font-bold tracking-[0.2em] text-indigo-400 uppercase">Atomic Suite</span>
@@ -45,7 +45,7 @@ const Header: React.FC<HeaderProps> = ({ isScraping }) => {
                 <motion.div 
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="flex items-center gap-3 px-4 py-2 bg-indigo-500/10 border border-indigo-500/20 rounded-full text-indigo-300 text-sm font-medium"
+                    className="flex items-center gap-3 px-4 py-2 bg-indigo-500/10 border border-indigo-500/20 rounded-none text-indigo-300 text-sm font-medium"
                 >
                     <Activity size={16} className="animate-pulse" />
                     <span>Motor de extracción activo...</span>

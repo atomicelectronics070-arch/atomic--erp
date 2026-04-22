@@ -161,7 +161,7 @@ export default function ContractsEvidencePage() {
     if (loadingCycle) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[500px] space-y-8 animate-pulse text-slate-800">
-                <div className="w-16 h-16 border-4 border-white/5 border-t-primary rounded-full animate-spin shadow-2xl"></div>
+                <div className="w-16 h-16 border-4 border-white/5 border-t-primary rounded-none animate-spin shadow-2xl"></div>
                 <p className="text-[10px] font-black uppercase tracking-[0.5em] italic">Sincronizando Historial Contractual...</p>
             </div>
         )
@@ -171,8 +171,8 @@ export default function ContractsEvidencePage() {
         <div className="space-y-16 pb-32 animate-in fade-in duration-1000 relative">
             {/* Background Orbs */}
             <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-                <div className="absolute top-[5%] right-[-5%] w-[40%] h-[40%] rounded-full bg-indigo-500/5 blur-[120px]" />
-                <div className="absolute bottom-[10%] left-[-5%] w-[35%] h-[35%] rounded-full bg-pink-500/3 blur-[100px]" />
+                <div className="absolute top-[5%] right-[-5%] w-[40%] h-[40%] rounded-none bg-indigo-500/5 blur-[120px]" />
+                <div className="absolute bottom-[10%] left-[-5%] w-[35%] h-[35%] rounded-none bg-pink-500/3 blur-[100px]" />
             </div>
 
             {/* Header */}
@@ -189,8 +189,8 @@ export default function ContractsEvidencePage() {
                         Gestión táctica de vinculación legal y monitoreo estratégico del programa de alto rendimiento de 30 días.
                     </p>
                 </div>
-                <div className="flex items-center gap-6 glass-panel !bg-slate-950/40 px-8 py-4 rounded-2xl border-white/5 text-[10px] font-black uppercase tracking-widest text-slate-500 italic shadow-2xl ring-1 ring-white/5">
-                    <span className={`w-3 h-3 rounded-full animate-pulse ${isAdmin ? "bg-primary shadow-[0_0_10px_rgba(99,102,241,1)]" : "bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,1)]"}`} />
+                <div className="flex items-center gap-6 glass-panel !bg-slate-950/40 px-8 py-4 rounded-none border-white/5 text-[10px] font-black uppercase tracking-widest text-slate-500 italic shadow-2xl ring-1 ring-white/5">
+                    <span className={`w-3 h-3 rounded-none animate-pulse ${isAdmin ? "bg-primary shadow-[0_0_10px_rgba(99,102,241,1)]" : "bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,1)]"}`} />
                     NIVEL_ACCESO: <span className="text-white ml-2">{session?.user?.role || "COLABORADOR"}</span>
                 </div>
             </div>
@@ -201,7 +201,7 @@ export default function ContractsEvidencePage() {
                 <div className="lg:col-span-1 space-y-10">
                     {isAdmin && (
                         /* Admin: Pending Requests */
-                        <div className="glass-panel border-white/5 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col rounded-[3.5rem] backdrop-blur-3xl">
+                        <div className="glass-panel border-white/5 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col rounded-none-[3.5rem] backdrop-blur-3xl">
                             <div className="p-12 border-b border-white/5 bg-white/[0.01]">
                                 <h2 className="text-xl font-black text-white uppercase tracking-tighter italic flex items-center gap-6">
                                     <ShieldAlert size={28} className="text-primary drop-shadow-[0_0_10px_rgba(99,102,241,0.5)]" /> Auditoría Pendiente
@@ -213,17 +213,17 @@ export default function ContractsEvidencePage() {
                                     <div className="flex justify-center py-20"><Loader2 className="animate-spin text-secondary" size={32} /></div>
                                 ) : pendingRequests.length === 0 ? (
                                     <div className="text-center py-20 space-y-4">
-                                        <div className="w-16 h-16 bg-slate-900 rounded-full flex items-center justify-center mx-auto border border-white/5 shadow-inner">
+                                        <div className="w-16 h-16 bg-slate-900 rounded-none flex items-center justify-center mx-auto border border-white/5 shadow-inner">
                                             <FileSignature size={24} className="text-slate-800" />
                                         </div>
                                         <p className="text-[10px] text-slate-700 font-black uppercase tracking-[0.4em] italic">Sin solicitudes registradas.</p>
                                     </div>
                                 ) : (
                                     pendingRequests.map(cycle => (
-                                        <div key={cycle.id} className="glass-panel !bg-slate-900/40 p-8 rounded-[2.5rem] border-white/5 space-y-6 group hover:!bg-white/[0.04] transition-all relative overflow-hidden">
+                                        <div key={cycle.id} className="glass-panel !bg-slate-900/40 p-8 rounded-none-[2.5rem] border-white/5 space-y-6 group hover:!bg-white/[0.04] transition-all relative overflow-hidden">
                                             <div className="absolute left-0 top-0 w-1.5 h-full bg-primary opacity-20 group-hover:opacity-100 transition-opacity" />
                                             <div className="flex items-center gap-6">
-                                                <div className="w-14 h-14 bg-slate-950 rounded-2xl border border-white/5 flex items-center justify-center text-white font-black text-xl italic shadow-inner group-hover:scale-105 transition-transform">
+                                                <div className="w-14 h-14 bg-slate-950 rounded-none border border-white/5 flex items-center justify-center text-white font-black text-xl italic shadow-inner group-hover:scale-105 transition-transform">
                                                     {cycle.user?.name?.[0] || "U"}
                                                 </div>
                                                 <div>
@@ -236,7 +236,7 @@ export default function ContractsEvidencePage() {
                                                 href={cycle.contractUrl} 
                                                 target="_blank" 
                                                 rel="noreferrer"
-                                                className="flex items-center gap-4 text-[10px] text-primary font-black hover:text-white uppercase tracking-[0.3em] bg-primary/5 px-6 py-3 rounded-xl border border-primary/20 transition-all italic group/link"
+                                                className="flex items-center gap-4 text-[10px] text-primary font-black hover:text-white uppercase tracking-[0.3em] bg-primary/5 px-6 py-3 rounded-none border border-primary/20 transition-all italic group/link"
                                             >
                                                 <FileText size={16} className="group-hover/link:rotate-12 transition-transform" />
                                                 Visualizar Activo Legal
@@ -247,7 +247,7 @@ export default function ContractsEvidencePage() {
                                                     <label className="text-[9px] font-black text-slate-600 uppercase tracking-[0.3em] ml-2 italic">Sueldo Fijo ($)</label>
                                                     <input 
                                                         type="number" 
-                                                        className="w-full bg-slate-950 border border-white/5 px-4 py-3 text-xs font-black text-white rounded-xl focus:border-primary outline-none transition-all shadow-inner"
+                                                        className="w-full bg-slate-950 border border-white/5 px-4 py-3 text-xs font-black text-white rounded-none focus:border-primary outline-none transition-all shadow-inner"
                                                         value={approveForm.fixedPay}
                                                         onChange={(e) => setApproveForm(prev => ({ ...prev, fixedPay: e.target.value }))}
                                                     />
@@ -256,7 +256,7 @@ export default function ContractsEvidencePage() {
                                                     <label className="text-[9px] font-black text-slate-600 uppercase tracking-[0.3em] ml-2 italic">Comisión (%)</label>
                                                     <input 
                                                         type="number" 
-                                                        className="w-full bg-slate-950 border border-white/5 px-4 py-3 text-xs font-black text-white rounded-xl focus:border-primary outline-none transition-all shadow-inner"
+                                                        className="w-full bg-slate-950 border border-white/5 px-4 py-3 text-xs font-black text-white rounded-none focus:border-primary outline-none transition-all shadow-inner"
                                                         value={approveForm.commissionPct}
                                                         onChange={(e) => setApproveForm(prev => ({ ...prev, commissionPct: e.target.value }))}
                                                     />
@@ -265,7 +265,7 @@ export default function ContractsEvidencePage() {
 
                                             <button
                                                 onClick={() => handleApproveAdmin(cycle.id)}
-                                                className="w-full bg-primary hover:bg-white hover:text-primary text-white py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.4em] transition-all shadow-[0_15px_30px_rgba(99,102,241,0.4)] italic skew-x-[-15deg] group"
+                                                className="w-full bg-primary hover:bg-white hover:text-primary text-white py-4 rounded-none text-[10px] font-black uppercase tracking-[0.4em] transition-all shadow-[0_15px_30px_rgba(99,102,241,0.4)] italic skew-x-[-15deg] group"
                                             >
                                                 <div className="skew-x-[8deg] flex items-center justify-center gap-3">
                                                     <Zap size={16} className="group-hover:scale-125 transition-transform" />
@@ -281,14 +281,14 @@ export default function ContractsEvidencePage() {
 
                     {!isAdmin && (
                         /* Colaborador Section */
-                        <div className="glass-panel border-white/5 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] p-12 flex flex-col rounded-[3.5rem] backdrop-blur-3xl relative overflow-hidden">
+                        <div className="glass-panel border-white/5 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] p-12 flex flex-col rounded-none-[3.5rem] backdrop-blur-3xl relative overflow-hidden">
                              <div className="absolute top-0 right-0 p-8 opacity-5 text-white pointer-events-none">
                                 <FileSignature size={120} />
                             </div>
                             {!myCycle ? (
                                 /* No cycle at all -> Upload */
                                 <div className="relative z-10">
-                                    <div className="w-24 h-24 bg-white/5 text-primary rounded-3xl flex items-center justify-center mx-auto mb-10 border border-white/5 shadow-[0_0_50px_rgba(99,102,241,0.15)] group hover:scale-105 transition-transform duration-700">
+                                    <div className="w-24 h-24 bg-white/5 text-primary rounded-none flex items-center justify-center mx-auto mb-10 border border-white/5 shadow-[0_0_50px_rgba(99,102,241,0.15)] group hover:scale-105 transition-transform duration-700">
                                         <FileSignature size={48} className="group-hover:rotate-12 transition-transform" />
                                     </div>
                                     <h2 className="text-3xl font-black text-white uppercase tracking-tighter mb-4 text-center italic">MI <span className="text-primary">CONTRATO</span></h2>
@@ -307,25 +307,25 @@ export default function ContractsEvidencePage() {
                                     {!uploadedFile ? (
                                         <button
                                             onClick={() => fileInputRef.current?.click()}
-                                            className="w-full border-2 border-dashed border-white/10 hover:border-primary/40 bg-slate-900/60 text-slate-500 font-black py-16 rounded-[2rem] flex flex-col items-center justify-center transition-all gap-6 text-[10px] uppercase tracking-[0.5em] italic group shadow-inner"
+                                            className="w-full border-2 border-dashed border-white/10 hover:border-primary/40 bg-slate-900/60 text-slate-500 font-black py-16 rounded-none-[2rem] flex flex-col items-center justify-center transition-all gap-6 text-[10px] uppercase tracking-[0.5em] italic group shadow-inner"
                                         >
                                             <Upload size={32} className="group-hover:translate-y-[-4px] transition-transform text-primary/40" />
                                             <span>IDENTIFICAR PDF_LOCAL</span>
                                         </button>
                                     ) : (
                                         <div className="space-y-6">
-                                            <div className="flex items-center gap-6 bg-slate-900/80 border border-white/5 px-8 py-6 rounded-2xl shadow-inner relative group">
-                                                <div className="absolute left-0 top-0 h-full w-1.5 bg-primary rounded-l-2xl" />
+                                            <div className="flex items-center gap-6 bg-slate-900/80 border border-white/5 px-8 py-6 rounded-none shadow-inner relative group">
+                                                <div className="absolute left-0 top-0 h-full w-1.5 bg-primary rounded-none" />
                                                 <FileText size={24} className="text-primary shrink-0" />
                                                 <span className="text-xs font-black text-white truncate flex-1 uppercase italic tracking-tighter">{uploadedFile.name}</span>
-                                                <button onClick={handleResetUpload} className="p-3 text-slate-700 hover:text-red-500 transition-all bg-slate-950 rounded-xl border border-white/5 shadow-2xl">
+                                                <button onClick={handleResetUpload} className="p-3 text-slate-700 hover:text-red-500 transition-all bg-slate-950 rounded-none border border-white/5 shadow-2xl">
                                                     <X size={18} />
                                                 </button>
                                             </div>
                                             <button
                                                 onClick={handleUpload}
                                                 disabled={isUploading}
-                                                className="w-full bg-primary hover:bg-white hover:text-primary disabled:opacity-20 text-white font-black py-6 rounded-[2rem] flex items-center justify-center transition-all shadow-[0_25px_60px_-10px_rgba(99,102,241,0.6)] active:scale-95 text-[11px] uppercase tracking-[0.4em] gap-6 italic skew-x-[-15deg] group"
+                                                className="w-full bg-primary hover:bg-white hover:text-primary disabled:opacity-20 text-white font-black py-6 rounded-none-[2rem] flex items-center justify-center transition-all shadow-[0_25px_60px_-10px_rgba(99,102,241,0.6)] active:scale-95 text-[11px] uppercase tracking-[0.4em] gap-6 italic skew-x-[-15deg] group"
                                             >
                                                 <div className="skew-x-[12deg] flex items-center gap-4">
                                                     {isUploading ? (
@@ -341,14 +341,14 @@ export default function ContractsEvidencePage() {
                             ) : myCycle.isActive === false ? (
                                 /* Cycle exists but not approved */
                                 <div className="text-center py-12 relative z-10">
-                                    <div className="w-24 h-24 bg-slate-900 text-slate-700 rounded-3xl flex items-center justify-center mx-auto mb-10 border border-white/5 shadow-inner">
+                                    <div className="w-24 h-24 bg-slate-900 text-slate-700 rounded-none flex items-center justify-center mx-auto mb-10 border border-white/5 shadow-inner">
                                         <Timer size={48} className="animate-pulse" />
                                     </div>
                                     <h2 className="text-2xl font-black text-white uppercase tracking-tighter mb-4 italic">AUDITORÍA <span className="text-primary">ESTACIONARIA</span></h2>
                                     <p className="text-[11px] text-slate-500 font-black mb-10 italic leading-relaxed uppercase tracking-[0.4em]">
                                         Contrato recibido exitosamente. Protocolo en espera de configuración central para iniciar ciclo 30D.
                                     </p>
-                                    <div className="inline-flex items-center gap-4 px-8 py-3 bg-primary/5 text-[9px] font-black text-primary uppercase tracking-[0.5em] border border-primary/20 rounded-full italic shadow-2xl">
+                                    <div className="inline-flex items-center gap-4 px-8 py-3 bg-primary/5 text-[9px] font-black text-primary uppercase tracking-[0.5em] border border-primary/20 rounded-none italic shadow-2xl">
                                         ESTADO: ESPERANDO SINCRONIZACIÓN
                                     </div>
                                 </div>
@@ -356,7 +356,7 @@ export default function ContractsEvidencePage() {
                                 /* Active cycle info */
                                 <div className="space-y-10 relative z-10">
                                     <div className="text-center">
-                                        <div className="w-24 h-24 bg-emerald-500/10 text-emerald-400 rounded-3xl flex items-center justify-center mx-auto mb-10 border border-emerald-500/20 shadow-[0_0_50px_rgba(52,211,153,0.2)]">
+                                        <div className="w-24 h-24 bg-emerald-500/10 text-emerald-400 rounded-none flex items-center justify-center mx-auto mb-10 border border-emerald-500/20 shadow-[0_0_50px_rgba(52,211,153,0.2)]">
                                             <CheckCircle2 size={48} />
                                         </div>
                                         <h2 className="text-3xl font-black text-emerald-400 uppercase tracking-tighter mb-2 italic">CICLO <span className="text-white">ACTIVO</span></h2>
@@ -367,14 +367,14 @@ export default function ContractsEvidencePage() {
 
                                     {/* Economic Terms for User */}
                                     <div className="grid grid-cols-2 gap-8 border-t border-white/5 pt-12">
-                                        <div className="glass-panel !bg-slate-950/60 p-8 border border-white/5 rounded-3xl shadow-inner relative overflow-hidden group">
+                                        <div className="glass-panel !bg-slate-950/60 p-8 border border-white/5 rounded-none shadow-inner relative overflow-hidden group">
                                             <div className="absolute right-0 top-0 p-4 opacity-5 text-primary group-hover:scale-125 transition-transform"><DollarSign size={40} /></div>
                                             <p className="text-[9px] font-black text-slate-600 uppercase tracking-[0.4em] mb-4 italic flex items-center gap-3">
                                                 <TrendingUp size={12} className="text-primary" /> SUELDO_FIJO
                                             </p>
                                             <p className="text-4xl font-black text-white italic tracking-tighter group-hover:translate-x-2 transition-transform">${myCycle.fixedPay || 0}</p>
                                         </div>
-                                        <div className="glass-panel !bg-slate-950/60 p-8 border border-white/5 rounded-3xl shadow-inner relative overflow-hidden group">
+                                        <div className="glass-panel !bg-slate-950/60 p-8 border border-white/5 rounded-none shadow-inner relative overflow-hidden group">
                                             <div className="absolute right-0 top-0 p-4 opacity-5 text-azure-400 group-hover:scale-125 transition-transform"><Percent size={40} /></div>
                                             <p className="text-[9px] font-black text-slate-600 uppercase tracking-[0.4em] mb-4 italic flex items-center gap-3">
                                                 <Zap size={12} className="text-azure-400" /> VARIABLE_COM
@@ -393,13 +393,13 @@ export default function ContractsEvidencePage() {
                             <motion.div 
                                 initial={{ opacity: 0, scale: 0.95 }}
                                 animate={{ opacity: 1, scale: 1 }}
-                                className="glass-panel !bg-slate-950/60 border-white/5 rounded-[3.5rem] p-12 text-white shadow-[0_50px_100px_-20px_rgba(0,0,0,1)] border relative overflow-hidden backdrop-blur-3xl"
+                                className="glass-panel !bg-slate-950/60 border-white/5 rounded-none-[3.5rem] p-12 text-white shadow-[0_50px_100px_-20px_rgba(0,0,0,1)] border relative overflow-hidden backdrop-blur-3xl"
                             >
                                 <div className="absolute top-0 right-0 p-10 opacity-5 text-secondary pointer-events-none rotate-12">
                                     <Timer size={150} />
                                 </div>
                                 <div className="flex items-center space-x-6 text-primary mb-10 relative z-10">
-                                    <div className="p-4 glass-panel !bg-primary/10 border-primary/20 rounded-2xl shadow-2xl">
+                                    <div className="p-4 glass-panel !bg-primary/10 border-primary/20 rounded-none shadow-2xl">
                                         <Timer size={24} className="drop-shadow-[0_0_10px_rgba(99,102,241,0.5)]" />
                                     </div>
                                     <span className="text-[11px] font-black uppercase tracking-[0.6em] italic">Progreso de Despliegue</span>
@@ -408,12 +408,12 @@ export default function ContractsEvidencePage() {
                                     <h3 className="text-6xl font-black mb-4 tracking-tighter italic flex items-end gap-4">
                                         DÍA {cycleInfo.currentDay} <span className="text-xl text-slate-700 tracking-widest font-black uppercase mb-3">/ 30D</span>
                                     </h3>
-                                    <div className="w-full bg-slate-900 h-3 rounded-full overflow-hidden mt-10 border border-white/5 shadow-inner p-[1.5px]">
+                                    <div className="w-full bg-slate-900 h-3 rounded-none overflow-hidden mt-10 border border-white/5 shadow-inner p-[1.5px]">
                                         <motion.div
                                             initial={{ width: 0 }}
                                             animate={{ width: `${cycleInfo.progress}%` }}
                                             transition={{ duration: 2, ease: "easeOut" }}
-                                            className="bg-gradient-to-r from-primary/40 to-primary h-full rounded-full shadow-[0_0_20px_rgba(99,102,241,0.5)]"
+                                            className="bg-gradient-to-r from-primary/40 to-primary h-full rounded-none shadow-[0_0_20px_rgba(99,102,241,0.5)]"
                                         />
                                     </div>
                                     <p className="text-[10px] text-slate-500 mt-8 uppercase font-black tracking-[0.6em] italic leading-relaxed">
@@ -429,10 +429,10 @@ export default function ContractsEvidencePage() {
 
                 {/* Right Panel: 30-Day Timeline */}
                 <div className="lg:col-span-2 space-y-10">
-                    <div className="glass-panel border-white/5 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] p-12 rounded-[4rem] backdrop-blur-3xl">
+                    <div className="glass-panel border-white/5 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] p-12 rounded-none-[4rem] backdrop-blur-3xl">
                         <div className="flex flex-wrap justify-between items-center mb-16 border-b border-white/5 pb-10 gap-8">
                             <div className="flex items-center space-x-6">
-                                <div className="p-5 bg-azure-500/10 border border-azure-500/20 text-azure-400 rounded-2xl shadow-2xl">
+                                <div className="p-5 bg-azure-500/10 border border-azure-500/20 text-azure-400 rounded-none shadow-2xl">
                                     <CalendarIcon size={32} className="drop-shadow-[0_0_10px_rgba(45,212,191,0.5)]" />
                                 </div>
                                 <div>
@@ -440,7 +440,7 @@ export default function ContractsEvidencePage() {
                                     <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] mt-3 italic">Cronograma Maestro 30 Jornadas</p>
                                 </div>
                             </div>
-                            <span className="text-[11px] font-black text-azure-400 bg-azure-500/10 px-8 py-3 rounded-full border border-azure-500/20 uppercase tracking-[0.4em] italic shadow-2xl">
+                            <span className="text-[11px] font-black text-azure-400 bg-azure-500/10 px-8 py-3 rounded-none border border-azure-500/20 uppercase tracking-[0.4em] italic shadow-2xl">
                                 {myCycle?.isActive 
                                     ? `VENCIMIENTO: ${new Date(myCycle.endDate).toLocaleDateString("es-EC").toUpperCase()}`
                                     : "PROTOCOLO EN ESPERA"}
@@ -459,7 +459,7 @@ export default function ContractsEvidencePage() {
                                         whileInView={{ opacity: 1, scale: 1 }}
                                         viewport={{ once: true }}
                                         key={week.id}
-                                        className={`p-10 rounded-[3rem] border-2 transition-all flex flex-col justify-between group relative overflow-hidden shadow-2xl ${status === "completed"
+                                        className={`p-10 rounded-none-[3rem] border-2 transition-all flex flex-col justify-between group relative overflow-hidden shadow-2xl ${status === "completed"
                                             ? "border-emerald-500/20 bg-emerald-500/5 backdrop-blur-3xl"
                                             : status === "pending"
                                                 ? "border-primary/40 bg-primary/5 shadow-[0_0_50px_rgba(99,102,241,0.1)] scale-[1.03] border-dashed"
@@ -472,18 +472,18 @@ export default function ContractsEvidencePage() {
 
                                         <div className="flex items-start justify-between mb-10 relative z-10">
                                             <div>
-                                                <span className={`text-[9px] font-black uppercase tracking-[0.4em] px-5 py-2 rounded-xl italic border shadow-2xl mb-6 inline-block ${status === "completed" ? "text-emerald-400 bg-emerald-500/10 border-emerald-500/20 shadow-emerald-500/10" : "text-primary bg-primary/10 border-primary/20 shadow-primary/10"}`}>
+                                                <span className={`text-[9px] font-black uppercase tracking-[0.4em] px-5 py-2 rounded-none italic border shadow-2xl mb-6 inline-block ${status === "completed" ? "text-emerald-400 bg-emerald-500/10 border-emerald-500/20 shadow-emerald-500/10" : "text-primary bg-primary/10 border-primary/20 shadow-primary/10"}`}>
                                                     {week.type.toUpperCase()}
                                                 </span>
                                                 <h4 className="text-3xl font-black text-white italic tracking-tighter uppercase group-hover:text-primary transition-colors">SEMANA {week.id}</h4>
                                                 <p className="text-[11px] font-black text-slate-600 uppercase tracking-[0.3em] mt-3 italic">{week.label}</p>
                                             </div>
                                             {status === "completed" ? (
-                                                <div className="w-16 h-16 bg-emerald-500 text-slate-950 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(52,211,153,0.5)] group-hover:rotate-12 transition-transform">
+                                                <div className="w-16 h-16 bg-emerald-500 text-slate-950 rounded-none flex items-center justify-center shadow-[0_0_30px_rgba(52,211,153,0.5)] group-hover:rotate-12 transition-transform">
                                                     <CheckCircle2 size={32} />
                                                 </div>
                                             ) : (
-                                                <div className="w-16 h-16 bg-slate-900 border border-white/5 rounded-2xl flex items-center justify-center text-slate-700 shadow-inner group-hover:bg-primary group-hover:text-white transition-all group-hover:shadow-[0_15px_30px_rgba(99,102,241,0.3)]">
+                                                <div className="w-16 h-16 bg-slate-900 border border-white/5 rounded-none flex items-center justify-center text-slate-700 shadow-inner group-hover:bg-primary group-hover:text-white transition-all group-hover:shadow-[0_15px_30px_rgba(99,102,241,0.3)]">
                                                     <Briefcase size={28} />
                                                 </div>
                                             )}
@@ -506,17 +506,17 @@ export default function ContractsEvidencePage() {
                         
                         {/* Legend for Admin */}
                         {isAdmin && (
-                            <div className="mt-16 bg-slate-950/60 p-8 rounded-[2.5rem] border border-white/5 flex items-center gap-10">
+                            <div className="mt-16 bg-slate-950/60 p-8 rounded-none-[2.5rem] border border-white/5 flex items-center gap-10">
                                 <div className="flex items-center gap-4">
-                                    <div className="w-3 h-3 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(52,211,153,0.5)]" />
+                                    <div className="w-3 h-3 rounded-none bg-emerald-500 shadow-[0_0_10px_rgba(52,211,153,0.5)]" />
                                     <span className="text-[9px] font-black text-slate-600 uppercase tracking-[0.4em] italic">COMPLETADO</span>
                                 </div>
                                 <div className="flex items-center gap-4">
-                                    <div className="w-3 h-3 rounded-full bg-secondary shadow-[0_0_10px_rgba(255,99,71,0.5)] animate-pulse" />
+                                    <div className="w-3 h-3 rounded-none bg-secondary shadow-[0_0_10px_rgba(255,99,71,0.5)] animate-pulse" />
                                     <span className="text-[9px] font-black text-slate-600 uppercase tracking-[0.4em] italic">EN_PROGRESO</span>
                                 </div>
                                 <div className="flex items-center gap-4">
-                                    <div className="w-3 h-3 rounded-full bg-slate-800" />
+                                    <div className="w-3 h-3 rounded-none bg-slate-800" />
                                     <span className="text-[9px] font-black text-slate-600 uppercase tracking-[0.4em] italic">POR_ACTIVAR</span>
                                 </div>
                                 <div className="ms-auto flex items-center gap-3 text-slate-800 italic uppercase font-black text-[8px] tracking-[0.4em]">

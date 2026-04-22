@@ -36,21 +36,21 @@ const ModalManager: React.FC<ModalManagerProps> = ({
                         <div className="flex gap-4">
                             <button 
                                 onClick={() => setShowPreview(false)}
-                                className="px-6 py-2 bg-slate-800 text-slate-400 rounded-xl hover:bg-slate-700 hover:text-white transition-all text-xs font-bold uppercase"
+                                className="px-6 py-2 bg-slate-800 text-slate-400 rounded-none hover:bg-slate-700 hover:text-white transition-all text-xs font-bold uppercase"
                             >
                                 Cancelar
                             </button>
                             <button 
                                 onClick={() => { handleExport('xlsx'); setShowPreview(false); }}
                                 disabled={isExporting}
-                                className="px-6 py-2 bg-green-600 text-white rounded-xl hover:bg-green-500 shadow-xl shadow-green-500/20 flex items-center gap-2 text-xs font-bold uppercase transition-all"
+                                className="px-6 py-2 bg-green-600 text-white rounded-none hover:bg-green-500 shadow-xl shadow-green-500/20 flex items-center gap-2 text-xs font-bold uppercase transition-all"
                             >
                                 <Download size={16} /> Descargar Archivo Excel
                             </button>
                         </div>
                     }
                 >
-                    <div className="overflow-auto max-h-[60vh] rounded-2xl border border-white/5 bg-slate-950/40 custom-scrollbar">
+                    <div className="overflow-auto max-h-[60vh] rounded-none border border-white/5 bg-slate-950/40 custom-scrollbar">
                         <table className="w-full text-left border-collapse">
                             <thead className="bg-slate-900 border-b border-white/10 sticky top-0 z-10">
                                 <tr>
@@ -67,7 +67,7 @@ const ModalManager: React.FC<ModalManagerProps> = ({
                                                 {f === 'images' && item[f] ? (
                                                     <div className="flex -space-x-2">
                                                         {(item[f] as string).split(', ').slice(0, 3).map((img, idx) => (
-                                                            <img key={idx} src={img} className="h-8 w-8 rounded-lg ring-2 ring-slate-950 object-cover bg-slate-800" alt="" />
+                                                            <img key={idx} src={img} className="h-8 w-8 rounded-none ring-2 ring-slate-950 object-cover bg-slate-800" alt="" />
                                                         ))}
                                                     </div>
                                                 ) : (item[f] || '-')}
@@ -96,7 +96,7 @@ const ModalManager: React.FC<ModalManagerProps> = ({
                             </div>
                         ) : (
                             history.map(item => (
-                                <div key={item.id} className="p-5 glass-panel border-white/5 hover:border-indigo-500/20 bg-white/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 group transition-all rounded-3xl overflow-hidden">
+                                <div key={item.id} className="p-5 glass-panel border-white/5 hover:border-indigo-500/20 bg-white/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 group transition-all rounded-none overflow-hidden">
                                     <div className="space-y-1">
                                         <div className="flex items-center gap-2">
                                             <Database size={14} className="text-indigo-400" />
@@ -104,7 +104,7 @@ const ModalManager: React.FC<ModalManagerProps> = ({
                                         </div>
                                         <div className="flex gap-4 mt-1 items-center">
                                             <span className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">{item.date}</span>
-                                            <span className="text-[10px] px-2 py-0.5 bg-green-500/10 text-green-500 border border-green-500/20 rounded font-black">{item.total} ÍTEMS</span>
+                                            <span className="text-[10px] px-2 py-0.5 bg-green-500/10 text-green-500 border border-green-500/20 rounded-none font-black">{item.total} ÍTEMS</span>
                                         </div>
                                     </div>
                                     <div className="flex gap-2 w-full md:w-auto">
@@ -164,7 +164,7 @@ const Modal: React.FC<ModalProps> = ({ title, subtitle, children, footer, onClos
             initial={{ scale: 0.95, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.95, opacity: 0, y: 20 }}
-            className="bg-slate-900 border border-white/10 rounded-3xl w-full max-w-5xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+            className="bg-slate-900 border border-white/10 rounded-none w-full max-w-5xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
             onClick={e => e.stopPropagation()}
         >
             {/* HEADER */}
@@ -175,7 +175,7 @@ const Modal: React.FC<ModalProps> = ({ title, subtitle, children, footer, onClos
                 </div>
                 <button 
                     onClick={onClose} 
-                    className="p-3 bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white rounded-2xl transition-all"
+                    className="p-3 bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white rounded-none transition-all"
                 >
                     <X size={24} />
                 </button>
@@ -205,7 +205,7 @@ const HistoryActionButton = ({ icon, color, onClick }: any) => {
     return (
         <button 
             onClick={onClick}
-            className={`flex-1 md:flex-none p-3 border rounded-xl transition-all ${colors[color]} active:scale-90`}
+            className={`flex-1 md:flex-none p-3 border rounded-none transition-all ${colors[color]} active:scale-90`}
         >
             {icon}
         </button>

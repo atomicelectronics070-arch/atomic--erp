@@ -181,8 +181,8 @@ export default function MessagesPage() {
         <div className="space-y-12 pb-32 animate-in fade-in duration-1000 relative">
             {/* Background Orbs */}
             <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-                <div className="absolute top-[10%] right-[-10%] w-[45%] h-[45%] rounded-full bg-secondary/5 blur-[120px]" />
-                <div className="absolute bottom-[20%] left-[-10%] w-[35%] h-[35%] rounded-full bg-azure-500/5 blur-[100px]" />
+                <div className="absolute top-[10%] right-[-10%] w-[45%] h-[45%] rounded-none bg-secondary/5 blur-[120px]" />
+                <div className="absolute bottom-[20%] left-[-10%] w-[35%] h-[35%] rounded-none bg-azure-500/5 blur-[100px]" />
             </div>
 
             {/* Header */}
@@ -203,7 +203,7 @@ export default function MessagesPage() {
                 <div className="flex items-center gap-6">
                     <button
                         onClick={() => setActiveTab("compose")}
-                        className="bg-secondary text-white px-12 py-5 font-black uppercase tracking-[0.3em] text-[10px] flex items-center shadow-[0_20px_50px_-10px_rgba(255,99,71,0.5)] transition-all hover:bg-white hover:text-secondary rounded-2xl active:scale-95 group italic skew-x-[-12deg]"
+                        className="bg-secondary text-white px-12 py-5 font-black uppercase tracking-[0.3em] text-[10px] flex items-center shadow-[0_20px_50px_-10px_rgba(255,99,71,0.5)] transition-all hover:bg-white hover:text-secondary rounded-none active:scale-95 group italic skew-x-[-12deg]"
                     >
                          <div className="skew-x-[12deg] flex items-center gap-4">
                             <MessageSquarePlus size={20} className="group-hover:rotate-12 transition-transform" />
@@ -216,10 +216,10 @@ export default function MessagesPage() {
             <div className="flex flex-col lg:flex-row gap-12 relative z-10 min-h-[700px]">
                 {/* Sidebar Navigation */}
                 <div className="w-full lg:w-80 flex flex-col gap-6 shrink-0">
-                    <div className="glass-panel !bg-slate-950/40 p-4 rounded-[2.5rem] border-white/5 shadow-2xl backdrop-blur-3xl space-y-2">
+                    <div className="glass-panel !bg-slate-950/40 p-4 rounded-none-[2.5rem] border-white/5 shadow-2xl backdrop-blur-3xl space-y-2">
                         <button
                             onClick={() => setActiveTab("inbox")}
-                            className={`flex items-center justify-between p-6 w-full text-left transition-all rounded-2xl border-white/5 group ${activeTab === "inbox"
+                            className={`flex items-center justify-between p-6 w-full text-left transition-all rounded-none border-white/5 group ${activeTab === "inbox"
                                 ? "bg-white/[0.03] border-white/10 text-secondary shadow-inner"
                                 : "text-slate-500 hover:text-white"
                                 }`}
@@ -229,14 +229,14 @@ export default function MessagesPage() {
                                 <span className="text-[10px] font-black uppercase tracking-[0.2em] italic">Bandeja Entrada</span>
                             </span>
                             {unreadCount > 0 && (
-                                <span className="bg-secondary text-white text-[9px] font-black px-2.5 py-1 rounded-full shadow-[0_0_15px_rgba(255,99,71,0.5)] animate-pulse">
+                                <span className="bg-secondary text-white text-[9px] font-black px-2.5 py-1 rounded-none shadow-[0_0_15px_rgba(255,99,71,0.5)] animate-pulse">
                                     {unreadCount}
                                 </span>
                             )}
                         </button>
                         <button
                             onClick={() => setActiveTab("outbox")}
-                            className={`flex items-center space-x-4 p-6 w-full text-left transition-all rounded-2xl border-white/5 group ${activeTab === "outbox"
+                            className={`flex items-center space-x-4 p-6 w-full text-left transition-all rounded-none border-white/5 group ${activeTab === "outbox"
                                 ? "bg-white/[0.03] border-white/10 text-secondary shadow-inner"
                                 : "text-slate-500 hover:text-white"
                                 }`}
@@ -246,7 +246,7 @@ export default function MessagesPage() {
                         </button>
                     </div>
 
-                    <div className="glass-panel !bg-slate-950/40 p-8 rounded-[2.5rem] border-white/5 shadow-2xl backdrop-blur-3xl flex-1 max-h-[500px] overflow-hidden flex flex-col relative">
+                    <div className="glass-panel !bg-slate-950/40 p-8 rounded-none-[2.5rem] border-white/5 shadow-2xl backdrop-blur-3xl flex-1 max-h-[500px] overflow-hidden flex flex-col relative">
                         <div className="absolute top-0 right-0 p-6 opacity-5 text-secondary pointer-events-none -rotate-12"><Users size={80} /></div>
                         <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 mb-8 flex items-center justify-between shrink-0 italic border-b border-white/5 pb-4">
                             <span className="flex items-center gap-3"><Users size={14} className="text-secondary" /> Equipo Conectado</span>
@@ -265,9 +265,9 @@ export default function MessagesPage() {
                                         }))
                                         setActiveTab("compose")
                                     }}
-                                    className="w-full text-left p-4 hover:bg-white/[0.03] border border-transparent hover:border-white/5 rounded-2xl transition-all flex items-center gap-4 group/user"
+                                    className="w-full text-left p-4 hover:bg-white/[0.03] border border-transparent hover:border-white/5 rounded-none transition-all flex items-center gap-4 group/user"
                                 >
-                                    <div className="w-10 h-10 rounded-xl bg-slate-950 border border-white/5 text-secondary font-black text-[12px] flex items-center justify-center shrink-0 uppercase italic shadow-inner group-hover/user:scale-110 transition-transform">
+                                    <div className="w-10 h-10 rounded-none bg-slate-950 border border-white/5 text-secondary font-black text-[12px] flex items-center justify-center shrink-0 uppercase italic shadow-inner group-hover/user:scale-110 transition-transform">
                                         {(u.name?.[0] || u.email?.[0] || "?")}
                                     </div>
                                     <div className="min-w-0">
@@ -281,8 +281,8 @@ export default function MessagesPage() {
                 </div>
 
                 {/* Main Content Area */}
-                <div className="flex-1 glass-panel !bg-slate-950/40 rounded-[3.5rem] border-white/5 shadow-2xl backdrop-blur-3xl overflow-hidden relative flex flex-col">
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-azure-500/5 blur-[100px] -mr-32 -mt-32 rounded-full"></div>
+                <div className="flex-1 glass-panel !bg-slate-950/40 rounded-none-[3.5rem] border-white/5 shadow-2xl backdrop-blur-3xl overflow-hidden relative flex flex-col">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-azure-500/5 blur-[100px] -mr-32 -mt-32 rounded-none"></div>
                     
                     <div className="flex-1 overflow-y-auto p-12 custom-scrollbar relative z-10">
                         {/* COMPOSE VIEW */}
@@ -295,7 +295,7 @@ export default function MessagesPage() {
                                     className="max-w-3xl mx-auto space-y-12"
                                 >
                                     <div className="flex items-center gap-6 border-b border-white/5 pb-10">
-                                        <div className="p-4 bg-secondary/10 border border-secondary/20 text-secondary rounded-2xl shadow-inner">
+                                        <div className="p-4 bg-secondary/10 border border-secondary/20 text-secondary rounded-none shadow-inner">
                                             <MessageSquarePlus size={28} />
                                         </div>
                                         <div>
@@ -308,7 +308,7 @@ export default function MessagesPage() {
                                         <motion.div
                                             initial={{ opacity: 0, scale: 0.95 }}
                                             animate={{ opacity: 1, scale: 1 }}
-                                            className={`p-6 rounded-2xl border flex items-center gap-6 italic tracking-widest font-black uppercase text-[10px] ${feedback.type === "success"
+                                            className={`p-6 rounded-none border flex items-center gap-6 italic tracking-widest font-black uppercase text-[10px] ${feedback.type === "success"
                                                 ? "bg-emerald-500/5 border-emerald-500/20 text-emerald-400 shadow-[0_0_30px_rgba(52,211,153,0.1)]"
                                                 : "bg-red-500/5 border-red-500/20 text-red-400 shadow-[0_0_30px_rgba(239,68,68,0.1)]"
                                                 }`}
@@ -326,12 +326,12 @@ export default function MessagesPage() {
                                                     <Target size={14} className="text-secondary" /> Vector Destino
                                                 </label>
                                                 <div className="space-y-3">
-                                                    <div className="w-full bg-slate-950 border border-white/5 p-3 min-h-[64px] flex flex-wrap gap-3 items-center rounded-[2rem] shadow-inner">
+                                                    <div className="w-full bg-slate-950 border border-white/5 p-3 min-h-[64px] flex flex-wrap gap-3 items-center rounded-none-[2rem] shadow-inner">
                                                         {composeData.receiverIds.map(id => {
                                                             const user = users.find(u => u.id === id)
                                                             if (!user) return null
                                                             return (
-                                                                <div key={id} className="bg-secondary/10 border border-secondary/30 text-secondary text-[9px] font-black px-4 py-2 flex items-center gap-3 rounded-full uppercase italic shadow-2xl">
+                                                                <div key={id} className="bg-secondary/10 border border-secondary/30 text-secondary text-[9px] font-black px-4 py-2 flex items-center gap-3 rounded-none uppercase italic shadow-2xl">
                                                                     <span>{user.name || (user.email.split('@')[0])}</span>
                                                                     <button
                                                                         type="button"
@@ -375,7 +375,7 @@ export default function MessagesPage() {
                                                     onChange={(e) =>
                                                         setComposeData({ ...composeData, type: e.target.value })
                                                     }
-                                                    className="w-full bg-slate-950 border border-white/5 p-6 text-xs font-black uppercase tracking-widest text-azure-400 outline-none rounded-[2rem] focus:border-azure-500 transition-all shadow-inner italic appearance-none"
+                                                    className="w-full bg-slate-950 border border-white/5 p-6 text-xs font-black uppercase tracking-widest text-azure-400 outline-none rounded-none-[2rem] focus:border-azure-500 transition-all shadow-inner italic appearance-none"
                                                     required
                                                 >
                                                     <option value="Mensaje Simple">Mensaje Simple</option>
@@ -395,7 +395,7 @@ export default function MessagesPage() {
                                                 onChange={(e) =>
                                                     setComposeData({ ...composeData, subject: e.target.value.toUpperCase() })
                                                 }
-                                                className="w-full bg-slate-950 border border-white/5 p-6 text-sm font-black uppercase tracking-widest text-white outline-none rounded-[2rem] focus:border-secondary transition-all shadow-inner placeholder:text-slate-900 italic"
+                                                className="w-full bg-slate-950 border border-white/5 p-6 text-sm font-black uppercase tracking-widest text-white outline-none rounded-none-[2rem] focus:border-secondary transition-all shadow-inner placeholder:text-slate-900 italic"
                                                 required
                                                 placeholder="EJ: REVISIÓN DE MÉTRICAS SEMANALES_S14"
                                             />
@@ -410,7 +410,7 @@ export default function MessagesPage() {
                                                     setComposeData({ ...composeData, content: e.target.value.toUpperCase() })
                                                 }
                                                 rows={8}
-                                                className="w-full bg-slate-950 border border-white/5 p-8 text-sm font-bold text-slate-400 outline-none rounded-[3rem] focus:border-secondary transition-all shadow-inner resize-none uppercase tracking-widest leading-relaxed placeholder:text-slate-900 italic custom-scrollbar"
+                                                className="w-full bg-slate-950 border border-white/5 p-8 text-sm font-bold text-slate-400 outline-none rounded-none-[3rem] focus:border-secondary transition-all shadow-inner resize-none uppercase tracking-widest leading-relaxed placeholder:text-slate-900 italic custom-scrollbar"
                                                 required
                                                 placeholder="DESCRIBA LOS DETALLES TÁCTICOS AQUÍ..."
                                             />
@@ -419,7 +419,7 @@ export default function MessagesPage() {
                                         <button
                                             type="submit"
                                             disabled={isSending || users.length === 0 || usersLoading}
-                                            className="w-full bg-secondary text-white p-8 font-black uppercase tracking-[0.5em] text-[11px] flex items-center justify-center gap-6 shadow-[0_25px_60px_-10px_rgba(255,99,71,0.6)] transition-all hover:bg-white hover:text-secondary rounded-[3rem] active:scale-95 disabled:opacity-20 italic skew-x-[-8deg] group"
+                                            className="w-full bg-secondary text-white p-8 font-black uppercase tracking-[0.5em] text-[11px] flex items-center justify-center gap-6 shadow-[0_25px_60px_-10px_rgba(255,99,71,0.6)] transition-all hover:bg-white hover:text-secondary rounded-none-[3rem] active:scale-95 disabled:opacity-20 italic skew-x-[-8deg] group"
                                         >
                                             <div className="skew-x-[8deg] flex items-center gap-4">
                                                 <Send size={24} className="group-hover:translate-x-2 group-hover:-translate-y-2 transition-transform" />
@@ -440,12 +440,12 @@ export default function MessagesPage() {
                                 >
                                     {isLoading ? (
                                         <div className="flex flex-col items-center justify-center py-40 gap-8 animate-pulse">
-                                            <div className="w-20 h-20 border-4 border-secondary/10 border-t-secondary rounded-full animate-spin shadow-2xl" />
+                                            <div className="w-20 h-20 border-4 border-secondary/10 border-t-secondary rounded-none animate-spin shadow-2xl" />
                                             <p className="text-[10px] font-black uppercase tracking-[0.6em] text-slate-700 italic">Extrayendo Archivo de Mensajes...</p>
                                         </div>
                                     ) : messages.length === 0 ? (
                                         <div className="flex flex-col items-center justify-center py-40 gap-8 text-slate-800 italic uppercase font-black text-xs">
-                                            <div className="w-32 h-32 bg-slate-950 border border-white/5 rounded-[3rem] flex items-center justify-center shadow-inner opacity-20">
+                                            <div className="w-32 h-32 bg-slate-950 border border-white/5 rounded-none-[3rem] flex items-center justify-center shadow-inner opacity-20">
                                                 <Inbox size={60} />
                                             </div>
                                             <p className="tracking-[0.8em]">Cámara de Mensajes Vacía</p>
@@ -456,7 +456,7 @@ export default function MessagesPage() {
                                                 <motion.div
                                                     layout
                                                     key={msg.id}
-                                                    className={`glass-panel border-white/5 p-10 rounded-[3rem] transition-all group relative overflow-hidden ${!msg.isRead && activeTab === "inbox" ? "bg-white/[0.04] shadow-[0_0_50px_rgba(255,99,71,0.05)] border-secondary/20" : "bg-slate-950/20 hover:bg-white/[0.02]"}`}
+                                                    className={`glass-panel border-white/5 p-10 rounded-none-[3rem] transition-all group relative overflow-hidden ${!msg.isRead && activeTab === "inbox" ? "bg-white/[0.04] shadow-[0_0_50px_rgba(255,99,71,0.05)] border-secondary/20" : "bg-slate-950/20 hover:bg-white/[0.02]"}`}
                                                 >
                                                      <div 
                                                         className="absolute left-0 top-0 w-1.5 h-full opacity-40 group-hover:opacity-100 transition-opacity" 
@@ -467,7 +467,7 @@ export default function MessagesPage() {
                                                         <div className="flex-1 space-y-6">
                                                             <div className="flex flex-wrap items-center gap-6">
                                                                 <span
-                                                                    className={`text-[9px] font-black uppercase tracking-[0.3em] px-4 py-2 rounded-xl italic border border-white/5 ${getTypeColor(msg.type)}`}
+                                                                    className={`text-[9px] font-black uppercase tracking-[0.3em] px-4 py-2 rounded-none italic border border-white/5 ${getTypeColor(msg.type)}`}
                                                                 >
                                                                     {msg.type}
                                                                 </span>
@@ -479,13 +479,13 @@ export default function MessagesPage() {
                                                                     <div className="flex items-center gap-3">
                                                                         <span className="text-slate-700">ORIGEN:</span>
                                                                         <span className="text-secondary">{msg.sender?.name || "SYS_NODE"}</span>
-                                                                        {msg.sender?.role && <span className="px-3 py-1 bg-slate-900 border border-white/5 rounded-lg text-[8px] text-slate-400 tracking-widest">{getRoleLabel(msg.sender.role)}</span>}
+                                                                        {msg.sender?.role && <span className="px-3 py-1 bg-slate-900 border border-white/5 rounded-none text-[8px] text-slate-400 tracking-widest">{getRoleLabel(msg.sender.role)}</span>}
                                                                     </div>
                                                                 ) : (
                                                                     <div className="flex items-center gap-3">
                                                                         <span className="text-slate-700">DESTINO:</span>
                                                                         <span className="text-secondary">{msg.receiver?.name || "SYS_NODE"}</span>
-                                                                        {msg.receiver?.role && <span className="px-3 py-1 bg-slate-900 border border-white/5 rounded-lg text-[8px] text-slate-400 tracking-widest">{getRoleLabel(msg.receiver.role)}</span>}
+                                                                        {msg.receiver?.role && <span className="px-3 py-1 bg-slate-900 border border-white/5 rounded-none text-[8px] text-slate-400 tracking-widest">{getRoleLabel(msg.receiver.role)}</span>}
                                                                     </div>
                                                                 )}
                                                                 <div className="flex items-center gap-3">
@@ -494,7 +494,7 @@ export default function MessagesPage() {
                                                                 </div>
                                                             </div>
 
-                                                            <div className="text-[11px] text-slate-400 bg-slate-950/80 p-8 rounded-[2.5rem] border border-white/5 whitespace-pre-wrap italic font-bold leading-relaxed uppercase tracking-widest shadow-inner group-hover:text-slate-300 transition-colors">
+                                                            <div className="text-[11px] text-slate-400 bg-slate-950/80 p-8 rounded-none-[2.5rem] border border-white/5 whitespace-pre-wrap italic font-bold leading-relaxed uppercase tracking-widest shadow-inner group-hover:text-slate-300 transition-colors">
                                                                 {msg.content}
                                                             </div>
                                                         </div>
@@ -510,7 +510,7 @@ export default function MessagesPage() {
                                                                             onChange={(e) =>
                                                                                 handleStatusUpdate(msg.id, e.target.value, true)
                                                                             }
-                                                                            className={`w-full text-[10px] font-black uppercase tracking-[0.4em] border px-6 py-4 rounded-2xl outline-none transition-all italic shadow-inner bg-slate-950 ${getStatusColor(msg.status)}`}
+                                                                            className={`w-full text-[10px] font-black uppercase tracking-[0.4em] border px-6 py-4 rounded-none outline-none transition-all italic shadow-inner bg-slate-950 ${getStatusColor(msg.status)}`}
                                                                         >
                                                                             <option value="Recibido" className="bg-slate-950">RECIBIDO</option>
                                                                             <option value="En proceso" className="bg-slate-950">PROCESANDO</option>
@@ -522,7 +522,7 @@ export default function MessagesPage() {
                                                                                 onClick={() =>
                                                                                     handleStatusUpdate(msg.id, msg.status, true)
                                                                                 }
-                                                                                className="w-full flex items-center justify-center gap-4 bg-secondary text-white py-4 text-[10px] font-black uppercase tracking-[0.4em] hover:bg-white hover:text-secondary transition-all rounded-2xl shadow-2xl italic group/read"
+                                                                                className="w-full flex items-center justify-center gap-4 bg-secondary text-white py-4 text-[10px] font-black uppercase tracking-[0.4em] hover:bg-white hover:text-secondary transition-all rounded-none shadow-2xl italic group/read"
                                                                             >
                                                                                 <MailOpen size={16} className="group-hover/read:scale-110 transition-transform" />
                                                                                 <span>Marcar Leído</span>
@@ -532,7 +532,7 @@ export default function MessagesPage() {
                                                                 ) : (
                                                                     <div className="space-y-4">
                                                                         <div
-                                                                            className={`text-[10px] font-black uppercase tracking-[0.4em] px-6 py-4 text-center border rounded-2xl italic ${getStatusColor(msg.status)}`}
+                                                                            className={`text-[10px] font-black uppercase tracking-[0.4em] px-6 py-4 text-center border rounded-none italic ${getStatusColor(msg.status)}`}
                                                                         >
                                                                             {msg.status.toUpperCase()}
                                                                         </div>
@@ -560,7 +560,7 @@ export default function MessagesPage() {
                     {/* Bottom Status Bar */}
                     <div className="h-14 bg-slate-950/80 border-t border-white/5 flex items-center justify-between px-10 relative z-10">
                         <div className="flex items-center gap-6">
-                            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                            <div className="w-2 h-2 rounded-none bg-emerald-500 animate-pulse" />
                             <span className="text-[9px] font-black text-slate-600 uppercase tracking-[0.4em] italic leading-none">Canal de Enlace Directo Activo</span>
                         </div>
                         <div className="flex items-center gap-6 text-slate-800 font-black italic uppercase text-[8px] tracking-[0.5em]">

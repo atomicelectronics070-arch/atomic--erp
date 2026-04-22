@@ -18,10 +18,10 @@ export default function Error({
     return (
         <div className="flex h-screen w-screen flex-col items-center justify-center bg-white p-8 text-center font-sans relative overflow-hidden">
             {/* Abstract Background Element */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-orange-50/50 rounded-full blur-3xl -z-10"></div>
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-orange-50/50 rounded-none blur-3xl -z-10"></div>
 
             <div className="mb-8">
-                <div className="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <div className="w-20 h-20 bg-orange-100 rounded-none flex items-center justify-center mx-auto mb-6">
                     <span className="text-orange-600 font-bold text-2xl">!</span>
                 </div>
             </div>

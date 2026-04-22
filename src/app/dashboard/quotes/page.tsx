@@ -434,8 +434,8 @@ export default function QuotationGenerator() {
         <div className="space-y-12 pb-32 animate-in fade-in duration-1000 relative">
             {/* Background Orbs */}
             <div className="fixed inset-0 pointer-events-none z-0">
-                <div className="absolute top-[10%] right-[-10%] w-[35%] h-[35%] rounded-full bg-azure-500/5 blur-[120px]" />
-                <div className="absolute bottom-[20%] left-[-10%] w-[30%] h-[30%] rounded-full bg-tomato-500/5 blur-[100px]" />
+                <div className="absolute top-[10%] right-[-10%] w-[35%] h-[35%] rounded-none bg-azure-500/5 blur-[120px]" />
+                <div className="absolute bottom-[20%] left-[-10%] w-[30%] h-[30%] rounded-none bg-tomato-500/5 blur-[100px]" />
             </div>
 
             {/* Header section */}
@@ -451,14 +451,14 @@ export default function QuotationGenerator() {
                 <div className="flex flex-wrap items-center gap-6">
                     <button
                         onClick={() => setIsHistoryOpen(true)}
-                        className="p-6 glass-panel text-slate-500 hover:text-white transition-all rounded-2xl border-white/5 group flex items-center gap-4"
+                        className="p-6 glass-panel text-slate-500 hover:text-white transition-all rounded-none border-white/5 group flex items-center gap-4"
                     >
                         <History size={24} className="group-hover:rotate-180 transition-transform duration-500" />
                         <span className="text-[10px] font-black uppercase tracking-widest hidden md:block">Archivo Histórico ({quoteHistory.length})</span>
                     </button>
                     <button
                         onClick={handleGeneratePDF}
-                        className="flex items-center space-x-6 bg-secondary text-white px-12 py-6 font-black uppercase tracking-[0.2em] text-[10px] hover:bg-white hover:text-secondary transition-all shadow-[0_20px_50px_-10px_rgba(255,99,71,0.5)] rounded-2xl active:scale-[0.98] group italic skew-x-[-12deg]"
+                        className="flex items-center space-x-6 bg-secondary text-white px-12 py-6 font-black uppercase tracking-[0.2em] text-[10px] hover:bg-white hover:text-secondary transition-all shadow-[0_20px_50px_-10px_rgba(255,99,71,0.5)] rounded-none active:scale-[0.98] group italic skew-x-[-12deg]"
                     >
                         <div className="skew-x-[12deg] flex items-center gap-6">
                             <FileOutput size={24} className="group-hover:translate-x-1 transition-transform" />
@@ -473,9 +473,9 @@ export default function QuotationGenerator() {
                 <div className="lg:col-span-2 space-y-12">
 
                     {/* Client Data Card */}
-                    <div className="glass-panel p-12 shadow-2xl relative overflow-hidden rounded-[3.5rem] border backdrop-blur-3xl border-white/5">
+                    <div className="glass-panel p-12 shadow-2xl relative overflow-hidden rounded-none-[3.5rem] border backdrop-blur-3xl border-white/5">
                         <div className="flex items-center space-x-6 mb-12 border-b border-white/5 pb-10">
-                            <div className="p-4 bg-slate-900 rounded-2xl border border-white/10 shadow-2xl">
+                            <div className="p-4 bg-slate-900 rounded-none border border-white/10 shadow-2xl">
                                 <User size={28} className="text-secondary" />
                             </div>
                             <div>
@@ -491,7 +491,7 @@ export default function QuotationGenerator() {
                                     value={clientName}
                                     onChange={(e) => setClientName(e.target.value)}
                                     placeholder="EJ: CORPORACIÓN INDUSTRIAL SUR S.A."
-                                    className="w-full px-8 py-6 bg-slate-950/40 border border-white/5 rounded-2xl text-[12px] font-black uppercase tracking-widest text-white focus:border-secondary outline-none transition-all placeholder:text-slate-800 shadow-inner"
+                                    className="w-full px-8 py-6 bg-slate-950/40 border border-white/5 rounded-none text-[12px] font-black uppercase tracking-widest text-white focus:border-secondary outline-none transition-all placeholder:text-slate-800 shadow-inner"
                                 />
                             </div>
                             <div className="space-y-4">
@@ -503,7 +503,7 @@ export default function QuotationGenerator() {
                                         value={clientEmail}
                                         onChange={(e) => setClientEmail(e.target.value)}
                                         placeholder="CORREO@CORPORATIVO.COM"
-                                        className="w-full pl-16 pr-8 py-6 bg-slate-950/40 border border-white/5 rounded-2xl text-[12px] font-black uppercase tracking-widest text-white focus:border-secondary outline-none transition-all placeholder:text-slate-800 shadow-inner"
+                                        className="w-full pl-16 pr-8 py-6 bg-slate-950/40 border border-white/5 rounded-none text-[12px] font-black uppercase tracking-widest text-white focus:border-secondary outline-none transition-all placeholder:text-slate-800 shadow-inner"
                                     />
                                 </div>
                             </div>
@@ -516,7 +516,7 @@ export default function QuotationGenerator() {
                                         value={clientPhone}
                                         onChange={(e) => setClientPhone(e.target.value)}
                                         placeholder="+593 9XXXXXXXX"
-                                        className="w-full pl-16 pr-8 py-6 bg-slate-950/40 border border-white/5 rounded-2xl text-[12px] font-black uppercase tracking-widest text-white focus:border-secondary outline-none transition-all placeholder:text-slate-800 shadow-inner"
+                                        className="w-full pl-16 pr-8 py-6 bg-slate-950/40 border border-white/5 rounded-none text-[12px] font-black uppercase tracking-widest text-white focus:border-secondary outline-none transition-all placeholder:text-slate-800 shadow-inner"
                                     />
                                 </div>
                             </div>
@@ -529,7 +529,7 @@ export default function QuotationGenerator() {
                                         value={deliveryAddress}
                                         onChange={(e) => setDeliveryAddress(e.target.value)}
                                         placeholder="CALLE PRIMARIA, SECUNDARIA Y REFERENCIAS..."
-                                        className="w-full pl-16 pr-8 py-6 bg-slate-950/40 border border-white/5 rounded-2xl text-[12px] font-black uppercase tracking-widest text-white focus:border-secondary outline-none transition-all placeholder:text-slate-800 shadow-inner"
+                                        className="w-full pl-16 pr-8 py-6 bg-slate-950/40 border border-white/5 rounded-none text-[12px] font-black uppercase tracking-widest text-white focus:border-secondary outline-none transition-all placeholder:text-slate-800 shadow-inner"
                                     />
                                 </div>
                             </div>
@@ -542,7 +542,7 @@ export default function QuotationGenerator() {
                                         value={advisorName}
                                         onChange={(e) => setAdvisorName(e.target.value.toUpperCase())}
                                         placeholder="EJ: JUAN PÉREZ / DEPARTAMENTO DE VENTAS"
-                                        className="w-full pl-16 pr-8 py-6 bg-slate-950/40 border border-white/5 rounded-2xl text-[12px] font-black uppercase tracking-widest text-white focus:border-secondary outline-none transition-all placeholder:text-slate-800 italic shadow-inner"
+                                        className="w-full pl-16 pr-8 py-6 bg-slate-950/40 border border-white/5 rounded-none text-[12px] font-black uppercase tracking-widest text-white focus:border-secondary outline-none transition-all placeholder:text-slate-800 italic shadow-inner"
                                     />
                                 </div>
                             </div>
@@ -550,7 +550,7 @@ export default function QuotationGenerator() {
                     </div>
 
                     {/* Items Table Card */}
-                    <div className="glass-panel p-12 shadow-2xl rounded-[3.5rem] border border-white/5 overflow-hidden backdrop-blur-3xl">
+                    <div className="glass-panel p-12 shadow-2xl rounded-none-[3.5rem] border border-white/5 overflow-hidden backdrop-blur-3xl">
                         <div className="flex justify-between items-end mb-12 border-b border-white/5 pb-10">
                             <div>
                                 <h2 className="text-3xl font-black text-white uppercase tracking-tighter italic">Partidas Presupuestarias</h2>
@@ -558,7 +558,7 @@ export default function QuotationGenerator() {
                             </div>
                             <button
                                 onClick={handleAddItem}
-                                className="text-[10px] font-black text-secondary bg-secondary/10 px-10 py-5 hover:bg-secondary hover:text-white transition-all uppercase tracking-[0.3em] border border-secondary/20 rounded-2xl shadow-2xl active:scale-95 italic"
+                                className="text-[10px] font-black text-secondary bg-secondary/10 px-10 py-5 hover:bg-secondary hover:text-white transition-all uppercase tracking-[0.3em] border border-secondary/20 rounded-none shadow-2xl active:scale-95 italic"
                             >
                                 <Plus size={20} className="mr-3 inline" /> Inyectar Partida
                             </button>
@@ -575,13 +575,13 @@ export default function QuotationGenerator() {
                             </div>
 
                             {items.map((item, index) => (
-                                <div key={item.id} className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center bg-slate-900/40 p-8 border border-white/5 rounded-[2.5rem] hover:bg-white/[0.04] hover:border-secondary/30 transition-all group relative shadow-inner">
+                                <div key={item.id} className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center bg-slate-900/40 p-8 border border-white/5 rounded-none-[2.5rem] hover:bg-white/[0.04] hover:border-secondary/30 transition-all group relative shadow-inner">
                                     <div className="col-span-2">
                                         <input
                                             type="text"
                                             value={item.productId}
                                             onChange={(e) => handleItemChange(item.id, "productId", e.target.value)}
-                                            className="w-full px-6 py-5 bg-slate-950/60 border border-white/5 rounded-xl text-[11px] font-black text-white focus:border-secondary outline-none uppercase tracking-widest shadow-inner text-center"
+                                            className="w-full px-6 py-5 bg-slate-950/60 border border-white/5 rounded-none text-[11px] font-black text-white focus:border-secondary outline-none uppercase tracking-widest shadow-inner text-center"
                                             placeholder="SKU"
                                         />
                                     </div>
@@ -592,7 +592,7 @@ export default function QuotationGenerator() {
                                             onFocus={() => setShowProductList(item.id)}
                                             onChange={(e) => handleItemChange(item.id, "description", e.target.value)}
                                             placeholder="IDENTIFICAR ITEM..."
-                                            className="w-full px-6 py-5 bg-slate-950/60 border border-white/5 rounded-xl text-[12px] font-black text-white focus:border-secondary outline-none uppercase tracking-tight italic shadow-inner"
+                                            className="w-full px-6 py-5 bg-slate-950/60 border border-white/5 rounded-none text-[12px] font-black text-white focus:border-secondary outline-none uppercase tracking-tight italic shadow-inner"
                                         />
                                         <AnimatePresence>
                                             {showProductList === item.id && (
@@ -600,7 +600,7 @@ export default function QuotationGenerator() {
                                                     initial={{ opacity: 0, y: 10, scale: 0.95 }}
                                                     animate={{ opacity: 1, y: 0, scale: 1 }}
                                                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                                    className="absolute top-full left-0 w-full glass-panel !bg-slate-900/95 shadow-[0_40px_80px_rgba(0,0,0,1)] z-[100] mt-6 max-h-96 overflow-y-auto rounded-[2.5rem] border border-white/10 custom-scrollbar"
+                                                    className="absolute top-full left-0 w-full glass-panel !bg-slate-900/95 shadow-[0_40px_80px_rgba(0,0,0,1)] z-[100] mt-6 max-h-96 overflow-y-auto rounded-none-[2.5rem] border border-white/10 custom-scrollbar"
                                                 >
                                                     {products
                                                         .filter(p => p.name.toLowerCase().includes(item.description.toLowerCase()) || (p.sku && p.sku.toLowerCase().includes(item.description.toLowerCase())))
@@ -613,7 +613,7 @@ export default function QuotationGenerator() {
                                                                 <div className="absolute left-0 top-0 w-1 h-full bg-secondary/0 group-hover/opt:bg-secondary transition-all" />
                                                                 <p className="text-sm font-black text-white uppercase tracking-tighter group-hover/opt:text-secondary transition-colors italic">{p.name}</p>
                                                                 <div className="flex justify-between items-center mt-4">
-                                                                    <span className="text-[9px] font-black text-secondary bg-secondary/5 px-3 py-1 rounded border border-secondary/10 uppercase tracking-[0.3em]">{p.sku}</span>
+                                                                    <span className="text-[9px] font-black text-secondary bg-secondary/5 px-3 py-1 rounded-none border border-secondary/10 uppercase tracking-[0.3em]">{p.sku}</span>
                                                                     <span className="text-lg font-black text-white tracking-tighter underline underline-offset-4 decoration-emerald-500/30">${p.price.toFixed(2)}</span>
                                                                 </div>
                                                             </button>
@@ -637,7 +637,7 @@ export default function QuotationGenerator() {
                                             type="number"
                                             value={item.quantity}
                                             onChange={(e) => handleItemChange(item.id, "quantity", parseInt(e.target.value) || 0)}
-                                            className="w-full py-5 bg-slate-950/60 border border-white/5 rounded-xl text-base text-center font-black text-white focus:border-secondary outline-none shadow-inner"
+                                            className="w-full py-5 bg-slate-950/60 border border-white/5 rounded-none text-base text-center font-black text-white focus:border-secondary outline-none shadow-inner"
                                             min="1"
                                         />
                                     </div>
@@ -646,7 +646,7 @@ export default function QuotationGenerator() {
                                             type="number"
                                             value={item.unitPrice}
                                             onChange={(e) => handleItemChange(item.id, "unitPrice", parseFloat(e.target.value) || 0)}
-                                            className="w-full py-5 px-6 bg-slate-950/60 border border-white/5 rounded-xl text-base text-right font-black text-white focus:border-secondary outline-none shadow-inner italic"
+                                            className="w-full py-5 px-6 bg-slate-950/60 border border-white/5 rounded-none text-base text-right font-black text-white focus:border-secondary outline-none shadow-inner italic"
                                         />
                                     </div>
                                     <div className="col-span-2 text-right">
@@ -657,7 +657,7 @@ export default function QuotationGenerator() {
                                     <div className="col-span-1 flex justify-end">
                                         <button
                                             onClick={() => handleRemoveItem(item.id)}
-                                            className="opacity-0 group-hover:opacity-100 text-slate-700 hover:text-red-500 transition-all p-4 bg-slate-950 rounded-2xl border border-white/5 shadow-2xl"
+                                            className="opacity-0 group-hover:opacity-100 text-slate-700 hover:text-red-500 transition-all p-4 bg-slate-950 rounded-none border border-white/5 shadow-2xl"
                                         >
                                             <Trash2 size={24} />
                                         </button>
@@ -668,7 +668,7 @@ export default function QuotationGenerator() {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                        <div className="glass-panel p-12 shadow-2xl rounded-[3rem] border border-white/5 relative overflow-hidden group">
+                        <div className="glass-panel p-12 shadow-2xl rounded-none-[3rem] border border-white/5 relative overflow-hidden group">
                             <h2 className="text-xl font-black text-white mb-10 uppercase tracking-tighter flex items-center italic">
                                 <ShieldCheck size={28} className="mr-5 text-emerald-400 drop-shadow-[0_0_10px_rgba(52,211,153,0.3)]" /> Cláusula de Garantía Industrial
                             </h2>
@@ -676,10 +676,10 @@ export default function QuotationGenerator() {
                                 value={warrantyNote}
                                 onChange={(e) => setWarrantyNote(e.target.value)}
                                 rows={6}
-                                className="w-full p-8 bg-slate-950/40 border border-white/5 rounded-[2.5rem] text-[12px] font-black uppercase tracking-widest focus:border-emerald-500/50 outline-none resize-none leading-relaxed text-slate-500 italic shadow-inner"
+                                className="w-full p-8 bg-slate-950/40 border border-white/5 rounded-none-[2.5rem] text-[12px] font-black uppercase tracking-widest focus:border-emerald-500/50 outline-none resize-none leading-relaxed text-slate-500 italic shadow-inner"
                             />
                         </div>
-                        <div className="glass-panel p-12 shadow-2xl rounded-[3rem] border border-white/5 relative overflow-hidden group">
+                        <div className="glass-panel p-12 shadow-2xl rounded-none-[3rem] border border-white/5 relative overflow-hidden group">
                             <h2 className="text-xl font-black text-white mb-10 uppercase tracking-tighter flex items-center italic">
                                 <MessageSquare size={28} className="mr-5 text-secondary drop-shadow-[0_0_10px_rgba(255,99,71,0.3)]" /> Notas de Implementación
                             </h2>
@@ -688,7 +688,7 @@ export default function QuotationGenerator() {
                                 onChange={(e) => setWarrantyComments(e.target.value)}
                                 placeholder="NOTAS ADICIONALES PARA EL DESPLIEGUE FINAL..."
                                 rows={6}
-                                className="w-full p-8 bg-slate-950/40 border border-white/5 rounded-[2.5rem] text-[12px] font-black uppercase tracking-widest focus:border-secondary/50 outline-none resize-none leading-relaxed text-white placeholder:text-slate-800 italic shadow-inner"
+                                className="w-full p-8 bg-slate-950/40 border border-white/5 rounded-none-[2.5rem] text-[12px] font-black uppercase tracking-widest focus:border-secondary/50 outline-none resize-none leading-relaxed text-white placeholder:text-slate-800 italic shadow-inner"
                             />
                         </div>
                     </div>
@@ -696,8 +696,8 @@ export default function QuotationGenerator() {
 
                 {/* Right Panel: Totalization */}
                 <div className="lg:col-span-1 space-y-12">
-                    <div className="glass-panel text-white p-16 shadow-[0_60px_120px_-20px_rgba(0,0,0,0.8)] sticky top-32 flex flex-col items-center text-center rounded-[4rem] border border-white/5 backdrop-blur-3xl">
-                        <div className="w-28 h-2.5 bg-secondary mb-14 rounded-full shadow-[0_0_30px_rgba(255,99,71,0.6)] animate-pulse"></div>
+                    <div className="glass-panel text-white p-16 shadow-[0_60px_120px_-20px_rgba(0,0,0,0.8)] sticky top-32 flex flex-col items-center text-center rounded-none-[4rem] border border-white/5 backdrop-blur-3xl">
+                        <div className="w-28 h-2.5 bg-secondary mb-14 rounded-none shadow-[0_0_30px_rgba(255,99,71,0.6)] animate-pulse"></div>
                         <h2 className="text-4xl font-black mb-14 flex flex-col items-center uppercase tracking-[0.5em] text-secondary italic">
                             <Calculator size={48} className="mb-8 drop-shadow-[0_0_15px_rgba(255,99,71,0.6)] group-hover:scale-110 transition-transform" /> Resumen Fiscal
                         </h2>
@@ -718,7 +718,7 @@ export default function QuotationGenerator() {
                                         type="number"
                                         value={discountPercent}
                                         onChange={(e) => setDiscountPercent(parseFloat(e.target.value) || 0)}
-                                        className="w-32 px-6 py-6 bg-slate-900 border border-white/10 rounded-2xl text-right focus:border-secondary outline-none text-secondary font-black text-2xl shadow-inner skew-x-[-8deg] group-hover:skew-x-0 transition-all duration-500"
+                                        className="w-32 px-6 py-6 bg-slate-900 border border-white/10 rounded-none text-right focus:border-secondary outline-none text-secondary font-black text-2xl shadow-inner skew-x-[-8deg] group-hover:skew-x-0 transition-all duration-500"
                                     />
                                     <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-700 text-xs font-black">%</span>
                                 </div>
@@ -743,13 +743,13 @@ export default function QuotationGenerator() {
 
                             <div className="pt-20 pb-8 relative group">
                                 <div className="absolute top-1/2 left-0 w-full h-[1px] bg-white/5 -translate-y-1/2"></div>
-                                <div className="relative bg-slate-950 inline-block px-12 py-8 rounded-[3rem] border border-secondary/30 shadow-[0_0_60px_rgba(255,99,71,0.25)] group-hover:shadow-[0_0_100px_rgba(255,99,71,0.4)] transition-all duration-700">
+                                <div className="relative bg-slate-950 inline-block px-12 py-8 rounded-none-[3rem] border border-secondary/30 shadow-[0_0_60px_rgba(255,99,71,0.25)] group-hover:shadow-[0_0_100px_rgba(255,99,71,0.4)] transition-all duration-700">
                                     <span className="text-[14px] font-black text-secondary uppercase tracking-[0.6em] block mb-4 italic">Total Liquidación</span>
                                     <span className="text-7xl font-black text-white tracking-tighter italic drop-shadow-[0_0_35px_rgba(255,255,255,0.3)] group-hover:scale-105 transition-transform block">${total.toLocaleString('es-EC', { minimumFractionDigits: 2 })}</span>
                                 </div>
                             </div>
 
-                            <div className="mt-16 text-left glass-panel !bg-slate-950/60 p-10 border-white/5 rounded-[2.5rem] relative overflow-hidden group">
+                            <div className="mt-16 text-left glass-panel !bg-slate-950/60 p-10 border-white/5 rounded-none-[2.5rem] relative overflow-hidden group">
                                 <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
                                     <ShieldCheck size={100} />
                                 </div>
@@ -763,19 +763,19 @@ export default function QuotationGenerator() {
                         </div>
                     </div>
 
-                    <div className="glass-panel p-12 shadow-2xl rounded-[3rem] border border-white/5 group overflow-hidden transition-all relative">
+                    <div className="glass-panel p-12 shadow-2xl rounded-none-[3rem] border border-white/5 group overflow-hidden transition-all relative">
                         <h3 className="text-[11px] font-black text-slate-500 uppercase tracking-[0.5em] mb-10 flex items-center italic">
                             <ImageIcon size={24} className="mr-5 text-secondary group-hover:scale-110 transition-transform" /> Portafolio Visión
                         </h3>
                         <div
                             onClick={() => fileInputRef.current?.click()}
-                            className="w-full h-96 border-4 border-dashed border-white/5 bg-slate-950/40 flex flex-col items-center justify-center cursor-pointer hover:border-secondary/50 hover:bg-secondary/5 transition-all overflow-hidden p-6 rounded-[3rem] relative shadow-inner group"
+                            className="w-full h-96 border-4 border-dashed border-white/5 bg-slate-950/40 flex flex-col items-center justify-center cursor-pointer hover:border-secondary/50 hover:bg-secondary/5 transition-all overflow-hidden p-6 rounded-none-[3rem] relative shadow-inner group"
                         >
                             {productImage ? (
-                                <img src={productImage} alt="Preview" className="max-w-full max-h-full object-contain rounded-3xl shadow-2xl transform group-hover:scale-105 transition-transform duration-700" />
+                                <img src={productImage} alt="Preview" className="max-w-full max-h-full object-contain rounded-none shadow-2xl transform group-hover:scale-105 transition-transform duration-700" />
                             ) : (
                                 <>
-                                    <div className="p-10 bg-slate-900/60 rounded-full mb-8 group-hover:scale-110 group-hover:rotate-12 transition-all border border-white/5 shadow-2xl">
+                                    <div className="p-10 bg-slate-900/60 rounded-none mb-8 group-hover:scale-110 group-hover:rotate-12 transition-all border border-white/5 shadow-2xl">
                                         <Plus size={56} className="text-secondary" />
                                     </div>
                                     <span className="text-[11px] text-slate-600 font-black uppercase tracking-[0.5em] text-center px-12 italic">Inyectar Captura Visual / Documentación Nodo</span>
@@ -784,7 +784,7 @@ export default function QuotationGenerator() {
                         </div>
                         <input type="file" ref={fileInputRef} onChange={handleImageUpload} className="hidden" accept="image/*" />
                         {productImage && (
-                            <button onClick={() => setProductImage(null)} className="mt-8 w-full text-center text-red-500 text-[10px] font-black uppercase tracking-[0.4em] hover:text-white transition-all italic hover:bg-red-500/10 py-4 rounded-xl border border-red-500/10">Abortar Archivo Visual</button>
+                            <button onClick={() => setProductImage(null)} className="mt-8 w-full text-center text-red-500 text-[10px] font-black uppercase tracking-[0.4em] hover:text-white transition-all italic hover:bg-red-500/10 py-4 rounded-none border border-red-500/10">Abortar Archivo Visual</button>
                         )}
                     </div>
                 </div>
@@ -807,11 +807,11 @@ export default function QuotationGenerator() {
                             animate={{ x: 0 }}
                             exit={{ x: '100%' }}
                             transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-                            className="w-full md:w-[750px] h-full glass-panel !bg-slate-950/60 shadow-[0_0_150px_rgba(0,0,0,1)] relative flex flex-col border-l border-white/10 md:rounded-l-[4.5rem] overflow-hidden"
+                            className="w-full md:w-[750px] h-full glass-panel !bg-slate-950/60 shadow-[0_0_150px_rgba(0,0,0,1)] relative flex flex-col border-l border-white/10 md:rounded-none-[4.5rem] overflow-hidden"
                         >
                             <div className="flex items-center justify-between p-14 border-b border-white/5 bg-white/[0.01] shrink-0">
                                 <div className="flex items-center gap-8">
-                                    <div className="bg-secondary p-5 text-white rounded-2xl shadow-2xl shadow-secondary/30 group hover:rotate-12 transition-transform">
+                                    <div className="bg-secondary p-5 text-white rounded-none shadow-2xl shadow-secondary/30 group hover:rotate-12 transition-transform">
                                         <History size={32} />
                                     </div>
                                     <div>
@@ -821,7 +821,7 @@ export default function QuotationGenerator() {
                                 </div>
                                 <button 
                                     onClick={() => setIsHistoryOpen(false)} 
-                                    className="p-5 bg-slate-900 border border-white/10 rounded-2xl text-slate-500 hover:text-white hover:rotate-90 transition-all duration-500 shadow-2xl"
+                                    className="p-5 bg-slate-900 border border-white/10 rounded-none text-slate-500 hover:text-white hover:rotate-90 transition-all duration-500 shadow-2xl"
                                 >
                                     <X size={32} />
                                 </button>
@@ -836,14 +836,14 @@ export default function QuotationGenerator() {
                                     </div>
                                 ) : (
                                     quoteHistory.map((quote) => (
-                                        <div key={quote.id} className="glass-panel !bg-slate-900/40 p-10 border border-white/5 shadow-2xl hover:border-secondary/40 hover:bg-white/[0.02] transition-all group flex flex-col rounded-[3rem] relative overflow-hidden">
+                                        <div key={quote.id} className="glass-panel !bg-slate-900/40 p-10 border border-white/5 shadow-2xl hover:border-secondary/40 hover:bg-white/[0.02] transition-all group flex flex-col rounded-none-[3rem] relative overflow-hidden">
                                             <div className="absolute top-0 left-0 w-2 h-full bg-slate-950 group-hover:bg-secondary transition-colors" />
                                             <div className="flex justify-between items-start mb-10 overflow-hidden">
                                                 <div className="max-w-[70%]">
                                                     <div className="flex items-center gap-5 flex-wrap">
-                                                        <span className="text-[11px] font-black text-secondary bg-secondary/10 px-5 py-2.5 rounded-xl border border-secondary/20 shadow-2xl shadow-secondary/5 italic">{quote.quoteNumber}</span>
+                                                        <span className="text-[11px] font-black text-secondary bg-secondary/10 px-5 py-2.5 rounded-none border border-secondary/20 shadow-2xl shadow-secondary/5 italic">{quote.quoteNumber}</span>
                                                         {quote.globalQuoteNumber && (
-                                                            <span className="text-[9px] font-black text-slate-600 bg-slate-950 px-4 py-2 rounded-xl border border-white/5 uppercase tracking-[0.2em] shadow-inner">
+                                                            <span className="text-[9px] font-black text-slate-600 bg-slate-950 px-4 py-2 rounded-none border border-white/5 uppercase tracking-[0.2em] shadow-inner">
                                                                 GLOB-ID: {quote.globalQuoteNumber}
                                                             </span>
                                                         )}
@@ -865,7 +865,7 @@ export default function QuotationGenerator() {
                                                     <div className="flex flex-col gap-4 mt-10 items-end w-full">
                                                         <button
                                                             onClick={() => handleDuplicateQuote(quote)}
-                                                            className="px-8 py-4 bg-slate-950 text-slate-500 hover:text-white hover:bg-secondary transition-all text-center uppercase text-[10px] font-black tracking-[0.4em] rounded-2xl border-2 border-white/5 group/btn flex items-center justify-center gap-4 w-full md:w-auto min-w-[200px] shadow-2xl"
+                                                            className="px-8 py-4 bg-slate-950 text-slate-500 hover:text-white hover:bg-secondary transition-all text-center uppercase text-[10px] font-black tracking-[0.4em] rounded-none border-2 border-white/5 group/btn flex items-center justify-center gap-4 w-full md:w-auto min-w-[200px] shadow-2xl"
                                                         >
                                                             <Copy size={16} className="group-hover/btn:rotate-12 transition-transform" />
                                                             <span>Clonar Nodo</span>
@@ -885,7 +885,7 @@ export default function QuotationGenerator() {
                             <div className="p-12 border-t border-white/5 bg-white/[0.01] shrink-0">
                                 <button 
                                     onClick={() => setIsHistoryOpen(false)}
-                                    className="w-full py-8 bg-white/5 text-slate-500 hover:text-white hover:bg-red-500 text-[11px] font-black uppercase tracking-[0.6em] italic rounded-3xl transition-all duration-700 border border-white/5 flex items-center justify-center gap-6 group shadow-2xl active:scale-95"
+                                    className="w-full py-8 bg-white/5 text-slate-500 hover:text-white hover:bg-red-500 text-[11px] font-black uppercase tracking-[0.6em] italic rounded-none transition-all duration-700 border border-white/5 flex items-center justify-center gap-6 group shadow-2xl active:scale-95"
                                 >
                                     <X size={20} className="group-hover:rotate-180 transition-transform duration-500" />
                                     <span>Suspender Auditoría Histórica</span>

@@ -86,8 +86,8 @@ export default function PricesPage() {
         <div className="space-y-12 pb-32 animate-in fade-in duration-1000 relative">
              {/* Background Orbs */}
             <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-                <div className="absolute top-[15%] right-[-5%] w-[40%] h-[40%] rounded-full bg-secondary/5 blur-[120px]" />
-                <div className="absolute bottom-[20%] left-[-5%] w-[35%] h-[35%] rounded-full bg-azure-500/5 blur-[100px]" />
+                <div className="absolute top-[15%] right-[-5%] w-[40%] h-[40%] rounded-none bg-secondary/5 blur-[120px]" />
+                <div className="absolute bottom-[20%] left-[-5%] w-[35%] h-[35%] rounded-none bg-azure-500/5 blur-[100px]" />
             </div>
 
             {/* Header */}
@@ -110,7 +110,7 @@ export default function PricesPage() {
                         setFormData({ name: "", description: "", price: 0, sku: "" })
                         setIsModalOpen(true)
                     }}
-                    className="bg-secondary text-white px-12 py-5 font-black uppercase tracking-[0.3em] text-[10px] flex items-center shadow-[0_20px_50px_-10px_rgba(255,99,71,0.5)] transition-all hover:bg-white hover:text-secondary rounded-2xl active:scale-95 group italic skew-x-[-12deg]"
+                    className="bg-secondary text-white px-12 py-5 font-black uppercase tracking-[0.3em] text-[10px] flex items-center shadow-[0_20px_50px_-10px_rgba(255,99,71,0.5)] transition-all hover:bg-white hover:text-secondary rounded-none active:scale-95 group italic skew-x-[-12deg]"
                 >
                     <div className="skew-x-[12deg] flex items-center gap-4">
                         <Plus size={20} className="group-hover:rotate-90 transition-transform" />
@@ -120,7 +120,7 @@ export default function PricesPage() {
             </div>
 
             {/* Main Content Container */}
-            <div className="glass-panel border-white/5 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] overflow-hidden rounded-[3.5rem] backdrop-blur-3xl relative z-10">
+            <div className="glass-panel border-white/5 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] overflow-hidden rounded-none-[3.5rem] backdrop-blur-3xl relative z-10">
                 
                 {/* Dashboard Search & Stats */}
                 <div className="p-10 border-b border-white/5 flex flex-col lg:flex-row justify-between items-center gap-10 bg-white/[0.01]">
@@ -131,12 +131,12 @@ export default function PricesPage() {
                             placeholder="ESCANEANDO SKU O IDENTIFICADOR..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-16 pr-8 py-5 bg-slate-950 border border-white/5 text-xs font-black uppercase tracking-widest text-white outline-none rounded-2xl focus:border-secondary transition-all shadow-inner placeholder:text-slate-900 italic"
+                            className="w-full pl-16 pr-8 py-5 bg-slate-950 border border-white/5 text-xs font-black uppercase tracking-widest text-white outline-none rounded-none focus:border-secondary transition-all shadow-inner placeholder:text-slate-900 italic"
                         />
                     </div>
-                    <div className="flex items-center gap-8 glass-panel !bg-slate-900/40 px-10 py-5 rounded-2xl border-white/5 shadow-inner">
+                    <div className="flex items-center gap-8 glass-panel !bg-slate-900/40 px-10 py-5 rounded-none border-white/5 shadow-inner">
                         <div className="flex items-center space-x-4">
-                            <div className="p-2 bg-azure-500/10 text-azure-400 rounded-lg"><Package size={18} /></div>
+                            <div className="p-2 bg-azure-500/10 text-azure-400 rounded-none"><Package size={18} /></div>
                             <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest italic">Inventory_Core: <span className="text-white ml-2">{products.length} ACTIVOS</span></span>
                         </div>
                     </div>
@@ -171,7 +171,7 @@ export default function PricesPage() {
                                     <tr key={p.id} className="hover:bg-white/[0.03] transition-all group">
                                         <td className="px-12 py-8">
                                             <div className="flex items-center space-x-6">
-                                                <div className="w-16 h-16 bg-slate-950 border border-white/5 flex items-center justify-center text-secondary group-hover:bg-secondary group-hover:text-white transition-all rounded-2xl shadow-inner group-hover:scale-105 duration-500">
+                                                <div className="w-16 h-16 bg-slate-950 border border-white/5 flex items-center justify-center text-secondary group-hover:bg-secondary group-hover:text-white transition-all rounded-none shadow-inner group-hover:scale-105 duration-500">
                                                     <Tag size={24} className="group-hover:rotate-12 transition-transform" />
                                                 </div>
                                                 <div>
@@ -195,13 +195,13 @@ export default function PricesPage() {
                                                         setFormData(p)
                                                         setIsModalOpen(true)
                                                     }}
-                                                    className="p-4 bg-slate-900 text-slate-600 hover:text-white hover:bg-azure-500 transition-all rounded-2xl border border-white/5 shadow-2xl hover:scale-110"
+                                                    className="p-4 bg-slate-900 text-slate-600 hover:text-white hover:bg-azure-500 transition-all rounded-none border border-white/5 shadow-2xl hover:scale-110"
                                                 >
                                                     <Edit2 size={18} />
                                                 </button>
                                                 <button
                                                     onClick={() => handleDelete(p.id)}
-                                                    className="p-4 bg-slate-900 text-slate-600 hover:text-white hover:bg-red-500 transition-all rounded-2xl border border-white/5 shadow-2xl hover:scale-110"
+                                                    className="p-4 bg-slate-900 text-slate-600 hover:text-white hover:bg-red-500 transition-all rounded-none border border-white/5 shadow-2xl hover:scale-110"
                                                 >
                                                     <Trash2 size={18} />
                                                 </button>
@@ -230,7 +230,7 @@ export default function PricesPage() {
                             initial={{ opacity: 0, scale: 0.95, y: 40 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95, y: 40 }}
-                            className="glass-panel !bg-slate-950/60 w-full max-w-2xl border border-white/10 shadow-[0_0_150px_rgba(0,0,0,1)] p-14 rounded-[4rem] relative z-10 backdrop-blur-3xl"
+                            className="glass-panel !bg-slate-950/60 w-full max-w-2xl border border-white/10 shadow-[0_0_150px_rgba(0,0,0,1)] p-14 rounded-none-[4rem] relative z-10 backdrop-blur-3xl"
                         >
                             <div className="flex justify-between items-start mb-14 border-b border-white/5 pb-10">
                                 <div className="space-y-4">
@@ -241,7 +241,7 @@ export default function PricesPage() {
                                     <h3 className="text-4xl font-black text-white uppercase tracking-tighter italic">CONFIGURACIÓN <span className="text-secondary">PRO_ACTIVO</span></h3>
                                     <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.4em] italic">Industrial Standard Core v2.4.1 Stable</p>
                                 </div>
-                                <button onClick={() => setIsModalOpen(false)} className="p-5 bg-slate-900 border border-white/10 rounded-2xl text-slate-600 hover:text-white transition-all shadow-2xl">
+                                <button onClick={() => setIsModalOpen(false)} className="p-5 bg-slate-900 border border-white/10 rounded-none text-slate-600 hover:text-white transition-all shadow-2xl">
                                     <X size={28} />
                                 </button>
                             </div>
@@ -255,7 +255,7 @@ export default function PricesPage() {
                                             type="text"
                                             value={formData.name}
                                             onChange={(e) => setFormData({ ...formData, name: e.target.value.toUpperCase() })}
-                                            className="w-full bg-slate-950 border border-white/5 p-6 text-[15px] font-black uppercase tracking-widest text-white outline-none rounded-[2rem] focus:border-secondary transition-all shadow-inner placeholder:text-slate-900 italic"
+                                            className="w-full bg-slate-950 border border-white/5 p-6 text-[15px] font-black uppercase tracking-widest text-white outline-none rounded-none-[2rem] focus:border-secondary transition-all shadow-inner placeholder:text-slate-900 italic"
                                             placeholder="EJ: MONITOR INDUSTRIAL 4K_MAESTRO"
                                         />
                                     </div>
@@ -265,7 +265,7 @@ export default function PricesPage() {
                                             type="text"
                                             value={formData.sku || ""}
                                             onChange={(e) => setFormData({ ...formData, sku: e.target.value.toUpperCase() })}
-                                            className="w-full bg-slate-950 border border-white/5 p-6 text-sm font-black uppercase tracking-widest text-azure-400 outline-none rounded-[2rem] focus:border-azure-500 transition-all shadow-inner placeholder:text-slate-900 italic"
+                                            className="w-full bg-slate-950 border border-white/5 p-6 text-sm font-black uppercase tracking-widest text-azure-400 outline-none rounded-none-[2rem] focus:border-azure-500 transition-all shadow-inner placeholder:text-slate-900 italic"
                                             placeholder="AT-G-500-BK"
                                         />
                                     </div>
@@ -279,7 +279,7 @@ export default function PricesPage() {
                                                 step="0.01"
                                                 value={formData.price}
                                                 onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })}
-                                                className="w-full bg-slate-950 border border-white/5 pl-12 pr-6 py-6 text-xl font-black text-white outline-none rounded-[2rem] focus:border-secondary transition-all shadow-inner italic"
+                                                className="w-full bg-slate-950 border border-white/5 pl-12 pr-6 py-6 text-xl font-black text-white outline-none rounded-none-[2rem] focus:border-secondary transition-all shadow-inner italic"
                                                 placeholder="0.00"
                                             />
                                         </div>
@@ -289,7 +289,7 @@ export default function PricesPage() {
                                         <textarea
                                             value={formData.description || ""}
                                             onChange={(e) => setFormData({ ...formData, description: e.target.value.toUpperCase() })}
-                                            className="w-full bg-slate-950 border border-white/5 p-8 text-sm font-bold text-slate-400 h-40 outline-none rounded-[2.5rem] focus:border-secondary transition-all resize-none shadow-inner uppercase tracking-widest leading-relaxed placeholder:text-slate-900 italic custom-scrollbar"
+                                            className="w-full bg-slate-950 border border-white/5 p-8 text-sm font-bold text-slate-400 h-40 outline-none rounded-none-[2.5rem] focus:border-secondary transition-all resize-none shadow-inner uppercase tracking-widest leading-relaxed placeholder:text-slate-900 italic custom-scrollbar"
                                             placeholder="ESPECIFICACIONES TÉCNICAS, GARANTÍAS O VARIABLES OPERATIVAS..."
                                         />
                                     </div>
@@ -305,7 +305,7 @@ export default function PricesPage() {
                                     </button>
                                     <button
                                         type="submit"
-                                        className="flex-[2] bg-secondary text-white font-black py-7 uppercase tracking-[0.3em] text-[11px] flex items-center justify-center gap-6 hover:bg-white hover:text-secondary transition-all shadow-[0_20px_60px_-10px_rgba(255,99,71,0.6)] rounded-[2.5rem] skew-x-[-12deg] group"
+                                        className="flex-[2] bg-secondary text-white font-black py-7 uppercase tracking-[0.3em] text-[11px] flex items-center justify-center gap-6 hover:bg-white hover:text-secondary transition-all shadow-[0_20px_60px_-10px_rgba(255,99,71,0.6)] rounded-none-[2.5rem] skew-x-[-12deg] group"
                                     >
                                         <div className="skew-x-[12deg] flex items-center gap-4">
                                             <Save size={24} className="group-hover:scale-110 transition-transform" />

@@ -145,14 +145,14 @@ export default function SoftwareLandingPage() {
                     {/* Big X button always visible */}
                     <button
                         onClick={(e) => { e.stopPropagation(); setActivePreview(null) }}
-                        className="absolute top-4 right-4 z-[200] w-12 h-12 bg-red-600 hover:bg-red-500 rounded-full flex items-center justify-center shadow-2xl shadow-red-900/50 transition-all hover:scale-110"
+                        className="absolute top-4 right-4 z-[200] w-12 h-12 bg-red-600 hover:bg-red-500 rounded-none flex items-center justify-center shadow-2xl shadow-red-900/50 transition-all hover:scale-110"
                         aria-label="Cerrar preview"
                     >
                         <X size={22} className="text-white" />
                     </button>
 
                     <div
-                        className="relative w-full h-full max-w-7xl flex flex-col bg-slate-950 rounded-3xl border border-white/20 shadow-[0_0_100px_rgba(0,0,0,0.5)] overflow-hidden scale-in-center"
+                        className="relative w-full h-full max-w-7xl flex flex-col bg-slate-950 rounded-none border border-white/20 shadow-[0_0_100px_rgba(0,0,0,0.5)] overflow-hidden scale-in-center"
                         onClick={(e) => e.stopPropagation()}
                     >
                         
@@ -162,13 +162,13 @@ export default function SoftwareLandingPage() {
                                 <div className="flex items-center space-x-2">
                                     <button 
                                         onClick={() => setActivePreview(null)} 
-                                        className="group relative w-5 h-5 rounded-full bg-red-500 hover:bg-red-400 transition-all shadow-lg flex items-center justify-center" 
+                                        className="group relative w-5 h-5 rounded-none bg-red-500 hover:bg-red-400 transition-all shadow-lg flex items-center justify-center" 
                                         aria-label="Cerrar"
                                     >
                                         <X size={10} className="text-red-900 opacity-0 group-hover:opacity-100 transition-opacity" />
                                     </button>
-                                    <div className="w-5 h-5 rounded-full bg-yellow-500/50 shadow-inner"></div>
-                                    <div className="w-5 h-5 rounded-full bg-green-500/50 shadow-inner"></div>
+                                    <div className="w-5 h-5 rounded-none bg-yellow-500/50 shadow-inner"></div>
+                                    <div className="w-5 h-5 rounded-none bg-green-500/50 shadow-inner"></div>
                                 </div>
                                 <button 
                                     onClick={() => setActivePreview(null)}
@@ -180,7 +180,7 @@ export default function SoftwareLandingPage() {
                             </div>
 
                             <div className="flex-1 flex justify-center pointer-events-none">
-                                <div className="bg-black/50 border border-white/10 rounded-full px-8 py-2 flex items-center space-x-3 backdrop-blur-md">
+                                <div className="bg-black/50 border border-white/10 rounded-none px-8 py-2 flex items-center space-x-3 backdrop-blur-md">
                                     <Sparkles size={12} style={{ color: activePreview.accent }} />
                                     <span className="text-[11px] font-black uppercase tracking-[0.25em] text-neutral-400">
                                         Navegando: <span className="text-white">{activePreview.title}</span>
@@ -190,7 +190,7 @@ export default function SoftwareLandingPage() {
 
                             <div className="flex items-center gap-4">
                                 <span className="text-[9px] font-bold text-neutral-600 uppercase tracking-widest hidden md:block">Safe Environment</span>
-                                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                                <div className="w-2 h-2 rounded-none bg-green-500 animate-pulse" />
                             </div>
                         </div>
 
@@ -221,8 +221,8 @@ export default function SoftwareLandingPage() {
 
             {/* Background Effects */}
             <div className="absolute top-0 inset-x-0 h-[500px] bg-gradient-to-b from-[#E8341A]/8 via-[#FAFAF8] to-[#FAFAF8] pointer-events-none"></div>
-            <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full bg-[#E8341A]/4 blur-[150px] pointer-events-none"></div>
-            <div className="absolute top-[20%] right-[-10%] w-[40%] h-[50%] rounded-full bg-[#2563EB]/4 blur-[120px] pointer-events-none"></div>
+            <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-none bg-[#E8341A]/4 blur-[150px] pointer-events-none"></div>
+            <div className="absolute top-[20%] right-[-10%] w-[40%] h-[50%] rounded-none bg-[#2563EB]/4 blur-[120px] pointer-events-none"></div>
             
             {/* Grid Texture */}
             <div className="absolute inset-0 opacity-[0.015] pointer-events-none" style={{ backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 49px, #fff 49px, #fff 50px), repeating-linear-gradient(-90deg, transparent, transparent 49px, #fff 49px, #fff 50px)', backgroundSize: '50px 50px' }}></div>
@@ -230,7 +230,7 @@ export default function SoftwareLandingPage() {
             <div className="relative z-10 pt-40 pb-20">
                 {/* HERO SECTION */}
                 <section className="max-w-7xl mx-auto px-6 mb-32 flex flex-col items-center text-center">
-                    <div className="inline-flex items-center gap-3 px-4 py-2 border border-[#E8341A]/25 bg-[#E8341A]/8 backdrop-blur-md rounded-full mb-8">
+                    <div className="inline-flex items-center gap-3 px-4 py-2 border border-[#E8341A]/25 bg-[#E8341A]/8 backdrop-blur-md rounded-none mb-8">
                         <Code size={14} className="text-[#E8341A]" />
                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#E8341A]">Atomic Software Labs</span>
                     </div>
@@ -248,9 +248,9 @@ export default function SoftwareLandingPage() {
 
                     <div className="mt-12 flex space-x-6 text-[#0F1923]/30">
                         <div className="flex items-center gap-2"><Database size={16} /><span className="text-[10px] font-bold uppercase tracking-widest">Data</span></div>
-                        <div className="w-1 h-1 rounded-full bg-[#0F1923]/15 my-auto"></div>
+                        <div className="w-1 h-1 rounded-none bg-[#0F1923]/15 my-auto"></div>
                         <div className="flex items-center gap-2"><Sparkles size={16} /><span className="text-[10px] font-bold uppercase tracking-widest">Cognitive UI</span></div>
-                        <div className="w-1 h-1 rounded-full bg-[#0F1923]/15 my-auto"></div>
+                        <div className="w-1 h-1 rounded-none bg-[#0F1923]/15 my-auto"></div>
                         <div className="flex items-center gap-2"><Smartphone size={16} /><span className="text-[10px] font-bold uppercase tracking-widest">Mobile First</span></div>
                     </div>
                 </section>
@@ -267,10 +267,10 @@ export default function SoftwareLandingPage() {
                             </p>
                         </div>
                         <div className="flex gap-2">
-                            <button onClick={() => scroll(-400)} className="w-12 h-12 rounded-full border border-[#0F1923]/12 flex items-center justify-center text-[#0F1923]/40 hover:bg-[#E8341A]/8 hover:text-[#E8341A] hover:border-[#E8341A]/30 transition-colors z-20">
+                            <button onClick={() => scroll(-400)} className="w-12 h-12 rounded-none border border-[#0F1923]/12 flex items-center justify-center text-[#0F1923]/40 hover:bg-[#E8341A]/8 hover:text-[#E8341A] hover:border-[#E8341A]/30 transition-colors z-20">
                                 <ChevronLeft size={18} />
                             </button>
-                            <button onClick={() => scroll(400)} className="w-12 h-12 rounded-full border border-[#0F1923]/12 flex items-center justify-center text-[#0F1923]/40 hover:bg-[#E8341A]/8 hover:text-[#E8341A] hover:border-[#E8341A]/30 transition-colors z-20">
+                            <button onClick={() => scroll(400)} className="w-12 h-12 rounded-none border border-[#0F1923]/12 flex items-center justify-center text-[#0F1923]/40 hover:bg-[#E8341A]/8 hover:text-[#E8341A] hover:border-[#E8341A]/30 transition-colors z-20">
                                 <ChevronRight size={18} />
                             </button>
                         </div>
@@ -295,11 +295,11 @@ export default function SoftwareLandingPage() {
                                     className={`shrink-0 w-[320px] md:w-[380px] relative ${item.delay ? 'animate-float-delayed mt-12' : 'animate-float'}`}
                                 >
                                     {/* Glass Phone Device */}
-                                    <div className="relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-[40px] p-4 shadow-2xl shadow-black/50 group">
-                                        <div className="absolute -inset-0.5 bg-gradient-to-b from-white/20 to-transparent rounded-[42px] z-[-1] opacity-50 pointer-events-none"></div>
+                                    <div className="relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-none-[40px] p-4 shadow-2xl shadow-black/50 group">
+                                        <div className="absolute -inset-0.5 bg-gradient-to-b from-white/20 to-transparent rounded-none-[42px] z-[-1] opacity-50 pointer-events-none"></div>
                                         
                                         {/* Screen */}
-                                        <div className={`w-full aspect-[9/16] rounded-[28px] overflow-hidden ${item.imagePlaceholderbg} relative flex flex-col cursor-pointer`}
+                                        <div className={`w-full aspect-[9/16] rounded-none-[28px] overflow-hidden ${item.imagePlaceholderbg} relative flex flex-col cursor-pointer`}
                                              onClick={(e) => {
                                                 if (!isDragging && item.previewUrl) {
                                                     setActivePreview({url: item.previewUrl, title: item.title, accent: item.accent})
@@ -307,7 +307,7 @@ export default function SoftwareLandingPage() {
                                              }}
                                         >
                                             {/* Camera Notch */}
-                                            <div className="absolute top-2 left-1/2 -translate-x-1/2 w-20 h-5 bg-neutral-950 rounded-full z-10 pointer-events-none shadow-md"></div>
+                                            <div className="absolute top-2 left-1/2 -translate-x-1/2 w-20 h-5 bg-neutral-950 rounded-none z-10 pointer-events-none shadow-md"></div>
                                             
                                             {/* Inner UI: Real Iframe Scaled Down or Mock */}
                                             {item.previewUrl ? (
@@ -323,26 +323,26 @@ export default function SoftwareLandingPage() {
                                             ) : (
                                                 <div className="flex-1 w-full p-6 pt-12 flex flex-col transform transition-transform duration-1000 group-hover:-translate-y-8 ease-out pointer-events-none">
                                                     <div className="w-full flex justify-between items-center mb-8">
-                                                        <div className="w-8 h-8 rounded-full bg-white/20 shadow-sm"></div>
-                                                        <div className="w-16 h-3 rounded bg-white/20 shadow-sm"></div>
+                                                        <div className="w-8 h-8 rounded-none bg-white/20 shadow-sm"></div>
+                                                        <div className="w-16 h-3 rounded-none bg-white/20 shadow-sm"></div>
                                                     </div>
                                                     <div className="flex space-x-2 w-full mb-3">
-                                                        <div className="flex-1 h-20 rounded-xl bg-white/10 shadow-sm"></div>
-                                                        <div className="flex-1 h-20 rounded-xl bg-white/10 shadow-sm"></div>
+                                                        <div className="flex-1 h-20 rounded-none bg-white/10 shadow-sm"></div>
+                                                        <div className="flex-1 h-20 rounded-none bg-white/10 shadow-sm"></div>
                                                     </div>
-                                                    <div className="w-3/4 h-8 rounded-lg mb-6 shadow-sm" style={{ backgroundColor: item.accent, opacity: 0.8 }}></div>
+                                                    <div className="w-3/4 h-8 rounded-none mb-6 shadow-sm" style={{ backgroundColor: item.accent, opacity: 0.8 }}></div>
 
-                                                    <div className="w-full h-24 rounded-xl bg-white/10 mb-4 border border-white/5 shadow-sm"></div>
-                                                    <div className="w-full h-24 rounded-xl bg-white/10 mb-4 border border-white/5 shadow-sm"></div>
-                                                    <div className="w-full h-24 rounded-xl bg-white/10 mb-4 border border-white/5 shadow-sm"></div>
-                                                    <div className="w-full flex-1 rounded-xl bg-white/10 border border-white/5 shadow-sm"></div>
+                                                    <div className="w-full h-24 rounded-none bg-white/10 mb-4 border border-white/5 shadow-sm"></div>
+                                                    <div className="w-full h-24 rounded-none bg-white/10 mb-4 border border-white/5 shadow-sm"></div>
+                                                    <div className="w-full h-24 rounded-none bg-white/10 mb-4 border border-white/5 shadow-sm"></div>
+                                                    <div className="w-full flex-1 rounded-none bg-white/10 border border-white/5 shadow-sm"></div>
                                                 </div>
                                             )}
 
                                             {/* Hover Glow Accent / Call to action */}
                                             <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/90 via-black/40 to-transparent p-6 opacity-0 group-hover:opacity-100 transition-all duration-300">
                                                 <div className="w-full text-center translate-y-8 group-hover:translate-y-0 transition-all duration-500 ease-out">
-                                                    <span className="text-[10px] font-black uppercase tracking-widest px-4 py-3 bg-neutral-900 border border-white/20 shadow-2xl rounded-sm inline-block scale-95 group-hover:scale-100 transition-transform duration-300" style={{ color: item.accent }}>
+                                                    <span className="text-[10px] font-black uppercase tracking-widest px-4 py-3 bg-neutral-900 border border-white/20 shadow-2xl rounded-none inline-block scale-95 group-hover:scale-100 transition-transform duration-300" style={{ color: item.accent }}>
                                                         {item.previewUrl ? 'INSPECCIONAR UI / ABRIR' : 'Próximamente'}
                                                     </span>
                                                 </div>

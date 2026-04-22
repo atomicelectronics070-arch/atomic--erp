@@ -121,8 +121,8 @@ export default function AdvancedCRMPage() {
         <div className="space-y-12 lg:min-h-screen flex flex-col relative w-full overflow-hidden pb-32 animate-in fade-in duration-1000">
             {/* Background Orbs */}
             <div className="fixed inset-0 pointer-events-none z-0">
-                <div className="absolute top-[10%] right-[-10%] w-[35%] h-[35%] rounded-full bg-indigo-500/5 blur-[120px]" />
-                <div className="absolute bottom-[20%] left-[-10%] w-[30%] h-[30%] rounded-full bg-pink-500/5 blur-[100px]" />
+                <div className="absolute top-[10%] right-[-10%] w-[35%] h-[35%] rounded-none bg-indigo-500/5 blur-[120px]" />
+                <div className="absolute bottom-[20%] left-[-10%] w-[30%] h-[30%] rounded-none bg-pink-500/5 blur-[100px]" />
             </div>
 
             {/* HEADERS & METRICS */}
@@ -135,12 +135,12 @@ export default function AdvancedCRMPage() {
                     <h1 className="text-6xl font-black text-white tracking-tighter uppercase italic">Centro <span className="text-primary">CRM</span></h1>
                     <p className="text-slate-500 font-bold text-xs uppercase tracking-[0.3em] mt-4 max-w-2xl leading-relaxed">Gestión táctica de prospectos, fidelización de nodos activos y análisis de conversión corporativa en tiempo real.</p>
                              <div className="flex flex-wrap items-center gap-10">
-                    <button className="p-8 glass-panel text-slate-500 hover:text-primary hover:bg-white/10 transition-all rounded-[1.5rem] group border-white/10 shadow-2xl">
+                    <button className="p-8 glass-panel text-slate-500 hover:text-primary hover:bg-white/10 transition-all rounded-none-[1.5rem] group border-white/10 shadow-2xl">
                         <Download size={26} className="group-hover:scale-125 transition-transform duration-500" />
                     </button>
                     <button
                         onClick={openCreatePanel}
-                        className="flex items-center space-x-6 bg-primary text-white px-14 py-6 font-black uppercase tracking-[0.4em] text-[11px] hover:scale-[1.05] transition-all shadow-[0_30px_70px_-15px_rgba(99,102,241,0.6)] rounded-[2.2rem] active:scale-95 group italic skew-x-[-12deg]"
+                        className="flex items-center space-x-6 bg-primary text-white px-14 py-6 font-black uppercase tracking-[0.4em] text-[11px] hover:scale-[1.05] transition-all shadow-[0_30px_70px_-15px_rgba(99,102,241,0.6)] rounded-none-[2.2rem] active:scale-95 group italic skew-x-[-12deg]"
                     >
                         <UserPlus size={24} className="group-hover:rotate-12 transition-transform" />
                         <span>INYECTAR NODO</span>
@@ -158,7 +158,7 @@ export default function AdvancedCRMPage() {
             </div>
 
             {/* DATA COMMAND GRID */}
-            <div className="flex-1 glass-panel !bg-slate-950/70 border-white/10 shadow-[0_80px_160px_-40px_rgba(0,0,0,0.9)] overflow-hidden flex flex-col relative z-10 rounded-[4rem] ring-1 ring-white/5 backdrop-blur-[40px]">
+            <div className="flex-1 glass-panel !bg-slate-950/70 border-white/10 shadow-[0_80px_160px_-40px_rgba(0,0,0,0.9)] overflow-hidden flex flex-col relative z-10 rounded-none-[4rem] ring-1 ring-white/5 backdrop-blur-[40px]">
                 {/* Protocol Toolbar */}
                 <div className="p-14 border-b border-white/10 bg-white/[0.02] flex flex-col xl:flex-row justify-between items-center gap-14">
                     <div className="relative w-full xl:max-w-3xl group">
@@ -168,7 +168,7 @@ export default function AdvancedCRMPage() {
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             placeholder="ESCANEAR ECOSISTEMA DE CLIENTES v4.0..."
-                            className="w-full pl-20 pr-10 py-7 bg-slate-900/80 border border-white/5 text-white text-[12px] font-black uppercase tracking-[0.3em] focus:border-primary/50 focus:ring-4 focus:ring-primary/5 transition-all outline-none rounded-[2rem] placeholder:text-slate-800 italic"
+                            className="w-full pl-20 pr-10 py-7 bg-slate-900/80 border border-white/5 text-white text-[12px] font-black uppercase tracking-[0.3em] focus:border-primary/50 focus:ring-4 focus:ring-primary/5 transition-all outline-none rounded-none-[2rem] placeholder:text-slate-800 italic"
                         />
                     </div>
                     <div className="flex w-full xl:w-auto items-center gap-10">
@@ -179,7 +179,7 @@ export default function AdvancedCRMPage() {
                         <select
                             value={statusFilter}
                             onChange={(e) => setStatusFilter(e.target.value)}
-                            className="w-full lg:w-80 px-10 py-6 bg-slate-900 border border-white/10 text-white text-[11px] font-black uppercase tracking-[0.3em] focus:border-primary outline-none rounded-[1.8rem] cursor-pointer hover:bg-slate-800 transition-all shadow-inner italic"
+                            className="w-full lg:w-80 px-10 py-6 bg-slate-900 border border-white/10 text-white text-[11px] font-black uppercase tracking-[0.3em] focus:border-primary outline-none rounded-none-[1.8rem] cursor-pointer hover:bg-slate-800 transition-all shadow-inner italic"
                         >
                             <option value="all">Filtro: Todos los Nodos</option>
                             <option value="activo">Estado: Diseños Activos</option>
@@ -213,7 +213,7 @@ export default function AdvancedCRMPage() {
                                 >
                                     <td className="px-14 py-10">
                                         <div className="flex items-center gap-8">
-                                            <div className="w-16 h-16 bg-slate-900 rounded-2xl flex items-center justify-center font-black text-xl border border-white/10 group-hover:border-primary transition-all shadow-2xl shadow-black/50 overflow-hidden relative">
+                                            <div className="w-16 h-16 bg-slate-900 rounded-none flex items-center justify-center font-black text-xl border border-white/10 group-hover:border-primary transition-all shadow-2xl shadow-black/50 overflow-hidden relative">
                                                 <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                                                 <span className="relative z-10">{(client.firstName?.[0] || client.name?.[0] || 'U').toUpperCase()}</span>
                                             </div>
@@ -243,7 +243,7 @@ export default function AdvancedCRMPage() {
                                     </td>
                                     <td className="px-14 py-10">
                                         <div className="flex flex-col items-center justify-center space-y-3">
-                                            <span className="text-[10px] font-black px-6 py-2 bg-slate-900/80 text-white border border-white/10 rounded-2xl uppercase tracking-[0.4em] group-hover:border-secondary/40 transition-all shadow-inner italic">
+                                            <span className="text-[10px] font-black px-6 py-2 bg-slate-900/80 text-white border border-white/10 rounded-none uppercase tracking-[0.4em] group-hover:border-secondary/40 transition-all shadow-inner italic">
                                                 {client.purchaseCount} <span className="text-secondary/60">TX_UID</span>
                                             </span>
                                             <span className="text-[9px] font-black text-slate-700 uppercase tracking-[0.5em] italic">
@@ -252,7 +252,7 @@ export default function AdvancedCRMPage() {
                                         </div>
                                     </td>
                                     <td className="px-14 py-10 text-center">
-                                        <span className={`px-8 py-3 text-[10px] font-black uppercase tracking-[0.4em] border rounded-[1.2rem] shadow-2xl italic leading-none inline-block ${
+                                        <span className={`px-8 py-3 text-[10px] font-black uppercase tracking-[0.4em] border rounded-none-[1.2rem] shadow-2xl italic leading-none inline-block ${
                                             client.status === 'ACTIVO' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 shadow-emerald-500/10' :
                                             client.status === 'PROSPECTO' ? 'bg-secondary/10 text-secondary border-secondary/20 shadow-secondary/10 ring-1 ring-secondary/20' :
                                             'bg-slate-800/20 text-slate-600 border-white/10'
@@ -264,11 +264,11 @@ export default function AdvancedCRMPage() {
                                         <div className="flex justify-end gap-5 opacity-0 group-hover:opacity-100 transition-all translate-x-12 group-hover:translate-x-0 duration-500">
                                             <button
                                                 onClick={(e) => handleDeleteClient(client.id, e)}
-                                                className="p-6 bg-red-500/5 text-red-500 hover:bg-red-500 hover:text-white transition-all rounded-2xl border border-red-500/20 shadow-2xl active:scale-90"
+                                                className="p-6 bg-red-500/5 text-red-500 hover:bg-red-500 hover:text-white transition-all rounded-none border border-red-500/20 shadow-2xl active:scale-90"
                                             >
                                                 <Trash2 size={24} />
                                             </button>
-                                            <button className="p-6 glass-panel !bg-primary text-white hover:scale-110 transition-all rounded-2xl shadow-3xl shadow-primary/40 ring-1 ring-white/20 active:scale-95">
+                                            <button className="p-6 glass-panel !bg-primary text-white hover:scale-110 transition-all rounded-none shadow-3xl shadow-primary/40 ring-1 ring-white/20 active:scale-95">
                                                 <ChevronRight size={28} />
                                             </button>
                                         </div>
@@ -296,11 +296,11 @@ export default function AdvancedCRMPage() {
                             animate={{ x: 0, opacity: 1 }}
                             exit={{ x: '100%', opacity: 0 }}
                             transition={{ type: 'spring', damping: 40, stiffness: 400, mass: 1 }}
-                            className="w-full md:w-[800px] h-full glass-panel !bg-slate-950/80 !border-l !border-white/20 z-[210] shadow-[0_0_250px_rgba(0,0,0,1)] flex flex-col md:rounded-l-[6rem] backdrop-blur-[120px]"
+                            className="w-full md:w-[800px] h-full glass-panel !bg-slate-950/80 !border-l !border-white/20 z-[210] shadow-[0_0_250px_rgba(0,0,0,1)] flex flex-col md:rounded-none-[6rem] backdrop-blur-[120px]"
                         >
                             <div className="flex items-center justify-between p-16 border-b border-white/20 bg-white/[0.03] shrink-0">
                                 <div className="flex items-center gap-10">
-                                    <div className="bg-secondary p-7 rounded-[2rem] shadow-2xl shadow-secondary/40 animate-pulse">
+                                    <div className="bg-secondary p-7 rounded-none-[2rem] shadow-2xl shadow-secondary/40 animate-pulse">
                                         <UserPlus size={36} className="text-white" />
                                     </div>
                                     <div>
@@ -312,7 +312,7 @@ export default function AdvancedCRMPage() {
                                 </div>
                                 <button 
                                     onClick={closePanel} 
-                                    className="text-slate-600 hover:text-white hover:rotate-90 transition-all duration-700 p-6 bg-slate-900/80 border border-white/20 rounded-[1.5rem] shadow-2xl active:scale-90"
+                                    className="text-slate-600 hover:text-white hover:rotate-90 transition-all duration-700 p-6 bg-slate-900/80 border border-white/20 rounded-none-[1.5rem] shadow-2xl active:scale-90"
                                 >
                                     <X size={40} />
                                 </button>
@@ -322,7 +322,7 @@ export default function AdvancedCRMPage() {
                                 {/* Form sections with enhanced styling */}
                                 <div className="space-y-14">
                                     <div className="flex items-center gap-6 border-b border-white/10 pb-8">
-                                        <div className="w-3 h-3 rounded-full bg-secondary shadow-[0_0_15px_rgba(255,99,71,0.8)]" />
+                                        <div className="w-3 h-3 rounded-none bg-secondary shadow-[0_0_15px_rgba(255,99,71,0.8)]" />
                                         <h3 className="text-sm font-black uppercase tracking-[0.6em] text-white italic">01 // Identidad Corporativa</h3>
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-14">
@@ -334,7 +334,7 @@ export default function AdvancedCRMPage() {
                                                 type="text"
                                                 value={formData.firstName}
                                                 onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                                                className="w-full p-8 bg-slate-900/60 border border-white/10 text-white text-[13px] font-black uppercase tracking-widest focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all outline-none rounded-3xl placeholder:text-slate-800 italic"
+                                                className="w-full p-8 bg-slate-900/60 border border-white/10 text-white text-[13px] font-black uppercase tracking-widest focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all outline-none rounded-none placeholder:text-slate-800 italic"
                                                 placeholder="REGISTRAR CADENA..."
                                             />
                                         </div>
@@ -344,7 +344,7 @@ export default function AdvancedCRMPage() {
                                                 type="text"
                                                 value={formData.lastName}
                                                 onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                                                className="w-full p-8 bg-slate-900/60 border border-white/10 text-white text-[13px] font-black uppercase tracking-widest focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all outline-none rounded-3xl placeholder:text-slate-800 italic"
+                                                className="w-full p-8 bg-slate-900/60 border border-white/10 text-white text-[13px] font-black uppercase tracking-widest focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all outline-none rounded-none placeholder:text-slate-800 italic"
                                                 placeholder="COMPLETAR REGISTRO..."
                                             />
                                         </div>
@@ -353,7 +353,7 @@ export default function AdvancedCRMPage() {
 
                                 <div className="space-y-14">
                                     <div className="flex items-center gap-6 border-b border-white/10 pb-8">
-                                        <div className="w-3 h-3 rounded-full bg-primary shadow-[0_0_15px_rgba(99,102,241,0.8)]" />
+                                        <div className="w-3 h-3 rounded-none bg-primary shadow-[0_0_15px_rgba(99,102,241,0.8)]" />
                                         <h3 className="text-sm font-black uppercase tracking-[0.6em] text-white italic">02 // Conectividad Local</h3>
                                     </div>
                                     <div className="space-y-14">
@@ -366,7 +366,7 @@ export default function AdvancedCRMPage() {
                                                 type="email"
                                                 value={formData.email}
                                                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                                className="w-full p-8 bg-slate-900/60 border border-white/10 text-white text-[13px] font-black tracking-[0.1em] focus:border-primary focus:ring-4 focus:ring-primary/5 outline-none rounded-3xl placeholder:text-slate-800 italic"
+                                                className="w-full p-8 bg-slate-900/60 border border-white/10 text-white text-[13px] font-black tracking-[0.1em] focus:border-primary focus:ring-4 focus:ring-primary/5 outline-none rounded-none placeholder:text-slate-800 italic"
                                                 placeholder="DIRECCIÓN_MAESTRA@DOMINIO.GLOBAL"
                                             />
                                         </div>
@@ -380,7 +380,7 @@ export default function AdvancedCRMPage() {
                                                     type="text"
                                                     value={formData.phone}
                                                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                                    className="w-full p-8 bg-slate-900/60 border border-white/10 text-white text-[13px] font-black tracking-[0.2em] focus:border-secondary outline-none rounded-3xl transition-all"
+                                                    className="w-full p-8 bg-slate-900/60 border border-white/10 text-white text-[13px] font-black tracking-[0.2em] focus:border-secondary outline-none rounded-none transition-all"
                                                     placeholder="+52 XXX XXX XXXX"
                                                 />
                                             </div>
@@ -393,7 +393,7 @@ export default function AdvancedCRMPage() {
                                                     type="text"
                                                     value={formData.city}
                                                     onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                                                    className="w-full p-8 bg-slate-900/60 border border-white/10 text-white text-[13px] font-black uppercase tracking-widest focus:border-secondary outline-none rounded-3xl transition-all"
+                                                    className="w-full p-8 bg-slate-900/60 border border-white/10 text-white text-[13px] font-black uppercase tracking-widest focus:border-secondary outline-none rounded-none transition-all"
                                                     placeholder="CIUDAD DE OPERACIÓN"
                                                 />
                                             </div>
@@ -403,7 +403,7 @@ export default function AdvancedCRMPage() {
 
                                 <div className="space-y-14">
                                     <div className="flex items-center gap-6 border-b border-white/10 pb-8">
-                                        <div className="w-3 h-3 rounded-full bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.8)]" />
+                                        <div className="w-3 h-3 rounded-none bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.8)]" />
                                         <h3 className="text-sm font-black uppercase tracking-[0.6em] text-white italic">03 // Análisis Operativo</h3>
                                     </div>
                                     <div className="space-y-6">
@@ -414,12 +414,12 @@ export default function AdvancedCRMPage() {
                                             rows={5}
                                             value={formData.requirement}
                                             onChange={(e) => setFormData({ ...formData, requirement: e.target.value })}
-                                            className="w-full p-10 bg-slate-900/60 border border-white/10 text-white text-[12px] font-black tracking-widest focus:border-primary transition-all outline-none rounded-[2.5rem] resize-none placeholder:text-slate-800 leading-relaxed italic custom-scrollbar-hidden"
+                                            className="w-full p-10 bg-slate-900/60 border border-white/10 text-white text-[12px] font-black tracking-widest focus:border-primary transition-all outline-none rounded-none-[2.5rem] resize-none placeholder:text-slate-800 leading-relaxed italic custom-scrollbar-hidden"
                                             placeholder="DESGLOSE EL PROTOCOLO DE NECESIDADES INDUSTRIALES..."
                                         />
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-                                        <div className="glass-panel !bg-slate-900/40 p-8 rounded-3xl border-white/10 text-center space-y-4 group hover:!bg-slate-900/80 transition-all">
+                                        <div className="glass-panel !bg-slate-900/40 p-8 rounded-none border-white/10 text-center space-y-4 group hover:!bg-slate-900/80 transition-all">
                                             <label className="text-[10px] font-black text-slate-600 uppercase tracking-[0.4em] italic group-hover:text-white transition-colors">Volumen TX</label>
                                             <input
                                                 type="number"
@@ -429,7 +429,7 @@ export default function AdvancedCRMPage() {
                                                 min="0"
                                             />
                                         </div>
-                                        <div className="glass-panel !bg-slate-900/40 p-8 rounded-3xl border-white/10 text-center space-y-4 group hover:!bg-slate-900/80 transition-all">
+                                        <div className="glass-panel !bg-slate-900/40 p-8 rounded-none border-white/10 text-center space-y-4 group hover:!bg-slate-900/80 transition-all">
                                             <label className="text-[10px] font-black text-slate-600 uppercase tracking-[0.4em] italic group-hover:text-white transition-colors">Impactos IA</label>
                                             <input
                                                 type="number"
@@ -439,7 +439,7 @@ export default function AdvancedCRMPage() {
                                                 min="0"
                                             />
                                         </div>
-                                        <div className="glass-panel !bg-slate-900/40 p-8 rounded-3xl border-white/10 space-y-4 group hover:!bg-slate-900/80 transition-all flex flex-col justify-center">
+                                        <div className="glass-panel !bg-slate-900/40 p-8 rounded-none border-white/10 space-y-4 group hover:!bg-slate-900/80 transition-all flex flex-col justify-center">
                                             <label className="text-[10px] font-black text-slate-600 uppercase tracking-[0.4em] italic text-center group-hover:text-white transition-colors">Nodo Status</label>
                                             <select
                                                 value={formData.status}
@@ -458,13 +458,13 @@ export default function AdvancedCRMPage() {
                             <div className="p-16 border-t border-white/20 bg-white/[0.04] grid grid-cols-1 md:grid-cols-2 gap-10 shrink-0 backdrop-blur-3xl">
                                 <button 
                                     onClick={closePanel} 
-                                    className="py-10 text-[11px] font-black uppercase tracking-[0.8em] bg-white/5 text-slate-500 hover:text-white hover:bg-white/10 transition-all rounded-[2.5rem] border border-white/10 active:scale-95 shadow-2xl italic skew-x-[-15deg] hover:skew-x-0"
+                                    className="py-10 text-[11px] font-black uppercase tracking-[0.8em] bg-white/5 text-slate-500 hover:text-white hover:bg-white/10 transition-all rounded-none-[2.5rem] border border-white/10 active:scale-95 shadow-2xl italic skew-x-[-15deg] hover:skew-x-0"
                                 >
                                     ABORTAR PROTOCOLO
                                 </button>
                                 <button 
                                     onClick={handleSaveClient} 
-                                    className="py-10 text-[11px] font-black uppercase tracking-[0.8em] bg-primary text-white hover:scale-105 transition-all shadow-[0_40px_100px_-20px_rgba(99,102,241,0.7)] flex justify-center items-center gap-6 rounded-[2.5rem] active:scale-[0.98] italic skew-x-[-15deg] hover:skew-x-0 group"
+                                    className="py-10 text-[11px] font-black uppercase tracking-[0.8em] bg-primary text-white hover:scale-105 transition-all shadow-[0_40px_100px_-20px_rgba(99,102,241,0.7)] flex justify-center items-center gap-6 rounded-none-[2.5rem] active:scale-[0.98] italic skew-x-[-15deg] hover:skew-x-0 group"
                                 >
                                     <Save size={24} className="group-hover:rotate-12 transition-transform" /> 
                                     <span>{editingId ? "COMMIT DATA" : "ENCRIPTAR NODO"}</span>
@@ -486,13 +486,13 @@ function StatCard({ label, value, icon, color, showPulse = false }: any) {
     }
 
     return (
-        <div className={`glass-panel p-12 border rounded-[4rem] flex items-center justify-between group hover:scale-[1.03] transition-all duration-700 relative overflow-hidden backdrop-blur-3xl shadow-[0_50px_100px_-25px_rgba(0,0,0,0.8)] ${colorClasses[color]}`}>
-            {showPulse && <div className="absolute top-6 right-6 w-3 h-3 rounded-full bg-secondary animate-pulse shadow-[0_0_15px_rgba(255,99,71,0.5)]" />}
+        <div className={`glass-panel p-12 border rounded-none-[4rem] flex items-center justify-between group hover:scale-[1.03] transition-all duration-700 relative overflow-hidden backdrop-blur-3xl shadow-[0_50px_100px_-25px_rgba(0,0,0,0.8)] ${colorClasses[color]}`}>
+            {showPulse && <div className="absolute top-6 right-6 w-3 h-3 rounded-none bg-secondary animate-pulse shadow-[0_0_15px_rgba(255,99,71,0.5)]" />}
             <div className="relative z-10 space-y-4">
                 <p className="text-[11px] font-black text-slate-500 uppercase tracking-[0.5em] italic group-hover:text-white transition-colors">{label}</p>
                 <p className="text-7xl font-black text-white tracking-tighter italic leading-none drop-shadow-[0_0_25px_rgba(255,255,255,0.1)]">{value}</p>
             </div>
-            <div className="p-7 bg-slate-900/80 rounded-[2rem] border border-white/10 shadow-3xl group-hover:rotate-[15deg] group-hover:scale-110 transition-all duration-700 text-slate-400 group-hover:text-white">
+            <div className="p-7 bg-slate-900/80 rounded-none-[2rem] border border-white/10 shadow-3xl group-hover:rotate-[15deg] group-hover:scale-110 transition-all duration-700 text-slate-400 group-hover:text-white">
                 {icon}
             </div>
         </div>

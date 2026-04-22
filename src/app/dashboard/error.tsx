@@ -15,7 +15,7 @@ export default function Error({
     }, [error])
 
     return (
-        <div className="flex h-full w-full flex-col items-center justify-center p-8 text-center bg-white rounded-lg shadow-sm">
+        <div className="flex h-full w-full flex-col items-center justify-center p-8 text-center bg-white rounded-none shadow-sm">
             <h2 className="text-2xl font-bold tracking-tight text-neutral-800 mb-2">Algo salió mal</h2>
             <p className="text-sm text-neutral-500 mb-6 max-w-md">
                 Hubo un problema al cargar esta sección. Puedes intentar recargar la página o volver al panel anterior.
