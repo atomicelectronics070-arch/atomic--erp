@@ -52,15 +52,16 @@ export default function PublicWebPage() {
     }
 
     return (
-        <div className="min-h-screen bg-[#020617] text-white font-sans relative" style={{ background: '#020617' }}>
+        <div className="min-h-screen bg-[#020617] text-white font-sans relative">
             <Starfield />
-            <div className="fixed top-0 left-0 z-50 bg-red-600 text-white text-[8px] px-1 pointer-events-none">UI v2.0 ACTIVE</div>
             
             {/* 1. SECCIÓN SUPERIOR: CATEGORÍAS */}
-            <CategoriesBanner categories={metadata.categories} />
+            <div className="bg-transparent">
+                <CategoriesBanner categories={metadata.categories} />
+            </div>
 
             {/* 2. SECCIÓN MEDIA: PRODUCTOS DESTACADOS (16x4 GRID SCROLLABLE) */}
-            <section className="bg-[#0F1923]/40 backdrop-blur-md py-32 border-b border-[#E8341A]/20 overflow-hidden">
+            <section className="bg-transparent py-32 border-b border-white/5 overflow-hidden">
                 <div className="max-w-[95%] mx-auto px-6">
                     <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
                         <div className="space-y-4">
@@ -174,10 +175,10 @@ function CollectionBanner({ collection, products, reverse }: { collection: any, 
             {collection.image ? (
                 <>
                     <img src={collection.image} alt={collection.name} className="absolute inset-0 w-full h-full object-cover" />
-                    <div className={`absolute inset-0 bg-gradient-to-r ${gradient} opacity-85`}></div>
+                    <div className={`absolute inset-0 bg-gradient-to-r ${gradient} opacity-60 backdrop-blur-[2px]`}></div>
                 </>
             ) : (
-                <div className={`absolute inset-0 bg-gradient-to-r ${gradient}`}></div>
+                <div className={`absolute inset-0 bg-gradient-to-r ${gradient} opacity-40`}></div>
             )}
 
             {/* Accent line */}
