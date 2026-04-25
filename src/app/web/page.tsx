@@ -52,7 +52,7 @@ export default function PublicWebPage() {
     }
 
     return (
-        <div className="min-h-screen bg-[#020617] text-white font-sans relative">
+        <div className="min-h-screen bg-transparent text-white font-sans relative">
             <Starfield />
             
             {/* 1. SECCIÓN SUPERIOR: CATEGORÍAS */}
