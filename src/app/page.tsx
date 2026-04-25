@@ -11,12 +11,12 @@ import {
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-mesh text-white font-sans overflow-x-hidden selection:bg-indigo-500/30">
+    <div className="min-h-screen bg-transparent text-white font-sans overflow-x-hidden selection:bg-indigo-500/30">
       
       {/* Background Orbs */}
       <div className="fixed inset-0 z-0 pointer-events-none">
-        <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] rounded-none bg-indigo-600/10 blur-[120px] animate-pulse" />
-        <div className="absolute bottom-[-10%] left-[-5%] w-[40%] h-[40%] rounded-none bg-pink-600/10 blur-[120px] animate-pulse" style={{ animationDelay: '2s' }} />
+        <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] rounded-none bg-indigo-600/20 blur-[120px] animate-pulse" />
+        <div className="absolute bottom-[-10%] left-[-5%] w-[40%] h-[40%] rounded-none bg-pink-600/20 blur-[120px] animate-pulse" style={{ animationDelay: '2s' }} />
       </div>
 
       {/* Navbar */}

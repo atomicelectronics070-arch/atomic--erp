@@ -34,9 +34,9 @@
   --surface-dark: #0F1923;
   --surface-dark-2: #1A2535;
 
-  /* Glass dark panels */
-  --glass-bg: rgba(15, 25, 35, 0.75);
-  --glass-border: rgba(255, 255, 255, 0.08);
+  /* Glass dark panels - Lowered opacity for background visibility */
+  --glass-bg: rgba(15, 25, 35, 0.35);
+  --glass-border: rgba(255, 255, 255, 0.12);
 }
 
 body {
@@ -59,9 +59,9 @@ body {
 
 /* ── Glass card (light) ── */
 .glass-card {
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(232, 52, 26, 0.08);
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* ── Gradient text (tomato → orange) ── */
@@ -93,6 +93,18 @@ body {
   background-image:
     radial-gradient(at 0% 0%, rgba(232, 52, 26, 0.12) 0px, transparent 50%),
     radial-gradient(at 100% 100%, rgba(37, 99, 235, 0.08) 0px, transparent 50%);
+}
+
+/* ── Background Nebula (4K Space) ── */
+.bg-nebula {
+  background-color: #020617;
+  background-image: 
+    linear-gradient(to bottom, rgba(2, 6, 23, 0.2), rgba(2, 6, 23, 0.7)),
+    url('/backgrounds/nebula.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
 }
 
 h1, h2, h3, h4, h5, h6 {
