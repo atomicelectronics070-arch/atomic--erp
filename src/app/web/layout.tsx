@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Search, ShoppingCart, User, Shield, Zap, CheckCircle2 } from "lucide-react"
-import { MoleculesBackground } from "@/components/ui/MoleculesBackground"
+import { StaticMoleculesBackground } from "@/components/ui/StaticMoleculesBackground"
 
 export default function WebLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname()
@@ -14,35 +14,42 @@ export default function WebLayout({ children }: { children: React.ReactNode }) {
             style={{ background: "transparent" }}
             data-testid="web-layout-root"
         >
-            {/* Interactive black-metaballs background — fixed behind everything */}
-            <MoleculesBackground />
+            {/* Static, GPU-cheap molecules background (no canvas) */}
+            <StaticMoleculesBackground />
 
             {/* Global border + hover tokens for the light theme */}
             <style jsx global>{`
                 .atomic-light-shell {
-                    --atomic-border: rgba(255, 255, 255, 0.85);
-                    --atomic-border-hover: rgba(0, 0, 0, 0.18);
-                    --atomic-surface: rgba(255, 255, 255, 0.55);
+                    /* Premium editorial palette */
+                    --atomic-ink: #14110F;
+                    --atomic-ink-soft: rgba(20, 17, 15, 0.6);
+                    --atomic-ink-faint: rgba(20, 17, 15, 0.35);
+                    --atomic-cream: #F4F1EB;
+                    --atomic-accent: #2F5D50; /* deep editorial green */
+                    --atomic-border: rgba(255, 255, 255, 0.9);
+                    --atomic-border-hover: rgba(20, 17, 15, 0.22);
+                    --atomic-surface: rgba(255, 255, 255, 0.45);
                     --atomic-surface-hover: rgba(255, 255, 255, 0.7);
+                    color: var(--atomic-ink);
                 }
                 .atomic-card {
                     background: var(--atomic-surface);
                     border: 1px solid var(--atomic-border);
-                    backdrop-filter: blur(14px);
-                    -webkit-backdrop-filter: blur(14px);
-                    transition: border-color 280ms ease, background 280ms ease,
-                        box-shadow 280ms ease, transform 280ms ease;
+                    backdrop-filter: blur(10px) saturate(1.05);
+                    -webkit-backdrop-filter: blur(10px) saturate(1.05);
+                    transition: border-color 320ms ease, background 320ms ease,
+                        box-shadow 320ms ease, transform 320ms ease;
                 }
                 .atomic-card:hover {
                     border-color: var(--atomic-border-hover);
                     background: var(--atomic-surface-hover);
-                    box-shadow: 0 18px 44px -18px rgba(0, 0, 0, 0.18);
+                    box-shadow: 0 22px 50px -22px rgba(20, 17, 15, 0.22);
                 }
                 .atomic-bar {
-                    background: rgba(255, 255, 255, 0.45);
+                    background: rgba(255, 255, 255, 0.55);
                     border: 1px solid var(--atomic-border);
-                    backdrop-filter: blur(18px);
-                    -webkit-backdrop-filter: blur(18px);
+                    backdrop-filter: blur(14px) saturate(1.05);
+                    -webkit-backdrop-filter: blur(14px) saturate(1.05);
                 }
             `}</style>
 
