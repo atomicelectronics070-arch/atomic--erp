@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { ShoppingBag, ChevronRight, Star, ArrowRight, Shield, Zap, Truck, Search, Download, X, ChevronLeft, Monitor, Cpu, Gamepad2, Home } from "lucide-react"
 import Link from "next/link"
-import { Starfield } from "@/components/ui/Starfield"
+// Galaxy background is now mounted globally in /web/layout.tsx
 
 const safeParseArr = (str: any) => {
     try { const p = JSON.parse(str); return Array.isArray(p) ? p : [] } catch { return [] }
@@ -44,17 +44,14 @@ export default function PublicWebPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-[#020617]">
-                <Starfield />
-                <div className="animate-spin rounded-none h-12 w-12 border-4 border-[#E8341A] border-t-transparent shadow-lg shadow-red-100"></div>
+            <div className="min-h-screen flex items-center justify-center" data-testid="web-loading">
+                <div className="animate-spin rounded-none h-12 w-12 border-4 border-[#E8341A] border-t-transparent shadow-lg shadow-[#E8341A]/40"></div>
             </div>
         )
     }
 
     return (
-        <div className="min-h-screen bg-[#020617] text-white font-sans relative">
-            <Starfield />
-            
+        <div className="min-h-screen text-white font-sans relative" style={{ background: "transparent" }} data-testid="public-web-page">
             {/* 1. SECCIÓN SUPERIOR: CATEGORÍAS */}
             <div className="bg-transparent">
                 <CategoriesBanner categories={metadata.categories} />
@@ -81,9 +78,9 @@ export default function PublicWebPage() {
                                 <Link
                                     key={p.id}
                                     href={`/web/product/${p.id}`}
-                                    className="group flex flex-row w-[400px] h-[100px] border border-white/5 bg-[#0F1923]/60 backdrop-blur-sm transition-all hover:bg-[#1E3A5F]/40 hover:border-[#E8341A]/50 overflow-hidden shadow-xl"
+                                    className="group flex flex-row w-[400px] h-[100px] border border-white/10 bg-[#0F1923]/10 backdrop-blur-md transition-all hover:bg-[#0F1923]/50 hover:border-[#E8341A]/60 overflow-hidden shadow-2xl shadow-black/40"
                                 >
-                                    <div className="w-[100px] h-full shrink-0 bg-white p-2">
+                                    <div className="w-[100px] h-full shrink-0 bg-white/10 backdrop-blur-sm p-2">
                                         {(() => {
                                             const imgs = safeParseArr(p.images)
                                             return imgs.length > 0 ? (
@@ -106,8 +103,8 @@ export default function PublicWebPage() {
                 </div>
             </section>
 
-            {/* Features Bar */}
-            <section className="bg-[#0F1923] py-12">
+            {/* Features Bar (30% opacity to prioritize galaxy) */}
+            <section className="bg-[#0F1923]/10 backdrop-blur-md py-12 border-y border-white/10" data-testid="features-bar">
                 <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-8">
                     {[
                         { icon: <Truck />, title: "Envíos Gratis", desc: "Todo el país", color: '#E8341A' },
@@ -170,15 +167,15 @@ function CollectionBanner({ collection, products, reverse }: { collection: any, 
     }
 
     return (
-        <section className="relative w-full overflow-hidden border-b border-white/10" style={{ minHeight: '65vh' }}>
-            {/* Background */}
+        <section className="relative w-full overflow-hidden border-b border-white/10" style={{ minHeight: '65vh' }} data-testid={`collection-banner-${collection.slug}`}>
+            {/* Background (30% opacity) */}
             {collection.image ? (
                 <>
-                    <img src={collection.image} alt={collection.name} className="absolute inset-0 w-full h-full object-cover" />
-                    <div className={`absolute inset-0 bg-gradient-to-r ${gradient} opacity-60 backdrop-blur-[2px]`}></div>
+                    <img src={collection.image} alt={collection.name} className="absolute inset-0 w-full h-full object-cover opacity-10" />
+                    <div className={`absolute inset-0 bg-gradient-to-r ${gradient} opacity-10 backdrop-blur-[2px]`}></div>
                 </>
             ) : (
-                <div className={`absolute inset-0 bg-gradient-to-r ${gradient} opacity-40`}></div>
+                <div className={`absolute inset-0 bg-gradient-to-r ${gradient} opacity-10`}></div>
             )}
 
             {/* Accent line */}
@@ -287,7 +284,7 @@ function CategoriesBanner({ categories }: { categories: any[] }) {
     const visible = categories.filter((c: any) => c.isVisible !== false)
 
     return (
-        <section id="categorias" className="w-full bg-[#0F1923] relative overflow-hidden py-24">
+        <section id="categorias" className="w-full bg-[#0F1923]/10 backdrop-blur-md relative overflow-hidden py-24 border-y border-white/10" data-testid="categories-banner">
             {/* Diagonal grid texture */}
             <div
                 className="absolute inset-0 opacity-[0.03]"
@@ -327,11 +324,11 @@ function CategoriesBanner({ categories }: { categories: any[] }) {
                             key={cat.id}
                             href={`/web/category/${cat.slug}`}
                             draggable={false}
-                            className="group shrink-0 relative overflow-hidden transition-all duration-500 hover:-translate-y-2 rounded-none bg-white/5 border border-white/10 w-72"
+                            className="group shrink-0 relative overflow-hidden transition-all duration-500 hover:-translate-y-2 rounded-none bg-[#0F1923]/10 backdrop-blur-md border border-white/15 hover:border-[#E8341A]/50 w-72"
                             style={{ boxShadow: '0 20px 50px rgba(0,0,0,0.5)' }}
                         >
                             {/* Category image */}
-                            <div className="h-56 overflow-hidden bg-black relative flex items-center justify-center">
+                            <div className="h-56 overflow-hidden bg-black/20 relative flex items-center justify-center">
                                 {cat.image ? (
                                     <img
                                         src={cat.image}
@@ -344,8 +341,8 @@ function CategoriesBanner({ categories }: { categories: any[] }) {
                                         {cat.name[0]}
                                     </span>
                                 )}
-                                {/* Gradient Overlay */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-[#0F1923] via-[#0F1923]/40 to-transparent"></div>
+                                {/* Gradient Overlay (lighter to prioritize galaxy) */}
+                                <div className="absolute inset-0 bg-gradient-to-t from-[#0F1923]/70 via-[#0F1923]/20 to-transparent"></div>
                                 {/* Accent line on hover */}
                                 <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-[#E8341A] scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
                             </div>
