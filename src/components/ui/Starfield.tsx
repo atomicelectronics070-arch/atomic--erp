@@ -14,102 +14,90 @@ export const Starfield: React.FC = () => {
 
     let animationFrameId: number;
     let w: number, h: number;
-    const stars: Star[] = [];
-    const starCount = 400;
-
-    class Star {
-      x: number;
-      y: number;
-      z: number;
-      px: number;
-      py: number;
-
-      constructor() {
-        this.x = Math.random() * w - w / 2;
-        this.y = Math.random() * h - h / 2;
-        this.z = Math.random() * w;
-        this.px = 0;
-        this.py = 0;
-      }
-
-      update() {
-        this.z -= 0.8; // Velocidad de movimiento hacia la cámara
-        if (this.z <= 0) {
-          this.z = w;
-          this.x = Math.random() * w - w / 2;
-          this.y = Math.random() * h - h / 2;
-        }
-      }
-
-      draw() {
-        const x = (this.x / this.z) * w + w / 2;
-        const y = (this.y / this.z) * h + h / 2;
-
-        if (this.px !== 0) {
-          const size = (1 - this.z / w) * 2;
-          const opacity = (1 - this.z / w);
-          
-          ctx!.beginPath();
-          ctx!.strokeStyle = `rgba(255, 255, 255, ${opacity})`;
-          ctx!.lineWidth = size;
-          ctx!.lineCap = 'round';
-          ctx!.moveTo(x, y);
-          ctx!.lineTo(this.px, this.py);
-          ctx!.stroke();
-        }
-
-        this.px = x;
-        this.py = y;
-      }
-    }
+    
+    // Configuración de estrellas
+    const stars: {x: number, y: number, z: number, px: number, py: number}[] = [];
+    const count = 400;
 
     const init = () => {
       w = window.innerWidth;
       h = window.innerHeight;
       canvas.width = w;
       canvas.height = h;
-
-      for (let i = 0; i < starCount; i++) {
-        stars.push(new Star());
+      stars.length = 0;
+      for (let i = 0; i < count; i++) {
+        stars.push({
+          x: Math.random() * w - w / 2,
+          y: Math.random() * h - h / 2,
+          z: Math.random() * w,
+          px: 0,
+          py: 0
+        });
       }
     };
 
     const animate = () => {
-      // Fondo negro profundo con un toque de azul
+      // Fondo negro absoluto para asegurar visibilidad
       ctx.fillStyle = '#020617';
       ctx.fillRect(0, 0, w, h);
 
-      stars.forEach(star => {
-        star.update();
-        star.draw();
-      });
+      for (let i = 0; i < count; i++) {
+        let s = stars[i];
+        s.z -= 1.5; // Velocidad
+        
+        if (s.z <= 0) {
+          s.z = w;
+          s.x = Math.random() * w - w / 2;
+          s.y = Math.random() * h - h / 2;
+          s.px = 0;
+          s.py = 0;
+        }
+
+        const x = (s.x / s.z) * w + w / 2;
+        const y = (s.y / s.z) * h + h / 2;
+
+        if (s.px !== 0) {
+          const size = (1 - s.z / w) * 2.5;
+          ctx.beginPath();
+          ctx.strokeStyle = `rgba(255, 255, 255, ${1 - s.z / w})`;
+          ctx.lineWidth = size;
+          ctx.lineCap = 'round';
+          ctx.moveTo(x, y);
+          ctx.lineTo(s.px, s.py);
+          ctx.stroke();
+        }
+
+        s.px = x;
+        s.py = y;
+      }
 
       animationFrameId = requestAnimationFrame(animate);
-    };
-
-    const handleResize = () => {
-      w = window.innerWidth;
-      h = window.innerHeight;
-      canvas.width = w;
-      canvas.height = h;
     };
 
     init();
     animate();
 
+    const handleResize = () => init();
     window.addEventListener('resize', handleResize);
 
     return () => {
-      cancelAnimationFrame(animationFrameId);
       window.removeEventListener('resize', handleResize);
+      cancelAnimationFrame(animationFrameId);
     };
   }, []);
 
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 -z-10 bg-slate-950"
-      style={{ pointerEvents: 'none' }}
+      className="fixed inset-0 w-full h-full"
+      style={{ 
+        zIndex: -1, 
+        background: '#020617',
+        pointerEvents: 'none',
+        position: 'fixed',
+        top: 0,
+        left: 0
+      }}
     />
   );
 };
