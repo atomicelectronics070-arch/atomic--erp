@@ -39,34 +39,34 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-[#FAFAF8] text-[#0F1923] overflow-hidden relative">
+        <div className="min-h-screen flex items-center justify-center bg-transparent text-white overflow-hidden relative">
             {/* Background Effects */}
             <div className="fixed inset-0 pointer-events-none">
-                <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-[#E8341A]/8 blur-[150px] rounded-none animate-pulse" />
-                <div className="absolute bottom-[-10%] left-[-5%] w-[40%] h-[40%] bg-[#2563EB]/8 blur-[150px] rounded-none animate-pulse" style={{ animationDelay: '2s' }} />
+                <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-[#E8341A]/12 blur-[150px] rounded-none animate-pulse" />
+                <div className="absolute bottom-[-10%] left-[-5%] w-[40%] h-[40%] bg-[#2563EB]/12 blur-[150px] rounded-none animate-pulse" style={{ animationDelay: '2s' }} />
             </div>
 
             <div className="w-full max-w-md relative z-10 p-6">
                 {/* Logo Section */}
                 <div className="text-center mb-10">
-                    <div className="inline-flex items-center gap-3 px-4 py-2 border border-[#E8341A]/25 bg-[#E8341A]/8 backdrop-blur-md rounded-none mb-6">
+                    <div className="inline-flex items-center gap-3 px-4 py-2 border border-[#E8341A]/25 bg-[#E8341A]/10 backdrop-blur-md rounded-none mb-6">
                         <ShieldCheck size={14} className="text-[#E8341A]" />
                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#E8341A]">Terminal de Acceso Seguro</span>
                     </div>
-                    <h1 className="text-5xl font-black tracking-tighter text-[#0F1923] uppercase italic leading-none">
+                    <h1 className="text-5xl font-black tracking-tighter text-white uppercase italic leading-none">
                         ATOMIC<span className="text-[#E8341A]">.</span>
                     </h1>
-                    <p className="text-[10px] font-bold text-[#0F1923]/35 uppercase tracking-[0.5em] mt-2">INDUSTRIAS TECNOLÓGICAS</p>
+                    <p className="text-[10px] font-bold text-white/35 uppercase tracking-[0.5em] mt-2">INDUSTRIAS TECNOLÓGICAS</p>
                 </div>
 
-                <div className="bg-white border border-[#0F1923]/6 shadow-xl shadow-[#E8341A]/5 rounded-none p-8 md:p-10 relative overflow-hidden group">
+                <div className="bg-slate-950/30 border border-white/10 backdrop-blur-3xl shadow-2xl shadow-[#E8341A]/5 rounded-none p-8 md:p-10 relative overflow-hidden group">
                     {/* Inner Glow */}
-                    <div className="absolute -top-24 -right-24 w-48 h-48 bg-[#E8341A]/6 blur-[60px] rounded-none group-hover:bg-[#E8341A]/12 transition-all duration-700"></div>
+                    <div className="absolute -top-24 -right-24 w-48 h-48 bg-[#E8341A]/10 blur-[60px] rounded-none group-hover:bg-[#E8341A]/20 transition-all duration-700"></div>
                     
                     <div className="relative z-10">
                         <div className="mb-8">
-                            <h2 className="text-2xl font-black text-[#0F1923] uppercase tracking-tighter">Entrar al Sistema</h2>
-                            <p className="text-[10px] font-bold text-[#0F1923]/35 uppercase tracking-widest mt-1">Sincronización de Nodo Operativo</p>
+                            <h2 className="text-2xl font-black text-white uppercase tracking-tighter">Entrar al Sistema</h2>
+                            <p className="text-[10px] font-bold text-white/35 uppercase tracking-widest mt-1">Sincronización de Nodo Operativo</p>
                         </div>
 
                         {error && (
@@ -77,11 +77,11 @@ export default function LoginPage() {
 
                         <form onSubmit={handleSubmit} className="space-y-6">
                             <div className="space-y-2">
-                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                                <label className="block text-[10px] font-black text-white/50 uppercase tracking-widest ml-1">
                                     Identificador Corporativo
                                 </label>
                                 <div className="relative group">
-                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#0F1923]/25 group-focus-within:text-[#E8341A] transition-colors">
+                                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-white/25 group-focus-within:text-[#E8341A] transition-colors">
                                         <Mail size={18} />
                                     </div>
                                     <input
@@ -90,18 +90,18 @@ export default function LoginPage() {
                                         onChange={(e) => setEmail(e.target.value)}
                                         required
                                         autoFocus
-                                        className="w-full pl-12 pr-4 py-4 rounded-none border border-[#0F1923]/8 bg-[#F5F3F0] text-[#0F1923] text-sm font-bold focus:ring-2 focus:ring-[#E8341A] focus:bg-white transition-all outline-none placeholder:text-[#0F1923]/25"
+                                        className="w-full pl-12 pr-4 py-4 rounded-none border border-white/10 bg-white/5 text-white text-sm font-bold focus:ring-2 focus:ring-[#E8341A] focus:bg-white/10 transition-all outline-none placeholder:text-white/20"
                                         placeholder="usuario@atomic.com"
                                     />
                                 </div>
                             </div>
 
                             <div className="space-y-2">
-                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                                <label className="block text-[10px] font-black text-white/50 uppercase tracking-widest ml-1">
                                     Clave de Encriptación
                                 </label>
                                 <div className="relative group">
-                                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#0F1923]/25 group-focus-within:text-[#E8341A] transition-colors">
+                                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-white/25 group-focus-within:text-[#E8341A] transition-colors">
                                         <Lock size={18} />
                                     </div>
                                     <input
@@ -109,7 +109,7 @@ export default function LoginPage() {
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         required
-                                        className="w-full pl-12 pr-4 py-4 rounded-none border border-[#0F1923]/8 bg-[#F5F3F0] text-[#0F1923] text-sm font-bold focus:ring-2 focus:ring-[#E8341A] focus:bg-white transition-all outline-none placeholder:text-[#0F1923]/25"
+                                        className="w-full pl-12 pr-4 py-4 rounded-none border border-white/10 bg-white/5 text-white text-sm font-bold focus:ring-2 focus:ring-[#E8341A] focus:bg-white/10 transition-all outline-none placeholder:text-white/20"
                                         placeholder="••••••••••••"
                                     />
                                 </div>
@@ -132,8 +132,8 @@ export default function LoginPage() {
                             </div>
                         </form>
 
-                        <div className="mt-10 pt-8 border-t border-[#0F1923]/6 text-center">
-                            <p className="text-[10px] font-bold text-[#0F1923]/30 uppercase tracking-widest">
+                        <div className="mt-10 pt-8 border-t border-white/10 text-center">
+                            <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest">
                                 ¿Sin acceso autorizado?{" "}
                                 <Link href="/register" className="text-[#E8341A] hover:text-[#C0280F] transition-colors font-black ml-1">
                                     Sincronizar Nuevo Nodo
@@ -144,19 +144,17 @@ export default function LoginPage() {
                 </div>
 
                 <div className="mt-12 text-center flex flex-col items-center gap-4">
-                    <div className="flex items-center gap-2 text-[10px] font-black text-[#0F1923]/20 uppercase tracking-[0.4em]">
+                    <div className="flex items-center gap-2 text-[10px] font-black text-white/20 uppercase tracking-[0.4em]">
                         <Sparkles size={12} className="text-[#E8341A]/40" />
                         Atomic Core System v4.0.2 Stable
                     </div>
-                    <div className="text-[9px] font-bold text-[#0F1923]/15 uppercase tracking-[0.3em]">
+                    <div className="text-[9px] font-bold text-white/15 uppercase tracking-[0.3em]">
                         &copy; 2026 ATOMIC INDUSTRIES - All Systems Online
                     </div>
                 </div>
             </div>
         </div>
     )
-}
-
 
 
 
