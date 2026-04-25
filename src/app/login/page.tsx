@@ -1,4 +1,5 @@
 "use client"
+// Fix: archivo restaurado completo (login/page.tsx llegó truncado al main por un commit incompleto)
 
 import { useState } from "react"
 import { signIn } from "next-auth/react"
