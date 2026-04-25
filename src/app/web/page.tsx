@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { ShoppingBag, ChevronRight, Star, ArrowRight, Shield, Zap, Truck, Search, Download, X, ChevronLeft, Monitor, Cpu, Gamepad2, Home } from "lucide-react"
 import Link from "next/link"
+import { Starfield } from "@/components/ui/Starfield"
 
 const safeParseArr = (str: any) => {
     try { const p = JSON.parse(str); return Array.isArray(p) ? p : [] } catch { return [] }
@@ -43,67 +44,59 @@ export default function PublicWebPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-[#FAFAF8]">
+            <div className="min-h-screen flex items-center justify-center bg-[#020617]">
+                <Starfield />
                 <div className="animate-spin rounded-none h-12 w-12 border-4 border-[#E8341A] border-t-transparent shadow-lg shadow-red-100"></div>
             </div>
         )
     }
 
     return (
-        <div className="min-h-screen bg-[#FAFAF8] text-[#0F1923] font-sans">
+        <div className="min-h-screen bg-[#020617] text-white font-sans relative">
+            <Starfield />
             
             {/* 1. SECCIÓN SUPERIOR: CATEGORÍAS */}
             <CategoriesBanner categories={metadata.categories} />
 
             {/* 2. SECCIÓN MEDIA: PRODUCTOS DESTACADOS (16x4 GRID SCROLLABLE) */}
-            <section className="bg-white py-32 border-b border-[#E8341A]/8 overflow-hidden">
+            <section className="bg-[#0F1923]/40 backdrop-blur-md py-32 border-b border-[#E8341A]/20 overflow-hidden">
                 <div className="max-w-[95%] mx-auto px-6">
                     <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
                         <div className="space-y-4">
                             <p className="text-[#E8341A] text-[10px] font-black uppercase tracking-[0.3em]">Selección Premium</p>
-                            <h2 className="text-5xl font-light text-[#0F1923] uppercase tracking-tighter">
+                            <h2 className="text-5xl font-light text-white uppercase tracking-tighter">
                                 Productos <span className="font-black italic text-[#E8341A]">Destacados</span>
                             </h2>
                         </div>
                         <div className="flex gap-2">
-                            <p className="text-[10px] font-black uppercase tracking-widest text-[#0F1923]/30">Scroll Horizontal Habilitado →</p>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-white/30">Scroll Horizontal Habilitado →</p>
                         </div>
                     </div>
 
-                    {/* Contenedor con scroll horizontal */}
-                    <div className="overflow-x-auto pb-12 hide-scrollbar cursor-grab active:cursor-grabbing">
-                        {/* 
-                            Grid de 4 filas explícitas. 
-                            Usamos grid-flow-col y grid-rows-4 para que los items se apilen de arriba hacia abajo 
-                            y luego fluyan hacia la derecha (creando las columnas necesarias).
-                        */}
-                        <div className="grid grid-rows-4 gap-6" style={{ gridAutoFlow: 'column', gridAutoColumns: 'minmax(280px, 280px)' }}>
-                            {featuredProducts.length > 0 ? featuredProducts.map((p) => (
+                    <div className="w-full overflow-x-auto hide-scrollbar cursor-grab active:cursor-grabbing">
+                        <div className="grid grid-flow-col grid-rows-4 gap-4 w-max">
+                            {featuredProducts.length > 0 ? featuredProducts.map((p: any) => (
                                 <Link
                                     key={p.id}
                                     href={`/web/product/${p.id}`}
-                                    draggable={false}
-                                    className="bg-white group border border-[#0F1923]/6 hover:border-[#E8341A]/30 transition-all flex hover:shadow-2xl shadow-sm shadow-[#0F1923]/5 rounded-none overflow-hidden h-36"
+                                    className="group flex flex-row w-[400px] h-[100px] border border-white/5 bg-[#0F1923]/60 backdrop-blur-sm transition-all hover:bg-[#1E3A5F]/40 hover:border-[#E8341A]/50 overflow-hidden shadow-xl"
                                 >
-                                    <div className="w-36 bg-[#F5F3F0] relative overflow-hidden flex items-center justify-center border-r border-[#0F1923]/6 shrink-0">
+                                    <div className="w-[100px] h-full shrink-0 bg-white p-2">
                                         {(() => {
                                             const imgs = safeParseArr(p.images)
                                             return imgs.length > 0 ? (
-                                                <img src={imgs[0]} alt={p.name} draggable={false} referrerPolicy="no-referrer" className="w-full h-full object-contain p-4 mix-blend-darken opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700 ease-out" />
-                                            ) : (
-                                                <ShoppingBag size={24} className="text-[#0F1923]/30" />
-                                            )
+                                                <img src={imgs[0]} alt={p.name} className="w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-500" />
+                                            ) : null
                                         })()}
-                                        <div className="absolute top-2 left-2 bg-[#E8341A] text-white text-[7px] font-black uppercase px-1.5 py-0.5 shadow-lg">PRO</div>
                                     </div>
-                                    <div className="p-4 flex-1 flex flex-col justify-center bg-white group-hover:bg-[#FFF5F3] transition-colors">
-                                        <h3 className="text-[10px] font-black uppercase text-[#0F1923] tracking-widest line-clamp-2 mb-2 leading-tight group-hover:text-[#E8341A] transition-colors">{p.name}</h3>
-                                        <p className="font-mono font-black text-[#0F1923]">${p.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
+                                    <div className="p-4 flex-1 flex flex-col justify-center bg-transparent transition-colors">
+                                        <h3 className="text-[10px] font-black uppercase text-white/90 tracking-widest line-clamp-2 mb-2 leading-tight group-hover:text-[#E8341A] transition-colors">{p.name}</h3>
+                                        <p className="font-mono font-black text-white/80">${p.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
                                     </div>
                                 </Link>
                             )) : (
-                                <div className="col-span-full py-12 text-center border-2 border-dashed border-[#0F1923]/10 w-full min-w-[100vw]">
-                                    <p className="font-black text-[#0F1923]/30 uppercase tracking-widest text-[10px]">No hay productos destacados configurados</p>
+                                <div className="col-span-full py-12 text-center border-2 border-dashed border-white/10 w-full min-w-[100vw]">
+                                    <p className="font-black text-white/20 uppercase tracking-widest text-[10px]">No hay productos destacados configurados</p>
                                 </div>
                             )}
                         </div>
