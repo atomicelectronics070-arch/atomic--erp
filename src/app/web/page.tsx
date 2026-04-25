@@ -52,8 +52,9 @@ export default function PublicWebPage() {
     }
 
     return (
-        <div className="min-h-screen bg-transparent text-white font-sans relative">
+        <div className="min-h-screen bg-[#020617] text-white font-sans relative" style={{ background: '#020617' }}>
             <Starfield />
+            <div className="fixed top-0 left-0 z-50 bg-red-600 text-white text-[8px] px-1 pointer-events-none">UI v2.0 ACTIVE</div>
             
             {/* 1. SECCIÓN SUPERIOR: CATEGORÍAS */}
             <CategoriesBanner categories={metadata.categories} />

@@ -89,14 +89,16 @@ export const Starfield: React.FC = () => {
   return (
     <canvas
       ref={canvasRef}
+      id="starfield-canvas"
       className="fixed inset-0 w-full h-full"
       style={{ 
-        zIndex: -1, 
+        zIndex: 0, 
         background: '#020617',
         pointerEvents: 'none',
         position: 'fixed',
         top: 0,
-        left: 0
+        left: 0,
+        display: 'block'
       }}
     />
   );
