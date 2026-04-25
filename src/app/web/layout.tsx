@@ -25,31 +25,82 @@ export default function WebLayout({ children }: { children: React.ReactNode }) {
                     --atomic-ink-soft: rgba(20, 17, 15, 0.6);
                     --atomic-ink-faint: rgba(20, 17, 15, 0.35);
                     --atomic-cream: #F4F1EB;
-                    --atomic-accent: #2F5D50; /* deep editorial green */
-                    --atomic-border: rgba(255, 255, 255, 0.9);
-                    --atomic-border-hover: rgba(20, 17, 15, 0.22);
-                    --atomic-surface: rgba(255, 255, 255, 0.45);
-                    --atomic-surface-hover: rgba(255, 255, 255, 0.7);
+                    --atomic-accent: #2F5D50;
+                    --atomic-border: rgba(255, 255, 255, 0.92);
+                    --atomic-border-hover: rgba(20, 17, 15, 0.18);
+                    --atomic-surface: rgba(255, 255, 255, 0.42);
+                    --atomic-surface-hover: rgba(255, 255, 255, 0.72);
                     color: var(--atomic-ink);
+
+                    /* Crisper text everywhere */
+                    -webkit-font-smoothing: antialiased;
+                    -moz-osx-font-smoothing: grayscale;
+                    text-rendering: optimizeLegibility;
                 }
+
+                html { scroll-behavior: smooth; }
+
+                @keyframes atomicFadeUp {
+                    from { opacity: 0; transform: translate3d(0, 14px, 0); }
+                    to   { opacity: 1; transform: translate3d(0, 0, 0); }
+                }
+
                 .atomic-card {
                     background: var(--atomic-surface);
                     border: 1px solid var(--atomic-border);
                     backdrop-filter: blur(10px) saturate(1.05);
                     -webkit-backdrop-filter: blur(10px) saturate(1.05);
-                    transition: border-color 320ms ease, background 320ms ease,
-                        box-shadow 320ms ease, transform 320ms ease;
+                    transition: border-color 420ms cubic-bezier(0.22, 1, 0.36, 1),
+                                background 420ms cubic-bezier(0.22, 1, 0.36, 1),
+                                box-shadow 420ms cubic-bezier(0.22, 1, 0.36, 1),
+                                transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+                    will-change: transform;
                 }
                 .atomic-card:hover {
                     border-color: var(--atomic-border-hover);
                     background: var(--atomic-surface-hover);
-                    box-shadow: 0 22px 50px -22px rgba(20, 17, 15, 0.22);
+                    box-shadow: 0 24px 60px -28px rgba(20, 17, 15, 0.25);
+                    transform: translate3d(0, -2px, 0);
                 }
                 .atomic-bar {
-                    background: rgba(255, 255, 255, 0.55);
+                    background: rgba(255, 255, 255, 0.62);
                     border: 1px solid var(--atomic-border);
-                    backdrop-filter: blur(14px) saturate(1.05);
-                    -webkit-backdrop-filter: blur(14px) saturate(1.05);
+                    backdrop-filter: blur(16px) saturate(1.05);
+                    -webkit-backdrop-filter: blur(16px) saturate(1.05);
+                }
+
+                /* Section reveal — subtle one-time fade-up */
+                .atomic-reveal {
+                    animation: atomicFadeUp 760ms cubic-bezier(0.22, 1, 0.36, 1) both;
+                }
+                .atomic-reveal-delay-1 { animation-delay: 80ms; }
+                .atomic-reveal-delay-2 { animation-delay: 160ms; }
+                .atomic-reveal-delay-3 { animation-delay: 240ms; }
+
+                /* Refined headings */
+                .atomic-display {
+                    font-feature-settings: "ss01", "ss02", "case";
+                    letter-spacing: -0.04em;
+                    line-height: 0.92;
+                }
+
+                /* Subtle film grain for premium texture (CSS-only, no asset) */
+                .atomic-light-shell::after {
+                    content: "";
+                    position: fixed; inset: 0;
+                    pointer-events: none;
+                    z-index: 1;
+                    opacity: 0.035;
+                    mix-blend-mode: multiply;
+                    background-image: radial-gradient(rgba(0,0,0,0.6) 0.5px, transparent 0.5px);
+                    background-size: 3px 3px;
+                }
+
+                @media (prefers-reduced-motion: reduce) {
+                    *, *::before, *::after {
+                        animation-duration: 0ms !important;
+                        transition-duration: 0ms !important;
+                    }
                 }
             `}</style>
 

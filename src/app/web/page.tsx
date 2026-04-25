@@ -53,22 +53,22 @@ export default function PublicWebPage() {
     return (
         <div className="min-h-screen text-[#0F0F0F] font-sans relative" style={{ background: "transparent" }} data-testid="public-web-page">
             {/* 1. SECCIÓN SUPERIOR: CATEGORÍAS */}
-            <div className="bg-transparent">
+            <div className="bg-transparent atomic-reveal">
                 <CategoriesBanner categories={metadata.categories} />
             </div>
 
             {/* 2. SECCIÓN MEDIA: PRODUCTOS DESTACADOS (16x4 GRID SCROLLABLE) */}
-            <section className="bg-transparent py-32 overflow-hidden">
+            <section className="bg-transparent py-32 overflow-hidden atomic-reveal atomic-reveal-delay-1">
                 <div className="max-w-[95%] mx-auto px-6">
                     <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
                         <div className="space-y-4">
-                            <p className="text-[#0F0F0F]/55 text-[10px] font-black uppercase tracking-[0.3em]">Selección Premium</p>
-                            <h2 className="text-5xl font-light text-[#0F0F0F] uppercase tracking-tighter">
+                            <p className="text-[#14110F]/55 text-[10px] font-black uppercase tracking-[0.42em]">Selección Premium</p>
+                            <h2 className="atomic-display text-5xl md:text-6xl font-light text-[#14110F] uppercase">
                                 Productos <span className="font-black italic">Destacados</span>
                             </h2>
                         </div>
                         <div className="flex gap-2">
-                            <p className="text-[10px] font-black uppercase tracking-widest text-[#0F0F0F]/40">Scroll Horizontal Habilitado →</p>
+                            <p className="text-[10px] font-black uppercase tracking-[0.32em] text-[#14110F]/40">Scroll Horizontal Habilitado →</p>
                         </div>
                     </div>
 
@@ -104,19 +104,19 @@ export default function PublicWebPage() {
             </section>
 
             {/* Features Bar */}
-            <section className="atomic-bar py-12" data-testid="features-bar">
-                <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-8">
+            <section className="atomic-bar py-14 atomic-reveal atomic-reveal-delay-2" data-testid="features-bar">
+                <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-10">
                     {[
-                        { icon: <Truck />, title: "Envíos Gratis", desc: "Todo el país" },
-                        { icon: <Shield />, title: "Garantía Total", desc: "Cobertura ATOMIC" },
-                        { icon: <Zap />, title: "Pago Seguro", desc: "Confianza total" },
-                        { icon: <Star />, title: "Soporte 24/7", desc: "Asistencia real" }
+                        { icon: <Truck strokeWidth={1.5} />, title: "Envíos Gratis", desc: "Todo el país" },
+                        { icon: <Shield strokeWidth={1.5} />, title: "Garantía Total", desc: "Cobertura ATOMIC" },
+                        { icon: <Zap strokeWidth={1.5} />, title: "Pago Seguro", desc: "Confianza total" },
+                        { icon: <Star strokeWidth={1.5} />, title: "Soporte 24/7", desc: "Asistencia real" }
                     ].map((f, i) => (
-                        <div key={i} className="flex items-center space-x-5 text-[#0F0F0F]">
-                            <div className="text-[#0F0F0F]">{f.icon}</div>
+                        <div key={i} className="flex items-center space-x-5 text-[#14110F]">
+                            <div className="text-[#14110F] opacity-80">{f.icon}</div>
                             <div>
-                                <p className="text-[10px] font-black uppercase tracking-widest">{f.title}</p>
-                                <p className="text-xs text-[#0F0F0F]/55">{f.desc}</p>
+                                <p className="text-[10px] font-black uppercase tracking-[0.28em]">{f.title}</p>
+                                <p className="text-xs text-[#14110F]/55 mt-0.5">{f.desc}</p>
                             </div>
                         </div>
                     ))}
@@ -167,7 +167,7 @@ function CollectionBanner({ collection, products, reverse }: { collection: any, 
     }
 
     return (
-        <section className="relative w-full overflow-hidden border-t border-white/70" style={{ minHeight: '65vh' }} data-testid={`collection-banner-${collection.slug}`}>
+        <section className="relative w-full overflow-hidden border-t border-white/70 atomic-reveal" style={{ minHeight: '65vh' }} data-testid={`collection-banner-${collection.slug}`}>
             {/* Background — kept very faint to let the metaballs breathe through */}
             {collection.image && (
                 <img src={collection.image} alt={collection.name} className="absolute inset-0 w-full h-full object-cover opacity-[0.07]" />
@@ -183,17 +183,17 @@ function CollectionBanner({ collection, products, reverse }: { collection: any, 
                         ÁREA DE ESPECIALIZACIÓN
                     </div>
 
-                    <h2 className="text-5xl md:text-7xl font-black text-[#0F0F0F] tracking-tighter leading-[0.9] mb-8 uppercase">
+                    <h2 className="atomic-display text-5xl md:text-7xl font-black text-[#14110F] mb-8 uppercase">
                         {collection.name}
                     </h2>
 
-                    <p className="text-[#0F0F0F]/65 text-sm md:text-base font-medium max-w-xl leading-relaxed mb-10 line-clamp-3">
+                    <p className="text-[#14110F]/65 text-sm md:text-base font-medium max-w-xl leading-relaxed mb-10 line-clamp-3">
                         {collection.description || `Explora nuestras soluciones y equipos especializados en ${collection.name}.`}
                     </p>
 
                     <Link
                         href={`/web/collection/${collection.slug}`}
-                        className="relative z-50 inline-flex items-center gap-3 bg-[#0F0F0F] text-white border border-white text-[11px] font-black uppercase tracking-widest px-10 py-5 transition-all hover:gap-5 hover:bg-white hover:text-[#0F0F0F] hover:border-[#0F0F0F]/30"
+                        className="relative z-50 inline-flex items-center gap-3 bg-[#14110F] text-white border border-white text-[11px] font-black uppercase tracking-[0.28em] px-10 py-5 transition-all duration-500 hover:gap-5 hover:bg-white hover:text-[#14110F] hover:border-[#14110F]/30 hover:shadow-[0_18px_40px_-18px_rgba(20,17,15,0.4)]"
                     >
                         Ingresar al Área <ArrowRight size={14} />
                     </Link>
@@ -283,8 +283,8 @@ function CategoriesBanner({ categories }: { categories: any[] }) {
                 {/* Header row */}
                 <div className="max-w-[95%] mx-auto px-6 mb-12 flex flex-col md:flex-row items-end justify-between gap-6">
                     <div className="space-y-2">
-                        <p className="text-[#0F0F0F]/55 text-[10px] font-black uppercase tracking-[0.4em]">Explorar por sección</p>
-                        <h2 className="text-4xl md:text-5xl font-black text-[#0F0F0F] uppercase tracking-tighter leading-none">
+                        <p className="text-[#14110F]/55 text-[10px] font-black uppercase tracking-[0.42em]">Explorar por sección</p>
+                        <h2 className="atomic-display text-4xl md:text-6xl font-black text-[#14110F] uppercase">
                             Categorías <span className="italic font-light">Industriales</span>
                         </h2>
                     </div>
