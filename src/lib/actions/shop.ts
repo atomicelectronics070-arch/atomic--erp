@@ -17,6 +17,7 @@ export async function saveCategory(id: string | null, data: any, productIds: str
         slug,
         description: data.description || null,
         image: data.image || null,
+        pdfUrl: data.pdfUrl || null,
         isVisible: data.isVisible ?? true
     }
     
@@ -54,6 +55,7 @@ export async function saveCollection(id: string | null, data: any, productIds: s
         slug,
         description: data.description || null,
         image: data.image || null,
+        pdfUrl: data.pdfUrl || null,
         isVisible: data.isVisible ?? true
     }
     
@@ -264,8 +266,11 @@ export async function bulkUpdateProducts(productIds: string[], data: any) {
     if (data.price !== undefined) updateData.price = parseFloat(data.price)
     if (data.stock !== undefined) updateData.stock = parseInt(data.stock)
     if (data.isActive !== undefined) updateData.isActive = data.isActive
+    if (data.featured !== undefined) updateData.featured = data.featured
     if (data.categoryId !== undefined) updateData.categoryId = data.categoryId
-    if (data.collectionId !== undefined) updateData.collectionId = data.collectionId
+    if (data.collectionId !== undefined) {
+        updateData.collectionId = data.collectionId === 'none' ? null : data.collectionId
+    }
 
     await prisma.product.updateMany({
         where: { id: { in: productIds } },
@@ -276,33 +281,56 @@ export async function bulkUpdateProducts(productIds: string[], data: any) {
     return { success: true }
 }
 
-export async function getProductById(id: string) {
-    return await prisma.product.findUnique({
+export async function toggleProductFeatured(id: string, featured: boolean) {
+    await prisma.product.update({
         where: { id },
-        include: {
-            category: true,
-            collection: true
-        }
+        data: { featured }
     })
+    revalidatePath('/dashboard/shop')
+    revalidatePath('/web')
+    return { success: true }
+}
+
+export async function getProductById(id: string) {
+    try {
+        const product = await prisma.product.findUnique({
+            where: { id },
+            include: {
+                category: true,
+                collection: true
+            }
+        });
+        if (!product) return null;
+        return JSON.parse(JSON.stringify(product));
+    } catch (e) {
+        console.error("Error fetching product by ID:", e);
+        return null;
+    }
 }
 
 export async function getRelatedProducts(categoryId: string | null, currentProductId: string) {
     if (!categoryId) return []
-    return await (prisma as any).product.findMany({
-        where: {
-            categoryId,
-            id: { not: currentProductId },
-            NOT: { isDeleted: true }
-        },
-        take: 4,
-        orderBy: { createdAt: 'desc' },
-        select: {
-            id: true,
-            name: true,
-            price: true,
-            images: true
-        }
-    })
+    try {
+        const products = await (prisma as any).product.findMany({
+            where: {
+                categoryId,
+                id: { not: currentProductId },
+                NOT: { isDeleted: true }
+            },
+            take: 4,
+            orderBy: { createdAt: 'desc' },
+            select: {
+                id: true,
+                name: true,
+                price: true,
+                images: true
+            }
+        });
+        return JSON.parse(JSON.stringify(products));
+    } catch (e) {
+        console.error("Error fetching related products:", e);
+        return [];
+    }
 }
 
 export async function cleanupDuplicateProducts() {

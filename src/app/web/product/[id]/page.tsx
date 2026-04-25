@@ -17,6 +17,7 @@ export default function ProductDetailPage() {
     const [related, setRelated] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
     const [selectedImage, setSelectedImage] = useState(0)
+    const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
     useEffect(() => {
         const load = async () => {
@@ -28,9 +29,12 @@ export default function ProductDetailPage() {
                     setProduct(p)
                     const r = await getRelatedProducts(p.categoryId, p.id)
                     setRelated(r)
+                } else {
+                    setErrorMsg("Product returned null from DB. ID: " + params.id)
                 }
-            } catch (error) {
+            } catch (error: any) {
                 console.error("Error loading product detail:", error)
+                setErrorMsg(error?.message || "Unknown error occurred")
             }
             setLoading(false)
         }
@@ -52,7 +56,9 @@ export default function ProductDetailPage() {
         return (
             <div className="min-h-screen bg-white flex flex-col items-center justify-center space-y-6">
                 <h1 className="text-4xl font-black uppercase text-neutral-200 tracking-tighter">Producto no encontrado</h1>
-                <Link href="/web" className="text-[10px] font-black uppercase tracking-[0.3em] bg-neutral-900 text-white px-8 py-4 hover:bg-orange-600 transition-all flex items-center space-x-3">
+                {errorMsg && <p className="text-red-500 font-bold max-w-xl text-center border border-red-500 p-4">{errorMsg}</p>}
+                <p className="text-neutral-400">ID Buscado: {params.id}</p>
+                <Link href="/web" className="text-[10px] font-black uppercase tracking-[0.3em] bg-neutral-900 text-white px-8 py-4 hover:bg-orange-600 transition-all flex items-center space-x-3 rounded-none">
                     <ArrowLeft size={14} />
                     <span>Volver al catálogo</span>
                 </Link>

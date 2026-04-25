@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { ShoppingBag, ChevronRight, Star, ArrowRight, Shield, Zap, Truck, Search, Download, X, ChevronLeft, Monitor, Cpu, Gamepad2 } from "lucide-react"
+import { ShoppingBag, ChevronRight, Star, ArrowRight, Shield, Zap, Truck, Search, Download, X, ChevronLeft, Monitor, Cpu, Gamepad2, Home } from "lucide-react"
 import Link from "next/link"
 
 const safeParseArr = (str: any) => {
@@ -12,224 +12,104 @@ export default function PublicWebPage() {
     const [products, setProducts] = useState<any[]>([])
     const [metadata, setMetadata] = useState<any>({ categories: [], collections: [] })
     const [loading, setLoading] = useState(true)
-    const [searchQuery, setSearchQuery] = useState("")
-    const [currentPage, setCurrentPage] = useState(1)
-    const [totalProducts, setTotalProducts] = useState(0)
-    const [localSearch, setLocalSearch] = useState("")
-    const [isSearching, setIsSearching] = useState(false)
-    const [shopSettings, setShopSettings] = useState<any>(null)
-    const [allProductsMap, setAllProductsMap] = useState<Record<string, any>>({})
-    const itemsPerPage = 24
 
-    // Load metadata + settings
+    // Load metadata + products
     useEffect(() => {
         const init = async () => {
-            const [mRes, s] = await Promise.all([
+            const [mRes, pRes] = await Promise.all([
                 fetch("/api/web/metadata").then(r => r.json()).catch(() => ({ categories: [], collections: [] })),
-                fetch("/api/shop/settings").then(r => r.json()).catch(() => ({}))
+                fetch("/api/web/products?page=1&pageSize=500&search=").then(r => r.json()).catch(() => ({ products: [] }))
             ])
             setMetadata(mRes)
-            if (s?.settings) setShopSettings(s.settings)
+            setProducts(pRes.products || [])
+            setLoading(false)
         }
         init()
     }, [])
 
-    // Debounce search
-    useEffect(() => {
-        if (loading) return
-        const t = setTimeout(() => { setSearchQuery(localSearch); setCurrentPage(1) }, 500)
-        return () => clearTimeout(t)
-    }, [localSearch])
+    const featuredProducts = products.filter(p => p.featured)
 
-    // Load products
-    useEffect(() => {
-        const load = async () => {
-            setIsSearching(true)
-            try {
-                const params = new URLSearchParams({
-                    page: String(currentPage),
-                    pageSize: String(itemsPerPage),
-                    search: searchQuery
-                })
-                const res = await fetch(`/api/web/products?${params}`).then(r => r.json())
-                setProducts(res.products || [])
-                setTotalProducts(res.total || 0)
-                // Build map for banner product lookup
-                const map: Record<string, any> = {}
-                ;(res.products || []).forEach((p: any) => { map[p.id] = p })
-                setAllProductsMap(prev => ({ ...prev, ...map }))
-            } catch(e) {
-                console.error('Error loading products:', e)
-            } finally { setIsSearching(false); setLoading(false) }
-        }
-        load()
-    }, [currentPage, searchQuery])
+    // Reorder collections to match user requirement: Tecnología Residencial, Desarrollo, Gaming, Automatización
+    const orderedCollections = []
+    const desiredOrder = ["tecnologia-residencial", "desarrollo", "gaming", "automatizacion"]
+    for (const slug of desiredOrder) {
+        const found = metadata.collections.find((c: any) => c.slug === slug)
+        if (found) orderedCollections.push(found)
+    }
+    // Append any others not in the list
+    for (const c of metadata.collections) {
+        if (!desiredOrder.includes(c.slug)) orderedCollections.push(c)
+    }
 
-    // Pre-fetch banner products if not already in map
-    useEffect(() => {
-        if (!shopSettings?.banners) return
-        const allIds = [
-            ...(shopSettings.banners.software?.productIds || []),
-            ...(shopSettings.banners.automation?.productIds || []),
-            ...(shopSettings.banners.gaming?.productIds || []),
-        ]
-        if (allIds.length === 0) return
-        const missing = allIds.filter((id: string) => !allProductsMap[id])
-        if (missing.length === 0) return
-        fetch('/api/web/products?page=1&pageSize=200&search=').then(r => r.json()).then(res => {
-            const map: Record<string, any> = {}
-            ;(res.products || []).forEach((p: any) => { map[p.id] = p })
-            setAllProductsMap(prev => ({ ...prev, ...map }))
-        })
-    }, [shopSettings])
-
-    const totalPages = Math.ceil(totalProducts / itemsPerPage)
-    const banners = shopSettings?.banners || {}
-
-    const BANNER_CONFIGS = [
-        {
-            key: 'software',
-            defaultTitle: 'Software & Desarrollo',
-            defaultDesc: 'Licencias, herramientas y soluciones para llevar tu negocio al siguiente nivel.',
-            defaultBg: 'from-[#0F1923] via-[#1E3A5F] to-[#0F1923]',
-            accent: '#2563EB',
-            accentDark: '#1E3A5F',
-            icon: <Monitor size={14} />,
-            tag: 'Software',
-            tagBg: 'bg-[#2563EB]',
-        },
-        {
-            key: 'automation',
-            defaultTitle: 'Automatización Industrial',
-            defaultDesc: 'Sistemas de control, PLCs y soluciones de automatización de última generación.',
-            defaultBg: 'from-[#0F1923] via-[#3D0A03] to-[#0F1923]',
-            accent: '#E8341A',
-            accentDark: '#C0280F',
-            icon: <Cpu size={14} />,
-            tag: 'Automatización',
-            tagBg: 'bg-[#E8341A]',
-        },
-        {
-            key: 'gaming',
-            defaultTitle: 'Gaming & Consolas',
-            defaultDesc: 'El mejor equipamiento gamer, consolas y accesorios para la experiencia definitiva.',
-            defaultBg: 'from-[#0F1923] via-[#5A1A0A] to-[#0F1923]',
-            accent: '#F5611A',
-            accentDark: '#C0280F',
-            icon: <Gamepad2 size={14} />,
-            tag: 'Gaming',
-            tagBg: 'bg-[#F5611A]',
-        },
-    ]
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-[#FAFAF8]">
+                <div className="animate-spin rounded-none h-12 w-12 border-4 border-[#E8341A] border-t-transparent shadow-lg shadow-red-100"></div>
+            </div>
+        )
+    }
 
     return (
         <div className="min-h-screen bg-[#FAFAF8] text-[#0F1923] font-sans">
-            {/* Minimalist Navbar removido - Controlado por layout.tsx */}
+            
+            {/* 1. SECCIÓN SUPERIOR: CATEGORÍAS */}
+            <CategoriesBanner categories={metadata.categories} />
 
-            {/* ══════════════════════════════════════════
-                 PRODUCTOS — PRIMERO
-              ══════════════════════════════════════════ */}
-            <section id="productos" className="bg-white py-32 border-b border-[#E8341A]/8">
-                <div className="max-w-7xl mx-auto px-6">
-                    <div className="text-center space-y-4 mb-16">
-                        <p className="text-[#E8341A] text-[10px] font-black uppercase tracking-[0.3em]">Catálogo Real</p>
-                        <h2 className="text-5xl font-light text-[#0F1923]/60 uppercase tracking-tighter">Equipos <span className="font-black text-[#0F1923] italic">Disponibles</span></h2>
+            {/* 2. SECCIÓN MEDIA: PRODUCTOS DESTACADOS (16x4 GRID SCROLLABLE) */}
+            <section className="bg-white py-32 border-b border-[#E8341A]/8 overflow-hidden">
+                <div className="max-w-[95%] mx-auto px-6">
+                    <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+                        <div className="space-y-4">
+                            <p className="text-[#E8341A] text-[10px] font-black uppercase tracking-[0.3em]">Selección Premium</p>
+                            <h2 className="text-5xl font-light text-[#0F1923] uppercase tracking-tighter">
+                                Productos <span className="font-black italic text-[#E8341A]">Destacados</span>
+                            </h2>
+                        </div>
+                        <div className="flex gap-2">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-[#0F1923]/30">Scroll Horizontal Habilitado →</p>
+                        </div>
                     </div>
 
-                    <div className="mb-16 max-w-2xl mx-auto relative group">
-                        <div className={`absolute inset-y-0 left-6 flex items-center pointer-events-none transition-all duration-300 ${isSearching ? 'text-[#E8341A] scale-110' : 'text-[#0F1923]/30 group-focus-within:text-[#E8341A]'}`}>
-                            {isSearching ? (
-                                <div className="animate-spin rounded-none h-5 w-5 border-2 border-[#E8341A] border-t-transparent shadow-lg shadow-red-100"></div>
-                            ) : (
-                                <Search size={22} className="group-focus-within:scale-110 transition-transform" />
-                            )}
-                        </div>
-                        <input
-                            type="text"
-                            placeholder="Buscar en el catálogo tecnológico..."
-                            value={localSearch}
-                            onChange={(e) => setLocalSearch(e.target.value)}
-                            className="w-full bg-[#F5F3F0] border-b-2 border-[#E8341A]/10 px-16 py-8 text-[11px] font-black uppercase tracking-[0.2em] focus:outline-none focus:border-[#E8341A] transition-all shadow-xl shadow-[#E8341A]/5 hover:shadow-[#E8341A]/10 placeholder:text-[#0F1923]/30 placeholder:italic text-[#0F1923]"
-                        />
-                        {localSearch && !isSearching && (
-                            <button onClick={() => setLocalSearch("")} className="absolute inset-y-0 right-6 flex items-center text-neutral-300 hover:text-red-500 transition-colors">
-                                <X size={18} />
-                            </button>
-                        )}
-                    </div>
-
-                    {loading ? (
-                        <div className="py-32 text-center">
-                            <div className="inline-block animate-pulse space-y-4">
-                                <div className="h-4 w-64 bg-[#E8341A]/10 mx-auto rounded-none"></div>
-                                <div className="h-12 w-96 bg-[#E8341A]/10 mx-auto rounded-none"></div>
-                            </div>
-                        </div>
-                    ) : (
-                        <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 transition-opacity duration-300 ${isSearching ? 'opacity-50 grayscale' : 'opacity-100'}`}>
-                            {products.map((p) => (
+                    {/* Contenedor con scroll horizontal */}
+                    <div className="overflow-x-auto pb-12 hide-scrollbar cursor-grab active:cursor-grabbing">
+                        {/* 
+                            Grid de 4 filas explícitas. 
+                            Usamos grid-flow-col y grid-rows-4 para que los items se apilen de arriba hacia abajo 
+                            y luego fluyan hacia la derecha (creando las columnas necesarias).
+                        */}
+                        <div className="grid grid-rows-4 gap-6" style={{ gridAutoFlow: 'column', gridAutoColumns: 'minmax(280px, 280px)' }}>
+                            {featuredProducts.length > 0 ? featuredProducts.map((p) => (
                                 <Link
                                     key={p.id}
                                     href={`/web/product/${p.id}`}
-                                    className="bg-white group cursor-pointer border border-[#0F1923]/6 hover:border-[#E8341A]/30 transition-all flex flex-col h-full hover:shadow-2xl shadow-sm shadow-[#0F1923]/5 hover:shadow-[#E8341A]/10 rounded-none overflow-hidden"
+                                    draggable={false}
+                                    className="bg-white group border border-[#0F1923]/6 hover:border-[#E8341A]/30 transition-all flex hover:shadow-2xl shadow-sm shadow-[#0F1923]/5 rounded-none overflow-hidden h-36"
                                 >
-                                    <div className="aspect-square bg-[#F5F3F0] relative overflow-hidden flex items-center justify-center p-8 border-b border-[#0F1923]/6">
+                                    <div className="w-36 bg-[#F5F3F0] relative overflow-hidden flex items-center justify-center border-r border-[#0F1923]/6 shrink-0">
                                         {(() => {
                                             const imgs = safeParseArr(p.images)
                                             return imgs.length > 0 ? (
-                                                <img src={imgs[0]} alt={p.name} referrerPolicy="no-referrer" className="w-full h-full object-contain opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700 ease-out" />
+                                                <img src={imgs[0]} alt={p.name} draggable={false} referrerPolicy="no-referrer" className="w-full h-full object-contain p-4 mix-blend-darken opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700 ease-out" />
                                             ) : (
-                                                <div className="text-[#0F1923]/30 uppercase font-black text-[10px] text-center">Sin imagen</div>
+                                                <ShoppingBag size={24} className="text-[#0F1923]/30" />
                                             )
                                         })()}
-                                        {p.featured && (
-                                            <div className="absolute top-4 right-4 bg-[#E8341A] text-white text-[8px] font-black uppercase px-2 py-1 shadow-lg shadow-[#E8341A]/30">Destacado</div>
-                                        )}
-                                        <div className="absolute inset-x-0 bottom-0 bg-[#E8341A] text-white py-4 text-[9px] font-black uppercase tracking-[0.3em] translate-y-full group-hover:translate-y-0 transition-transform flex items-center justify-center space-x-2">
-                                            <span>Ver detalles</span> <ChevronRight size={12} />
-                                        </div>
+                                        <div className="absolute top-2 left-2 bg-[#E8341A] text-white text-[7px] font-black uppercase px-1.5 py-0.5 shadow-lg">PRO</div>
                                     </div>
-                                    <div className="p-6 space-y-3 flex-1 flex flex-col group-hover:bg-[#FFF5F3] transition-colors">
-                                        <div className="flex items-center justify-between">
-                                            {p.compareAtPrice && <p className="text-[10px] text-white/20 line-through font-bold">${p.compareAtPrice.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>}
-                                        </div>
+                                    <div className="p-4 flex-1 flex flex-col justify-center bg-white group-hover:bg-[#FFF5F3] transition-colors">
+                                        <h3 className="text-[10px] font-black uppercase text-[#0F1923] tracking-widest line-clamp-2 mb-2 leading-tight group-hover:text-[#E8341A] transition-colors">{p.name}</h3>
+                                        <p className="font-mono font-black text-[#0F1923]">${p.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
                                     </div>
                                 </Link>
-                            ))}
-                            {totalProducts === 0 && (
-                                <div className="col-span-4 py-20 text-center border-2 border-dashed border-[#E8341A]/15">
-                                    <p className="font-black text-[#0F1923]/30 uppercase tracking-widest">No se encontraron productos</p>
+                            )) : (
+                                <div className="col-span-full py-12 text-center border-2 border-dashed border-[#0F1923]/10 w-full min-w-[100vw]">
+                                    <p className="font-black text-[#0F1923]/30 uppercase tracking-widest text-[10px]">No hay productos destacados configurados</p>
                                 </div>
                             )}
                         </div>
-                    )}
-
-                    {!loading && totalProducts > 0 && (
-                        <div className="mt-24 flex flex-col items-center space-y-8">
-                            <div className="flex items-center space-x-2">
-                                <button onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))} disabled={currentPage === 1} className="w-12 h-12 flex items-center justify-center border-2 border-[#0F1923]/8 text-[#0F1923]/30 hover:border-[#E8341A] hover:text-[#E8341A] disabled:opacity-20 transition-all font-black rounded-none">&lt;</button>
-                                {[...Array(totalPages)].map((_, i) => {
-                                    const page = i + 1
-                                    if (totalPages > 7 && page !== 1 && page !== totalPages && Math.abs(page - currentPage) > 1) {
-                                        if (page === 2 || page === totalPages - 1) return <span key={page} className="text-[#0F1923]/20">...</span>
-                                        return null
-                                    }
-                                    return (
-                                        <button key={page} onClick={() => setCurrentPage(page)} className={`w-12 h-12 flex items-center justify-center border-2 font-black text-xs transition-all rounded-none ${currentPage === page ? "bg-[#E8341A] border-[#E8341A] text-white shadow-lg shadow-[#E8341A]/30" : "bg-white border-[#0F1923]/8 text-[#0F1923]/30 hover:border-[#E8341A] hover:text-[#E8341A]"}`}>{page}</button>
-                                    )
-                                })}
-                                <button onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))} disabled={currentPage === totalPages} className="w-12 h-12 flex items-center justify-center border-2 border-[#0F1923]/8 text-[#0F1923]/30 hover:border-[#E8341A] hover:text-[#E8341A] disabled:opacity-20 transition-all font-black rounded-none">&gt;</button>
-                            </div>
-                            <p className="text-[10px] font-black text-[#0F1923]/40 uppercase tracking-widest">Página {currentPage} de {totalPages} — {totalProducts} resultados</p>
-                        </div>
-                    )}
+                    </div>
                 </div>
             </section>
-
-            {/* ══════════════════════════════════════════
-                 CATEGORÍAS SCROLLABLES
-              ══════════════════════════════════════════ */}
-            <CategoriesBanner categories={metadata.categories} />
 
             {/* Features Bar */}
             <section className="bg-[#0F1923] py-12">
@@ -251,74 +131,28 @@ export default function PublicWebPage() {
                 </div>
             </section>
 
-            {/* ══════════════════════════════════════════
-                 BANNERS HERO (Software / Auto / Gaming)
-              ══════════════════════════════════════════ */}
-            {BANNER_CONFIGS.map((cfg) => {
-                const bData = banners[cfg.key] || {}
-                if (bData.active === false) return null
-                const title = bData.title || cfg.defaultTitle
-                const desc = bData.description || cfg.defaultDesc
-                const bg = bData.imageUrl
-                const prodIds: string[] = bData.productIds || []
-                const bannerProducts = prodIds.map((id: string) => allProductsMap[id]).filter(Boolean)
-
+            {/* 3. SECCIÓN INFERIOR: ÁREAS DE ESPECIALIZACIÓN */}
+            {orderedCollections.map((col: any, idx: number) => {
+                const bProducts = products.filter(p => p.collectionId === col.id).slice(0, 10)
+                const isOdd = idx % 2 !== 0
                 return (
-                    <HeroBanner
-                        key={cfg.key}
-                        title={title}
-                        description={desc}
-                        backgroundImage={bg}
-                        gradientClass={cfg.defaultBg}
-                        accent={cfg.accent}
-                        accentDark={cfg.accentDark}
-                        tag={cfg.tag}
-                        tagBg={cfg.tagBg}
-                        icon={cfg.icon}
-                        products={bannerProducts}
-                        linkUrl={cfg.key === 'software' ? '/web/software' : '#productos'}
-                        linkText={cfg.key === 'software' ? 'Ver Portafolio' : 'Ver Catálogo'}
+                    <CollectionBanner
+                        key={col.id}
+                        collection={col}
+                        products={bProducts}
+                        reverse={isOdd}
                     />
                 )
             })}
 
-            {/* Newsletter */}
-            <section className="bg-[#E8341A] py-32 relative overflow-hidden">
-                <div className="absolute right-0 top-0 h-full w-1/3 bg-white/8 -skew-x-12 translate-x-20"></div>
-                <div className="absolute left-0 bottom-0 w-64 h-64 bg-[#C0280F]/40 rounded-none blur-3xl"></div>
-                <div className="absolute right-1/4 top-0 w-48 h-48 bg-[#2563EB]/15 rounded-none blur-2xl"></div>
-                <div className="max-w-7xl mx-auto px-6 relative z-10 flex flex-col md:flex-row items-center justify-between gap-12 text-white">
-                    <div className="max-w-xl space-y-6">
-                        <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter leading-none italic">Únete a la <br />Comunidad <span className="text-white/70">ATOMIC</span></h2>
-                        <p className="text-white/75 font-medium text-lg">Suscríbete para recibir ofertas exclusivas, lanzamientos y consejos de tecnología industrial.</p>
-                    </div>
-                    <form className="w-full max-w-md flex flex-col sm:flex-row gap-4">
-                        <input type="email" placeholder="Tu correo electrónico" className="flex-1 bg-white/15 border-2 border-white/25 px-6 py-5 text-white placeholder-white/40 focus:outline-none focus:border-white transition-all font-bold rounded-none" />
-                        <button className="bg-white text-[#E8341A] px-10 py-5 text-[10px] font-black uppercase tracking-widest shadow-2xl hover:bg-[#0F1923] hover:text-white transition-all rounded-none">Suscribirme</button>
-                    </form>
-                </div>
-            </section>
         </div>
     )
 }
 
 // ══════════════════════════════════════════════════════════════
-//  HeroBanner — Banner hero full-width con galería de productos
+//  CollectionBanner — Banners for Specialization Areas
 // ══════════════════════════════════════════════════════════════
-function HeroBanner({ title, description, backgroundImage, gradientClass, accent, accentDark, tag, tagBg, icon, products, linkUrl = "#productos", linkText = "Ver Catálogo" }: {
-    title: string
-    description: string
-    backgroundImage?: string
-    gradientClass: string
-    accent: string
-    accentDark: string
-    tag: string
-    tagBg: string
-    icon: any
-    products: any[]
-    linkUrl?: string
-    linkText?: string
-}) {
+function CollectionBanner({ collection, products, reverse }: { collection: any, products: any[], reverse: boolean }) {
     const galleryRef = useRef<HTMLDivElement>(null)
 
     const scrollGallery = (dir: 'left' | 'right') => {
@@ -326,80 +160,76 @@ function HeroBanner({ title, description, backgroundImage, gradientClass, accent
         galleryRef.current.scrollBy({ left: dir === 'right' ? 260 : -260, behavior: 'smooth' })
     }
 
+    // Default gradients based on slug if image is missing or just to overlay
+    let gradient = "from-[#0F1923] via-[#1E3A5F] to-[#0F1923]"
+    let accent = "#2563EB"
+    if (collection.slug.includes('gaming')) {
+        gradient = "from-[#0F1923] via-[#5A1A0A] to-[#0F1923]"
+        accent = "#F5611A"
+    } else if (collection.slug.includes('automatizacion')) {
+        gradient = "from-[#0F1923] via-[#3D0A03] to-[#0F1923]"
+        accent = "#E8341A"
+    } else if (collection.slug.includes('residencial')) {
+        gradient = "from-[#0F1923] via-[#0F3D23] to-[#0F1923]"
+        accent = "#10B981"
+    }
+
     return (
-        <section className="relative w-full overflow-hidden" style={{ minHeight: '72vh' }}>
+        <section className="relative w-full overflow-hidden border-b border-white/10" style={{ minHeight: '65vh' }}>
             {/* Background */}
-            {backgroundImage ? (
+            {collection.image ? (
                 <>
-                    <img src={backgroundImage} alt={title} className="absolute inset-0 w-full h-full object-cover" />
-                    <div className={`absolute inset-0 bg-gradient-to-r ${gradientClass} opacity-85`}></div>
+                    <img src={collection.image} alt={collection.name} className="absolute inset-0 w-full h-full object-cover" />
+                    <div className={`absolute inset-0 bg-gradient-to-r ${gradient} opacity-85`}></div>
                 </>
             ) : (
-                <div className={`absolute inset-0 bg-gradient-to-r ${gradientClass}`}></div>
+                <div className={`absolute inset-0 bg-gradient-to-r ${gradient}`}></div>
             )}
 
-            {/* Decorative patterns */}
-            <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")' }}></div>
-
             {/* Accent line */}
-            <div className="absolute left-0 top-0 bottom-0 w-1.5" style={{ backgroundColor: accent }}></div>
+            <div className={`absolute ${reverse ? 'right-0' : 'left-0'} top-0 bottom-0 w-1.5`} style={{ backgroundColor: accent }}></div>
 
             {/* Content */}
-            <div className="relative z-10 w-full h-full flex flex-col justify-between" style={{ minHeight: '72vh' }}>
-                {/* Top: tag */}
-                <div className="px-12 pt-12">
-                    <div className={`inline-flex items-center gap-2 ${tagBg} text-white text-[10px] font-black uppercase tracking-[0.3em] px-4 py-2`}>
-                        {icon}
-                        <span>{tag}</span>
+            <div className="relative z-10 w-full h-full flex flex-col justify-between py-16" style={{ minHeight: '65vh' }}>
+                <div className={`px-12 md:px-20 flex-1 flex flex-col justify-center ${reverse ? 'items-end text-right' : 'items-start text-left'}`}>
+                    <div className={`inline-flex items-center gap-2 bg-white/10 text-white text-[9px] font-black uppercase tracking-[0.4em] px-4 py-2 mb-8 backdrop-blur-sm`}>
+                        ÁREA DE ESPECIALIZACIÓN
                     </div>
-                </div>
-
-                {/* Center: main copy */}
-                <div className="px-12 md:px-20 flex-1 flex flex-col justify-center py-8" style={{ maxWidth: '65%' }}>
-                    <h2 className="text-5xl md:text-7xl xl:text-8xl font-black text-white tracking-tighter leading-[0.88] mb-6 uppercase" style={{ textShadow: '0 4px 30px rgba(0,0,0,0.5)' }}>
-                        {title}
+                    
+                    <h2 className="text-5xl md:text-7xl font-black text-white tracking-tighter leading-[0.9] mb-8 uppercase" style={{ textShadow: '0 4px 30px rgba(0,0,0,0.5)' }}>
+                        {collection.name}
                     </h2>
-                    <p className="text-white/70 text-base md:text-lg font-medium max-w-lg leading-relaxed mb-8">
-                        {description}
+                    
+                    <p className="text-white/70 text-sm md:text-base font-medium max-w-xl leading-relaxed mb-10 line-clamp-3">
+                        {collection.description || `Explora nuestras soluciones y equipos especializados en ${collection.name}.`}
                     </p>
-                    <div className="flex items-center gap-4">
-                        <a
-                            href={linkUrl || "#productos"}
-                            className="relative z-50 inline-flex items-center gap-3 text-white text-[11px] font-black uppercase tracking-widest px-8 py-4 transition-all hover:gap-5"
-                            style={{ backgroundColor: accent }}
-                        >
-                            {linkText || "Ver Catálogo"} <ArrowRight size={14} />
-                        </a>
-                        <a href="#categorias" className="relative z-50 text-white/50 text-[10px] font-black uppercase tracking-widest hover:text-white transition-colors">
-                            Ver Categorías →
-                        </a>
-                    </div>
+                    
+                    <Link
+                        href={`/web/collection/${collection.slug}`}
+                        className="relative z-50 inline-flex items-center gap-3 text-white text-[11px] font-black uppercase tracking-widest px-10 py-5 transition-all hover:gap-5 shadow-2xl"
+                        style={{ backgroundColor: accent }}
+                    >
+                        Ingresar al Área <ArrowRight size={14} />
+                    </Link>
                 </div>
 
-                {/* Bottom-right: product gallery scroll */}
+                {/* Bottom product gallery scroll */}
                 {products.length > 0 && (
-                    <div className="absolute bottom-0 right-0 w-full md:w-[55%] pb-6 pr-6">
-                        <div className="flex items-center justify-between mb-3 px-2">
-                            <span className="text-white/40 text-[9px] font-black uppercase tracking-[0.3em]">Productos Destacados</span>
+                    <div className={`absolute bottom-0 ${reverse ? 'left-0 pl-6' : 'right-0 pr-6'} w-full md:w-[60%] pb-8`}>
+                        <div className={`flex items-center ${reverse ? 'justify-end flex-row-reverse' : 'justify-between'} mb-4 px-4 gap-4`}>
+                            <span className="text-white/50 text-[9px] font-black uppercase tracking-[0.4em]">Equipamiento Sugerido</span>
                             <div className="flex gap-1">
-                                <button
-                                    onClick={() => scrollGallery('left')}
-                                    className="w-7 h-7 border border-white/20 flex items-center justify-center text-white/40 hover:text-white hover:border-white/60 transition-all"
-                                >
-                                    <ChevronLeft size={12} />
+                                <button onClick={() => scrollGallery('left')} className="w-8 h-8 border border-white/20 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-all rounded-none">
+                                    <ChevronLeft size={14} />
                                 </button>
-                                <button
-                                    onClick={() => scrollGallery('right')}
-                                    className="w-7 h-7 border border-white/20 flex items-center justify-center text-white/40 hover:text-white hover:border-white/60 transition-all"
-                                >
-                                    <ChevronRight size={12} />
+                                <button onClick={() => scrollGallery('right')} className="w-8 h-8 border border-white/20 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-all rounded-none">
+                                    <ChevronRight size={14} />
                                 </button>
                             </div>
                         </div>
                         <div
                             ref={galleryRef}
-                            className="flex gap-3 overflow-x-auto pb-1 scroll-smooth"
-                            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                            className={`flex gap-4 overflow-x-auto pb-2 scroll-smooth px-4 hide-scrollbar ${reverse ? 'flex-row-reverse' : ''}`}
                         >
                             {products.map((p: any) => {
                                 const imgs = safeParseArr(p.images)
@@ -407,18 +237,18 @@ function HeroBanner({ title, description, backgroundImage, gradientClass, accent
                                     <Link
                                         key={p.id}
                                         href={`/web/product/${p.id}`}
-                                        className="group shrink-0 w-36 bg-white/10 backdrop-blur-md border border-white/10 hover:border-white/30 hover:bg-white/20 transition-all overflow-hidden"
+                                        className="group shrink-0 w-48 bg-white/5 backdrop-blur-xl border border-white/10 hover:border-white/30 hover:bg-white/10 transition-all overflow-hidden shadow-2xl rounded-none"
                                     >
-                                        <div className="h-24 overflow-hidden bg-white/5 flex items-center justify-center">
+                                        <div className="h-32 overflow-hidden bg-black/20 flex items-center justify-center p-4">
                                             {imgs.length > 0 ? (
-                                                <img src={imgs[0]} alt={p.name} referrerPolicy="no-referrer" className="w-full h-full object-contain p-2 mix-blend-luminosity group-hover:mix-blend-normal group-hover:scale-110 transition-all duration-500" />
+                                                <img src={imgs[0]} alt={p.name} referrerPolicy="no-referrer" className="w-full h-full object-contain mix-blend-screen group-hover:scale-110 transition-transform duration-700" />
                                             ) : (
                                                 <ShoppingBag size={24} className="text-white/20" />
                                             )}
                                         </div>
-                                        <div className="p-2.5">
-                                            <p className="text-white text-[9px] font-black uppercase tracking-wide line-clamp-2 leading-tight">{p.name}</p>
-                                            <p className="text-white/70 text-[10px] font-black font-mono mt-1">${p.price?.toLocaleString('en-US', { minimumFractionDigits: 2 }) || '0.00'}</p>
+                                        <div className="p-4 border-t border-white/5">
+                                            <p className="text-white text-[9px] font-black uppercase tracking-widest line-clamp-2 leading-tight">{p.name}</p>
+                                            <p className="text-white/80 text-[11px] font-black font-mono mt-2" style={{ color: accent }}>${p.price?.toLocaleString('en-US', { minimumFractionDigits: 2 }) || '0.00'}</p>
                                         </div>
                                     </Link>
                                 )
@@ -427,185 +257,118 @@ function HeroBanner({ title, description, backgroundImage, gradientClass, accent
                     </div>
                 )}
             </div>
-
-            {/* Divider bottom glow */}
-            <div className="absolute bottom-0 left-0 right-0 h-px" style={{ background: `linear-gradient(90deg, transparent, ${accent}, transparent)` }}></div>
         </section>
     )
 }
 
 // ══════════════════════════════════════════════════════════════
-//  CategoriesBanner — Banner 4 con todas las categorías scrollable
+//  CategoriesBanner — Categorías con Scroll Horizontal (Top Section)
 // ══════════════════════════════════════════════════════════════
 function CategoriesBanner({ categories }: { categories: any[] }) {
     const scrollRef = useRef<HTMLDivElement>(null)
-    const [canScrollLeft, setCanScrollLeft] = useState(false)
-    const [canScrollRight, setCanScrollRight] = useState(true)
-    const [activeIdx, setActiveIdx] = useState(0)
     const [isDragging, setIsDragging] = useState(false)
-    const [dragStart, setDragStart] = useState(0)
-    const [scrollStart, setScrollStart] = useState(0)
-    const CARD_W = 216
-
-    const checkScroll = () => {
-        if (!scrollRef.current) return
-        const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current
-        setCanScrollLeft(scrollLeft > 10)
-        setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10)
-        setActiveIdx(Math.round(scrollLeft / CARD_W))
-    }
-
-    useEffect(() => {
-        const el = scrollRef.current
-        if (!el) return
-        el.addEventListener('scroll', checkScroll, { passive: true })
-        checkScroll()
-        return () => el.removeEventListener('scroll', checkScroll)
-    }, [categories])
+    const [startX, setStartX] = useState(0)
+    const [scrollLeft, setScrollLeft] = useState(0)
 
     const scroll = (dir: 'left' | 'right') => {
-        scrollRef.current?.scrollBy({ left: dir === 'right' ? CARD_W * 2 : -CARD_W * 2, behavior: 'smooth' })
-    }
-    const goToIdx = (i: number) => {
-        scrollRef.current?.scrollTo({ left: i * CARD_W, behavior: 'smooth' })
+        scrollRef.current?.scrollBy({ left: dir === 'right' ? 300 : -300, behavior: 'smooth' })
     }
 
-    // Drag-to-scroll
     const onMouseDown = (e: React.MouseEvent) => {
         setIsDragging(true)
-        setDragStart(e.clientX)
-        setScrollStart(scrollRef.current?.scrollLeft || 0)
+        setStartX(e.pageX - (scrollRef.current?.offsetLeft || 0))
+        setScrollLeft(scrollRef.current?.scrollLeft || 0)
     }
+
     const onMouseMove = (e: React.MouseEvent) => {
-        if (!isDragging || !scrollRef.current) return
-        scrollRef.current.scrollLeft = scrollStart + (dragStart - e.clientX)
+        if (!isDragging) return
+        e.preventDefault()
+        const x = e.pageX - (scrollRef.current?.offsetLeft || 0)
+        const walk = (x - startX) * 2 // Scroll-fast
+        if (scrollRef.current) scrollRef.current.scrollLeft = scrollLeft - walk
     }
-    const onMouseUp = () => setIsDragging(false)
 
     if (categories.length === 0) return null
     const visible = categories.filter((c: any) => c.isVisible !== false)
 
     return (
-        <section id="categorias" className="w-full bg-[#F5F3F0] relative overflow-hidden">
+        <section id="categorias" className="w-full bg-[#0F1923] relative overflow-hidden py-24">
             {/* Diagonal grid texture */}
             <div
-                className="absolute inset-0 opacity-[0.025]"
-                style={{ backgroundImage: 'repeating-linear-gradient(45deg, #fff 0, #fff 1px, transparent 0, transparent 50%)', backgroundSize: '14px 14px' }}
+                className="absolute inset-0 opacity-[0.03]"
+                style={{ backgroundImage: 'repeating-linear-gradient(45deg, #fff 0, #fff 1px, transparent 0, transparent 50%)', backgroundSize: '20px 20px' }}
             ></div>
 
-            {/* Top divider glow */}
-            <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-[#E8341A]/40 to-transparent"></div>
-
-            <div className="relative z-10 py-20 pb-12">
+            <div className="relative z-10">
                 {/* Header row */}
-                <div className="max-w-7xl mx-auto px-6 mb-12 flex items-end justify-between">
-                    <div className="space-y-1">
-                        <p className="text-[#E8341A] text-[9px] font-black uppercase tracking-[0.4em]">Explorar por sección</p>
-                        <h2 className="text-3xl md:text-5xl font-black text-[#0F1923] uppercase tracking-tighter leading-none">
-                            Todas las <span className="text-[#E8341A] italic">Categorías</span>
+                <div className="max-w-[95%] mx-auto px-6 mb-12 flex flex-col md:flex-row items-end justify-between gap-6">
+                    <div className="space-y-2">
+                        <p className="text-[#E8341A] text-[10px] font-black uppercase tracking-[0.4em]">Explorar por sección</p>
+                        <h2 className="text-4xl md:text-5xl font-black text-white uppercase tracking-tighter leading-none">
+                            Categorías <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/50 italic">Industriales</span>
                         </h2>
-                        <p className="text-[#0F1923]/30 text-[10px] font-bold uppercase tracking-widest pt-2">
-                            {visible.length} sección{visible.length !== 1 ? 'es' : ''} disponible{visible.length !== 1 ? 's' : ''} — ingeniería modular
-                        </p>
                     </div>
-                    <div className="flex items-center gap-2 pb-1">
-                        <button
-                            onClick={() => scroll('left')}
-                            disabled={!canScrollLeft}
-                            className="w-12 h-12 border border-[#0F1923]/12 flex items-center justify-center text-[#0F1923]/30 hover:text-[#E8341A] hover:border-[#E8341A] hover:bg-[#E8341A]/8 transition-all disabled:opacity-20 rounded-none"
-                        >
+                    <div className="flex items-center gap-2">
+                        <button onClick={() => scroll('left')} className="w-12 h-12 border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:border-[#E8341A] hover:bg-[#E8341A] transition-all rounded-none">
                             <ChevronLeft size={16} />
                         </button>
-                        <button
-                            onClick={() => scroll('right')}
-                            disabled={!canScrollRight}
-                            className="w-12 h-12 border border-[#0F1923]/12 flex items-center justify-center text-[#0F1923]/30 hover:text-[#E8341A] hover:border-[#E8341A] hover:bg-[#E8341A]/8 transition-all disabled:opacity-20 rounded-none"
-                        >
+                        <button onClick={() => scroll('right')} className="w-12 h-12 border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:border-[#E8341A] hover:bg-[#E8341A] transition-all rounded-none">
                             <ChevronRight size={16} />
                         </button>
                     </div>
                 </div>
 
-                {/* Cards track */}
-                <div className="relative">
-                    <div
-                        ref={scrollRef}
-                        onScroll={checkScroll}
-                        onMouseDown={onMouseDown}
-                        onMouseMove={onMouseMove}
-                        onMouseUp={onMouseUp}
-                        onMouseLeave={onMouseUp}
-                        className="flex gap-4 overflow-x-auto pl-6 pr-6 pb-6 hide-scrollbar"
-                        style={{
-                            cursor: isDragging ? 'grabbing' : 'grab',
-                            userSelect: 'none',
-                        }}
-                    >
-                        {visible.map((cat: any, i: number) => (
-                            <a
-                                key={cat.id}
-                                href="#productos"
-                                draggable={false}
-                                className="group shrink-0 relative overflow-hidden transition-all duration-500 hover:-translate-y-2 rounded-none"
-                                style={{
-                                    width: `${CARD_W}px`,
-                                    minWidth: `${CARD_W}px`,
-                                    border: '1px solid rgba(15,25,35,0.06)',
-                                    boxShadow: '0 10px 40px rgba(0,0,0,0.4)',
-                                }}
-                            >
-                                {/* Category image */}
-                                <div className="h-48 overflow-hidden bg-[#EDE9E4] relative">
-                                    {cat.image ? (
-                                        <img
-                                            src={cat.image}
-                                            alt={cat.name}
-                                            draggable={false}
-                                            className="w-full h-full object-cover opacity-40 group-hover:opacity-80 group-hover:scale-110 transition-all duration-1000 ease-out"
-                                        />
-                                    ) : (
-                                        <div className="absolute inset-0 flex items-center justify-center">
-                                            <span className="text-7xl font-black uppercase select-none opacity-5">
-                                                {cat.name[0]}
-                                            </span>
-                                        </div>
-                                    )}
-                                    {/* Scrim */}
-                                    <div className="absolute inset-0 bg-gradient-to-t from-[#F5F3F0] via-[#F5F3F0]/30 to-transparent"></div>
-                                    {/* Accent line on hover */}
-                                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-[#E8341A] scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
-                                </div>
+                {/* Cards track (Mouse drag enabled) */}
+                <div
+                    ref={scrollRef}
+                    onMouseDown={onMouseDown}
+                    onMouseLeave={() => setIsDragging(false)}
+                    onMouseUp={() => setIsDragging(false)}
+                    onMouseMove={onMouseMove}
+                    className="flex gap-6 overflow-x-auto px-6 hide-scrollbar cursor-grab active:cursor-grabbing pb-8"
+                >
+                    {visible.map((cat: any) => (
+                        <Link
+                            key={cat.id}
+                            href={`/web/category/${cat.slug}`}
+                            draggable={false}
+                            className="group shrink-0 relative overflow-hidden transition-all duration-500 hover:-translate-y-2 rounded-none bg-white/5 border border-white/10 w-72"
+                            style={{ boxShadow: '0 20px 50px rgba(0,0,0,0.5)' }}
+                        >
+                            {/* Category image */}
+                            <div className="h-56 overflow-hidden bg-black relative flex items-center justify-center">
+                                {cat.image ? (
+                                    <img
+                                        src={cat.image}
+                                        alt={cat.name}
+                                        draggable={false}
+                                        className="w-full h-full object-cover opacity-50 group-hover:opacity-80 group-hover:scale-110 transition-all duration-1000 ease-out"
+                                    />
+                                ) : (
+                                    <span className="text-8xl font-black uppercase select-none opacity-5 text-white">
+                                        {cat.name[0]}
+                                    </span>
+                                )}
+                                {/* Gradient Overlay */}
+                                <div className="absolute inset-0 bg-gradient-to-t from-[#0F1923] via-[#0F1923]/40 to-transparent"></div>
+                                {/* Accent line on hover */}
+                                <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-[#E8341A] scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
+                            </div>
 
-                                {/* Info */}
-                                <div className="p-5 bg-white/95 backdrop-blur-md">
-                                    <h3 className="text-[#0F1923] text-xs font-black uppercase tracking-[0.1em] line-clamp-1 group-hover:text-[#E8341A] transition-colors">
-                                        {cat.name}
-                                    </h3>
-                                    <p className="text-[#0F1923]/30 text-[9px] font-bold mt-1 uppercase tracking-widest italic">Explorar →</p>
-                                </div>
-                            </a>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Progress bar info */}
-                <div className="flex justify-center items-center gap-1.5 mt-8">
-                    {visible.slice(0, Math.min(visible.length, 12)).map((_: any, i: number) => (
-                        <div
-                            key={i}
-                            className="transition-all duration-500"
-                            style={{
-                                height: '2px',
-                                width: activeIdx === i ? '32px' : '4px',
-                                backgroundColor: activeIdx === i ? '#E8341A' : 'rgba(15,25,35,0.12)',
-                            }}
-                        />
+                            {/* Info */}
+                            <div className="absolute bottom-0 left-0 p-6 w-full">
+                                <h3 className="text-white text-sm font-black uppercase tracking-[0.1em] line-clamp-2 group-hover:text-[#E8341A] transition-colors leading-tight mb-2" style={{ textShadow: '0 2px 10px rgba(0,0,0,0.8)' }}>
+                                    {cat.name}
+                                </h3>
+                                <p className="text-white/50 text-[9px] font-black mt-1 uppercase tracking-widest italic flex items-center gap-2">
+                                    Ver Inventario <ArrowRight size={10} className="group-hover:translate-x-2 transition-transform" />
+                                </p>
+                            </div>
+                        </Link>
                     ))}
                 </div>
             </div>
-
-            {/* Bottom line */}
-            <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-[#E8341A]/15 to-transparent"></div>
+            <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#E8341A]/30 to-transparent"></div>
         </section>
     )
 }

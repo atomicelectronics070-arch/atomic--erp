@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { motion } from "framer-motion"
 import { ShoppingBag, Plus, Save, Image as ImageIcon, FileText, Trash2, X, PlusCircle, Globe, LayoutGrid, List, Layers, Tag as TagIcon, Edit, Power, Star, Settings, CreditCard, Box, CheckSquare, Square, ChevronRight, ChevronDown, Search, Store, Upload, RefreshCw, Monitor, Cpu, Gamepad2, Layout, CheckCircle, ShieldAlert } from "lucide-react"
-import { saveProduct, getProducts, deleteProduct, getShopMetadata, createCategory, saveCategory, createCollection, saveCollection, deleteCollection, deleteManyCollections, updateCollection, deleteManyProducts, updateProductsCollection, restoreProduct, restoreManyProducts, permanentDeleteManyProducts, bulkUpdateProducts, cleanupDuplicateProducts, getProviderStats, searchProductsForTaxonomy } from "@/lib/actions/shop"
+import { saveProduct, getProducts, deleteProduct, getShopMetadata, createCategory, saveCategory, createCollection, saveCollection, deleteCollection, deleteManyCollections, updateCollection, deleteManyProducts, updateProductsCollection, restoreProduct, restoreManyProducts, permanentDeleteManyProducts, bulkUpdateProducts, cleanupDuplicateProducts, getProviderStats, searchProductsForTaxonomy, toggleProductFeatured } from "@/lib/actions/shop"
 
 const safeParseArray = (str: any, fallback: any = []) => {
     if (!str || str === 'null') return fallback;
@@ -484,11 +484,25 @@ export default function ShopConfigPage() {
                                                                             </button>
                                                                         ) : (
                                                                             <>
-                                                                                <button 
+                                                                <button 
                                                                                     onClick={() => { setEditingProduct(p); setView('edit'); }}
                                                                                     className="p-4 bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all rounded-none border border-white/5 shadow-2xl active:scale-90 group/btn"
                                                                                 >
                                                                                     <Edit size={18} className="group-hover/btn:rotate-12 transition-transform" />
+                                                                                </button>
+                                                                                <button
+                                                                                    onClick={async () => {
+                                                                                        await toggleProductFeatured(p.id, !p.featured)
+                                                                                        refreshData()
+                                                                                    }}
+                                                                                    className={`p-4 transition-all rounded-none border shadow-2xl active:scale-90 ${
+                                                                                        p.featured 
+                                                                                            ? 'bg-yellow-500/20 border-yellow-500/30 text-yellow-400 hover:bg-yellow-500 hover:text-white'
+                                                                                            : 'bg-white/5 border-white/5 text-slate-700 hover:bg-yellow-500/10 hover:text-yellow-500'
+                                                                                    }`}
+                                                                                    title={p.featured ? 'Quitar de destacados' : 'Marcar como destacado'}
+                                                                                >
+                                                                                    <Star size={18} />
                                                                                 </button>
                                                                                 <button 
                                                                                     onClick={() => handleDelete(p.id)}
@@ -1529,6 +1543,7 @@ function BulkEditModal({ selectedCount, categories, collections, onClose, onSave
         price: undefined,
         stock: undefined,
         isActive: undefined,
+        featured: undefined,
         categoryId: undefined,
         collectionId: undefined
     })
@@ -1608,21 +1623,41 @@ function BulkEditModal({ selectedCount, categories, collections, onClose, onSave
                         </div>
                     </div>
 
-                    <div className="glass-panel p-8 rounded-none-[2.5rem] border-white/10 flex items-center justify-between bg-slate-950/40">
-                        <span className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em]">Visibilidad Estratégica</span>
-                        <div className="flex gap-4">
-                            <button 
-                                onClick={() => setData({ ...data, isActive: true })}
-                                className={`px-6 py-3 text-[9px] font-black uppercase tracking-widest transition-all rounded-none ${data.isActive === true ? 'bg-secondary text-white shadow-lg shadow-secondary/20' : 'bg-white/5 text-slate-500 border border-white/5'}`}
-                            > Activar </button>
-                            <button 
-                                onClick={() => setData({ ...data, isActive: false })}
-                                className={`px-6 py-3 text-[9px] font-black uppercase tracking-widest transition-all rounded-none ${data.isActive === false ? 'bg-red-500 text-white shadow-lg shadow-red-500/20' : 'bg-white/5 text-slate-500 border border-white/5'}`}
-                            > Inactivar </button>
-                            <button 
-                                onClick={() => setData({ ...data, isActive: undefined })}
-                                className={`px-6 py-3 text-[9px] font-black uppercase tracking-widest transition-all rounded-none ${data.isActive === undefined ? 'bg-slate-700 text-white shadow-lg' : 'bg-white/5 text-slate-500 border border-white/5'}`}
-                            > OMITIR </button>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                        <div className="glass-panel p-8 rounded-none-[2.5rem] border-white/10 flex flex-col justify-center gap-4 bg-slate-950/40">
+                            <span className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em]">Visibilidad Estratégica</span>
+                            <div className="flex gap-4">
+                                <button 
+                                    onClick={() => setData({ ...data, isActive: true })}
+                                    className={`flex-1 py-3 text-[9px] font-black uppercase tracking-widest transition-all rounded-none ${data.isActive === true ? 'bg-secondary text-white shadow-lg shadow-secondary/20' : 'bg-white/5 text-slate-500 border border-white/5'}`}
+                                > Activar </button>
+                                <button 
+                                    onClick={() => setData({ ...data, isActive: false })}
+                                    className={`flex-1 py-3 text-[9px] font-black uppercase tracking-widest transition-all rounded-none ${data.isActive === false ? 'bg-red-500 text-white shadow-lg shadow-red-500/20' : 'bg-white/5 text-slate-500 border border-white/5'}`}
+                                > Inactivar </button>
+                                <button 
+                                    onClick={() => setData({ ...data, isActive: undefined })}
+                                    className={`flex-1 py-3 text-[9px] font-black uppercase tracking-widest transition-all rounded-none ${data.isActive === undefined ? 'bg-slate-700 text-white shadow-lg' : 'bg-white/5 text-slate-500 border border-white/5'}`}
+                                > OMITIR </button>
+                            </div>
+                        </div>
+
+                        <div className="glass-panel p-8 rounded-none-[2.5rem] border-white/10 flex flex-col justify-center gap-4 bg-slate-950/40">
+                            <span className="text-[10px] font-black uppercase text-yellow-500/50 tracking-[0.4em]">Producto Destacado</span>
+                            <div className="flex gap-4">
+                                <button 
+                                    onClick={() => setData({ ...data, featured: true })}
+                                    className={`flex-1 py-3 text-[9px] font-black uppercase tracking-widest transition-all rounded-none ${data.featured === true ? 'bg-yellow-500 text-white shadow-lg shadow-yellow-500/20' : 'bg-white/5 text-slate-500 border border-white/5'}`}
+                                > Destacar </button>
+                                <button 
+                                    onClick={() => setData({ ...data, featured: false })}
+                                    className={`flex-1 py-3 text-[9px] font-black uppercase tracking-widest transition-all rounded-none ${data.featured === false ? 'bg-slate-800 text-white' : 'bg-white/5 text-slate-500 border border-white/5'}`}
+                                > Normal </button>
+                                <button 
+                                    onClick={() => setData({ ...data, featured: undefined })}
+                                    className={`flex-1 py-3 text-[9px] font-black uppercase tracking-widest transition-all rounded-none ${data.featured === undefined ? 'bg-slate-700 text-white shadow-lg' : 'bg-white/5 text-slate-500 border border-white/5'}`}
+                                > OMITIR </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1658,6 +1693,7 @@ function TaxonomyModal({ type, initialData, allProducts, onClose, onSaved }: { t
         name: initialData?.name || '',
         description: initialData?.description || '',
         image: initialData?.image || '',
+        pdfUrl: initialData?.pdfUrl || '',
         isVisible: initialData?.isVisible ?? true
     })
     
@@ -1750,6 +1786,17 @@ function TaxonomyModal({ type, initialData, allProducts, onClose, onSaved }: { t
                                     onChange={(e) => setData({ ...data, image: e.target.value })}
                                     placeholder="https://cloud.atomic.shop/resources/..."
                                     className="w-full bg-slate-950 border border-white/5 px-8 py-6 text-[10px] font-mono text-slate-400 outline-none focus:border-primary transition-all rounded-none"
+                                />
+                            </div>
+
+                            <div className="space-y-4">
+                                <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Documento PDF (URL / Base64)</label>
+                                <input 
+                                    type="text"
+                                    value={data.pdfUrl}
+                                    onChange={(e) => setData({ ...data, pdfUrl: e.target.value })}
+                                    placeholder="https://... o data:application/pdf;base64,..."
+                                    className="w-full bg-slate-950 border border-white/5 px-8 py-6 text-[10px] font-mono text-slate-400 outline-none focus:border-secondary transition-all rounded-none"
                                 />
                             </div>
                         </div>
