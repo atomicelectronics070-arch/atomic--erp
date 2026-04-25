@@ -1,5 +1,4 @@
 "use client"
-// Fix: archivo restaurado completo (login/page.tsx llegó truncado al main por un commit incompleto)
 
 import { useState } from "react"
 import { signIn } from "next-auth/react"
@@ -41,14 +40,12 @@ export default function LoginPage() {
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-[#FAFAF8] text-[#0F1923] overflow-hidden relative">
-            {/* Background Effects */}
             <div className="fixed inset-0 pointer-events-none">
                 <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-[#E8341A]/8 blur-[150px] rounded-none animate-pulse" />
                 <div className="absolute bottom-[-10%] left-[-5%] w-[40%] h-[40%] bg-[#2563EB]/8 blur-[150px] rounded-none animate-pulse" style={{ animationDelay: '2s' }} />
             </div>
 
             <div className="w-full max-w-md relative z-10 p-6">
-                {/* Logo Section */}
                 <div className="text-center mb-10">
                     <div className="inline-flex items-center gap-3 px-4 py-2 border border-[#E8341A]/25 bg-[#E8341A]/8 backdrop-blur-md rounded-none mb-6">
                         <ShieldCheck size={14} className="text-[#E8341A]" />
@@ -61,9 +58,8 @@ export default function LoginPage() {
                 </div>
 
                 <div className="bg-white border border-[#0F1923]/6 shadow-xl shadow-[#E8341A]/5 rounded-none p-8 md:p-10 relative overflow-hidden group">
-                    {/* Inner Glow */}
                     <div className="absolute -top-24 -right-24 w-48 h-48 bg-[#E8341A]/6 blur-[60px] rounded-none group-hover:bg-[#E8341A]/12 transition-all duration-700"></div>
-                    
+
                     <div className="relative z-10">
                         <div className="mb-8">
                             <h2 className="text-2xl font-black text-[#0F1923] uppercase tracking-tighter">Entrar al Sistema</h2>
@@ -82,7 +78,7 @@ export default function LoginPage() {
                                     Identificador Corporativo
                                 </label>
                                 <div className="relative group">
-                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#0F1923]/25 group-focus-within:text-[#E8341A] transition-colors">
+                                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#0F1923]/25 group-focus-within:text-[#E8341A] transition-colors">
                                         <Mail size={18} />
                                     </div>
                                     <input
@@ -157,9 +153,3 @@ export default function LoginPage() {
         </div>
     )
 }
-
-
-
-
-
-
