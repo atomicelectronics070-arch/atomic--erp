@@ -1,0 +1,1243 @@
+<!-- MARCA_QR_123 -->
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>ISU Sucre | Control de Accesos</title>
+  <link rel="icon" type="image/png" href="/static/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+<style>
+/* ============================================================
+   DESIGN SYSTEM — ISU SUCRE ACCESS CONTROL
+   ============================================================ */
+:root {
+  --bg:        #080810;
+  --surface:   #0f0f1a;
+  --surface2:  #15151f;
+  --border:    rgba(255,255,255,0.07);
+  --border2:   rgba(255,255,255,0.13);
+  --text:      #f0f0f8;
+  --muted:     rgba(240,240,248,0.5);
+  --accent:    #f59e0b;
+  --accent-d:  #d97706;
+  --accent-rgb:245,158,11;
+  --success:   #10b981;
+  --success-d: #059669;
+  --danger:    #ef4444;
+  --danger-d:  #dc2626;
+  --blue:      #6366f1;
+  --radius:    8px;
+  --radius-sm: 5px;
+  --radius-lg: 12px;
+  --shadow:    0 24px 64px rgba(0,0,0,0.7);
+  --shadow-sm: 0 4px 16px rgba(0,0,0,0.4);
+  --sidebar-w: 240px;
+  --transition: all 0.22s cubic-bezier(0.4,0,0.2,1);
+}
+
+*{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased;}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;overflow:hidden;}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.12);border-radius:99px}
+::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,0.22)}
+
+/* ── Inputs & Selects ── */
+input,select,textarea{
+  background:rgba(255,255,255,0.05);border:1px solid var(--border2);
+  color:var(--text);font-family:'Inter',sans-serif;font-size:13px;
+  border-radius:var(--radius-sm);padding:10px 14px;outline:none;
+  transition:var(--transition);width:100%;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(var(--accent-rgb),0.15);}
+input::placeholder{color:var(--muted);}
+label{font-size:12px;font-weight:600;color:var(--muted);letter-spacing:0.05em;text-transform:uppercase;display:block;margin-bottom:6px;}
+
+/* ── Buttons ── */
+button{font-family:'Inter',sans-serif;font-size:13px;font-weight:600;border:none;border-radius:var(--radius-sm);cursor:pointer;transition:var(--transition);display:inline-flex;align-items:center;gap:8px;white-space:nowrap;}
+.btn{padding:10px 18px;}
+.btn-accent{background:var(--accent);color:#000;padding:10px 18px;}
+.btn-accent:hover{background:var(--accent-d);transform:translateY(-1px);box-shadow:0 4px 16px rgba(var(--accent-rgb),0.4);}
+.btn-success{background:var(--success);color:#fff;padding:10px 18px;}
+.btn-success:hover{background:var(--success-d);transform:translateY(-1px);}
+.btn-danger{background:rgba(239,68,68,0.12);color:var(--danger);border:1px solid rgba(239,68,68,0.25);padding:8px 14px;}
+.btn-danger:hover{background:var(--danger);color:#fff;}
+.btn-ghost{background:rgba(255,255,255,0.06);color:var(--text);border:1px solid var(--border);padding:8px 14px;}
+.btn-ghost:hover{background:rgba(255,255,255,0.12);border-color:var(--border2);}
+.btn-sm{padding:6px 12px;font-size:12px;}
+.btn:disabled{opacity:0.5;cursor:not-allowed;transform:none!important;}
+.btn-icon{padding:8px;border-radius:8px;background:rgba(255,255,255,0.06);color:var(--muted);}
+.btn-icon:hover{background:rgba(255,255,255,0.12);color:var(--text);}
+.btn-full{width:100%;justify-content:center;}
+
+/* ── Cards ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+.card-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:16px;}
+.card-header h3{font-size:15px;font-weight:700;flex:1;}
+.card-header .sub{font-size:12px;color:var(--muted);font-weight:400;margin-top:2px;}
+.card-body{padding:24px;}
+
+/* ── KPI Cards ── */
+.kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;display:flex;flex-direction:column;gap:8px;transition:var(--transition);}
+.kpi-card:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:var(--shadow-sm);}
+.kpi-label{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;}
+.kpi-value{font-size:32px;font-weight:800;line-height:1;}
+.kpi-sub{font-size:11px;color:var(--muted);}
+.kpi-accent{border-color:rgba(var(--accent-rgb),0.3);}
+.kpi-accent .kpi-value{color:var(--accent);}
+.kpi-success .kpi-value{color:var(--success);}
+.kpi-blue .kpi-value{color:var(--blue);}
+
+/* ── Badges & Pills ── */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:4px;font-size:11px;font-weight:700;letter-spacing:0.03em;}
+.badge-success{background:rgba(16,185,129,0.15);color:var(--success);border:1px solid rgba(16,185,129,0.25);}
+.badge-danger{background:rgba(239,68,68,0.15);color:var(--danger);border:1px solid rgba(239,68,68,0.25);}
+.badge-accent{background:rgba(var(--accent-rgb),0.15);color:var(--accent);border:1px solid rgba(var(--accent-rgb),0.25);}
+.badge-neutral{background:rgba(255,255,255,0.06);color:var(--muted);border:1px solid var(--border);}
+.badge-blue{background:rgba(99,102,241,0.15);color:var(--blue);border:1px solid rgba(99,102,241,0.25);}
+.dot{width:6px;height:6px;border-radius:50%;display:inline-block;}
+.dot-success{background:var(--success);}
+.dot-danger{background:var(--danger);}
+.dot-accent{background:var(--accent);}
+
+/* ── Avatar ── */
+.avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;}
+.avatar-sm{width:28px;height:28px;font-size:11px;}
+.av-orange{background:rgba(var(--accent-rgb),0.2);color:var(--accent);}
+.av-green{background:rgba(16,185,129,0.2);color:var(--success);}
+.av-blue{background:rgba(99,102,241,0.2);color:var(--blue);}
+.av-red{background:rgba(239,68,68,0.2);color:var(--danger);}
+
+/* ── Data Table ── */
+.table-wrap{overflow-x:auto;overflow-y:auto;}
+.data-table{width:100%;border-collapse:collapse;font-size:13px;}
+.data-table th{padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:0.07em;text-transform:uppercase;border-bottom:1px solid var(--border);white-space:nowrap;}
+.data-table td{padding:12px 16px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.data-table tbody tr{transition:var(--transition);}
+.data-table tbody tr:hover{background:rgba(255,255,255,0.03);}
+.data-table tbody tr:last-child td{border-bottom:none;}
+.data-table .user-cell{display:flex;align-items:center;gap:12px;}
+.data-table .user-name{font-weight:600;color:var(--text);}
+.data-table .user-sub{font-size:11px;color:var(--muted);}
+tr.new-entry td{animation:flashEntry 0.8s ease-out;}
+@keyframes flashEntry{0%{background:rgba(16,185,129,0.18);}100%{background:transparent;}}
+
+/* ── Tabs ── */
+.tabs{display:flex;gap:4px;background:var(--surface2);padding:4px;border-radius:var(--radius-sm);border:1px solid var(--border);}
+.tab{padding:8px 18px;border-radius:8px;background:transparent;color:var(--muted);font-size:13px;font-weight:600;transition:var(--transition);border:none;cursor:pointer;}
+.tab.active{background:var(--surface);color:var(--text);box-shadow:var(--shadow-sm);border:1px solid var(--border2);}
+.tab:hover:not(.active){color:var(--text);}
+
+/* ── Form ── */
+.form-group{display:flex;flex-direction:column;gap:6px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+.form-error{font-size:11px;color:var(--danger);margin-top:4px;}
+.form-success{font-size:11px;color:var(--success);margin-top:4px;}
+.input-group{position:relative;}
+.input-group input{padding-right:48px;}
+.input-group .input-icon{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;}
+
+/* ── Sidebar ── */
+#sidebar{
+  width:var(--sidebar-w);min-width:var(--sidebar-w);
+  background:var(--surface);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;height:100vh;
+  position:fixed;top:0;left:0;z-index:100;
+}
+.sidebar-logo{padding:24px 20px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border);}
+.sidebar-logo img{width:36px;height:36px;object-fit:contain;}
+.sidebar-logo-text .name{font-weight:800;font-size:14px;color:var(--text);line-height:1.2;}
+.sidebar-logo-text .sub{font-size:11px;color:var(--muted);}
+.sidebar-nav{padding:12px 10px;flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:2px;}
+.nav-section{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;padding:12px 10px 6px;}
+.nav-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:var(--radius-sm);cursor:pointer;color:var(--muted);font-weight:600;font-size:13px;transition:var(--transition);border:none;background:transparent;width:100%;text-align:left;}
+.nav-item:hover{background:rgba(255,255,255,0.05);color:var(--text);}
+.nav-item.active{background:rgba(var(--accent-rgb),0.12);color:var(--accent);}
+.nav-item svg{flex-shrink:0;width:18px;height:18px;}
+.nav-item .nav-badge{margin-left:auto;background:var(--accent);color:#000;font-size:10px;font-weight:800;padding:2px 6px;border-radius:99px;}
+.sidebar-footer{padding:16px;border-top:1px solid var(--border);}
+.sidebar-user{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--radius-sm);background:rgba(255,255,255,0.04);}
+.sidebar-user .user-name{font-weight:700;font-size:13px;}
+.sidebar-user .user-role{font-size:11px;color:var(--muted);}
+
+/* ── Main Content ── */
+#main{margin-left:var(--sidebar-w);height:100vh;display:flex;flex-direction:column;overflow:hidden;}
+.top-bar{padding:16px 28px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:16px;flex-shrink:0;background:var(--surface);}
+.top-bar .page-title{font-size:18px;font-weight:800;flex:1;}
+.top-bar .page-sub{font-size:12px;color:var(--muted);margin-top:2px;}
+.top-bar .status-pill{display:flex;align-items:center;gap:6px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);padding:6px 12px;border-radius:99px;font-size:12px;font-weight:600;color:var(--success);}
+.content-area{flex:1;overflow-y:auto;padding:24px 28px;}
+
+/* ── Grid Layouts ── */
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.grid-60-40{display:grid;grid-template-columns:1fr 0.65fr;gap:20px;}
+.stack{display:flex;flex-direction:column;gap:20px;}
+
+/* ── Section header ── */
+.section-header{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
+.section-header h2{font-size:18px;font-weight:800;}
+.section-header .section-sub{font-size:13px;color:var(--muted);}
+.spacer{flex:1;}
+
+/* ── Notification toast ── */
+.toast-container{position:fixed;bottom:28px;right:28px;z-index:9999;display:flex;flex-direction:column;gap:10px;align-items:flex-end;}
+.toast{padding:14px 20px;border-radius:var(--radius-sm);font-weight:600;font-size:13px;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow);max-width:360px;animation:toastIn 0.35s cubic-bezier(0.175,0.885,0.32,1.275);}
+@keyframes toastIn{from{transform:translateY(20px) scale(0.95);opacity:0;}to{transform:none;opacity:1;}}
+.toast-success{background:#0a2e22;border:1px solid rgba(16,185,129,0.35);color:var(--success);}
+.toast-error{background:#2d0f0f;border:1px solid rgba(239,68,68,0.35);color:var(--danger);}
+.toast-warn{background:#2d2000;border:1px solid rgba(var(--accent-rgb),0.35);color:var(--accent);}
+
+/* ── Scanner box ── */
+.scanner-box{border:2px dashed var(--border2);border-radius:var(--radius);padding:28px;text-align:center;position:relative;background:rgba(255,255,255,0.02);}
+.scanner-box b{display:block;font-size:15px;color:var(--text);margin-bottom:6px;}
+.scanner-box small{color:var(--muted);font-size:12px;}
+.scan-status{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;border-radius:14px;font-weight:800;font-size:16px;opacity:0;transition:opacity 0.2s;pointer-events:none;}
+.scan-status.show{opacity:1;}
+.scan-status.ok{background:rgba(16,185,129,0.92);color:#fff;}
+.scan-status.bad{background:rgba(239,68,68,0.92);color:#fff;}
+
+/* ── Login ── */
+#loginView{display:none;position:fixed;inset:0;background:var(--bg);z-index:1000;align-items:center;justify-content:center;}
+#loginView.active{display:flex;}
+.login-shell{display:grid;grid-template-columns:1fr 1fr;min-height:100vh;width:100vw;}
+.login-left{background:linear-gradient(135deg,#0a0a18 0%,#1a0f05 50%,#0a0a18 100%);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:24px;padding:60px;position:relative;overflow:hidden;}
+.login-left::before{content:'';position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(var(--accent-rgb),0.08) 0%,transparent 70%);top:-100px;left:-100px;}
+.login-left::after{content:'';position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(16,185,129,0.06) 0%,transparent 70%);bottom:-80px;right:-80px;}
+.login-brand{text-align:center;z-index:1;}
+.login-brand img{width:72px;height:72px;object-fit:contain;margin-bottom:20px;}
+.login-brand h1{font-size:28px;font-weight:900;margin-bottom:8px;}
+.login-brand p{color:var(--muted);font-size:15px;}
+.login-right{display:flex;align-items:center;justify-content:center;padding:60px;background:var(--surface);}
+.login-form{width:100%;max-width:380px;display:flex;flex-direction:column;gap:20px;}
+.login-form h2{font-size:22px;font-weight:800;margin-bottom:4px;}
+.login-form p{color:var(--muted);font-size:13px;}
+.login-error{background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.25);color:var(--danger);padding:12px 16px;border-radius:var(--radius-sm);font-size:13px;display:none;}
+
+/* ── Modal ── */
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(6px);z-index:500;display:none;align-items:center;justify-content:center;}
+.modal-backdrop.open{display:flex;}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);box-shadow:var(--shadow);width:100%;max-width:480px;max-height:90vh;overflow:hidden;display:flex;flex-direction:column;}
+.modal-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;}
+.modal-header h3{font-size:16px;font-weight:700;flex:1;}
+.modal-body{padding:24px;overflow-y:auto;flex:1;}
+.modal-footer{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end;}
+
+/* ── Empty state ── */
+.empty-state{text-align:center;padding:40px 20px;color:var(--muted);}
+.empty-state svg{margin-bottom:12px;opacity:0.4;}
+.empty-state p{font-size:13px;}
+
+/* ── Inline feedback ── */
+.inline-feedback{font-size:12px;padding:8px 12px;border-radius:8px;margin-top:8px;display:none;}
+.inline-feedback.show{display:block;}
+.inline-feedback.success{background:rgba(16,185,129,0.12);color:var(--success);border:1px solid rgba(16,185,129,0.2);}
+.inline-feedback.error{background:rgba(239,68,68,0.12);color:var(--danger);border:1px solid rgba(239,68,68,0.2);}
+
+/* ── Search input ── */
+.search-input{position:relative;display:flex;align-items:center;}
+.search-input input{padding-left:38px;}
+.search-input .icon{position:absolute;left:12px;color:var(--muted);pointer-events:none;}
+
+/* ── Responsive ── */
+@media(max-width:900px){
+  #sidebar{display:none;}
+  #main{margin-left:0;}
+  .grid-4{grid-template-columns:1fr 1fr;}
+  .grid-2,.grid-60-40{grid-template-columns:1fr;}
+  .form-row,.form-row-3{grid-template-columns:1fr;}
+  .login-shell{grid-template-columns:1fr;}
+  .login-left{display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== LOGIN VIEW ===== -->
+<div id="loginView" class="active">
+  <div class="login-shell">
+    <div class="login-left">
+      <div class="login-brand">
+        <img src="/static/logo.png" alt="Logo" onerror="this.style.display='none'">
+        <h1>Control de Accesos</h1>
+        <p>Instituto Superior Universitario Sucre</p>
+      </div>
+    </div>
+    <div class="login-right">
+      <div class="login-form">
+        <div>
+          <h2>Bienvenido</h2>
+          <p>Ingresa tus credenciales para continuar</p>
+        </div>
+        <div id="loginError" class="login-error">Usuario o contraseña incorrectos.</div>
+        <div class="form-group">
+          <label>Usuario</label>
+          <input id="email" type="text" placeholder="admin" autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label>Contraseña</label>
+          <input id="password" type="password" placeholder="••••••••" autocomplete="off">
+        </div>
+        <button class="btn btn-accent btn-full" id="btnLogin">Iniciar Sesión</button>
+        <button class="btn btn-ghost btn-full" id="btnOpenChangeCreds" type="button" style="font-size:12px; opacity:0.7;">Cambiar credenciales</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MAIN APP ===== -->
+<div id="appShell" style="display:none; height:100vh; display:flex; flex-direction:row;">
+
+  <!-- Sidebar -->
+  <aside id="sidebar">
+    <div class="sidebar-logo">
+      <img src="/static/logo.png" alt="Logo" onerror="this.style.display='none'">
+      <div class="sidebar-logo-text">
+        <div class="name">ISU Sucre</div>
+        <div class="sub">Control de Accesos</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">Principal</div>
+      <button class="nav-item active" data-view="dashboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Dashboard
+      </button>
+      <div class="nav-section">Gestión</div>
+      <button class="nav-item" data-view="students">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Estudiantes
+        <span class="nav-badge" id="navBadgeStudents">0</span>
+      </button>
+      <button class="nav-item" data-view="teachers">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/></svg>
+        Docentes
+        <span class="nav-badge" id="navBadgeTeachers" style="background:var(--blue);color:#fff;">0</span>
+      </button>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="avatar avatar-sm av-orange">A</div>
+        <div>
+          <div class="user-name">Administrador</div>
+          <div class="user-role">ISU Sucre</div>
+        </div>
+        <button class="btn-icon" id="btnLogout" title="Cerrar sesión" style="margin-left:auto;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <div id="main" style="margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;">
+
+    <!-- ===== DASHBOARD VIEW ===== -->
+    <div id="viewDashboard" style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
+      <div class="top-bar">
+        <div>
+          <div class="page-title">Dashboard</div>
+          <div class="page-sub" id="dashboardDate">Cargando...</div>
+        </div>
+        <div style="flex:1"></div>
+        <div class="status-pill"><span class="dot dot-success"></span> Lector Activo</div>
+        <div class="scanner-box" style="padding:10px 16px;border-style:solid;display:flex;align-items:center;gap:10px;min-width:220px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/></svg>
+          <span id="scannerStatusText" style="font-size:12px;color:var(--muted);font-weight:600;">Esperando código...</span>
+          <div id="qrStatus" class="scan-status"></div>
+        </div>
+      </div>
+      <div class="content-area">
+        <!-- KPI Cards -->
+        <div class="grid-4" style="margin-bottom:24px;">
+          <div class="kpi-card kpi-accent">
+            <div class="kpi-label">Ingresos Hoy</div>
+            <div class="kpi-value" id="kpiToday">0</div>
+            <div class="kpi-sub">Registros de hoy</div>
+          </div>
+          <div class="kpi-card kpi-success">
+            <div class="kpi-label">Estudiantes</div>
+            <div class="kpi-value" id="kpiStudents">0</div>
+            <div class="kpi-sub">Registrados en sistema</div>
+          </div>
+          <div class="kpi-card kpi-blue">
+            <div class="kpi-label">Docentes</div>
+            <div class="kpi-value" id="kpiTeachers">0</div>
+            <div class="kpi-sub">Personal académico</div>
+          </div>
+          <div class="kpi-card" style="border-color:rgba(239,68,68,0.25);">
+            <div class="kpi-label">Total Ingresos</div>
+            <div class="kpi-value" id="kpiTotal" style="color:var(--danger);">0</div>
+            <div class="kpi-sub">Todos los registros</div>
+          </div>
+        </div>
+
+        <!-- Bitácora -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h3>Bitácora de Ingresos</h3>
+              <div class="sub" id="bitacoraSubtitle">Todos los registros en tiempo real</div>
+            </div>
+            <div class="spacer"></div>
+            <div class="tabs">
+              <button class="tab active" data-tab="all">Todos</button>
+              <button class="tab" data-tab="student">Estudiantes</button>
+              <button class="tab" data-tab="teacher">Docentes</button>
+            </div>
+            <div class="search-input" style="width:200px;">
+              <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="bitacoraSearch" placeholder="Buscar...">
+            </div>
+          </div>
+          <div class="table-wrap" style="max-height:500px;">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Usuario</th>
+                  <th>Identificación</th>
+                  <th>Rol / Carrera</th>
+                  <th>Tipo</th>
+                  <th>Fecha y Hora</th>
+                </tr>
+              </thead>
+              <tbody id="bitacoraTbody">
+                <tr><td colspan="5" class="empty-state"><p>Cargando registros...</p></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== STUDENTS VIEW ===== -->
+    <div id="viewStudents" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+      <div class="top-bar">
+        <div>
+          <div class="page-title">Gestión de Estudiantes</div>
+          <div class="page-sub">Registro e inscripción académica</div>
+        </div>
+        <div class="spacer"></div>
+        <button class="btn btn-success" id="btnOpenStudentForm">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Nuevo Estudiante
+        </button>
+      </div>
+      <div class="content-area">
+        <div class="grid-60-40">
+          <!-- Directory -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3>Directorio Académico</h3>
+                <div class="sub"><span id="studentDirCount">0</span> estudiantes registrados</div>
+              </div>
+              <div class="spacer"></div>
+              <div class="search-input" style="width:200px;">
+                <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" id="studentDirSearch" placeholder="Buscar estudiante...">
+              </div>
+            </div>
+            <div class="table-wrap" style="max-height:600px;">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Estudiante</th>
+                    <th>Cédula</th>
+                    <th>Carrera</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="studentDirTbody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Quick register -->
+          <div class="card" style="height:fit-content;">
+            <div class="card-header">
+              <div>
+                <h3>Registro Rápido</h3>
+                <div class="sub">Escanear o ingresar código</div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="scanner-box" style="margin-bottom:20px;">
+                <b>Usar lector USB</b>
+                <small>El lector actúa como teclado. Escanea el QR para registrar ingreso.</small>
+              </div>
+              <div class="form-group">
+                <label>Código de acceso manual</label>
+                <div style="display:flex;gap:8px;">
+                  <input type="text" id="manualScanInput" placeholder="Cédula o código de 5 dígitos">
+                  <button class="btn btn-accent" id="btnManualScan" style="white-space:nowrap;">Validar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== TEACHERS VIEW ===== -->
+    <div id="viewTeachers" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+      <div class="top-bar">
+        <div>
+          <div class="page-title">Gestión de Docentes</div>
+          <div class="page-sub">Personal académico e institucional</div>
+        </div>
+        <div class="spacer"></div>
+        <button class="btn btn-ghost" style="color:var(--blue);border-color:rgba(99,102,241,0.3);" id="btnOpenTeacherForm">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Nuevo Docente
+        </button>
+      </div>
+      <div class="content-area">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h3>Directorio Docente</h3>
+              <div class="sub"><span id="teacherDirCount">0</span> docentes registrados</div>
+            </div>
+            <div class="spacer"></div>
+            <div class="search-input" style="width:220px;">
+              <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="teacherDirSearch" placeholder="Buscar docente...">
+            </div>
+          </div>
+          <div class="table-wrap" style="max-height:600px;">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Docente</th>
+                  <th>Cédula</th>
+                  <th>Departamento</th>
+                  <th>Código QR</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="teacherDirTbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /#main -->
+</div><!-- /#appShell -->
+
+<!-- ===== MODALS ===== -->
+
+<!-- Student Form Modal -->
+<div class="modal-backdrop" id="modalStudentForm">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="avatar av-green">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <h3>Registrar Nuevo Estudiante</h3>
+      <button class="btn-icon" data-close-modal="modalStudentForm">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="stack">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nombres *</label>
+            <input type="text" id="sNombre" placeholder="Ej: Carlos Andrés">
+          </div>
+          <div class="form-group">
+            <label>Apellidos *</label>
+            <input type="text" id="sApellido" placeholder="Ej: Rodríguez Mora">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Número de Cédula *</label>
+            <input type="text" id="sCedula" placeholder="Ej: 0912345678" maxlength="13">
+          </div>
+          <div class="form-group">
+            <label>Carrera *</label>
+            <input type="text" id="sCarrera" placeholder="Ej: TECNOLOGÍA EN REDES">
+          </div>
+        </div>
+        <div id="studentFormFeedback" class="inline-feedback"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" data-close-modal="modalStudentForm">Cancelar</button>
+      <button class="btn btn-success" id="btnSaveStudent">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        Registrar y Habilitar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Teacher Form Modal -->
+<div class="modal-backdrop" id="modalTeacherForm">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="avatar av-blue">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/></svg>
+      </div>
+      <h3>Registrar Nuevo Docente</h3>
+      <button class="btn-icon" data-close-modal="modalTeacherForm">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="stack">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nombres *</label>
+            <input type="text" id="tNombre" placeholder="Ej: Ana María">
+          </div>
+          <div class="form-group">
+            <label>Apellidos *</label>
+            <input type="text" id="tApellido" placeholder="Ej: López Vera">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Número de Cédula *</label>
+            <input type="text" id="tCedula" placeholder="Ej: 1712345678">
+          </div>
+          <div class="form-group">
+            <label>Departamento / Área</label>
+            <input type="text" id="tDept" placeholder="Ej: Coordinación Académica">
+          </div>
+        </div>
+        <div id="teacherFormFeedback" class="inline-feedback"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" data-close-modal="modalTeacherForm">Cancelar</button>
+      <button class="btn btn-ghost" id="btnSaveTeacher" style="color:var(--blue);border-color:rgba(99,102,241,0.4);">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        Registrar y Habilitar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- QR Modal -->
+<div class="modal-backdrop" id="modalQR">
+  <div class="modal" style="max-width:380px;">
+    <div class="modal-header">
+      <h3>Código QR de Acceso</h3>
+      <button class="btn-icon" data-close-modal="modalQR">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" style="text-align:center;">
+      <div id="qrBox" style="background:#fff;padding:16px;border-radius:12px;display:inline-block;margin-bottom:16px;"></div>
+      <div id="qrUserName" style="font-weight:800;font-size:16px;"></div>
+      <div id="qrPayload" style="font-size:13px;color:var(--muted);margin-top:4px;"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" id="btnPrintQR">Imprimir</button>
+      <button class="btn btn-ghost" data-close-modal="modalQR">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Change Creds Modal -->
+<div class="modal-backdrop" id="modalChangeCreds">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-header">
+      <h3>Cambiar Credenciales</h3>
+      <button class="btn-icon" data-close-modal="modalChangeCreds">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="stack">
+        <p style="font-size:12px;color:var(--muted);">Estas credenciales se guardan localmente en este navegador.</p>
+        <div class="form-group"><label>Usuario Actual</label><input id="ccUserCurrent" type="text" placeholder="Usuario actual"></div>
+        <div class="form-group"><label>Contraseña Actual</label><input id="ccPassCurrent" type="password" placeholder="••••••••"></div>
+        <div style="height:1px;background:var(--border);border-radius:99px;"></div>
+        <div class="form-group"><label>Nuevo Usuario</label><input id="ccUserNew" type="text" placeholder="Dejar vacío si no cambia"></div>
+        <div class="form-group"><label>Nueva Contraseña</label><input id="ccPassNew" type="password" placeholder="Dejar vacío si no cambia"></div>
+        <div class="form-group"><label>Confirmar Nueva Contraseña</label><input id="ccPassConfirm" type="password" placeholder="Repetir contraseña"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" data-close-modal="modalChangeCreds">Cancelar</button>
+      <button class="btn btn-accent" id="btnSaveChangeCreds">Guardar cambios</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Hidden QR input for USB scanner -->
+<input id="qrInput" autocomplete="off" style="position:fixed;left:-9999px;top:-9999px;opacity:0;width:1px;height:1px;">
+
+<script>
+// ============================================================
+//  CONFIG & STORAGE
+// ============================================================
+const API_BASE = "";
+const TOKEN_KEY = "isu_token_v2";
+const CREDS_KEY = "isu_creds_v3";
+const defaultCreds = { email:"admin", password:"admin" };
+
+const loadJson = (k) => { try{ return JSON.parse(localStorage.getItem(k)||"null"); }catch{ return null; } };
+const saveJson = (k,v) => localStorage.setItem(k, JSON.stringify(v));
+const $ = (id) => document.getElementById(id);
+const escHtml = (s) => String(s??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
+const normalize = (s) => String(s||"").trim().toLowerCase();
+const MONTHS = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+
+const state = {
+  students: [],
+  teachers: [],
+  logs: [],
+  logFilter: "all",
+  currentView: "dashboard",
+  token: null
+};
+
+// ============================================================
+//  TOAST NOTIFICATIONS
+// ============================================================
+function toast(msg, type="success") {
+  const c = $("toastContainer");
+  const t = document.createElement("div");
+  t.className = `toast toast-${type}`;
+  const icons = {success:"✓", error:"✕", warn:"⚠"};
+  t.innerHTML = `<span>${icons[type]||"•"}</span> ${escHtml(msg)}`;
+  c.appendChild(t);
+  setTimeout(() => { t.style.opacity="0"; t.style.transform="translateY(10px)"; setTimeout(()=>t.remove(), 300); }, 3500);
+}
+
+// ============================================================
+//  API
+// ============================================================
+function getToken() { return sessionStorage.getItem(TOKEN_KEY)||""; }
+function setToken(t) { sessionStorage.setItem(TOKEN_KEY, t||""); }
+
+async function api(path, { method="GET", body=null, auth=true }={}) {
+  const headers = { "Content-Type":"application/json" };
+  if(auth) { const t=getToken(); if(t) headers["Authorization"]="Bearer "+t; }
+  const res = await fetch(API_BASE+path, { method, headers, body: body?JSON.stringify(body):null });
+  const text = await res.text();
+  let data = null;
+  try{ data = text ? JSON.parse(text) : null; }catch{ data = {raw:text}; }
+  if(!res.ok) { const msg=(data&&(data.error||data.message))||(data&&data.raw)||`Error HTTP ${res.status}`; throw new Error(msg); }
+  return data;
+}
+
+// ============================================================
+//  HELPERS
+// ============================================================
+function decodeFullName(s) {
+  const raw = String(s||"").trim();
+  if(raw.includes("|||")){ const [n,a]=raw.split("|||"); return {nombre:(n||"").trim(), apellido:(a||"").trim()}; }
+  const parts = raw.split(/\s+/);
+  return parts.length<=1 ? {nombre:raw, apellido:""} : {nombre:parts.slice(0,-1).join(" "), apellido:parts.slice(-1).join(" ")};
+}
+
+function toLocalDT(iso) {
+  if(!iso) return "—";
+  const d = new Date(iso);
+  return `${String(d.getDate()).padStart(2,"0")}/${String(d.getMonth()+1).padStart(2,"0")}/${d.getFullYear()} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;
+}
+
+function beep(ok=true) {
+  try{
+    const a=new(window.AudioContext||window.webkitAudioContext)(), o=a.createOscillator();
+    o.frequency.value=ok?880:260; o.connect(a.destination); o.start(); o.stop(a.currentTime+0.2);
+  }catch(e){}
+}
+
+function initials(nombre, apellido) {
+  return ((nombre||"")[0]||(apellido||"")[0]||"?").toUpperCase() + ((apellido||"")[0]||"").toUpperCase();
+}
+
+function avatarColor(str) {
+  const colors = ["av-orange","av-green","av-blue","av-red"];
+  const h = [...(str||"A")].reduce((a,c)=>a+c.charCodeAt(0),0);
+  return colors[h % colors.length];
+}
+
+// ============================================================
+//  DATA REFRESH
+// ============================================================
+async function refreshStudents() {
+  const r = await api("/api/students", { method:"GET", auth:true });
+  state.students = (r.students||[]).map(s => {
+    const nm = decodeFullName(s.full_name);
+    return { id:s.id, student_id:s.student_id, cedula:s.student_id, nombre:nm.nombre, apellido:nm.apellido, career:s.career||"", enabled:Number(s.enabled)===1, qr_code:s.qr_code };
+  });
+  $("kpiStudents").textContent = state.students.length;
+  $("navBadgeStudents").textContent = state.students.length;
+  $("studentDirCount").textContent = state.students.length;
+}
+
+async function refreshTeachers() {
+  const r = await api("/api/teachers", { method:"GET", auth:false });
+  state.teachers = (r||[]).map(t => ({ id:t.id, nombre:t.first_name, apellido:t.last_name, cedula:t.cedula||"", department:t.department||"", enabled:Number(t.enabled)===1, qr_code:t.qr_code||t.cedula?.substring(0,5)||"" }));
+  $("kpiTeachers").textContent = state.teachers.length;
+  $("navBadgeTeachers").textContent = state.teachers.length;
+  $("teacherDirCount").textContent = state.teachers.length;
+}
+
+async function refreshLogs() {
+  const r = await api("/api/logs?limit=200", { method:"GET", auth:true });
+  const prev = state.logs.length;
+  state.logs = (r.logs||[]).filter(l => l.type==="SCAN" && l.ok);
+  // KPI today
+  const today = new Date().toDateString();
+  const todayCount = state.logs.filter(l => new Date(l.ts).toDateString()===today).length;
+  $("kpiToday").textContent = todayCount;
+  $("kpiTotal").textContent = state.logs.length;
+  renderBitacora(prev < state.logs.length);
+}
+
+// ============================================================
+//  BITÁCORA RENDER
+// ============================================================
+function renderBitacora(animate=false) {
+  const filter = state.logFilter;
+  const q = normalize($("bitacoraSearch")?.value||"");
+  const tbody = $("bitacoraTbody");
+  if(!tbody) return;
+
+  let rows = state.logs.filter(l => {
+    const role = l.meta?.role || "student";
+    if(filter==="student" && role!=="student") return false;
+    if(filter==="teacher" && role!=="teacher") return false;
+    if(q) {
+      const name = l.meta?.full_name||l.student_id||"";
+      const career = l.meta?.role==="teacher" ? (state.teachers.find(t=>t.cedula===l.student_id)?.department||"") : (state.students.find(s=>s.student_id===l.student_id)?.career||"");
+      const full = `${name} ${l.student_id} ${career}`.toLowerCase();
+      if(!full.includes(q)) return false;
+    }
+    return true;
+  }).sort((a,b)=>String(b.ts||"").localeCompare(String(a.ts||"")));
+
+  if(rows.length===0) {
+    tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><p>No hay registros para mostrar.</p></div></td></tr>`;
+    return;
+  }
+
+  const newCount = animate ? 1 : 0;
+  tbody.innerHTML = "";
+  rows.forEach((l, i) => {
+    const role = l.meta?.role || "student";
+    let nombre="Desconocido", apellido="", career="—", avatarCls="av-orange";
+
+    if(l.meta?.full_name) {
+      const nm = decodeFullName(l.meta.full_name);
+      nombre=nm.nombre; apellido=nm.apellido;
+    } else {
+      const s=state.students.find(x=>x.student_id===l.student_id);
+      if(s){ nombre=s.nombre; apellido=s.apellido; }
+    }
+
+    if(role==="teacher") {
+      const t=state.teachers.find(x=>x.cedula===l.student_id);
+      career=t?.department||"Docente"; avatarCls="av-blue";
+    } else {
+      const s=state.students.find(x=>x.student_id===l.student_id);
+      career=s?.career||"Estudiante"; avatarCls="av-orange";
+    }
+
+    const av = initials(nombre, apellido);
+    const typeBadge = role==="teacher"
+      ? `<span class="badge badge-blue">Docente</span>`
+      : `<span class="badge badge-accent">Estudiante</span>`;
+
+    const tr = document.createElement("tr");
+    if(i<newCount) tr.className="new-entry";
+    tr.innerHTML = `
+      <td style="font-size:12px;color:var(--muted);font-weight:700;width:40px;text-align:center;">${i+1}</td>
+      <td>
+        <div class="user-name" style="font-weight:600;">${escHtml(nombre)} ${escHtml(apellido)}</div>
+      </td>
+      <td><code style="background:rgba(255,255,255,0.06);padding:2px 8px;border-radius:4px;font-size:12px;">${escHtml(l.student_id||"—")}</code></td>
+      <td><span style="color:var(--muted);font-size:12px;">${escHtml(career)}</span></td>
+      <td>${typeBadge}</td>
+      <td style="font-size:12px;color:var(--muted);">${escHtml(toLocalDT(l.ts))}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+// ============================================================
+//  STUDENT DIRECTORY
+// ============================================================
+function renderStudentDir() {
+  const q = normalize($("studentDirSearch")?.value||"");
+  const tbody = $("studentDirTbody");
+  if(!tbody) return;
+  let rows = state.students.filter(s => {
+    if(!q) return true;
+    return `${s.nombre} ${s.apellido} ${s.cedula} ${s.career}`.toLowerCase().includes(q);
+  });
+
+  if(rows.length===0) {
+    tbody.innerHTML=`<tr><td colspan="5"><div class="empty-state"><p>No se encontraron estudiantes.</p></div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML="";
+  rows.forEach((s, idx) => {
+    const statusBadge = s.enabled
+      ? `<span class="badge badge-success"><span class="dot dot-success"></span> Activo</span>`
+      : `<span class="badge badge-danger"><span class="dot dot-danger"></span> Bloqueado</span>`;
+    const tr=document.createElement("tr");
+    tr.innerHTML=`
+      <td style="font-size:12px;color:var(--muted);font-weight:700;width:40px;text-align:center;">${idx+1}</td>
+      <td>
+        <div class="user-name">${escHtml(s.nombre)} ${escHtml(s.apellido)}</div>
+      </td>
+      <td><code style="background:rgba(255,255,255,0.06);padding:2px 8px;border-radius:4px;font-size:12px;">${escHtml(s.cedula)}</code></td>
+      <td><span style="font-size:12px;color:var(--muted);">${escHtml(s.career)}</span></td>
+      <td>${statusBadge}</td>
+      <td>
+        <div style="display:flex;gap:6px;">
+          <button class="btn btn-icon btn-sm" title="Ver QR" onclick="openQR('${escHtml(s.cedula)}','${escHtml(s.nombre)}','${escHtml(s.apellido)}','${escHtml(s.qr_code)}')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="5" height="5"/><rect x="16" y="3" width="5" height="5"/><rect x="3" y="16" width="5" height="5"/><path d="M16 12h5v5h-2v-2h-3M11 3v18M3 11h8"/></svg>
+          </button>
+          <button class="btn btn-sm ${s.enabled?'btn-danger':'btn-success'}" style="font-size:11px;" onclick="toggleStudent('${escHtml(s.student_id)}', ${s.enabled})">${s.enabled?"Bloquear":"Activar"}</button>
+        </div>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+// ============================================================
+//  TEACHER DIRECTORY
+// ============================================================
+function renderTeacherDir() {
+  const q = normalize($("teacherDirSearch")?.value||"");
+  const tbody = $("teacherDirTbody");
+  if(!tbody) return;
+  let rows = state.teachers.filter(t => {
+    if(!q) return true;
+    return `${t.nombre} ${t.apellido} ${t.cedula} ${t.department}`.toLowerCase().includes(q);
+  });
+
+  if(rows.length===0) {
+    tbody.innerHTML=`<tr><td colspan="6"><div class="empty-state"><p>No se encontraron docentes.</p></div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML="";
+  rows.forEach((t, idx) => {
+    const statusBadge = t.enabled
+      ? `<span class="badge badge-success"><span class="dot dot-success"></span> Activo</span>`
+      : `<span class="badge badge-danger"><span class="dot dot-danger"></span> Bloqueado</span>`;
+    const tr=document.createElement("tr");
+    tr.innerHTML=`
+      <td style="font-size:12px;color:var(--muted);font-weight:700;width:40px;text-align:center;">${idx+1}</td>
+      <td>
+        <div class="user-name">${escHtml(t.nombre)} ${escHtml(t.apellido)}</div>
+      </td>
+      <td><code style="background:rgba(255,255,255,0.06);padding:2px 8px;border-radius:4px;font-size:12px;">${escHtml(t.cedula)}</code></td>
+      <td><span class="badge badge-neutral">${escHtml(t.department||"Sin departamento")}</span></td>
+      <td><code style="background:rgba(99,102,241,0.1);color:var(--blue);padding:2px 8px;border-radius:4px;font-size:12px;">${escHtml(t.qr_code||"—")}</code></td>
+      <td>${statusBadge}</td>
+      <td>
+        <div style="display:flex;gap:6px;">
+          <button class="btn btn-icon btn-sm" title="Ver QR" onclick="openTeacherQR(${t.id}, '${escHtml(t.nombre)}', '${escHtml(t.apellido)}', '${escHtml(t.qr_code)}')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="5" height="5"/><rect x="16" y="3" width="5" height="5"/><rect x="3" y="16" width="5" height="5"/><path d="M16 12h5v5h-2v-2h-3M11 3v18M3 11h8"/></svg>
+          </button>
+          <button class="btn btn-sm ${t.enabled?'btn-danger':'btn-success'}" style="font-size:11px;" onclick="toggleTeacher(${t.id}, ${t.enabled})">${t.enabled?"Bloquear":"Activar"}</button>
+        </div>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+// ============================================================
+//  TOGGLE ACTIONS
+// ============================================================
+window.toggleStudent = async (student_id, enabled) => {
+  try{
+    await api(`/api/students/${encodeURIComponent(student_id)}/enable`, { method:"POST", body:{ enabled:!enabled }, auth:true });
+    await refreshStudents(); renderStudentDir();
+    toast(enabled?"Acceso bloqueado":"Acceso activado", enabled?"warn":"success");
+  }catch(e){ toast(e.message,"error"); }
+};
+
+window.toggleTeacher = async (id, enabled) => {
+  try{
+    const url = enabled ? `/api/teachers/${id}/disable` : `/api/teachers/${id}/enable`;
+    const res = await fetch(url, { method:"POST" });
+    if(!res.ok) throw new Error("Error");
+    await refreshTeachers(); renderTeacherDir();
+    toast(enabled?"Docente bloqueado":"Docente activado", enabled?"warn":"success");
+  }catch(e){ toast(e.message,"error"); }
+};
+
+// ============================================================
+//  QR MODALS
+// ============================================================
+window.openQR = (cedula, nombre, apellido, qr_code) => {
+  $("qrUserName").textContent = `${nombre} ${apellido}`;
+  $("qrPayload").textContent = `Código: ${qr_code}`;
+  const box=$("qrBox"); box.innerHTML="";
+  new QRCode(box, { text:qr_code||cedula, width:200, height:200, correctLevel:QRCode.CorrectLevel.M });
+  $("modalQR").classList.add("open");
+};
+
+window.openTeacherQR = async (id, nombre, apellido, qr_code) => {
+  $("qrUserName").textContent = `${nombre} ${apellido}`;
+  $("qrPayload").textContent = `Código: ${qr_code}`;
+  const box=$("qrBox"); box.innerHTML="";
+  new QRCode(box, { text:qr_code, width:200, height:200, correctLevel:QRCode.CorrectLevel.M });
+  $("modalQR").classList.add("open");
+};
+
+// ============================================================
+//  SCANNER
+// ============================================================
+const setStatus = (el, msg, ok) => {
+  if(!el) return;
+  el.textContent=msg; el.classList.add("show"); el.classList.remove("ok","bad");
+  if(ok===true) el.classList.add("ok"); if(ok===false) el.classList.add("bad");
+  setTimeout(()=>el.classList.remove("show"),2200);
+};
+
+async function handleScan(code) {
+  const v=String(code||"").trim(); if(!v) return;
+  const statusEl=$("qrStatus");
+  try{
+    const r=await api("/api/scan",{method:"POST",body:{code:v},auth:false});
+    if(r.ok && r.allowed){
+      const who=r.student?r.student.full_name:(r.teacher?`${r.teacher.first_name} ${r.teacher.last_name}`:"");
+      setStatus(statusEl,`✓ PERMITIDO ${who}`,true);
+      toast(`Acceso concedido: ${who}`,"success"); beep(true);
+    } else {
+      const reason=r.reason||"Código no reconocido";
+      setStatus(statusEl,`✕ DENEGADO`,false);
+      toast(`Acceso denegado: ${reason}`,"error"); beep(false);
+    }
+    if(getToken()) await refreshLogs();
+  }catch(e){
+    setStatus(statusEl,"✕ ERROR",false); toast(e.message,"error"); beep(false);
+  }
+}
+
+let scanBuffer="", scanTimer=null;
+document.addEventListener("keydown", (e) => {
+  const ae=document.activeElement, tag=(ae?.tagName||"").toLowerCase();
+  if(tag==="input"||tag==="textarea"||tag==="select") return;
+  if(e.key==="Enter"){ const f=scanBuffer.trim(); scanBuffer=""; if(scanTimer){clearTimeout(scanTimer);scanTimer=null;} if(f) handleScan(f); return; }
+  if(e.key.length!==1) return;
+  scanBuffer+=e.key;
+  if(scanTimer) clearTimeout(scanTimer);
+  scanTimer=setTimeout(()=>{ const f=scanBuffer.trim(); scanBuffer=""; scanTimer=null; if(f) handleScan(f); },120);
+},true);
+
+// ============================================================
+//  VIEW NAVIGATION
+// ============================================================
+async function showView(name) {
+  ["dashboard","students","teachers"].forEach(v => {
+    const el=$(`view${v.charAt(0).toUpperCase()+v.slice(1)}`);
+    if(el) el.style.display="none";
+  });
+  const target=$(`view${name.charAt(0).toUpperCase()+name.slice(1)}`);
+  if(target) target.style.display="flex";
+  document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));
+  document.querySelectorAll(`[data-view="${name}"]`).forEach(n=>n.classList.add("active"));
+  state.currentView=name;
+
+  if(name==="students") renderStudentDir();
+  if(name==="teachers") renderTeacherDir();
+}
+
+document.querySelectorAll(".nav-item[data-view]").forEach(btn => {
+  btn.addEventListener("click",()=>showView(btn.dataset.view));
+});
+
+// ============================================================
+//  MODAL MANAGEMENT
+// ============================================================
+document.querySelectorAll("[data-close-modal]").forEach(btn => {
+  btn.addEventListener("click",()=>$( btn.dataset.closeModal)?.classList.remove("open"));
+});
+document.querySelectorAll(".modal-backdrop").forEach(m => {
+  m.addEventListener("click",(e)=>{ if(e.target===m) m.classList.remove("open"); });
+});
+
+$("btnOpenStudentForm").addEventListener("click",()=>$("modalStudentForm").classList.add("open"));
+$("btnOpenTeacherForm").addEventListener("click",()=>$("modalTeacherForm").classList.add("open"));
+
+// ============================================================
+//  REGISTER STUDENT
+// ============================================================
+$("btnSaveStudent").addEventListener("click", async () => {
+  const nombre=$("sNombre").value.trim().toUpperCase();
+  const apellido=$("sApellido").value.trim().toUpperCase();
+  const cedula=$("sCedula").value.trim();
+  const career=$("sCarrera").value.trim().toUpperCase();
+  const fb=$("studentFormFeedback");
+
+  if(!nombre||!apellido||!cedula||!career){ showFeedback(fb,"Todos los campos son obligatorios","error"); return; }
+  if(!/^\d{8,13}$/.test(cedula)){ showFeedback(fb,"Cédula inválida (8 a 13 dígitos numéricos)","error"); return; }
+
+  $("btnSaveStudent").disabled=true;
+  try{
+    await api("/api/students",{method:"POST",body:{student_id:cedula,full_name:`${nombre}|||${apellido}`,career,qr_code:cedula.substring(0,5)},auth:true});
+    showFeedback(fb,"Estudiante registrado exitosamente","success");
+    setTimeout(()=>{ $("modalStudentForm").classList.remove("open"); clearForm(["sNombre","sApellido","sCedula","sCarrera"]); fb.classList.remove("show"); },1500);
+    await refreshStudents(); renderStudentDir();
+  }catch(e){ showFeedback(fb,e.message,"error"); }
+  finally{ $("btnSaveStudent").disabled=false; }
+});
+
+// ============================================================
+//  REGISTER TEACHER
+// ============================================================
+$("btnSaveTeacher").addEventListener("click", async () => {
+  const nombre=$("tNombre").value.trim();
+  const apellido=$("tApellido").value.trim();
+  const cedula=$("tCedula").value.trim();
+  const dept=$("tDept").value.trim();
+  const fb=$("teacherFormFeedback");
+
+  if(!nombre||!apellido||!cedula){ showFeedback(fb,"Nombre, apellido y cédula son obligatorios","error"); return; }
+
+  $("btnSaveTeacher").disabled=true;
+  try{
+    const res=await fetch("/api/teachers",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({first_name:nombre,last_name:apellido,cedula,department:dept,qr_code:cedula.substring(0,5)})});
+    const data=await res.json();
+    if(!data.ok) throw new Error(data.error||"No se pudo registrar");
+    showFeedback(fb,"Docente registrado exitosamente","success");
+    setTimeout(()=>{ $("modalTeacherForm").classList.remove("open"); clearForm(["tNombre","tApellido","tCedula","tDept"]); fb.classList.remove("show"); },1500);
+    await refreshTeachers(); renderTeacherDir();
+  }catch(e){ showFeedback(fb,e.message,"error"); }
+  finally{ $("btnSaveTeacher").disabled=false; }
+});
+
+function showFeedback(el, msg, type) {
+  el.textContent=msg; el.className=`inline-feedback ${type} show`;
+}
+function clearForm(ids){ ids.forEach(id=>{ const el=$(id); if(el) el.value=""; }); }
+
+// ============================================================
+//  MANUAL SCAN
+// ============================================================
+$("btnManualScan").addEventListener("click",()=>{ const v=$("manualScanInput").value.trim(); if(v){ handleScan(v); $("manualScanInput").value=""; }});
+$("manualScanInput").addEventListener("keydown",(e)=>{ if(e.key==="Enter"){ const v=$("manualScanInput").value.trim(); if(v){ handleScan(v); $("manualScanInput").value=""; }}});
+
+// ============================================================
+//  BITÁCORA TABS & SEARCH
+// ============================================================
+document.querySelectorAll(".tab").forEach(t => {
+  t.addEventListener("click",()=>{
+    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+    t.classList.add("active");
+    state.logFilter=t.dataset.tab||"all";
+    renderBitacora();
+  });
+});
+$("bitacoraSearch").addEventListener("input", renderBitacora);
+$("studentDirSearch").addEventListener("input", renderStudentDir);
+$("teacherDirSearch").addEventListener("input", renderTeacherDir);
+
+// ============================================================
+//  PRINT QR
+// ============================================================
+$("btnPrintQR").addEventListener("click",()=>{
+  const name=$("qrUserName").textContent;
+  const code=$("qrPayload").textContent;
+  const html=$("qrBox").innerHTML;
+  const win=window.open("","_blank","width=480,height=520");
+  if(!win){ toast("Popup bloqueado","warn"); return; }
+  win.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>QR</title><style>body{font-family:Arial;text-align:center;padding:30px;} .c{border:1px solid #ddd;border-radius:12px;padding:24px;display:inline-block;} h2{margin:0 0 8px;} p{color:#666;font-size:13px;}</style></head><body><div class="c"><h2>${name}</h2>${html}<p>${code}</p></div></body></html>`);
+  win.document.close(); win.focus();
+});
+
+// ============================================================
+//  LOGIN
+// ============================================================
+function hideAll(){ $("loginView").classList.remove("active"); $("appShell").style.display="none"; }
+function showLogin(){ $("loginView").classList.add("active"); $("appShell").style.display="none"; setToken(""); }
+function showApp(){ $("loginView").classList.remove("active"); $("appShell").style.display="flex"; }
+
+async function doLogin(){
+  const user=$("email").value.trim();
+  const pass=$("password").value;
+  const errEl=$("loginError");
+  errEl.style.display="none";
+
+  try{
+    const r=await api("/api/login",{method:"POST",body:{username:user,password:pass},auth:false});
+    if(r?.ok&&r.token){ setToken(r.token); await loadApp(); return; }
+    throw new Error("Invalid");
+  }catch(e){
+    const creds=loadJson(CREDS_KEY)||structuredClone(defaultCreds);
+    if(user===(creds.email||"admin")&&pass===(creds.password||"admin")){ await loadApp(); return; }
+    errEl.style.display="block"; errEl.textContent="Usuario o contraseña incorrectos.";
+  }
+}
+
+async function loadApp(){
+  showApp();
+  const d=new Date();
+  $("dashboardDate").textContent=`${d.toLocaleDateString("es-EC",{weekday:"long",year:"numeric",month:"long",day:"numeric"})}`;
+  try{
+    await Promise.all([refreshStudents(), refreshTeachers(), refreshLogs()]);
+  }catch(e){ toast("No se pudo conectar con el servidor","error"); }
+  showView("dashboard");
+}
+
+$("btnLogin").addEventListener("click",(e)=>{ e.preventDefault(); doLogin(); });
+$("email").addEventListener("keydown",(e)=>{ if(e.key==="Enter") doLogin(); });
+$("password").addEventListener("keydown",(e)=>{ if(e.key==="Enter") doLogin(); });
+$("btnLogout").addEventListener("click",()=>showLogin());
+
+$("btnOpenChangeCreds").addEventListener("click",()=>$("modalChangeCreds").classList.add("open"));
+$("btnSaveChangeCreds").addEventListener("click",()=>{
+  const cur=loadJson(CREDS_KEY)||structuredClone(defaultCreds);
+  const uc=$("ccUserCurrent").value.trim(), pc=$("ccPassCurrent").value;
+  if(uc!==cur.email||pc!==cur.password){ toast("Credenciales actuales incorrectas","error"); return; }
+  const nu=$("ccUserNew").value.trim(), np=$("ccPassNew").value, cp=$("ccPassConfirm").value;
+  if(np&&np!==cp){ toast("Las contraseñas no coinciden","error"); return; }
+  saveJson(CREDS_KEY,{email:nu||cur.email, password:np||cur.password});
+  toast("Credenciales actualizadas","success");
+  $("modalChangeCreds").classList.remove("open");
+});
+
+// ============================================================
+//  POLLING
+// ============================================================
+setInterval(async()=>{
+  if($("appShell").style.display!=="none"&&getToken()){
+    try{ await refreshLogs(); }catch(e){}
+  }
+},4000);
+
+// ============================================================
+//  INIT
+// ============================================================
+(function init(){
+  if(!loadJson(CREDS_KEY)) saveJson(CREDS_KEY,structuredClone(defaultCreds));
+  showLogin();
+})();
+</script>
+</body>
+</html>
