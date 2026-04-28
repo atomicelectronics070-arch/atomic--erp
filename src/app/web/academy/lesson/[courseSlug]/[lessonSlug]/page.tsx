@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth"
 import { notFound, redirect } from "next/navigation"
 import { revalidatePath } from "next/cache"
 import LessonPlayer from "./LessonPlayer"
+import { sendWhatsAppMessage } from "@/lib/whatsapp/service"
 
 export default async function LessonPage({ params }: { params: { courseSlug: string, lessonSlug: string } }) {
     const session = await getServerSession(authOptions)
@@ -33,7 +34,6 @@ export default async function LessonPage({ params }: { params: { courseSlug: str
 
     const lessonIndex = course.lessons.findIndex(l => l.id === lesson.id)
     const prevLesson = lessonIndex > 0 ? course.lessons[lessonIndex - 1] : null
-    const nextLesson = lessonIndex < course.lessons.length - 1 ? course.lessons[lessonIndex + 1] : null
 
     const isCompleted = lesson.progress && lesson.progress.length > 0 && lesson.progress[0].completed
 
@@ -62,6 +62,19 @@ export default async function LessonPage({ params }: { params: { courseSlug: str
                 completedAt: newProgress === 100 ? new Date() : null
             }
         })
+
+        // NEW: WhatsApp Notification for Completion
+        if (newProgress === 100) {
+            try {
+                const fullUser = await prisma.user.findUnique({ where: { id: userId } })
+                if (fullUser?.phone) {
+                    await sendWhatsAppMessage(
+                        fullUser.phone,
+                        `🚀 ¡Felicidades Elemento ${fullUser.name}! Has completado el curso "${course.title}". Tu certificación ha sido generada en el núcleo de Atomic Academy.`
+                    )
+                }
+            } catch (e) { console.error("Error sending WhatsApp completion message", e) }
+        }
 
         revalidatePath(`/web/academy/lesson/${params.courseSlug}/${params.lessonSlug}`)
         revalidatePath(`/web/academy/course/${params.courseSlug}`)

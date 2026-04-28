@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import bcrypt from "bcryptjs"
+import { sendWhatsAppMessage } from "@/lib/whatsapp/service"
 
 export async function POST(req: Request) {
     try {
         const body = await req.json()
-        const { name, lastName, cedula, password, role, referredBy } = body
+        const { name, lastName, cedula, password, role, referredBy, phone } = body
         const email = body.email?.trim().toLowerCase()
 
         if (!name || !lastName || !cedula || !email || !password || !role) {
@@ -29,34 +30,27 @@ export async function POST(req: Request) {
 
         const passwordHash = await bcrypt.hash(password, 10)
 
-        // Find the referring user if name provided (optional simplified check)
-        let referredById = null
-        if (referredBy) {
-            const referrer = await prisma.user.findFirst({
-                where: {
-                    OR: [
-                        { name: { contains: referredBy, mode: 'insensitive' } },
-                        { lastName: { contains: referredBy, mode: 'insensitive' } }
-                    ]
-                }
-            })
-            if (referrer) referredById = referrer.id
-        }
-
         const user = await prisma.user.create({
             data: {
                 name,
                 lastName,
                 cedula,
                 email,
+                phone,
                 passwordHash,
                 status: "PENDING",
-                role: role.toUpperCase(), // AFILIADO, DISTRIBUIDOR, or CONSUMIDOR
-                referredById,
-                receivePromotions: !!body.receivePromotions,
+                role: role.toUpperCase(),
                 profileData: body.profileData || `Referido por: ${referredBy || 'N/A'}`,
             },
         })
+
+        // Notify Admin via WhatsApp
+        try {
+            await sendWhatsAppMessage(
+                process.env.ADMIN_PHONE || "593984252528",
+                `🔔 *NUEVO REGISTRO ATOMIC*\n\n👤 *Usuario:* ${name} ${lastName}\n📧 *Email:* ${email}\n🎭 *Rol Solicitado:* ${role}\n🆔 *Cédula:* ${cedula}\n\nAcción requerida: Aprobar en el dashboard.`
+            )
+        } catch (e) { console.error("WhatsApp Admin Notify Error", e) }
 
         return NextResponse.json({
             message: "Solicitud enviada exitosamente. Un administrador revisará su cuenta.",
@@ -67,5 +61,3 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
     }
 }
-
-
