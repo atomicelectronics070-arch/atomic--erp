@@ -141,7 +141,7 @@ export default function QuarterlyPage() {
                 <div>
                     <div className="flex items-center space-x-4 mb-4 text-secondary">
                         <Calendar size={20} className="drop-shadow-[0_0_8px_rgba(255,99,71,0.5)]" />
-                        <span className="text-[10px] uppercase font-black tracking-[0.6em] italic">Gestión Legal & Corporativo v5.0</span>
+                        <span className="text-[10px] uppercase font-black tracking-[0.6em] italic">Gestiï¿½n Legal & Corporativo v5.0</span>
                     </div>
                     <h1 className="text-6xl font-black text-white tracking-tighter uppercase italic leading-none">
                         PLAN <span className="text-secondary underline decoration-secondary/30 underline-offset-8">TRIMESTRAL</span>

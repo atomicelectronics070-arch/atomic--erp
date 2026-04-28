@@ -163,7 +163,7 @@ export async function deletePost(postId: string, userId: string) {
             where: { id: postId },
             select: { authorId: true }
         })
-        if (!post) return { success: false, error: "La publicación no existe." }
+        if (!post) return { success: false, error: "La publicaciï¿½n no existe." }
 
         const user = await prisma.user.findUnique({
             where: { id: userId },
@@ -191,35 +191,4 @@ export async function deletePost(postId: string, userId: string) {
         console.error("Delete post error:", error)
         return { success: false, error: error.message }
     }
-},
-            select: { authorId: true }
-        })
-        if (!post) return { success: false, error: "Post not found" }
-
-        const user = await prisma.user.findUnique({
-            where: { id: userId },
-            select: { role: true }
-        })
-
-        const isAdmin = user?.role === "ADMIN" || user?.role === "MANAGEMENT"
-        const isOwner = post.authorId === userId
-
-        if (!isAdmin && !isOwner) {
-            return { success: false, error: "No autorizado" }
-        }
-
-        // Delete likes and comments first (cascade)
-        await prisma.socialLike.deleteMany({ where: { postId } })
-        await prisma.socialComment.deleteMany({ where: { postId } })
-        await prisma.socialTag.deleteMany({ where: { postId } })
-        await prisma.socialPost.delete({ where: { id: postId } })
-
-        return { success: true }
-    } catch (error: any) {
-        console.error("Delete post error:", error)
-        return { success: false, error: error.message }
-    }
 }
-
-
-

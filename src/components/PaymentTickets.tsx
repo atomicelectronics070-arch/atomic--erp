@@ -178,7 +178,7 @@ export default function PaymentTickets() {
                         <CreditCard size={48} className="text-slate-800" />
                     </div>
                     <p className="text-slate-700 font-black uppercase tracking-[0.6em] text-[11px] italic">Sin registros de liquidación autorizados.</p>
-                    <p className="text-[9px] text-slate-800 font-black uppercase tracking-[0.4em] mt-4">Gesti�n de Búsqueda: 100%</p>
+                    <p className="text-[9px] text-slate-800 font-black uppercase tracking-[0.4em] mt-4">Gesti�n de Búsqueda: 100%</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">

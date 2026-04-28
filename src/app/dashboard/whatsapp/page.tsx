@@ -22,8 +22,9 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const API_BASE = 'http://localhost:5000/api';
-const SOCKET_URL = 'http://localhost:5000';
+const WHATSAPP_SERVER = process.env.NEXT_PUBLIC_WHATSAPP_SERVER_URL || 'http://localhost:5000';
+const API_BASE = `${WHATSAPP_SERVER}/api`;
+const SOCKET_URL = WHATSAPP_SERVER;
 
 export default function WhatsAppDashboard() {
   const { data: session } = useSession();
@@ -45,7 +46,7 @@ export default function WhatsAppDashboard() {
   useEffect(() => {
     if (!actualUserId) return;
 
-    axios.get('http://localhost:5000/health').then(() => setBackendOnline(true)).catch(() => setBackendOnline(false));
+    axios.get(`${WHATSAPP_SERVER}/health`).then(() => setBackendOnline(true)).catch(() => setBackendOnline(false));
 
     const socket = io(SOCKET_URL);
 

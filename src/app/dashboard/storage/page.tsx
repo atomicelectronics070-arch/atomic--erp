@@ -104,7 +104,7 @@ export default function StoragePage() {
                 <div>
                      <div className="flex items-center space-x-6 mb-6 text-secondary">
                         <HardDrive size={24} className="drop-shadow-[0_0_12px_rgba(255,99,71,0.6)]" />
-                        <span className="text-[11px] uppercase font-black tracking-[0.8em] italic">Gestión de Archivos</span>
+                        <span className="text-[11px] uppercase font-black tracking-[0.8em] italic">Gestiï¿½n de Archivos</span>
                     </div>
                     <h1 className="text-6xl font-black tracking-tighter text-white uppercase italic leading-none drop-shadow-[0_0_30px_rgba(255,255,255,0.05)]">
                         CENTRO PARA <span className="text-secondary underline decoration-secondary/40 underline-offset-[12px] decoration-4">SUBIR ARCHIVOS Y ALMACENAR</span>
@@ -303,7 +303,7 @@ export default function StoragePage() {
                                     <h3 className="text-5xl font-black uppercase italic tracking-tighter text-white leading-none">
                                         CREAR <span className="text-secondary">Elemento</span>
                                     </h3>
-                                    <p className="text-[11px] font-black text-slate-700 uppercase tracking-[0.6em] mt-4 italic">Sistema de Organización de Archivos</p>
+                                    <p className="text-[11px] font-black text-slate-700 uppercase tracking-[0.6em] mt-4 italic">Sistema de Organizaciï¿½n de Archivos</p>
                                 </div>
                             </div>
 

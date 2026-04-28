@@ -210,7 +210,10 @@ export default function UserManagementClient({ users: initialUsers }: Props) {
                                                             <option value="MANAGEMENT">Gerencia Corporativa</option>
                                                             <option value="COORDINATOR">Coordinación</option>
                                                             <option value="COORD_ASSISTANT">Asistente de Coordinación</option>
-                                                            <option value="SALESPERSON">Asesor Comercial</option>
+                                                            <option value="SALESPERSON">Asesor Comercial (Vendedor)</option>
+                                                            <option value="AFILIADO">Afiliado Corporativo</option>
+                                                            <option value="CONSUMIDOR">Consumidor Final</option>
+                                                            <option value="CURSOS">Estudiante / Academia</option>
                                                             <option value="EDITOR">Editor de Contenido</option>
                                                         </select>
                                                         <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" size={16} />

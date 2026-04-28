@@ -74,7 +74,7 @@ export default function TrainingChatPage() {
                                 botType="CAPACITADOR"
                                 title="Asistente"
                                 subtitle="SISTEMA NEURONAL - VENTAS Y LOGÍSTICA"
-                                welcomeMessage="Gesti�n INICIADO. SOY EL Asistente DE ATOMIC Solutions. ESTOY LISTO PARA OPTIMIZAR TU RENDIMIENTO EN VENTAS, ESTRATEGIA OPERATIVA Y PROCESOS DE ALTO IMPACTO. ¿EN QUÉ Elemento DESEAS PROFUNDIZAR HOY?"
+                                welcomeMessage="Gesti�n INICIADO. SOY EL Asistente DE ATOMIC Solutions. ESTOY LISTO PARA OPTIMIZAR TU RENDIMIENTO EN VENTAS, ESTRATEGIA OPERATIVA Y PROCESOS DE ALTO IMPACTO. ¿EN QUÉ Elemento DESEAS PROFUNDIZAR HOY?"
                                 IconComponent={Zap}
                                 colorTheme="orange"
                             />

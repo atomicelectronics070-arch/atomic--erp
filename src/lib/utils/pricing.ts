@@ -1,10 +1,10 @@
 
-export type UserRole = 'ADMIN' | 'SALESPERSON' | 'MANAGEMENT' | 'AFILIADO' | 'DISTRIBUIDOR' | 'CONSUMIDOR' | 'CLIENTE';
+export type UserRole = 'ADMIN' | 'SALESPERSON' | 'MANAGEMENT' | 'AFILIADO' | 'DISTRIBUIDOR' | 'CONSUMIDOR' | 'CLIENTE' | 'CURSOS';
 
 export const DISCOUNTS = {
-    AFILIADO: 0.20,    // 20%
-    DISTRIBUIDOR: 0.15, // 15%
-    CONSUMIDOR: 0,      // 0%
+    SALESPERSON: 0.20, // Vendedor: 20%
+    AFILIADO: 0.15,    // Afiliado: 15%
+    CONSUMIDOR: 0,      // Consumidor: 0%
 } as const;
 
 /**
@@ -18,12 +18,12 @@ export function calculateDiscountedPrice(basePrice: number, role?: string | null
     
     const upperRole = role.toUpperCase();
     
-    if (upperRole === 'AFILIADO') {
-        return basePrice * (1 - DISCOUNTS.AFILIADO);
+    if (upperRole === 'SALESPERSON') {
+        return basePrice * (1 - DISCOUNTS.SALESPERSON);
     }
     
-    if (upperRole === 'DISTRIBUIDOR') {
-        return basePrice * (1 - DISCOUNTS.DISTRIBUIDOR);
+    if (upperRole === 'AFILIADO') {
+        return basePrice * (1 - DISCOUNTS.AFILIADO);
     }
     
     return basePrice;

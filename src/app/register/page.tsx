@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
@@ -66,9 +66,9 @@ export default function RegisterPage() {
                     <div className="w-20 h-20 bg-green-500/10 border border-green-500/30 flex items-center justify-center mx-auto mb-8">
                         <ShieldCheck size={40} className="text-green-500" />
                     </div>
-                    <h2 className="text-3xl font-black uppercase tracking-tighter italic mb-4">Solicitud <span className="text-[#E8341A]">Enviada</span></h2>
+                    <h2 className="text-3xl font-black uppercase tracking-tighter italic mb-4">ESPERANDO <span className="text-[#E8341A]">AUTORIZACIÓN</span></h2>
                     <p className="text-white/40 text-xs font-bold uppercase tracking-widest leading-relaxed mb-8">
-                        Tus credenciales han sido registradas y estan en espera de validacion administrativa. Seras redirigido al portal de acceso en breve.
+                        Tu solicitud ha sido recibida. Solo el administrador central puede autorizar el acceso a este sistema. Por favor, contacta a soporte si la espera es prolongada.
                     </p>
                     <Link href="/login" className="inline-flex items-center gap-2 text-[#E8341A] font-black text-[10px] uppercase tracking-widest hover:underline">
                         Ir al Login Ahora <ArrowRight size={14} />
@@ -169,8 +169,9 @@ export default function RegisterPage() {
                                         <select name="role" value={formData.role} onChange={handleChange}
                                             className="w-full bg-black/50 border border-white/10 px-12 py-5 text-white text-xs font-black uppercase tracking-widest focus:border-[#E8341A] transition-all outline-none appearance-none cursor-pointer">
                                             <option value="CONSUMIDOR">CONSUMIDOR FINAL (PERSONA COMUN)</option>
-                                            <option value="AFILIADO">AFILIADO (SOCIO 20% DESC)</option>
-                                            <option value="DISTRIBUIDOR">DISTRIBUIDOR (SOCIO 15% DESC)</option>
+                                            <option value="AFILIADO">AFILIADO (SOCIO 15% DESC)</option>
+                                            <option value="SALESPERSON">VENDEDOR / DISTRIBUIDOR (SOCIO 20% DESC)</option>
+                                            <option value="CURSOS">ESTUDIANTE (PLATAFORMA CURSOS)</option>
                                         </select>
                                     </div>
                                 </div>

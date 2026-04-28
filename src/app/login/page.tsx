@@ -4,12 +4,13 @@ import { useState } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { Mail, Lock, ArrowRight, Loader2, Sparkles, ShieldCheck } from "lucide-react"
+import { Mail, Lock, ArrowRight, Loader2, Sparkles, ShieldCheck, Users, ShoppingBag, GraduationCap } from "lucide-react"
 
 export default function LoginPage() {
     const router = useRouter()
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+    const [section, setSection] = useState("VENDEDOR")
     const [error, setError] = useState("")
     const [loading, setLoading] = useState(false)
 
@@ -26,9 +27,20 @@ export default function LoginPage() {
             })
 
             if (res?.error) {
-                setError("Credenciales inválidas. Por favor verifique su acceso.")
+                setError(res.error || "Credenciales inválidas. Por favor verifique su acceso.")
             } else {
-                router.push("/dashboard")
+                // Determine redirect based on selected section
+                let targetPath = "/dashboard"
+                
+                if (section === "CONSUMIDOR") {
+                    targetPath = "/shop" 
+                } else if (section === "CURSOS") {
+                    targetPath = "/web/academy/dashboard"
+                } else {
+                    targetPath = "/dashboard"
+                }
+
+                router.push(targetPath)
                 router.refresh()
             }
         } catch (err: any) {
@@ -39,7 +51,7 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-transparent text-white overflow-hidden relative">
+        <div className="min-h-screen flex items-center justify-center bg-marble text-white overflow-hidden relative">
             {/* Background Effects */}
             <div className="fixed inset-0 pointer-events-none">
                 <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-[#E8341A]/12 blur-[150px] rounded-none animate-pulse" />
@@ -51,12 +63,12 @@ export default function LoginPage() {
                 <div className="text-center mb-10">
                     <div className="inline-flex items-center gap-3 px-4 py-2 border border-[#E8341A]/25 bg-[#E8341A]/10 backdrop-blur-md rounded-none mb-6">
                         <ShieldCheck size={14} className="text-[#E8341A]" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#E8341A]">Terminal de Acceso Seguro</span>
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#E8341A]">Terminal de Acceso Unificado</span>
                     </div>
                     <h1 className="text-5xl font-black tracking-tighter text-white uppercase italic leading-none">
                         ATOMIC<span className="text-[#E8341A]">.</span>
                     </h1>
-                    <p className="text-[10px] font-bold text-white/35 uppercase tracking-[0.5em] mt-2">INDUSTRIAS TECNOLÓGICAS</p>
+                    <p className="text-[10px] font-bold text-white/35 uppercase tracking-[0.5em] mt-2">SISTEMA INTEGRAL DE ACCESO</p>
                 </div>
 
                 <div className="bg-slate-950/30 border border-white/10 backdrop-blur-3xl shadow-2xl shadow-[#E8341A]/5 rounded-none p-8 md:p-10 relative overflow-hidden group">
@@ -65,7 +77,7 @@ export default function LoginPage() {
                     
                     <div className="relative z-10">
                         <div className="mb-8">
-                            <h2 className="text-2xl font-black text-white uppercase tracking-tighter">Entrar al Sistema</h2>
+                            <h2 className="text-2xl font-black text-white uppercase tracking-tighter">Identificación</h2>
                             <p className="text-[10px] font-bold text-white/35 uppercase tracking-widest mt-1">Sincronización de Elemento Operativo</p>
                         </div>
 
@@ -76,6 +88,27 @@ export default function LoginPage() {
                         )}
 
                         <form onSubmit={handleSubmit} className="space-y-6">
+                        <form onSubmit={handleSubmit} className="space-y-6">
+                            {/* Role Selection Grid (More Visual) */}
+                            <div className="grid grid-cols-2 gap-3 mb-8">
+                                {[
+                                    { id: 'VENDEDOR', label: 'Vendedor', icon: <Users size={14} /> },
+                                    { id: 'ADMIN', label: 'Admin', icon: <ShieldCheck size={14} /> },
+                                    { id: 'AFILIADO', label: 'Afiliado', icon: <Sparkles size={14} /> },
+                                    { id: 'CONSUMIDOR', label: 'Tienda', icon: <ShoppingBag size={14} /> },
+                                    { id: 'CURSOS', label: 'Cursos', icon: <GraduationCap size={14} /> }
+                                ].map((role) => (
+                                    <button
+                                        key={role.id}
+                                        type="button"
+                                        onClick={() => setSection(role.id)}
+                                        className={`flex items-center justify-center gap-2 py-3 border transition-all text-[9px] font-black uppercase tracking-widest ${section === role.id ? 'bg-[#E8341A] border-[#E8341A] text-white shadow-[0_0_15px_rgba(232,52,26,0.3)]' : 'bg-white/5 border-white/10 text-white/30 hover:bg-white/10'}`}
+                                    >
+                                        {role.icon} {role.label}
+                                    </button>
+                                ))}
+                            </div>
+
                             <div className="space-y-2">
                                 <label className="block text-[10px] font-black text-white/50 uppercase tracking-widest ml-1">
                                     Identificador Corporativo
@@ -89,7 +122,6 @@ export default function LoginPage() {
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
                                         required
-                                        autoFocus
                                         className="w-full pl-12 pr-4 py-4 rounded-none border border-white/10 bg-white/5 text-white text-sm font-bold focus:ring-2 focus:ring-[#E8341A] focus:bg-white/10 transition-all outline-none placeholder:text-white/20"
                                         placeholder="usuario@atomic.com"
                                     />
@@ -146,7 +178,7 @@ export default function LoginPage() {
                 <div className="mt-12 text-center flex flex-col items-center gap-4">
                     <div className="flex items-center gap-2 text-[10px] font-black text-white/20 uppercase tracking-[0.4em]">
                         <Sparkles size={12} className="text-[#E8341A]/40" />
-                        Atomic Core System v4.0.2 Stable
+                        Atomic Core System v4.1.0 Unified
                     </div>
                     <div className="text-[9px] font-bold text-white/15 uppercase tracking-[0.3em]">
                         &copy; 2026 ATOMIC Solutions - All Systems Online
@@ -155,10 +187,4 @@ export default function LoginPage() {
             </div>
         </div>
     )
-
-
-
-
-
-
-
+}

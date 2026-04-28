@@ -289,7 +289,7 @@ export default function PricesPage() {
                                 <div className="space-y-4">
                                      <div className="flex items-center space-x-4 text-secondary">
                                         <ShieldCheck size={20} />
-                                        <span className="text-[10px] uppercase font-black tracking-[0.6em] italic">Gesti�n de Inyección</span>
+                                        <span className="text-[10px] uppercase font-black tracking-[0.6em] italic">Gesti�n de Inyección</span>
                                     </div>
                                     <h3 className="text-4xl font-black text-white uppercase tracking-tighter italic">CONFIGURACIÓN <span className="text-secondary">PRO_ACTIVO</span></h3>
                                     <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.4em] italic">Corporativo Standard Core v2.4.1 Stable</p>

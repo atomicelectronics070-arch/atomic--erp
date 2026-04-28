@@ -180,7 +180,7 @@ export default function ContractsEvidencePage() {
                 <div>
                      <div className="flex items-center space-x-4 mb-4 text-primary">
                         <ShieldCheck size={20} className="drop-shadow-[0_0_8px_rgba(99,102,241,0.5)]" />
-                        <span className="text-[10px] uppercase font-black tracking-[0.6em] italic">Gesti�n Legal & Operativo</span>
+                        <span className="text-[10px] uppercase font-black tracking-[0.6em] italic">Gesti�n Legal & Operativo</span>
                     </div>
                     <h1 className="text-6xl font-black tracking-tighter text-white uppercase italic leading-none">
                         CONTRATOS & <span className="text-primary underline decoration-primary/30 underline-offset-8">CICLO LABORAL</span>
@@ -293,7 +293,7 @@ export default function ContractsEvidencePage() {
                                     </div>
                                     <h2 className="text-3xl font-black text-white uppercase tracking-tighter mb-4 text-center italic">MI <span className="text-primary">CONTRATO</span></h2>
                                     <p className="text-[11px] text-slate-500 mb-10 font-black uppercase tracking-[0.4em] text-center italic leading-relaxed">
-                                        Sincroniza tu vinculación legal firmada (PDF) para iniciar el Gesti�n de Detallesoría Atomic.
+                                        Sincroniza tu vinculación legal firmada (PDF) para iniciar el Gesti�n de Detallesoría Atomic.
                                     </p>
 
                                     <input
@@ -346,7 +346,7 @@ export default function ContractsEvidencePage() {
                                     </div>
                                     <h2 className="text-2xl font-black text-white uppercase tracking-tighter mb-4 italic">DetallesORÍA <span className="text-primary">ESTACIONARIA</span></h2>
                                     <p className="text-[11px] text-slate-500 font-black mb-10 italic leading-relaxed uppercase tracking-[0.4em]">
-                                        Contrato recibido exitosamente. Gesti�n en espera de configuración central para iniciar ciclo 30D.
+                                        Contrato recibido exitosamente. Gesti�n en espera de configuración central para iniciar ciclo 30D.
                                     </p>
                                     <div className="inline-flex items-center gap-4 px-8 py-3 bg-primary/5 text-[9px] font-black text-primary uppercase tracking-[0.5em] border border-primary/20 rounded-none italic shadow-2xl">
                                         ESTADO: ESPERANDO SINCRONIZACIÓN
@@ -418,7 +418,7 @@ export default function ContractsEvidencePage() {
                                     </div>
                                     <p className="text-[10px] text-slate-500 mt-8 uppercase font-black tracking-[0.6em] italic leading-relaxed">
                                         {cycleInfo.daysRemaining === 0
-                                            ? "Felicidades: Gesti�n 30D completado al 100%."
+                                            ? "Felicidades: Gesti�n 30D completado al 100%."
                                             : `Quedan ${cycleInfo.daysRemaining} jornadas para completar el ciclo operativo.`}
                                     </p>
                                 </div>
@@ -443,7 +443,7 @@ export default function ContractsEvidencePage() {
                             <span className="text-[11px] font-black text-azure-400 bg-azure-500/10 px-8 py-3 rounded-none border border-azure-500/20 uppercase tracking-[0.4em] italic shadow-2xl">
                                 {myCycle?.isActive 
                                     ? `VENCIMIENTO: ${new Date(myCycle.endDate).toLocaleDateString("es-EC").toUpperCase()}`
-                                    : "Gesti�n EN ESPERA"}
+                                    : "Gesti�n EN ESPERA"}
                             </span>
                         </div>
 

@@ -24,10 +24,10 @@ export default async function AdminUsersPage() {
             role: true,
             status: true,
             createdAt: true,
-            quotes: {
+            transactions: {
                 select: {
-                    total: true,
-                    commission: true,
+                    profit: true,
+                    amount: true,
                     status: true
                 }
             }
@@ -35,10 +35,10 @@ export default async function AdminUsersPage() {
     })
 
     const users = dbUsers.map((u: any) => {
-        const approvedQuotes = u.quotes.filter((q: any) => q.status === 'APROBADO' || q.status === 'FACTURADO')
-        const totalVentas = approvedQuotes.reduce((acc: number, q: any) => acc + (q.total || 0), 0)
-        const totalComision = approvedQuotes.reduce((acc: number, q: any) => acc + (q.commission || 0), 0)
-        const quotesCount = u.quotes.length
+        const approvedTx = u.transactions ? u.transactions.filter((q: any) => q.status === 'APROBADO' || q.status === 'FACTURADO') : []
+        const totalVentas = approvedTx.reduce((acc: number, q: any) => acc + (q.amount || 0), 0)
+        const totalComision = approvedTx.reduce((acc: number, q: any) => acc + (q.profit || 0), 0)
+        const quotesCount = u.transactions?.length || 0
         
         return {
             ...u,

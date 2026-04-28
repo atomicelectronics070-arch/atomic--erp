@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { useSession } from "next-auth/react"
 import { useRouter, usePathname } from "next/navigation"
@@ -126,7 +126,7 @@ export default function DashboardLayout({
                     </div>
 
                     <div className="space-y-10">
-                        {(role === "ADMIN" || role === "MANAGEMENT" || role === "SALESPERSON") && (
+                        {(role === "ADMIN" || role === "MANAGEMENT" || role === "SALESPERSON" || role === "AFILIADO") && (
                             <CollapsibleSection
                                 label="Operaciones"
                                 isOpen={openSections.operaciones}
@@ -144,14 +144,14 @@ export default function DashboardLayout({
                             </CollapsibleSection>
                         )}
 
-                        {(role === "ADMIN" || role === "MANAGEMENT" || role === "COORDINATOR" || role === "COORD_ASSISTANT" || role === "SALESPERSON" || role === "EDITOR") && (
+                        {(role === "ADMIN" || role === "MANAGEMENT" || role === "COORDINATOR" || role === "COORD_ASSISTANT" || role === "SALESPERSON" || role === "EDITOR" || role === "AFILIADO") && (
                             <CollapsibleSection
                                 label="Cerebro IA"
                                 isOpen={openSections.ia}
                                 onToggle={() => toggleSection('ia')}
                             >
                                 <NavLink href="/dashboard/training" icon={<BrainCircuit size={16} />} label="IA Asistente" isSubItem />
-                                <NavLink href="/dashboard/academy" icon={<GraduationCap size={16} />} label="Gestión Academia" isSubItem />
+                                <NavLink href="/dashboard/admin/academy" icon={<GraduationCap size={16} />} label="Gestión Academia" isSubItem />
                             </CollapsibleSection>
                         )}
 
@@ -165,9 +165,9 @@ export default function DashboardLayout({
                             </CollapsibleSection>
                         )}
 
-                        {(role === "ADMIN" || role === "MANAGEMENT" || role === "SALESPERSON") && (
+                        {(role === "ADMIN" || role === "MANAGEMENT" || role === "SALESPERSON" || role === "AFILIADO") && (
                             <CollapsibleSection
-                                label="ComunicaciÃ³n"
+                                label="Comunicación"
                                 isOpen={openSections.comunicacion}
                                 onToggle={() => toggleSection('comunicacion')}
                             >
@@ -235,7 +235,7 @@ export default function DashboardLayout({
                             <div className="flex items-center gap-2 mt-1">
                                 <div className="w-1 h-1 rounded-none bg-emerald-500 animate-pulse"></div>
                                 <p className="text-[9px] font-black text-primary uppercase tracking-[0.3em] truncate italic opacity-80">
-                                    {role === "COORD_ASSISTANT" ? "ASIST. COORD" : role === "ADMIN" ? "ADMINISTRADOR" : role === "MANAGEMENT" ? "GERENCIA" : role === "COORDINATOR" ? "COORDINADOR" : role === "SALESPERSON" ? "VENDEDOR" : role}
+                                    {role === "COORD_ASSISTANT" ? "ASIST. COORD" : role === "ADMIN" ? "ADMINISTRADOR" : role === "MANAGEMENT" ? "GERENCIA" : role === "COORDINATOR" ? "COORDINADOR" : role === "SALESPERSON" ? "VENDEDOR" : role === "AFILIADO" ? "AFILIADO" : role}
                                 </p>
                             </div>
                         </div>

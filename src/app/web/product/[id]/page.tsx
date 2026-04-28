@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
+import Link from "next/link"
 import { 
   ShoppingBag, ChevronRight, Star, ArrowRight, Shield, Zap, Truck, 
   Search, ShoppingCart, User, Download, ExternalLink, Power, ArrowLeft, 
@@ -109,7 +110,8 @@ export default function ProductDetailPage() {
     })()
 
     return (
-        <div className="min-h-screen bg-white text-neutral-900 font-sans">
+    return (
+        <div className="min-h-screen bg-marble text-neutral-900 font-sans">
             {/* Nav removed -> Handled by layout.tsx */}
             <div className="max-w-7xl mx-auto px-6 py-12">
                 {/* Breadcrumbs */}
@@ -126,7 +128,7 @@ export default function ProductDetailPage() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-20">
                     {/* Left: Gallery */}
                     <div className="space-y-6">
-                        <div className="aspect-square bg-neutral-50 border border-neutral-100 relative overflow-hidden flex items-center justify-center p-12 group">
+                        <div className="aspect-square bg-white/50 backdrop-blur-sm border border-neutral-100 relative overflow-hidden flex items-center justify-center p-12 group shadow-xl">
                             {images.length > 0 ? (
                                 <img 
                                     src={images[selectedImage]} 
@@ -135,10 +137,13 @@ export default function ProductDetailPage() {
                                     className="w-full h-full object-contain mix-blend-multiply transition-transform duration-700 group-hover:scale-105" 
                                 />
                             ) : (
-                                <div className="text-neutral-200 font-black text-[10px] uppercase tracking-widest text-center">Sin imagen<br />disponible</div>
+                                <div className="flex flex-col items-center justify-center opacity-10">
+                                    <Package size={80} />
+                                    <span className="text-[10px] font-black uppercase tracking-[0.5em] mt-8 text-center italic">Elemento sin imagen<br/>Sincronización Pendiente</span>
+                                </div>
                             )}
                             {product.featured && (
-                                <div className="absolute top-8 left-8 bg-orange-600 text-white text-[8px] font-black uppercase px-3 py-1.5 shadow-xl shadow-orange-100">Destacado</div>
+                                <div className="absolute top-8 left-8 bg-[#E8341A] text-white text-[8px] font-black uppercase px-3 py-1.5 shadow-xl shadow-orange-100">Destacado</div>
                             )}
                         </div>
                         {images.length > 1 && (

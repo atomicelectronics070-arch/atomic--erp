@@ -280,7 +280,7 @@ export default function AdvancedCRMPage() {
                                         <h2 className="text-5xl font-black uppercase tracking-tighter text-white italic leading-tight">
                                             {editingId ? "EXPEDIENTE <span className='text-primary'>MAESTRO</span>" : "NUEVO <span className='text-primary'>Elemento</span>"}
                                         </h2>
-                                        <p className="text-[11px] font-black text-slate-500 mt-2 uppercase tracking-[0.5em] italic opacity-80">Gestión de Registro Corporativo v4.0</p>
+                                        <p className="text-[11px] font-black text-slate-500 mt-2 uppercase tracking-[0.5em] italic opacity-80">Gestiï¿½n de Registro Corporativo v4.0</p>
                                     </div>
                                 </div>
                                 <button 
@@ -388,7 +388,7 @@ export default function AdvancedCRMPage() {
                                             value={formData.requirement}
                                             onChange={(e) => setFormData({ ...formData, requirement: e.target.value })}
                                             className="w-full p-10 bg-slate-900/60 border border-white/10 text-white text-[12px] font-black tracking-widest focus:border-primary transition-all outline-none rounded-none-[2.5rem] resize-none placeholder:text-slate-800 leading-relaxed italic custom-scrollbar-hidden"
-                                            placeholder="DESGLOSE EL Gestión de NECESIDADES CorporativoES..."
+                                            placeholder="DESGLOSE EL Gestiï¿½n de NECESIDADES CorporativoES..."
                                         />
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

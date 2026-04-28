@@ -6,7 +6,8 @@ import { motion, AnimatePresence } from "framer-motion"
 import { 
     FileText, FileSignature, Receipt, Download, MapPin, 
     MessageSquare, CreditCard, User, Sparkles, Target, 
-    Zap, ShieldCheck, ArrowRight, LayoutGrid, CheckCircle2 
+    Zap, ShieldCheck, ArrowRight, LayoutGrid, CheckCircle2,
+    Upload
 } from "lucide-react"
 import jsPDF from "jspdf"
 import autoTable from "jspdf-autotable"
@@ -313,7 +314,7 @@ export default function DocumentGenerator() {
                             </div>
                             <div className="space-y-4 col-span-2">
                                 <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-2 italic flex items-center gap-3">
-                                    <MapPin size={14} className="text-secondary" /> Coordenadas de Entrega Logística
+                                    <MapPin size={14} className="text-secondary" /> Coordenadas de Entrega Logï¿½stica
                                 </label>
                                 <input
                                     type="text"
@@ -384,7 +385,7 @@ export default function DocumentGenerator() {
                             </div>
                             <div className="space-y-4 col-span-2">
                                 <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-2 italic flex items-center gap-3">
-                                    <MapPin size={14} className="text-secondary" /> Coordenadas de Entrega Logística
+                                    <MapPin size={14} className="text-secondary" /> Coordenadas de Entrega Logï¿½stica
                                 </label>
                                 <input
                                     type="text"
@@ -494,7 +495,7 @@ export default function DocumentGenerator() {
                             </div>
                             <div className="space-y-4 col-span-2">
                                 <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-2 italic flex items-center gap-3">
-                                    <MapPin size={14} className="text-secondary" /> Coordenadas de Entrega Logística
+                                    <MapPin size={14} className="text-secondary" /> Coordenadas de Entrega Logï¿½stica
                                 </label>
                                 <input
                                     type="text"

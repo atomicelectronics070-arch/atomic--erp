@@ -66,7 +66,7 @@ export default function SocialFeed() {
         try {
             const res = await createPost(session.user.id, newPostContent, mediaFile || undefined)
             if (res.success) {
-            alert("Publicación eliminada correctamente.");
+            alert("Publicaciï¿½n eliminada correctamente.");
                 setNewPostContent("")
                 setMediaFile(null)
                 setMediaType(null)
@@ -108,18 +108,19 @@ export default function SocialFeed() {
 
         const res = await addComment(postId, session.user.id, text)
         if (res.success) {
-            alert("Publicación eliminada correctamente.");
+            alert("Publicaciï¿½n eliminada correctamente.");
             setCommentTexts(prev => ({ ...prev, [postId]: "" }))
             loadData()
         }
+    }
 
     const handleDeletePost = async (postId: string) => {
         try {
-            if (!confirm("¿Seguro que deseas eliminar esta publicación permanentemente?")) return;
+            if (!confirm("ï¿½Seguro que deseas eliminar esta publicaciï¿½n permanentemente?")) return;
             
             const userId = session?.user?.id;
             if (!userId) {
-                alert("Error: No se encontró el ID de usuario en la sesión.");
+                alert("Error: No se encontrï¿½ el ID de usuario en la sesiï¿½n.");
                 return;
             }
 
@@ -127,16 +128,13 @@ export default function SocialFeed() {
             
             if (res.success) {
                 setPosts(current => current.filter(p => p.id !== postId));
-                alert("Publicación eliminada.");
+                alert("Publicaciï¿½n eliminada.");
             } else {
                 alert("Error del servidor: " + (res.error || "Desconocido"));
             }
         } catch (err: any) {
-            alert("Error crítico: " + err.message);
+            alert("Error crï¿½tico: " + err.message);
         }
-    }
-    }
-
     }
 
     if (!session) return null
@@ -298,7 +296,82 @@ export default function SocialFeed() {
                                                         </div>
                                                         <div className="absolute -top-2 right-4 w-4 h-4 bg-slate-900 border-l border-t border-white/20 rotate-45"></div>
                                                     </div>
-                                                )})}
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        <div className="mb-8">
+                                            {post.content && (
+                                                <p className="text-xl font-black text-white/90 uppercase tracking-tighter italic leading-relaxed whitespace-pre-wrap">{post.content}</p>
+                                            )}
+                                            {post.mediaUrl && (
+                                                <div className="mt-6 rounded-none overflow-hidden border border-white/10 shadow-2xl relative group">
+                                                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-60"></div>
+                                                    {post.mediaUrl.match(/\.(mp4|webm|ogg)$/i) ? (
+                                                        <video src={post.mediaUrl} controls className="w-full max-h-[600px] bg-black/50" />
+                                                    ) : (
+                                                        <img src={post.mediaUrl} alt="Post media" className="w-full max-h-[600px] object-cover group-hover:scale-105 transition-transform duration-1000" />
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        <div className="flex items-center gap-8 border-t border-white/5 pt-8">
+                                            <button 
+                                                onClick={() => handleLike(post.id)}
+                                                className={`flex items-center gap-3 text-sm font-black uppercase tracking-widest transition-all group italic ${isLiked ? 'text-pink-500' : 'text-slate-500 hover:text-white'}`}
+                                            >
+                                                <Heart size={20} className={isLiked ? "fill-pink-500" : "group-hover:scale-110 transition-transform"} />
+                                                <span>{post.likes.length} APORTE</span>
+                                            </button>
+                                            <button 
+                                                onClick={() => setActiveCommentPost(showComments ? null : post.id)}
+                                                className={`flex items-center gap-3 text-sm font-black uppercase tracking-widest transition-all group italic ${showComments ? 'text-primary' : 'text-slate-500 hover:text-white'}`}
+                                            >
+                                                <MessageSquare size={20} className={showComments ? "fill-primary/20" : "group-hover:scale-110 transition-transform"} />
+                                                <span>{post.comments?.length || 0} DEBATE</span>
+                                            </button>
+                                            <button className="flex items-center gap-3 text-sm font-black uppercase tracking-widest text-slate-500 hover:text-white transition-all group italic ml-auto">
+                                                <Share2 size={20} className="group-hover:rotate-12 transition-transform" />
+                                                <span>ECO</span>
+                                            </button>
+                                        </div>
+
+                                        <AnimatePresence>
+                                            {showComments && (
+                                                <motion.div 
+                                                    initial={{ height: 0, opacity: 0 }}
+                                                    animate={{ height: "auto", opacity: 1 }}
+                                                    exit={{ height: 0, opacity: 0 }}
+                                                    className="overflow-hidden"
+                                                >
+                                                    <div className="pt-8 border-t border-white/5 mt-8 space-y-6">
+                                                        <div className="space-y-6 max-h-[400px] overflow-y-auto pr-4 custom-scrollbar">
+                                                            {post.comments?.map((comment: any) => (
+                                                                <div key={comment.id} className="flex gap-4">
+                                                                    <div className="w-10 h-10 shrink-0 rounded-none bg-slate-900 border border-white/10 flex items-center justify-center font-black text-white italic">
+                                                                        {comment.author.name[0]}
+                                                                    </div>
+                                                                    <div className="flex-1 bg-slate-900/40 border border-white/5 p-4 rounded-none">
+                                                                        <div className="flex items-center justify-between mb-2">
+                                                                            <span className="text-xs font-black text-white uppercase italic tracking-widest">{comment.author.name}</span>
+                                                                            <span className="text-[9px] font-black text-slate-600 uppercase tracking-widest">{new Date(comment.createdAt).toLocaleString()}</span>
+                                                                        </div>
+                                                                        <p className="text-sm font-bold text-slate-300 uppercase tracking-tighter italic">{comment.content}</p>
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+
+                                                        <div className="flex gap-4 items-center">
+                                                            <div className="w-10 h-10 shrink-0 rounded-none bg-primary flex items-center justify-center font-black text-white shadow-[0_0_15px_rgba(99,102,241,0.5)] italic">
+                                                                {session.user?.name?.[0] || "U"}
+                                                            </div>
+                                                            <div className="flex-1 relative">
+                                                                <input 
+                                                                    type="text"
+                                                                    value={commentTexts[post.id] || ""}
+                                                                    onChange={(e) => setCommentTexts(prev => ({ ...prev, [post.id]: e.target.value }))}
                                                                     placeholder="ESCRIBE UN COMENTARIO..."
                                                                     onKeyDown={(e) => e.key === 'Enter' && handleComment(post.id)}
                                                                     className="w-full bg-slate-900/60 border border-white/10 rounded-none py-4 pl-6 pr-14 text-xs font-black text-white italic placeholder:text-slate-600 focus:border-primary transition-all outline-none"

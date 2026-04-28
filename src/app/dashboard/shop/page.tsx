@@ -346,7 +346,7 @@ export default function ShopConfigPage() {
                                                 onClick={() => setActiveTab('settings')}
                                                 className="w-full text-center text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 hover:text-secondary transition-all flex items-center justify-center gap-3 italic"
                                             >
-                                                Gestión de Mantenimiento <ChevronRight size={14} />
+                                                Gestiï¿½n de Mantenimiento <ChevronRight size={14} />
                                             </button>
                                         </div>
                                     </div>
@@ -837,7 +837,7 @@ export default function ShopConfigPage() {
                                         <Toggle label="Activo" icon="" checked={storeSettings.bannerActive} onChange={(v) => setStoreSettings({ ...storeSettings, bannerActive: v })} />
                                     </div>
                                     <div className="space-y-4">
-                                        <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.3em] ml-2">Gestión de MensajerÃ­a Superior</label>
+                                        <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.3em] ml-2">Gestiï¿½n de MensajerÃ­a Superior</label>
                                         <textarea 
                                             rows={4} 
                                             disabled={!storeSettings.bannerActive} 
@@ -865,7 +865,7 @@ export default function ShopConfigPage() {
                                             <Trash2 size={24} />
                                             <div>
                                                 <span className="text-[11px] uppercase font-black tracking-[0.2em] block">Saneamiento de Duplicados</span>
-                                                <span className="text-[9px] text-slate-500 font-bold uppercase tracking-widest italic leading-relaxed mt-1 block">Gestión de eliminaciÃ³n masiva por redundancia de metadatos.</span>
+                                                <span className="text-[9px] text-slate-500 font-bold uppercase tracking-widest italic leading-relaxed mt-1 block">Gestiï¿½n de eliminaciÃ³n masiva por redundancia de metadatos.</span>
                                             </div>
                                         </div>
                                         <button 
@@ -1047,7 +1047,7 @@ function BannerConfigPanel({ bannerKey, label, icon, accentColor, data, allProdu
                     </div>
                     <div>
                         <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-white italic">{label}</h4>
-                        <p className="text-[8px] font-bold text-slate-500 uppercase tracking-widest mt-1 italic">Gestión Hero Unit</p>
+                        <p className="text-[8px] font-bold text-slate-500 uppercase tracking-widest mt-1 italic">Gestiï¿½n Hero Unit</p>
                     </div>
                 </div>
                 <Toggle
@@ -1380,7 +1380,7 @@ function ProductForm({ initialData, metadata, onCancel, onSaved }: { initialData
                         <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-3xl -mr-16 -mt-16 rounded-none"></div>
                         <div className="flex items-center space-x-4 border-b border-white/5 pb-8">
                             <FileText size={20} className="text-primary" />
-                            <h2 className="text-[11px] font-black uppercase tracking-[0.4em] text-white italic">Gestión de Ficha TÃ©cnica</h2>
+                            <h2 className="text-[11px] font-black uppercase tracking-[0.4em] text-white italic">Gestiï¿½n de Ficha TÃ©cnica</h2>
                         </div>
 
                         <div className="space-y-6">
@@ -1574,7 +1574,7 @@ function BulkEditModal({ selectedCount, categories, collections, onClose, onSave
                 
                 <div className="flex justify-between items-start border-b border-white/5 pb-10">
                     <div>
-                        <h2 className="text-2xl font-black text-white uppercase tracking-tighter italic">Gestión de EdiciÃ³n Masiva</h2>
+                        <h2 className="text-2xl font-black text-white uppercase tracking-tighter italic">Gestiï¿½n de EdiciÃ³n Masiva</h2>
                         <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.4em] mt-2 italic leading-relaxed">Afectando a <span className="text-secondary">{selectedCount}</span> nÃºcleos de activos comerciales en paralelo.</p>
                     </div>
                     <button onClick={onClose} className="w-12 h-12 bg-white/5 hover:bg-white/10 flex items-center justify-center rounded-none border border-white/5 transition-all active:scale-90 duration-300">
@@ -1919,7 +1919,7 @@ function TaxonomyModal({ type, initialData, allProducts, onClose, onSaved }: { t
                                     })}
                                     {searchTerm.length < 2 && searchTerm.length > 0 && (
                                         <div className="py-24 text-center opacity-20">
-                                            <p className="text-[10px] font-black uppercase tracking-[0.5em]">Escriba Gestión de bÃºsqueda...</p>
+                                            <p className="text-[10px] font-black uppercase tracking-[0.5em]">Escriba Gestiï¿½n de bÃºsqueda...</p>
                                         </div>
                                     )}
                                     {searchTerm.length >= 2 && searchResults.length === 0 && !searching && (

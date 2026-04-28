@@ -172,7 +172,7 @@ export default function ChatInterface({ botType, title, subtitle, welcomeMessage
                     </button>
                 </div>
                 <p className="mt-6 text-center text-[9px] font-black text-slate-800 uppercase tracking-[0.4em] italic leading-none">
-                    Gesti�n de Sincronización IA v2.5.0 - Núcleo <span className="text-secondary/40">Atomic Solutions</span>
+                    Gesti�n de Sincronización IA v2.5.0 - Núcleo <span className="text-secondary/40">Atomic Solutions</span>
                 </p>
             </div>
         </div>

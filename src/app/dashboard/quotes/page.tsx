@@ -162,7 +162,7 @@ export default function QuotationGenerator() {
 
     const handleGeneratePDF = async () => {
         if (!clientName.trim() || !clientEmail.trim() || !clientPhone.trim()) {
-            alert("⚠️ Gesti�n Fallido: Identificadores de Cliente Obligatorios (Nombre, Email, Teléfono). El teléfono es estrictamente necesario.")
+            alert("⚠️ Gesti�n Fallido: Identificadores de Cliente Obligatorios (Nombre, Email, Teléfono). El teléfono es estrictamente necesario.")
             return
         }
 
@@ -577,13 +577,13 @@ export default function QuotationGenerator() {
                         <div className="flex justify-between items-end mb-12 border-b border-white/5 pb-10">
                             <div>
                                 <h2 className="text-3xl font-black text-white uppercase tracking-tighter italic">Detalle de Productos</h2>
-                                <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] mt-2">Lista de �tems</p>
+                                <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] mt-2">Lista de �tems</p>
                             </div>
                             <button
                                 onClick={handleAddItem}
                                 className="text-[10px] font-black text-secondary bg-secondary/10 px-10 py-5 hover:bg-secondary hover:text-white transition-all uppercase tracking-[0.3em] border border-secondary/20 rounded-none shadow-2xl active:scale-95 italic"
                             >
-                                <Plus size={20} className="mr-3 inline" /> Agregar �tem
+                                <Plus size={20} className="mr-3 inline" /> Agregar �tem
                             </button>
                         </div>
 
@@ -839,7 +839,7 @@ export default function QuotationGenerator() {
                                     </div>
                                     <div>
                                         <h2 className="text-4xl font-black uppercase tracking-tighter text-white italic">Archivo <span className="text-secondary">Maestro</span></h2>
-                                        <p className="text-[10px] text-slate-500 font-black uppercase tracking-[0.6em] mt-3 italic">Gesti�n Táctico de Liquidación</p>
+                                        <p className="text-[10px] text-slate-500 font-black uppercase tracking-[0.6em] mt-3 italic">Gesti�n Táctico de Liquidación</p>
                                     </div>
                                 </div>
                                 <button 
@@ -855,7 +855,7 @@ export default function QuotationGenerator() {
                                     <div className="text-center py-52 text-slate-800 flex flex-col items-center">
                                         <Clock size={100} className="mb-10 opacity-10 animate-pulse" />
                                         <p className="text-xs font-black uppercase tracking-[0.6em] italic">No se detectan registros históricos autorizados.</p>
-                                        <p className="text-[9px] text-slate-900 font-black uppercase tracking-[0.4em] mt-4">Gesti�n Cero: Estado Activo</p>
+                                        <p className="text-[9px] text-slate-900 font-black uppercase tracking-[0.4em] mt-4">Gesti�n Cero: Estado Activo</p>
                                     </div>
                                 ) : (
                                     quoteHistory.map((quote) => (

@@ -184,7 +184,7 @@ export default function DashboardOverview() {
                                 <BarChart3 className="text-primary" size={42} />
                             </div>
                             <h2 className="text-5xl font-black text-white uppercase tracking-tighter italic">
-                                Gesti�n de ANÁLISIS <span className="text-primary underline decoration-primary/40 underline-offset-[12px]">GLOBAL</span>
+                                Gesti�n de ANÁLISIS <span className="text-primary underline decoration-primary/40 underline-offset-[12px]">GLOBAL</span>
                             </h2>
                         </div>
                         <p className="text-[12px] font-black text-slate-500 uppercase tracking-[0.5em] ml-2 italic opacity-60">Matriz de eficiencia neta vs Proyecciones de escalado Corporativo v4</p>
@@ -197,7 +197,7 @@ export default function DashboardOverview() {
                                 onClick={() => setChartPeriod(p)}
                                 className={`px-12 py-5 text-[11px] font-black uppercase tracking-[0.3em] transition-all rounded-none-[1.5rem] relative ${chartPeriod === p ? 'bg-primary text-white shadow-[0_20px_40px_-10px_rgba(99,102,241,0.6)] italic z-10 scale-105' : 'text-slate-600 hover:text-white hover:bg-white/5'}`}
                             >
-                                {p === "weekly" ? "Gesti�n Semanal" : p === "monthly" ? "Análisis Mensual" : "Detallesoría Anual"}
+                                {p === "weekly" ? "Gesti�n Semanal" : p === "monthly" ? "Análisis Mensual" : "Detallesoría Anual"}
                             </button>
                         ))}
                     </div>
