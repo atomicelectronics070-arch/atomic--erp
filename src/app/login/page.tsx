@@ -88,7 +88,6 @@ export default function LoginPage() {
                         )}
 
                         <form onSubmit={handleSubmit} className="space-y-6">
-                        <form onSubmit={handleSubmit} className="space-y-6">
                             {/* Role Selection Grid (More Visual) */}
                             <div className="grid grid-cols-2 gap-3 mb-8">
                                 {[

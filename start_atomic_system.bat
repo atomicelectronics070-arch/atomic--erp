@@ -17,10 +17,10 @@ echo [0/2] Limpiando procesos antiguos...
 taskkill /F /IM node.exe /T >nul 2>&1
 taskkill /F /IM cloudflared.exe /T >nul 2>&1
 
-echo [1/3] Iniciando Servidor Next.js en puerto 3000...
+echo [1/3] Iniciando Servidor Next.js en MODO PRODUCCIÓN...
 cd /d "%PROJECT_DIR%"
-:: Iniciamos el servidor en una nueva ventana minimizada
-start "Atomic Server" /min cmd /c "npm run dev"
+:: Iniciamos el servidor en modo producción para máximo rendimiento
+start "Atomic Server PROD" /min cmd /c "npm run start"
 
 echo [2/3] Iniciando Servidor Scraper Pro en puerto 5005...
 cd /d "%PROJECT_DIR%..\..\scraper-pro\server"

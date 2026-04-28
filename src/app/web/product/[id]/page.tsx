@@ -110,7 +110,6 @@ export default function ProductDetailPage() {
     })()
 
     return (
-    return (
         <div className="min-h-screen bg-marble text-neutral-900 font-sans">
             {/* Nav removed -> Handled by layout.tsx */}
             <div className="max-w-7xl mx-auto px-6 py-12">
