@@ -3,10 +3,12 @@
 import { useSession } from "next-auth/react"
 import { useRouter, usePathname } from "next/navigation"
 import Link from "next/link"
-import { Home, Users, FileText, Settings, LogOut, CheckSquare, Sun, Moon, LayoutDashboard, Tag, Database, MessageSquare, ExternalLink, ShoppingBag, Menu, X, Calendar, Edit3, Mail, BrainCircuit, Bot, Globe, BarChart3, GraduationCap } from "lucide-react"
+import { Home, Users, FileText, Settings, LogOut, CheckSquare, Sun, Moon, LayoutDashboard, Tag, Database, MessageSquare, ExternalLink, ShoppingBag, Menu, X, Calendar, Edit3, Mail, BrainCircuit, Bot, Globe, BarChart3, GraduationCap, Code2 } from "lucide-react"
 import { useState, useEffect } from "react"
 import { ChevronDown, ChevronRight } from "lucide-react"
 import NotificationBell from "@/components/NotificationBell"
+import { AISearchBot } from "@/components/ui/AISearchBot"
+import { JarvisAI } from "@/components/ui/JarvisAI"
 
 export default function DashboardLayout({
     children,
@@ -53,9 +55,25 @@ export default function DashboardLayout({
 
     if (status === "loading" || !session) {
         return (
-            <div className="h-screen w-screen flex flex-col items-center justify-center bg-mesh gap-8">
-                <div className="w-24 h-24 border-4 border-primary/20 border-t-primary rounded-none animate-spin shadow-[0_0_50px_rgba(99,102,241,0.2)]"></div>
-                <div className="font-black text-primary uppercase tracking-[0.8em] animate-pulse text-xs italic text-center px-8">Cargando Central...</div>
+            <div className="h-screen w-screen flex flex-col items-center justify-center bg-[#000103] gap-8 relative overflow-hidden">
+                <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.05] bg-fixed"></div>
+                <div className="relative">
+                    <div className="w-32 h-32 border border-primary/20 rounded-none animate-[spin_3s_linear_infinite] shadow-[0_0_50px_rgba(99,102,241,0.1)]"></div>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-16 h-16 border-2 border-primary animate-[spin_1.5s_linear_infinite_reverse] shadow-[0_0_20px_rgba(99,102,241,0.3)]"></div>
+                    </div>
+                </div>
+                <div className="flex flex-col items-center gap-2">
+                    <div className="font-black text-primary uppercase tracking-[1em] animate-pulse text-[10px] italic">Sincronización Neuronal</div>
+                    <div className="w-48 h-[1px] bg-white/5 relative overflow-hidden">
+                        <motion.div 
+                            initial={{ x: "-100%" }}
+                            animate={{ x: "100%" }}
+                            transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
+                            className="absolute inset-0 bg-gradient-to-r from-transparent via-primary to-transparent w-1/2"
+                        />
+                    </div>
+                </div>
             </div>
         )
     }
@@ -151,6 +169,7 @@ export default function DashboardLayout({
                                 onToggle={() => toggleSection('ia')}
                             >
                                 <NavLink href="/dashboard/training" icon={<BrainCircuit size={16} />} label="IA Asistente" isSubItem />
+                                <NavLink href="/dashboard/software" icon={<Code2 size={16} />} label="Desarrollo Software" isSubItem />
                                 <NavLink href="/dashboard/admin/academy" icon={<GraduationCap size={16} />} label="Gestión Academia" isSubItem />
                             </CollapsibleSection>
                         )}
@@ -290,6 +309,7 @@ export default function DashboardLayout({
                     </div>
                 </div>
             </main>
+            <JarvisAI />
         </div>
     )
 }

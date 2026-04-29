@@ -5,31 +5,26 @@ import { usePathname } from "next/navigation"
 import { Search, ShoppingCart, User, Shield, Zap, CheckCircle2 } from "lucide-react"
 import { useCart } from "@/context/CartContext"
 
+import { AISearchBot } from "@/components/ui/AISearchBot"
+
 export default function WebLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname()
     const { totalItems } = useCart()
 
     return (
-        <div 
-            className="min-h-screen font-sans text-[#0F1923] selection:bg-red-200/60"
-            style={{ 
-                backgroundImage: "url('/assets/white_marble_bg.png')", 
-                backgroundAttachment: "fixed",
-                backgroundSize: "cover",
-                backgroundPosition: "center"
-            }}
-        >
+        <div className="min-h-screen font-sans text-white bg-[#020617] relative">
+            <div className="scanline" />
 
             {/* ── Navbar ── */}
-            <nav className="sticky top-0 w-full z-50 bg-white/90 backdrop-blur-xl border-b border-[#E8341A]/10 shadow-sm shadow-[#E8341A]/5">
+            <nav className="sticky top-0 w-full z-50 bg-slate-950/80 backdrop-blur-xl border-b border-white/5 shadow-sm shadow-[#E8341A]/5">
                 <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
 
                     {/* Logo + Links */}
                     <div className="flex items-center space-x-12">
-                        <Link href="/web" className="text-2xl font-black tracking-tighter uppercase italic text-[#0F1923] group">
-                            ATOMIC<span className="text-[#E8341A] group-hover:text-[#C0280F] transition-colors">.</span>
+                        <Link href="/web" className="text-2xl font-black tracking-tighter uppercase italic text-white group">
+                            ATOMIC<span className="text-[#E8341A] neon-text group-hover:text-[#FF4D2D] transition-colors">.</span>
                         </Link>
-                        <div className="hidden md:flex space-x-8 text-[10px] font-black uppercase tracking-[0.2em] text-[#0F1923]/40">
+                        <div className="hidden md:flex space-x-8 text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
                             <Link
                                 href="/web"
                                 className={pathname === '/web' ? 'text-[#E8341A] border-b-2 border-[#E8341A] pb-1' : 'hover:text-[#E8341A] transition-colors'}
@@ -45,8 +40,20 @@ export default function WebLayout({ children }: { children: React.ReactNode }) {
                             >Desarrollo</Link>
                             <Link
                                 href="/web/academy"
+                                className={pathname.startsWith('/web/academy') ? 'text-[#00F0FF] border-b-2 border-[#00F0FF] pb-1' : 'hover:text-[#00F0FF] transition-colors'}
+                            >Capacitación</Link>
+                            <Link
+                                href="/web/academy"
                                 className={pathname.startsWith('/web/academy') ? 'text-[#E8341A] border-b-2 border-[#E8341A] pb-1' : 'hover:text-[#E8341A] transition-colors'}
                             >Academia</Link>
+                            <Link
+                                href="/web/benefits"
+                                className={pathname === '/web/benefits' ? 'text-[#E8341A] border-b-2 border-[#E8341A] pb-1' : 'hover:text-[#E8341A] transition-colors'}
+                            >Beneficios</Link>
+                            <Link
+                                href="/web/contact"
+                                className={pathname === '/web/contact' ? 'text-[#E8341A] border-b-2 border-[#E8341A] pb-1' : 'hover:text-[#E8341A] transition-colors'}
+                            >Contacto</Link>
                             <Link
                                 href="/web/blogs"
                                 className={pathname.startsWith('/web/blogs') ? 'text-[#2563EB] border-b-2 border-[#2563EB] pb-1' : 'hover:text-[#2563EB] transition-colors'}
@@ -55,7 +62,7 @@ export default function WebLayout({ children }: { children: React.ReactNode }) {
                     </div>
 
                     {/* Actions */}
-                    <div className="flex items-center space-x-6 text-[#0F1923]/40">
+                    <div className="flex items-center space-x-6 text-white/40">
                         <button className="hover:text-[#E8341A] transition-colors"><Search size={18} /></button>
                         <Link href="/login" className="hover:text-[#E8341A] transition-colors"><User size={18} /></Link>
                         <div className="relative">
@@ -113,6 +120,7 @@ export default function WebLayout({ children }: { children: React.ReactNode }) {
                             <ul className="space-y-5 text-[10px] text-white/20 font-black uppercase tracking-widest">
                                 <li className="hover:text-white transition-colors"><Link href="/web">Visión Técnica</Link></li>
                                 <li className="hover:text-white transition-colors"><Link href="/web/software">Laboratorio de Software</Link></li>
+                                <li className="hover:text-white transition-colors"><Link href="/web/benefits">Beneficios</Link></li>
                                 <li className="hover:text-white transition-colors"><Link href="/web/blogs">Blog de Noticias</Link></li>
                             </ul>
                         </div>
@@ -129,6 +137,7 @@ export default function WebLayout({ children }: { children: React.ReactNode }) {
                             <ul className="space-y-5 text-[10px] text-white/20 font-black uppercase tracking-widest">
                                 <li className="hover:text-white transition-colors"><Link href="/web#productos">Catálogo</Link></li>
                                 <li className="hover:text-white transition-colors"><Link href="/web#categorias">Categorías</Link></li>
+                                <li className="hover:text-white transition-colors"><Link href="/web/contact">Reseñas y Contacto</Link></li>
                                 <li className="hover:text-white transition-colors"><Link href="/login">Portal ERP</Link></li>
                             </ul>
                         </div>
@@ -148,6 +157,7 @@ export default function WebLayout({ children }: { children: React.ReactNode }) {
                 {/* Footer top tomato glow */}
                 <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#E8341A]/20 to-transparent pointer-events-none" />
             </footer>
+            <AISearchBot />
         </div>
     )
 }

@@ -2,41 +2,37 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: #FAFAF8;
-  --color-foreground: #0F1923;
+  --color-background: #020617;
+  --color-foreground: #F4F1EB;
   --color-primary: #E8341A;
-  --color-primary-dark: #C0280F;
-  --color-primary-mid: #F5611A;
-  --color-secondary: #1E3A5F;
-  --color-accent-blue: #2563EB;
-  --color-accent-blue-mid: #3B82F6;
-  --color-accent-blue-light: #93C5FD;
+  --color-primary-neon: #FF4D2D;
+  --color-cyan-neon: #00F0FF;
+  --color-purple-neon: #7000FF;
+  --color-secondary: #0F1923;
 
   --font-sans: "Inter", ui-sans-serif, system-ui;
   --font-heading: "Plus Jakarta Sans", ui-sans-serif, system-ui;
+  --font-mono: "Fira Code", monospace;
 }
 
 :root {
-  --background: #FAFAF8;
-  --foreground: #0F1923;
+  --background: #020617;
+  --foreground: #F4F1EB;
   --primary: #E8341A;
-  --primary-dark: #C0280F;
-  --primary-mid: #F5611A;
-  --secondary: #1E3A5F;
-  --accent-blue: #2563EB;
-  --accent-blue-mid: #3B82F6;
-  --accent-blue-light: #93C5FD;
+  --primary-neon: #FF4D2D;
+  --cyan-neon: #00F0FF;
+  --purple-neon: #7000FF;
+  --secondary: #0F1923;
 
   /* Surface tokens */
-  --surface-0: #FFFFFF;
-  --surface-1: #F5F3F0;
-  --surface-2: #EDE9E4;
-  --surface-dark: #0F1923;
-  --surface-dark-2: #1A2535;
+  --surface-0: #0F1923;
+  --surface-1: #1A2535;
+  --surface-2: #242E3D;
 
-  /* Glass dark panels - Lowered opacity for background visibility */
-  --glass-bg: rgba(15, 25, 35, 0.35);
-  --glass-border: rgba(255, 255, 255, 0.12);
+  /* Refined Glass - More 'Lithe' */
+  --glass-bg: rgba(15, 25, 35, 0.45);
+  --glass-border: rgba(255, 255, 255, 0.05);
+  --neon-glow: 0 0 20px rgba(232, 52, 26, 0.25);
 }
 
 body {
@@ -44,24 +40,25 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans);
   accent-color: var(--primary);
-  letter-spacing: -0.015em;
+  letter-spacing: 0.02em;
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* ── Glass panel (dark) ── */
+/* ── Glass panel (Refined) ── */
 .glass-panel {
   background: var(--glass-bg);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
   border: 1px solid var(--glass-border);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.35);
+  box-shadow: 0 4px 24px 0 rgba(0, 0, 0, 0.2);
 }
 
-/* ── Glass card (light) ── */
+/* ── Glass card (Refined) ── */
 .glass-card {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.03);
 }
 
 /* ── Gradient text (tomato → orange) ── */
@@ -95,16 +92,66 @@ body {
     radial-gradient(at 100% 100%, rgba(37, 99, 235, 0.08) 0px, transparent 50%);
 }
 
+/* ── Cyber Card ── */
+.cyber-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+.cyber-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--primary), transparent);
+  transition: 0.5s;
+}
+.cyber-card:hover::before {
+  left: 100%;
+}
+.cyber-card:hover {
+  border-color: rgba(232, 52, 26, 0.4);
+  box-shadow: var(--neon-glow);
+}
+
+/* ── Scanline Effect ── */
+.scanline {
+  width: 100%;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.03);
+  position: absolute;
+  z-index: 5;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  animation: scanline 8s linear infinite;
+}
+
+@keyframes scanline {
+  0% { top: 0; }
+  100% { top: 100%; }
+}
+
+/* ── Neon Text ── */
+.neon-text {
+  color: var(--primary-neon);
+  text-shadow: 0 0 10px rgba(255, 77, 45, 0.5), 0 0 20px rgba(255, 77, 45, 0.2);
+}
+
 /* ── Background Nebula (4K Space) ── */
 .bg-nebula {
   background-color: #020617;
   background-image: 
-    linear-gradient(to bottom, rgba(2, 6, 23, 0.2), rgba(2, 6, 23, 0.7)),
+    radial-gradient(circle at 50% 50%, rgba(232, 52, 26, 0.05), transparent),
     url('/backgrounds/nebula.png');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
-  background-repeat: no-repeat;
 }
 
 h1, h2, h3, h4, h5, h6 {

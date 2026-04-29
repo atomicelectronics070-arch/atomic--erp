@@ -2,11 +2,17 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
+import { isStaff } from "@/lib/roles"
 
 export const dynamic = "force-dynamic"
 
 export async function GET() {
     try {
+        const session = await getServerSession(authOptions)
+        if (!isStaff(session)) {
+            return NextResponse.json({ error: "Unauthorized access to inventory" }, { status: 403 })
+        }
+
         const products = await (prisma as any).product.findMany({
             where: {
                 NOT: { isDeleted: true }
@@ -22,8 +28,8 @@ export async function GET() {
 export async function POST(req: Request) {
     try {
         const session = await getServerSession(authOptions)
-        if (!session) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+        if (!isStaff(session)) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
         }
 
         const data = await req.json()

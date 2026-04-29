@@ -23,9 +23,9 @@ export default function TrainingChatPage() {
                         <Sparkles className="drop-shadow-[0_0_8px_rgba(255,99,71,0.5)]" size={20} />
                         <span className="text-[10px] font-black uppercase tracking-[0.6em] italic">Atomic Cognitive Ecosystem</span>
                     </div>
-                    <h1 className="text-6xl font-black text-white uppercase tracking-tighter leading-none italic">NÚCLEO <span className="text-secondary underline decoration-secondary/30 underline-offset-8">IA</span></h1>
+                    <h1 className="text-6xl font-black text-white uppercase tracking-tighter leading-none italic">NÚCLEO <span className="text-secondary underline decoration-secondary/30 underline-offset-8">NEMOTRON</span></h1>
                     <p className="text-xs text-slate-500 font-bold uppercase tracking-[0.3em] mt-5 italic leading-relaxed max-w-xl">
-                        Sincronización neuronal con modelos de vanguardia G-SERIES. <br />Optimización de procesos operativos mediante inteligencia predictiva.
+                        Interfaz de comando neuronal sincronizada con JARVIS PRO. <br />Despliegue de inteligencia operativa para optimización de alto nivel.
                     </p>
                 </div>
 

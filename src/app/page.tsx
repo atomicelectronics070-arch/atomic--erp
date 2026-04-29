@@ -11,12 +11,13 @@ import {
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-transparent text-white font-sans overflow-x-hidden selection:bg-indigo-500/30">
+    <div className="min-h-screen bg-transparent text-white font-sans overflow-x-hidden selection:bg-indigo-500/30 relative">
+      <div className="scanline" />
       
       {/* Background Orbs */}
       <div className="fixed inset-0 z-0 pointer-events-none">
-        <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] rounded-none bg-indigo-600/20 blur-[120px] animate-pulse" />
-        <div className="absolute bottom-[-10%] left-[-5%] w-[40%] h-[40%] rounded-none bg-pink-600/20 blur-[120px] animate-pulse" style={{ animationDelay: '2s' }} />
+        <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] rounded-none bg-[#E8341A]/10 blur-[120px] animate-pulse" />
+        <div className="absolute bottom-[-10%] left-[-5%] w-[40%] h-[40%] rounded-none bg-[#00F0FF]/10 blur-[120px] animate-pulse" style={{ animationDelay: '2s' }} />
       </div>
 
       {/* Navbar */}
@@ -28,7 +29,7 @@ export default function Home() {
           </div>
           <div className="flex flex-col">
             <span className="text-xl md:text-2xl font-black tracking-tighter uppercase italic text-white leading-none">
-              ATOMIC<span className="text-primary">.</span>
+              ATOMIC<span className="text-[#E8341A] neon-text">.</span>
             </span>
             <span className="text-[8px] font-black tracking-[0.4em] text-slate-400/60 uppercase mt-1">Solutions ERP</span>
           </div>
@@ -63,7 +64,7 @@ export default function Home() {
           className="text-5xl md:text-7xl lg:text-[6.5rem] font-black tracking-tighter leading-[0.85] text-white mb-8"
         >
           Precisión a <br className="hidden md:block" />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-indigo-600 to-pink-600 italic">Escala Global.</span>
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#E8341A] via-[#FF4D2D] to-[#F5611A] italic neon-text">Escala Global.</span>
         </motion.h1>
 
         <motion.p 
@@ -125,22 +126,22 @@ export default function Home() {
       <section className="relative z-10 px-6 max-w-7xl mx-auto my-40">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <FeatureCard
-            icon={<BrainCircuit className="text-indigo-400" size={24} />}
+            icon={<BrainCircuit className="text-[#E8341A]" size={24} />}
             title="Motores de IA"
             desc="Modelos cognitivos avanzados para la automatización de procesos operativos y respuestas."
           />
           <FeatureCard
-            icon={<Database className="text-pink-400" size={24} />}
+            icon={<Database className="text-[#00F0FF]" size={24} />}
             title="Data Cloud"
             desc="Sincronización masiva de inventarios y gestión documental bajo encriptación militar."
           />
           <FeatureCard
-            icon={<Shield className="text-indigo-400" size={24} />}
+            icon={<Shield className="text-[#E8341A]" size={24} />}
             title="Seguridad ACL"
             desc="Control granular de permisos y roles para una administración transparente y segura."
           />
           <FeatureCard
-            icon={<Activity className="text-pink-400" size={24} />}
+            icon={<Activity className="text-[#00F0FF]" size={24} />}
             title="Market Scraping"
             desc="Extracción de inteligencia comercial en tiempo real con Scraper Pro AI nativo."
           />
@@ -184,12 +185,12 @@ export default function Home() {
 
 function FeatureCard({ icon, title, desc }: { icon: React.ReactNode; title: string; desc: string }) {
   return (
-    <div className="glass-panel p-8 hover:border-primary/40 hover:bg-white/5 transition-all group flex flex-col justify-start h-full cursor-default rounded-none">
-      <div className="mb-8 w-12 h-12 glass-panel border-white/10 flex items-center justify-center rounded-none group-hover:scale-110 transition-transform">
+    <div className="cyber-card p-8 transition-all group flex flex-col justify-start h-full cursor-default rounded-none">
+      <div className="mb-8 w-12 h-12 bg-white/5 border border-white/10 flex items-center justify-center rounded-none group-hover:scale-110 transition-transform">
         {icon}
       </div>
       <div>
-        <h3 className="text-sm font-black text-white uppercase tracking-tight mb-3 opacity-90">{title}</h3>
+        <h3 className="text-sm font-black text-white uppercase tracking-tight mb-3 opacity-90 group-hover:text-[#E8341A] transition-colors">{title}</h3>
         <p className="text-xs font-medium text-slate-500 leading-relaxed">{desc}</p>
       </div>
     </div>

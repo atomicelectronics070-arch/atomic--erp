@@ -143,6 +143,11 @@ model Product {
 
   isDeleted Boolean @default(false)
   provider  String?
+
+  @@index([categoryId])
+  @@index([collectionId])
+  @@index([isDeleted, isActive])
+  @@index([provider])
 }
 
 model Category {
@@ -324,6 +329,8 @@ model WAContact {
   createdAt     DateTime         @default(now())
   updatedAt     DateTime         @updatedAt
   conversations WAConversation[]
+
+  @@index([whatsappId])
 }
 
 model WAConversation {
@@ -344,6 +351,9 @@ model WAConversation {
   notes       WANote[]
   tags        WATag[]
   assignments WAAssignment[]
+
+  @@index([status])
+  @@index([contactId])
 }
 
 model WAMessage {
@@ -363,6 +373,9 @@ model WAMessage {
   senderId String? // User ID if OUTBOUND
 
   createdAt DateTime @default(now())
+
+  @@index([conversationId])
+  @@index([direction])
 }
 
 model WATag {

@@ -51,33 +51,34 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-marble text-white overflow-hidden relative">
+        <div className="min-h-screen flex items-center justify-center bg-[#020617] text-white overflow-hidden relative">
+            <div className="scanline" />
             {/* Background Effects */}
             <div className="fixed inset-0 pointer-events-none">
-                <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-[#E8341A]/12 blur-[150px] rounded-none animate-pulse" />
-                <div className="absolute bottom-[-10%] left-[-5%] w-[40%] h-[40%] bg-[#2563EB]/12 blur-[150px] rounded-none animate-pulse" style={{ animationDelay: '2s' }} />
+                <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-[#E8341A]/10 blur-[150px] rounded-none animate-pulse" />
+                <div className="absolute bottom-[-10%] left-[-5%] w-[40%] h-[40%] bg-[#00F0FF]/10 blur-[150px] rounded-none animate-pulse" style={{ animationDelay: '2s' }} />
             </div>
 
             <div className="w-full max-w-md relative z-10 p-6">
                 {/* Logo Section */}
                 <div className="text-center mb-10">
                     <div className="inline-flex items-center gap-3 px-4 py-2 border border-[#E8341A]/25 bg-[#E8341A]/10 backdrop-blur-md rounded-none mb-6">
-                        <ShieldCheck size={14} className="text-[#E8341A]" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#E8341A]">Terminal de Acceso Unificado</span>
+                        <ShieldCheck size={14} className="text-[#E8341A] neon-text" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#E8341A] neon-text">Terminal de Acceso Unificado</span>
                     </div>
                     <h1 className="text-5xl font-black tracking-tighter text-white uppercase italic leading-none">
-                        ATOMIC<span className="text-[#E8341A]">.</span>
+                        ATOMIC<span className="text-[#E8341A] neon-text">.</span>
                     </h1>
                     <p className="text-[10px] font-bold text-white/35 uppercase tracking-[0.5em] mt-2">SISTEMA INTEGRAL DE ACCESO</p>
                 </div>
 
-                <div className="bg-slate-950/30 border border-white/10 backdrop-blur-3xl shadow-2xl shadow-[#E8341A]/5 rounded-none p-8 md:p-10 relative overflow-hidden group">
+                <div className="cyber-card backdrop-blur-3xl shadow-2xl shadow-[#E8341A]/5 rounded-none p-8 md:p-10 relative overflow-hidden group">
                     {/* Inner Glow */}
                     <div className="absolute -top-24 -right-24 w-48 h-48 bg-[#E8341A]/10 blur-[60px] rounded-none group-hover:bg-[#E8341A]/20 transition-all duration-700"></div>
                     
                     <div className="relative z-10">
                         <div className="mb-8">
-                            <h2 className="text-2xl font-black text-white uppercase tracking-tighter">Identificación</h2>
+                            <h2 className="text-2xl font-black text-white uppercase tracking-tighter neon-text">Identificación</h2>
                             <p className="text-[10px] font-bold text-white/35 uppercase tracking-widest mt-1">Sincronización de Elemento Operativo</p>
                         </div>
 

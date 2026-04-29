@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { ShoppingBag, Star, ArrowRight, Search, ChevronLeft, ChevronRight, Heart, Zap, Shield, Truck, Package, Filter, LayoutGrid, List } from "lucide-react"
+import { ShoppingBag, Star, ArrowRight, Search, ChevronLeft, ChevronRight, Heart, Zap, Shield, Truck, Package, Filter, LayoutGrid, List, Radio, Construction, Home, Gamepad2, Cpu, Code } from "lucide-react"
 import Link from "next/link"
 import { StaticMoleculesBackground } from "@/components/ui/StaticMoleculesBackground"
 
@@ -142,17 +142,36 @@ export default function ProductsPage() {
                 </Section>
 
                 {/* 2. CATEGORÍAS - Scrollable Cards */}
-                <Section title="Categorías" subtitle="Organizado por especialidad" color="#2563EB">
+                <Section title="Nuestras Categorías" subtitle="Organizado por especialidad" color="#2563EB">
                     <div className="flex gap-6 overflow-x-auto hide-scrollbar pb-10">
-                        {sections.categories.map((c: any) => (
-                            <Link key={c.id} href={`/web/category/${c.slug}`} className="group shrink-0 w-64 bg-white/60 backdrop-blur-md border border-white/40 p-8 flex flex-col items-center text-center transition-all hover:shadow-2xl hover:-translate-y-2">
-                                <div className="w-20 h-20 bg-slate-50 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                                    {c.image ? <img src={proxyImg(c.image)} className="w-12 h-12 object-contain mix-blend-multiply" /> : <Package className="w-10 h-10 text-slate-200" />}
-                                </div>
-                                <h3 className="text-xs font-black uppercase tracking-widest line-clamp-1">{c.name}</h3>
-                                <p className="text-[#2563EB] text-[9px] font-black mt-2 uppercase flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">Explorar <ArrowRight size={10} /></p>
-                            </Link>
-                        ))}
+                        {sections.categories.map((c: any) => {
+                            const iconMap: any = {
+                                "antenas": <Radio size={32} />,
+                                "barreras": <Construction size={32} />,
+                                "residencial": <Home size={32} />,
+                                "gaming": <Gamepad2 size={32} />,
+                                "automatizacion": <Cpu size={32} />,
+                                "desarrollo": <Code size={32} />
+                            };
+                            const slug = c.slug.toLowerCase();
+                            const Icon = Object.keys(iconMap).find(k => slug.includes(k)) ? iconMap[Object.keys(iconMap).find(k => slug.includes(k))!] : <Package size={32} />;
+
+                            return (
+                                <Link key={c.id} href={`/web/category/${c.slug}`} className="group shrink-0 w-64 bg-white/60 backdrop-blur-md border border-white/40 p-8 flex flex-col items-center text-center transition-all hover:shadow-2xl hover:-translate-y-2">
+                                    <div className="w-20 h-20 bg-slate-50 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                                        {c.image ? (
+                                            <img src={proxyImg(c.image)} className="w-12 h-12 object-contain mix-blend-multiply" />
+                                        ) : (
+                                            <div className="text-slate-300 group-hover:text-[#2563EB] transition-colors">
+                                                {Icon}
+                                            </div>
+                                        )}
+                                    </div>
+                                    <h3 className="text-xs font-black uppercase tracking-widest line-clamp-1">{c.name}</h3>
+                                    <p className="text-[#2563EB] text-[9px] font-black mt-2 uppercase flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">Explorar <ArrowRight size={10} /></p>
+                                </Link>
+                            );
+                        })}
                     </div>
                 </Section>
 
