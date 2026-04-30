@@ -62,12 +62,14 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
     )
 
     const featuredProducts = filteredProducts.filter(p => {
-        const nameStr = p.name.toLowerCase();
+        const text = `${p.name} ${p.description || ''} ${p.category?.name || ''}`.toLowerCase();
         return p.featured || 
-               nameStr.includes('power bank') || 
-               nameStr.includes('banco de poder') || 
-               nameStr.includes('espia') || 
-               nameStr.includes('espía');
+               text.includes('power bank') || 
+               text.includes('powerbank') || 
+               text.includes('banco de poder') || 
+               text.includes('espia') || 
+               text.includes('espía') ||
+               text.includes('oculta');
     })
 
     const desiredOrder = ["tecnologia-residencial", "desarrollo", "gaming", "automatizacion"]
@@ -106,7 +108,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                         </div>
 
                         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                            {featuredProducts.slice(0, 10).map((p: any, i: number) => (
+                            {featuredProducts.slice(0, 20).map((p: any, i: number) => (
                                 <motion.div
                                     key={p.id}
                                     initial={{ opacity: 0, y: 15 }}
@@ -168,7 +170,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                         </div>
 
                         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                            {filteredProducts.slice(0, 10).map((p: any, i: number) => (
+                            {filteredProducts.slice(0, 30).map((p: any, i: number) => (
                                 <motion.div
                                     key={p.id}
                                     initial={{ opacity: 0, y: 15 }}
