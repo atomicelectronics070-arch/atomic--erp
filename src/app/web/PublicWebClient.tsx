@@ -147,6 +147,68 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                 </section>
 
                 {/* ======================================================== */}
+                {/* 2.5 SECCIÓN MEDIA: TODOS LOS PRODUCTOS */}
+                {/* ======================================================== */}
+                <section className="bg-transparent py-16 border-t border-slate-200/50">
+                    <div className="max-w-7xl mx-auto px-6">
+                        <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+                            <div>
+                                <h2 className="text-2xl md:text-3xl font-light text-slate-800 uppercase tracking-tight">
+                                    NUESTROS <span className="font-black text-[#E8341A]">PRODUCTOS</span>
+                                </h2>
+                                <p className="text-slate-500 text-[10px] mt-1 uppercase tracking-widest font-semibold">Catálogo General</p>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                            {filteredProducts.slice(0, 10).map((p: any, i: number) => (
+                                <motion.div
+                                    key={p.id}
+                                    initial={{ opacity: 0, y: 15 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: i * 0.05 }}
+                                >
+                                    <Link
+                                        href={`/web/product/${p.id}`}
+                                        className="group flex flex-col bg-white/60 backdrop-blur-md border border-slate-200/60 hover:border-slate-300 hover:bg-white hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-300 rounded-xl overflow-hidden h-[280px]"
+                                    >
+                                        <div className="h-36 relative bg-transparent p-3 flex items-center justify-center border-b border-slate-100/50">
+                                            {(() => {
+                                                const imgs = safeParseArray(p.images)
+                                                return imgs.length > 0 ? (
+                                                    <Image 
+                                                        src={imgs[0]} 
+                                                        alt={p.name} 
+                                                        fill
+                                                        className="object-contain p-3 group-hover:scale-110 transition-transform duration-500 mix-blend-multiply" 
+                                                    />
+                                                ) : <ShoppingBag className="text-slate-200 w-8 h-8" />
+                                            })()}
+                                        </div>
+                                        <div className="p-4 flex-1 flex flex-col justify-between">
+                                            <h3 className="text-[11px] font-bold text-slate-700 tracking-wide line-clamp-2 leading-tight group-hover:text-[#E8341A] transition-colors">{p.name}</h3>
+                                            <div className="flex items-end justify-between mt-2">
+                                                <div>
+                                                    {userRole && (userRole === 'AFILIADO' || userRole === 'DISTRIBUIDOR') && (
+                                                        <p className="text-[9px] text-slate-400 line-through font-medium">
+                                                            ${p.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                                                        </p>
+                                                    )}
+                                                    <p className="text-sm font-black text-slate-900">
+                                                        ${calculateDiscountedPrice(p.price, userRole).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </Link>
+                                </motion.div>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+
+                {/* ======================================================== */}
                 {/* 3. BANNER DE ACADEMY */}
                 {/* ======================================================== */}
                 <section className="py-16 border-y border-slate-200/50 bg-gradient-to-b from-transparent to-blue-50/30">
