@@ -447,7 +447,7 @@ function CategoriesBanner({ categories }: { categories: any[] }) {
                             className="snap-start shrink-0"
                         >
                             <Link
-                                href={`/web/category/${cat.slug}`}
+                                href={cat.slug === 'desarrollo' || cat.slug === 'software-desarrollo' ? '/web/demos' : `/web/category/${cat.slug}`}
                                 className="group block relative overflow-hidden w-48 h-60 rounded-xl border border-slate-700/50 bg-slate-800/50 hover:border-[#E8341A]/50 hover:-translate-y-1 transition-all duration-300"
                             >
                                 {/* Always silhouette — invert + brightness to turn any image into a white silhouette */}

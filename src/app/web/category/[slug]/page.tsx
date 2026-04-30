@@ -91,12 +91,19 @@ export default async function CategoryPage({ params }: { params: { slug: string 
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     {category.products.length > 0 ? category.products.map(p => {
-                        let imgs = [];
-                        try { 
-                            let parsed = JSON.parse(p.images || '[]');
-                            if(typeof parsed === 'string') { try { parsed = JSON.parse(parsed) } catch(e){} }
-                            imgs = Array.isArray(parsed) ? parsed : [];
-                        } catch {}
+                        let imgs: string[] = [];
+                        if (p.images) {
+                            const trimmed = p.images.trim();
+                            if (trimmed.startsWith('http') || trimmed.startsWith('/') || trimmed.startsWith('data:image')) {
+                                imgs = [trimmed];
+                            } else {
+                                try { 
+                                    let parsed = JSON.parse(trimmed);
+                                    if(typeof parsed === 'string') { try { parsed = JSON.parse(parsed) } catch(e){} }
+                                    imgs = Array.isArray(parsed) ? parsed : (typeof parsed === 'string' ? [parsed] : []);
+                                } catch {}
+                            }
+                        }
                         return (
                             <Link key={p.id} href={`/web/product/${p.id}`} className="group bg-slate-900/40 border border-white/5 hover:border-[#E8341A]/30 transition-all flex flex-col h-full hover:bg-slate-800/80 rounded-none overflow-hidden">
                                 <div className="aspect-square bg-white/[0.02] relative overflow-hidden flex items-center justify-center p-6 border-b border-white/5">
