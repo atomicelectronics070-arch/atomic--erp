@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { useRef, useState, useEffect } from "react"
 import { ArrowRight, ChevronLeft, ChevronRight, Code, Database, Sparkles, Smartphone, X } from "lucide-react"
@@ -26,7 +26,7 @@ const PORTFOLIO_ITEMS = [
         id: 1,
         title: "Instituto Sucre",
         category: "Plataforma EduTech",
-        description: "GestiÃ³n acadÃ©mica integral. Redujo el tiempo de inscripciÃ³n de estudiantes en un 80% mediante flujos automatizados.",
+        description: "Gestión académica integral. Redujo el tiempo de inscripción de estudiantes en un 80% mediante flujos automatizados.",
         imagePlaceholderbg: "bg-indigo-900/40",
         accent: "#6366f1",
         delay: false,
@@ -35,8 +35,8 @@ const PORTFOLIO_ITEMS = [
     {
         id: 2,
         title: "Bodegas Logistics",
-        category: "LogÃ­stica Corporativo",
-        description: "Control de inventario en tiempo real. Algoritmos de predicciÃ³n de desabastecimiento y trazabilidad QR multi-almacÃ©n.",
+        category: "Logística Corporativo",
+        description: "Control de inventario en tiempo real. Algoritmos de predicción de desabastecimiento y trazabilidad QR multi-almacén.",
         imagePlaceholderbg: "bg-emerald-900/40",
         accent: "#10b981",
         delay: true,
@@ -46,7 +46,7 @@ const PORTFOLIO_ITEMS = [
         id: 3,
         title: "Scraper Pro",
         category: "Inteligencia Competitiva",
-        description: "Motor automatizado de extracciÃ³n de datos masivos con exportaciÃ³n instantÃ¡nea a Excel y CSV, impulsado por Puppeteer.",
+        description: "Motor automatizado de extracción de datos masivos con exportación instantánea a Excel y CSV, impulsado por Puppeteer.",
         imagePlaceholderbg: "bg-purple-900/40",
         accent: "#a855f7",
         delay: false,
@@ -56,7 +56,7 @@ const PORTFOLIO_ITEMS = [
         id: 4,
         title: "Couple Games",
         category: "Entretenimiento B2C",
-        description: "AplicaciÃ³n interactiva y lÃºdica. Interfaces vibrantes con micro-animaciones fluidas diseÃ±adas para alto engagement.",
+        description: "Aplicación interactiva y lúdica. Interfaces vibrantes con micro-animaciones fluidas diseñadas para alto engagement.",
         imagePlaceholderbg: "bg-pink-900/40",
         accent: "#ec4899",
         delay: true,
@@ -65,8 +65,8 @@ const PORTFOLIO_ITEMS = [
     {
         id: 5,
         title: "SOFT3 Logistics",
-        category: "ERP de LogÃ­stica",
-        description: "Sistema robusto de gestiÃ³n de inventarios y cadena de suministro desarrollado en Laravel para alta escalabilidad.",
+        category: "ERP de Logística",
+        description: "Sistema robusto de gestión de inventarios y cadena de suministro desarrollado en Laravel para alta escalabilidad.",
         imagePlaceholderbg: "bg-blue-900/40",
         accent: "#3b82f6",
         delay: false,
@@ -75,8 +75,8 @@ const PORTFOLIO_ITEMS = [
     {
         id: 6,
         title: "Juegos en Casa",
-        category: "CatÃ¡logo Interactivo",
-        description: "Plataforma de entretenimiento familiar diseÃ±ada para facilitar el acceso a juegos lÃºdicos en el hogar.",
+        category: "Catálogo Interactivo",
+        description: "Plataforma de entretenimiento familiar diseñada para facilitar el acceso a juegos lúdicos en el hogar.",
         imagePlaceholderbg: "bg-amber-900/40",
         accent: "#f59e0b",
         delay: true,
@@ -86,7 +86,7 @@ const PORTFOLIO_ITEMS = [
         id: 7,
         title: "Atomic ERP Admin",
         category: "Ecosistema Central",
-        description: "El nÃºcleo operativo de ATOMIC. SimulaciÃ³n en vivo de nuestro panel de control de Ultra-Rendimiento.",
+        description: "El núcleo operativo de ATOMIC. Simulación en vivo de nuestro panel de control de Ultra-Rendimiento.",
         imagePlaceholderbg: "bg-orange-900/40",
         accent: "#6366f1",
         delay: false,
@@ -236,14 +236,14 @@ export default function SoftwareLandingPage() {
                     </div>
 
                     <h1 className="text-5xl md:text-7xl lg:text-8xl font-black uppercase tracking-tighter leading-[0.85] mb-8 text-[#0F1923]">
-                        IngenierÃ­a en <br />
+                        Ingeniería en <br />
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#E8341A] via-[#F5611A] to-[#2563EB]">Desarrollo</span>
                     </h1>
 
                     <p className="max-w-3xl text-lg md:text-xl text-[#0F1923]/50 font-medium leading-relaxed">
-                        Nuestra misiÃ³n es brindar un <strong className="text-[#0F1923]">ecosistema digital integrado para toda la regiÃ³n</strong>,
-                        proporcionando herramientas tecnolÃ³gicas que acorten exponencialmente los tiempos de ejecuciÃ³n administrativa y
-                        mejoren drÃ¡sticamente el rendimiento de todos los procesos operativos corporativos.
+                        Nuestra misión es brindar un <strong className="text-[#0F1923]">ecosistema digital integrado para toda la región</strong>,
+                        proporcionando herramientas tecnológicas que acorten exponencialmente los tiempos de ejecución administrativa y
+                        mejoren drásticamente el rendimiento de todos los procesos operativos corporativos.
                     </p>
 
                     <div className="mt-12 flex space-x-6 text-[#0F1923]/30">
