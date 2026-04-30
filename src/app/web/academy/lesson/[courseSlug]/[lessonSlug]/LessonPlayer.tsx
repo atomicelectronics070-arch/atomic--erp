@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
 import { ChevronLeft, ChevronRight, CheckCircle2, PlayCircle, BookOpen, Bot, X, ArrowRight } from "lucide-react"
 
-export default function LessonPlayer({ course, lesson, prevLesson, isCompleted, markCompletedAction }: any) {
+export default function LessonPlayer({ course, lesson, prevLesson, isCompleted, markCompletedAction, isPublic }: any) {
     const [showAiTutor, setShowAiTutor] = useState(false)
     const [quizStep, setQuizStep] = useState<"CONTENT" | "QUIZ" | "PASSED">("CONTENT")
     const [currentQuestion, setCurrentQuestion] = useState(0)
@@ -123,15 +123,27 @@ export default function LessonPlayer({ course, lesson, prevLesson, isCompleted, 
                         <span className="text-[9px] font-black text-[#E8341A] uppercase tracking-[0.5em] block">Módulo Actual</span>
                         <h2 className="text-3xl font-black uppercase tracking-tighter leading-none italic">{course.title}</h2>
                     </div>
-                    <div className="mt-10 space-y-4 bg-white/5 p-6 rounded-none border border-white/5">
-                        <div className="flex justify-between text-[9px] font-black uppercase tracking-[0.3em] text-white/40">
-                            <span>Tu Dominio</span>
-                            <span className="text-[#E8341A]">{course.enrollments[0].progress}%</span>
+                    {!isPublic && course.enrollments?.[0] && (
+                        <div className="mt-10 space-y-4 bg-white/5 p-6 rounded-none border border-white/5">
+                            <div className="flex justify-between text-[9px] font-black uppercase tracking-[0.3em] text-white/40">
+                                <span>Tu Dominio</span>
+                                <span className="text-[#E8341A]">{course.enrollments[0].progress}%</span>
+                            </div>
+                            <div className="w-full h-1.5 bg-white/5 rounded-none overflow-hidden">
+                                <div className="h-full bg-[#E8341A] shadow-[0_0_15px_rgba(232,52,26,0.5)] transition-all duration-1000" style={{ width: `${course.enrollments[0].progress}%` }}></div>
+                            </div>
                         </div>
-                        <div className="w-full h-1.5 bg-white/5 rounded-none overflow-hidden">
-                            <div className="h-full bg-[#E8341A] shadow-[0_0_15px_rgba(232,52,26,0.5)] transition-all duration-1000" style={{ width: `${course.enrollments[0].progress}%` }}></div>
+                    )}
+                    {isPublic && (
+                        <div className="mt-10 p-6 border border-blue-500/30 bg-blue-500/5">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-blue-400 mb-4 leading-relaxed">
+                                Estás en modo de visualización pública. Inicia sesión para guardar tu progreso y obtener certificaciones.
+                            </p>
+                            <Link href="/login" className="block w-full py-3 bg-blue-600 text-white text-center text-[9px] font-black uppercase tracking-[0.3em] hover:bg-blue-500 transition-all">
+                                INICIAR SESIÓN
+                            </Link>
                         </div>
-                    </div>
+                    )}
                 </div>
                 
                 <div className="flex-1 overflow-y-auto custom-scrollbar-hidden bg-white/[0.01]">
@@ -242,7 +254,7 @@ export default function LessonPlayer({ course, lesson, prevLesson, isCompleted, 
                                         )}
                                     </div>
 
-                                    {(quiz.length > 0 && quizStep === "CONTENT" && !isCompleted) ? (
+                                    {(quiz.length > 0 && quizStep === "CONTENT" && !isCompleted && !isPublic) ? (
                                         <button 
                                             onClick={handleStartQuiz}
                                             className="px-12 py-5 bg-[#0F1923] text-white text-[11px] font-black uppercase tracking-[0.4em] hover:bg-[#E8341A] transition-all flex items-center gap-4 shadow-xl"
@@ -250,13 +262,19 @@ export default function LessonPlayer({ course, lesson, prevLesson, isCompleted, 
                                             Iniciar Validación <ArrowRight size={18} />
                                         </button>
                                     ) : (
-                                        <form action={markCompletedAction}>
-                                            <button type="submit" className={`px-12 py-5 text-[11px] font-black uppercase tracking-[0.4em] transition-all flex items-center justify-center gap-4 skew-x-[-12deg] group relative overflow-hidden ${isCompleted ? 'bg-green-600 text-white' : 'bg-[#E8341A] text-white shadow-[0_20px_50px_-10px_rgba(232,52,26,0.5)]'}`}>
-                                                <div className="skew-x-[12deg] flex items-center gap-4 relative z-10">
-                                                    {isCompleted ? <>Fase Completada <CheckCircle2 size={18} /></> : <>Finalizar Fase <ChevronRight size={18} /></>}
-                                                </div>
-                                            </button>
-                                        </form>
+                                        isPublic ? (
+                                            <Link href="/login" className="px-12 py-5 bg-[#0F1923] text-white text-[11px] font-black uppercase tracking-[0.4em] hover:bg-blue-600 transition-all flex items-center gap-4 skew-x-[-12deg]">
+                                                <div className="skew-x-[12deg] flex items-center gap-4">Regístrate para Finalizar <ChevronRight size={18} /></div>
+                                            </Link>
+                                        ) : (
+                                            <form action={markCompletedAction}>
+                                                <button type="submit" className={`px-12 py-5 text-[11px] font-black uppercase tracking-[0.4em] transition-all flex items-center justify-center gap-4 skew-x-[-12deg] group relative overflow-hidden ${isCompleted ? 'bg-green-600 text-white' : 'bg-[#E8341A] text-white shadow-[0_20px_50px_-10px_rgba(232,52,26,0.5)]'}`}>
+                                                    <div className="skew-x-[12deg] flex items-center gap-4 relative z-10">
+                                                        {isCompleted ? <>Fase Completada <CheckCircle2 size={18} /></> : <>Finalizar Fase <ChevronRight size={18} /></>}
+                                                    </div>
+                                                </button>
+                                            </form>
+                                        )
                                     )}
                                 </div>
                             </>

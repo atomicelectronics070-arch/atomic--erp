@@ -8,8 +8,8 @@ import { sendWhatsAppMessage } from "@/lib/whatsapp/service"
 
 export default async function LessonPage({ params }: { params: { courseSlug: string, lessonSlug: string } }) {
     const session = await getServerSession(authOptions)
-    if (!session) redirect("/login")
-    const userId = session.user.id
+    const userId = session?.user?.id || "public"
+    const isPublic = !session
 
     const course = await prisma.course.findUnique({
         where: { slug: params.courseSlug },
@@ -25,7 +25,10 @@ export default async function LessonPage({ params }: { params: { courseSlug: str
         }
     })
 
-    if (!course || course.enrollments.length === 0) {
+    if (!course) notFound()
+    
+    // Redirect only if authenticated but not enrolled
+    if (!isPublic && course.enrollments.length === 0) {
         redirect(`/web/academy/course/${params.courseSlug}`)
     }
 
@@ -92,6 +95,7 @@ export default async function LessonPage({ params }: { params: { courseSlug: str
             prevLesson={prevLesson} 
             isCompleted={isCompleted} 
             markCompletedAction={markCompleted} 
+            isPublic={isPublic}
         />
     )
 }

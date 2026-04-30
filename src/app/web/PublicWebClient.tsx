@@ -161,23 +161,21 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                 </section>
 
                 {/* 5. COLECCIONES */}
-                <div className="py-16 max-w-7xl mx-auto px-6 space-y-10">
+                <div className="py-16 max-w-7xl mx-auto px-6 space-y-16">
                     {orderedCollections.map((col: any, idx: number) => {
-                        const bProducts = filteredProducts.filter(p => p.collectionId === col.id).slice(0, 12)
+                        const bProducts = filteredProducts.filter(p => p.collectionId === col.id).slice(0, 10)
                         return (
-                            <div key={col.id} className="space-y-10">
-                                <CollectionBanner collection={col} products={bProducts} reverse={idx % 2 !== 0} userRole={userRole} />
-                                {col.slug === 'desarrollo' && (
-                                    <div className="pt-6">
-                                        <WebShowcase />
-                                    </div>
-                                )}
-                            </div>
+                            <CollectionBanner key={col.id} collection={col} products={bProducts} reverse={idx % 2 !== 0} userRole={userRole} />
                         )
                     })}
                 </div>
 
-                {/* 6. FEATURES BAR */}
+                {/* 6. SOFTWARE & WEB SHOWCASE - Dedicated Section */}
+                <section id="demos" className="py-20 max-w-7xl mx-auto px-6">
+                    <WebShowcase />
+                </section>
+
+                {/* 7. FEATURES BAR */}
                 <section className="py-10 border-t border-slate-800/50 mt-8">
                     <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-6">
                         {[
@@ -325,12 +323,22 @@ function CollectionBanner({ collection, products, reverse, userRole }: { collect
                     <p className="text-slate-400 text-xs leading-relaxed mb-7 line-clamp-3 font-normal">
                         {collection.description || `Equipamiento especializado para ${collection.name}. Selección exclusiva de productos de alto rendimiento.`}
                     </p>
-                    <Link
-                        href={`/web/collection/${collection.slug}`}
-                        className={`inline-flex self-start items-center gap-2 text-white text-[10px] font-semibold uppercase tracking-widest px-5 py-2.5 rounded-lg transition-all bg-slate-700 ${btnHover} border border-slate-600/50`}
-                    >
-                        Ver colección <ArrowRight size={13} />
-                    </Link>
+                    <div className="flex gap-3">
+                        <Link
+                            href={`/web/collection/${collection.slug}`}
+                            className={`inline-flex self-start items-center gap-2 text-white text-[10px] font-semibold uppercase tracking-widest px-5 py-2.5 rounded-lg transition-all bg-slate-700 ${btnHover} border border-slate-600/50`}
+                        >
+                            Ver colección <ArrowRight size={13} />
+                        </Link>
+                        {collection.slug === 'desarrollo' && (
+                            <button
+                                onClick={() => document.getElementById('demos')?.scrollIntoView({ behavior: 'smooth' })}
+                                className="inline-flex self-start items-center gap-2 text-white text-[10px] font-semibold uppercase tracking-widest px-5 py-2.5 rounded-lg transition-all bg-blue-900/30 border border-blue-500/30 hover:bg-blue-600"
+                            >
+                                Ver Demos Web <Bot size={13} />
+                            </button>
+                        )}
+                    </div>
                 </div>
 
                 <div className="w-full lg:w-2/3 p-5 lg:p-6 relative border-t lg:border-t-0 lg:border-l border-slate-700/50">
