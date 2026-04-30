@@ -28,7 +28,7 @@ export default function ContactPage() {
                         <div className="w-16 h-px bg-current opacity-20"></div>
                         Enlace de Sistemas
                     </div>
-                    <h1 className="text-6xl md:text-[10rem] font-light uppercase tracking-tighter leading-[0.8] italic mb-16">
+                    <h1 className="text-5xl md:text-8xl font-light uppercase tracking-tighter leading-[0.9] italic mb-12">
                         CONTACTO <br/> <span className="text-[#E8341A] font-black">Y RESEÑAS.</span>
                     </h1>
                 </div>
@@ -47,27 +47,27 @@ export default function ContactPage() {
                         <form className="space-y-10">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                                 <div className="space-y-3">
-                                    <label className="text-[8px] font-black uppercase tracking-[0.4em] text-white/10">Nombre Completo</label>
+                                    <label className="text-[9px] font-black uppercase tracking-[0.4em] text-white/40">Nombre Completo</label>
                                     <input 
                                         type="text" 
-                                        className="w-full bg-transparent border-b border-white/5 p-4 focus:border-[#E8341A]/40 transition-all outline-none font-medium text-xs uppercase tracking-widest placeholder:text-white/5"
+                                        className="w-full bg-slate-900/40 border border-white/10 rounded-lg p-4 focus:border-[#E8341A] transition-all outline-none font-medium text-[11px] uppercase tracking-widest placeholder:text-white/5"
                                         placeholder="SANTIAGO G."
                                     />
                                 </div>
                                 <div className="space-y-3">
-                                    <label className="text-[8px] font-black uppercase tracking-[0.4em] text-white/10">Email Corporativo</label>
+                                    <label className="text-[9px] font-black uppercase tracking-[0.4em] text-white/40">Email Corporativo</label>
                                     <input 
                                         type="email" 
-                                        className="w-full bg-transparent border-b border-white/5 p-4 focus:border-[#E8341A]/40 transition-all outline-none font-medium text-xs uppercase tracking-widest placeholder:text-white/5"
+                                        className="w-full bg-slate-900/40 border border-white/10 rounded-lg p-4 focus:border-[#E8341A] transition-all outline-none font-medium text-[11px] uppercase tracking-widest placeholder:text-white/5"
                                         placeholder="EMAIL@EMPRESA.COM"
                                     />
                                 </div>
                             </div>
                             <div className="space-y-3">
-                                <label className="text-[8px] font-black uppercase tracking-[0.4em] text-white/10">Requerimiento</label>
+                                <label className="text-[9px] font-black uppercase tracking-[0.4em] text-white/40">Requerimiento</label>
                                 <textarea 
                                     rows={4}
-                                    className="w-full bg-transparent border-b border-white/5 p-4 focus:border-[#E8341A]/40 transition-all outline-none font-medium text-xs uppercase tracking-widest resize-none placeholder:text-white/5"
+                                    className="w-full bg-slate-900/40 border border-white/10 rounded-lg p-4 focus:border-[#E8341A] transition-all outline-none font-medium text-[11px] uppercase tracking-widest resize-none placeholder:text-white/5"
                                     placeholder="DESCRIBA SU PROYECTO..."
                                 />
                             </div>

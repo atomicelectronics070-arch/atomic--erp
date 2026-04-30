@@ -37,6 +37,7 @@ export const AISearchBot = () => {
         { role: 'bot', content: '¡Hola! Soy el Asistente de Atomic. Puedo ayudarte a encontrar cámaras, power banks, cerraduras smart, antenas, iluminación y más. ¿Qué estás buscando hoy?' }
     ])
     const [isTyping, setIsTyping] = useState(false)
+    const [context, setContext] = useState<string | null>(null) // Context for better follow-ups
     const bottomRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
@@ -57,12 +58,30 @@ export const AISearchBot = () => {
 
         setTimeout(() => {
             const lower = text.toLowerCase()
+            
+            // 1. Check for specific numeric context (e.g. "dime el de 40" referring to power banks)
+            if (context === 'powerbank' && (lower.includes('40') || lower.includes('20') || lower.includes('10'))) {
+                const mah = lower.includes('40') ? '40.000 mAh' : (lower.includes('20') ? '20.000 mAh' : '10.000 mAh')
+                const reply = `El modelo de ${mah} es uno de nuestros más vendidos. He filtrado los resultados para que lo veas. ¿Quieres saber el precio exacto o ver las especificaciones?`
+                updateGlobalSearch(`power bank ${mah.replace('.','')}`)
+                setMessages(prev => [...prev, { role: 'bot', content: reply }])
+                setIsTyping(false)
+                return
+            }
+
+            // 2. Normal keyword mapping
             const match = KEYWORD_MAP.find(k => k.keys.some(kw => lower.includes(kw)))
 
             let reply: string
             if (match) {
                 reply = match.reply
-                if (match.query) updateGlobalSearch(match.query)
+                if (match.query) {
+                    updateGlobalSearch(match.query)
+                    // Set context for follow-up intelligence
+                    if (match.query.includes('power bank')) setContext('powerbank')
+                    else if (match.query.includes('camara')) setContext('camara')
+                    else setContext(null)
+                }
             } else {
                 reply = FALLBACK_REPLIES[fallbackIndex % FALLBACK_REPLIES.length]
                 fallbackIndex++

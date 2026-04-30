@@ -45,10 +45,10 @@ export default function BenefitsPage() {
                         <div className="w-16 h-px bg-current opacity-20"></div>
                         Vivir en el Futuro
                     </div>
-                    <h1 className="text-6xl md:text-[10rem] font-light uppercase tracking-tighter leading-[0.8] italic mb-16">
+                    <h1 className="text-5xl md:text-8xl font-light uppercase tracking-tighter leading-[0.9] italic mb-12">
                         BENEFICIOS <br/> <span className="text-[#E8341A] font-black">RESIDENCIALES.</span>
                     </h1>
-                    <p className="max-w-xl text-white/30 text-sm uppercase tracking-[0.3em] font-medium leading-relaxed italic">
+                    <p className="max-w-xl text-white/30 text-xs uppercase tracking-[0.3em] font-medium leading-relaxed italic">
                         La infraestructura esencial para la eficiencia y seguridad del siglo XXI.
                     </p>
                 </div>
