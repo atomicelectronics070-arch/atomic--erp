@@ -27,7 +27,7 @@ export default async function BlogsGallery() {
               <div className="w-8 h-8 rounded-none border border-white/10 flex items-center justify-center bg-white/5 group-hover:bg-white/10 transition-colors">
                   <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
               </div>
-              <span className="text-[10px] font-black uppercase tracking-[0.2em]">Volver a Tienda Pública</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.2em]">Volver a Tienda</span>
           </Link>
           <div className="text-[10px] uppercase font-black tracking-[0.3em] text-indigo-400">Atomic Corporate</div>
       </nav>

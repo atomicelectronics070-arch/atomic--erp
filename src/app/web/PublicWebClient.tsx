@@ -110,7 +110,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-16">
                             <div className="space-y-2">
                                 <h2 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tighter italic">
-                                    TIENDA <span className="text-[#E8341A]">PÚBLICA</span>
+                                    NUESTRA <span className="text-[#E8341A]">TIENDA</span>
                                 </h2>
                                 <p className="text-slate-500 text-[10px] uppercase tracking-[0.4em] font-bold">Catálogo de Alta Precisión</p>
                             </div>
