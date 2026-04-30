@@ -1,10 +1,10 @@
 "use client"
 
 import { useState, useRef, useEffect, useCallback } from "react"
-import { ShoppingBag, ChevronRight, ArrowRight, Shield, Zap, Truck, ChevronLeft, Hexagon, Star } from "lucide-react"
+import { ShoppingBag, ChevronRight, ArrowRight, Shield, Zap, Truck, ChevronLeft, Hexagon, Star, X, Smartphone, Database, Sparkles, Code } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import { calculateDiscountedPrice } from "@/lib/utils/pricing"
 
 const safeParseArray = (str: any, fallback: any = []) => {
@@ -165,7 +165,14 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                     {orderedCollections.map((col: any, idx: number) => {
                         const bProducts = filteredProducts.filter(p => p.collectionId === col.id).slice(0, 12)
                         return (
-                            <CollectionBanner key={col.id} collection={col} products={bProducts} reverse={idx % 2 !== 0} userRole={userRole} />
+                            <div key={col.id} className="space-y-10">
+                                <CollectionBanner collection={col} products={bProducts} reverse={idx % 2 !== 0} userRole={userRole} />
+                                {col.slug === 'desarrollo' && (
+                                    <div className="pt-6">
+                                        <WebShowcase />
+                                    </div>
+                                )}
+                            </div>
                         )
                     })}
                 </div>
@@ -424,5 +431,164 @@ function CategoriesBanner({ categories }: { categories: any[] }) {
                 </div>
             </div>
         </section>
+    )
+}
+
+/* ─── Web Demo Showcase (Development Section) ─── */
+const PORTFOLIO_ITEMS = [
+    {
+        id: 1,
+        title: "Instituto Sucre",
+        category: "Plataforma EduTech",
+        description: "Gestión académica integral. Redujo el tiempo de inscripción de estudiantes en un 80%.",
+        accent: "#6366f1",
+        previewUrl: "/instituto_sucre.html"
+    },
+    {
+        id: 2,
+        title: "Bodegas Logistics",
+        category: "Logística Corporativo",
+        description: "Control de inventario en tiempo real con trazabilidad QR multi-almacén.",
+        accent: "#10b981",
+        previewUrl: "/bodegas.html"
+    },
+    {
+        id: 3,
+        title: "Scraper Pro",
+        category: "Inteligencia Competitiva",
+        description: "Motor automatizado de extracción de datos masivos impulsado por Puppeteer.",
+        accent: "#a855f7",
+        previewUrl: "/scraper/index.html"
+    },
+    {
+        id: 4,
+        title: "Couple Games",
+        category: "Entretenimiento B2C",
+        description: "Aplicación interactiva con micro-animaciones fluidas diseñada para alto engagement.",
+        accent: "#ec4899",
+        previewUrl: "/couples-game/index.html"
+    },
+    {
+        id: 5,
+        title: "SOFT3 Logistics",
+        category: "ERP de Logística",
+        description: "Sistema robusto de gestión de inventarios desarrollado en Laravel para alta escalabilidad.",
+        accent: "#3b82f6",
+        previewUrl: "/soft3.html"
+    }
+]
+
+function WebShowcase() {
+    const [activePreview, setActivePreview] = useState<{url: string, title: string, accent: string} | null>(null)
+    const scrollRef = useRef<HTMLDivElement>(null)
+
+    const scroll = (dir: 'left' | 'right') => {
+        scrollRef.current?.scrollBy({ left: dir === 'right' ? 350 : -350, behavior: 'smooth' })
+    }
+
+    return (
+        <div className="bg-slate-900/40 border border-slate-700/30 rounded-2xl p-8 relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-8 opacity-5">
+                <Code size={120} />
+            </div>
+            
+            <div className="relative z-10 flex flex-col md:flex-row justify-between items-end mb-10 gap-4">
+                <div>
+                    <div className="flex items-center gap-2 text-blue-400 mb-2">
+                        <Sparkles size={14} />
+                        <span className="text-[10px] font-bold uppercase tracking-[0.3em]">Software & Web Demos</span>
+                    </div>
+                    <h3 className="text-2xl font-bold text-white uppercase tracking-tight">Showcase de <span className="text-blue-500">Desarrollo</span></h3>
+                </div>
+                <div className="flex gap-2">
+                    <button onClick={() => scroll('left')} className="w-10 h-10 rounded-full border border-slate-700 bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition-colors">
+                        <ChevronLeft size={20} />
+                    </button>
+                    <button onClick={() => scroll('right')} className="w-10 h-10 rounded-full border border-slate-700 bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition-colors">
+                        <ChevronRight size={20} />
+                    </button>
+                </div>
+            </div>
+
+            <div ref={scrollRef} className="flex gap-6 overflow-x-auto hide-scrollbar pb-4 snap-x">
+                {PORTFOLIO_ITEMS.map((item) => (
+                    <motion.div 
+                        key={item.id}
+                        whileHover={{ y: -5 }}
+                        className="snap-start shrink-0 w-72 bg-slate-800/80 border border-slate-700/50 rounded-xl overflow-hidden group cursor-pointer"
+                        onClick={() => setActivePreview({ url: item.previewUrl, title: item.title, accent: item.accent })}
+                    >
+                        {/* Fake Browser Top */}
+                        <div className="bg-slate-950 px-3 py-2 flex items-center gap-1.5 border-b border-slate-800">
+                            <div className="w-2 h-2 rounded-full bg-red-500/50" />
+                            <div className="w-2 h-2 rounded-full bg-yellow-500/50" />
+                            <div className="w-2 h-2 rounded-full bg-green-500/50" />
+                            <div className="ml-2 flex-1 bg-slate-900 h-3 rounded-sm" />
+                        </div>
+                        
+                        {/* Preview Image / Placeholder */}
+                        <div className="h-40 relative bg-slate-900 flex items-center justify-center overflow-hidden">
+                            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 opacity-50 group-hover:opacity-100 transition-opacity" />
+                            <iframe 
+                                src={item.previewUrl} 
+                                className="w-[400%] h-[400%] origin-top-left scale-[0.25] pointer-events-none opacity-40 group-hover:opacity-80 transition-opacity"
+                                tabIndex={-1}
+                            />
+                            <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/40 opacity-100 group-hover:opacity-0 transition-opacity">
+                                <Smartphone size={32} className="text-white/20 mb-2" />
+                                <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Ver Demo</span>
+                            </div>
+                        </div>
+
+                        {/* Info */}
+                        <div className="p-4 border-t border-slate-700/50">
+                            <span className="text-[9px] font-bold uppercase tracking-widest mb-1 block" style={{ color: item.accent }}>{item.category}</span>
+                            <h4 className="text-sm font-bold text-white mb-2">{item.title}</h4>
+                            <p className="text-[10px] text-slate-500 leading-relaxed line-clamp-2">{item.description}</p>
+                        </div>
+                    </motion.div>
+                ))}
+            </div>
+
+            {/* Preview Modal */}
+            <AnimatePresence>
+                {activePreview && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-md p-4 md:p-10"
+                        onClick={() => setActivePreview(null)}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.9, opacity: 0 }}
+                            className="relative w-full h-full max-w-6xl bg-slate-950 border border-slate-700 shadow-2xl rounded-xl overflow-hidden flex flex-col"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="h-14 bg-slate-900 border-b border-slate-800 flex items-center justify-between px-6">
+                                <div className="flex items-center gap-4">
+                                    <div className="flex gap-2">
+                                        <button onClick={() => setActivePreview(null)} className="w-3 h-3 rounded-full bg-red-500" />
+                                        <div className="w-3 h-3 rounded-full bg-yellow-500" />
+                                        <div className="w-3 h-3 rounded-full bg-green-500" />
+                                    </div>
+                                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest border-l border-slate-800 pl-4">
+                                        Demo: <span className="text-white">{activePreview.title}</span>
+                                    </span>
+                                </div>
+                                <button onClick={() => setActivePreview(null)} className="text-slate-500 hover:text-white transition-colors">
+                                    <X size={20} />
+                                </button>
+                            </div>
+                            <div className="flex-1 bg-white">
+                                <iframe src={activePreview.url} className="w-full h-full border-0" />
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </div>
     )
 }
