@@ -20,7 +20,7 @@ export default function WebLayout({ children }: { children: React.ReactNode }) {
                     {/* Logo + Links */}
                     <div className="flex items-center space-x-12">
                         <Link href="/web" className="text-2xl font-black tracking-tighter uppercase italic text-white group">
-                            ATOMIC<span className="text-[#E8341A] neon-text group-hover:text-[#FF4D2D] transition-colors">.</span>
+                            ATOMIC<span className="text-[#FF0000] drop-shadow-[0_0_10px_#FF0000] group-hover:text-[#FF4D2D] transition-colors">!</span>
                         </Link>
                         <div className="hidden md:flex space-x-8 text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
                             <Link
