@@ -1,0 +1,80 @@
+=== BYPASS SCRAPER STARTED 2026-04-30T17:55:44.584Z ===
+[2026-04-30T17:55:44.590Z] 🌍 Launching stealth browser...
+[2026-04-30T17:55:45.326Z] 
+🚀 === IMPORMEL (bypass) ===
+[2026-04-30T17:56:16.553Z]   Impormel p1 error: page.goto: Timeout 30000ms exceeded.
+Call log:
+[2m  - navigating to "https://impormel.com/shop/", waiting until "domcontentloaded"[22m
+
+[2026-04-30T17:56:46.567Z]   Impormel p2 error: page.goto: Timeout 30000ms exceeded.
+Call log:
+[2m  - navigating to "https://impormel.com/shop/page/2/", waiting until "domcontentloaded"[22m
+
+[2026-04-30T17:57:16.578Z]   Impormel p3 error: page.goto: Timeout 30000ms exceeded.
+Call log:
+[2m  - navigating to "https://impormel.com/shop/page/3/", waiting until "domcontentloaded"[22m
+
+[2026-04-30T17:57:16.646Z] 
+🚀 === IDC MAYORISTAS (bypass) ===
+[2026-04-30T17:57:41.797Z]   IDC linea-blanca p1: 12/12 ✅
+[2026-04-30T17:57:56.533Z]   IDC linea-blanca p2: 12/12 ✅
+[2026-04-30T17:58:11.093Z]   IDC linea-blanca p3: 12/12 ✅
+[2026-04-30T17:58:26.131Z]   IDC linea-blanca p4: 12/12 ✅
+[2026-04-30T17:58:41.311Z]   IDC linea-blanca p5: 8/8 ✅
+[2026-04-30T17:59:13.134Z]   IDC tecnologia p1: 12/12 ✅
+[2026-04-30T17:59:39.863Z]   IDC tecnologia p2: 12/12 ✅
+[2026-04-30T18:00:04.416Z]   IDC tecnologia p3: 12/12 ✅
+[2026-04-30T18:00:26.873Z]   IDC tecnologia p4: 12/12 ✅
+[2026-04-30T18:00:48.856Z]   IDC tecnologia p5: 12/12 ✅
+[2026-04-30T18:01:09.559Z]   IDC tecnologia p6: 12/12 ✅
+[2026-04-30T18:01:27.315Z]   IDC tecnologia p7: 12/12 ✅
+[2026-04-30T18:01:43.227Z]   IDC tecnologia p8: 12/12 ✅
+[2026-04-30T18:01:58.815Z]   IDC tecnologia p9: 12/12 ✅
+[2026-04-30T18:02:14.795Z]   IDC tecnologia p10: 12/12 ✅
+[2026-04-30T18:02:30.796Z]   IDC tecnologia p11: 12/12 ✅
+[2026-04-30T18:02:47.831Z]   IDC tecnologia p12: 12/12 ✅
+[2026-04-30T18:03:08.626Z]   IDC tecnologia p13: 12/12 ✅
+[2026-04-30T18:03:25.468Z]   IDC tecnologia p14: 12/12 ✅
+[2026-04-30T18:03:41.125Z]   IDC tecnologia p15: 12/12 ✅
+[2026-04-30T18:03:56.517Z]   IDC tecnologia p16: 12/12 ✅
+[2026-04-30T18:04:12.840Z]   IDC tecnologia p17: 12/12 ✅
+[2026-04-30T18:04:31.949Z]   IDC tecnologia p18: 12/12 ✅
+[2026-04-30T18:04:54.157Z]   IDC tecnologia p19: 12/12 ✅
+[2026-04-30T18:05:16.174Z]   IDC tecnologia p20: 12/12 ✅
+[2026-04-30T18:05:38.902Z]   IDC celulares p1: 12/12 ✅
+[2026-04-30T18:05:59.500Z]   IDC celulares p2: 12/12 ✅
+[2026-04-30T18:06:20.365Z]   IDC celulares p3: 12/12 ✅
+[2026-04-30T18:06:41.991Z]   IDC celulares p4: 12/12 ✅
+[2026-04-30T18:07:04.452Z]   IDC celulares p5: 12/12 ✅
+[2026-04-30T18:07:28.360Z]   IDC celulares p6: 12/12 ✅
+[2026-04-30T18:07:48.327Z]   IDC celulares p7: 12/12 ✅
+[2026-04-30T18:08:12.280Z]   IDC celulares p8: 12/12 ✅
+[2026-04-30T18:08:31.233Z]   IDC celulares p9: 12/12 ✅
+[2026-04-30T18:08:54.268Z]   IDC celulares p10: 12/12 ✅
+[2026-04-30T18:09:17.622Z]   IDC celulares p11: 12/12 ✅
+[2026-04-30T18:09:28.167Z]   IDC celulares p12: 3/3 ✅
+[2026-04-30T18:09:39.022Z] 
+🚀 === IMPORTADORA ATENEA (bypass) ===
+[2026-04-30T18:09:43.987Z] 
+🚀 === IMPORTADORA ESPINOZA (bypass) ===
+[2026-04-30T18:09:44.171Z]   📂 Espinoza cat: accesorios-para-celular
+[2026-04-30T18:09:48.443Z]   📂 Espinoza cat: celulares
+[2026-04-30T18:09:51.906Z]   📂 Espinoza cat: computacion
+[2026-04-30T18:09:55.236Z]   📂 Espinoza cat: entretenimiento-y-hogar
+[2026-04-30T18:09:59.216Z]   📂 Espinoza cat: gaming
+[2026-04-30T18:10:02.865Z]   📂 Espinoza cat: electrodomesticos
+[2026-04-30T18:10:06.532Z]   📂 Espinoza cat: herramientas
+[2026-04-30T18:10:09.896Z]   📂 Espinoza cat: audio
+[2026-04-30T18:10:13.603Z] 
+🚀 === LA COMPETENCIA (bypass) ===
+[2026-04-30T18:10:27.317Z] 
+╔══════════════════════════════════════════╗
+[2026-04-30T18:10:27.319Z] ║      📊 BYPASS SCRAPER FINAL REPORT      ║
+[2026-04-30T18:10:27.320Z] ╚══════════════════════════════════════════╝
+[2026-04-30T18:10:27.321Z]   Impormel                            0 productos
+[2026-04-30T18:10:27.322Z]   IDC Mayoristas                    431 productos
+[2026-04-30T18:10:27.323Z]   Importadora Atenea                  0 productos
+[2026-04-30T18:10:27.324Z]   Importadora Espinoza                0 productos
+[2026-04-30T18:10:27.324Z]   La Competencia                      0 productos
+[2026-04-30T18:10:27.325Z]   ──────────────────────────────────────────
+[2026-04-30T18:10:27.326Z]   TOTAL:                           431 productos

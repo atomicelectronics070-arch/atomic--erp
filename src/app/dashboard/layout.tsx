@@ -170,7 +170,10 @@ export default function DashboardLayout({
                             >
                                 <NavLink href="/dashboard/training" icon={<BrainCircuit size={16} />} label="IA Asistente" isSubItem />
                                 <NavLink href="/dashboard/software" icon={<Code2 size={16} />} label="Desarrollo Software" isSubItem />
-                                <NavLink href="/dashboard/admin/academy" icon={<GraduationCap size={16} />} label="Gestión Academia" isSubItem />
+                                <NavLink href="/academy" icon={<GraduationCap size={16} />} label="Academia Pública" isSubItem />
+                                {(role === "ADMIN" || role === "MANAGEMENT") && (
+                                    <NavLink href="/dashboard/academy" icon={<GraduationCap size={16} />} label="Gestión Academia" isSubItem />
+                                )}
                             </CollapsibleSection>
                         )}
 

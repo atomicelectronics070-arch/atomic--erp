@@ -34,14 +34,23 @@ export const JarvisAI = () => {
         setMessages(prev => [...prev, { role: "user", content: userMsg }])
         setIsLoading(true)
 
-        // Simulating Nemotron Logic
-        setTimeout(() => {
-            setMessages(prev => [...prev, { 
-                role: "model", 
-                content: `Protocolo Nemotron procesado. Análisis de "${userMsg}" completado. Los sistemas Atómicos están operando al 99.8% de eficiencia. ¿Deseas un reporte detallado del nodo actual?` 
-            }])
+        // Nemotron API connection
+        try {
+            const res = await fetch("/api/jarvis", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    // Only send last 5 messages to save context limit if needed
+                    messages: [...messages.slice(-5), { role: "user", content: userMsg }]
+                })
+            })
+            const data = await res.json()
+            setMessages(prev => [...prev, { role: "model", content: data.content || "Fallo de comunicación." }])
+        } catch (error) {
+            setMessages(prev => [...prev, { role: "model", content: "Error crítico de conexión neuronal." }])
+        } finally {
             setIsLoading(false)
-        }, 1200)
+        }
     }
 
     return (

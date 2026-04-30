@@ -56,6 +56,7 @@ export default function BlogsDashboard() {
       tiktokOpenId: ""
   })
   const [savingSettings, setSavingSettings] = useState(false)
+  const [isNemotronProcessing, setIsNemotronProcessing] = useState(false)
 
   const fetchBlogs = async () => {
     setLoading(true)
@@ -157,6 +158,37 @@ export default function BlogsDashboard() {
     if (!confirm("⚠️ Confirmación Crítica: ¿Eliminar este artículo permanentemente?")) return
     const res = await fetch(`/api/blogs?id=${id}`, { method: "DELETE" })
     if (res.ok) fetchBlogs()
+  }
+
+  const handleOmniPublish = async () => {
+      setIsNemotronProcessing(true)
+      const targets = Object.keys(socialTargets).filter(k => socialTargets[k as keyof typeof socialTargets])
+      
+      try {
+          const res = await fetch("/api/blogs/omni-publish", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                  text: excerpt || content || title,
+                  imageUrl: contentType === 'article' ? imageUrl : null,
+                  videoUrl: contentType === 'video' ? videoUrl : null,
+                  targets,
+                  authorId: (session?.user as any)?.id
+              })
+          })
+          
+          if (res.ok) {
+              closeModal()
+              fetchBlogs()
+              alert("Nemotron procesó y distribuyó exitosamente el contenido.")
+          } else {
+              alert("Error de Nemotron al procesar.")
+          }
+      } catch(e) {
+          console.error(e)
+      } finally {
+          setIsNemotronProcessing(false)
+      }
   }
 
   const handleTogglePermission = async (userId: string, currentVal: boolean) => {
@@ -668,14 +700,25 @@ export default function BlogsDashboard() {
                                 </div>
                             </button>
                             
-                             <div className="ms-auto flex items-center gap-8">
+                            <div className="ms-auto flex items-center gap-8">
                                 <button type="button" onClick={closeModal} className="px-10 py-5 text-[10px] font-black uppercase tracking-[0.4em] text-slate-700 hover:text-white transition-all italic">
                                     CANCELAR_AUD
                                 </button>
-                                <button type="submit" className="bg-secondary text-white px-14 py-6 text-[11px] font-black uppercase tracking-[0.4em] shadow-[0_20px_50px_-10px_rgba(255,99,71,0.6)] hover:bg-white hover:text-secondary rounded-none-[2rem] active:scale-95 italic skew-x-[-12deg] group transition-all">
-                                    <div className="skew-x-[12deg] flex items-center gap-6">
-                                        <ShieldCheck size={24} className="group-hover/btn:scale-110 transition-transform" />
-                                        <span>AUTORIZAR Y PUBLICAR</span>
+                                <button
+                                    type="button"
+                                    onClick={handleOmniPublish}
+                                    disabled={isNemotronProcessing}
+                                    className="bg-indigo-600 text-white px-8 py-5 text-[10px] font-black uppercase tracking-[0.4em] shadow-[0_0_20px_rgba(79,70,229,0.5)] hover:bg-white hover:text-indigo-600 rounded-none active:scale-95 italic skew-x-[-12deg] group transition-all"
+                                >
+                                    <div className="skew-x-[12deg] flex items-center gap-4">
+                                        <Sparkles size={18} className={isNemotronProcessing ? "animate-spin" : "group-hover:rotate-12 transition-transform"} />
+                                        <span>{isNemotronProcessing ? 'NEMOTRON PENSANDO...' : 'AUTO-NEMOTRON'}</span>
+                                    </div>
+                                </button>
+                                <button type="submit" className="bg-secondary text-white px-10 py-5 text-[10px] font-black uppercase tracking-[0.4em] shadow-[0_20px_50px_-10px_rgba(255,99,71,0.6)] hover:bg-white hover:text-secondary rounded-none active:scale-95 italic skew-x-[-12deg] group transition-all">
+                                    <div className="skew-x-[12deg] flex items-center gap-4">
+                                        <ShieldCheck size={18} className="group-hover:scale-110 transition-transform" />
+                                        <span>GUARDAR MANUAL</span>
                                     </div>
                                 </button>
                              </div>

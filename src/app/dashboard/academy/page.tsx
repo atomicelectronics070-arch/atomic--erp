@@ -101,9 +101,14 @@ export default async function AcademyAdminPage() {
                                                 <Users size={14} className="text-blue-400" /> {course._count.enrollments} <span className="opacity-40">ALUMNOS</span>
                                             </span>
                                         </div>
-                                        <Link href={`/dashboard/academy/course/${course.id}`}>
-                                            <NeonButton variant="outline" className="!px-6 !py-3">GESTIONAR</NeonButton>
-                                        </Link>
+                                        <div className="flex gap-2">
+                                            <Link href={`/academy/${course.slug}`} target="_blank">
+                                                <NeonButton variant="outline" className="!px-4 !py-3 !text-[8px]">VER ↗</NeonButton>
+                                            </Link>
+                                            <Link href={`/dashboard/academy/course/${course.id}`}>
+                                                <NeonButton variant="outline" className="!px-6 !py-3">GESTIONAR</NeonButton>
+                                            </Link>
+                                        </div>
                                     </div>
                                 </CyberCard>
                             ))}
