@@ -125,7 +125,7 @@ function DemoChat({ demo, onClose }: { demo: typeof demos[0], onClose: () => voi
                     </div>
                     <div className="flex items-center gap-4">
                         <a 
-                            href="https://wa.me/593969043453?text=Hola, me interesa un proyecto de " + demo.chatContext
+                            href={`https://wa.me/593969043453?text=Hola, me interesa un proyecto de ${demo.chatContext}`}
                             target="_blank"
                             className="text-[9px] font-black uppercase tracking-widest px-3 py-1.5 border border-green-500/30 text-green-400 hover:bg-green-500/10 transition-colors"
                         >

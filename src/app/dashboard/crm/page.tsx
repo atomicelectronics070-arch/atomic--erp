@@ -312,9 +312,6 @@ function InputBlock({ label, value, onChange, placeholder = "..." }: any) {
 function StatCard({ label, value, icon, color, showPulse = false }: any) {
     return null; // Legacy replacement
 }
-      </div>
-    )
-}
 
 
 
