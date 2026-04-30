@@ -61,7 +61,14 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
         p.description?.toLowerCase().includes(searchQuery.toLowerCase())
     )
 
-    const featuredProducts = filteredProducts.filter(p => p.featured)
+    const featuredProducts = filteredProducts.filter(p => {
+        const nameStr = p.name.toLowerCase();
+        return p.featured || 
+               nameStr.includes('power bank') || 
+               nameStr.includes('banco de poder') || 
+               nameStr.includes('espia') || 
+               nameStr.includes('espía');
+    })
 
     const desiredOrder = ["tecnologia-residencial", "desarrollo", "gaming", "automatizacion"]
     const orderedCollections = desiredOrder
