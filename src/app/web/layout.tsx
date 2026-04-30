@@ -30,7 +30,7 @@ export default function WebLayout({ children }: { children: React.ReactNode }) {
                             <Link
                                 href="/web/products"
                                 className={pathname.includes('/product') ? 'text-[#E8341A] border-b-2 border-[#E8341A] pb-1' : 'hover:text-[#E8341A] transition-colors'}
-                            >Productos</Link>
+                            >Tienda Pública</Link>
                             <Link
                                 href="/web/categories"
                                 className={pathname === '/web/categories' ? 'text-[#E8341A] border-b-2 border-[#E8341A] pb-1' : 'hover:text-[#E8341A] transition-colors'}
@@ -128,8 +128,8 @@ export default function WebLayout({ children }: { children: React.ReactNode }) {
                                 ATOMIC<span className="text-[#E8341A]">.</span>
                             </span>
                         </div>
-                        <p className="text-xs text-white/25 leading-relaxed font-medium max-w-xs uppercase tracking-widest">
-                            Infraestructura Modular de Alto Nivel para el mercado global corporativo.
+                        <p className="text-[10px] text-white/40 leading-relaxed font-bold max-w-xs uppercase tracking-widest">
+                            Líder en infraestructura tecnológica, seguridad avanzada y soluciones de automatización industrial y residencial.
                         </p>
                         {/* Blue accent tag */}
                         <div className="inline-flex items-center gap-2 bg-[#2563EB]/10 border border-[#2563EB]/20 rounded-none px-3 py-1.5">
@@ -163,7 +163,7 @@ export default function WebLayout({ children }: { children: React.ReactNode }) {
                                 <li className="hover:text-white transition-colors"><Link href="/web/products">Catálogo</Link></li>
                                 <li className="hover:text-white transition-colors"><Link href="/web/categories">Categorías</Link></li>
                                 <li className="hover:text-white transition-colors"><Link href="/web/contact">Reseñas y Contacto</Link></li>
-                                <li className="hover:text-white transition-colors"><Link href="/login">Portal ERP</Link></li>
+                                <li className="hover:text-white transition-colors"><Link href="/login">Acceso</Link></li>
                             </ul>
                         </div>
                     </div>

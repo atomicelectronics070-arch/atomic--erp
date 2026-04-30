@@ -75,7 +75,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
         })
 
     return (
-        <div className="min-h-screen bg-[#0F172A] text-slate-200 selection:bg-[#E8341A]/20 pb-20" style={{ fontFamily: "'IBM Plex Sans', ui-sans-serif, system-ui" }}>
+        <div className="min-h-screen bg-[#020617] text-slate-200 selection:bg-[#E8341A]/20 pb-20 font-sans">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6 }}>
 
                 {/* 1. CATEGORÍAS */}
@@ -104,17 +104,55 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                     </div>
                 </section>
 
-                {/* 3. NUESTROS PRODUCTOS — infinite horizontal scroll */}
-                <section className="py-12 border-t border-slate-800/50" id="productos">
-                    <div className="max-w-7xl mx-auto px-6 mb-6 flex items-end justify-between">
-                        <div>
-                            <h2 className="text-xl font-semibold text-white uppercase tracking-widest">
-                                NUESTROS <span className="font-bold text-[#E8341A]">PRODUCTOS</span>
-                            </h2>
-                            <p className="text-slate-500 text-[10px] mt-1 uppercase tracking-[0.3em] font-medium">Catálogo General</p>
+                {/* 3. TIENDA PÚBLICA — Professional Search & Catalog */}
+                <section className="py-20 border-t border-slate-800/50" id="productos">
+                    <div className="max-w-7xl mx-auto px-6 mb-12">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-16">
+                            <div className="space-y-2">
+                                <h2 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tighter italic">
+                                    TIENDA <span className="text-[#E8341A]">PÚBLICA</span>
+                                </h2>
+                                <p className="text-slate-500 text-[10px] uppercase tracking-[0.4em] font-bold">Catálogo de Alta Precisión</p>
+                            </div>
+
+                            {/* Professional Search Bar */}
+                            <div className="relative w-full md:w-[400px]">
+                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+                                <input 
+                                    type="text" 
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    placeholder="Buscar por nombre, marca o categoría..."
+                                    className="w-full bg-slate-900 border border-slate-700/50 rounded-none p-4 pl-12 text-sm uppercase tracking-widest placeholder:text-slate-600 focus:border-[#E8341A] focus:bg-slate-800/80 transition-all outline-none"
+                                />
+                                {searchQuery && (
+                                    <button 
+                                        onClick={() => setSearchQuery("")}
+                                        className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white"
+                                    >
+                                        <X size={16} />
+                                    </button>
+                                )}
+                            </div>
                         </div>
+
+                        {searchQuery ? (
+                            filteredProducts.length === 0 ? (
+                                <div className="py-20 text-center border border-dashed border-slate-800 rounded-none">
+                                    <p className="text-slate-500 text-[10px] uppercase tracking-[0.3em] font-black">No se encontraron productos para "{searchQuery}"</p>
+                                    <button onClick={() => setSearchQuery("")} className="mt-4 text-[#E8341A] text-[10px] font-black uppercase tracking-widest hover:underline">Limpiar Búsqueda</button>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                                    {filteredProducts.slice(0, 40).map((p: any, i: number) => (
+                                        <MiniProductCard key={p.id} product={p} userRole={userRole} delay={i * 0.02} />
+                                    ))}
+                                </div>
+                            )
+                        ) : (
+                            <InfiniteProductScroll products={filteredProducts.slice(0, 80)} userRole={userRole} />
+                        )}
                     </div>
-                    <InfiniteProductScroll products={filteredProducts.slice(0, 80)} userRole={userRole} />
                 </section>
 
                 {/* 4. BANNER ACADEMY */}
