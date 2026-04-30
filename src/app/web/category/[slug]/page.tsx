@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma"
 import Link from "next/link"
-import { ArrowLeft, Download, ShoppingBag, ChevronRight } from "lucide-react"
+import { ArrowLeft, Download, ShoppingBag, ChevronRight, Shield } from "lucide-react"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { calculateDiscountedPrice } from "@/lib/utils/pricing"
