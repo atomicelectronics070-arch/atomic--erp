@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect, useCallback } from "react"
-import { ShoppingBag, ChevronRight, ArrowRight, Shield, Zap, Truck, ChevronLeft, Hexagon, Star, X, Smartphone, Database, Sparkles, Code } from "lucide-react"
+import { ShoppingBag, ChevronRight, ArrowRight, Shield, Zap, Truck, ChevronLeft, Hexagon, Star, X, Smartphone, Database, Sparkles, Code, Bot, Download } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
@@ -366,72 +366,145 @@ function InfiniteProductScroll({ products, userRole }: { products: any[], userRo
 function CollectionBanner({ collection, products, reverse, userRole }: { collection: any, products: any[], reverse: boolean, userRole?: string }) {
     const galleryRef = useRef<HTMLDivElement>(null)
     const scrollGallery = (dir: 'left' | 'right') => {
-        galleryRef.current?.scrollBy({ left: dir === 'right' ? 250 : -250, behavior: 'smooth' })
+        galleryRef.current?.scrollBy({ left: dir === 'right' ? 300 : -300, behavior: 'smooth' })
     }
 
     const isRed = collection.slug.includes('gaming') || collection.slug.includes('automatizacion')
-    const textAccent = isRed ? "text-[#E8341A]" : "text-[#2563EB]"
-    const btnHover = isRed ? "hover:bg-[#E8341A]" : "hover:bg-[#2563EB]"
+    const textAccent = isRed ? "text-[#E8341A]" : "text-blue-500"
+    const bgAccent = isRed ? "from-[#E8341A]/20" : "from-blue-600/20"
+    const btnHover = isRed ? "hover:bg-[#E8341A] hover:border-[#E8341A]" : "hover:bg-blue-600 hover:border-blue-600"
+    const badgeColor = isRed ? "bg-[#E8341A]/10 text-[#E8341A] border-[#E8341A]/30" : "bg-blue-500/10 text-blue-400 border-blue-500/30"
 
     return (
-        <section className="bg-slate-800/30 border border-slate-700/50 rounded-2xl overflow-hidden shadow-lg">
-            <div className={`flex flex-col lg:flex-row ${reverse ? 'lg:flex-row-reverse' : ''} items-stretch`}>
-                <div className="w-full lg:w-1/3 p-8 md:p-10 flex flex-col justify-center bg-slate-800/80">
-                    <span className={`${textAccent} text-[9px] font-semibold uppercase tracking-[0.3em] mb-3 block`}>Colección</span>
-                    <h2 className="text-2xl font-semibold text-white tracking-tight leading-tight mb-3 uppercase">{collection.name}</h2>
-                    <p className="text-slate-400 text-xs leading-relaxed mb-7 line-clamp-3 font-normal">
-                        {collection.description || `Equipamiento especializado para ${collection.name}. Selección exclusiva de productos de alto rendimiento.`}
-                    </p>
-                    <div className="flex gap-3">
-                        <Link
-                            href={`/web/collection/${collection.slug}`}
-                            className={`inline-flex self-start items-center gap-2 text-white text-[10px] font-semibold uppercase tracking-widest px-5 py-2.5 rounded-lg transition-all bg-slate-700 ${btnHover} border border-slate-600/50`}
-                        >
-                            Ver colección <ArrowRight size={13} />
-                        </Link>
-                        {collection.slug === 'desarrollo' && (
-                            <button
-                                onClick={() => document.getElementById('demos')?.scrollIntoView({ behavior: 'smooth' })}
-                                className="inline-flex self-start items-center gap-2 text-white text-[10px] font-semibold uppercase tracking-widest px-5 py-2.5 rounded-lg transition-all bg-blue-900/30 border border-blue-500/30 hover:bg-blue-600"
+        <motion.section 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.7 }}
+            className="group relative bg-[#0B1121] border border-slate-800/80 hover:border-slate-700/80 rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)] transition-colors duration-500"
+        >
+            {/* Background Glow effects */}
+            <div className={`absolute top-0 ${reverse ? 'right-0' : 'left-0'} w-[500px] h-[500px] bg-gradient-to-br ${bgAccent} to-transparent opacity-20 blur-[100px] pointer-events-none`} />
+            
+            <div className={`flex flex-col lg:flex-row ${reverse ? 'lg:flex-row-reverse' : ''} items-stretch relative z-10`}>
+                
+                {/* Left Side: Premium Text Info */}
+                <div className={`w-full lg:w-[45%] p-10 md:p-14 flex flex-col justify-center relative border-b lg:border-b-0 ${reverse ? 'lg:border-l border-slate-800' : 'lg:border-r border-slate-800'} overflow-hidden`}>
+                    {/* Subtle grid background for text area */}
+                    <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.03] pointer-events-none mix-blend-overlay"></div>
+                    
+                    <div className="relative z-10">
+                        <div className="flex items-center gap-3 mb-6">
+                            <span className={`px-3 py-1 text-[9px] font-black uppercase tracking-[0.4em] rounded-full border ${badgeColor} backdrop-blur-sm flex items-center gap-2`}>
+                                <Sparkles size={10} />
+                                Colección Premium
+                            </span>
+                            <span className="px-3 py-1 text-[9px] font-bold uppercase tracking-widest rounded-full border border-slate-700 bg-slate-800/50 text-slate-400 backdrop-blur-sm">
+                                2026 Edition
+                            </span>
+                        </div>
+
+                        <h2 className="text-4xl md:text-5xl font-black text-white tracking-tighter leading-none mb-6 uppercase drop-shadow-lg">
+                            {collection.name}
+                        </h2>
+                        
+                        <p className="text-slate-400 text-[13px] leading-relaxed mb-10 font-medium max-w-md">
+                            {collection.description || `Equipamiento especializado y soluciones avanzadas para ${collection.name}. Eleva tu infraestructura tecnológica al siguiente nivel con calidad certificada.`}
+                        </p>
+
+                        <div className="flex flex-wrap gap-4 items-center">
+                            <Link
+                                href={`/web/collection/${collection.slug}`}
+                                className={`inline-flex items-center gap-3 text-white text-[11px] font-black uppercase tracking-widest px-8 py-4 rounded-xl transition-all duration-300 bg-slate-800/80 border border-slate-600 ${btnHover} shadow-xl`}
                             >
-                                Ver Demos Web <Bot size={13} />
-                            </button>
-                        )}
+                                Explorar Catálogo <ArrowRight size={16} />
+                            </Link>
+                            
+                            {collection.slug === 'desarrollo' || collection.slug === 'software-desarrollo' ? (
+                                <button
+                                    onClick={() => document.getElementById('demos')?.scrollIntoView({ behavior: 'smooth' })}
+                                    className="inline-flex items-center gap-3 text-white text-[11px] font-black uppercase tracking-widest px-8 py-4 rounded-xl transition-all duration-300 bg-gradient-to-r from-blue-600/20 to-blue-900/20 border border-blue-500/30 hover:bg-blue-600 hover:border-blue-500 shadow-xl"
+                                >
+                                    Ver Demos Web <Bot size={16} />
+                                </button>
+                            ) : (
+                                <button className="inline-flex items-center justify-center w-12 h-12 rounded-xl transition-all duration-300 bg-slate-800/50 border border-slate-700 hover:bg-white hover:text-black hover:border-white text-slate-400 shadow-xl group/btn">
+                                    <Download size={18} className="group-hover/btn:-translate-y-0.5 transition-transform" />
+                                </button>
+                            )}
+                        </div>
+
+                        {/* Extra trust badges below buttons */}
+                        <div className="flex items-center gap-6 mt-12 pt-8 border-t border-slate-800/80">
+                            <div className="flex items-center gap-2">
+                                <Shield size={16} className={textAccent} />
+                                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Garantía Total</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <Zap size={16} className={textAccent} />
+                                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Soporte VIP</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div className="w-full lg:w-2/3 p-5 lg:p-6 relative border-t lg:border-t-0 lg:border-l border-slate-700/50">
+                {/* Right Side: Showcase Gallery */}
+                <div className="w-full lg:w-[55%] p-6 md:p-10 relative bg-slate-900/40">
                     {products.length > 0 ? (
-                        <>
-                            <div className="absolute top-4 right-6 flex gap-2 z-10">
-                                <button onClick={() => scrollGallery('left')} className="w-7 h-7 rounded-full bg-slate-800 border border-slate-600 flex items-center justify-center hover:bg-slate-700 text-slate-300"><ChevronLeft size={14} /></button>
-                                <button onClick={() => scrollGallery('right')} className="w-7 h-7 rounded-full bg-slate-800 border border-slate-600 flex items-center justify-center hover:bg-slate-700 text-slate-300"><ChevronRight size={14} /></button>
+                        <div className="h-full flex flex-col">
+                            <div className="flex justify-between items-center mb-6 px-2">
+                                <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Productos Destacados</span>
+                                <div className="flex gap-2">
+                                    <button onClick={() => scrollGallery('left')} className="w-10 h-10 rounded-full bg-slate-800/80 border border-slate-700 flex items-center justify-center hover:bg-white hover:text-black hover:border-white transition-all text-slate-400 shadow-lg backdrop-blur-sm"><ChevronLeft size={16} /></button>
+                                    <button onClick={() => scrollGallery('right')} className="w-10 h-10 rounded-full bg-slate-800/80 border border-slate-700 flex items-center justify-center hover:bg-white hover:text-black hover:border-white transition-all text-slate-400 shadow-lg backdrop-blur-sm"><ChevronRight size={16} /></button>
+                                </div>
                             </div>
-                            <div ref={galleryRef} className="flex gap-3 overflow-x-auto pb-3 pt-8 hide-scrollbar snap-x">
-                                {products.map((p: any) => (
-                                    <Link key={p.id} href={`/web/product/${p.id}`} className="shrink-0 w-40 group bg-slate-800/50 border border-slate-700/40 rounded-xl hover:border-slate-500 transition-all p-2.5 snap-start">
-                                        <div className="h-28 bg-white/3 flex items-center justify-center relative mb-2.5 rounded-lg overflow-hidden border border-slate-700/30">
-                                            {safeParseArray(p.images).length > 0 ? (
-                                                <Image src={safeParseArray(p.images)[0]} alt={p.name} fill className="object-contain p-2 group-hover:scale-110 transition-transform duration-400" />
-                                            ) : <ShoppingBag className="text-slate-700 w-6 h-6" />}
-                                        </div>
-                                        <p className="text-slate-400 text-[9px] font-medium line-clamp-2 mb-1.5 group-hover:text-white transition-colors leading-snug">{p.name}</p>
-                                        <p className="text-[11px] font-bold text-white">${calculateDiscountedPrice(p.price, userRole).toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
-                                    </Link>
+
+                            <div ref={galleryRef} className="flex gap-4 overflow-x-auto pb-6 pt-2 px-2 hide-scrollbar snap-x flex-1 items-center">
+                                {products.map((p: any, idx: number) => (
+                                    <motion.div 
+                                        key={p.id}
+                                        initial={{ opacity: 0, scale: 0.9 }}
+                                        whileInView={{ opacity: 1, scale: 1 }}
+                                        transition={{ delay: idx * 0.05 }}
+                                        className="snap-center shrink-0"
+                                    >
+                                        <Link 
+                                            href={`/web/product/${p.id}`} 
+                                            className="block w-48 lg:w-56 group bg-slate-800/40 border border-slate-700/50 rounded-2xl hover:border-slate-500/80 transition-all duration-300 p-3 shadow-xl hover:shadow-2xl relative overflow-hidden"
+                                        >
+                                            <div className="absolute top-0 right-0 p-3 z-10">
+                                                <div className="w-6 h-6 rounded-full bg-slate-900/60 backdrop-blur-sm flex items-center justify-center border border-white/10 group-hover:bg-white group-hover:text-black transition-all">
+                                                    <ArrowRight size={10} className="opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />
+                                                </div>
+                                            </div>
+
+                                            <div className="h-36 lg:h-44 bg-white/5 flex items-center justify-center relative mb-4 rounded-xl overflow-hidden border border-slate-700/30">
+                                                {safeParseArray(p.images).length > 0 ? (
+                                                    <Image src={safeParseArray(p.images)[0]} alt={p.name} fill className="object-contain p-4 group-hover:scale-110 transition-transform duration-500 drop-shadow-2xl" />
+                                                ) : <ShoppingBag className="text-slate-700 w-8 h-8" />}
+                                            </div>
+                                            
+                                            <div className="px-1">
+                                                <p className="text-slate-400 text-[11px] font-semibold line-clamp-2 mb-2 group-hover:text-white transition-colors leading-relaxed h-8">{p.name}</p>
+                                                <p className="text-sm font-black text-white bg-slate-900/50 inline-block px-3 py-1.5 rounded-lg border border-slate-700/50">${calculateDiscountedPrice(p.price, userRole).toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
+                                            </div>
+                                        </Link>
+                                    </motion.div>
                                 ))}
                             </div>
-                        </>
+                        </div>
                     ) : (
-                        <div className="h-full min-h-[180px] flex items-center justify-center">
-                            <div className="text-center">
-                                <Hexagon className="w-7 h-7 text-slate-700 mx-auto mb-2" />
-                                <p className="text-slate-600 text-[10px] uppercase tracking-widest font-medium">Catálogo en actualización</p>
+                        <div className="h-full min-h-[300px] flex items-center justify-center">
+                            <div className="text-center bg-slate-800/30 p-10 rounded-3xl border border-slate-700/30">
+                                <Hexagon className="w-12 h-12 text-slate-700 mx-auto mb-4 animate-[spin_10s_linear_infinite]" strokeWidth={1} />
+                                <p className="text-slate-500 text-[11px] uppercase tracking-[0.4em] font-black">Catálogo en Sincronización</p>
                             </div>
                         </div>
                     )}
                 </div>
             </div>
-        </section>
+        </motion.section>
     )
 }
 
