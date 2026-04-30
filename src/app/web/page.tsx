@@ -22,7 +22,7 @@ export default async function PublicWebPage() {
         prisma.product.findMany({
             where: { isDeleted: false, isActive: true },
             orderBy: { createdAt: 'desc' },
-            take: 120,
+            take: 500,
             include: { 
                 category: { select: { id: true, name: true, slug: true } },
                 collection: { select: { id: true, name: true, slug: true } }

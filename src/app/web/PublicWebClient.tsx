@@ -132,23 +132,28 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                             </div>
 
                             {/* Professional Search Bar */}
-                            <div className="relative w-full md:w-[400px]">
-                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+                            <div className="relative group w-full md:w-[400px]">
+                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-hover:text-[#E8341A] transition-colors" size={18} />
                                 <input 
                                     type="text" 
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                     placeholder="Buscar por nombre, marca o categoría..."
-                                    className="w-full bg-slate-900 border border-slate-700/50 rounded-none p-4 pl-12 text-sm uppercase tracking-widest placeholder:text-slate-600 focus:border-[#E8341A] focus:bg-slate-800/80 transition-all outline-none"
+                                    className="w-full bg-slate-900 border border-slate-700/50 rounded-none p-4 pl-12 pr-24 text-sm uppercase tracking-widest placeholder:text-slate-600 focus:border-[#E8341A] focus:bg-slate-800/80 transition-all outline-none"
                                 />
-                                {searchQuery && (
-                                    <button 
-                                        onClick={() => setSearchQuery("")}
-                                        className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white"
-                                    >
-                                        <X size={16} />
-                                    </button>
-                                )}
+                                <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-4">
+                                    <div className="hidden sm:block px-2 py-0.5 bg-[#E8341A]/10 border border-[#E8341A]/20 rounded-none">
+                                        <span className="text-[8px] font-black text-[#E8341A] uppercase tracking-widest">{filteredProducts.length} Items</span>
+                                    </div>
+                                    {searchQuery && (
+                                        <button 
+                                            onClick={() => setSearchQuery("")}
+                                            className="text-slate-500 hover:text-white transition-colors"
+                                        >
+                                            <X size={16} />
+                                        </button>
+                                    )}
+                                </div>
                             </div>
                         </div>
 
