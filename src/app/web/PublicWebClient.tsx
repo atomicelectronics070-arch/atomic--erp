@@ -114,7 +114,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                             <p className="text-slate-500 text-[10px] mt-1 uppercase tracking-[0.3em] font-medium">Catálogo General</p>
                         </div>
                     </div>
-                    <InfiniteProductScroll products={filteredProducts} userRole={userRole} />
+                    <InfiniteProductScroll products={filteredProducts.slice(0, 80)} userRole={userRole} />
                 </section>
 
                 {/* 4. BANNER ACADEMY */}

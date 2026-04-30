@@ -51,18 +51,16 @@ export const SpaceBackground = () => {
         style={{ x: starsX, y: starsY }}
         className="absolute inset-[-20%] pointer-events-none"
       >
-        {[...Array(60)].map((_, i) => (
+        {[...Array(40)].map((_, i) => (
           <div 
             key={i}
-            className="absolute bg-white rounded-full opacity-30 animate-pulse"
+            className="absolute bg-white rounded-full opacity-30"
             style={{
               top: `${Math.random() * 100}%`,
               left: `${Math.random() * 100}%`,
-              width: `${1 + Math.random() * 2}px`,
-              height: `${1 + Math.random() * 2}px`,
-              boxShadow: '0 0 10px rgba(255,255,255,0.8)',
-              animationDelay: `${Math.random() * 5}s`,
-              animationDuration: `${2 + Math.random() * 6}s`,
+              width: `${1 + Math.random() * 1.5}px`,
+              height: `${1 + Math.random() * 1.5}px`,
+              boxShadow: '0 0 8px rgba(255,255,255,0.6)',
             }}
           />
         ))}
