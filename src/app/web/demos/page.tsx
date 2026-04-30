@@ -56,15 +56,22 @@ export default function DemosPage() {
                             transition={{ delay: i * 0.1 }}
                             className="group relative bg-slate-900/40 border border-white/5 p-1 overflow-hidden"
                         >
-                            <div className="relative aspect-video overflow-hidden border border-white/5">
+                            <div className="relative aspect-video overflow-hidden border border-white/10 group-hover:border-[#E8341A]/50 transition-colors">
+                                {/* Browser Toolbar Mockup */}
+                                <div className="absolute top-0 left-0 right-0 h-6 bg-slate-900 border-b border-white/5 flex items-center px-3 gap-1.5 z-20">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-red-500/50" />
+                                    <div className="w-1.5 h-1.5 rounded-full bg-yellow-500/50" />
+                                    <div className="w-1.5 h-1.5 rounded-full bg-green-500/50" />
+                                    <div className="ml-3 h-2 w-32 bg-white/5 rounded-full" />
+                                </div>
                                 <img 
                                     src={demo.image} 
                                     alt={demo.title} 
-                                    className="w-full h-full object-cover grayscale opacity-50 group-hover:opacity-100 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 ease-out"
+                                    className="w-full h-full object-cover pt-6 grayscale opacity-40 group-hover:opacity-100 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 ease-out"
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-[#020617] via-transparent to-transparent opacity-60"></div>
-                                <div className="absolute top-6 left-6">
-                                    <span className="bg-[#E8341A] text-white text-[9px] font-black uppercase tracking-[0.2em] px-3 py-1 italic shadow-2xl">
+                                <div className="absolute inset-0 bg-gradient-to-t from-[#020617] via-transparent to-transparent opacity-40"></div>
+                                <div className="absolute top-10 left-6">
+                                    <span className="bg-[#E8341A] text-white text-[8px] font-black uppercase tracking-[0.2em] px-3 py-1 italic shadow-2xl">
                                         {demo.type}
                                     </span>
                                 </div>
