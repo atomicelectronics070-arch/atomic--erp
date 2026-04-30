@@ -94,10 +94,14 @@ body {
 
 /* ── Premium Marble Background ── */
 .bg-marble {
-  background-color: #F8F9FA;
-  background-image: url('/backgrounds/marble.png');
-  background-size: cover;
-  background-position: center;
+  background-color: #f1f5f9; /* Guaranteed contrast against white cards */
+  background-image: 
+    url('/assets/white_marble_bg.png'),
+    url('/backgrounds/marble.png'),
+    radial-gradient(circle at 15% 50%, rgba(232, 52, 26, 0.05), transparent 30%),
+    radial-gradient(circle at 85% 30%, rgba(37, 99, 235, 0.05), transparent 30%);
+  background-size: cover, cover, auto, auto;
+  background-position: center, center, 0 0, 0 0;
   background-attachment: fixed;
 }
 

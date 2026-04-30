@@ -109,7 +109,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                                 >
                                     <Link
                                         href={`/web/product/${p.id}`}
-                                        className="group flex flex-col bg-white/60 backdrop-blur-md border border-slate-200/60 hover:border-[#E8341A]/30 hover:bg-white hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-300 rounded-xl overflow-hidden h-[280px]"
+                                        className="group flex flex-col bg-white/80 backdrop-blur-md border border-slate-200 shadow-sm hover:border-[#E8341A]/30 hover:bg-white hover:shadow-lg transition-all duration-300 rounded-xl overflow-hidden h-[280px]"
                                     >
                                         <div className="h-36 relative bg-transparent p-3 flex items-center justify-center border-b border-slate-100/50">
                                             {(() => {
@@ -171,7 +171,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                                 >
                                     <Link
                                         href={`/web/product/${p.id}`}
-                                        className="group flex flex-col bg-white/60 backdrop-blur-md border border-slate-200/60 hover:border-slate-300 hover:bg-white hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-300 rounded-xl overflow-hidden h-[280px]"
+                                        className="group flex flex-col bg-white/80 backdrop-blur-md border border-slate-200 shadow-sm hover:border-slate-300 hover:bg-white hover:shadow-lg transition-all duration-300 rounded-xl overflow-hidden h-[280px]"
                                     >
                                         <div className="h-36 relative bg-transparent p-3 flex items-center justify-center border-b border-slate-100/50">
                                             {(() => {
