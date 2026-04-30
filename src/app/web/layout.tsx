@@ -30,10 +30,13 @@ export default function WebLayout({ children }: { children: React.ReactNode }) {
                                 className={pathname === '/web' ? 'text-[#E8341A] border-b-2 border-[#E8341A] pb-1' : 'hover:text-[#E8341A] transition-colors'}
                             >Inicio</Link>
                             <Link
-                                href="/web#productos"
+                                href="/web/products"
                                 className={pathname.includes('/product') ? 'text-[#E8341A] border-b-2 border-[#E8341A] pb-1' : 'hover:text-[#E8341A] transition-colors'}
                             >Productos</Link>
-                            <Link href="/web#categorias" className="hover:text-[#E8341A] transition-colors">Categorías</Link>
+                            <Link
+                                href="/web/categories"
+                                className={pathname === '/web/categories' ? 'text-[#E8341A] border-b-2 border-[#E8341A] pb-1' : 'hover:text-[#E8341A] transition-colors'}
+                            >Categorías</Link>
                             <Link
                                 href="/web/software"
                                 className={pathname === '/web/software' ? 'text-[#2563EB] border-b-2 border-[#2563EB] pb-1' : 'hover:text-[#2563EB] transition-colors'}
@@ -135,8 +138,8 @@ export default function WebLayout({ children }: { children: React.ReactNode }) {
                         <div className="space-y-8">
                             <h5 className="text-[10px] font-black uppercase tracking-[0.4em] text-[#F5611A]">Plataformas</h5>
                             <ul className="space-y-5 text-[10px] text-white/20 font-black uppercase tracking-widest">
-                                <li className="hover:text-white transition-colors"><Link href="/web#productos">Catálogo</Link></li>
-                                <li className="hover:text-white transition-colors"><Link href="/web#categorias">Categorías</Link></li>
+                                <li className="hover:text-white transition-colors"><Link href="/web/products">Catálogo</Link></li>
+                                <li className="hover:text-white transition-colors"><Link href="/web/categories">Categorías</Link></li>
                                 <li className="hover:text-white transition-colors"><Link href="/web/contact">Reseñas y Contacto</Link></li>
                                 <li className="hover:text-white transition-colors"><Link href="/login">Portal ERP</Link></li>
                             </ul>

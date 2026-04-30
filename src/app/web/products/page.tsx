@@ -1,321 +1,251 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
-import { ShoppingBag, Star, ArrowRight, Search, ChevronLeft, ChevronRight, Heart, Zap, Shield, Truck, Package, Filter, LayoutGrid, List, Radio, Construction, Home, Gamepad2, Cpu, Code } from "lucide-react"
+import { useState, useEffect, useMemo } from "react"
 import Link from "next/link"
-import { StaticMoleculesBackground } from "@/components/ui/StaticMoleculesBackground"
+import Image from "next/image"
+import { Search, ChevronLeft, ChevronRight, Filter, ShoppingBag, ArrowRight } from "lucide-react"
+import { calculateDiscountedPrice } from "@/lib/utils/pricing"
 
-const safeParseArray = (str: any, fallback: any = []) => {
-    if (!str || str === 'null' || str === '[]' || str === '') return fallback;
-    if (Array.isArray(str)) return str.length > 0 ? str : fallback;
+const safeParseArray = (str: any): string[] => {
+    if (!str || str === 'null' || str === '[]') return []
+    if (Array.isArray(str)) return str
     if (typeof str === 'string') {
-        const trimmed = str.trim();
-        if (trimmed.startsWith('http') || trimmed.startsWith('/') || trimmed.startsWith('data:image')) {
-            return [trimmed];
-        }
+        const t = str.trim()
+        if (t.startsWith('http') || t.startsWith('/')) return [t]
         try {
-            let cleaned = trimmed;
-            if (cleaned.startsWith('"') && cleaned.endsWith('"')) {
-                cleaned = cleaned.substring(1, cleaned.length - 1).replace(/\\"/g, '"');
-            }
-            let parsed = JSON.parse(cleaned);
-            if (typeof parsed === 'string') {
-                try { parsed = JSON.parse(parsed); } catch(e) {}
-            }
-            if (Array.isArray(parsed)) return parsed.length > 0 ? parsed : fallback;
-            if (typeof parsed === 'string' && parsed.length > 0) return [parsed];
-        } catch (e) {
-            const urlRegex = /(https?:\/\/[^\s"\]]+)/g;
-            const matches = trimmed.match(urlRegex);
-            if (matches && matches.length > 0) return matches;
+            let p = JSON.parse(t)
+            if (typeof p === 'string') p = JSON.parse(p)
+            if (Array.isArray(p)) return p
+            if (typeof p === 'string') return [p]
+        } catch {
+            const m = t.match(/(https?:\/\/[^\s"\\]+)/g)
+            if (m) return m
         }
     }
-    return fallback;
-};
-
-const proxyImg = (url: string): string => {
-    if (!url) return ''
-    if (url.startsWith('/api/img-proxy') || url.startsWith('/') || url.startsWith('data:')) return url
-    return `/api/img-proxy?url=${encodeURIComponent(url)}`
+    return []
 }
 
+const LETTERS = ['#', 'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
+const PAGE_SIZE = 30
+
 export default function ProductsPage() {
-    const [sections, setSections] = useState<any>({
-        featured: [],
-        categories: [],
-        collections: [],
-        bestSellers: [],
-        distributors: [],
-        recent: [],
-        gadgets: [],
-        builders: [],
-        all: []
-    })
+    const [products, setProducts] = useState<any[]>([])
+    const [categories, setCategories] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
-    const [favorites, setFavorites] = useState<string[]>([])
-    const [catalogSearch, setCatalogSearch] = useState("")
+    const [search, setSearch] = useState("")
+    const [activeLetter, setActiveLetter] = useState<string | null>(null)
+    const [activeCategory, setActiveCategory] = useState<string | null>(null)
+    const [page, setPage] = useState(1)
+    const [userRole, setUserRole] = useState<string | undefined>()
 
     useEffect(() => {
         const init = async () => {
             setLoading(true)
-            const [mRes, pRes] = await Promise.all([
-                fetch("/api/web/metadata").then(r => r.json()),
-                fetch("/api/web/products?pageSize=100").then(r => r.json())
-            ])
-
-            const products = pRes.products || []
-            
-            // Logic for sections
-            setSections({
-                featured: products.filter((p: any) => p.featured),
-                categories: mRes.categories || [],
-                collections: mRes.collections || [],
-                bestSellers: products.slice(0, 10), // Mocked for now
-                distributors: products.filter((p: any) => p.name.toLowerCase().includes('distribuidor') || p.price > 1000).slice(0, 8),
-                recent: [...products].sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 8),
-                gadgets: products.filter((p: any) => p.categoryId && mRes.categories.find((c: any) => c.id === p.categoryId && c.slug.includes('gadgets'))).slice(0, 8),
-                builders: products.filter((p: any) => p.name.toLowerCase().includes('obra') || p.name.toLowerCase().includes('constru')).slice(0, 8),
-                all: products
-            })
-
-            const savedFavs = localStorage.getItem('atomic_favs')
-            if (savedFavs) setFavorites(JSON.parse(savedFavs))
-            
+            try {
+                const [mRes, pRes, sRes] = await Promise.all([
+                    fetch("/api/web/metadata").then(r => r.json()),
+                    fetch("/api/web/products?pageSize=500").then(r => r.json()),
+                    fetch("/api/auth/session").then(r => r.json()).catch(() => null)
+                ])
+                setProducts(pRes.products || [])
+                setCategories(mRes.categories || [])
+                if (sRes?.user?.role) setUserRole(sRes.user.role)
+            } catch(e) {
+                console.error(e)
+            }
             setLoading(false)
         }
         init()
     }, [])
 
-    const toggleFavorite = (id: string) => {
-        const newFavs = favorites.includes(id) ? favorites.filter(f => f !== id) : [...favorites, id]
-        setFavorites(newFavs)
-        localStorage.setItem('atomic_favs', JSON.stringify(newFavs))
-    }
+    // Reset pagination when filters change
+    useEffect(() => { setPage(1) }, [search, activeLetter, activeCategory])
 
-    if (loading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-[#F4F1EB]">
-                <StaticMoleculesBackground />
-                <div className="animate-spin h-10 w-10 border-4 border-[#E8341A] border-t-transparent shadow-lg"></div>
-            </div>
-        )
-    }
+    const filtered = useMemo(() => {
+        let p = [...products]
+        if (activeCategory) p = p.filter(x => x.categoryId === activeCategory)
+        if (activeLetter === '#') p = p.filter(x => !/^[a-zA-Z]/.test(x.name))
+        else if (activeLetter) p = p.filter(x => x.name.toUpperCase().startsWith(activeLetter))
+        if (search) p = p.filter(x => x.name.toLowerCase().includes(search.toLowerCase()) || x.description?.toLowerCase().includes(search.toLowerCase()))
+        return p.sort((a, b) => a.name.localeCompare(b.name))
+    }, [products, activeCategory, activeLetter, search])
+
+    const totalPages = Math.ceil(filtered.length / PAGE_SIZE)
+    const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+
+    // Available letters in current dataset
+    const availableLetters = useMemo(() => {
+        const set = new Set<string>()
+        products.forEach(p => {
+            const first = p.name[0]?.toUpperCase()
+            if (/[A-Z]/.test(first)) set.add(first)
+            else set.add('#')
+        })
+        return set
+    }, [products])
+
+    if (loading) return (
+        <div className="min-h-screen bg-[#0F172A] flex items-center justify-center">
+            <div className="animate-spin h-10 w-10 border-4 border-[#E8341A] border-t-transparent rounded-full" />
+        </div>
+    )
 
     return (
-        <div className="min-h-screen bg-[#F4F1EB] text-slate-900 selection:bg-[#E8341A]/10">
-            <StaticMoleculesBackground />
+        <div className="min-h-screen bg-[#0F172A] text-slate-200" style={{ fontFamily: "'IBM Plex Sans', ui-sans-serif, system-ui" }}>
 
-            {/* Header / Hero Section for Products */}
-            <header className="relative z-10 pt-20 pb-16 px-6 border-b border-black/5 bg-white/30 backdrop-blur-md">
-                <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-10">
-                    <div className="space-y-6 text-center md:text-left">
-                        <div className="inline-flex items-center gap-2 bg-[#E8341A]/10 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-[#E8341A]">
-                            Catálogo Maestro de Productos
-                        </div>
-                        <h1 className="text-6xl md:text-8xl font-black tracking-tighter uppercase leading-none">
-                            CENTRO DE <span className="text-[#E8341A] italic underline decoration-4 underline-offset-8">EQUIPOS</span>
+            {/* ── Header ── */}
+            <header className="bg-slate-900/80 border-b border-slate-800 sticky top-0 z-30 backdrop-blur-md">
+                <div className="max-w-7xl mx-auto px-6 py-4 flex flex-col md:flex-row gap-4 items-center">
+                    <div className="flex-1">
+                        <h1 className="text-sm font-semibold text-white uppercase tracking-widest">
+                            CATÁLOGO <span className="text-[#E8341A]">COMPLETO</span>
+                            <span className="ml-3 text-slate-500 font-normal text-[11px]">{filtered.length} productos</span>
                         </h1>
-                        <p className="text-slate-500 uppercase text-[10px] font-bold tracking-[0.3em] max-w-lg mx-auto md:mx-0">
-                            Explora nuestra infraestructura tecnológica organizada por categorías, áreas y especialidades corporativas.
-                        </p>
                     </div>
-                    <div className="w-full md:w-[500px] relative group">
-                        <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#E8341A] transition-colors" size={22} />
-                        <input 
+
+                    {/* Search */}
+                    <div className="relative w-full md:w-80">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={15} />
+                        <input
                             type="text"
-                            placeholder="Buscar en todo el inventario..."
-                            className="w-full bg-white border-2 border-slate-100 pl-16 pr-8 py-7 text-[12px] font-black uppercase tracking-widest outline-none focus:border-[#E8341A] transition-all shadow-2xl"
+                            value={search}
+                            onChange={e => setSearch(e.target.value)}
+                            placeholder="Buscar producto..."
+                            className="w-full bg-slate-800 border border-slate-700 pl-9 pr-4 py-2.5 text-[12px] text-white placeholder-slate-500 outline-none focus:border-[#E8341A] rounded-lg transition-colors"
                         />
                     </div>
+
+                    {/* Category filter */}
+                    <select
+                        value={activeCategory || ""}
+                        onChange={e => setActiveCategory(e.target.value || null)}
+                        className="bg-slate-800 border border-slate-700 text-slate-300 text-[11px] px-3 py-2.5 rounded-lg outline-none focus:border-[#E8341A] cursor-pointer"
+                    >
+                        <option value="">Todas las categorías</option>
+                        {categories.filter(c => c.isVisible).map(c => (
+                            <option key={c.id} value={c.id}>{c.name}</option>
+                        ))}
+                    </select>
+
+                    {(activeLetter || activeCategory || search) && (
+                        <button
+                            onClick={() => { setActiveLetter(null); setActiveCategory(null); setSearch("") }}
+                            className="text-[10px] font-semibold uppercase tracking-widest text-[#E8341A] hover:text-red-400 flex items-center gap-1 shrink-0"
+                        >
+                            <Filter size={12} /> Limpiar
+                        </button>
+                    )}
+                </div>
+
+                {/* Alphabet bar */}
+                <div className="max-w-7xl mx-auto px-6 pb-3 flex flex-wrap gap-1">
+                    {LETTERS.map(l => {
+                        const has = availableLetters.has(l)
+                        const active = activeLetter === l
+                        return (
+                            <button
+                                key={l}
+                                onClick={() => setActiveLetter(active ? null : l)}
+                                disabled={!has}
+                                className={`w-7 h-7 text-[10px] font-bold rounded transition-all ${
+                                    active ? 'bg-[#E8341A] text-white' :
+                                    has ? 'bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white' :
+                                    'bg-slate-900 text-slate-700 cursor-not-allowed'
+                                }`}
+                            >
+                                {l}
+                            </button>
+                        )
+                    })}
                 </div>
             </header>
 
-            <main className="relative z-10 max-w-7xl mx-auto px-6 py-20 space-y-32">
-                
-                {/* 1. PRODUCTOS DESTACADOS - Large Grid */}
-                <Section title="Nuestros Destacados" subtitle="Lo mejor de la ingeniería" color="#E8341A">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                        {sections.featured.slice(0, 4).map((p: any) => (
-                            <ProductCard key={p.id} product={p} isFav={favorites.includes(p.id)} onFav={() => toggleFavorite(p.id)} />
-                        ))}
+            {/* ── Grid ── */}
+            <main className="max-w-7xl mx-auto px-6 py-8">
+                {paginated.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-32 text-center">
+                        <ShoppingBag className="w-12 h-12 text-slate-700 mb-4" />
+                        <p className="text-slate-500 text-sm font-medium">No se encontraron productos</p>
+                        <button onClick={() => { setSearch(""); setActiveLetter(null); setActiveCategory(null) }} className="mt-4 text-[#E8341A] text-[11px] font-semibold uppercase tracking-widest hover:underline">
+                            Ver todo el catálogo
+                        </button>
                     </div>
-                </Section>
-
-                {/* 2. CATEGORÍAS - Scrollable Cards */}
-                <Section title="Nuestras Categorías" subtitle="Organizado por especialidad" color="#2563EB">
-                    <div className="flex gap-6 overflow-x-auto hide-scrollbar pb-10">
-                        {sections.categories.map((c: any) => {
-                            const iconMap: any = {
-                                "antenas": <Radio size={32} />,
-                                "barreras": <Construction size={32} />,
-                                "residencial": <Home size={32} />,
-                                "gaming": <Gamepad2 size={32} />,
-                                "automatizacion": <Cpu size={32} />,
-                                "desarrollo": <Code size={32} />
-                            };
-                            const slug = c.slug.toLowerCase();
-                            const Icon = Object.keys(iconMap).find(k => slug.includes(k)) ? iconMap[Object.keys(iconMap).find(k => slug.includes(k))!] : <Package size={32} />;
-
+                ) : (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+                        {paginated.map(p => {
+                            const imgs = safeParseArray(p.images)
+                            const price = calculateDiscountedPrice(p.price, userRole)
                             return (
-                                <Link key={c.id} href={`/web/category/${c.slug}`} className="group shrink-0 w-64 bg-white/60 backdrop-blur-md border border-white/40 p-8 flex flex-col items-center text-center transition-all hover:shadow-2xl hover:-translate-y-2">
-                                    <div className="w-20 h-20 bg-slate-50 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                                        {c.image ? (
-                                            <img src={proxyImg(c.image)} className="w-12 h-12 object-contain mix-blend-multiply" />
+                                <Link
+                                    key={p.id}
+                                    href={`/web/product/${p.id}`}
+                                    className="group flex flex-col bg-slate-800/50 border border-slate-700/40 hover:border-[#E8341A]/50 hover:bg-slate-800 transition-all duration-200 rounded-xl overflow-hidden"
+                                >
+                                    <div className="aspect-square relative bg-white/3 overflow-hidden">
+                                        {imgs.length > 0 ? (
+                                            <Image src={imgs[0]} alt={p.name} fill className="object-contain p-3 group-hover:scale-105 transition-transform duration-300" />
                                         ) : (
-                                            <div className="text-slate-300 group-hover:text-[#2563EB] transition-colors">
-                                                {Icon}
+                                            <div className="w-full h-full flex items-center justify-center">
+                                                <ShoppingBag className="text-slate-700 w-8 h-8" />
                                             </div>
                                         )}
                                     </div>
-                                    <h3 className="text-xs font-black uppercase tracking-widest line-clamp-1">{c.name}</h3>
-                                    <p className="text-[#2563EB] text-[9px] font-black mt-2 uppercase flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">Explorar <ArrowRight size={10} /></p>
+                                    <div className="p-3 flex flex-col flex-1">
+                                        <p className="text-[10px] font-medium text-slate-400 line-clamp-2 leading-snug group-hover:text-slate-200 transition-colors flex-1 mb-2">{p.name}</p>
+                                        <p className="text-[11px] font-bold text-white">${price.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
+                                    </div>
                                 </Link>
-                            );
+                            )
                         })}
                     </div>
-                </Section>
+                )}
 
-                {/* 3. MÁS VENDIDOS & RECIENTES - Split Row */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-20">
-                    <Section title="Más Vendidos" subtitle="Preferidos por el sector" color="#F59E0B">
-                        <div className="space-y-4">
-                            {sections.bestSellers.slice(0, 5).map((p: any) => (
-                                <MiniProductItem key={p.id} product={p} />
-                            ))}
-                        </div>
-                    </Section>
-                    <Section title="Novedades" subtitle="Importados recientemente" color="#10B981">
-                        <div className="space-y-4">
-                            {sections.recent.slice(0, 5).map((p: any) => (
-                                <MiniProductItem key={p.id} product={p} />
-                            ))}
-                        </div>
-                    </Section>
-                </div>
+                {/* ── Pagination ── */}
+                {totalPages > 1 && (
+                    <div className="mt-12 flex items-center justify-center gap-2 flex-wrap">
+                        <button
+                            onClick={() => setPage(p => Math.max(1, p - 1))}
+                            disabled={page === 1}
+                            className="w-9 h-9 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                        >
+                            <ChevronLeft size={15} />
+                        </button>
 
-                {/* 4. SECCIONES ESPECIALES - Horizontal Rows */}
-                <Section title="Para Distribuidores" subtitle="Ofertas de volumen" color="#6366F1">
-                    <HorizontalScroll>
-                        {sections.distributors.map((p: any) => (
-                            <ProductCard key={p.id} product={p} isFav={favorites.includes(p.id)} onFav={() => toggleFavorite(p.id)} />
-                        ))}
-                    </HorizontalScroll>
-                </Section>
+                        {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
+                            let p: number
+                            if (totalPages <= 7) p = i + 1
+                            else if (page <= 4) p = i + 1
+                            else if (page >= totalPages - 3) p = totalPages - 6 + i
+                            else p = page - 3 + i
+                            return (
+                                <button
+                                    key={p}
+                                    onClick={() => setPage(p)}
+                                    className={`w-9 h-9 rounded-lg text-[11px] font-semibold transition-all ${
+                                        page === p
+                                            ? 'bg-[#E8341A] text-white shadow-[0_0_12px_rgba(232,52,26,0.4)]'
+                                            : 'bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700'
+                                    }`}
+                                >
+                                    {p}
+                                </button>
+                            )
+                        })}
 
-                <Section title="Ofertas para Constructores" subtitle="Proyectos a gran escala" color="#E8341A">
-                    <HorizontalScroll>
-                        {sections.builders.length > 0 ? sections.builders.map((p: any) => (
-                            <ProductCard key={p.id} product={p} isFav={favorites.includes(p.id)} onFav={() => toggleFavorite(p.id)} />
-                        )) : <div className="py-20 text-center w-full border-2 border-dashed border-black/5 opacity-30 font-black uppercase tracking-widest text-xs italic">Próximamente más ofertas en este sector</div>}
-                    </HorizontalScroll>
-                </Section>
+                        <button
+                            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                            disabled={page === totalPages}
+                            className="w-9 h-9 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                        >
+                            <ChevronRight size={15} />
+                        </button>
 
-                {/* 5. GADGETS & FAVORITOS */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-                    <div className="lg:col-span-2">
-                        <Section title="Gadgets & Accesorios" subtitle="Tecnología de punta" color="#EC4899">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                {sections.gadgets.slice(0, 6).map((p: any) => (
-                                    <ProductCard key={p.id} product={p} isFav={favorites.includes(p.id)} onFav={() => toggleFavorite(p.id)} compact />
-                                ))}
-                            </div>
-                        </Section>
+                        <span className="text-[10px] text-slate-500 ml-2">
+                            Pág. {page} de {totalPages} · {filtered.length} resultados
+                        </span>
                     </div>
-                    <div>
-                        <Section title="Tus Favoritos" subtitle="Guardados por ti" color="#E8341A">
-                            <div className="bg-white/60 backdrop-blur-md border border-white/40 p-8 min-h-[400px]">
-                                {favorites.length > 0 ? (
-                                    <div className="space-y-6">
-                                        {favorites.slice(0, 6).map(id => {
-                                            const p = sections.all.find((x: any) => x.id === id)
-                                            if (!p) return null
-                                            return <MiniProductItem key={p.id} product={p} showFavIcon />
-                                        })}
-                                        {favorites.length > 6 && <p className="text-center text-[10px] font-black uppercase text-slate-400 mt-4">y {favorites.length - 6} más...</p>}
-                                    </div>
-                                ) : (
-                                    <div className="flex flex-col items-center justify-center h-full text-center space-y-4 opacity-20 py-20">
-                                        <Heart size={48} />
-                                        <p className="text-[10px] font-black uppercase tracking-widest">No tienes favoritos guardados</p>
-                                    </div>
-                                )}
-                            </div>
-                        </Section>
-                    </div>
-                </div>
-
+                )}
             </main>
-        </div>
-    )
-}
-
-function Section({ title, subtitle, color, children }: { title: string, subtitle: string, color: string, children: React.ReactNode }) {
-    return (
-        <div className="space-y-12">
-            <div className="flex flex-col md:flex-row justify-between items-end gap-6">
-                <div className="space-y-2 text-center md:text-left">
-                    <p className="text-[10px] font-black uppercase tracking-[0.4em]" style={{ color }}>{subtitle}</p>
-                    <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter leading-none">{title}</h2>
-                </div>
-                <div className="flex items-center gap-2">
-                    <Link href="/web" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-[#E8341A] transition-colors flex items-center gap-2">Ver todo <ArrowRight size={12} /></Link>
-                </div>
-            </div>
-            {children}
-        </div>
-    )
-}
-
-function ProductCard({ product, isFav, onFav, compact = false }: { product: any, isFav: boolean, onFav: () => void, compact?: boolean }) {
-    const imgs = safeParseArray(product.images)
-    return (
-        <div className={`group bg-white/60 backdrop-blur-md border border-white/40 ${compact ? 'p-4' : 'p-8'} transition-all hover:shadow-2xl hover:-translate-y-2 flex flex-col`}>
-            <div className="relative aspect-square mb-6 bg-white flex items-center justify-center p-6 border border-black/5 overflow-hidden">
-                <img src={proxyImg(imgs[0])} alt={product.name} className="w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-700" />
-                <button 
-                    onClick={(e) => { e.preventDefault(); onFav(); }}
-                    className={`absolute top-4 right-4 w-10 h-10 flex items-center justify-center transition-all ${isFav ? 'bg-[#E8341A] text-white' : 'bg-white/80 text-slate-400 hover:text-[#E8341A]'}`}
-                >
-                    <Heart size={18} fill={isFav ? 'currentColor' : 'none'} />
-                </button>
-            </div>
-            <Link href={`/web/product/${product.id}`} className="flex-1 space-y-4">
-                <h3 className="text-xs font-black uppercase tracking-widest line-clamp-2 leading-tight group-hover:text-[#E8341A] transition-colors">{product.name}</h3>
-                <div className="flex justify-between items-end">
-                    <p className="text-[#E8341A] font-mono font-black text-xl">${product.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
-                    <p className="text-[9px] font-black uppercase text-slate-300 tracking-tighter">SKU: {product.sku || 'N/A'}</p>
-                </div>
-            </Link>
-        </div>
-    )
-}
-
-function MiniProductItem({ product, showFavIcon = false }: { product: any, showFavIcon?: boolean }) {
-    const imgs = safeParseArray(product.images)
-    return (
-        <Link href={`/web/product/${product.id}`} className="group flex items-center gap-6 p-4 bg-white/40 border border-white/40 hover:bg-white/80 transition-all">
-            <div className="w-16 h-16 bg-white p-2 shrink-0 border border-black/5">
-                <img src={proxyImg(imgs[0])} alt={product.name} className="w-full h-full object-contain mix-blend-multiply" />
-            </div>
-            <div className="flex-1">
-                <h4 className="text-[10px] font-black uppercase tracking-widest line-clamp-1 group-hover:text-[#E8341A] transition-colors">{product.name}</h4>
-                <p className="text-[#E8341A] font-mono font-black text-sm">${product.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
-            </div>
-            {showFavIcon && <Heart size={14} className="text-[#E8341A] fill-[#E8341A]" />}
-            <ArrowRight size={14} className="text-slate-200 group-hover:text-[#E8341A] transition-colors group-hover:translate-x-2" />
-        </Link>
-    )
-}
-
-function HorizontalScroll({ children }: { children: React.ReactNode }) {
-    const ref = useRef<HTMLDivElement>(null)
-    return (
-        <div className="relative group">
-            <button onClick={() => ref.current?.scrollBy({ left: -600, behavior: 'smooth' })} className="absolute -left-6 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white shadow-xl flex items-center justify-center border border-black/5 opacity-0 group-hover:opacity-100 transition-all hover:bg-[#E8341A] hover:text-white"><ChevronLeft size={20} /></button>
-            <button onClick={() => ref.current?.scrollBy({ left: 600, behavior: 'smooth' })} className="absolute -right-6 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white shadow-xl flex items-center justify-center border border-black/5 opacity-0 group-hover:opacity-100 transition-all hover:bg-[#E8341A] hover:text-white"><ChevronRight size={20} /></button>
-            <div ref={ref} className="flex gap-8 overflow-x-auto hide-scrollbar scroll-smooth px-2">
-                {children}
-            </div>
         </div>
     )
 }
