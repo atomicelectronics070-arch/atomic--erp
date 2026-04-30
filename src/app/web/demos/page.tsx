@@ -32,6 +32,13 @@ const demos = [
         type: "Educación Online",
         image: "https://images.unsplash.com/photo-1501504905252-473c47e087f8?q=80&w=800&auto=format&fit=crop",
         tags: ["LMS", "Video", "Quizzes"]
+    },
+    {
+        title: "Branding & UI/UX",
+        description: "Identidad visual corporativa, diseño de interfaces modernas y experiencia de usuario optimizada.",
+        type: "Diseño Creativo",
+        image: "https://images.unsplash.com/photo-1586717791821-3f44a563eb4c?q=80&w=800&auto=format&fit=crop",
+        tags: ["Branding", "UI/UX", "Figma"]
     }
 ]
 

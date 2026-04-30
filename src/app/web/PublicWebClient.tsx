@@ -52,14 +52,30 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
         p.description?.toLowerCase().includes(searchQuery.toLowerCase())
     )
 
-    const featuredProducts = filteredProducts.filter(p => {
-        const text = `${p.name} ${p.description || ''} ${p.category?.name || ''}`.toLowerCase();
-        return p.featured ||
-               text.includes('power bank') || text.includes('powerbank') ||
-               text.includes('banco de poder') ||
-               text.includes('espia') || text.includes('espía') ||
-               text.includes('oculta');
-    })
+    const featuredProducts = (() => {
+        let consolesCount = 0;
+        // Prioritize PS5 Pro for the single console spot
+        const sorted = [...filteredProducts].sort((a, b) => {
+            if (a.name.includes('PS5 Pro')) return -1;
+            if (b.name.includes('PS5 Pro')) return 1;
+            return 0;
+        });
+
+        return sorted.filter(p => {
+            const text = `${p.name} ${p.description || ''} ${p.category?.name || ''}`.toLowerCase();
+            const isConsole = p.category?.slug === 'consolas-de-video-juegos' || text.includes('playstation') || text.includes('ps5') || text.includes('ps4');
+            const isTech = text.includes('power bank') || text.includes('powerbank') || text.includes('banco de poder') || text.includes('espia') || text.includes('espía') || text.includes('oculta');
+            
+            if (isConsole) {
+                if (consolasCount < 1) {
+                    consolasCount++;
+                    return true;
+                }
+                return false;
+            }
+            return p.featured || isTech;
+        });
+    })();
 
     const desiredOrder = ["tecnologia-residencial", "desarrollo", "gaming", "automatizacion"]
     // Deduplicate collections by slug before rendering
@@ -447,7 +463,7 @@ function CategoriesBanner({ categories }: { categories: any[] }) {
                             className="snap-start shrink-0"
                         >
                             <Link
-                                href={cat.slug === 'desarrollo' || cat.slug === 'software-desarrollo' ? '/web/demos' : `/web/category/${cat.slug}`}
+                                href={cat.slug === 'desarrollo' || cat.slug === 'software-desarrollo' || cat.slug.includes('diseno') || cat.name.toLowerCase().includes('diseño') ? '/web/demos' : `/web/category/${cat.slug}`}
                                 className="group block relative overflow-hidden w-48 h-60 rounded-xl border border-slate-700/50 bg-slate-800/50 hover:border-[#E8341A]/50 hover:-translate-y-1 transition-all duration-300"
                             >
                                 {/* Always silhouette — invert + brightness to turn any image into a white silhouette */}
