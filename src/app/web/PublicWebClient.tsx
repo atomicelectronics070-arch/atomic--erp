@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { ShoppingBag, ChevronRight, Star, ArrowRight, Shield, Zap, Truck, ChevronLeft } from "lucide-react"
+import { ShoppingBag, ChevronRight, Star, ArrowRight, Shield, Zap, Truck, ChevronLeft, Hexagon } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import { motion } from "framer-motion"
@@ -70,7 +70,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
         .concat(metadata.collections.filter(c => !desiredOrder.includes(c.slug)))
 
     return (
-        <div className="min-h-screen bg-marble text-slate-900 font-sans selection:bg-[#E8341A]/10">
+        <div className="min-h-screen bg-marble text-slate-900 font-sans selection:bg-[#E8341A]/10 pb-20">
             <motion.div 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -80,29 +80,34 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                 <CategoriesBanner categories={metadata.categories} />
 
                 {/* 2. SECCIÓN MEDIA: PRODUCTOS DESTACADOS */}
-                <section className="bg-transparent py-24 border-b border-slate-200">
+                <section className="bg-transparent py-16">
                     <div className="max-w-7xl mx-auto px-6">
-                        <div className="mb-12">
-                            <h2 className="text-3xl md:text-5xl font-light text-slate-900 uppercase tracking-tighter">
-                                PRODUCTOS <span className="font-black text-[#E8341A]">DESTACADOS</span>
-                            </h2>
-                            <p className="text-slate-500 text-sm mt-3 uppercase tracking-widest">La mejor selección premium</p>
+                        <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+                            <div>
+                                <h2 className="text-2xl md:text-3xl font-light text-slate-800 uppercase tracking-tight">
+                                    PRODUCTOS <span className="font-black text-[#E8341A]">DESTACADOS</span>
+                                </h2>
+                                <p className="text-slate-500 text-[10px] mt-1 uppercase tracking-widest font-semibold">Selección Premium</p>
+                            </div>
+                            <Link href="/web/products" className="text-xs font-bold text-slate-600 hover:text-[#E8341A] transition-colors flex items-center gap-1 uppercase tracking-widest">
+                                Ver todos <ArrowRight size={14} />
+                            </Link>
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                            {featuredProducts.slice(0, 8).map((p: any, i: number) => (
+                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                            {featuredProducts.slice(0, 10).map((p: any, i: number) => (
                                 <motion.div
                                     key={p.id}
-                                    initial={{ opacity: 0, y: 20 }}
+                                    initial={{ opacity: 0, y: 15 }}
                                     whileInView={{ opacity: 1, y: 0 }}
                                     viewport={{ once: true }}
-                                    transition={{ delay: i * 0.1 }}
+                                    transition={{ delay: i * 0.05 }}
                                 >
                                     <Link
                                         href={`/web/product/${p.id}`}
-                                        className="group flex flex-col bg-white border border-slate-200 hover:border-[#E8341A]/30 hover:shadow-xl transition-all duration-300 rounded-sm overflow-hidden h-full"
+                                        className="group flex flex-col bg-white/60 backdrop-blur-md border border-slate-200/60 hover:border-[#E8341A]/30 hover:bg-white hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-300 rounded-xl overflow-hidden h-[280px]"
                                     >
-                                        <div className="h-48 relative bg-slate-50 p-4 border-b border-slate-100 flex items-center justify-center">
+                                        <div className="h-36 relative bg-transparent p-3 flex items-center justify-center border-b border-slate-100/50">
                                             {(() => {
                                                 const imgs = safeParseArray(p.images)
                                                 return imgs.length > 0 ? (
@@ -110,26 +115,23 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                                                         src={imgs[0]} 
                                                         alt={p.name} 
                                                         fill
-                                                        className="object-contain p-4 group-hover:scale-105 transition-transform duration-500" 
+                                                        className="object-contain p-3 group-hover:scale-110 transition-transform duration-500 mix-blend-multiply" 
                                                     />
-                                                ) : <ShoppingBag className="text-slate-300 w-12 h-12" />
+                                                ) : <ShoppingBag className="text-slate-200 w-8 h-8" />
                                             })()}
                                         </div>
-                                        <div className="p-5 flex-1 flex flex-col justify-between">
-                                            <h3 className="text-xs font-bold uppercase text-slate-800 tracking-wide line-clamp-2 mb-3 group-hover:text-[#E8341A] transition-colors">{p.name}</h3>
-                                            <div className="flex items-end justify-between">
+                                        <div className="p-4 flex-1 flex flex-col justify-between">
+                                            <h3 className="text-[11px] font-bold text-slate-700 tracking-wide line-clamp-2 leading-tight group-hover:text-[#E8341A] transition-colors">{p.name}</h3>
+                                            <div className="flex items-end justify-between mt-2">
                                                 <div>
                                                     {userRole && (userRole === 'AFILIADO' || userRole === 'DISTRIBUIDOR') && (
-                                                        <p className="text-[10px] text-slate-400 line-through font-medium">
+                                                        <p className="text-[9px] text-slate-400 line-through font-medium">
                                                             ${p.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                                                         </p>
                                                     )}
-                                                    <p className="text-lg font-bold text-slate-900">
+                                                    <p className="text-sm font-black text-slate-900">
                                                         ${calculateDiscountedPrice(p.price, userRole).toLocaleString('en-US', { minimumFractionDigits: 2 })}
                                                     </p>
-                                                </div>
-                                                <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-[#E8341A] group-hover:text-white transition-colors">
-                                                    <ArrowRight size={14} />
                                                 </div>
                                             </div>
                                         </div>
@@ -141,19 +143,19 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                 </section>
 
                 {/* Features Bar */}
-                <section className="bg-white py-12 border-b border-slate-200">
-                    <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-8">
+                <section className="py-8 my-8 border-y border-slate-200/50 bg-white/30 backdrop-blur-sm">
+                    <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-6">
                         {[
-                            { icon: <Truck size={20} />, title: "Logística Global", desc: "Envíos prioritarios", color: '#E8341A' },
-                            { icon: <Shield size={20} />, title: "Seguridad Atomic", desc: "Garantía blindada", color: '#2563EB' },
-                            { icon: <Zap size={20} />, title: "Transacción Encriptada", desc: "Pago en 1-Click", color: '#E8341A' },
-                            { icon: <Star size={20} />, title: "Elite Support", desc: "Canal exclusivo", color: '#2563EB' }
+                            { icon: <Truck size={16} />, title: "Logística Global", desc: "Envíos rápidos", color: '#E8341A' },
+                            { icon: <Shield size={16} />, title: "Seguridad", desc: "Garantía total", color: '#2563EB' },
+                            { icon: <Zap size={16} />, title: "Rapidez", desc: "Pago en 1-Click", color: '#E8341A' },
+                            { icon: <Star size={16} />, title: "Soporte", desc: "Asistencia VIP", color: '#2563EB' }
                         ].map((f, i) => (
-                            <div key={i} className="flex items-center space-x-4">
-                                <div style={{ color: f.color }} className="bg-slate-50 p-3 rounded-full">{f.icon}</div>
+                            <div key={i} className="flex items-center space-x-3">
+                                <div style={{ color: f.color }} className="bg-white p-2 rounded-lg shadow-sm border border-slate-100">{f.icon}</div>
                                 <div>
-                                    <p className="text-xs font-bold uppercase tracking-widest text-slate-900 mb-1">{f.title}</p>
-                                    <p className="text-[11px] text-slate-500 uppercase">{f.desc}</p>
+                                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-800">{f.title}</p>
+                                    <p className="text-[9px] text-slate-500 uppercase">{f.desc}</p>
                                 </div>
                             </div>
                         ))}
@@ -161,144 +163,142 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                 </section>
 
                 {/* Academy Promo Banner */}
-                <section className="py-24 border-b border-slate-200 bg-gradient-to-br from-blue-50/50 to-white">
-                    <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-                        <motion.div 
-                            initial={{ opacity: 0, x: -30 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            viewport={{ once: true }}
-                            className="space-y-8"
-                        >
-                            <div className="flex items-center gap-3 text-blue-600">
-                                <Zap size={16} />
-                                <span className="text-[10px] font-bold uppercase tracking-widest">NEURAL LEARNING HUB</span>
-                            </div>
-                            <h2 className="text-4xl md:text-6xl font-light text-slate-900 uppercase tracking-tighter leading-tight">
-                                ATOMIC <br/> 
-                                <span className="text-blue-600 font-black">ACADEMY</span>
-                            </h2>
-                            <p className="text-slate-600 text-sm md:text-base leading-relaxed max-w-md">
-                                Domine el ecosistema tecnológico con certificaciones de alto nivel avaladas por expertos.
-                            </p>
-                            <div className="flex gap-4">
-                                <Link href="/web/academy">
-                                    <button className="bg-blue-600 text-white px-8 py-4 font-bold uppercase tracking-widest text-xs hover:bg-blue-700 transition-colors shadow-lg">INICIAR CURSO</button>
-                                </Link>
-                                <button className="border border-slate-300 text-slate-700 px-8 py-4 font-bold uppercase tracking-widest text-xs hover:bg-slate-50 transition-colors">VER TEMARIO</button>
-                            </div>
-                        </motion.div>
-                        <motion.div 
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            whileInView={{ opacity: 1, scale: 1 }}
-                            viewport={{ once: true }}
-                            className="relative aspect-video bg-white shadow-2xl border border-slate-100 rounded-lg overflow-hidden flex items-center justify-center"
-                        >
-                            <div className="absolute inset-0 bg-gradient-to-tr from-blue-100/50 to-transparent" />
-                            <Zap size={80} className="text-blue-500 opacity-20" />
-                            <div className="relative z-10 text-center space-y-3">
-                                <div className="text-3xl font-black text-slate-900 tracking-tight">PRÓXIMA CLASE</div>
-                                <div className="text-xs font-bold text-blue-600 uppercase tracking-widest">EN VIVO // 19:00 GMT-5</div>
-                            </div>
-                        </motion.div>
+                <section className="py-12 my-12 max-w-6xl mx-auto px-6">
+                    <div className="bg-gradient-to-r from-slate-900 to-slate-800 rounded-3xl overflow-hidden shadow-2xl relative">
+                        <div className="absolute top-0 right-0 w-1/2 h-full bg-blue-600/10 blur-[100px] pointer-events-none" />
+                        <div className="grid grid-cols-1 lg:grid-cols-5 items-center">
+                            <motion.div 
+                                initial={{ opacity: 0, x: -20 }}
+                                whileInView={{ opacity: 1, x: 0 }}
+                                viewport={{ once: true }}
+                                className="lg:col-span-3 p-10 md:p-14 space-y-6"
+                            >
+                                <div className="flex items-center gap-2 text-blue-400">
+                                    <Zap size={14} />
+                                    <span className="text-[9px] font-bold uppercase tracking-[0.2em]">PLATAFORMA EDUCATIVA</span>
+                                </div>
+                                <h2 className="text-3xl md:text-4xl font-light text-white uppercase tracking-tight">
+                                    ATOMIC <span className="font-black text-blue-400">ACADEMY</span>
+                                </h2>
+                                <p className="text-slate-300 text-sm leading-relaxed max-w-sm">
+                                    Certificaciones técnicas de alto nivel. Aprenda de los expertos y potencie su carrera profesional.
+                                </p>
+                                <div className="flex gap-4 pt-2">
+                                    <Link href="/web/academy">
+                                        <button className="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold uppercase tracking-widest text-[10px] hover:bg-blue-500 transition-all shadow-lg shadow-blue-600/20">Acceder</button>
+                                    </Link>
+                                    <button className="border border-slate-700 text-slate-300 px-6 py-3 rounded-xl font-bold uppercase tracking-widest text-[10px] hover:bg-slate-800 transition-all">Saber más</button>
+                                </div>
+                            </motion.div>
+                            <motion.div 
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                whileInView={{ opacity: 1, scale: 1 }}
+                                viewport={{ once: true }}
+                                className="lg:col-span-2 relative h-full min-h-[200px] bg-slate-950/50 border-l border-slate-800 flex flex-col items-center justify-center p-8"
+                            >
+                                <Hexagon size={60} className="text-blue-500/20 mb-4" strokeWidth={1} />
+                                <div className="text-xl font-black text-white tracking-tight mb-1">NUEVOS CURSOS</div>
+                                <div className="text-[10px] font-bold text-blue-400 uppercase tracking-widest">Disponibles Ahora</div>
+                            </motion.div>
+                        </div>
                     </div>
                 </section>
 
                 {/* 3. SECCIÓN INFERIOR: ÁREAS DE ESPECIALIZACIÓN */}
-                {orderedCollections.map((col: any, idx: number) => {
-                    const bProducts = filteredProducts.filter(p => p.collectionId === col.id).slice(0, 10)
-                    return (
-                        <CollectionBanner
-                            id="productos"
-                            key={col.id}
-                            collection={col}
-                            products={bProducts}
-                            reverse={idx % 2 !== 0}
-                            userRole={userRole}
-                        />
-                    )
-                })}
+                <div className="max-w-7xl mx-auto px-6 space-y-12">
+                    {orderedCollections.map((col: any, idx: number) => {
+                        const bProducts = filteredProducts.filter(p => p.collectionId === col.id).slice(0, 10)
+                        return (
+                            <CollectionBanner
+                                key={col.id}
+                                collection={col}
+                                products={bProducts}
+                                reverse={idx % 2 !== 0}
+                                userRole={userRole}
+                            />
+                        )
+                    })}
+                </div>
             </motion.div>
         </div>
     )
 }
 
-function CollectionBanner({ id, collection, products, reverse, userRole }: { id?: string, collection: any, products: any[], reverse: boolean, userRole?: string }) {
+function CollectionBanner({ collection, products, reverse, userRole }: { collection: any, products: any[], reverse: boolean, userRole?: string }) {
     const galleryRef = useRef<HTMLDivElement>(null)
     const scrollGallery = (dir: 'left' | 'right') => {
         if (!galleryRef.current) return
-        galleryRef.current.scrollBy({ left: dir === 'right' ? 300 : -300, behavior: 'smooth' })
+        galleryRef.current.scrollBy({ left: dir === 'right' ? 250 : -250, behavior: 'smooth' })
     }
 
-    let accent = "bg-blue-600"
-    let hoverAccent = "hover:bg-blue-700"
+    let accent = "bg-slate-900"
+    let hoverAccent = "hover:bg-blue-600"
     let textAccent = "text-blue-600"
+    
     if (collection.slug.includes('gaming') || collection.slug.includes('automatizacion')) {
-        accent = "bg-[#E8341A]"
-        hoverAccent = "hover:bg-[#d02c15]"
+        hoverAccent = "hover:bg-[#E8341A]"
         textAccent = "text-[#E8341A]"
     }
 
     return (
-        <section id={id} className="relative w-full overflow-hidden border-b border-slate-200 bg-white py-24">
-            <div className="max-w-7xl mx-auto px-6">
-                <div className={`flex flex-col md:flex-row ${reverse ? 'md:flex-row-reverse' : ''} gap-12 items-center`}>
+        <section className="bg-white/60 backdrop-blur-xl border border-slate-200/60 rounded-3xl overflow-hidden shadow-sm">
+            <div className={`flex flex-col lg:flex-row ${reverse ? 'lg:flex-row-reverse' : ''} items-stretch`}>
+                
+                {/* Title Section */}
+                <div className="w-full lg:w-1/3 p-8 md:p-12 flex flex-col justify-center bg-white/40">
+                    <span className={`inline-block ${textAccent} text-[9px] font-black uppercase tracking-[0.3em] mb-3`}>
+                        Colección
+                    </span>
+                    <h2 className="text-3xl font-black text-slate-800 tracking-tight leading-tight mb-4 uppercase">
+                        {collection.name}
+                    </h2>
+                    <p className="text-slate-500 text-xs leading-relaxed mb-8 line-clamp-3">
+                        {collection.description || `Equipamiento especializado para ${collection.name}. Eleve su experiencia con nuestra selección exclusiva de productos de alta gama.`}
+                    </p>
                     
-                    <div className="w-full md:w-1/3 flex flex-col justify-center">
-                        <motion.div 
-                            initial={{ y: 20, opacity: 0 }}
-                            whileInView={{ y: 0, opacity: 1 }}
-                            viewport={{ once: true }}
-                        >
-                            <span className={`inline-block ${textAccent} text-[10px] font-bold uppercase tracking-widest mb-4`}>
-                                ÁREA DE ESPECIALIZACIÓN
-                            </span>
-                            <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tighter leading-tight mb-6 uppercase">
-                                {collection.name}
-                            </h2>
-                            <p className="text-slate-600 text-sm leading-relaxed mb-8">
-                                {collection.description || `Equipamiento premium para ${collection.name}. Eleve su experiencia con nuestra selección exclusiva.`}
-                            </p>
-                            
-                            <Link
-                                href={`/web/collection/${collection.slug}`}
-                                className={`inline-flex items-center gap-3 text-white text-xs font-bold uppercase tracking-widest px-8 py-4 transition-all shadow-md ${accent} ${hoverAccent}`}
-                            >
-                                Acceder al Catálogo <ArrowRight size={14} />
-                            </Link>
-                        </motion.div>
-                    </div>
-
-                    <div className="w-full md:w-2/3 relative">
-                        {products.length > 0 ? (
-                            <>
-                                <div className="absolute -top-12 right-0 flex gap-2">
-                                    <button onClick={() => scrollGallery('left')} className="w-10 h-10 bg-slate-50 border border-slate-200 flex items-center justify-center hover:bg-slate-100 transition-colors text-slate-600"><ChevronLeft size={18} /></button>
-                                    <button onClick={() => scrollGallery('right')} className="w-10 h-10 bg-slate-50 border border-slate-200 flex items-center justify-center hover:bg-slate-100 transition-colors text-slate-600"><ChevronRight size={18} /></button>
-                                </div>
-                                <div ref={galleryRef} className="flex gap-6 overflow-x-auto pb-4 pt-2 scroll-smooth hide-scrollbar snap-x">
-                                    {products.map((p: any) => (
-                                        <Link key={p.id} href={`/web/product/${p.id}`} className="shrink-0 w-64 group bg-white border border-slate-200 hover:shadow-xl transition-all p-4 snap-start">
-                                            <div className="h-48 bg-slate-50 flex items-center justify-center relative mb-4">
-                                                {safeParseArray(p.images).length > 0 ? (
-                                                    <Image src={safeParseArray(p.images)[0]} alt={p.name} fill className="object-contain p-4 group-hover:scale-105 transition-transform duration-500" />
-                                                ) : <ShoppingBag className="text-slate-300 w-12 h-12" />}
-                                            </div>
-                                            <p className="text-slate-800 text-xs font-bold uppercase tracking-wide line-clamp-2 mb-2 group-hover:text-[#E8341A] transition-colors">{p.name}</p>
-                                            <p className="text-[14px] font-bold text-slate-900">
-                                                ${calculateDiscountedPrice(p.price, userRole).toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                                            </p>
-                                        </Link>
-                                    ))}
-                                </div>
-                            </>
-                        ) : (
-                            <div className="h-64 border-2 border-dashed border-slate-200 flex items-center justify-center text-slate-400 text-sm uppercase tracking-widest font-bold">
-                                Próximamente
-                            </div>
-                        )}
-                    </div>
-
+                    <Link
+                        href={`/web/collection/${collection.slug}`}
+                        className={`inline-flex self-start items-center gap-2 text-white text-[10px] font-bold uppercase tracking-widest px-6 py-3 rounded-lg transition-all shadow-sm ${accent} ${hoverAccent}`}
+                    >
+                        Ver colección <ArrowRight size={14} />
+                    </Link>
                 </div>
+
+                {/* Products Slider */}
+                <div className="w-full lg:w-2/3 p-6 lg:p-8 bg-transparent relative border-t lg:border-t-0 lg:border-l border-slate-200/50">
+                    {products.length > 0 ? (
+                        <>
+                            <div className="absolute top-4 right-8 flex gap-2 z-10">
+                                <button onClick={() => scrollGallery('left')} className="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center hover:bg-slate-50 transition-colors text-slate-600 shadow-sm"><ChevronLeft size={16} /></button>
+                                <button onClick={() => scrollGallery('right')} className="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center hover:bg-slate-50 transition-colors text-slate-600 shadow-sm"><ChevronRight size={16} /></button>
+                            </div>
+                            
+                            <div ref={galleryRef} className="flex gap-4 overflow-x-auto pb-4 pt-8 scroll-smooth hide-scrollbar snap-x px-2">
+                                {products.map((p: any) => (
+                                    <Link key={p.id} href={`/web/product/${p.id}`} className="shrink-0 w-48 group bg-white border border-slate-100 rounded-xl hover:shadow-lg hover:border-slate-300 transition-all p-3 snap-start">
+                                        <div className="h-32 bg-transparent flex items-center justify-center relative mb-3">
+                                            {safeParseArray(p.images).length > 0 ? (
+                                                <Image src={safeParseArray(p.images)[0]} alt={p.name} fill className="object-contain p-2 group-hover:scale-105 transition-transform duration-500 mix-blend-multiply" />
+                                            ) : <ShoppingBag className="text-slate-200 w-8 h-8" />}
+                                        </div>
+                                        <p className="text-slate-700 text-[10px] font-bold uppercase tracking-wide line-clamp-2 mb-2 group-hover:text-[#E8341A] transition-colors">{p.name}</p>
+                                        <p className="text-xs font-black text-slate-900">
+                                            ${calculateDiscountedPrice(p.price, userRole).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                                        </p>
+                                    </Link>
+                                ))}
+                            </div>
+                        </>
+                    ) : (
+                        <div className="h-full min-h-[200px] flex items-center justify-center">
+                            <div className="text-center">
+                                <Hexagon className="w-8 h-8 text-slate-200 mx-auto mb-2" />
+                                <p className="text-slate-400 text-[10px] uppercase tracking-widest font-bold">Catálogo en actualización</p>
+                            </div>
+                        </div>
+                    )}
+                </div>
+
             </div>
         </section>
     )
@@ -307,29 +307,29 @@ function CollectionBanner({ id, collection, products, reverse, userRole }: { id?
 function CategoriesBanner({ categories }: { categories: any[] }) {
     const scrollRef = useRef<HTMLDivElement>(null)
     const scroll = (dir: 'left' | 'right') => {
-        scrollRef.current?.scrollBy({ left: dir === 'right' ? 300 : -300, behavior: 'smooth' })
+        scrollRef.current?.scrollBy({ left: dir === 'right' ? 250 : -250, behavior: 'smooth' })
     }
 
     return (
-        <section id="categorias" className="w-full bg-white relative py-20 border-b border-slate-200">
+        <section id="categorias" className="w-full bg-transparent relative py-12">
             <div className="max-w-7xl mx-auto px-6">
-                <div className="flex flex-col md:flex-row items-end justify-between gap-6 mb-12">
+                <div className="flex flex-row items-end justify-between gap-4 mb-8">
                     <div>
-                        <h2 className="text-4xl md:text-5xl font-light text-slate-900 uppercase tracking-tighter">
+                        <h2 className="text-2xl md:text-3xl font-light text-slate-800 uppercase tracking-tight">
                             NUESTRAS <span className="font-black text-[#E8341A]">CATEGORÍAS</span>
                         </h2>
                     </div>
-                    <div className="flex items-center gap-3">
-                        <button onClick={() => scroll('left')} className="w-12 h-12 border border-slate-200 bg-white text-slate-600 flex items-center justify-center hover:bg-slate-50 transition-colors"><ChevronLeft size={20} /></button>
-                        <button onClick={() => scroll('right')} className="w-12 h-12 border border-slate-200 bg-white text-slate-600 flex items-center justify-center hover:bg-slate-50 transition-colors"><ChevronRight size={20} /></button>
+                    <div className="flex items-center gap-2">
+                        <button onClick={() => scroll('left')} className="w-9 h-9 rounded-full border border-slate-300 bg-white/80 backdrop-blur-sm text-slate-600 flex items-center justify-center hover:bg-slate-100 hover:text-slate-900 transition-colors shadow-sm"><ChevronLeft size={16} /></button>
+                        <button onClick={() => scroll('right')} className="w-9 h-9 rounded-full border border-slate-300 bg-white/80 backdrop-blur-sm text-slate-600 flex items-center justify-center hover:bg-slate-100 hover:text-slate-900 transition-colors shadow-sm"><ChevronRight size={16} /></button>
                     </div>
                 </div>
 
-                <div ref={scrollRef} className="flex gap-6 overflow-x-auto hide-scrollbar pb-6 snap-x">
+                <div ref={scrollRef} className="flex gap-4 overflow-x-auto hide-scrollbar pb-6 snap-x px-1">
                     {categories.filter(c => c.isVisible).map((cat: any, i: number) => (
                         <motion.div
                             key={cat.id}
-                            initial={{ opacity: 0, y: 20 }}
+                            initial={{ opacity: 0, y: 15 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: i * 0.05 }}
@@ -337,22 +337,26 @@ function CategoriesBanner({ categories }: { categories: any[] }) {
                         >
                             <Link
                                 href={`/web/category/${cat.slug}`}
-                                className="group block relative overflow-hidden w-72 h-96 border border-slate-200 bg-slate-50 hover:shadow-xl transition-all duration-300"
+                                className="group block relative overflow-hidden w-56 h-72 rounded-2xl border border-slate-200/50 bg-white/80 backdrop-blur-md hover:shadow-lg hover:border-[#E8341A]/20 transition-all duration-300"
                             >
-                                <div className="absolute inset-0">
+                                <div className="absolute inset-0 p-6 flex items-center justify-center">
                                     {cat.image ? (
-                                        <Image src={cat.image} alt={cat.name} fill className="object-cover opacity-60 mix-blend-multiply group-hover:scale-110 transition-transform duration-700" />
+                                        <Image 
+                                            src={cat.image} 
+                                            alt={cat.name} 
+                                            fill 
+                                            className="object-contain p-8 opacity-70 mix-blend-multiply group-hover:scale-110 transition-transform duration-700" 
+                                        />
                                     ) : (
-                                        <div className="w-full h-full bg-slate-100 flex items-center justify-center">
-                                            <ShoppingBag className="text-slate-300 w-16 h-16" />
+                                        <div className="w-full h-full flex flex-col items-center justify-center opacity-20 group-hover:opacity-40 transition-opacity">
+                                            <Hexagon className="w-16 h-16 text-slate-400 mb-2" strokeWidth={1} />
                                         </div>
                                     )}
-                                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent"></div>
                                 </div>
-                                <div className="absolute bottom-0 left-0 p-6 w-full">
-                                    <h3 className="text-white text-2xl font-black uppercase tracking-tight mb-2 group-hover:text-[#E8341A] transition-colors">{cat.name}</h3>
-                                    <p className="text-white/80 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 group-hover:text-white transition-colors">
-                                        Ver Catálogo <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                                <div className="absolute bottom-0 left-0 w-full p-5 bg-gradient-to-t from-white via-white/90 to-transparent">
+                                    <h3 className="text-slate-800 text-sm font-black uppercase tracking-tight mb-1 group-hover:text-[#E8341A] transition-colors line-clamp-2">{cat.name}</h3>
+                                    <p className="text-slate-500 text-[9px] font-bold uppercase tracking-widest flex items-center gap-1 group-hover:text-[#E8341A] transition-colors">
+                                        Ver Catálogo <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
                                     </p>
                                 </div>
                             </Link>
