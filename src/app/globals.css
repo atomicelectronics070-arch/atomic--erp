@@ -36,7 +36,8 @@
 }
 
 body {
-  background: transparent;
+  background-color: #0F172A !important;
+  background-image: none !important;
   color: var(--foreground);
   font-family: var(--font-sans);
   accent-color: var(--primary);
@@ -75,34 +76,10 @@ body {
   -webkit-text-fill-color: transparent;
 }
 
-/* ── Background mesh (light + subtle warm tones) ── */
-.bg-mesh {
-  background-color: #FAFAF8;
-  background-image:
-    radial-gradient(at 0% 0%, rgba(232, 52, 26, 0.06) 0px, transparent 55%),
-    radial-gradient(at 100% 0%, rgba(37, 99, 235, 0.05) 0px, transparent 50%),
-    radial-gradient(at 50% 100%, rgba(245, 97, 26, 0.04) 0px, transparent 50%);
-}
-
-/* ── Background mesh dark ── */
-.bg-mesh-dark {
-  background-color: #0F1923;
-  background-image:
-    radial-gradient(at 0% 0%, rgba(232, 52, 26, 0.12) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, rgba(37, 99, 235, 0.08) 0px, transparent 50%);
-}
-
-/* ── Premium Marble Background ── */
-.bg-marble {
-  background-color: #f1f5f9; /* Guaranteed contrast against white cards */
-  background-image: 
-    url('/assets/white_marble_bg.png'),
-    url('/backgrounds/marble.png'),
-    radial-gradient(circle at 15% 50%, rgba(232, 52, 26, 0.05), transparent 30%),
-    radial-gradient(circle at 85% 30%, rgba(37, 99, 235, 0.05), transparent 30%);
-  background-size: cover, cover, auto, auto;
-  background-position: center, center, 0 0, 0 0;
-  background-attachment: fixed;
+/* ── Background meshes (Disabled - Forced Solid) ── */
+.bg-mesh, .bg-mesh-dark, .bg-marble {
+  background-color: #0F172A !important;
+  background-image: none !important;
 }
 
 /* ── Cyber Card ── */
@@ -156,15 +133,10 @@ body {
   text-shadow: 0 0 10px rgba(255, 77, 45, 0.5), 0 0 20px rgba(255, 77, 45, 0.2);
 }
 
-/* ── Background Nebula (4K Space) ── */
+/* ── Background Nebula (disabled - solid) ── */
 .bg-nebula {
-  background-color: #020617;
-  background-image: 
-    radial-gradient(circle at 50% 50%, rgba(232, 52, 26, 0.05), transparent),
-    url('/backgrounds/nebula.png');
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
+  background-color: #0F172A !important;
+  background-image: none !important;
 }
 
 h1, h2, h3, h4, h5, h6 {
