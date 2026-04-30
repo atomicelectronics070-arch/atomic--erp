@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { useState } from "react"
 import { useCart } from "@/context/CartContext"
@@ -17,12 +17,12 @@ export default function CartPage() {
         setLoading(true)
         
         const orderId = Math.random().toString(36).substring(2, 9).toUpperCase()
-        const methodText = paymentMethod === 'transfer' ? 'Transferencia Bancaria' : 'DepÃ³sito Bancario'
+        const methodText = paymentMethod === 'transfer' ? 'Transferencia Bancaria' : 'Depósito Bancario'
         
         let message = `Hola ATOMIC, acabo de realizar un pedido desde la web.\n\n`
         message += `*Pedido #ID-${orderId}*\n`
         message += `*Cliente:* ${session?.user?.name || 'Cliente Web'}\n`
-        message += `*MÃ©todo:* ${methodText}\n\n`
+        message += `*Método:* ${methodText}\n\n`
         message += `*Productos:*\n`
         
         items.forEach(item => {
@@ -30,7 +30,7 @@ export default function CartPage() {
         })
         
         message += `\n*TOTAL:* ${formatCurrency(totalPrice)}\n\n`
-        message += `Por favor, confÃ­rmenme los datos para realizar el pago. Â¡Gracias!`
+        message += `Por favor, confírmenme los datos para realizar el pago. ¡Gracias!`
 
         const whatsappUrl = `https://wa.me/593969043453?text=${encodeURIComponent(message)}`
         
@@ -48,10 +48,10 @@ export default function CartPage() {
                 <div className="w-24 h-24 bg-neutral-50 flex items-center justify-center mb-8 border border-neutral-100">
                     <ShoppingBag className="text-neutral-200" size={40} />
                 </div>
-                <h1 className="text-4xl font-black uppercase text-neutral-900 tracking-tighter mb-4">Tu carrito estÃ¡ vacÃ­o</h1>
-                <p className="text-neutral-400 text-sm uppercase tracking-widest mb-10 text-center max-w-xs">Parece que aÃºn no has aÃ±adido elementos tecnolÃ³gicos a tu selecciÃ³n.</p>
+                <h1 className="text-4xl font-black uppercase text-neutral-900 tracking-tighter mb-4">Tu carrito está vacío</h1>
+                <p className="text-neutral-400 text-sm uppercase tracking-widest mb-10 text-center max-w-xs">Parece que aún no has añadido elementos tecnológicos a tu selección.</p>
                 <Link href="/web" className="bg-orange-600 text-white px-10 py-5 text-[10px] font-black uppercase tracking-[0.3em] hover:bg-neutral-900 transition-all shadow-2xl shadow-orange-100">
-                    Explorar CatÃ¡logo
+                    Explorar Catálogo
                 </Link>
             </div>
         )
@@ -69,7 +69,7 @@ export default function CartPage() {
                             Mi <span className="text-orange-600">Carrito</span>
                         </h1>
                     </div>
-                    <p className="text-[10px] font-black text-neutral-300 uppercase tracking-widest">{items.length} ELEMENTOS EN SELECCIÃ“N</p>
+                    <p className="text-[10px] font-black text-neutral-300 uppercase tracking-widest">{items.length} ELEMENTOS EN SELECCIÓN</p>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
@@ -87,7 +87,7 @@ export default function CartPage() {
                                 
                                 <div className="flex-1 space-y-2">
                                     <h3 className="text-sm font-black uppercase tracking-wider text-neutral-900 group-hover:text-orange-600 transition-colors">{item.name}</h3>
-                                    <p className="text-[10px] text-neutral-400 font-bold uppercase">TecnologÃ­a Certificada</p>
+                                    <p className="text-[10px] text-neutral-400 font-bold uppercase">Tecnología Certificada</p>
                                     <div className="flex items-center gap-6 mt-4">
                                         <p className="font-mono font-black text-lg text-neutral-900">{formatCurrency(item.price)}</p>
                                         <div className="flex items-center border border-neutral-200">
@@ -134,7 +134,7 @@ export default function CartPage() {
                                     <span>{formatCurrency(totalPrice)}</span>
                                 </div>
                                 <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-white/50">
-                                    <span>EnvÃ­o</span>
+                                    <span>Envío</span>
                                     <span className="text-green-500">Gratis</span>
                                 </div>
                                 <div className="flex justify-between items-center pt-4">
@@ -144,7 +144,7 @@ export default function CartPage() {
                             </div>
 
                             <div className="space-y-6 mb-10">
-                                <p className="text-[9px] font-black uppercase tracking-[0.3em] text-white/40 mb-4">MÃ©todo de Pago</p>
+                                <p className="text-[9px] font-black uppercase tracking-[0.3em] text-white/40 mb-4">Método de Pago</p>
                                 <div className="grid grid-cols-1 gap-4">
                                     <button 
                                         onClick={() => setPaymentMethod('transfer')}
@@ -153,7 +153,7 @@ export default function CartPage() {
                                         <Building2 size={18} className={paymentMethod === 'transfer' ? 'text-orange-500' : 'text-white/20'} />
                                         <div className="text-left">
                                             <p className="text-[10px] font-black uppercase tracking-widest">Transferencia</p>
-                                            <p className="text-[8px] text-white/40 font-bold uppercase">Banca ElectrÃ³nica</p>
+                                            <p className="text-[8px] text-white/40 font-bold uppercase">Banca Electrónica</p>
                                         </div>
                                     </button>
                                     <button 
@@ -162,7 +162,7 @@ export default function CartPage() {
                                     >
                                         <Smartphone size={18} className={paymentMethod === 'deposit' ? 'text-orange-500' : 'text-white/20'} />
                                         <div className="text-left">
-                                            <p className="text-[10px] font-black uppercase tracking-widest">DepÃ³sito</p>
+                                            <p className="text-[10px] font-black uppercase tracking-widest">Depósito</p>
                                             <p className="text-[8px] text-white/40 font-bold uppercase">Cajero / Ventanilla</p>
                                         </div>
                                     </button>
@@ -182,16 +182,16 @@ export default function CartPage() {
                             </button>
                             
                             <p className="mt-8 text-[8px] text-white/20 font-bold uppercase text-center leading-relaxed">
-                                Al presionar el botÃ³n serÃ¡s redirigido a WhatsApp para coordinar la entrega y el pago.
+                                Al presionar el botón serás redirigido a WhatsApp para coordinar la entrega y el pago.
                             </p>
                         </div>
                         
                         <div className="p-8 border-2 border-dashed border-neutral-200">
                             <p className="text-[9px] font-black uppercase tracking-widest text-neutral-400 mb-4 flex items-center gap-2">
-                                <CreditCard size={14} /> InformaciÃ³n de Pago
+                                <CreditCard size={14} /> Información de Pago
                             </p>
                             <p className="text-[10px] text-neutral-500 leading-relaxed font-medium">
-                                DeberÃ¡ enviar el comprobante de su compra al nÃºmero <span className="text-orange-600 font-black">0969043453</span> una vez realizada la transacciÃ³n para procesar su despacho de inmediato.
+                                Deberá enviar el comprobante de su compra al número <span className="text-orange-600 font-black">0969043453</span> una vez realizada la transacción para procesar su despacho de inmediato.
                             </p>
                         </div>
                     </div>
