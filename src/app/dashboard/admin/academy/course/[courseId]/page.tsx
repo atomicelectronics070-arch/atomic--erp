@@ -86,7 +86,7 @@ export default function CourseLessonsAdmin({ params }: { params: { courseId: str
                 </div>
                 
                 <button 
-                    onClick={() => { setEditingLesson(null); setLessonForm({ title: "", slug: "", content: "", videoUrl: "", order: lessons.length }); setIsLessonModalOpen(true); }}
+                    onClick={() => { setEditingLesson(null); setLessonForm({ title: "", slug: "", content: "", videoUrl: "", quizData: "", order: lessons.length }); setIsLessonModalOpen(true); }}
                     className="px-10 py-5 bg-[#E8341A] text-white text-[11px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-xl shadow-[#E8341A]/20 flex items-center gap-4 skew-x-[-10deg]"
                 >
                     <div className="skew-x-[10deg] flex items-center gap-3">

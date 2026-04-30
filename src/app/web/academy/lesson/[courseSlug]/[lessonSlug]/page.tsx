@@ -39,6 +39,7 @@ export default async function LessonPage({ params }: { params: { courseSlug: str
 
     async function markCompleted() {
         'use server'
+        if (!course || !lesson) return
         await prisma.lessonProgress.upsert({
             where: {
                 userId_lessonId: { userId, lessonId: lesson.id }
@@ -48,14 +49,14 @@ export default async function LessonPage({ params }: { params: { courseSlug: str
         })
 
         // Update overall course progress
-        const completedCount = course.lessons.filter(l => 
-            (l.id === lesson.id) || (l.progress && l.progress.length > 0 && l.progress[0].completed)
+        const completedCount = course!.lessons.filter(l => 
+            (l.id === lesson!.id) || (l.progress && l.progress.length > 0 && l.progress[0].completed)
         ).length
         const totalCount = course.lessons.length
         const newProgress = Math.round((completedCount / totalCount) * 100)
 
         await prisma.courseEnrollment.update({
-            where: { id: course.enrollments[0].id },
+            where: { id: course!.enrollments[0].id },
             data: { 
                 progress: newProgress,
                 status: newProgress === 100 ? 'COMPLETED' : 'IN_PROGRESS',
@@ -67,10 +68,14 @@ export default async function LessonPage({ params }: { params: { courseSlug: str
         if (newProgress === 100) {
             try {
                 const fullUser = await prisma.user.findUnique({ where: { id: userId } })
-                if (fullUser?.phone) {
+                // The User model doesn't have a direct 'phone' field. 
+                // We'll check if we can extract it from profileData or skip if not found.
+                const userPhone = fullUser?.profileData?.match(/Celular:\s*(\+?\d+)/)?.[1]
+                
+                if (userPhone) {
                     await sendWhatsAppMessage(
-                        fullUser.phone,
-                        `🚀 ¡Felicidades Elemento ${fullUser.name}! Has completado el curso "${course.title}". Tu certificación ha sido generada en el núcleo de Atomic Academy.`
+                        userPhone,
+                        `🚀 ¡Felicidades Elemento ${fullUser?.name}! Has completado el curso "${course!.title}". Tu certificación ha sido generada en el núcleo de Atomic Academy.`
                     )
                 }
             } catch (e) { console.error("Error sending WhatsApp completion message", e) }

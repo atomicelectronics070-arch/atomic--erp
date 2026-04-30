@@ -5,7 +5,7 @@ import { sendWhatsAppMessage } from "@/lib/whatsapp/service"
 
 export async function POST(req: Request) {
     try {
-        const body = await req.json()
+        const body: any = await req.json()
         const { name, lastName, cedula, password, role, referredBy, phone } = body
         const email = body.email?.trim().toLowerCase()
 
@@ -36,11 +36,10 @@ export async function POST(req: Request) {
                 lastName,
                 cedula,
                 email,
-                phone,
                 passwordHash,
                 status: "PENDING",
                 role: role.toUpperCase(),
-                profileData: body.profileData || `Referido por: ${referredBy || 'N/A'}`,
+                profileData: body.profileData || `Celular: ${phone || 'N/A'} | Referido por: ${referredBy || 'N/A'}`,
             },
         })
 

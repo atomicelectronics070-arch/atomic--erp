@@ -1,4 +1,4 @@
-import { Shield, Zap, Smartphone, TrendingUp, Sun, Droplets, Eye, Mic, Film, Heart, Waves, Moon, Lock, Bell, Music, UserPlus, Leaf, Window as WindowIcon, Search, Tool, HardHat, Layout, Key, Cloud, Thermometer, Battery, Monitor, Puzzle, HelpCircle, Smile, CheckCircle2, ArrowRight } from "lucide-react"
+import { Shield, Zap, Smartphone, TrendingUp, Sun, Droplets, Eye, Mic, Film, Heart, Waves, Moon, Lock, Bell, Music, UserPlus, Leaf, AppWindow as WindowIcon, Search, Wrench as Tool, HardHat, Layout, Key, Cloud, Thermometer, Battery, Monitor, Puzzle, HelpCircle, Smile, CheckCircle2, ArrowRight } from "lucide-react"
 import Link from "next/link"
 
 export default function BenefitsPage() {
@@ -23,7 +23,7 @@ export default function BenefitsPage() {
         { icon: <WindowIcon size={24} />, title: "Persianas Inteligentes", desc: "Apertura y cierre según la posición del sol para proteger muebles y ahorrar energía." },
         { icon: <Search size={24} />, title: "Vigilancia con IA", desc: "Reconocimiento de personas, vehículos y mascotas para filtrar falsas alarmas." },
         { icon: <Tool size={24} />, title: "Mantenimiento Preventivo", desc: "El sistema le avisa cuándo un equipo necesita revisión antes de que falle." },
-        { icon: <ShieldCheck size={24} />, title: "Seguros más Económicos", desc: "Las aseguradoras ofrecen mejores primas para hogares con sistemas de seguridad activa." },
+        { icon: <ShieldCheck size={24} className="" />, title: "Seguros más Económicos", desc: "Las aseguradoras ofrecen mejores primas para hogares con sistemas de seguridad activa." },
         { icon: <Layout size={24} />, title: "Interfaz Unificada", desc: "Diga adiós a tener 20 aplicaciones; controle todo desde un solo ecosistema Atomic." },
         { icon: <Key size={24} />, title: "Privacidad Encriptada", desc: "Sus datos y videos viajan con encriptación de grado militar para su total tranquilidad." },
         { icon: <Waves size={24} />, title: "Riego Inteligente", desc: "Riegue su jardín solo cuando es necesario, basándose en el pronóstico del clima." },

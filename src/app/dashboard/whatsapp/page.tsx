@@ -1,4 +1,19 @@
+"use client"
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useSession } from 'next-auth/react';
+import axios from 'axios';
+import { io } from 'socket.io-client';
+import { QRCodeCanvas } from 'qrcode.react';
+import { 
+  MessageSquare, Smartphone, CheckCircle2, Bot, 
+  Send, RefreshCw, X, ChevronRight, Search
+} from 'lucide-react';
 import { CyberCard, NeonButton, CyberInput, GlassPanel } from '@/components/ui/CyberUI';
+
+const API_BASE = '/api';
+const WHATSAPP_SERVER = process.env.NEXT_PUBLIC_WHATSAPP_SERVER || 'http://localhost:3001';
+const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001';
 
 export default function WhatsAppDashboard() {
   const { data: session } = useSession();
@@ -22,8 +37,8 @@ export default function WhatsAppDashboard() {
     axios.get(`${WHATSAPP_SERVER}/health`).then(() => setBackendOnline(true)).catch(() => setBackendOnline(false));
     const socket = io(SOCKET_URL);
     socket.on('connect', () => setBackendOnline(true));
-    socket.on('qr', (data) => { if (data.id === activeInstance) { setQr(data.qr); setStatus('initializing'); } });
-    socket.on('ready', (data) => { if (data.id === activeInstance) { setStatus('connected'); setQr(null); fetchChats(); } });
+    socket.on('qr', (data: any) => { if (data.id === activeInstance) { setQr(data.qr); setStatus('initializing'); } });
+    socket.on('ready', (data: any) => { if (data.id === activeInstance) { setStatus('connected'); setQr(null); fetchChats(); } });
     return () => { socket.disconnect(); };
   }, [activeInstance, actualUserId]);
 
@@ -45,6 +60,30 @@ export default function WhatsAppDashboard() {
       const res = await axios.get(`${API_BASE}/whatsapp/messages/${activeInstance}/${chat.id}`);
       setMessages(res.data);
     } catch (e) { console.error(e); }
+  };
+
+  const initWhatsApp = async () => {
+    setLoading(true);
+    try {
+      await axios.post(`${WHATSAPP_SERVER}/init`, { id: activeInstance });
+    } catch (e) { console.error(e); }
+    setLoading(false);
+  };
+
+  const generateVariant = async (v: string) => {
+    if (!selectedChat) return;
+    setAiLoading(true);
+    try {
+      const lastMsg = messages[messages.length - 1]?.body || '';
+      const res = await axios.post(`${API_BASE}/whatsapp/ai/suggest`, { 
+        instanceId: activeInstance,
+        chatId: selectedChat.id,
+        context: lastMsg,
+        variant: v
+      });
+      // Handle suggestion
+    } catch (e) { console.error(e); }
+    setAiLoading(false);
   };
 
   return (

@@ -6,7 +6,7 @@ import Link from "next/link"
 import { 
   ShoppingBag, ChevronRight, Star, ArrowRight, Shield, Zap, Truck, 
   Search, ShoppingCart, User, Download, ExternalLink, Power, ArrowLeft, 
-  CheckCircle2, Info
+  CheckCircle2, Info, Package
 } from "lucide-react"
 import { useSession } from "next-auth/react"
 import { useCart } from "@/context/CartContext"

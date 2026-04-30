@@ -4,11 +4,13 @@ import { useState, useRef } from "react"
 import { 
     ImageIcon, Video, Send, Heart, MessageSquare, 
     MoreHorizontal, Share2, Globe, X, Trophy, Trash2,
-    TrendingUp, Award, Zap, Star, Activity, Medal
+    TrendingUp, Award, Zap, Star, Activity, Medal,
+    GraduationCap as School
 } from "lucide-react"
 import { createPost, toggleLike, addComment, fetchFeed, getSalesRanking, deletePost } from "@/lib/actions/social"
 import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
+import Link from "next/link"
 
 interface SocialFeedClientProps {
     initialPosts: any[]
@@ -39,6 +41,30 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
         ])
         if (feedRes.success) setPosts(feedRes.posts as any[])
         if (rankRes.success) setRanking(rankRes.ranking as any[])
+    }
+
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>, type: "image" | "video") => {
+        const file = e.target.files?.[0]
+        if (!file) return
+        
+        const reader = new FileReader()
+        reader.onloadend = () => {
+            setMediaFile(reader.result as string)
+            setMediaType(type)
+        }
+        reader.readAsDataURL(file)
+    }
+
+    const handleLike = async (postId: string) => {
+        await toggleLike(postId, session.user.id)
+        refreshData()
+    }
+
+    const handleDelete = async (postId: string) => {
+        if (confirm("¿Seguro que quieres eliminar esta transmisión?")) {
+            await deletePost(postId, session.user.id)
+            refreshData()
+        }
     }
 
     const handleCreatePost = async () => {
@@ -165,7 +191,7 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
                     </CyberCard>
                     <CyberCard className="!p-12 border-[#00F0FF]/20">
                         <div className="flex items-center gap-6 mb-12">
-                            <GraduationCap className="text-[#00F0FF] neon-text" size={40} />
+                            <School className="text-[#00F0FF] neon-text" size={40} />
                             <div>
                                 <h3 className="text-3xl font-black text-white uppercase italic tracking-tighter">ACADEMIA</h3>
                                 <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.5em] italic">NEURAL TRAINING // DISPONIBLE</p>

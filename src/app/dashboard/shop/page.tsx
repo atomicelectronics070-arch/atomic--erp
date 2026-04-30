@@ -1,4 +1,33 @@
+"use client"
+
+import { useState, useEffect, useRef } from "react"
+import { motion, AnimatePresence } from "framer-motion"
+import { 
+    ShoppingBag, Tag as TagIcon, Globe, CheckCircle, Store, RefreshCw, 
+    ChevronRight, Trash2, Search, CheckSquare, Square, Image as ImageIcon, 
+    Edit, Star, X, Layers, Monitor, Cpu, Gamepad2, Box, ShieldAlert, Save, Plus,
+    Upload, PlusCircle, FileText, ChevronDown, LayoutGrid, Layout
+} from "lucide-react"
 import { CyberCard, NeonButton, CyberInput, GlassPanel } from "@/components/ui/CyberUI"
+import { 
+    getProducts, getShopMetadata, saveProduct, saveCategory, 
+    saveCollection, cleanupDuplicateProducts, getProviderStats, 
+    searchProductsForTaxonomy, createCategory, createCollection, 
+    bulkUpdateProducts, deleteProduct, restoreProduct, 
+    deleteManyProducts, restoreManyProducts, permanentDeleteManyProducts,
+    deleteCollection, deleteManyCollections, toggleProductFeatured
+} from "@/lib/actions/shop"
+
+const safeParseArray = (str: any, fallback: any = []) => {
+    if (!str) return fallback;
+    if (Array.isArray(str)) return str;
+    try {
+        const parsed = JSON.parse(str);
+        return Array.isArray(parsed) ? parsed : fallback;
+    } catch (e) {
+        return fallback;
+    }
+};
 
 export default function ShopConfigPage() {
     const [view, setView] = useState<'list' | 'add' | 'edit'>('list')
@@ -18,8 +47,129 @@ export default function ShopConfigPage() {
     const [isTrashView, setIsTrashView] = useState(false)
     const [providerStats, setProviderStats] = useState<any[]>([])
     const [isCleaning, setIsCleaning] = useState(false)
+    const [storeSettings, setStoreSettings] = useState<any>({
+        bannerText: "OFERTAS ATÓMICAS DE TEMPORADA",
+        active: true,
+        imageUrl: "",
+        title: "BIENVENIDO AL FUTURO",
+        description: "EXPLORA NUESTRO CATÁLOGO DE ALTA TECNOLOGÍA",
+        productIds: []
+    })
 
-    // ... (keep state logic same)
+    const refreshData = async () => {
+        setLoading(true)
+        try {
+            const { products: p, total } = await getProducts({ 
+                page: currentPage, 
+                pageSize, 
+                search: dashboardSearch,
+                showDeleted: isTrashView
+            })
+            setProducts(p)
+            setTotalProducts(total)
+            
+            const meta = await getShopMetadata()
+            setMetadata(meta)
+            
+            const stats = await getProviderStats()
+            setProviderStats(stats)
+
+            // Fetch settings
+            const settRes = await fetch('/api/shop/settings').then(r => r.json())
+            if (settRes.settings) setStoreSettings(settRes.settings)
+        } catch (error) {
+            console.error("Error refreshing data:", error)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const saveSettings = async () => {
+        try {
+            await fetch('/api/shop/settings', {
+                method: 'POST',
+                body: JSON.stringify(storeSettings)
+            })
+            alert("Ajustes sincronizados")
+            refreshData()
+        } catch (e) {
+            alert("Error al guardar ajustes")
+        }
+    }
+
+    useEffect(() => {
+        refreshData()
+    }, [currentPage, dashboardSearch, isTrashView])
+
+    const toggleProductSelection = (id: string) => {
+        setSelectedProducts(prev => 
+            prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+        )
+    }
+
+    const toggleAllProducts = () => {
+        if (selectedProducts.length === products.length && products.length > 0) {
+            setSelectedProducts([])
+        } else {
+            setSelectedProducts(products.map(p => p.id))
+        }
+    }
+
+    const handleDelete = async (id: string) => {
+        if (confirm("¿Seguro que quieres eliminar este producto?")) {
+            await deleteProduct(id)
+            refreshData()
+        }
+    }
+
+    const handleRestore = async (id: string) => {
+        await restoreProduct(id)
+        refreshData()
+    }
+
+    const handleBulkDeleteProducts = async () => {
+        if (confirm(`¿Seguro que quieres eliminar ${selectedProducts.length} productos?`)) {
+            await deleteManyProducts(selectedProducts)
+            setSelectedProducts([])
+            refreshData()
+        }
+    }
+
+    const handleBulkRestore = async () => {
+        await restoreManyProducts(selectedProducts)
+        setSelectedProducts([])
+        refreshData()
+    }
+
+    const handleBulkPermanentDelete = async () => {
+        if (confirm("¿Seguro que quieres ELIMINAR PERMANENTEMENTE estos productos? Esta acción no se puede deshacer.")) {
+            await permanentDeleteManyProducts(selectedProducts)
+            setSelectedProducts([])
+            refreshData()
+        }
+    }
+
+    const handleBulkEdit = async (data: any) => {
+        await bulkUpdateProducts(selectedProducts, data)
+        setShowBulkEdit(false)
+        setSelectedProducts([])
+        refreshData()
+    }
+
+    const handleDeleteCollection = async (id: string) => {
+        if (confirm("¿Seguro que quieres eliminar esta colección?")) {
+            await deleteCollection(id)
+            refreshData()
+        }
+    }
+
+    const handleBulkDeleteCollections = async () => {
+        if (confirm(`¿Seguro que quieres eliminar ${selectedCollections.length} colecciones?`)) {
+            await deleteManyCollections(selectedCollections)
+            setSelectedCollections([])
+            refreshData()
+        }
+    }
 
     return (
         <div className="space-y-16 pb-32 relative z-10">
@@ -44,7 +194,7 @@ export default function ShopConfigPage() {
                 </div>
             </header>
 
-            {view === 'list' && (
+            {view === 'list' ? (
                 <div className="space-y-12 animate-in fade-in duration-700">
                     <div className="flex gap-4 p-2 bg-white/5 border border-white/10 w-fit backdrop-blur-3xl">
                         {['products', 'catalogs', 'settings'].map((tab) => (
@@ -1014,7 +1164,7 @@ function StatCard({ label, value, icon }: { label: string, value: any, icon: any
 
 function ProductForm({ initialData, metadata, onCancel, onSaved }: { initialData?: any, metadata: any, onCancel: () => void, onSaved: () => void }) {
     const [loading, setLoading] = useState(false)
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<any>({
         id: initialData?.id || null,
         name: initialData?.name || '',
         description: initialData?.description || '',
@@ -1494,7 +1644,7 @@ function TaxonomyModal({ type, initialData, allProducts, onClose, onSaved }: { t
     })
     
     const assignedProducts = allProducts.filter(p => type === 'category' ? p.categoryId === data.id : p.collectionId === data.id)
-    const [selectedProducts, setSelectedProducts] = useState<any[]>(assignedProducts)
+    const [selectedProducts, setSelectedProducts] = useState<any[]>(assignedProducts as any[])
     
     useEffect(() => {
         const delayDebounceFn = setTimeout(async () => {
