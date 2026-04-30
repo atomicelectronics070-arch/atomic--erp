@@ -76,10 +76,14 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.8 }}
             >
+                {/* ======================================================== */}
                 {/* 1. SECCIÓN SUPERIOR: CATEGORÍAS */}
+                {/* ======================================================== */}
                 <CategoriesBanner categories={metadata.categories} />
 
+                {/* ======================================================== */}
                 {/* 2. SECCIÓN MEDIA: PRODUCTOS DESTACADOS */}
+                {/* ======================================================== */}
                 <section className="bg-transparent py-16">
                     <div className="max-w-7xl mx-auto px-6">
                         <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
@@ -142,70 +146,59 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                     </div>
                 </section>
 
-                {/* Features Bar */}
-                <section className="py-8 my-8 border-y border-slate-200/50 bg-white/30 backdrop-blur-sm">
-                    <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-6">
-                        {[
-                            { icon: <Truck size={16} />, title: "Logística Global", desc: "Envíos rápidos", color: '#E8341A' },
-                            { icon: <Shield size={16} />, title: "Seguridad", desc: "Garantía total", color: '#2563EB' },
-                            { icon: <Zap size={16} />, title: "Rapidez", desc: "Pago en 1-Click", color: '#E8341A' },
-                            { icon: <Star size={16} />, title: "Soporte", desc: "Asistencia VIP", color: '#2563EB' }
-                        ].map((f, i) => (
-                            <div key={i} className="flex items-center space-x-3">
-                                <div style={{ color: f.color }} className="bg-white p-2 rounded-lg shadow-sm border border-slate-100">{f.icon}</div>
-                                <div>
-                                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-800">{f.title}</p>
-                                    <p className="text-[9px] text-slate-500 uppercase">{f.desc}</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </section>
-
-                {/* Academy Promo Banner */}
-                <section className="py-12 my-12 max-w-6xl mx-auto px-6">
-                    <div className="bg-gradient-to-r from-slate-900 to-slate-800 rounded-3xl overflow-hidden shadow-2xl relative">
-                        <div className="absolute top-0 right-0 w-1/2 h-full bg-blue-600/10 blur-[100px] pointer-events-none" />
-                        <div className="grid grid-cols-1 lg:grid-cols-5 items-center">
+                {/* ======================================================== */}
+                {/* 3. BANNER DE ACADEMY */}
+                {/* ======================================================== */}
+                <section className="py-16 border-y border-slate-200/50 bg-gradient-to-b from-transparent to-blue-50/30">
+                    <div className="max-w-7xl mx-auto px-6">
+                        <div className="bg-white/80 backdrop-blur-xl border border-blue-100/50 rounded-3xl overflow-hidden shadow-lg relative flex flex-col md:flex-row">
+                            <div className="absolute top-0 right-0 w-full h-full bg-blue-50/50 blur-[80px] pointer-events-none -z-10" />
+                            
                             <motion.div 
                                 initial={{ opacity: 0, x: -20 }}
                                 whileInView={{ opacity: 1, x: 0 }}
                                 viewport={{ once: true }}
-                                className="lg:col-span-3 p-10 md:p-14 space-y-6"
+                                className="flex-1 p-10 md:p-14 flex flex-col justify-center"
                             >
-                                <div className="flex items-center gap-2 text-blue-400">
-                                    <Zap size={14} />
-                                    <span className="text-[9px] font-bold uppercase tracking-[0.2em]">PLATAFORMA EDUCATIVA</span>
+                                <div className="flex items-center gap-2 text-blue-600 mb-4">
+                                    <Zap size={14} className="animate-pulse" />
+                                    <span className="text-[10px] font-black uppercase tracking-[0.3em]">PLATAFORMA EDUCATIVA</span>
                                 </div>
-                                <h2 className="text-3xl md:text-4xl font-light text-white uppercase tracking-tight">
-                                    ATOMIC <span className="font-black text-blue-400">ACADEMY</span>
+                                <h2 className="text-4xl md:text-5xl font-light text-slate-900 uppercase tracking-tight mb-4">
+                                    ATOMIC <span className="font-black text-blue-600">ACADEMY</span>
                                 </h2>
-                                <p className="text-slate-300 text-sm leading-relaxed max-w-sm">
-                                    Certificaciones técnicas de alto nivel. Aprenda de los expertos y potencie su carrera profesional.
+                                <p className="text-slate-600 text-sm leading-relaxed max-w-lg mb-8">
+                                    Certificaciones técnicas de alto nivel. Aprenda de los expertos y potencie su carrera profesional con el ecosistema Atomic.
                                 </p>
-                                <div className="flex gap-4 pt-2">
+                                <div className="flex gap-4">
                                     <Link href="/web/academy">
-                                        <button className="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold uppercase tracking-widest text-[10px] hover:bg-blue-500 transition-all shadow-lg shadow-blue-600/20">Acceder</button>
+                                        <button className="bg-blue-600 text-white px-8 py-3.5 rounded-xl font-bold uppercase tracking-widest text-[10px] hover:bg-blue-700 hover:shadow-lg hover:-translate-y-0.5 transition-all">Acceder a Cursos</button>
                                     </Link>
-                                    <button className="border border-slate-700 text-slate-300 px-6 py-3 rounded-xl font-bold uppercase tracking-widest text-[10px] hover:bg-slate-800 transition-all">Saber más</button>
+                                    <button className="border border-blue-200 text-blue-600 bg-blue-50/50 px-8 py-3.5 rounded-xl font-bold uppercase tracking-widest text-[10px] hover:bg-blue-100 transition-all">Ver Temario</button>
                                 </div>
                             </motion.div>
+
                             <motion.div 
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                whileInView={{ opacity: 1, scale: 1 }}
+                                initial={{ opacity: 0 }}
+                                whileInView={{ opacity: 1 }}
                                 viewport={{ once: true }}
-                                className="lg:col-span-2 relative h-full min-h-[200px] bg-slate-950/50 border-l border-slate-800 flex flex-col items-center justify-center p-8"
+                                className="w-full md:w-2/5 relative min-h-[250px] bg-gradient-to-br from-blue-600 to-blue-800 flex flex-col items-center justify-center p-10 overflow-hidden"
                             >
-                                <Hexagon size={60} className="text-blue-500/20 mb-4" strokeWidth={1} />
-                                <div className="text-xl font-black text-white tracking-tight mb-1">NUEVOS CURSOS</div>
-                                <div className="text-[10px] font-bold text-blue-400 uppercase tracking-widest">Disponibles Ahora</div>
+                                <div className="absolute inset-0 bg-[url('/backgrounds/nebula.png')] opacity-10 mix-blend-overlay"></div>
+                                <Hexagon size={80} className="text-blue-300/30 mb-6 absolute scale-[3] animate-[spin_60s_linear_infinite]" strokeWidth={0.5} />
+                                <div className="relative z-10 text-center">
+                                    <div className="text-3xl font-black text-white tracking-tighter mb-2 italic drop-shadow-md">NUEVOS CURSOS</div>
+                                    <div className="text-[10px] font-black text-blue-200 uppercase tracking-[0.4em] bg-blue-900/50 px-4 py-2 rounded-full backdrop-blur-sm border border-blue-400/30">Disponibles Ahora</div>
+                                </div>
                             </motion.div>
                         </div>
                     </div>
                 </section>
 
-                {/* 3. SECCIÓN INFERIOR: ÁREAS DE ESPECIALIZACIÓN */}
-                <div className="max-w-7xl mx-auto px-6 space-y-12">
+                {/* ======================================================== */}
+                {/* 4. COLECCIONES Y MÁS */}
+                {/* ======================================================== */}
+                <div className="py-16 max-w-7xl mx-auto px-6 space-y-12">
                     {orderedCollections.map((col: any, idx: number) => {
                         const bProducts = filteredProducts.filter(p => p.collectionId === col.id).slice(0, 10)
                         return (
@@ -219,6 +212,29 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                         )
                     })}
                 </div>
+
+                {/* ======================================================== */}
+                {/* 5. FEATURES BAR (Al final como footer extra) */}
+                {/* ======================================================== */}
+                <section className="py-10 border-t border-slate-200/50 bg-white/40 backdrop-blur-md mt-12">
+                    <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-6">
+                        {[
+                            { icon: <Truck size={18} />, title: "Logística Global", desc: "Envíos rápidos", color: '#E8341A' },
+                            { icon: <Shield size={18} />, title: "Seguridad", desc: "Garantía total", color: '#2563EB' },
+                            { icon: <Zap size={18} />, title: "Rapidez", desc: "Pago en 1-Click", color: '#E8341A' },
+                            { icon: <Star size={18} />, title: "Soporte", desc: "Asistencia VIP", color: '#2563EB' }
+                        ].map((f, i) => (
+                            <div key={i} className="flex items-center space-x-4">
+                                <div style={{ color: f.color }} className="bg-white p-3 rounded-xl shadow-sm border border-slate-100">{f.icon}</div>
+                                <div>
+                                    <p className="text-[11px] font-black uppercase tracking-widest text-slate-800">{f.title}</p>
+                                    <p className="text-[10px] text-slate-500 uppercase font-medium mt-0.5">{f.desc}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+
             </motion.div>
         </div>
     )
@@ -231,7 +247,7 @@ function CollectionBanner({ collection, products, reverse, userRole }: { collect
         galleryRef.current.scrollBy({ left: dir === 'right' ? 250 : -250, behavior: 'smooth' })
     }
 
-    let accent = "bg-slate-900"
+    let accent = "bg-slate-800"
     let hoverAccent = "hover:bg-blue-600"
     let textAccent = "text-blue-600"
     
@@ -241,7 +257,7 @@ function CollectionBanner({ collection, products, reverse, userRole }: { collect
     }
 
     return (
-        <section className="bg-white/60 backdrop-blur-xl border border-slate-200/60 rounded-3xl overflow-hidden shadow-sm">
+        <section className="bg-white/70 backdrop-blur-xl border border-slate-200/60 rounded-3xl overflow-hidden shadow-sm">
             <div className={`flex flex-col lg:flex-row ${reverse ? 'lg:flex-row-reverse' : ''} items-stretch`}>
                 
                 {/* Title Section */}
@@ -337,7 +353,7 @@ function CategoriesBanner({ categories }: { categories: any[] }) {
                         >
                             <Link
                                 href={`/web/category/${cat.slug}`}
-                                className="group block relative overflow-hidden w-56 h-72 rounded-2xl border border-slate-200/50 bg-white/80 backdrop-blur-md hover:shadow-lg hover:border-[#E8341A]/20 transition-all duration-300"
+                                className="group block relative overflow-hidden w-56 h-72 rounded-2xl border border-slate-200/50 bg-white/80 backdrop-blur-md hover:shadow-lg hover:border-[#E8341A]/30 hover:-translate-y-1 transition-all duration-300"
                             >
                                 <div className="absolute inset-0 p-6 flex items-center justify-center">
                                     {cat.image ? (
@@ -345,7 +361,7 @@ function CategoriesBanner({ categories }: { categories: any[] }) {
                                             src={cat.image} 
                                             alt={cat.name} 
                                             fill 
-                                            className="object-contain p-8 opacity-70 mix-blend-multiply group-hover:scale-110 transition-transform duration-700" 
+                                            className="object-contain p-8 opacity-70 mix-blend-multiply group-hover:scale-110 group-hover:opacity-100 transition-all duration-700" 
                                         />
                                     ) : (
                                         <div className="w-full h-full flex flex-col items-center justify-center opacity-20 group-hover:opacity-40 transition-opacity">
