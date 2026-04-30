@@ -10,9 +10,9 @@
   --color-purple-neon: #7000FF;
   --color-secondary: #0F1923;
 
-  --font-sans: "Inter", ui-sans-serif, system-ui;
-  --font-heading: "Plus Jakarta Sans", ui-sans-serif, system-ui;
-  --font-mono: "Fira Code", monospace;
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui;
+  --font-heading: "IBM Plex Sans", ui-sans-serif, system-ui;
+  --font-mono: "IBM Plex Mono", monospace;
 }
 
 :root {
