@@ -34,11 +34,43 @@ export default function WhatsAppDashboard() {
 
   useEffect(() => {
     if (!actualUserId) return;
+    
+    // Check backend health
     axios.get(`${WHATSAPP_SERVER}/health`).then(() => setBackendOnline(true)).catch(() => setBackendOnline(false));
-    const socket = io(SOCKET_URL);
-    socket.on('connect', () => setBackendOnline(true));
-    socket.on('qr', (data: any) => { if (data.id === activeInstance) { setQr(data.qr); setStatus('initializing'); } });
-    socket.on('ready', (data: any) => { if (data.id === activeInstance) { setStatus('connected'); setQr(null); fetchChats(); } });
+    
+    console.log("Connecting to WhatsApp Socket:", SOCKET_URL);
+    const socket = io(SOCKET_URL, {
+      transports: ['websocket', 'polling'],
+      reconnectionAttempts: 5
+    });
+
+    socket.on('connect', () => {
+      console.log("Socket Connected!");
+      setBackendOnline(true);
+    });
+
+    socket.on('qr', (data: any) => { 
+      console.log("QR Received for:", data.id);
+      if (data.id === activeInstance) { 
+        setQr(data.qr); 
+        setStatus('initializing'); 
+      } 
+    });
+
+    socket.on('ready', (data: any) => { 
+      console.log("Terminal Ready:", data.id);
+      if (data.id === activeInstance) { 
+        setStatus('connected'); 
+        setQr(null); 
+        fetchChats(); 
+      } 
+    });
+
+    socket.on('connect_error', (err) => {
+      console.error("Socket Connection Error:", err);
+      setBackendOnline(false);
+    });
+
     return () => { socket.disconnect(); };
   }, [activeInstance, actualUserId]);
 

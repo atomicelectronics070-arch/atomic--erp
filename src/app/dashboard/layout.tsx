@@ -193,20 +193,7 @@ export default function DashboardLayout({
                                 isOpen={openSections.comunicacion}
                                 onToggle={() => toggleSection('comunicacion')}
                             >
-                                <Link
-                                    href="/dashboard/messages"
-                                    className="flex items-center space-x-4 px-5 py-3 ml-4 border-l border-white/5 pl-6 rounded-none text-[10px] font-black text-slate-500 hover:bg-white/5 hover:text-white transition-all group relative italic"
-                                >
-                                    <Mail size={16} className="text-slate-600 group-hover:text-primary transition-colors" />
-                                    <span className="tracking-[0.2em] uppercase">MensajerÃ­a_Env</span>
-                                    {unreadCount > 0 && (
-                                        <span className="absolute right-4 top-1/2 -translate-y-1/2 bg-primary text-white text-[8px] font-black px-2 py-0.5 rounded-none shadow-[0_0_15px_rgba(99,102,241,0.5)] animate-pulse">
-                                            {unreadCount}
-                                        </span>
-                                    )}
-                                </Link>
-
-                                <NavLink href="/dashboard/whatsapp" icon={<MessageSquare size={16} />} label="Mensajería" isSubItem />
+                                <NavLink href="/dashboard/whatsapp" icon={<MessageSquare size={16} />} label="WhatsApp & CRM" isSubItem />
                                 <NavLink href="/dashboard/agenda" icon={<Calendar size={16} />} label="Agenda" isSubItem />
                                 <NavLink href="/dashboard/notes" icon={<Edit3 size={16} />} label="Bloc Notas" isSubItem />
                                 <NavLink href="/dashboard/blogs" icon={<FileText size={16} />} label="Blog Corporativo" isSubItem />
