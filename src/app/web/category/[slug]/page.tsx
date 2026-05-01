@@ -108,7 +108,7 @@ export default async function CategoryPage({ params }: { params: { slug: string 
                             <Link key={p.id} href={`/web/product/${p.id}`} className="group bg-slate-900/40 border border-white/5 hover:border-[#E8341A]/30 transition-all flex flex-col h-full hover:bg-slate-800/80 rounded-none overflow-hidden">
                                 <div className="aspect-square bg-white/[0.02] relative overflow-hidden flex items-center justify-center p-6 border-b border-white/5">
                                     {imgs.length > 0 ? (
-                                        <img src={imgs[0]} className="w-full h-full object-contain opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700 ease-out p-4" />
+                                        <img src={imgs[0]} alt={p.name} referrerPolicy="no-referrer" className="w-full h-full object-contain opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700 ease-out p-4" />
                                     ) : (
                                         <ShoppingBag size={32} className="text-white/10" />
                                     )}

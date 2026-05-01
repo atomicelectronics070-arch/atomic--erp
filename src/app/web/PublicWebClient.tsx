@@ -276,7 +276,7 @@ function MiniProductCard({ product: p, userRole, delay }: { product: any, userRo
                     {(() => {
                         const imgs = safeParseArray(p.images)
                         return imgs.length > 0 ? (
-                            <Image src={imgs[0]} alt={p.name} fill className="object-contain p-2 group-hover:scale-110 transition-transform duration-300" />
+                            <Image src={imgs[0]} alt={p.name} fill className="object-contain p-2 group-hover:scale-110 transition-transform duration-300" referrerPolicy="no-referrer" />
                         ) : <ShoppingBag className="text-slate-700 w-5 h-5" />
                     })()}
                 </div>
@@ -346,7 +346,7 @@ function InfiniteProductScroll({ products, userRole }: { products: any[], userRo
                     >
                         <div className="h-32 relative bg-white/3 flex items-center justify-center overflow-hidden border-b border-slate-700/30">
                             {safeParseArray(p.images).length > 0 ? (
-                                <Image src={safeParseArray(p.images)[0]} alt={p.name} fill className="object-contain p-3 group-hover:scale-105 transition-transform duration-300" />
+                                <Image src={safeParseArray(p.images)[0]} alt={p.name} fill className="object-contain p-3 group-hover:scale-105 transition-transform duration-300" referrerPolicy="no-referrer" />
                             ) : <ShoppingBag className="text-slate-700 w-7 h-7" />}
                         </div>
                         <div className="p-3">
@@ -481,7 +481,7 @@ function CollectionBanner({ collection, products, reverse, userRole }: { collect
 
                                             <div className="h-36 lg:h-44 bg-white/5 flex items-center justify-center relative mb-4 rounded-xl overflow-hidden border border-slate-700/30">
                                                 {safeParseArray(p.images).length > 0 ? (
-                                                    <Image src={safeParseArray(p.images)[0]} alt={p.name} fill className="object-contain p-4 group-hover:scale-110 transition-transform duration-500 drop-shadow-2xl" />
+                                                    <Image src={safeParseArray(p.images)[0]} alt={p.name} fill className="object-contain p-4 group-hover:scale-110 transition-transform duration-500 drop-shadow-2xl" referrerPolicy="no-referrer" />
                                                 ) : <ShoppingBag className="text-slate-700 w-8 h-8" />}
                                             </div>
                                             

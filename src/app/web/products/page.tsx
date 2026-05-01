@@ -183,7 +183,7 @@ export default function ProductsPage() {
                                 >
                                     <div className="aspect-square relative bg-white/3 overflow-hidden">
                                         {imgs.length > 0 ? (
-                                            <Image src={imgs[0]} alt={p.name} fill className="object-contain p-3 group-hover:scale-105 transition-transform duration-300" />
+                                            <Image src={imgs[0]} alt={p.name} fill className="object-contain p-3 group-hover:scale-105 transition-transform duration-300" referrerPolicy="no-referrer" />
                                         ) : (
                                             <div className="w-full h-full flex items-center justify-center">
                                                 <ShoppingBag className="text-slate-700 w-8 h-8" />
