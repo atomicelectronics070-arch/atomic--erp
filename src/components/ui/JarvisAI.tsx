@@ -11,7 +11,7 @@ type Message = {
 }
 
 export const JarvisAI = () => {
-    const [mode, setMode] = useState<'closed' | 'mini' | 'pro'>('mini')
+    const [mode, setMode] = useState<'closed' | 'mini' | 'pro'>('closed')
     const [messages, setMessages] = useState<Message[]>([
         { role: 'model', content: "Sincronización JARVIS asistida iniciada. Soy tu guía operativo en Atomic ERP. ¿En qué módulo necesitas asistencia hoy?" }
     ])
