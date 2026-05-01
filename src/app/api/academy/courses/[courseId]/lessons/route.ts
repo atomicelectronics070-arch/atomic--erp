@@ -11,8 +11,9 @@ async function requireAdmin() {
 
 export async function POST(
     req: Request,
-    { params }: { params: { courseId: string } }
+    { params }: { params: Promise<{ courseId: string }> }
 ) {
+    const { courseId } = await params;
     const session = await requireAdmin()
     if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
@@ -27,7 +28,7 @@ export async function POST(
                 content: content || "",
                 videoUrl: videoUrl || null,
                 order: order || 0,
-                courseId: params.courseId,
+                courseId: courseId,
             }
         })
         return NextResponse.json({ lesson })
@@ -39,13 +40,14 @@ export async function POST(
 
 export async function GET(
     req: Request,
-    { params }: { params: { courseId: string } }
+    { params }: { params: Promise<{ courseId: string }> }
 ) {
+    const { courseId } = await params;
     const session = await requireAdmin()
     if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
     const lessons = await prisma.lesson.findMany({
-        where: { courseId: params.courseId },
+        where: { courseId: courseId },
         orderBy: { order: "asc" }
     })
     return NextResponse.json({ lessons })
