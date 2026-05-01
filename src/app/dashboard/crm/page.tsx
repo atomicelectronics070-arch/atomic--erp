@@ -113,34 +113,34 @@ export default function AdvancedCRMPage() {
     return (
         <div className="min-h-screen bg-transparent text-white p-4 lg:p-8 space-y-10 relative overflow-hidden">
             {/* Header */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-white/5 pb-10">
-                <div className="space-y-4">
-                    <div className="flex items-center gap-3 text-indigo-400">
-                        <Briefcase size={20} className="neon-glow" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.6em] italic">CRM ESTRATÉGICO // v5.0</span>
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 border-b border-white/5 pb-6">
+                <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-indigo-400">
+                        <Briefcase size={14} className="neon-glow" />
+                        <span className="text-[8px] font-black uppercase tracking-[0.4em] italic opacity-60">CRM ESTRATÉGICO // v5.1</span>
                     </div>
-                    <h1 className="text-7xl font-black italic tracking-tighter uppercase leading-none">Atomic <span className="text-indigo-500">Pipeline</span></h1>
+                    <h1 className="text-4xl font-black italic tracking-tighter uppercase leading-none">Atomic <span className="text-indigo-500">Pipeline</span></h1>
                 </div>
-                <div className="flex items-center gap-4 w-full md:w-auto">
-                    <div className="relative flex-1 md:w-80 group">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-indigo-400 transition-colors" size={16} />
+                <div className="flex items-center gap-3 w-full md:w-auto">
+                    <div className="relative flex-1 md:w-64 group">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/10 group-focus-within:text-indigo-400 transition-colors" size={14} />
                         <input 
                             type="text" 
-                            placeholder="FILTRAR ELEMENTOS..."
+                            placeholder="FILTRAR..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full bg-white/5 border border-white/10 p-4 pl-12 text-[10px] font-black uppercase tracking-widest outline-none focus:border-indigo-500/50 transition-all italic"
+                            className="w-full bg-white/[0.02] border border-white/5 p-3 pl-10 text-[9px] font-black uppercase tracking-widest outline-none focus:border-indigo-500/30 transition-all italic"
                         />
                     </div>
-                    <button onClick={() => { setEditingClient(null); setFormData({ firstName: "", lastName: "", email: "", phone: "", city: "", requirement: "", status: "PROSPECTO", purchaseCount: 0 }); setIsPanelOpen(true); }} className="bg-indigo-600 hover:bg-indigo-500 text-white p-4 px-8 text-[10px] font-black uppercase tracking-widest italic skew-x-[-12deg] transition-all hover:scale-105 active:scale-95 flex items-center gap-3 shadow-[0_0_30px_rgba(79,70,229,0.3)]">
-                        <UserPlus size={18} />
+                    <button onClick={() => { setEditingClient(null); setFormData({ firstName: "", lastName: "", email: "", phone: "", city: "", requirement: "", status: "PROSPECTO", purchaseCount: 0 }); setIsPanelOpen(true); }} className="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-3 text-[9px] font-black uppercase tracking-widest italic transition-all hover:scale-105 active:scale-95 flex items-center gap-2 shadow-xl shadow-indigo-600/10">
+                        <UserPlus size={14} />
                         <span>NUEVO LEAD</span>
                     </button>
                 </div>
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <StatBox label="Prospectos" value={clients.filter(c => c.status === 'PROSPECTO').length} color="slate" />
                 <StatBox label="En Cierre" value={clients.filter(c => c.status === 'NEGOCIACION').length} color="indigo" />
                 <StatBox label="Garantizados" value={clients.filter(c => c.status === 'ACTIVO').length} color="emerald" />
@@ -318,21 +318,25 @@ function SortableClientCard({ client, onClick }: any) {
                     ))}
                 </div>
                 <span className="text-[8px] font-black text-white/10 uppercase tracking-widest">{new Date(client.updatedAt).toLocaleDateString()}</span>
+                        <div key={i} className={`w-1 h-1 rounded-none ${i < (client.purchaseCount || 1) ? 'bg-indigo-500' : 'bg-white/10'}`} />
+                    ))}
+                </div>
+                <span className="text-[7px] font-black text-white/10 uppercase tracking-widest">{new Date(client.updatedAt).toLocaleDateString()}</span>
             </div>
         </div>
     )
 }
 
-function StatBox({ label, value, color }: any) {
+function StatBox({ label, value, color }: { label: string, value: string | number, color: string }) {
     const colors: any = {
-        slate: 'text-white/40',
-        indigo: 'text-indigo-500 neon-text',
-        emerald: 'text-emerald-500'
+        slate: "border-slate-500/20 text-slate-400",
+        indigo: "border-indigo-500/20 text-indigo-400",
+        emerald: "border-emerald-500/20 text-emerald-400"
     }
     return (
-        <div className="bg-white/[0.02] border border-white/5 p-8 flex flex-col items-center justify-center space-y-2 group hover:bg-white/[0.04] transition-all">
-            <span className="text-[9px] font-black uppercase tracking-[0.4em] text-white/20 italic">{label}</span>
-            <span className={`text-5xl font-black italic tracking-tighter ${colors[color]}`}>{value}</span>
+        <div className={`p-4 bg-white/[0.01] border ${colors[color]} space-y-1`}>
+            <p className="text-[8px] font-black uppercase tracking-widest opacity-40 italic">{label}</p>
+            <p className="text-xl font-black italic tracking-tighter text-white">{value}</p>
         </div>
     )
 }
