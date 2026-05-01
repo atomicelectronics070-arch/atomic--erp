@@ -172,14 +172,9 @@ export default function AdvancedCRMPage() {
                         </div>
                     ))}
                 </div>
-                <DragOverlay>
-                    {activeId ? (
-                        <div className="bg-slate-900 border border-indigo-500/50 p-6 shadow-2xl scale-105 opacity-90 cursor-grabbing rounded-none">
-                            <p className="text-[12px] font-black uppercase italic">{clients.find(c => c.id === activeId)?.firstName} {clients.find(c => c.id === activeId)?.lastName}</p>
-                        </div>
-                    ) : null}
                 </DragOverlay>
-            </DndConte            <AnimatePresence>
+            </DndContext>
+            <AnimatePresence>
                 {isPanelOpen && (
                     <>
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/90 backdrop-blur-md z-[100]" onClick={() => setIsPanelOpen(false)} />
