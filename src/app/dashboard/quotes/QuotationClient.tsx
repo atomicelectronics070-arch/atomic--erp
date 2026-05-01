@@ -38,9 +38,21 @@ interface QuotationClientProps {
 export default function QuotationClient({ initialProducts, initialHistory, nextNumber, session }: QuotationClientProps) {
     const [clientName, setClientName] = useState("")
     const [clientEmail, setClientEmail] = useState("")
+    const [emailNotSpecified, setEmailNotSpecified] = useState(false)
     const [clientPhone, setClientPhone] = useState("")
+    const [clientCity, setClientCity] = useState("")
+    const [quoteSubject, setQuoteSubject] = useState("")
     const [deliveryAddress, setDeliveryAddress] = useState("")
     const [quoteNumber, setQuoteNumber] = useState(nextNumber)
+
+    // Pre-fill from URL params (Jarvis integration)
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const urlClient = params.get('client');
+        const urlSubject = params.get('subject');
+        if (urlClient) setClientName(urlClient);
+        if (urlSubject) setQuoteSubject(urlSubject);
+    }, []);
     const [advisorName, setAdvisorName] = useState(session.user?.name?.toUpperCase() || "ASESOR ATOMIC")
 
     const [items, setItems] = useState<QuoteItem[]>([
@@ -84,8 +96,14 @@ export default function QuotationClient({ initialProducts, initialHistory, nextN
     }
 
     const handleGeneratePDF = async () => {
-        if (!clientName.trim() || !clientPhone.trim()) {
-            alert("⚠️ Error: Identificadores de Cliente Obligatorios.")
+        const finalEmail = emailNotSpecified ? "no@especifica.com" : clientEmail;
+        
+        if (!clientName.trim() || !clientPhone.trim() || !clientCity.trim() || !quoteSubject.trim()) {
+            alert("⚠️ CAMPOS OBLIGATORIOS: Nombre, Ciudad, Teléfono y Tema de la Cotización.");
+            return
+        }
+        if (!emailNotSpecified && !clientEmail.includes("@")) {
+            alert("⚠️ Correo electrónico inválido.");
             return
         }
 
@@ -105,12 +123,24 @@ export default function QuotationClient({ initialProducts, initialHistory, nextN
 
         doc.save(`${quoteNumber}_${clientName.replace(/\s+/g, "_")}.pdf`)
 
-        // Save to DB
+        // Save to DB & Sync CRM
         await fetch("/api/quotes", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-                quoteNumber, clientName, clientEmail, clientPhone, items, total, status, advisorName
+                quoteNumber, 
+                clientName, 
+                clientEmail: finalEmail, 
+                clientPhone, 
+                city: clientCity,
+                quoteSubject,
+                items, 
+                subtotal,
+                tax: taxAmount,
+                total, 
+                status, 
+                advisorName,
+                deliveryAddress
             })
         })
     }
@@ -155,15 +185,35 @@ export default function QuotationClient({ initialProducts, initialHistory, nextN
                             <User className="text-[#E8341A]" /> IDENTIDAD DEL CLIENTE
                         </h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div className="space-y-3">
+                                <label className="text-[10px] font-black text-white/30 uppercase tracking-widest italic">Razón Social / Nombre <span className="text-[#E8341A]">*</span></label>
+                                <input value={clientName} onChange={e => setClientName(e.target.value)} className="w-full bg-white/5 border border-white/10 p-5 text-white uppercase font-black tracking-widest focus:border-[#E8341A] outline-none transition-all" />
+                            </div>
+                            <div className="space-y-3">
+                                <label className="text-[10px] font-black text-white/30 uppercase tracking-widest italic">Ciudad / Ubicación <span className="text-[#E8341A]">*</span></label>
+                                <input value={clientCity} onChange={e => setClientCity(e.target.value)} className="w-full bg-white/5 border border-white/10 p-5 text-white uppercase font-black tracking-widest focus:border-[#E8341A] outline-none transition-all" />
+                            </div>
+                            <div className="space-y-3">
+                                <div className="flex justify-between items-center">
+                                    <label className="text-[10px] font-black text-white/30 uppercase tracking-widest italic">Correo Electrónico</label>
+                                    <label className="flex items-center gap-2 cursor-pointer group">
+                                        <input type="checkbox" checked={emailNotSpecified} onChange={e => setEmailNotSpecified(e.target.checked)} className="accent-[#E8341A]" />
+                                        <span className="text-[8px] font-black text-white/20 group-hover:text-white transition-all uppercase tracking-widest">No especifica</span>
+                                    </label>
+                                </div>
+                                <input 
+                                    disabled={emailNotSpecified}
+                                    value={clientEmail} 
+                                    onChange={e => setClientEmail(e.target.value)} 
+                                    className={`w-full bg-white/5 border border-white/10 p-5 text-white font-black tracking-widest focus:border-[#E8341A] outline-none transition-all ${emailNotSpecified ? 'opacity-20 italic' : ''}`} 
+                                    placeholder={emailNotSpecified ? "SIN CORREO" : "EMAIL@CORP.COM"}
+                                />
+                            </div>
+                            <div className="space-y-3">
+                                <label className="text-[10px] font-black text-white/30 uppercase tracking-widest italic">Teléfono Corporativo <span className="text-[#E8341A]">*</span></label>
+                                <input value={clientPhone} onChange={e => setClientPhone(e.target.value)} className="w-full bg-white/5 border border-white/10 p-5 text-white font-black tracking-widest focus:border-[#E8341A] outline-none transition-all" />
+                            </div>
                             <div className="md:col-span-2 space-y-3">
-                                <label className="text-[10px] font-black text-white/30 uppercase tracking-widest italic">Razón Social</label>
-                                <input value={clientName} onChange={e => setClientName(e.target.value)} className="w-full bg-white/5 border border-white/10 p-6 text-white uppercase font-black tracking-widest focus:border-[#E8341A] outline-none transition-all" />
-                            </div>
-                            <div className="space-y-3">
-                                <label className="text-[10px] font-black text-white/30 uppercase tracking-widest italic">Teléfono Corporativo</label>
-                                <input value={clientPhone} onChange={e => setClientPhone(e.target.value)} className="w-full bg-white/5 border border-white/10 p-6 text-white font-black tracking-widest focus:border-[#E8341A] outline-none transition-all" />
-                            </div>
-                            <div className="space-y-3">
                                 <label className="text-[10px] font-black text-white/30 uppercase tracking-widest italic">Estado de Negociación</label>
                                 <div className="flex gap-2">
                                     {["PENDIENTE", "CERRADO", "ABANDONADO"].map(s => (
@@ -173,6 +223,21 @@ export default function QuotationClient({ initialProducts, initialHistory, nextN
                                     ))}
                                 </div>
                             </div>
+                        </div>
+                    </div>
+ 
+                    {/* Quote Subject - Proposal Title */}
+                    <div className="cyber-card p-10 !bg-slate-900/50 backdrop-blur-3xl border-l-4 border-l-[#E8341A]">
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black text-[#E8341A] uppercase tracking-[0.4em] italic flex items-center gap-3">
+                                <ShieldCheck size={14} /> TEMA / TÍTULO DE LA PROPUESTA <span className="opacity-40">(OBLIGATORIO)</span>
+                            </label>
+                            <input 
+                                value={quoteSubject} 
+                                onChange={e => setQuoteSubject(e.target.value)} 
+                                placeholder="EJ: SUMINISTRO E INSTALACIÓN DE EQUIPOS DE SEGURIDAD..."
+                                className="w-full bg-transparent border-b border-white/10 py-4 text-xl font-black text-white uppercase tracking-tighter outline-none focus:border-[#E8341A] transition-all placeholder:opacity-10 italic" 
+                            />
                         </div>
                     </div>
 

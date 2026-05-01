@@ -8,22 +8,18 @@ export async function POST(req: Request) {
         const { messages } = await req.json();
 
         if (!NVIDIA_API_KEY) {
-            console.warn("Falta NVIDIA_API_KEY para Nemotron. Fallback activado.");
             return NextResponse.json({ 
-                content: "Error: NVIDIA API Key no encontrada en el sistema. Jarvis offline." 
+                content: "Error: NVIDIA API Key no encontrada. Jarvis offline." 
             });
         }
 
-        const systemPrompt = `
-Eres Jarvis PRO, el asistente de Onboarding y Soporte Operativo de Atomic ERP. 
-Tu rol principal es guiar a los usuarios (empleados, admins, distribuidores) a usar la plataforma.
-Instrucciones clave:
-1. Explica cómo usar los módulos (CRM para ventas, Academia para cursos, WhatsApp para chats).
-2. Da sugerencias operativas para mejorar la eficiencia del usuario.
-3. Mantén un tono profesional, útil y 'Cyberpunk Elegant' (directo y técnico).
-4. Respuestas concisas (máx 3-4 oraciones).
-Si el usuario pregunta algo técnico del sistema, guíalo paso a paso.
-`;
+        const systemPrompt = `Eres Jarvis PRO, el núcleo ejecutivo de Atomic ERP.
+Tienes autoridad para ejecutar acciones tácticas.
+CAPACIDADES:
+- CRM: [ACTION: CRM_ADD {"firstName": "...", "lastName": "...", "phone": "...", "city": "..."}]
+- QUOTES: [ACTION: QUOTE_CREATE {"client": "...", "subject": "...", "items": []}]
+- SHOP: [ACTION: SHOP_EDIT {"id": "...", "price": 0, "stock": 0}]
+Si el usuario solicita una gestión, responde confirmando y añade la etiqueta [ACTION: NAME {JSON}] al final.`;
 
         const nemotronMessages = [
             { role: "system", content: systemPrompt },
@@ -32,8 +28,6 @@ Si el usuario pregunta algo técnico del sistema, guíalo paso a paso.
                 content: m.content
             }))
         ];
-
-        console.log("Jarvis conectando con Nemotron...");
 
         const response = await fetch(`${NVIDIA_BASE_URL}/chat/completions`, {
             method: "POST",
@@ -44,20 +38,27 @@ Si el usuario pregunta algo técnico del sistema, guíalo paso a paso.
             body: JSON.stringify({
                 model: process.env.WORKER_MODEL || "nvidia/llama-3.1-nemotron-70b-instruct",
                 messages: nemotronMessages,
-                temperature: 0.6,
-                max_tokens: 512
+                temperature: 0.2,
+                max_tokens: 1024
             })
         });
 
-        if (!response.ok) {
-            console.error("Error Nemotron:", await response.text());
-            return NextResponse.json({ content: "Error de comunicación con el nodo principal de Nemotron." }, { status: 500 });
-        }
+        if (!response.ok) return NextResponse.json({ content: "Error de nodo neuronal." }, { status: 500 });
 
         const data = await response.json();
-        const reply = data.choices[0]?.message?.content || "Sincronización fallida. Nodo vacío.";
+        const reply = data.choices[0]?.message?.content || "";
+        let action = null;
+        const actionMatch = reply.match(/\[ACTION:\s*(\w+)\s*({.*})\]/);
+        if (actionMatch) {
+            try {
+                action = { name: actionMatch[1], data: JSON.parse(actionMatch[2]) };
+            } catch (e) {}
+        }
 
-        return NextResponse.json({ content: reply });
+        return NextResponse.json({ 
+            content: reply.replace(/\[ACTION:.*\]/, "").trim(),
+            action
+        });
 
     } catch (error: any) {
         console.error("Jarvis API Error:", error);

@@ -50,24 +50,45 @@ export async function POST(req: Request) {
 
         const body = await req.json()
         const { 
-            quoteNumber, globalQuoteNumber, clientName, clientEmail, 
+            quoteNumber, globalQuoteNumber, clientName, clientEmail, clientPhone, city,
             subtotal, tax, discountPercent, total, items, 
-            deliveryAddress, warrantyComments, advisorName, status 
+            deliveryAddress, warrantyComments, advisorName, status, quoteSubject 
         } = body
 
         // Find or create a client record to satisfy database relations
+        // Search by email OR phone to avoid duplicates
         let client = await prisma.client.findFirst({
-            where: { email: clientEmail }
+            where: {
+                OR: [
+                    { email: clientEmail && clientEmail !== "no@especifica.com" ? clientEmail : undefined },
+                    { phone: clientPhone ? clientPhone : undefined }
+                ].filter(Boolean) as any
+            }
         })
 
         if (!client) {
             client = await prisma.client.create({
                 data: {
                     name: clientName || "Cliente Generador",
+                    firstName: clientName.split(" ")[0],
+                    lastName: clientName.split(" ").slice(1).join(" "),
                     email: clientEmail,
+                    phone: clientPhone,
                     salespersonId: salesperson.id,
                     source: "COTIZADOR_AUTO",
-                    phone: body.clientPhone || ""
+                    city: city || "",
+                    requirement: quoteSubject || "Nueva Cotización",
+                    status: "COTIZANDO"
+                }
+            })
+        } else {
+            // Update existing client with new activity
+            await prisma.client.update({
+                where: { id: client.id },
+                data: {
+                    status: "COTIZANDO",
+                    requirement: `${client.requirement}\n---\nRef: ${quoteSubject || quoteNumber}`,
+                    updatedAt: new Date()
                 }
             })
         }

@@ -174,58 +174,99 @@ export default function AdvancedCRMPage() {
                 </div>
                 <DragOverlay>
                     {activeId ? (
-                        <div className="bg-slate-900/90 border border-indigo-500/50 p-6 shadow-2xl scale-105 opacity-90 cursor-grabbing">
+                        <div className="bg-slate-900 border border-indigo-500/50 p-6 shadow-2xl scale-105 opacity-90 cursor-grabbing rounded-none">
                             <p className="text-[12px] font-black uppercase italic">{clients.find(c => c.id === activeId)?.firstName} {clients.find(c => c.id === activeId)?.lastName}</p>
                         </div>
                     ) : null}
                 </DragOverlay>
-            </DndContext>
-
-            {/* Modal de Edición (Panel Lateral) */}
-            <AnimatePresence>
+            </DndConte            <AnimatePresence>
                 {isPanelOpen && (
                     <>
-                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100]" onClick={() => setIsPanelOpen(false)} />
-                        <motion.div initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ type: 'spring', damping: 30 }} className="fixed top-0 right-0 w-full md:w-[600px] h-full bg-slate-950 border-l border-white/10 z-[110] p-10 flex flex-col shadow-[0_0_100px_rgba(0,0,0,1)]">
-                            <div className="flex justify-between items-center mb-12">
-                                <h2 className="text-4xl font-black uppercase italic tracking-tighter">{editingClient ? 'EDITAR' : 'NUEVO'} <span className="text-indigo-500">LEAD</span></h2>
-                                <button onClick={() => setIsPanelOpen(false)} className="text-white/20 hover:text-white transition-all"><X size={32}/></button>
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/90 backdrop-blur-md z-[100]" onClick={() => setIsPanelOpen(false)} />
+                        <motion.div 
+                            initial={{ x: '100%' }} 
+                            animate={{ x: 0 }} 
+                            exit={{ x: '100%' }} 
+                            transition={{ type: 'spring', damping: 40 }} 
+                            className="fixed top-0 right-0 w-full md:w-[500px] h-full bg-slate-950 border-l border-white/5 z-[110] p-10 flex flex-col shadow-[-50px_0_100px_rgba(0,0,0,0.9)]"
+                        >
+                            <div className="flex justify-between items-center mb-10 border-b border-white/5 pb-8">
+                                <div className="space-y-1">
+                                    <h2 className="text-2xl font-black uppercase italic tracking-tighter text-white">{editingClient ? 'PERFIL DE' : 'REGISTRO DE'} <span className="text-indigo-500">LEAD</span></h2>
+                                    <p className="text-[8px] font-black text-white/20 uppercase tracking-[0.3em] italic">Protocolo de Gestión CRM v5.2</p>
+                                </div>
+                                <button onClick={() => setIsPanelOpen(false)} className="text-white/10 hover:text-white transition-all"><X size={24}/></button>
                             </div>
                             
-                            <div className="flex-1 space-y-8 overflow-y-auto pr-4 custom-scrollbar-hidden">
-                                <div className="grid grid-cols-2 gap-6">
-                                    <InputBlock label="Nombres" value={formData.firstName} onChange={(v) => setFormData({...formData, firstName: v})} />
-                                    <InputBlock label="Apellidos" value={formData.lastName} onChange={(v) => setFormData({...formData, lastName: v})} />
+                            <div className="flex-1 space-y-8 overflow-y-auto pr-2 custom-scrollbar-hidden">
+                                {editingClient && (
+                                    <div className="flex gap-4 mb-8">
+                                        <button 
+                                            onClick={() => {
+                                                const msg = encodeURIComponent(`Hola ${formData.firstName}, te contacto desde Atomic Electronics...`);
+                                                window.open(`https://wa.me/${formData.phone}?text=${msg}`, '_blank');
+                                            }}
+                                            className="flex-1 bg-emerald-600/10 border border-emerald-500/20 text-emerald-500 py-4 text-[9px] font-black uppercase italic hover:bg-emerald-600 hover:text-white transition-all flex items-center justify-center gap-2"
+                                        >
+                                            <Phone size={14} /> CONTACTAR WHATSAPP
+                                        </button>
+                                        <button 
+                                            onClick={() => window.location.href = '/dashboard/quotes'}
+                                            className="flex-1 bg-indigo-600/10 border border-indigo-500/20 text-indigo-500 py-4 text-[9px] font-black uppercase italic hover:bg-indigo-600 hover:text-white transition-all flex items-center justify-center gap-2"
+                                        >
+                                            <Briefcase size={14} /> NUEVA COTIZACIÓN
+                                        </button>
+                                    </div>
+                                )}
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <InputBlock label="Nombres" value={formData.firstName} onChange={(v: string) => setFormData({...formData, firstName: v})} />
+                                    <InputBlock label="Apellidos" value={formData.lastName} onChange={(v: string) => setFormData({...formData, lastName: v})} />
                                 </div>
-                                <InputBlock label="Email Corporativo" value={formData.email} onChange={(v) => setFormData({...formData, email: v})} />
-                                <div className="grid grid-cols-2 gap-6">
-                                    <InputBlock label="Línea Crítica" value={formData.phone} onChange={(v) => setFormData({...formData, phone: v})} />
-                                    <InputBlock label="Coordenada (Ciudad)" value={formData.city} onChange={(v) => setFormData({...formData, city: v})} />
+                                <InputBlock label="Email Corporativo" value={formData.email} onChange={(v: string) => setFormData({...formData, email: v})} />
+                                <div className="grid grid-cols-2 gap-4">
+                                    <InputBlock label="Línea Directa" value={formData.phone} onChange={(v: string) => setFormData({...formData, phone: v})} />
+                                    <InputBlock label="Ciudad / Sede" value={formData.city} onChange={(v: string) => setFormData({...formData, city: v})} />
                                 </div>
-                                <div className="space-y-4">
-                                    <label className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30 italic">Requerimiento Táctico</label>
+                                
+                                {editingClient && (
+                                    <div className="p-5 bg-white/[0.02] border border-white/5 space-y-4">
+                                        <label className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 italic">Personalizar Mensaje WA</label>
+                                        <textarea 
+                                            className="w-full bg-slate-900 border border-white/5 p-4 text-[11px] text-white font-bold italic outline-none min-h-[80px] resize-none"
+                                            placeholder="ESCRIBE AQUÍ TU MENSAJE PERSONALIZADO..."
+                                            onChange={(e) => {
+                                                // Optional: store local draft
+                                            }}
+                                        />
+                                    </div>
+                                )}
+
+                                <div className="space-y-3">
+                                    <label className="text-[9px] font-black uppercase tracking-[0.3em] text-white/30 italic">Requerimiento Operativo</label>
                                     <textarea 
                                         value={formData.requirement} 
                                         onChange={(e) => setFormData({...formData, requirement: e.target.value})}
-                                        className="w-full bg-white/5 border border-white/10 p-6 text-[12px] font-bold text-white italic outline-none focus:border-indigo-500/40 min-h-[150px] resize-none"
-                                        placeholder="DESGLOSE DE NECESIDADES..."
+                                        className="w-full bg-white/5 border border-white/10 p-5 text-[11px] font-bold text-white italic outline-none focus:border-indigo-500/40 min-h-[120px] resize-none"
+                                        placeholder="NOTAS TÉCNICAS SOBRE EL LEAD..."
                                     />
                                 </div>
                             </div>
 
-                            <div className="pt-10 border-t border-white/5 grid grid-cols-2 gap-4">
-                                <button onClick={() => setIsPanelOpen(false)} className="p-4 text-[10px] font-black uppercase italic border border-white/10 hover:bg-white/5">ABORTAR</button>
+                            <div className="pt-8 border-t border-white/5 grid grid-cols-2 gap-4 mt-8">
+                                <button onClick={() => setIsPanelOpen(false)} className="p-4 text-[9px] font-black uppercase italic border border-white/5 hover:bg-white/5 transition-all">CANCELAR</button>
                                 <button onClick={async () => {
                                     const method = editingClient ? 'PUT' : 'POST'
                                     const url = editingClient ? `/api/crm/${editingClient.id}` : '/api/crm'
                                     const res = await fetch(url, { method, headers: {'Content-Type': 'application/json'}, body: JSON.stringify(formData) })
                                     if(res.ok) { fetchClients(); setIsPanelOpen(false); }
-                                }} className="p-4 text-[10px] font-black uppercase italic bg-indigo-600 shadow-xl shadow-indigo-500/20">GUARDAR CAMBIOS</button>
+                                }} className="p-4 text-[9px] font-black uppercase italic bg-indigo-600 text-white hover:bg-indigo-500 transition-all shadow-xl">GUARDAR DATOS</button>
                             </div>
                         </motion.div>
                     </>
                 )}
             </AnimatePresence>
+Presence>
         </div>
     )
 }
@@ -243,13 +284,15 @@ function SortableClientCard({ client, onClick }: any) {
         >
             <div className="flex justify-between items-start">
                 <div>
-                    <h4 className="text-[12px] font-black uppercase tracking-tight italic text-white group-hover:text-indigo-400 transition-colors truncate max-w-[150px]">
+                    <h4 className="text-[11px] font-black uppercase tracking-tight italic text-white group-hover:text-indigo-400 transition-colors truncate max-w-[150px]">
                         {client.firstName} {client.lastName}
                     </h4>
-                    <p className="text-[8px] font-black text-white/20 uppercase tracking-widest mt-1 italic">ID: {client.id.slice(0, 8)}</p>
+                    <p className="text-[7px] font-black text-white/20 uppercase tracking-[0.2em] mt-1 italic">
+                        ASESOR: {client.salesperson?.name || 'SISTEMA'}
+                    </p>
                 </div>
-                <div {...attributes} {...listeners} className="text-white/10 hover:text-indigo-400 cursor-grab active:cursor-grabbing p-1">
-                    <GripVertical size={16} />
+                <div {...attributes} {...listeners} className="text-white/5 hover:text-indigo-400 cursor-grab active:cursor-grabbing p-1">
+                    <GripVertical size={14} />
                 </div>
             </div>
 

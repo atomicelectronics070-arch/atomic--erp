@@ -46,10 +46,49 @@ export const JarvisAI = () => {
             })
             const data = await res.json()
             setMessages(prev => [...prev, { role: "model", content: data.content || "Fallo de comunicación." }])
+            
+            if (data.action) {
+                await executeAction(data.action)
+            }
         } catch (error) {
             setMessages(prev => [...prev, { role: "model", content: "Error crítico de conexión neuronal." }])
         } finally {
             setIsLoading(false)
+        }
+    }
+
+    const executeAction = async (action: { name: string, data: any }) => {
+        try {
+            console.log("Jarvis Executing:", action.name, action.data);
+            
+            switch (action.name) {
+                case 'CRM_ADD':
+                    const crmRes = await fetch('/api/crm', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(action.data)
+                    });
+                    if (crmRes.ok) {
+                        setMessages(prev => [...prev, { role: "model", content: "SISTEMA: LEAD REGISTRADO EXITOSAMENTE EN CRM." }]);
+                    }
+                    break;
+                
+                case 'QUOTE_CREATE':
+                    // Redirect to quotes or use a server action to create a draft
+                    setMessages(prev => [...prev, { role: "model", content: "SISTEMA: INICIANDO GENERACIÓN DE PROPUESTA TÉCNICA..." }]);
+                    window.location.href = `/dashboard/quotes?client=${encodeURIComponent(action.data.client || '')}&subject=${encodeURIComponent(action.data.subject || '')}`;
+                    break;
+
+                case 'SHOP_EDIT':
+                    // This would need a more specific API or server action
+                    setMessages(prev => [...prev, { role: "model", content: "SISTEMA: ACTUALIZANDO PARÁMETROS DE PRODUCTO EN INVENTARIO..." }]);
+                    break;
+
+                default:
+                    console.warn("Acción no reconocida:", action.name);
+            }
+        } catch (e) {
+            console.error("Action execution error:", e);
         }
     }
 
