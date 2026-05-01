@@ -8,7 +8,7 @@ import { useState, useEffect } from "react"
 import { ChevronDown, ChevronRight } from "lucide-react"
 import NotificationBell from "@/components/NotificationBell"
 import { AISearchBot } from "@/components/ui/AISearchBot"
-import { JarvisAI } from "@/components/ui/JarvisAI"
+import { AISearchBot } from "@/components/ui/AISearchBot"
 
 export default function DashboardLayout({
     children,
@@ -312,7 +312,6 @@ export default function DashboardLayout({
                     </div>
                 </div>
             </main>
-            <JarvisAI />
         </div>
     )
 }
