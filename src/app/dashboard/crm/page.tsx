@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Search, Plus, Phone, Mail, UserPlus, Filter, Download, Trash2, Edit2, Briefcase, ChevronRight, X, BarChart3, TrendingUp, CheckCircle2, Save, MoreVertical, GripVertical, AlertCircle, Clock } from "lucide-react"
+import { Search, Plus, Phone, Mail, UserPlus, Filter, Download, Trash2, Edit2, Briefcase, ChevronRight, X, BarChart3, TrendingUp, CheckCircle2, Save, MoreVertical, GripVertical, AlertCircle, Clock, MapPin, ShieldAlert } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { 
   DndContext, 
@@ -172,6 +172,13 @@ export default function AdvancedCRMPage() {
                         </div>
                     ))}
                 </div>
+                <DragOverlay>
+                    {activeId ? (
+                        <SortableClientCard 
+                            client={clients.find((c: any) => c.id === activeId)} 
+                            isDragging={true} 
+                        />
+                    ) : null}
                 </DragOverlay>
             </DndContext>
             <AnimatePresence>
@@ -261,13 +268,13 @@ export default function AdvancedCRMPage() {
                     </>
                 )}
             </AnimatePresence>
-Presence>
         </div>
     )
 }
 
-function SortableClientCard({ client, onClick }: any) {
-    const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: client.id })
+function SortableClientCard({ client, onClick, isDragging: isOverlayDragging }: any) {
+    const { attributes, listeners, setNodeRef, transform, transition, isDragging: isLibDragging } = useSortable({ id: client.id })
+    const isDragging = isOverlayDragging || isLibDragging
     const style = { transform: CSS.Transform.toString(transform), transition }
 
     return (
@@ -313,10 +320,6 @@ function SortableClientCard({ client, onClick }: any) {
                     ))}
                 </div>
                 <span className="text-[8px] font-black text-white/10 uppercase tracking-widest">{new Date(client.updatedAt).toLocaleDateString()}</span>
-                        <div key={i} className={`w-1 h-1 rounded-none ${i < (client.purchaseCount || 1) ? 'bg-indigo-500' : 'bg-white/10'}`} />
-                    ))}
-                </div>
-                <span className="text-[7px] font-black text-white/10 uppercase tracking-widest">{new Date(client.updatedAt).toLocaleDateString()}</span>
             </div>
         </div>
     )
