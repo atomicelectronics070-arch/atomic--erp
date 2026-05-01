@@ -183,8 +183,8 @@ export default function ShopConfigPage() {
                         <ShoppingBag size={20} />
                         <span className="text-[10px] uppercase font-black tracking-[0.6em] italic">E-COMMERCE PROTOCOL V6.2 // MASTER</span>
                     </div>
-                    <h1 className="text-7xl font-black text-white uppercase tracking-tighter leading-none italic">
-                        CENTRO DE <span className="text-secondary neon-text">CATÁLOGO</span>
+                    <h1 className="text-4xl font-black text-white uppercase tracking-tighter leading-none italic">
+                        CENTRO DE <span className="text-secondary">OPERACIONES</span>
                     </h1>
                 </motion.div>
                 <div className="flex gap-4">
@@ -342,23 +342,24 @@ export default function ShopConfigPage() {
                                         <div className="overflow-x-auto">
                                             <table className="w-full text-left">
                                                 <thead>
-                                                    <tr className="bg-white/[0.02] text-[10px] font-black uppercase tracking-[0.4em] text-slate-600 border-b border-white/5 italic">
-                                                        <th className="px-10 py-10 w-20">
+                                                    <tr className="bg-white/[0.01] text-[9px] font-black uppercase tracking-[0.3em] text-slate-500 border-b border-white/5 italic">
+                                                        <th className="px-8 py-8 w-16">
                                                             <button onClick={toggleAllProducts} className="text-slate-800 hover:text-secondary transition-colors">
-                                                                {selectedProducts.length === products.length && products.length > 0 ? <CheckSquare size={22} className="text-secondary shadow-[0_0_10px_rgba(255,99,71,0.5)]" /> : <Square size={22} />}
+                                                                {selectedProducts.length === products.length && products.length > 0 ? <CheckSquare size={18} className="text-secondary" /> : <Square size={18} />}
                                                             </button>
                                                         </th>
-                                                        <th className="px-10 py-10">Entidad / Identificador</th>
-                                                        <th className="px-10 py-10">Segmentaci\u00f3n_Vect</th>
-                                                        <th className="px-10 py-10">Stock Disponible</th>
-                                                        <th className="px-10 py-10">Valor de Mercado</th>
-                                                        <th className="px-10 py-10 text-right pr-16">Acciones_CMD</th>
+                                                        <th className="px-8 py-8">Activo</th>
+                                                        <th className="px-8 py-8">Categoría</th>
+                                                        <th className="px-8 py-8">Stock</th>
+                                                        <th className="px-8 py-8">Costo (Neto)</th>
+                                                        <th className="px-8 py-8">PVP (Final)</th>
+                                                        <th className="px-8 py-8 text-right pr-12">Origen</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody className="divide-y divide-white/5">
                                                     {products.length === 0 ? (
                                                         <tr>
-                                                            <td colSpan={6} className="py-48 text-center">
+                                                            <td colSpan={7} className="py-48 text-center">
                                                                 <div className="flex flex-col items-center space-y-8 opacity-20 group">
                                                                     <div className="p-8 bg-white/5 rounded-none group-hover:scale-110 transition-transform duration-700">
                                                                         <ShoppingBag size={80} className="text-slate-500" />
@@ -378,46 +379,37 @@ export default function ShopConfigPage() {
                                                                         {selectedProducts.includes(p.id) ? <CheckSquare size={22} /> : <Square size={22} />}
                                                                     </button>
                                                                 </td>
-                                                                <td className="px-10 py-8">
-                                                                    <div className="flex items-center space-x-6">
-                                                                        <div className="w-20 h-20 bg-slate-950 border border-white/5 rounded-none overflow-hidden flex items-center justify-center relative group-hover:border-secondary/30 transition-all shadow-2xl">
-                                                                            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 to-transparent opacity-40"></div>
+                                                                <td className="px-8 py-6">
+                                                                    <div className="flex items-center space-x-4">
+                                                                        <div className="w-12 h-12 bg-slate-950 border border-white/5 shrink-0 flex items-center justify-center relative group-hover:border-secondary/20 transition-all">
                                                                             {p.images && p.images !== 'null' && safeParseArray(p.images).length > 0 ? (
-                                                                                <img src={safeParseArray(p.images)[0]} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
+                                                                                <img src={safeParseArray(p.images)[0]} className="w-full h-full object-contain" />
                                                                             ) : (
-                                                                                <ImageIcon size={28} className="text-slate-800" />
+                                                                                <ImageIcon size={18} className="text-slate-800" />
                                                                             )}
                                                                         </div>
-                                                                        <div className="max-w-md">
-                                                                            <p className="text-[14px] font-black text-white line-clamp-1 group-hover:text-secondary transition-colors italic uppercase tracking-tighter mb-1">{p.name}</p>
-                                                                            <div className="flex items-center gap-4">
-                                                                                <span className="text-[9px] text-slate-500 font-black uppercase tracking-[0.3em]">{p.sku || 'N/A \u2014 PROTOCOL_ID'}</span>
-                                                                                {p.featured && <span className="bg-yellow-500/10 text-yellow-500 text-[8px] font-black uppercase tracking-[0.4em] px-3 py-1 rounded-none border border-yellow-500/20 shadow-[0_0_10px_rgba(234,179,8,0.2)]">DESTACADO</span>}
-                                                                            </div>
+                                                                        <div className="max-w-xs">
+                                                                            <p className="text-[11px] font-black text-white line-clamp-1 italic uppercase tracking-tighter">{p.name}</p>
+                                                                            <span className="text-[8px] text-slate-500 font-black uppercase tracking-[0.2em]">{p.sku || 'N/A PROTOCOL'}</span>
                                                                         </div>
                                                                     </div>
                                                                 </td>
-                                                                <td className="px-10 py-8">
-                                                                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white bg-slate-950 px-5 py-2.5 rounded-none-[1.2rem] border border-white/10 shadow-3xl italic group-hover:border-primary/30 transition-all">
-                                                                        {p.category?.name || 'GEN\u00c9RICO_Vect'}
+                                                                <td className="px-8 py-6">
+                                                                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 bg-slate-900 px-3 py-1.5 border border-white/5 italic">
+                                                                        {p.category?.name || 'GENÉRICO'}
                                                                     </span>
                                                                 </td>
-                                                                <td className="px-10 py-8">
-                                                                    <div className="flex items-center gap-4">
-                                                                        <div className={`w-2.5 h-2.5 rounded-none ${p.stock < 10 ? 'bg-red-500 animate-pulse shadow-[0_0_12px_rgba(239,68,68,0.8)]' : (p.stock < 50 ? 'bg-yellow-500 shadow-[0_0_10px_rgba(234,179,8,0.6)]' : 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.6)]')}`}></div>
-                                                                        <div>
-                                                                            <p className="text-sm font-black text-white italic tracking-tighter">{p.stock} <span className="text-[9px] text-slate-600 ml-1 uppercase">Uds</span></p>
-                                                                            <p className="text-[8px] font-bold text-slate-500 uppercase tracking-widest mt-1">Disp. Inmediata</p>
-                                                                        </div>
-                                                                    </div>
+                                                                <td className="px-8 py-6">
+                                                                    <p className="text-[11px] font-black text-white italic tracking-tighter">{p.stock} <span className="text-[8px] text-slate-600 ml-0.5">UDS</span></p>
                                                                 </td>
-                                                                <td className="px-10 py-8">
-                                                                    <div className="flex flex-col">
-                                                                        <span className="text-lg font-black text-secondary italic tracking-tighter">${parseFloat(p.price).toLocaleString()}</span>
-                                                                        {p.compareAtPrice && parseFloat(p.compareAtPrice) > 0 && (
-                                                                            <span className="text-[10px] text-slate-600 line-through font-bold opacity-50 tracking-widest">${parseFloat(p.compareAtPrice).toLocaleString()}</span>
-                                                                        )}
-                                                                    </div>
+                                                                <td className="px-8 py-6">
+                                                                    <span className="text-[11px] font-black text-slate-400 italic">${parseFloat(p.buyPrice || 0).toLocaleString()}</span>
+                                                                </td>
+                                                                <td className="px-8 py-6">
+                                                                    <span className="text-[11px] font-black text-secondary italic tracking-tighter">${parseFloat(p.price).toLocaleString()}</span>
+                                                                </td>
+                                                                <td className="px-8 py-6 text-right pr-12">
+                                                                    <span className="text-[8px] font-black text-slate-600 uppercase tracking-widest italic">{p.provider || 'SISTEMA'}</span>
                                                                 </td>
                                                                 <td className="px-10 py-8 text-right pr-16">
                                                                     <div className="flex items-center justify-end gap-5">

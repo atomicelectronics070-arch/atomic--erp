@@ -92,38 +92,36 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
 
             <div className="flex flex-col lg:flex-row gap-16 items-start relative z-10">
                 <div className="flex-1 space-y-16 w-full">
-                    <motion.div initial={{ opacity: 0, x: -50 }} animate={{ opacity: 1, x: 0 }} className="flex flex-col md:flex-row justify-between items-start md:items-end gap-10 border-b border-white/5 pb-12">
-                        <div className="space-y-4">
-                            <div className="flex items-center space-x-4 text-[#E8341A] neon-text">
-                                <Globe size={24} />
-                                <span className="text-[10px] uppercase font-black tracking-[0.6em] italic">TRANSMISIÓN CORPORATIVA // NODO ALPHA</span>
+                    <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col md:flex-row justify-between items-center gap-6 border-b border-white/5 pb-8">
+                        <div className="space-y-2">
+                            <div className="flex items-center space-x-3 text-[#E8341A]">
+                                <Globe size={16} />
+                                <span className="text-[9px] uppercase font-black tracking-[0.4em] italic opacity-60">RED SOCIAL CORPORATIVA // ALPHA NODO</span>
                             </div>
-                            <h1 className="text-7xl font-black tracking-tighter text-white uppercase italic leading-none">FEED <span className="text-[#E8341A] neon-text">SOCIAL</span></h1>
+                            <h1 className="text-4xl font-black tracking-tighter text-white uppercase italic leading-none">Atomic <span className="text-[#E8341A]">Feed</span></h1>
                         </div>
                     </motion.div>
 
-                    <CyberCard className="!p-10 relative group">
-                        <div className="flex gap-6 items-start">
-                            <div className="w-16 h-16 bg-[#E8341A]/10 border border-[#E8341A]/20 flex items-center justify-center font-black text-2xl text-[#E8341A] neon-text italic shrink-0">
+                    <CyberCard className="!p-8 relative group bg-slate-950/40">
+                        <div className="flex gap-4 items-start">
+                            <div className="w-12 h-12 bg-[#E8341A]/5 border border-[#E8341A]/10 flex items-center justify-center font-black text-xl text-[#E8341A] italic shrink-0">
                                 {session.user?.name?.[0] || "U"}
                             </div>
-                            <div className="flex-1 space-y-8">
+                            <div className="flex-1 space-y-6">
                                 <textarea 
                                     value={newPostContent}
                                     onChange={(e) => setNewPostContent(e.target.value)}
-                                    placeholder="¿QUÉ NOVEDADES HAY EN EL ECOSISTEMA?"
-                                    className="w-full bg-transparent border-none outline-none resize-none text-xl font-black text-white placeholder:text-white/10 uppercase tracking-tighter italic min-h-[100px]"
+                                    placeholder="COMPARTIR ACTUALIZACIÓN OPERATIVA..."
+                                    className="w-full bg-transparent border-none outline-none resize-none text-lg font-black text-white placeholder:text-white/5 uppercase tracking-tighter italic min-h-[60px]"
                                 />
-                                <div className="flex items-center justify-between border-t border-white/5 pt-8">
-                                    <div className="flex items-center gap-4">
-                                        <button onClick={() => fileInputRef.current?.click()} className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-white/40 hover:text-white bg-white/5 border border-white/5 transition-all italic">FOTO</button>
-                                        <button onClick={() => videoInputRef.current?.click()} className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-white/40 hover:text-white bg-white/5 border border-white/5 transition-all italic">VIDEO</button>
+                                <div className="flex items-center justify-between border-t border-white/5 pt-6">
+                                    <div className="flex items-center gap-3">
+                                        <button onClick={() => fileInputRef.current?.click()} className="px-4 py-2 text-[8px] font-black uppercase tracking-widest text-white/30 hover:text-white bg-white/5 transition-all italic">IMAGEN</button>
                                         <input type="file" accept="image/*" hidden ref={fileInputRef} onChange={(e) => handleFileChange(e, "image")} />
-                                        <input type="file" accept="video/*" hidden ref={videoInputRef} onChange={(e) => handleFileChange(e, "video")} />
                                     </div>
-                                    <NeonButton variant="primary" onClick={handleCreatePost} disabled={(!newPostContent.trim() && !mediaFile) || isSubmitting}>
-                                        {isSubmitting ? "SYNC..." : "TRANSMITIR"}
-                                    </NeonButton>
+                                    <button onClick={handleCreatePost} disabled={(!newPostContent.trim() && !mediaFile) || isSubmitting} className="bg-[#E8341A] text-white px-6 py-2 text-[9px] font-black uppercase tracking-widest italic hover:scale-105 transition-all">
+                                        {isSubmitting ? "SYNC..." : "PUBLICAR"}
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -133,30 +131,30 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
                         <AnimatePresence mode="popLayout">
                             {posts.map((post, i) => (
                                 <motion.div layout initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} key={post.id}>
-                                    <CyberCard className="!p-12 relative group">
-                                        <div className="flex items-center justify-between mb-10">
-                                            <div className="flex items-center gap-6">
-                                                <div className="w-16 h-16 bg-white/5 border border-white/10 flex items-center justify-center font-black text-2xl text-white italic">
+                                    <CyberCard className="!p-8 relative group bg-slate-950/20 border-white/5">
+                                        <div className="flex items-center justify-between mb-6">
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-10 h-10 bg-white/5 border border-white/5 flex items-center justify-center font-black text-sm text-white italic">
                                                     {post.author.name[0]}
                                                 </div>
                                                 <div>
-                                                    <p className="text-2xl font-black text-white uppercase tracking-tighter italic group-hover:text-[#E8341A] transition-colors">{post.author.name}</p>
-                                                    <p className="text-[10px] font-black text-[#E8341A] neon-text uppercase tracking-[0.4em] italic mt-1">{post.author.role}</p>
+                                                    <p className="text-lg font-black text-white uppercase tracking-tighter italic">{post.author.name}</p>
+                                                    <p className="text-[8px] font-black text-[#E8341A] uppercase tracking-[0.3em] italic">{post.author.role}</p>
                                                 </div>
                                             </div>
                                         </div>
-                                        <p className="text-2xl font-black text-white/90 uppercase tracking-tighter italic leading-snug mb-10">{post.content}</p>
+                                        <p className="text-lg font-black text-white/80 uppercase tracking-tighter italic leading-snug mb-6">{post.content}</p>
                                         {post.mediaUrl && (
-                                            <div className="mb-10 border border-white/5 overflow-hidden">
-                                                <img src={post.mediaUrl} className="w-full max-h-[600px] object-cover group-hover:scale-105 transition-transform duration-1000" />
+                                            <div className="mb-6 border border-white/5 overflow-hidden rounded-sm">
+                                                <img src={post.mediaUrl} className="w-full max-h-[400px] object-contain bg-black/40" />
                                             </div>
                                         )}
-                                        <div className="flex gap-10 border-t border-white/5 pt-10">
-                                            <button onClick={() => handleLike(post.id)} className={`flex items-center gap-3 text-[10px] font-black uppercase tracking-widest italic ${post.likes.some((l: any) => l.userId === session.user?.id) ? 'text-[#E8341A] neon-text' : 'text-white/20 hover:text-white'}`}>
-                                                <Heart size={18} /> {post.likes.length} APORTES
+                                        <div className="flex gap-8 border-t border-white/5 pt-6">
+                                            <button onClick={() => handleLike(post.id)} className={`flex items-center gap-2 text-[8px] font-black uppercase tracking-widest italic ${post.likes.some((l: any) => l.userId === session.user?.id) ? 'text-[#E8341A]' : 'text-white/20 hover:text-white'}`}>
+                                                <Heart size={14} /> {post.likes.length}
                                             </button>
-                                            <button onClick={() => setActiveCommentPost(activeCommentPost === post.id ? null : post.id)} className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-white/20 hover:text-[#00F0FF] transition-all italic">
-                                                <MessageSquare size={18} /> {post.comments?.length || 0} DEBATES
+                                            <button onClick={() => setActiveCommentPost(activeCommentPost === post.id ? null : post.id)} className="flex items-center gap-2 text-[8px] font-black uppercase tracking-widest text-white/20 hover:text-white transition-all italic">
+                                                <MessageSquare size={14} /> {post.comments?.length || 0}
                                             </button>
                                         </div>
                                     </CyberCard>
@@ -167,23 +165,23 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
                 </div>
 
                 <div className="w-full lg:w-[450px] space-y-12 sticky top-32">
-                    <CyberCard className="!p-12 border-[#E8341A]/20">
-                        <div className="flex items-center gap-6 mb-12">
-                            <Trophy className="text-[#E8341A] neon-text" size={40} />
+                    <CyberCard className="!p-8 border-white/5 bg-slate-950/20">
+                        <div className="flex items-center gap-4 mb-8">
+                            <Trophy className="text-[#E8341A]" size={24} />
                             <div>
-                                <h3 className="text-3xl font-black text-white uppercase italic tracking-tighter">RANKING</h3>
-                                <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.5em] italic">TOP ASESORES // GLOBAL</p>
+                                <h3 className="text-xl font-black text-white uppercase italic tracking-tighter">RANKING ASESORES</h3>
+                                <p className="text-[8px] font-black text-white/30 uppercase tracking-[0.4em] italic">TOP DESEMPEÑO GLOBAL</p>
                             </div>
                         </div>
-                        <div className="space-y-4">
+                        <div className="space-y-3">
                             {ranking.map((user, index) => (
-                                <div key={user.id} className={`flex items-center gap-6 p-6 border ${index === 0 ? 'bg-[#E8341A]/5 border-[#E8341A]/30' : 'bg-white/[0.02] border-white/5'} transition-all group`}>
-                                    <div className={`w-12 h-12 flex items-center justify-center font-black text-xl italic ${index === 0 ? 'bg-[#E8341A] text-white shadow-[0_0_15px_rgba(232,52,26,0.4)]' : 'bg-white/5 text-white/20'}`}>
+                                <div key={user.id} className={`flex items-center gap-4 p-4 border ${index === 0 ? 'bg-[#E8341A]/5 border-[#E8341A]/20' : 'bg-white/[0.01] border-white/5'} transition-all group`}>
+                                    <div className={`w-8 h-8 flex items-center justify-center font-black text-sm italic ${index === 0 ? 'bg-[#E8341A] text-white shadow-lg' : 'bg-white/5 text-white/20'}`}>
                                         {index + 1}
                                     </div>
                                     <div className="flex-1">
-                                        <p className="text-sm font-black text-white uppercase italic tracking-tighter truncate group-hover:text-[#E8341A] transition-colors">{user.name}</p>
-                                        <p className="text-[10px] font-black text-[#E8341A] neon-text italic mt-1">${user.totalProfit.toLocaleString()}</p>
+                                        <p className="text-[11px] font-black text-white uppercase italic tracking-tighter truncate group-hover:text-[#E8341A] transition-colors">{user.name}</p>
+                                        <p className="text-[9px] font-black text-[#E8341A] italic mt-0.5">${user.totalProfit.toLocaleString()}</p>
                                     </div>
                                 </div>
                             ))}

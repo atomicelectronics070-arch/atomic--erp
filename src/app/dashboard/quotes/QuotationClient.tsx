@@ -123,26 +123,26 @@ export default function QuotationClient({ initialProducts, initialHistory, nextN
 
             {/* Header */}
             <motion.div 
-                initial={{ opacity: 0, x: -50 }}
-                animate={{ opacity: 1, x: 0 }}
-                className="flex flex-col md:flex-row justify-between items-start md:items-end gap-10 border-b border-white/5 pb-16 relative z-10"
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex flex-col md:flex-row justify-between items-center gap-8 border-b border-white/5 pb-10 relative z-10"
             >
-                <div>
-                    <div className="flex items-center space-x-4 mb-4 text-[#E8341A] neon-text">
-                        <Briefcase size={20} />
-                        <span className="text-[10px] uppercase font-black tracking-[0.6em] italic">ECOSISTEMA DE VENTAS // GENERADOR V3</span>
+                <div className="space-y-2">
+                    <div className="flex items-center space-x-3 text-[#E8341A]">
+                        <Briefcase size={16} />
+                        <span className="text-[9px] uppercase font-black tracking-[0.4em] italic opacity-60">GENERADOR DE PROPUESTAS // V3.1</span>
                     </div>
-                    <h1 className="text-7xl font-black text-white tracking-tighter uppercase italic leading-none">
-                        COTIZA<span className="text-[#E8341A] neon-text">DOR</span>
+                    <h1 className="text-4xl font-black text-white tracking-tighter uppercase italic leading-none">
+                        Atomic <span className="text-[#E8341A]">Quote</span>
                     </h1>
                 </div>
                 <div className="flex gap-4">
-                    <button onClick={() => setIsHistoryOpen(true)} className="p-6 glass-panel text-white/40 hover:text-white transition-all"><History /></button>
+                    <button onClick={() => setIsHistoryOpen(true)} className="p-4 glass-panel text-white/20 hover:text-white transition-all border-white/5 shadow-xl"><History size={20}/></button>
                     <button 
                         onClick={handleGeneratePDF}
-                        className="bg-[#E8341A] text-white px-12 py-6 font-black uppercase tracking-[0.3em] text-[10px] shadow-[0_0_40px_rgba(232,52,26,0.3)] hover:scale-105 transition-all italic"
+                        className="bg-[#E8341A] text-white px-10 py-4 font-black uppercase tracking-[0.2em] text-[9px] shadow-xl hover:scale-105 transition-all italic"
                     >
-                        EMITIR PROPUESTA FINAL
+                        EMITIR PROPUESTA
                     </button>
                 </div>
             </motion.div>
@@ -187,44 +187,56 @@ export default function QuotationClient({ initialProducts, initialHistory, nextN
                                 {items.map((item, i) => (
                                     <motion.div 
                                         key={item.id}
-                                        initial={{ opacity: 0, y: 20 }}
+                                        initial={{ opacity: 0, y: 10 }}
                                         animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, x: -50 }}
-                                        className="grid grid-cols-12 gap-6 items-center bg-white/5 p-6 border border-white/5 group relative"
+                                        exit={{ opacity: 0, x: -20 }}
+                                        className="grid grid-cols-12 gap-4 items-center bg-slate-900/40 p-5 border border-white/5 group relative hover:bg-slate-900/60 transition-all"
                                     >
-                                        <div className="col-span-2">
-                                            <input value={item.productId} readOnly className="w-full bg-transparent border-b border-white/10 p-2 text-white/40 text-[10px] font-black uppercase" />
+                                        <div className="col-span-1">
+                                            <div className="w-10 h-10 bg-white/5 border border-white/5 flex items-center justify-center relative overflow-hidden group-hover:border-[#E8341A]/30 transition-all">
+                                                {initialProducts.find(p => p.sku === item.productId || p.name === item.description)?.images ? (
+                                                    <img src={safeParseArray(initialProducts.find(p => p.sku === item.productId || p.name === item.description)?.images)[0]} className="w-full h-full object-contain" />
+                                                ) : <ImageIcon size={14} className="text-white/10" />}
+                                            </div>
+                                        </div>
+                                        <div className="col-span-1">
+                                            <input value={item.productId} readOnly className="w-full bg-transparent border-none p-1 text-white/30 text-[8px] font-black uppercase" />
                                         </div>
                                         <div className="col-span-4 relative">
                                             <input 
                                                 value={item.description} 
                                                 onFocus={() => setShowProductList(item.id)}
                                                 onChange={e => handleItemChange(item.id, "description", e.target.value)} 
-                                                className="w-full bg-transparent border-b border-white/20 p-2 text-white text-xs font-black uppercase italic outline-none focus:border-[#E8341A] transition-all" 
-                                                placeholder="BUSCAR PRODUCTO..."
+                                                className="w-full bg-transparent border-none p-1 text-white text-[11px] font-black uppercase italic outline-none focus:text-[#E8341A] transition-all" 
+                                                placeholder="BUSCAR..."
                                             />
                                             {showProductList === item.id && (
-                                                <div className="absolute top-full left-0 w-full bg-slate-900 border border-white/10 shadow-2xl z-50 max-h-64 overflow-y-auto">
+                                                <div className="absolute top-full left-0 w-full bg-slate-950 border border-white/10 shadow-2xl z-50 max-h-48 overflow-y-auto backdrop-blur-3xl">
                                                     {initialProducts.filter(p => p.name.toLowerCase().includes(item.description.toLowerCase())).map(p => (
-                                                        <button key={p.id} onClick={() => selectProduct(item.id, p)} className="w-full text-left p-4 hover:bg-white/10 border-b border-white/5">
-                                                            <p className="text-[11px] font-black text-white uppercase tracking-tighter">{p.name}</p>
-                                                            <p className="text-[10px] text-[#E8341A] font-mono font-black mt-1">${p.price}</p>
+                                                        <button key={p.id} onClick={() => selectProduct(item.id, p)} className="w-full text-left p-3 hover:bg-white/5 border-b border-white/5 flex items-center gap-3">
+                                                            <div className="w-8 h-8 bg-white/5 border border-white/5 shrink-0 overflow-hidden">
+                                                                {p.images && safeParseArray(p.images).length > 0 && <img src={safeParseArray(p.images)[0]} className="w-full h-full object-contain" />}
+                                                            </div>
+                                                            <div>
+                                                                <p className="text-[9px] font-black text-white uppercase tracking-tighter">{p.name}</p>
+                                                                <p className="text-[8px] text-[#E8341A] font-black mt-0.5">${p.price}</p>
+                                                            </div>
                                                         </button>
                                                     ))}
                                                 </div>
                                             )}
                                         </div>
-                                        <div className="col-span-1 text-center">
-                                            <input type="number" value={item.quantity} onChange={e => handleItemChange(item.id, "quantity", parseInt(e.target.value) || 0)} className="w-full bg-white/5 border border-white/10 p-2 text-center text-white font-black text-sm" />
+                                        <div className="col-span-1">
+                                            <input type="number" value={item.quantity} onChange={e => handleItemChange(item.id, "quantity", parseInt(e.target.value) || 0)} className="w-full bg-white/5 border border-white/5 p-2 text-center text-white font-black text-[11px]" />
                                         </div>
                                         <div className="col-span-2 text-right">
-                                            <input type="number" value={item.unitPrice} onChange={e => handleItemChange(item.id, "unitPrice", parseFloat(e.target.value) || 0)} className="w-full bg-transparent text-right text-white font-black text-sm" />
+                                            <input type="number" value={item.unitPrice} onChange={e => handleItemChange(item.id, "unitPrice", parseFloat(e.target.value) || 0)} className="w-full bg-transparent text-right text-white font-black text-[11px]" />
                                         </div>
                                         <div className="col-span-2 text-right">
-                                            <span className="text-sm font-black text-white/80 italic">${(item.quantity * item.unitPrice).toFixed(2)}</span>
+                                            <span className="text-[11px] font-black text-white/60 italic">${(item.quantity * item.unitPrice).toFixed(2)}</span>
                                         </div>
                                         <div className="col-span-1 flex justify-end">
-                                            <button onClick={() => handleRemoveItem(item.id)} className="text-white/20 hover:text-red-500 transition-all opacity-0 group-hover:opacity-100"><Trash2 size={18} /></button>
+                                            <button onClick={() => handleRemoveItem(item.id)} className="text-white/10 hover:text-red-500 transition-all group-hover:text-white/40"><Trash2 size={14} /></button>
                                         </div>
                                     </motion.div>
                                 ))}

@@ -98,28 +98,28 @@ export default function DashboardOverview() {
                         <Target size={24} className="drop-shadow-[0_0_12px_rgba(255,99,71,0.6)] group-hover:rotate-45 transition-transform" />
                         <span className="text-[11px] uppercase font-black tracking-[0.6em] italic">ECOSISTEMA DE CONTROL v4.0</span>
                     </div>
-                    <h1 className="text-7xl font-black tracking-tighter text-white uppercase italic leading-[0.8] transition-all">
-                        CENTRO DE <span className="text-primary drop-shadow-[0_0_15px_rgba(99,102,241,0.3)]">MANDO</span>
+                    <h1 className="text-4xl font-black tracking-tighter text-white uppercase italic leading-none">
+                        CENTRO DE <span className="text-primary">MANDO</span>
                     </h1>
-                    <p className="text-slate-500 font-bold text-xs uppercase tracking-[0.4em] max-w-2xl leading-relaxed italic opacity-80 border-l-2 border-primary/30 pl-6">
-                        Visualización táctica de métricas corporativas, eficiencia operativa y proyecciones de escalado comercial Corporativo.
+                    <p className="text-slate-500 font-bold text-[9px] uppercase tracking-[0.3em] max-w-xl leading-relaxed italic opacity-60 border-l border-primary/30 pl-4">
+                        Visualización táctica de métricas corporativas y eficiencia operativa.
                     </p>
                 </div>
                 
-                <div className="flex items-center gap-10">
+                <div className="flex items-center gap-6">
                     <button 
                         onClick={loadStats} 
-                        className="p-8 glass-panel hover:bg-white/10 text-slate-500 hover:text-secondary transition-all rounded-none-[2rem] group border-white/5 shadow-2xl active:scale-95"
+                        className="p-4 glass-panel hover:bg-white/5 text-slate-500 hover:text-primary transition-all rounded-none border-white/5 shadow-xl active:scale-95"
                     >
-                        <RefreshCw size={28} className={loading ? "animate-spin" : "group-hover:rotate-180 transition-transform duration-700"} />
+                        <RefreshCw size={20} className={loading ? "animate-spin" : ""} />
                     </button>
-                    <div className="flex items-center gap-8 glass-panel !bg-slate-950/60 p-6 border-white/10 shadow-[0_40px_80px_-20px_rgba(0,0,0,0.7)] rounded-none-[2.5rem] ring-1 ring-white/5 backdrop-blur-3xl group">
-                        <div className="w-20 h-20 bg-slate-900 border border-white/10 text-white flex items-center justify-center font-black text-3xl shadow-2xl shadow-indigo-500/20 rounded-none uppercase tracking-tighter italic group-hover:scale-105 transition-transform duration-500 border-l-4 border-l-primary">
+                    <div className="flex items-center gap-4 glass-panel !bg-slate-950/40 p-4 border-white/5 shadow-xl rounded-none ring-1 ring-white/5 backdrop-blur-3xl group">
+                        <div className="w-10 h-10 bg-slate-900 border border-white/5 text-white flex items-center justify-center font-black text-lg shadow-xl rounded-none italic border-l-2 border-l-primary">
                             {session.user?.name?.[0]}
                         </div>
-                        <div className="pr-6">
-                            <p className="text-[10px] font-black text-primary uppercase tracking-[0.5em] mb-2 opacity-80 italic">{role === "ADMIN" ? "ADMINISTRADOR" : role}</p>
-                            <p className="text-2xl font-black text-white uppercase tracking-tighter italic">{session.user?.name}</p>
+                        <div className="pr-4">
+                            <p className="text-[8px] font-black text-primary uppercase tracking-[0.3em] mb-0.5 opacity-60 italic">{role === "ADMIN" ? "ADMINISTRADOR" : role}</p>
+                            <p className="text-sm font-black text-white uppercase tracking-tighter italic">{session.user?.name}</p>
                         </div>
                     </div>
                 </div>
@@ -147,21 +147,18 @@ export default function DashboardOverview() {
 
                 <button 
                     onClick={() => setShowQuotesOverlay(true)}
-                    className="glass-panel !bg-slate-950/80 p-12 text-white shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] relative overflow-hidden text-left hover:scale-[1.03] transition-all border-b-8 border-secondary/40 rounded-none-[3rem] group ring-1 ring-white/10 backdrop-blur-3xl"
+                    className="glass-panel !bg-slate-950/40 p-8 text-white shadow-xl relative overflow-hidden text-left hover:bg-slate-900/60 transition-all border-b-2 border-secondary/30 rounded-none group ring-1 ring-white/5 backdrop-blur-3xl"
                 >
-                    <div className="absolute right-[-40px] bottom-[-40px] opacity-[0.08] group-hover:scale-125 group-hover:opacity-20 transition-all duration-1000 text-white">
-                        <FileText size={220} />
-                    </div>
-                    <div className="flex items-center gap-4 mb-10">
-                        <div className="p-4 bg-secondary/10 rounded-none border border-secondary/20">
-                            <FileText size={24} className="text-secondary" />
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="p-3 bg-secondary/5 rounded-none border border-secondary/10">
+                            <FileText size={18} className="text-secondary" />
                         </div>
-                        <h3 className="text-[11px] font-black text-secondary uppercase tracking-[0.5em] italic">Emisión Táctica</h3>
+                        <h3 className="text-[9px] font-black text-secondary uppercase tracking-[0.3em] italic opacity-60">Emisiones</h3>
                     </div>
-                    <p className="text-8xl font-black text-white tracking-tighter drop-shadow-[0_0_35px_rgba(255,255,255,0.3)] italic leading-none">{data.quotesCount}</p>
-                    <div className="mt-14 flex items-center gap-6 text-[12px] font-black uppercase tracking-[0.4em] text-slate-500 group-hover:text-white transition-all italic">
-                        <span>Acceder Al Escáner</span>
-                        <ArrowRight size={22} className="group-hover:translate-x-4 transition-transform text-primary font-black" />
+                    <p className="text-5xl font-black text-white tracking-tighter italic leading-none">{data.quotesCount}</p>
+                    <div className="mt-8 flex items-center gap-4 text-[9px] font-black uppercase tracking-[0.3em] text-slate-500 group-hover:text-white transition-all italic">
+                        <span>Ver Archivo</span>
+                        <ArrowRight size={14} className="group-hover:translate-x-2 transition-transform text-primary" />
                     </div>
                 </button>
 
@@ -380,28 +377,21 @@ function KPITile({ icon, label, value, meta, progress, accent }: { icon: any, la
     const barGradient = accent === 'pink' ? 'from-secondary to-pink-400' : accent === 'indigo' ? 'from-primary to-indigo-400' : 'from-emerald-500 to-teal-400'
 
     return (
-        <div className="glass-panel p-12 relative overflow-hidden group hover:scale-[1.03] transition-all duration-700 rounded-none-[3rem] border-white/5 shadow-2xl backdrop-blur-3xl ring-1 ring-white/5">
-            <div className={`absolute -right-12 -top-12 opacity-[0.04] group-hover:opacity-15 group-hover:scale-125 transition-all duration-1000 text-white`}>
-                {icon}
-            </div>
-            <div className="flex justify-between items-start mb-14">
-                <div className={`p-6 bg-slate-900/80 text-white shadow-2xl border border-white/10 rounded-none ring-1 ring-white/10 group-hover:rotate-12 transition-transform duration-500`}>
+        <div className="glass-panel p-8 relative overflow-hidden hover:bg-white/[0.02] transition-all duration-500 rounded-none border-white/5 shadow-xl backdrop-blur-3xl ring-1 ring-white/5">
+            <div className="flex justify-between items-start mb-10">
+                <div className={`p-4 bg-slate-900/60 text-white shadow-lg border border-white/5 rounded-none`}>
                     {icon}
                 </div>
-                <span className={`text-[10px] font-black text-${accentColor} bg-${accentColor}/10 px-6 py-2.5 uppercase tracking-widest rounded-none border border-${accentColor}/20 italic shadow-2xl shadow-${accentColor}/10`}>
+                <span className={`text-[8px] font-black text-${accentColor} bg-${accentColor}/5 px-4 py-1.5 uppercase tracking-widest rounded-none border border-${accentColor}/10 italic`}>
                     {meta}
                 </span>
             </div>
-            <h3 className="text-[11px] font-black text-slate-500 uppercase tracking-[0.5em] mb-4 italic opacity-80">{label}</h3>
-            <p className="text-6xl font-black text-white tracking-tighter italic leading-none truncate group-hover:text-secondary transition-colors">{value}</p>
+            <h3 className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] mb-2 italic opacity-60">{label}</h3>
+            <p className="text-4xl font-black text-white tracking-tighter italic leading-none">{value}</p>
             
-            <div className="mt-12 h-3 w-full bg-slate-900 rounded-none overflow-hidden border border-white/10 shadow-inner p-[3px] relative">
-                <div className={`h-full bg-gradient-to-r ${barGradient} rounded-none transition-all duration-2000 ease-out`} style={{ width: `${progress}%`, boxShadow: `0 0 20px ${shadowColor}` }}></div>
+            <div className="mt-8 h-1.5 w-full bg-slate-900 rounded-none overflow-hidden border border-white/5 shadow-inner relative">
+                <div className={`h-full bg-gradient-to-r ${barGradient} rounded-none`} style={{ width: `${progress}%` }}></div>
             </div>
-            <p className="text-[10px] font-black text-slate-500 uppercase mt-8 tracking-widest flex items-center gap-4 italic opacity-70">
-                <div className={`w-2 h-2 rounded-none bg-${accentColor} animate-pulse`} />
-                {progress}% Eficiencia de Rendimiento
-            </p>
         </div>
     )
 }
