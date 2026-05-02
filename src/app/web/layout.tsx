@@ -4,8 +4,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Search, ShoppingCart, User, Shield, Zap, CheckCircle2 } from "lucide-react"
 import { useCart } from "@/context/CartContext"
-
-import { AISearchBot } from "@/components/ui/AISearchBot"
+import { motion, AnimatePresence } from "framer-motion"
 
 export default function WebLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname()
@@ -185,9 +184,6 @@ export default function WebLayout({ children }: { children: React.ReactNode }) {
                 {/* Footer top tomato glow */}
                 <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#E8341A]/20 to-transparent pointer-events-none" />
             </footer>
-            <AISearchBot />
         </div>
     )
 }
-
-
