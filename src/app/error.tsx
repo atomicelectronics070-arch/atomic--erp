@@ -39,7 +39,7 @@ export default function Error({
                     Intentar Recuperar
                 </button>
                 <Link
-                    href="/dashboard"
+                    href="/"
                     className="bg-neutral-900 text-white px-8 py-3 rounded-none text-xs font-bold uppercase tracking-widest hover:bg-black transition-all shadow-xl shadow-neutral-900/20 active:scale-95"
                 >
                     Volver al Inicio
@@ -57,5 +57,3 @@ export default function Error({
         </div>
     )
 }
-
-
