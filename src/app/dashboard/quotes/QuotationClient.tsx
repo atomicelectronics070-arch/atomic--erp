@@ -26,7 +26,30 @@ interface Product {
     description: string | null
     price: number
     sku: string | null
+    images?: string | null
 }
+
+const safeParseArray = (str: any, fallback: any = []) => {
+    if (!str || str === 'null' || str === '[]' || str === '') return fallback;
+    if (Array.isArray(str)) return str.length > 0 ? str : fallback;
+    if (typeof str === 'string') {
+        const trimmed = str.trim();
+        if (trimmed.startsWith('http') || trimmed.startsWith('/') || trimmed.startsWith('data:image')) return [trimmed];
+        try {
+            let cleaned = trimmed;
+            if (cleaned.startsWith('"') && cleaned.endsWith('"')) cleaned = cleaned.substring(1, cleaned.length - 1).replace(/\\"/g, '"');
+            let parsed = JSON.parse(cleaned);
+            if (typeof parsed === 'string') { try { parsed = JSON.parse(parsed); } catch(e) {} }
+            if (Array.isArray(parsed)) return parsed.length > 0 ? parsed : fallback;
+            if (typeof parsed === 'string' && parsed.length > 0) return [parsed];
+        } catch (e) {
+            const urlRegex = /(https?:\/\/[^\s"\]]+)/g;
+            const matches = trimmed.match(urlRegex);
+            if (matches && matches.length > 0) return matches;
+        }
+    }
+    return fallback;
+};
 
 interface QuotationClientProps {
     initialProducts: Product[]

@@ -296,11 +296,10 @@ export default function DashboardLayout({
                         {children}
                     </div>
                 </div>
+            </main>
         </div>
-
     )
 }
-
 function NavLink({ href, icon, label, isActive, isSubItem }: { href: string; icon: React.ReactNode; label: string; isActive?: boolean; isSubItem?: boolean }) {
     return (
         <Link
@@ -380,6 +379,8 @@ function DollarSign(props: any) {
 }
 
 import { motion, AnimatePresence } from "framer-motion"
+
+
 
 
 

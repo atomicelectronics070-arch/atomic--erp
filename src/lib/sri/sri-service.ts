@@ -31,7 +31,8 @@ export class SRIService {
         console.log(`[SRI] Starting invoice process for order ${orderId}`);
         
         // 1. Get order and SRI settings from DB
-        const settings = await prisma.sRISettings.findFirst();
+        const p = prisma as any;
+        const settings = await p.sriSettings?.findFirst() || await p.sRISettings?.findFirst();
         if (!settings) throw new Error("SRI Settings not configured");
 
         // 2. Generate XML
