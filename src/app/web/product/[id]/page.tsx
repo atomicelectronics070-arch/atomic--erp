@@ -6,12 +6,13 @@ import Link from "next/link"
 import { 
   ShoppingBag, ChevronRight, Star, ArrowRight, Shield, Zap, Truck, 
   Search, ShoppingCart, User, Download, ExternalLink, Power, ArrowLeft, 
-  CheckCircle2, Info, Package
+  CheckCircle2, Info, Package, MessageCircle, CreditCard
 } from "lucide-react"
 import { useSession } from "next-auth/react"
 import { useCart } from "@/context/CartContext"
 import { getProductById, getRelatedProducts } from "@/lib/actions/shop"
 import { calculateDiscountedPrice } from "@/lib/utils/pricing"
+import PaymentModal from "../../components/PaymentModal"
 
 export default function ProductDetailPage() {
     const { data: session } = useSession()
@@ -25,6 +26,7 @@ export default function ProductDetailPage() {
     const [selectedImage, setSelectedImage] = useState(0)
     const [errorMsg, setErrorMsg] = useState<string | null>(null)
     const [added, setAdded] = useState(false)
+    const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false)
 
     const handleAddToCart = () => {
         if (!product) return;
@@ -205,24 +207,39 @@ export default function ProductDetailPage() {
                             </div>
 
                             <div className="space-y-4">
-                                <button 
-                                    onClick={handleAddToCart}
-                                    className={`w-full py-6 text-[10px] font-black uppercase tracking-[0.4em] transition-all shadow-2xl flex items-center justify-center space-x-4 group rounded-none ${added ? 'bg-green-600 text-white' : 'bg-orange-600 text-white hover:bg-neutral-900 shadow-orange-100'}`}
-                                >
-                                    {added ? (
-                                        <>
-                                            <CheckCircle2 size={18} />
-                                            <span>¡Añadido!</span>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <ShoppingCart size={18} />
-                                            <span>Añadir al Carrito</span>
-                                            <ArrowRight size={16} className="translate-x-0 group-hover:translate-x-3 transition-transform" />
-                                        </>
-                                    )}
-                                </button>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <button 
+                                        onClick={handleAddToCart}
+                                        className={`w-full py-6 text-[10px] font-black uppercase tracking-[0.4em] transition-all shadow-2xl flex items-center justify-center space-x-3 group rounded-none ${added ? 'bg-green-600 text-white' : 'bg-[#E8341A] text-white hover:bg-slate-800'}`}
+                                    >
+                                        {added ? (
+                                            <>
+                                                <CheckCircle2 size={18} />
+                                                <span>¡Añadido!</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <ShoppingCart size={18} />
+                                                <span>Añadir al Carrito</span>
+                                            </>
+                                        )}
+                                    </button>
+
+                                    <button 
+                                        onClick={() => setIsPaymentModalOpen(true)}
+                                        className="w-full py-6 text-[10px] font-black uppercase tracking-[0.4em] transition-all shadow-2xl flex items-center justify-center space-x-3 group rounded-none bg-blue-600 text-white hover:bg-blue-500"
+                                    >
+                                        <CreditCard size={18} />
+                                        <span>Comprar Ahora</span>
+                                    </button>
+                                </div>
                                 
+                                <PaymentModal 
+                                    isOpen={isPaymentModalOpen} 
+                                    onClose={() => setIsPaymentModalOpen(false)} 
+                                    product={{ id: product.id, name: product.name, price: calculateDiscountedPrice(product.price, userRole), sku: product.sku }} 
+                                />
+
                                 {product.specSheetUrl && (
                                     <a 
                                         href={product.specSheetUrl} 

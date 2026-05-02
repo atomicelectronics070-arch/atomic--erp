@@ -805,3 +805,18 @@ model LessonProgress {
 
   @@unique([userId, lessonId])
 }
+
+model SRISettings {
+  id              String   @id @default(cuid())
+  ruc             String   @unique
+  businessName    String
+  establishment   String   @default("001")
+  emissionPoint   String   @default("001")
+  environment     String   @default("pruebas") // pruebas, produccion
+  p12Path         String?
+  password        String?
+  lastSequential  Int      @default(1)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
