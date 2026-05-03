@@ -15,7 +15,7 @@ export default function DashboardLayout({
     children: React.ReactNode
 }) {
     const { data: session, status } = useSession()
-    const [sidebarOpen, setSidebarOpen] = useState(true)
+    const [sidebarOpen, setSidebarOpen] = useState(false)
     const [unreadCount, setUnreadCount] = useState(0)
     const [openSections, setOpenSections] = useState<Record<string, boolean>>({
         operaciones: true,
@@ -91,12 +91,11 @@ export default function DashboardLayout({
 
     return (
         <div className="flex h-screen bg-[#000103] text-white overflow-hidden font-sans relative selection:bg-primary/30 selection:text-white">
-            {/* Background Orbs - Deep Visual Hierarchy */}
+            {/* Background Orbs - Optimized */}
             <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-                <div className="absolute top-[-10%] right-[-5%] w-[50%] h-[50%] rounded-none bg-indigo-600/5 blur-[120px] animate-pulse transition-all duration-10000" />
-                <div className="absolute bottom-[-10%] left-[-5%] w-[45%] h-[45%] rounded-none bg-pink-600/5 blur-[120px] animate-pulse transition-all duration-7000" />
-                <div className="absolute top-[30%] left-[20%] w-[30%] h-[30%] rounded-none bg-violet-600/5 blur-[100px]" />
-                <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.03] bg-fixed"></div>
+                <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-primary/5 blur-[100px]" />
+                <div className="absolute bottom-[-10%] left-[-5%] w-[35%] h-[35%] bg-secondary/5 blur-[100px]" />
+                <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.02] bg-fixed"></div>
             </div>
 
             {/* Top Security Line (Visual Accent) */}
@@ -117,8 +116,8 @@ export default function DashboardLayout({
 
             {/* Sidebar - Precision Glass Engineering */}
             <aside className={`
-                fixed inset-y-0 left-0 w-80 flex flex-col shadow-[10px_0_50px_rgba(0,0,0,0.5)] glass-panel !bg-slate-950/40 !border-r !border-white/5 z-40
-                transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] 
+                fixed inset-y-0 left-0 w-80 flex flex-col glass-panel !bg-slate-950/60 !border-r !border-white/5 z-40
+                transition-transform duration-500 ease-out
                 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
             `}>
                 <div className="h-40 flex flex-col items-center justify-center px-10 border-b border-white/5 relative group bg-white/[0.02]">
@@ -130,15 +129,11 @@ export default function DashboardLayout({
                         <X size={24} />
                     </button>
                     <div className="flex flex-col items-center relative z-10 transition-transform duration-700 group-hover:scale-105">
-                        <img
-                            src="/logo_atomic.jpg"
-                            alt="ATOMIC Logo"
-                            className="w-40 h-auto object-contain mb-4 drop-shadow-[0_0_25px_rgba(255,255,255,0.15)] grayscale group-hover:grayscale-0 transition-all duration-1000"
-                        />
                         <div className="flex items-center gap-4">
-                            <div className="w-1.5 h-1.5 rounded-none bg-primary shadow-[0_0_8px_rgba(99,102,241,0.5)] animate-pulse"></div>
-                            <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.6em] italic">ATOMIC SOLUTIONS</span>
+                            <div className="w-2 h-2 rounded-none bg-primary shadow-[0_0_12px_rgba(99,102,241,0.6)] animate-pulse"></div>
+                            <span className="text-xl font-black text-white uppercase tracking-[0.4em] italic shadow-sm">ATOMIC</span>
                         </div>
+                        <span className="text-[8px] font-black text-slate-500 uppercase tracking-[0.6em] italic mt-2 opacity-60">SOLUTIONS</span>
                     </div>
                 </div>
 
@@ -173,11 +168,9 @@ export default function DashboardLayout({
                                 isOpen={openSections.ia}
                                 onToggle={() => toggleSection('ia')}
                             >
-                                <NavLink href="/dashboard/training" icon={<BrainCircuit size={16} />} label="IA Asistente" isSubItem />
-                                <NavLink href="/dashboard/software" icon={<Code2 size={16} />} label="Desarrollo Software" isSubItem />
-                                <NavLink href="/academy" icon={<GraduationCap size={16} />} label="Academia Pública" isSubItem />
+                                <NavLink href="/academy" icon={<GraduationCap size={16} />} label="Academia Pro" isSubItem />
                                 {(role === "ADMIN" || role === "MANAGEMENT") && (
-                                    <NavLink href="/dashboard/academy" icon={<GraduationCap size={16} />} label="Gestión Academia" isSubItem />
+                                    <NavLink href="/dashboard/academy" icon={<Settings size={16} />} label="Gestión Academia" isSubItem />
                                 )}
                             </CollapsibleSection>
                         )}
@@ -298,8 +291,8 @@ export default function DashboardLayout({
                 </header>
 
                 {/* Performance Scrollable Region */}
-                <div className="flex-1 overflow-y-auto relative z-0 scrollbar-hide bg-gradient-to-b from-transparent to-black/20">
-                    <div className="mx-auto max-w-[1600px] p-10 lg:p-16 min-h-full animate-in fade-in slide-in-from-bottom-10 duration-1000">
+                <div className="flex-1 overflow-y-auto relative z-0 scrollbar-hide">
+                    <div className="mx-auto max-w-[1600px] p-10 lg:p-16 min-h-full">
                         {children}
                     </div>
                 </div>

@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { BookOpen, PlayCircle, Users, Clock, Search, Layers, ChevronRight, Zap, GraduationCap, Star } from "lucide-react"
+import { BookOpen, PlayCircle, Users, Clock, Search, Layers, ChevronRight, Zap, GraduationCap, Star, Settings, Plus, Edit } from "lucide-react"
 import { motion } from "framer-motion"
+import { useSession } from "next-auth/react"
 
 interface Lesson {
     id: string
@@ -54,6 +55,9 @@ const CATEGORY_ICONS: Record<string, string> = {
 }
 
 export default function AcademyPage() {
+    const { data: session } = useSession()
+    const isAdmin = session?.user?.role === "ADMIN" || session?.user?.role === "MANAGEMENT"
+    
     const [categories, setCategories] = useState<Category[]>([])
     const [loading, setLoading] = useState(true)
     const [search, setSearch] = useState("")
@@ -109,6 +113,17 @@ export default function AcademyPage() {
                             Capacitación tecnológica profesional. Accede libremente a todos nuestros cursos, 
                             sin registro ni pago requerido.
                         </p>
+
+                        {isAdmin && (
+                            <div className="mt-10 flex gap-4">
+                                <Link href="/dashboard/academy" className="px-8 py-4 bg-primary text-white text-[10px] font-black uppercase tracking-widest italic flex items-center gap-3 shadow-[0_0_30px_rgba(99,102,241,0.3)]">
+                                    <Settings size={16} /> PANEL DE GESTIÓN
+                                </Link>
+                                <button className="px-8 py-4 border border-white/10 text-white/60 text-[10px] font-black uppercase tracking-widest italic flex items-center gap-3 hover:bg-white/5 transition-all">
+                                    <Plus size={16} /> NUEVO CURSO
+                                </button>
+                            </div>
+                        )}
                     </motion.div>
 
                     {/* Stats strip */}
@@ -294,12 +309,11 @@ export default function AcademyPage() {
                                                                     <BookOpen size={12} className="text-[#E8341A]" />
                                                                     {course._count.lessons} Módulos
                                                                 </span>
-                                                                <span className="flex items-center gap-1.5 text-[9px] font-black text-white/30 uppercase tracking-widest italic">
-                                                                    <Users size={12} className="text-blue-400" />
-                                                                    {course._count.enrollments} Alumnos
-                                                                </span>
                                                             </div>
-                                                            <ChevronRight size={16} className="text-[#E8341A] group-hover:translate-x-1 transition-transform" />
+                                                            <div className="flex items-center gap-3">
+                                                                {isAdmin && <button className="p-2 text-white/20 hover:text-white transition-colors"><Edit size={14} /></button>}
+                                                                <ChevronRight size={16} className="text-[#E8341A] group-hover:translate-x-1 transition-transform" />
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
