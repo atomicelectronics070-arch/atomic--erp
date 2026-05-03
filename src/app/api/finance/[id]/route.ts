@@ -43,7 +43,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
         })
 
         // Notify user if was pending and now approved
-        if (isAdmin && oldTrx.status === "PENDIENTE" && body.status === "APROBADO" && transaction.salespersonId) {
+        if (isAdmin && oldTrx.status === "PENDIENTE" && body.status === "PAGADO" && transaction.salespersonId) {
             await prisma.notification.create({
                 data: {
                     userId: transaction.salespersonId,

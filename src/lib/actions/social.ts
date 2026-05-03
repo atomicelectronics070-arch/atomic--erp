@@ -134,7 +134,7 @@ export async function getSalesRanking() {
                     }
                 },
                 transactions: {
-                    where: { status: "APROBADO" },
+                    where: { status: "PAGADO" },
                     select: { profit: true }
                 }
             }

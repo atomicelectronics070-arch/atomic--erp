@@ -24,7 +24,7 @@ interface Transaction {
     commission: number
     bonus: number
     quoteNumber?: string
-    status: "APROBADO" | "PENDIENTE" | "CANCELADO"
+    status: "PAGADO" | "PENDIENTE" | "CANCELADO"
     type: string
     proofUrl?: string
     salespersonId: string
@@ -519,7 +519,7 @@ export default function FinanceManager() {
                                                             }`}
                                                     >
                                                         <option value="PENDIENTE">PENDIENTE DE REVISIÓN</option>
-                                                        <option value="APROBADO">CONSOLIDAR Y NOTIFICAR</option>
+                                                        <option value="PAGADO">CONSOLIDAR Y NOTIFICAR</option>
                                                         <option value="CANCELADO">RECHAZAR OPERACIÓN</option>
                                                     </select>
                                                 </div>

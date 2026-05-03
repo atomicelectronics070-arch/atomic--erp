@@ -50,7 +50,7 @@ export async function POST(req: Request) {
         const trxId = `TRX-${nextNumber.toString().padStart(3, '0')}`
 
         // If not admin, force status PENDING and no financial details
-        const status = isAdmin ? (body.status || "APROBADO") : "PENDIENTE"
+        const status = isAdmin ? (body.status || "PAGADO") : "PENDIENTE"
         const salespersonId = isAdmin ? (body.salespersonId || session.user.id) : session.user.id
 
         const transaction = await prisma.transaction.create({
