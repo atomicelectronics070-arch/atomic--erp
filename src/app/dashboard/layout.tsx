@@ -145,21 +145,52 @@ export default function DashboardLayout({
 
                     <div className="space-y-10">
                         {(role === "ADMIN" || role === "MANAGEMENT" || role === "SALESPERSON" || role === "AFILIADO") && (
-                            <CollapsibleSection
-                                label="Operaciones"
-                                isOpen={openSections.operaciones}
-                                onToggle={() => toggleSection('operaciones')}
-                            >
-                                <NavLink href="/dashboard/quotes" icon={<FileText size={16} />} label="Cotizaciones" isSubItem />
-                                <NavLink href="/dashboard/prices" icon={<Tag size={16} />} label="Lista de Precios" isSubItem />
-                                <NavLink href="/dashboard/shop" icon={<ShoppingBag size={16} />} label="Inventario" isSubItem />
-                                <NavLink href="/dashboard/storage" icon={<Database size={16} />} label="Centro de Archivos" isSubItem />
-                                <NavLink href="/dashboard/documents" icon={<FileText size={16} />} label="Emisión de Documentos" isSubItem />
-                                <NavLink href="/dashboard/crm" icon={<Users size={16} />} label="GestiÃ³n CRM" isSubItem />
-                                <NavLink href="/dashboard/finance" icon={<DollarSign size={16} />} label="Finanzas" isSubItem />
-                                <NavLink href="/dashboard/contracts" icon={<CheckSquare size={16} />} label="Legales y Contratos" isSubItem />
-                                <NavLink href="/dashboard/quarterly" icon={<Calendar size={16} />} label="Plan Trimestral" isSubItem />
-                            </CollapsibleSection>
+                            <>
+                                <CollapsibleSection
+                                    label="Aplicaciones"
+                                    isOpen={openSections.operaciones}
+                                    onToggle={() => toggleSection('operaciones')}
+                                >
+                                    <NavLink href="/dashboard/quotes" icon={<FileText size={16} />} label="Cotizaciones" isSubItem />
+                                    <NavLink href="/dashboard/prices" icon={<Tag size={16} />} label="Lista de Precios" isSubItem />
+                                    <NavLink href="/dashboard/shop" icon={<ShoppingBag size={16} />} label="Inventario" isSubItem />
+                                </CollapsibleSection>
+
+                                <CollapsibleSection
+                                    label="Almacenamiento"
+                                    isOpen={openSections.almacenamiento ?? false}
+                                    onToggle={() => toggleSection('almacenamiento')}
+                                >
+                                    <NavLink href="/dashboard/storage" icon={<Database size={16} />} label="Archivos" isSubItem />
+                                    <NavLink href="/dashboard/documents" icon={<FileText size={16} />} label="Emisión Documentos" isSubItem />
+                                    <NavLink href="/dashboard/quotes" icon={<BrainCircuit size={16} />} label="Cotizador Smart" isSubItem />
+                                </CollapsibleSection>
+
+                                <CollapsibleSection
+                                    label="Base de Datos"
+                                    isOpen={openSections.crm ?? false}
+                                    onToggle={() => toggleSection('crm')}
+                                >
+                                    <NavLink href="/dashboard/crm" icon={<Users size={16} />} label="Directorio CRM" isSubItem />
+                                    <NavLink href="/dashboard/whatsapp" icon={<MessageSquare size={16} />} label="WhatsApp & CRM" isSubItem />
+                                </CollapsibleSection>
+
+                                <CollapsibleSection
+                                    label="Finanzas"
+                                    isOpen={openSections.finanzas ?? false}
+                                    onToggle={() => toggleSection('finanzas')}
+                                >
+                                    <NavLink href="/dashboard/finance" icon={<DollarSign size={16} />} label="Gestión Financiera" isSubItem />
+                                </CollapsibleSection>
+
+                                <CollapsibleSection
+                                    label="Contratos"
+                                    isOpen={openSections.contratos ?? false}
+                                    onToggle={() => toggleSection('contratos')}
+                                >
+                                    <NavLink href="/dashboard/contracts" icon={<CheckSquare size={16} />} label="Gestión de Contratos" isSubItem />
+                                </CollapsibleSection>
+                            </>
                         )}
 
                         {(role === "ADMIN" || role === "MANAGEMENT" || role === "COORDINATOR" || role === "COORD_ASSISTANT" || role === "SALESPERSON" || role === "EDITOR" || role === "AFILIADO") && (
