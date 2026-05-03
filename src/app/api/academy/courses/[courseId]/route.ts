@@ -13,17 +13,18 @@ async function requireAdmin(req: Request) {
 
 export async function PATCH(
     req: Request,
-    { params }: { params: { courseId: string } }
+    { params }: { params: Promise<{ courseId: string }> }
 ) {
     const session = await requireAdmin(req)
     if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
     const body = await req.json()
     const { title, description, imageUrl, published, categoryId } = body
+    const { courseId } = await params
 
     try {
         const course = await prisma.course.update({
-            where: { id: params.courseId },
+            where: { id: courseId },
             data: {
                 ...(title !== undefined && { title }),
                 ...(description !== undefined && { description }),
@@ -41,13 +42,14 @@ export async function PATCH(
 
 export async function DELETE(
     req: Request,
-    { params }: { params: { courseId: string } }
+    { params }: { params: Promise<{ courseId: string }> }
 ) {
     const session = await requireAdmin(req)
     if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    const { courseId } = await params
 
     try {
-        await prisma.course.delete({ where: { id: params.courseId } })
+        await prisma.course.delete({ where: { id: courseId } })
         return NextResponse.json({ success: true })
     } catch (error) {
         console.error("[COURSE_DELETE]", error)
@@ -57,14 +59,15 @@ export async function DELETE(
 
 export async function GET(
     req: Request,
-    { params }: { params: { courseId: string } }
+    { params }: { params: Promise<{ courseId: string }> }
 ) {
     const session = await requireAdmin(req)
     if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    const { courseId } = await params
 
     try {
         const course = await prisma.course.findUnique({
-            where: { id: params.courseId },
+            where: { id: courseId },
             include: { category: true, lessons: { orderBy: { order: "asc" } } }
         })
         return NextResponse.json({ course })
