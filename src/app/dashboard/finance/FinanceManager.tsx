@@ -515,7 +515,7 @@ export default function FinanceManager() {
                                                         value={formData.status}
                                                         onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
                                                         className={`w-full border rounded-none py-6 px-10 text-[11px] font-black uppercase tracking-[0.4em] transition-all cursor-pointer h-[75px] ${
-                                                            formData.status === 'APROBADO' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-slate-950/60 text-slate-600 border-white/10'
+                                                            formData.status === 'PAGADO' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-slate-950/60 text-slate-600 border-white/10'
                                                             }`}
                                                     >
                                                         <option value="PENDIENTE">PENDIENTE DE REVISIÓN</option>
