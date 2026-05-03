@@ -33,7 +33,7 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
     const [activeCommentPost, setActiveCommentPost] = useState<string | null>(null)
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [openMenuId, setOpenMenuId] = useState<string | null>(null)
-    const [rankingFilter, setRankingFilter] = useState<'value' | 'count' | 'name'>('value')
+    const [rankingFilter, setRankingFilter] = useState<'points' | 'value' | 'count' | 'name'>('points')
     const [isQuickSaleOpen, setIsQuickSaleOpen] = useState(false)
     const [quickSaleData, setQuickSaleData] = useState({ amount: 0, salespersonId: "", client: "VENTA RÁPIDA RANKING" })
     const isAdmin = session?.user?.role === "ADMIN" || session?.user?.role === "MANAGEMENT"
@@ -224,6 +224,7 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
                                     onChange={(e: any) => setRankingFilter(e.target.value)}
                                     className="bg-black/40 border border-white/10 text-[9px] font-black text-white uppercase tracking-widest px-4 py-2 outline-none focus:border-[#E8341A] italic"
                                 >
+                                    <option value="points">PUNTOS (TOTAL)</option>
                                     <option value="value">MONTO ($)</option>
                                     <option value="count">VENTAS (#)</option>
                                     <option value="name">ASESOR</option>
@@ -232,6 +233,7 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
                         </div>
                         <div className="space-y-3">
                             {[...ranking].sort((a, b) => {
+                                if (rankingFilter === 'points') return (b.points || 0) - (a.points || 0);
                                 if (rankingFilter === 'value') return b.totalProfit - a.totalProfit;
                                 if (rankingFilter === 'count') return b.salesCount - a.salesCount;
                                 return a.name.localeCompare(b.name);
@@ -246,7 +248,7 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
                                             <div className="flex items-center gap-4">
                                                 <p className="text-[10px] font-black text-[#E8341A] italic">${user.totalProfit.toLocaleString()}</p>
                                                 <div className="px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 text-[8px] font-black text-emerald-500 italic">
-                                                    +{calculatePoints(user.totalProfit)} PTS
+                                                    {user.points || 0} PTS
                                                 </div>
                                             </div>
                                         </div>
@@ -313,6 +315,10 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
                             <div className="flex justify-between items-center group">
                                 <span className="text-[10px] font-black text-white/40 group-hover:text-white transition-colors uppercase italic tracking-wider">VENTA +$1000</span>
                                 <span className="text-[#E8341A] font-black italic">15 PTS</span>
+                            </div>
+                            <div className="flex justify-between items-center group border-t border-white/5 pt-4">
+                                <span className="text-[10px] font-black text-azure-400 group-hover:text-white transition-colors uppercase italic tracking-wider">CADA COTIZACIÓN</span>
+                                <span className="text-azure-400 font-black italic">2 PTS</span>
                             </div>
                         </div>
                         <div className="mt-8 pt-6 border-t border-white/5">

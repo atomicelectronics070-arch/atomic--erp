@@ -145,7 +145,19 @@ export async function getSalesRanking() {
             const salesCount = user.transactions.length
             const quotesCount = user._count.conversations
             const contactsCount = user._count.clients
-            const score = totalProfit + salesCount
+            
+            // Calculate Points Logic
+            let salesPoints = 0
+            user.transactions.forEach(tx => {
+                const val = tx.profit || 0
+                if (val > 1000) salesPoints += 15
+                else if (val >= 300) salesPoints += 10
+                else if (val >= 100) salesPoints += 8
+                else if (val > 0) salesPoints += 3
+            })
+
+            const quotePoints = quotesCount * 2
+            const totalPoints = salesPoints + quotePoints
             
             return {
                 id: user.id,
@@ -154,9 +166,10 @@ export async function getSalesRanking() {
                 totalProfit,
                 quotesCount,
                 contactsCount,
-                score
+                points: totalPoints,
+                score: totalPoints // Use points as the primary score
             }
-        }).sort((a, b) => b.score - a.score)
+        }).sort((a, b) => b.points - a.points)
 
         return { success: true, ranking }
     } catch (error: any) {
