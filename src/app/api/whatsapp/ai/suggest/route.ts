@@ -2,13 +2,16 @@ import { NextResponse } from "next/server"
 import { OpenAI } from "openai"
 import { prisma } from "@/lib/prisma"
 
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-})
+export const dynamic = 'force-dynamic'
 
 export async function POST(req: Request) {
     try {
         const { instanceId, chatId, context, variant, type = 'suggestion' } = await req.json()
+
+        // Instanciamos OpenAI dentro del handler para evitar errores de credenciales en el build
+        const openai = new OpenAI({
+            apiKey: process.env.OPENAI_API_KEY,
+        })
 
         // 1. Obtener el Plan Maestro y la Memoria Neuronal de la base de datos
         const [planSetting, memorySetting] = await Promise.all([
@@ -66,12 +69,6 @@ export async function POST(req: Request) {
         })
 
         const result = completion.choices[0].message.content
-
-        // 3. Auto-aprendizaje (Solo en análisis profundo)
-        if (type === 'analysis' && result) {
-            // Aquí podríamos disparar una tarea en segundo plano para actualizar la memoria
-            // Por ahora solo devolvemos el reporte para que el usuario lo vea
-        }
 
         return NextResponse.json(type === 'analysis' ? { report: result } : { suggestion: result })
     } catch (error) {
