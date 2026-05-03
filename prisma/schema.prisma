@@ -580,11 +580,37 @@ model Blog {
   socialTargets String?  // JSON: ["facebook","instagram","youtube","tiktok"]
   publishResults String? // JSON: { facebook: { success, postId, error }, ... }
 
+  // Macabre Matrix: Environments & Accounts
+  environmentId String?
+  environment   Environment? @relation(fields: [environmentId], references: [id])
+  targetAccounts String?      // JSON: ["account_id_1", "account_id_2"]
+
   authorId  String
   author    User     @relation("UserBlogs", fields: [authorId], references: [id])
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Environment {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  accounts    SocialAccount[]
+  blogs       Blog[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model SocialAccount {
+  id            String   @id @default(cuid())
+  name          String   // e.g. "CUENTA 1", "FB_VENTAS_01"
+  platform      String   // facebook, instagram, youtube, tiktok
+  externalId    String?  // Optional platform internal ID
+  environmentId String
+  environment   Environment @relation(fields: [environmentId], references: [id])
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 // Social Platform Credentials

@@ -38,7 +38,7 @@ export async function POST(req: Request) {
         }
 
         const body = await req.json()
-        const { title, excerpt, content, imageUrl, published, contentType, videoUrl, socialTargets } = body
+        const { title, excerpt, content, imageUrl, published, contentType, videoUrl, socialTargets, environmentId, targetAccounts } = body
 
         if (!title || !content) {
             return NextResponse.json({ error: "Title and content are required" }, { status: 400 })
@@ -54,6 +54,8 @@ export async function POST(req: Request) {
                 contentType: contentType || 'article',
                 videoUrl: videoUrl || null,
                 socialTargets: socialTargets ? JSON.stringify(socialTargets) : null,
+                environmentId: environmentId || null,
+                targetAccounts: targetAccounts || null,
                 authorId: session.user.id
             }
         })
@@ -71,7 +73,7 @@ export async function PUT(req: Request) {
         if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
         const body = await req.json()
-        const { id, title, excerpt, content, imageUrl, published } = body
+        const { id, title, excerpt, content, imageUrl, published, contentType, videoUrl, socialTargets, environmentId, targetAccounts } = body
 
         if (!id) return NextResponse.json({ error: "ID is required" }, { status: 400 })
 
@@ -84,7 +86,18 @@ export async function PUT(req: Request) {
 
         const updated = await prisma.blog.update({
             where: { id },
-            data: { title, excerpt, content, imageUrl, published }
+            data: { 
+                title, 
+                excerpt, 
+                content, 
+                imageUrl, 
+                published,
+                contentType,
+                videoUrl,
+                socialTargets: socialTargets ? JSON.stringify(socialTargets) : null,
+                environmentId,
+                targetAccounts
+            }
         })
 
         return NextResponse.json(updated)
