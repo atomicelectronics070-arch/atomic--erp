@@ -22,6 +22,7 @@ export default function DashboardLayout({
         operaciones: false,
         rrhh: false,
         comunicacion: false,
+        marketing: false,
         ia: false,
         config: false
     })
@@ -155,6 +156,14 @@ export default function DashboardLayout({
                                     onToggle={() => toggleSection('finanzas')}
                                 >
                                     <NavLink href="/dashboard/finance" icon={<DollarSign size={14} />} label="Gestión" isSubItem />
+                                </CollapsibleSection>
+
+                                <CollapsibleSection
+                                    label="Marketing"
+                                    isOpen={openSections.marketing ?? false}
+                                    onToggle={() => toggleSection('marketing')}
+                                >
+                                    <NavLink href="/dashboard/blogs" icon={<Edit3 size={14} />} label="Blogs" isSubItem />
                                 </CollapsibleSection>
                             </>
                         )}
