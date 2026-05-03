@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { Search, ChevronLeft, ChevronRight, Filter, ShoppingBag, ArrowRight } from "lucide-react"
+import { Search, ChevronLeft, ChevronRight, Filter, ShoppingBag } from "lucide-react"
 import { calculateDiscountedPrice } from "@/lib/utils/pricing"
 
 const safeParseArray = (str: any): string[] => {
@@ -85,33 +85,33 @@ export default function ProductsPage() {
     }, [products])
 
     if (loading) return (
-        <div className="min-h-screen bg-[#0F172A] flex items-center justify-center">
-            <div className="animate-spin h-10 w-10 border-4 border-[#E8341A] border-t-transparent rounded-full" />
+        <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center">
+            <div className="animate-spin h-10 w-10 border-4 border-[#1E3A8A] border-t-transparent rounded-full" />
         </div>
     )
 
     return (
-        <div className="min-h-screen bg-[#0F172A] text-slate-200" style={{ fontFamily: "'IBM Plex Sans', ui-sans-serif, system-ui" }}>
+        <div className="min-h-screen bg-[#F8FAFC] text-slate-900" style={{ fontFamily: "'IBM Plex Sans', ui-sans-serif, system-ui" }}>
 
             {/* ── Header ── */}
-            <header className="bg-slate-900/80 border-b border-slate-800 sticky top-0 z-30 backdrop-blur-md">
+            <header className="bg-white/90 border-b border-slate-200 sticky top-0 z-30 backdrop-blur-md">
                 <div className="max-w-7xl mx-auto px-6 py-4 flex flex-col md:flex-row gap-4 items-center">
                     <div className="flex-1">
-                        <h1 className="text-sm font-semibold text-white uppercase tracking-widest">
-                            CATÁLOGO <span className="text-[#E8341A]">COMPLETO</span>
-                            <span className="ml-3 text-slate-500 font-normal text-[11px]">{filtered.length} productos</span>
+                        <h1 className="text-sm font-semibold text-[#1E3A8A] uppercase tracking-widest">
+                            CATÁLOGO <span className="text-blue-600">COMPLETO</span>
+                            <span className="ml-3 text-slate-400 font-normal text-[11px]">{filtered.length} productos</span>
                         </h1>
                     </div>
 
                     {/* Search */}
                     <div className="relative w-full md:w-80">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={15} />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={15} />
                         <input
                             type="text"
                             value={search}
                             onChange={e => setSearch(e.target.value)}
                             placeholder="Buscar producto..."
-                            className="w-full bg-slate-800 border border-slate-700 pl-9 pr-4 py-2.5 text-[12px] text-white placeholder-slate-500 outline-none focus:border-[#E8341A] rounded-lg transition-colors"
+                            className="w-full bg-slate-50 border border-slate-200 pl-9 pr-4 py-2.5 text-[12px] text-slate-900 placeholder-slate-400 outline-none focus:border-[#1E3A8A] rounded-lg transition-colors"
                         />
                     </div>
 
@@ -119,7 +119,7 @@ export default function ProductsPage() {
                     <select
                         value={activeCategory || ""}
                         onChange={e => setActiveCategory(e.target.value || null)}
-                        className="bg-slate-800 border border-slate-700 text-slate-300 text-[11px] px-3 py-2.5 rounded-lg outline-none focus:border-[#E8341A] cursor-pointer"
+                        className="bg-slate-50 border border-slate-200 text-slate-600 text-[11px] px-3 py-2.5 rounded-lg outline-none focus:border-[#1E3A8A] cursor-pointer"
                     >
                         <option value="">Todas las categorías</option>
                         {categories.filter(c => c.isVisible).map(c => (
@@ -130,7 +130,7 @@ export default function ProductsPage() {
                     {(activeLetter || activeCategory || search) && (
                         <button
                             onClick={() => { setActiveLetter(null); setActiveCategory(null); setSearch("") }}
-                            className="text-[10px] font-semibold uppercase tracking-widest text-[#E8341A] hover:text-red-400 flex items-center gap-1 shrink-0"
+                            className="text-[10px] font-semibold uppercase tracking-widest text-red-500 hover:text-red-600 flex items-center gap-1 shrink-0"
                         >
                             <Filter size={12} /> Limpiar
                         </button>
@@ -148,9 +148,9 @@ export default function ProductsPage() {
                                 onClick={() => setActiveLetter(active ? null : l)}
                                 disabled={!has}
                                 className={`w-7 h-7 text-[10px] font-bold rounded transition-all ${
-                                    active ? 'bg-[#E8341A] text-white' :
-                                    has ? 'bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white' :
-                                    'bg-slate-900 text-slate-700 cursor-not-allowed'
+                                    active ? 'bg-[#1E3A8A] text-white shadow-md' :
+                                    has ? 'bg-white border border-slate-200 text-slate-500 hover:border-[#1E3A8A] hover:text-[#1E3A8A]' :
+                                    'bg-slate-50 text-slate-200 cursor-not-allowed border border-transparent'
                                 }`}
                             >
                                 {l}
@@ -164,9 +164,9 @@ export default function ProductsPage() {
             <main className="max-w-7xl mx-auto px-6 py-8">
                 {paginated.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-32 text-center">
-                        <ShoppingBag className="w-12 h-12 text-slate-700 mb-4" />
-                        <p className="text-slate-500 text-sm font-medium">No se encontraron productos</p>
-                        <button onClick={() => { setSearch(""); setActiveLetter(null); setActiveCategory(null) }} className="mt-4 text-[#E8341A] text-[11px] font-semibold uppercase tracking-widest hover:underline">
+                        <ShoppingBag className="w-12 h-12 text-slate-200 mb-4" />
+                        <p className="text-slate-400 text-sm font-medium">No se encontraron productos</p>
+                        <button onClick={() => { setSearch(""); setActiveLetter(null); setActiveCategory(null) }} className="mt-4 text-[#1E3A8A] text-[11px] font-semibold uppercase tracking-widest hover:underline">
                             Ver todo el catálogo
                         </button>
                     </div>
@@ -179,20 +179,20 @@ export default function ProductsPage() {
                                 <Link
                                     key={p.id}
                                     href={`/web/product/${p.id}`}
-                                    className="group flex flex-col bg-slate-800/50 border border-slate-700/40 hover:border-[#E8341A]/50 hover:bg-slate-800 transition-all duration-200 rounded-xl overflow-hidden"
+                                    className="group flex flex-col bg-white border border-slate-200 hover:border-blue-300 hover:shadow-xl transition-all duration-300 rounded-xl overflow-hidden"
                                 >
-                                    <div className="aspect-square relative bg-white/3 overflow-hidden">
+                                    <div className="aspect-square relative bg-slate-50 overflow-hidden">
                                         {imgs.length > 0 ? (
                                             <Image src={imgs[0]} alt={p.name} fill className="object-contain p-3 group-hover:scale-105 transition-transform duration-300" referrerPolicy="no-referrer" />
                                         ) : (
                                             <div className="w-full h-full flex items-center justify-center">
-                                                <ShoppingBag className="text-slate-700 w-8 h-8" />
+                                                <ShoppingBag className="text-slate-200 w-8 h-8" />
                                             </div>
                                         )}
                                     </div>
                                     <div className="p-3 flex flex-col flex-1">
-                                        <p className="text-[10px] font-medium text-slate-400 line-clamp-2 leading-snug group-hover:text-slate-200 transition-colors flex-1 mb-2">{p.name}</p>
-                                        <p className="text-[11px] font-bold text-white">${price.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
+                                        <p className="text-[10px] font-medium text-slate-500 line-clamp-2 leading-snug group-hover:text-[#1E3A8A] transition-colors flex-1 mb-2">{p.name}</p>
+                                        <p className="text-[11px] font-bold text-[#1E3A8A]">${price.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
                                     </div>
                                 </Link>
                             )
@@ -206,7 +206,7 @@ export default function ProductsPage() {
                         <button
                             onClick={() => setPage(p => Math.max(1, p - 1))}
                             disabled={page === 1}
-                            className="w-9 h-9 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                            className="w-9 h-9 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-400 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
                         >
                             <ChevronLeft size={15} />
                         </button>
@@ -223,8 +223,8 @@ export default function ProductsPage() {
                                     onClick={() => setPage(p)}
                                     className={`w-9 h-9 rounded-lg text-[11px] font-semibold transition-all ${
                                         page === p
-                                            ? 'bg-[#E8341A] text-white shadow-[0_0_12px_rgba(232,52,26,0.4)]'
-                                            : 'bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700'
+                                            ? 'bg-[#1E3A8A] text-white shadow-lg'
+                                            : 'bg-white border border-slate-200 text-slate-500 hover:border-[#1E3A8A] hover:text-[#1E3A8A]'
                                     }`}
                                 >
                                     {p}
@@ -235,12 +235,12 @@ export default function ProductsPage() {
                         <button
                             onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                             disabled={page === totalPages}
-                            className="w-9 h-9 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                            className="w-9 h-9 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-400 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
                         >
                             <ChevronRight size={15} />
                         </button>
 
-                        <span className="text-[10px] text-slate-500 ml-2">
+                        <span className="text-[10px] text-slate-400 ml-2">
                             Pág. {page} de {totalPages} · {filtered.length} resultados
                         </span>
                     </div>

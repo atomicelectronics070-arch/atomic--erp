@@ -49,23 +49,23 @@ export default function CategoriesPage() {
     }, [])
 
     if (loading) return (
-        <div className="min-h-screen bg-[#0F172A] flex items-center justify-center">
-            <div className="animate-spin h-10 w-10 border-4 border-[#E8341A] border-t-transparent rounded-full" />
+        <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center">
+            <div className="animate-spin h-10 w-10 border-4 border-[#1E3A8A] border-t-transparent rounded-full" />
         </div>
     )
 
     return (
-        <div className="min-h-screen bg-[#0F172A] text-slate-200" style={{ fontFamily: "'IBM Plex Sans', ui-sans-serif, system-ui" }}>
+        <div className="min-h-screen bg-[#F8FAFC] text-slate-900" style={{ fontFamily: "'IBM Plex Sans', ui-sans-serif, system-ui" }}>
 
             {/* Hero */}
-            <header className="border-b border-slate-800 py-14 px-6 bg-slate-900/40">
+            <header className="border-b border-slate-200 py-14 px-6 bg-white">
                 <div className="max-w-7xl mx-auto">
-                    <div className="flex items-center gap-3 text-[#E8341A] mb-4">
+                    <div className="flex items-center gap-3 text-[#1E3A8A] mb-4">
                         <Grid3X3 size={16} />
                         <span className="text-[10px] font-semibold uppercase tracking-[0.3em]">Todas las Especialidades</span>
                     </div>
-                    <h1 className="text-4xl md:text-5xl font-light text-white uppercase tracking-tight mb-3">
-                        NUESTRAS <span className="font-bold text-[#E8341A]">CATEGORÍAS</span>
+                    <h1 className="text-4xl md:text-5xl font-light text-[#1E3A8A] uppercase tracking-tight mb-3">
+                        NUESTRAS <span className="font-bold text-blue-600">CATEGORÍAS</span>
                     </h1>
                     <p className="text-slate-400 text-sm font-normal max-w-xl">
                         Tecnología organizada por especialidad. Encuentra exactamente lo que necesitas para tu hogar o empresa.
@@ -87,33 +87,33 @@ export default function CategoriesPage() {
                             >
                                 <Link
                                     href={`/web/category/${cat.slug}`}
-                                    className="group flex flex-col h-full bg-slate-800/50 border border-slate-700/50 rounded-2xl overflow-hidden hover:border-[#E8341A]/40 hover:bg-slate-800 hover:-translate-y-1 transition-all duration-300 shadow-lg hover:shadow-[0_12px_40px_rgba(232,52,26,0.08)]"
+                                    className="group flex flex-col h-full bg-white border border-slate-200 rounded-2xl overflow-hidden hover:border-blue-300 hover:shadow-xl transition-all duration-300"
                                 >
                                     {/* Image area — silhouette mode */}
-                                    <div className="relative h-44 bg-slate-900/60 flex items-center justify-center overflow-hidden border-b border-slate-700/40">
+                                    <div className="relative h-44 bg-slate-50 flex items-center justify-center overflow-hidden border-b border-slate-100">
                                         {cat.image ? (
                                             <Image
                                                 src={cat.image}
                                                 alt={cat.name}
                                                 fill
-                                                className="object-contain p-10 opacity-20 group-hover:opacity-40 group-hover:scale-110 transition-all duration-500 invert brightness-200 saturate-0"
+                                                className="object-contain p-10 opacity-10 group-hover:opacity-30 group-hover:scale-110 transition-all duration-500 saturate-0"
                                             />
                                         ) : (
-                                            <Hexagon className="w-16 h-16 text-slate-700 group-hover:text-slate-600 transition-colors" strokeWidth={0.8} />
+                                            <Hexagon className="w-16 h-16 text-slate-100 group-hover:text-blue-50 transition-colors" strokeWidth={0.8} />
                                         )}
-                                        {/* Red glow on hover */}
-                                        <div className="absolute inset-0 bg-gradient-to-t from-[#E8341A]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                        {/* Blue glow on hover */}
+                                        <div className="absolute inset-0 bg-gradient-to-t from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                                     </div>
 
                                     {/* Content */}
                                     <div className="p-5 flex flex-col flex-1">
-                                        <h2 className="text-sm font-semibold text-white uppercase tracking-tight mb-2 group-hover:text-[#E8341A] transition-colors line-clamp-2">
+                                        <h2 className="text-sm font-semibold text-[#1E3A8A] uppercase tracking-tight mb-2 group-hover:text-blue-600 transition-colors line-clamp-2">
                                             {cat.name}
                                         </h2>
                                         <p className="text-slate-400 text-[11px] font-normal leading-relaxed flex-1 line-clamp-3">
                                             {intro}
                                         </p>
-                                        <div className="mt-4 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-widest text-slate-500 group-hover:text-[#E8341A] transition-colors">
+                                        <div className="mt-4 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-widest text-slate-300 group-hover:text-blue-600 transition-colors">
                                             Ver productos <ArrowRight size={11} className="group-hover:translate-x-0.5 transition-transform" />
                                         </div>
                                     </div>
