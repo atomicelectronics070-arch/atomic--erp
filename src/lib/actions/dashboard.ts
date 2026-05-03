@@ -36,7 +36,7 @@ export async function getDashboardData(userId: string, role: string) {
         const quotesWhere: any = isAdmin ? {} : { salespersonId: userId }
 
         // Fetch basic stats in parallel
-        const [annualSales, quarterStats, totalQuotesCount, totalCommissions] = await Promise.all([
+        const [annualSales, quarterStats, totalQuotesCount, totalCommissions, userCount] = await Promise.all([
             (prisma as any).transaction.aggregate({
                 where: { ...txWhere, date: { gte: yearStart, lte: yearEnd } },
                 _sum: { amount: true }
@@ -52,7 +52,8 @@ export async function getDashboardData(userId: string, role: string) {
             (prisma as any).transaction.aggregate({
                 where: txWhere,
                 _sum: { commission: true }
-            })
+            }),
+            prisma.user.count()
         ])
 
         // Fetch quote data
@@ -127,6 +128,7 @@ export async function getDashboardData(userId: string, role: string) {
             quarterSales: quarterStats._sum.amount || 0,
             quarterCount: quarterStats._count.id || 0,
             quotesCount: totalQuotesCount,
+            userCount: userCount,
             commissionsTotal: totalCommissions._sum.commission || 0,
             quoteData,
             charts: {
