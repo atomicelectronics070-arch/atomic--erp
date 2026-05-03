@@ -2,63 +2,75 @@ import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import bcrypt from "bcryptjs"
 
-export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
-    try {
-        const session = await getServerSession(authOptions)
-
-        if (!session || (session.user.role !== "ADMIN" && session.user.role !== "MANAGEMENT")) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-        }
-
-        const { id: userId } = await params
-
-        if (!userId) {
-            return NextResponse.json({ error: "User ID is required" }, { status: 400 })
-        }
-
-        // Permanent deletion
-        await prisma.user.delete({
-            where: { id: userId },
-        })
-
-        return NextResponse.json({ message: "User deleted successfully" }, { status: 200 })
-    } catch (error) {
-        console.error("User deletion error:", error)
-        return NextResponse.json({ error: "Internal server error" }, { status: 500 })
-    }
-}
-
+// PATCH /api/admin/users/[id]
+// Toggle status, update info or reset password
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
+        const { id } = await params
         const session = await getServerSession(authOptions)
-
-        if (!session || (session.user.role !== "ADMIN" && session.user.role !== "MANAGEMENT")) {
+        
+        if (!session || (session.user.role !== 'ADMIN' && session.user.role !== 'MANAGEMENT')) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
         }
 
         const body = await req.json()
-        const { status, role } = body
-        const { id: userId } = await params
+        const { isActive, name, email, role, approveReset, status } = body
 
-        if (!userId) {
-            return NextResponse.json({ error: "User ID is required" }, { status: 400 })
+        const updateData: any = {}
+        
+        if (typeof isActive === 'boolean') updateData.isActive = isActive
+        if (name) updateData.name = name
+        if (email) updateData.email = email
+        if (role) updateData.role = role
+        if (status) updateData.status = status
+
+        // Generation of Emergency Temp Code
+        if (approveReset) {
+            const tempCode = `ATOMIC-${Math.floor(1000 + Math.random() * 9000)}`
+            const hashedTemp = await bcrypt.hash(tempCode, 10)
+            updateData.passwordHash = hashedTemp
+            updateData.tempResetCode = tempCode
+            updateData.resetRequested = false
         }
 
-        // Prepare update data
-        const updateData: any = {}
-        if (status) updateData.status = status
-        if (role) updateData.role = role
-
-        const updatedUser = await prisma.user.update({
-            where: { id: userId },
-            data: updateData,
+        const user = await prisma.user.update({
+            where: { id },
+            data: updateData
         })
 
-        return NextResponse.json({ message: "User updated successfully", user: updatedUser }, { status: 200 })
+        return NextResponse.json({ success: true, user, message: "User updated successfully" })
+
     } catch (error) {
-        console.error("User update error:", error)
+        console.error("Admin user PATCH error:", error)
         return NextResponse.json({ error: "Internal server error" }, { status: 500 })
     }
 }
 
+// DELETE /api/admin/users/[id]
+export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
+    try {
+        const { id } = await params
+        const session = await getServerSession(authOptions)
+        
+        if (!session || (session.user.role !== 'ADMIN' && session.user.role !== 'MANAGEMENT')) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+        }
+
+        // We delete only if it's not deleting themselves
+        if (session.user.id === id) {
+            return NextResponse.json({ error: "Cannot delete yourself" }, { status: 400 })
+        }
+
+        await prisma.user.delete({
+            where: { id }
+        })
+
+        return NextResponse.json({ success: true, message: "User deleted successfully" })
+
+    } catch (error) {
+        console.error("Admin user DELETE error:", error)
+        return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    }
+}
