@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth"
 import PublicWebClient from "./PublicWebClient"
 
 export const dynamic = "force-dynamic"
+export const revalidate = 0
 
 export default async function PublicWebPage() {
     const session = await getServerSession(authOptions)
@@ -22,7 +23,6 @@ export default async function PublicWebPage() {
         prisma.product.findMany({
             where: { isDeleted: false, isActive: true },
             orderBy: { createdAt: 'desc' },
-            take: 500,
             include: { 
                 category: { select: { id: true, name: true, slug: true } },
                 collection: { select: { id: true, name: true, slug: true } }

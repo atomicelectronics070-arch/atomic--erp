@@ -7,16 +7,6 @@ import Link from "next/link"
 
 const demos = [
     {
-        title: "Atomic E-Commerce",
-        description: "Plataforma de comercio electrónico masivo con integración de pagos globales y gestión logística en tiempo real.",
-        type: "Software de Comercio",
-        image: "https://images.unsplash.com/photo-1472851294608-062f824d29cc?q=80&w=1200&auto=format&fit=crop",
-        tags: ["Next.js", "Prisma", "Real-time"],
-        accent: "#E8341A",
-        icon: ShoppingCart,
-        chatContext: "e-commerce / tienda en línea"
-    },
-    {
         title: "SaaS Dashboard Pro",
         description: "Panel administrativo de ultra-rendimiento con analítica predictiva e inteligencia de datos centralizada.",
         type: "Software de Gestión",
@@ -25,26 +15,6 @@ const demos = [
         accent: "#2563EB",
         icon: Code,
         chatContext: "sistema de gestión / dashboard / ERP"
-    },
-    {
-        title: "Branding & UI/UX",
-        description: "Identidad visual de alto impacto y diseño de interfaces optimizadas para la máxima conversión de usuarios.",
-        type: "Diseño Creativo",
-        image: "https://images.unsplash.com/photo-1586717791821-3f44a563eb4c?q=80&w=1200&auto=format&fit=crop",
-        tags: ["Branding", "UI/UX", "Figma"],
-        accent: "#F5611A",
-        icon: Palette,
-        chatContext: "diseño de marca / identidad visual / UI-UX"
-    },
-    {
-        title: "Atomic Academy",
-        description: "Ecosistema de aprendizaje digital con gestión de certificaciones y trayectorias de capacitación inteligente.",
-        type: "Educación Digital",
-        image: "https://images.unsplash.com/photo-1501504905252-473c47e087f8?q=80&w=1200&auto=format&fit=crop",
-        tags: ["LMS", "E-learning", "Mobile"],
-        accent: "#00F0FF",
-        icon: GraduationCap,
-        chatContext: "plataforma educativa / academia en línea / LMS"
     }
 ]
 

@@ -23,7 +23,7 @@ export default function BenefitsPage() {
         { icon: <WindowIcon size={24} />, title: "Persianas Inteligentes", desc: "Apertura y cierre según la posición del sol para proteger muebles y ahorrar energía." },
         { icon: <Search size={24} />, title: "Vigilancia con IA", desc: "Reconocimiento de personas, vehículos y mascotas para filtrar falsas alarmas." },
         { icon: <Tool size={24} />, title: "Mantenimiento Preventivo", desc: "El sistema le avisa cuándo un equipo necesita revisión antes de que falle." },
-        { icon: <ShieldCheck size={24} className="" />, title: "Seguros más Económicos", desc: "Las aseguradoras ofrecen mejores primas para hogares con sistemas de seguridad activa." },
+        { icon: <Shield size={24} />, title: "Seguros más Económicos", desc: "Las aseguradoras ofrecen mejores primas para hogares con sistemas de seguridad activa." },
         { icon: <Layout size={24} />, title: "Interfaz Unificada", desc: "Diga adiós a tener 20 aplicaciones; controle todo desde un solo ecosistema Atomic." },
         { icon: <Key size={24} />, title: "Privacidad Encriptada", desc: "Sus datos y videos viajan con encriptación de grado militar para su total tranquilidad." },
         { icon: <Waves size={24} />, title: "Riego Inteligente", desc: "Riegue su jardín solo cuando es necesario, basándose en el pronóstico del clima." },
@@ -36,19 +36,19 @@ export default function BenefitsPage() {
     ]
 
     return (
-        <div className="min-h-screen bg-[#020617] text-white">
+        <div className="min-h-screen bg-[#F8FAFC] text-slate-900 selection:bg-blue-600/10">
             {/* Hero Section */}
-            <div className="relative py-48 overflow-hidden border-b border-white/[0.03]">
-                <div className="absolute inset-0 bg-[#E8341A]/[0.03] blur-[140px] rounded-full -top-[20%] -right-[10%]" />
+            <div className="relative py-48 overflow-hidden bg-white border-b border-slate-200">
+                <div className="absolute inset-0 bg-blue-500/[0.03] blur-[140px] rounded-full -top-[20%] -right-[10%]" />
                 <div className="max-w-7xl mx-auto px-8 relative z-10">
-                    <div className="inline-flex items-center gap-4 mb-10 text-[#E8341A]/50 text-[9px] font-medium uppercase tracking-[0.6em]">
-                        <div className="w-16 h-px bg-current opacity-20"></div>
+                    <div className="inline-flex items-center gap-4 mb-10 text-blue-600/60 text-[9px] font-bold uppercase tracking-[0.6em]">
+                        <div className="w-16 h-px bg-current opacity-30"></div>
                         Vivir en el Futuro
                     </div>
-                    <h1 className="text-5xl md:text-8xl font-light uppercase tracking-tighter leading-[0.9] italic mb-12">
-                        BENEFICIOS <br/> <span className="text-[#E8341A] font-black">RESIDENCIALES.</span>
+                    <h1 className="text-5xl md:text-8xl font-black uppercase tracking-tighter leading-[0.9] italic mb-12 text-[#1E3A8A]">
+                        BENEFICIOS <br/> <span className="text-blue-600 font-black">RESIDENCIALES.</span>
                     </h1>
-                    <p className="max-w-xl text-white/30 text-xs uppercase tracking-[0.3em] font-medium leading-relaxed italic">
+                    <p className="max-w-xl text-slate-400 text-xs uppercase tracking-[0.3em] font-bold leading-relaxed italic">
                         La infraestructura esencial para la eficiencia y seguridad del siglo XXI.
                     </p>
                 </div>
@@ -58,22 +58,22 @@ export default function BenefitsPage() {
             <section className="max-w-7xl mx-auto px-8 py-32">
                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     {benefits.map((b, i) => (
-                        <div key={i} className="group p-8 bg-white/[0.01] border border-white/[0.03] hover:border-[#E8341A]/20 transition-all hover:bg-white/[0.03] relative overflow-hidden">
-                            <div className="text-[#E8341A]/40 mb-6 group-hover:scale-110 group-hover:text-[#E8341A] transition-all duration-500">{b.icon}</div>
-                            <h3 className="text-sm font-black uppercase tracking-tight mb-3 italic text-white/80">{b.title}</h3>
-                            <p className="text-[9px] text-white/20 uppercase tracking-widest leading-relaxed font-medium group-hover:text-white/40 transition-colors">{b.desc}</p>
+                        <div key={i} className="group p-8 bg-white border border-slate-200 hover:border-blue-300 transition-all hover:shadow-2xl relative overflow-hidden">
+                            <div className="text-blue-600/40 mb-6 group-hover:scale-110 group-hover:text-blue-600 transition-all duration-500">{b.icon}</div>
+                            <h3 className="text-sm font-black uppercase tracking-tight mb-3 italic text-slate-800">{b.title}</h3>
+                            <p className="text-[9px] text-slate-400 uppercase tracking-widest leading-relaxed font-bold group-hover:text-slate-500 transition-colors">{b.desc}</p>
                         </div>
                     ))}
                 </div>
             </section>
 
             {/* How to Save Section */}
-            <section className="bg-white text-[#0F1923] py-40">
+            <section className="bg-slate-50 text-slate-900 py-40 border-y border-slate-200">
                 <div className="max-w-7xl mx-auto px-8">
                     <div className="flex flex-col lg:flex-row gap-32 items-center">
                         <div className="lg:w-1/2 space-y-16">
-                            <h2 className="text-5xl md:text-7xl font-light uppercase tracking-tighter leading-none italic">
-                                ¿CÓMO <span className="text-[#E8341A] font-black">AHORRAR</span> <br/> CON TU SISTEMA?
+                            <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter leading-none italic text-[#1E3A8A]">
+                                ¿CÓMO <span className="text-blue-600">AHORRAR</span> <br/> CON TU SISTEMA?
                             </h2>
                             <div className="space-y-12">
                                 {[
@@ -82,43 +82,39 @@ export default function BenefitsPage() {
                                     { id: "03", title: "Uso de Dimmers y LED", desc: "Reducción imperceptible del brillo para ahorrar hasta un 20% mensual." }
                                 ].map((item, i) => (
                                     <div key={i} className="flex gap-8 group">
-                                        <div className="text-4xl font-black text-slate-100 group-hover:text-[#E8341A] transition-colors italic leading-none">{item.id}</div>
+                                        <div className="text-4xl font-black text-slate-200 group-hover:text-blue-600 transition-colors italic leading-none">{item.id}</div>
                                         <div>
-                                            <h4 className="text-sm font-black uppercase tracking-tight mb-2 italic">{item.title}</h4>
-                                            <p className="text-[10px] text-slate-400 uppercase tracking-widest font-medium leading-relaxed">{item.desc}</p>
+                                            <h4 className="text-sm font-black uppercase tracking-tight mb-2 italic text-slate-800">{item.title}</h4>
+                                            <p className="text-[10px] text-slate-400 uppercase tracking-widest font-bold leading-relaxed">{item.desc}</p>
                                         </div>
                                     </div>
                                 ))}
                             </div>
                         </div>
-                        <div className="lg:w-1/2 bg-[#0F1923] p-12 md:p-20 text-white space-y-12 relative overflow-hidden border border-white/[0.05]">
-                            <div className="absolute top-0 right-0 w-48 h-48 bg-[#E8341A]/10 blur-[100px]" />
-                            <h3 className="text-2xl font-light uppercase tracking-widest italic border-b border-white/5 pb-8">MANTENIMIENTO <span className="font-black">ELITE</span></h3>
-                            <ul className="space-y-8 text-[9px] font-medium uppercase tracking-[0.3em]">
-                                <li className="flex items-center gap-6 text-white/40 hover:text-white transition-colors"><CheckCircle2 size={12} className="text-[#E8341A]" /> Actualizaciones de Firmware Mensuales</li>
-                                <li className="flex items-center gap-6 text-white/40 hover:text-white transition-colors"><CheckCircle2 size={12} className="text-[#E8341A]" /> Limpieza de Sensores y Lentes Opticos</li>
-                                <li className="flex items-center gap-6 text-white/40 hover:text-white transition-colors"><CheckCircle2 size={12} className="text-[#E8341A]" /> Auditoría de Seguridad Digital</li>
+                        <div className="lg:w-1/2 bg-white p-12 md:p-20 text-slate-900 space-y-12 relative overflow-hidden border border-slate-200 shadow-2xl rounded-2xl">
+                            <div className="absolute top-0 right-0 w-48 h-48 bg-blue-500/5 blur-[100px]" />
+                            <h3 className="text-2xl font-black uppercase tracking-widest italic border-b border-slate-100 pb-8 text-[#1E3A8A]">MANTENIMIENTO <span className="text-blue-600">ELITE</span></h3>
+                            <ul className="space-y-8 text-[9px] font-bold uppercase tracking-[0.3em]">
+                                <li className="flex items-center gap-6 text-slate-400 hover:text-slate-900 transition-colors"><CheckCircle2 size={12} className="text-blue-600" /> Actualizaciones de Firmware Mensuales</li>
+                                <li className="flex items-center gap-6 text-slate-400 hover:text-slate-900 transition-colors"><CheckCircle2 size={12} className="text-blue-600" /> Limpieza de Sensores y Lentes Opticos</li>
+                                <li className="flex items-center gap-6 text-slate-400 hover:text-slate-900 transition-colors"><CheckCircle2 size={12} className="text-blue-600" /> Auditoría de Seguridad Digital</li>
                             </ul>
-                            <button className="w-full py-5 border border-white/10 hover:bg-white hover:text-[#0F1923] transition-all text-[9px] font-black uppercase tracking-[0.4em] italic">Agendar Revisión Técnica</button>
+                            <button className="w-full py-5 bg-[#1E3A8A] text-white hover:bg-blue-700 transition-all text-[9px] font-black uppercase tracking-[0.4em] italic shadow-lg">Agendar Revisión Técnica</button>
                         </div>
                     </div>
                 </div>
             </section>
 
             {/* Call to Action */}
-            <section className="py-40 text-center relative overflow-hidden">
-                <div className="absolute inset-0 bg-[#2563EB]/5 blur-[120px]" />
-                <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic mb-12 relative z-10">
-                    ¿LISTO PARA <span className="text-[#E8341A]">TRANSFORMAR</span> <br/> TU HOGAR?
+            <section className="py-40 text-center relative overflow-hidden bg-white">
+                <div className="absolute inset-0 bg-blue-500/[0.02] blur-[120px]" />
+                <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic mb-12 relative z-10 text-[#1E3A8A]">
+                    ¿LISTO PARA <span className="text-blue-600">TRANSFORMAR</span> <br/> TU HOGAR?
                 </h2>
-                <Link href="/web/contact" className="inline-flex items-center gap-4 px-16 py-6 bg-[#E8341A] text-white font-black uppercase tracking-[0.4em] text-[12px] italic hover:scale-105 transition-all relative z-10 shadow-[0_20px_50px_-10px_rgba(232,52,26,0.5)]">
+                <Link href="/web/contact" className="inline-flex items-center gap-4 px-16 py-6 bg-blue-600 text-white font-black uppercase tracking-[0.4em] text-[12px] italic hover:scale-105 transition-all relative z-10 shadow-2xl">
                     Solicitar Consultoría <ArrowRight size={16} />
                 </Link>
             </section>
         </div>
     )
-}
-
-function ShieldCheck({ size, className }: { size: number, className: string }) {
-    return <Shield size={size} className={className} />
 }

@@ -41,10 +41,6 @@ export default function WebLayout({ children }: { children: React.ReactNode }) {
                                 className={pathname === '/web/demos' ? 'text-[#1E3A8A] border-b-2 border-[#1E3A8A] pb-1' : 'hover:text-[#1E3A8A] transition-colors'}
                             >Desarrollo</Link>
                             <Link
-                                href="/web/demos"
-                                className={pathname === '/web/demos' ? 'text-[#2563EB] border-b-2 border-[#2563EB] pb-1' : 'hover:text-[#2563EB] transition-colors'}
-                            >Diseño</Link>
-                            <Link
                                 href="/web/academy"
                                 className={pathname.startsWith('/web/academy') ? 'text-blue-600 border-b-2 border-blue-600 pb-1' : 'hover:text-blue-600 transition-colors'}
                             >Academia</Link>

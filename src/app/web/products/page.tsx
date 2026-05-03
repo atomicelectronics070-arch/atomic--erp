@@ -44,7 +44,7 @@ export default function ProductsPage() {
             try {
                 const [mRes, pRes, sRes] = await Promise.all([
                     fetch("/api/web/metadata").then(r => r.json()),
-                    fetch("/api/web/products?pageSize=500").then(r => r.json()),
+                    fetch("/api/web/products?pageSize=50000").then(r => r.json()),
                     fetch("/api/auth/session").then(r => r.json()).catch(() => null)
                 ])
                 setProducts(pRes.products || [])
