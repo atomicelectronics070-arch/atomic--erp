@@ -127,6 +127,12 @@ export async function getSalesRanking() {
                 id: true,
                 name: true,
                 email: true,
+                _count: {
+                    select: {
+                        conversations: true, // Quotes
+                        clients: true        // CRM Contacts
+                    }
+                },
                 transactions: {
                     where: { status: "APROBADO" },
                     select: { profit: true }
@@ -137,6 +143,8 @@ export async function getSalesRanking() {
         const ranking = users.map(user => {
             const totalProfit = user.transactions.reduce((sum, tx) => sum + (tx.profit || 0), 0)
             const salesCount = user.transactions.length
+            const quotesCount = user._count.conversations
+            const contactsCount = user._count.clients
             const score = totalProfit + salesCount
             
             return {
@@ -144,6 +152,8 @@ export async function getSalesRanking() {
                 name: user.name || user.email.split('@')[0],
                 salesCount,
                 totalProfit,
+                quotesCount,
+                contactsCount,
                 score
             }
         }).sort((a, b) => b.score - a.score)

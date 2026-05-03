@@ -199,15 +199,50 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
                                 if (rankingFilter === 'count') return b.salesCount - a.salesCount;
                                 return a.name.localeCompare(b.name);
                             }).map((user, index) => (
-                                <div key={user.id} className={`flex items-center gap-4 p-4 border ${index === 0 ? 'bg-[#E8341A]/5 border-[#E8341A]/20' : 'bg-white/[0.01] border-white/5'} transition-all group`}>
-                                    <div className={`w-8 h-8 flex items-center justify-center font-black text-sm italic ${index === 0 ? 'bg-[#E8341A] text-white shadow-lg' : 'bg-white/5 text-white/20'}`}>
-                                        {index + 1}
+                                <div key={user.id} className={`flex flex-col p-4 border ${index === 0 ? 'bg-[#E8341A]/5 border-[#E8341A]/20' : 'bg-white/[0.01] border-white/5'} transition-all group gap-3`}>
+                                    <div className="flex items-center gap-4">
+                                        <div className={`w-6 h-6 flex items-center justify-center font-black text-[10px] italic ${index === 0 ? 'bg-[#E8341A] text-white' : 'bg-white/5 text-white/20'}`}>
+                                            {index + 1}
+                                        </div>
+                                        <div className="flex-1 flex items-center justify-between">
+                                            <p className="text-[10px] font-black text-white uppercase italic tracking-tighter truncate group-hover:text-[#E8341A] transition-colors">{user.name}</p>
+                                            <div className="flex items-center gap-4">
+                                                <p className="text-[10px] font-black text-[#E8341A] italic">${user.totalProfit.toLocaleString()}</p>
+                                                <div className="px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 text-[8px] font-black text-emerald-500 italic">
+                                                    +{calculatePoints(user.totalProfit)} PTS
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div className="flex-1">
-                                        <p className="text-[11px] font-black text-white uppercase italic tracking-tighter truncate group-hover:text-[#E8341A] transition-colors">{user.name}</p>
-                                        <div className="flex justify-between items-center mt-1">
-                                            <p className="text-[9px] font-black text-[#E8341A] italic">${user.totalProfit.toLocaleString()}</p>
-                                            <p className="text-[9px] font-black text-emerald-500 italic">+{calculatePoints(user.totalProfit)} PTS</p>
+                                    
+                                    {/* MICRO-STATS HORIZONTAL */}
+                                    <div className="grid grid-cols-3 gap-6 pl-10">
+                                        <div className="space-y-1">
+                                            <div className="flex justify-between items-center text-[7px] font-black text-white/20 uppercase italic">
+                                                <span>COTIZACIONES</span>
+                                                <span className="text-blue-400">{user.quotesCount}</span>
+                                            </div>
+                                            <div className="h-0.5 w-full bg-white/5 rounded-none overflow-hidden">
+                                                <div className="h-full bg-blue-500" style={{ width: `${Math.min((user.quotesCount / 50) * 100, 100)}%` }}></div>
+                                            </div>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <div className="flex justify-between items-center text-[7px] font-black text-white/20 uppercase italic">
+                                                <span>CRM CONTACTS</span>
+                                                <span className="text-violet-400">{user.contactsCount}</span>
+                                            </div>
+                                            <div className="h-0.5 w-full bg-white/5 rounded-none overflow-hidden">
+                                                <div className="h-full bg-violet-500" style={{ width: `${Math.min((user.contactsCount / 100) * 100, 100)}%` }}></div>
+                                            </div>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <div className="flex justify-between items-center text-[7px] font-black text-white/20 uppercase italic">
+                                                <span>VENTAS</span>
+                                                <span className="text-emerald-400">{user.salesCount}</span>
+                                            </div>
+                                            <div className="h-0.5 w-full bg-white/5 rounded-none overflow-hidden">
+                                                <div className="h-full bg-emerald-500" style={{ width: `${Math.min((user.salesCount / 20) * 100, 100)}%` }}></div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
