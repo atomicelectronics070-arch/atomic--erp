@@ -3,11 +3,12 @@
 import { useSession } from "next-auth/react"
 import { useRouter, usePathname } from "next/navigation"
 import Link from "next/link"
-import { Home, Users, FileText, Settings, LogOut, CheckSquare, Sun, Moon, LayoutDashboard, Tag, Database, MessageSquare, ExternalLink, ShoppingBag, Menu, X, Calendar, Edit3, Mail, BrainCircuit, Bot, Globe, BarChart3, GraduationCap, Code2 } from "lucide-react"
+import { Home, Users, FileText, Settings, LogOut, CheckSquare, Sun, Moon, LayoutDashboard, Tag, Database, MessageSquare, ExternalLink, ShoppingBag, Menu, X, Calendar, Edit3, Mail, BrainCircuit, Bot, Globe, BarChart3, GraduationCap, Code2, User } from "lucide-react"
 import { useState, useEffect } from "react"
 import { ChevronDown, ChevronRight } from "lucide-react"
 import NotificationBell from "@/components/NotificationBell"
 import { AISearchBot } from "@/components/ui/AISearchBot"
+import { motion, AnimatePresence } from "framer-motion"
 
 export default function DashboardLayout({
     children,
@@ -29,7 +30,6 @@ export default function DashboardLayout({
     const isDashboard = pathname.startsWith("/dashboard")
 
     useEffect(() => {
-        // Solo redirigir a login si estamos intentando acceder a una ruta de dashboard
         if (status === "unauthenticated" && isDashboard) {
             router.push("/login")
         }
@@ -60,24 +60,15 @@ export default function DashboardLayout({
 
     if (status === "loading" || !session) {
         return (
-            <div className="h-screen w-screen flex flex-col items-center justify-center bg-[#000103] gap-8 relative overflow-hidden">
-                <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.05] bg-fixed"></div>
+            <div className="h-screen w-screen flex flex-col items-center justify-center bg-[#F8FAFC] gap-8 relative overflow-hidden">
                 <div className="relative">
-                    <div className="w-32 h-32 border border-primary/20 rounded-none animate-[spin_3s_linear_infinite] shadow-[0_0_50px_rgba(99,102,241,0.1)]"></div>
+                    <div className="w-32 h-32 border border-[#1E3A8A]/20 animate-[spin_3s_linear_infinite]"></div>
                     <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-16 h-16 border-2 border-primary animate-[spin_1.5s_linear_infinite_reverse] shadow-[0_0_20px_rgba(99,102,241,0.3)]"></div>
+                        <div className="w-16 h-16 border-2 border-[#1E3A8A] animate-[spin_1.5s_linear_infinite_reverse]"></div>
                     </div>
                 </div>
                 <div className="flex flex-col items-center gap-2">
-                    <div className="font-black text-primary uppercase tracking-[1em] animate-pulse text-[10px] italic">Sincronización Neuronal</div>
-                    <div className="w-48 h-[1px] bg-white/5 relative overflow-hidden">
-                        <motion.div 
-                            initial={{ x: "-100%" }}
-                            animate={{ x: "100%" }}
-                            transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
-                            className="absolute inset-0 bg-gradient-to-r from-transparent via-primary to-transparent w-1/2"
-                        />
-                    </div>
+                    <div className="font-black text-[#1E3A8A] uppercase tracking-[1em] animate-pulse text-[10px] italic">Sincronización Operativa</div>
                 </div>
             </div>
         )
@@ -90,17 +81,8 @@ export default function DashboardLayout({
     }
 
     return (
-        <div className="flex h-screen bg-[#000103] text-white overflow-hidden font-sans relative selection:bg-primary/30 selection:text-white">
-            {/* Background Orbs - Optimized */}
-            <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-                <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-primary/5 blur-[100px]" />
-                <div className="absolute bottom-[-10%] left-[-5%] w-[35%] h-[35%] bg-secondary/5 blur-[100px]" />
-                <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.02] bg-fixed"></div>
-            </div>
-
-            {/* Top Security Line (Visual Accent) */}
-            <div className="fixed top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent z-[100]"></div>
-
+        <div className="flex h-screen bg-[#F8FAFC] text-[#0F172A] overflow-hidden font-sans relative selection:bg-[#1E3A8A]/10 selection:text-[#1E3A8A]">
+            
             {/* Sidebar Overlay for Mobile */}
             <AnimatePresence>
                 {sidebarOpen && (
@@ -108,30 +90,25 @@ export default function DashboardLayout({
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="fixed inset-0 bg-black/70 backdrop-blur-sm z-30 lg:hidden"
+                        className="fixed inset-0 bg-[#0F172A]/40 backdrop-blur-sm z-30 lg:hidden"
                         onClick={() => setSidebarOpen(false)}
                     />
                 )}
             </AnimatePresence>
-            {/* Sidebar - Precision Glass Engineering */}
+
+            {/* Sidebar - Executive White/Navy */}
             <aside className={`
-                fixed inset-y-0 left-0 w-64 flex flex-col glass-panel !bg-slate-950/80 !border-r !border-white/5 z-40
+                fixed inset-y-0 left-0 w-64 flex flex-col bg-white border-r border-slate-200 z-40
                 transition-transform duration-500 ease-out
-                ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+                ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0
             `}>
-                <div className="h-24 flex flex-col items-center justify-center px-6 border-b border-white/5 relative group bg-white/[0.02]">
-                    <button
-                        onClick={() => setSidebarOpen(false)}
-                        className="absolute top-4 right-4 text-slate-500 hover:text-primary transition-all lg:hidden"
-                    >
-                        <X size={20} />
-                    </button>
+                <div className="h-24 flex flex-col items-center justify-center px-6 border-b border-slate-100 relative group">
                     <Link href="/web" target="_blank" className="flex flex-col items-center relative z-10 transition-transform duration-700 group-hover:scale-105 cursor-pointer">
                         <div className="flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 rounded-none bg-primary shadow-[0_0_8px_rgba(99,102,241,0.6)] animate-pulse"></div>
-                            <span className="text-base font-black text-white uppercase tracking-[0.3em] italic">ATOMIC</span>
+                            <div className="w-2 h-2 bg-[#1E3A8A]"></div>
+                            <span className="text-base font-black text-[#0F172A] uppercase tracking-[0.3em] italic">ATOMIC</span>
                         </div>
-                        <span className="text-[7px] font-black text-slate-600 uppercase tracking-[0.5em] italic mt-1">SOLUTIONS</span>
+                        <span className="text-[7px] font-black text-slate-400 uppercase tracking-[0.5em] italic mt-1">SOLUTIONS</span>
                     </Link>
                 </div>
 
@@ -202,9 +179,9 @@ export default function DashboardLayout({
                     </div>
                 </nav>
 
-                <div className="p-6 shrink-0 border-t border-white/5 bg-white/[0.01]">
+                <div className="p-6 shrink-0 border-t border-slate-100 bg-slate-50/30">
                     <div className="flex items-center space-x-4 mb-6 px-2">
-                        <div className="w-10 h-10 rounded-none border border-white/10 flex items-center justify-center font-black text-sm text-white italic overflow-hidden bg-slate-900">
+                        <div className="w-10 h-10 border border-slate-200 flex items-center justify-center font-black text-sm text-[#0F172A] italic overflow-hidden bg-white">
                             {(session?.user as any)?.profilePicture ? (
                                 <img src={(session?.user as any).profilePicture} alt="U" className="w-full h-full object-cover" />
                             ) : (
@@ -212,40 +189,40 @@ export default function DashboardLayout({
                             )}
                         </div>
                         <div className="flex-1 overflow-hidden">
-                            <p className="text-[10px] font-black text-white truncate uppercase italic">{session.user?.name}</p>
-                            <p className="text-[8px] font-black text-primary uppercase tracking-widest truncate italic opacity-60">
+                            <p className="text-[10px] font-black text-[#0F172A] truncate uppercase italic">{session.user?.name}</p>
+                            <p className="text-[8px] font-black text-[#1E3A8A] uppercase tracking-widest truncate italic">
                                 {role}
                             </p>
                         </div>
                     </div>
-                    <Link href="/api/auth/signout" className="flex items-center space-x-3 px-4 py-3 text-[9px] font-black text-slate-500 hover:text-red-400 rounded-none transition-all hover:bg-red-500/5 group italic border border-transparent hover:border-red-500/10">
+                    <Link href="/api/auth/signout" className="flex items-center space-x-3 px-4 py-3 text-[9px] font-black text-slate-400 hover:text-red-500 rounded-none transition-all hover:bg-red-50/5 group italic border border-transparent">
                         <LogOut size={14} />
                         <span className="uppercase tracking-widest">Cerrar Sesión</span>
                     </Link>
                 </div>
             </aside>
 
-            {/* Main Content Engineering */}
-            <main className={`flex-1 flex flex-col h-full overflow-hidden relative z-10 transition-all duration-500 ${sidebarOpen ? "lg:ml-64" : ""}`}>
-                {/* Precision Glass Header */}
-                <header className="h-16 lg:h-20 glass-panel !bg-slate-950/60 !border-b !border-white/5 flex items-center justify-between px-6 lg:px-10 shrink-0 z-50 backdrop-blur-3xl shadow-xl">
+            {/* Main Content */}
+            <main className={`flex-1 flex flex-col h-full overflow-hidden relative z-10 transition-all duration-500 lg:ml-64`}>
+                {/* Header */}
+                <header className="h-16 lg:h-20 bg-white border-b border-slate-200 flex items-center justify-between px-6 lg:px-10 shrink-0 z-50 shadow-sm">
                     <div className="flex items-center space-x-6">
                         <button
                             onClick={() => setSidebarOpen(!sidebarOpen)}
-                            className="p-3 glass-panel text-slate-500 hover:text-white transition-all rounded-none border-white/5"
+                            className="p-3 bg-slate-50 text-slate-400 hover:text-[#1E3A8A] transition-all lg:hidden"
                         >
                             <Menu size={20} />
                         </button>
                         <div className="hidden sm:flex flex-col">
                             <div className="flex items-center gap-2">
-                                <div className="w-1.5 h-1.5 rounded-none bg-primary shadow-[0_0_8px_rgba(99,102,241,0.8)] animate-pulse"></div>
-                                <span className="text-[10px] font-black text-white uppercase tracking-[0.3em] italic">ATOMIC INDUSTRIAS</span>
+                                <div className="w-1.5 h-1.5 bg-[#1E3A8A]"></div>
+                                <span className="text-[10px] font-black text-[#0F172A] uppercase tracking-[0.3em] italic">ATOMIC INDUSTRIAS</span>
                             </div>
                         </div>
                         <Link 
                             href="/web" 
                             target="_blank"
-                            className="hidden md:flex items-center space-x-2 px-4 py-2 border border-primary/20 bg-primary/5 hover:bg-primary/10 text-primary transition-all rounded-none"
+                            className="hidden md:flex items-center space-x-2 px-4 py-2 border border-slate-200 hover:border-[#1E3A8A] text-slate-500 hover:text-[#1E3A8A] transition-all"
                         >
                             <ExternalLink size={12} />
                             <span className="text-[8px] font-black uppercase tracking-widest italic">Visitar Web</span>
@@ -253,36 +230,34 @@ export default function DashboardLayout({
                     </div>
                     
                     <div className="flex items-center space-x-6">
-                        <div className="flex items-center gap-4 pr-6 border-r border-white/5">
+                        <div className="flex items-center gap-4 pr-6 border-r border-slate-100">
                             <NotificationBell />
                         </div>
                         
-                        <Link href="/dashboard/profile" className="flex items-center gap-3 p-1 glass-panel !bg-slate-900 border-white/10 hover:scale-105 transition-all group pr-4">
-                            <div className="w-8 h-8 bg-slate-950 flex items-center justify-center text-primary overflow-hidden border-r border-white/5">
+                        <Link href="/dashboard/profile" className="flex items-center gap-3 p-1 bg-slate-50 border border-slate-200 hover:border-[#1E3A8A] transition-all group pr-4">
+                            <div className="w-8 h-8 bg-white flex items-center justify-center text-[#1E3A8A] overflow-hidden border-r border-slate-100">
                                 {(session?.user as any)?.profilePicture ? (
                                     <img src={(session?.user as any).profilePicture} alt="P" className="w-full h-full object-cover" />
                                 ) : (
                                     <User size={14} />
                                 )}
                             </div>
-                            <Settings size={14} className="text-slate-500 group-hover:rotate-45 transition-transform" />
+                            <Settings size={14} className="text-slate-400 group-hover:rotate-45 transition-transform" />
                         </Link>
 
-                        <div className="hidden lg:flex flex-col items-end border-l border-white/5 pl-6">
-                             <span className="text-[9px] font-black text-emerald-400 uppercase tracking-tighter italic leading-none">SISTEMA INTERNO</span>
-                             <span className="text-[7px] text-slate-600 font-black uppercase tracking-widest">v4.0.1</span>
+                        <div className="hidden lg:flex flex-col items-end border-l border-slate-100 pl-6">
+                             <span className="text-[9px] font-black text-emerald-600 uppercase tracking-tighter italic leading-none">SISTEMA ACTIVO</span>
+                             <span className="text-[7px] text-slate-300 font-black uppercase tracking-widest">v7.0.0</span>
                         </div>
                     </div>
                 </header>
 
-                {/* Performance Scrollable Region */}
                 <div className="flex-1 overflow-y-auto relative z-0 scrollbar-hide">
                     <div className="mx-auto max-w-[1800px] p-4 lg:p-8 min-h-full">
                         {children}
                     </div>
                 </div>
             </main>
-            {/* JarvisAI removido temporalmente por petición del usuario */}
         </div>
     )
 }
@@ -294,12 +269,12 @@ function NavLink({ href, icon, label, isActive, isSubItem }: { href: string; ico
             className={`
                 flex items-center space-x-4 px-5 py-3 rounded-none transition-all duration-300 group relative
                 ${isActive 
-                    ? 'bg-primary/10 text-primary border-r-2 border-primary shadow-[0_0_20px_rgba(99,102,241,0.1)]' 
-                    : 'text-slate-500 hover:text-white hover:bg-white/[0.03]'}
-                ${isSubItem ? 'ml-4 border-l border-white/5 pl-6' : ''}
+                    ? 'bg-[#1E3A8A]/5 text-[#1E3A8A] border-r-2 border-[#1E3A8A]' 
+                    : 'text-slate-400 hover:text-[#0F172A] hover:bg-slate-50'}
+                ${isSubItem ? 'ml-4 border-l border-slate-100 pl-6' : ''}
             `}
         >
-            <span className={`transition-all duration-300 ${isActive ? 'text-primary scale-110' : 'group-hover:text-primary group-hover:scale-110'}`}>
+            <span className={`transition-all duration-300 ${isActive ? 'text-[#1E3A8A] scale-110' : 'group-hover:text-[#1E3A8A] group-hover:scale-110'}`}>
                 {icon}
             </span>
             <span className={`text-[10px] font-black uppercase tracking-[0.2em] italic transition-all duration-300 ${isActive ? 'translate-x-1' : 'group-hover:translate-x-1'}`}>
@@ -314,15 +289,15 @@ function CollapsibleSection({ label, children, isOpen, onToggle }: { label: stri
         <div className="space-y-1">
             <button
                 onClick={onToggle}
-                className="w-full flex items-center justify-between px-5 py-3 group cursor-pointer transition-all duration-300 hover:bg-white/[0.02]"
+                className="w-full flex items-center justify-between px-5 py-3 group cursor-pointer transition-all duration-300 hover:bg-slate-50"
             >
                 <div className="flex items-center gap-3">
-                    <div className={`w-1 h-3 bg-slate-800 transition-all duration-500 ${isOpen ? 'bg-primary h-4' : 'group-hover:bg-slate-600'}`}></div>
-                    <span className={`text-[9px] font-black text-slate-500 uppercase tracking-[0.4em] italic transition-all duration-300 group-hover:text-slate-300 ${isOpen ? 'text-white' : ''}`}>
+                    <div className={`w-1 h-3 bg-slate-200 transition-all duration-500 ${isOpen ? 'bg-[#1E3A8A] h-4' : 'group-hover:bg-slate-400'}`}></div>
+                    <span className={`text-[9px] font-black text-slate-400 uppercase tracking-[0.4em] italic transition-all duration-300 group-hover:text-[#0F172A] ${isOpen ? 'text-[#0F172A]' : ''}`}>
                         {label}
                     </span>
                 </div>
-                <div className={`transition-transform duration-500 ${isOpen ? 'rotate-180 text-primary' : 'text-slate-700 group-hover:text-slate-400'}`}>
+                <div className={`transition-transform duration-500 ${isOpen ? 'rotate-180 text-[#1E3A8A]' : 'text-slate-300 group-hover:text-slate-500'}`}>
                     <ChevronDown size={12} />
                 </div>
             </button>
@@ -364,12 +339,3 @@ function DollarSign(props: any) {
         </svg>
     )
 }
-
-import { motion, AnimatePresence } from "framer-motion"
-
-
-
-
-
-
-

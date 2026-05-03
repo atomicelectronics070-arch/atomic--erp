@@ -1,14 +1,13 @@
-/* Atomic Premium Design System — Tomato · White · Steel Blue — v6.0 */
+/* Atomic Premium Design System — Navy · White · Slate Gray — v7.0 */
 @import "tailwindcss";
 
 @theme {
-  --color-background: #020617;
-  --color-foreground: #F4F1EB;
-  --color-primary: #E8341A;
-  --color-primary-neon: #FF4D2D;
-  --color-cyan-neon: #00F0FF;
-  --color-purple-neon: #7000FF;
-  --color-secondary: #0F1923;
+  --color-background: #F8FAFC;
+  --color-foreground: #0F172A;
+  --color-primary: #1E3A8A;
+  --color-primary-light: #3B82F6;
+  --color-navy: #0F172A;
+  --color-secondary: #F1F5F9;
 
   --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui;
   --font-heading: "IBM Plex Sans", ui-sans-serif, system-ui;
@@ -16,77 +15,47 @@
 }
 
 :root {
-  --background: #020617;
-  --foreground: #F4F1EB;
-  --primary: #E8341A;
-  --primary-neon: #FF4D2D;
-  --cyan-neon: #00F0FF;
-  --purple-neon: #7000FF;
-  --secondary: #0F1923;
+  --background: #F8FAFC;
+  --foreground: #0F172A;
+  --primary: #1E3A8A;
+  --primary-light: #3B82F6;
+  --navy: #0F172A;
+  --secondary: #F1F5F9;
 
   /* Surface tokens */
-  --surface-0: #0F1923;
-  --surface-1: #1A2535;
-  --surface-2: #242E3D;
+  --surface-0: #FFFFFF;
+  --surface-1: #F8FAFC;
+  --surface-2: #F1F5F9;
 
-  /* Refined Glass - More 'Lithe' */
-  --glass-bg: rgba(15, 25, 35, 0.45);
-  --glass-border: rgba(255, 255, 255, 0.05);
-  --neon-glow: 0 0 20px rgba(232, 52, 26, 0.25);
+  /* Refined Design */
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(30, 58, 138, 0.1);
+  --navy-glow: 0 0 20px rgba(30, 58, 138, 0.1);
 }
 
 body {
-  background-color: #0F172A !important;
-  background-image: none !important;
+  background-color: #F8FAFC !important;
   color: var(--foreground);
   font-family: var(--font-sans);
   accent-color: var(--primary);
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
 }
 
-/* ── Glass panel (Refined) ── */
+/* ── Glass panel (Light) ── */
 .glass-panel {
   background: var(--glass-bg);
-  backdrop-filter: blur(40px);
-  -webkit-backdrop-filter: blur(40px);
-  border: 1px solid var(--glass-border);
-  box-shadow: 0 4px 24px 0 rgba(0, 0, 0, 0.2);
-}
-
-/* ── Glass card (Refined) ── */
-.glass-card {
-  background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.03);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 4px 24px 0 rgba(15, 23, 42, 0.05);
 }
 
-/* ── Gradient text (tomato → orange) ── */
-.text-gradient {
-  background: linear-gradient(135deg, #E8341A 0%, #F5611A 60%, #FF8C42 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-/* ── Gradient text blue ── */
-.text-gradient-blue {
-  background: linear-gradient(135deg, #1E3A5F 0%, #2563EB 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-/* ── Background meshes (Disabled - Forced Solid) ── */
-.bg-mesh, .bg-mesh-dark, .bg-marble {
-  background-color: #0F172A !important;
-  background-image: none !important;
-}
-
-/* ── Cyber Card ── */
+/* ── Cyber Card (Navy Theme) ── */
 .cyber-card {
-  background: var(--glass-bg);
-  backdrop-filter: blur(20px);
-  border: 1px solid var(--glass-border);
+  background: #FFFFFF;
+  border: 1px solid rgba(30, 58, 138, 0.1);
   position: relative;
   overflow: hidden;
   transition: all 0.3s ease;
@@ -105,102 +74,51 @@ body {
   left: 100%;
 }
 .cyber-card:hover {
-  border-color: rgba(232, 52, 26, 0.4);
-  box-shadow: var(--neon-glow);
+  border-color: rgba(30, 58, 138, 0.3);
+  box-shadow: 0 10px 40px rgba(15, 23, 42, 0.08);
+  transform: translateY(-2px);
 }
 
-/* ── Scanline Effect ── */
-.scanline {
-  width: 100%;
-  height: 2px;
-  background: rgba(255, 255, 255, 0.03);
-  position: absolute;
-  z-index: 5;
-  top: 0;
-  left: 0;
-  pointer-events: none;
-  animation: scanline 8s linear infinite;
-}
-
-@keyframes scanline {
-  0% { top: 0; }
-  100% { top: 100%; }
-}
-
-/* ── Neon Text ── */
+/* ── Neon Text (Navy) ── */
 .neon-text {
-  color: var(--primary-neon);
-  text-shadow: 0 0 10px rgba(255, 77, 45, 0.5), 0 0 20px rgba(255, 77, 45, 0.2);
+  color: var(--primary);
+  text-shadow: 0 0 10px rgba(30, 58, 138, 0.2);
 }
 
-/* ── Background Nebula (disabled - solid) ── */
-.bg-nebula {
-  background-color: #0F172A !important;
-  background-image: none !important;
+/* ── Scanline (Soft) ── */
+.scanline {
+  display: none; /* Removed for cleaner corporate look */
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
+  color: var(--navy);
 }
 
-/* ── Focus ring ── */
-*:focus {
-  outline-color: var(--primary) !important;
-}
-
-/* ── Scrollbar ── */
+/* ── Scrollbar (Navy) ── */
 ::-webkit-scrollbar {
   width: 8px;
-  height: 8px;
 }
-
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: #F1F5F9;
 }
-
 ::-webkit-scrollbar-thumb {
-  background: rgba(232, 52, 26, 0.25);
-  border-radius: 0px;
+  background: #CBD5E1;
+  border-radius: 4px;
 }
-
 ::-webkit-scrollbar-thumb:hover {
   background: var(--primary);
 }
 
-/* ── Hide scrollbar utility ── */
-.hide-scrollbar::-webkit-scrollbar { display: none; }
-.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-/* ── Animated underline for nav links ── */
-.nav-link-active {
-  color: var(--primary);
-  border-bottom: 2px solid var(--primary);
-  padding-bottom: 2px;
-}
-
-/* ── Tomato button glow ── */
+/* ── Button Primary ── */
 .btn-primary {
   background: var(--primary);
   color: #fff;
-  box-shadow: 0 8px 32px rgba(232, 52, 26, 0.35);
-  transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+  transition: all 0.2s;
 }
 .btn-primary:hover {
-  background: var(--primary-dark);
-  box-shadow: 0 12px 40px rgba(192, 40, 15, 0.45);
+  background: #172554;
   transform: translateY(-1px);
-}
-
-/* ── Blue button glow ── */
-.btn-blue {
-  background: var(--accent-blue);
-  color: #fff;
-  box-shadow: 0 8px 32px rgba(37, 99, 235, 0.30);
-  transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
-}
-.btn-blue:hover {
-  background: var(--secondary);
-  box-shadow: 0 12px 40px rgba(30, 58, 95, 0.40);
-  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(30, 58, 138, 0.2);
 }
