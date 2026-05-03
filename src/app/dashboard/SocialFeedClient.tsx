@@ -33,6 +33,15 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
     const [activeCommentPost, setActiveCommentPost] = useState<string | null>(null)
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [openMenuId, setOpenMenuId] = useState<string | null>(null)
+    const [rankingFilter, setRankingFilter] = useState<'value' | 'count' | 'name'>('value')
+
+    const calculatePoints = (value: number) => {
+        if (value > 1000) return 15;
+        if (value >= 300) return 10;
+        if (value >= 100) return 8;
+        if (value > 0) return 3;
+        return 0;
+    }
 
     const refreshData = async () => {
         const [feedRes, rankRes] = await Promise.all([
@@ -166,25 +175,78 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
 
                 <div className="w-full lg:w-[450px] space-y-12 sticky top-32">
                     <CyberCard className="!p-8 border-white/5 bg-slate-950/20">
-                        <div className="flex items-center gap-4 mb-8">
-                            <Trophy className="text-[#E8341A]" size={24} />
-                            <div>
-                                <h3 className="text-xl font-black text-white uppercase italic tracking-tighter">RANKING ASESORES</h3>
-                                <p className="text-[8px] font-black text-white/30 uppercase tracking-[0.4em] italic">TOP DESEMPEÑO GLOBAL</p>
+                        <div className="flex items-center justify-between mb-8">
+                            <div className="flex items-center gap-4">
+                                <Trophy className="text-[#E8341A]" size={24} />
+                                <div>
+                                    <h3 className="text-xl font-black text-white uppercase italic tracking-tighter">RANKING ASESORES</h3>
+                                    <p className="text-[8px] font-black text-white/30 uppercase tracking-[0.4em] italic">TOP DESEMPEÑO GLOBAL</p>
+                                </div>
                             </div>
+                            <select 
+                                value={rankingFilter}
+                                onChange={(e: any) => setRankingFilter(e.target.value)}
+                                className="bg-black/40 border border-white/10 text-[9px] font-black text-white uppercase tracking-widest px-4 py-2 outline-none focus:border-[#E8341A] italic"
+                            >
+                                <option value="value">MONTO ($)</option>
+                                <option value="count">VENTAS (#)</option>
+                                <option value="name">ASESOR</option>
+                            </select>
                         </div>
                         <div className="space-y-3">
-                            {ranking.map((user, index) => (
+                            {[...ranking].sort((a, b) => {
+                                if (rankingFilter === 'value') return b.totalProfit - a.totalProfit;
+                                if (rankingFilter === 'count') return b.salesCount - a.salesCount;
+                                return a.name.localeCompare(b.name);
+                            }).map((user, index) => (
                                 <div key={user.id} className={`flex items-center gap-4 p-4 border ${index === 0 ? 'bg-[#E8341A]/5 border-[#E8341A]/20' : 'bg-white/[0.01] border-white/5'} transition-all group`}>
                                     <div className={`w-8 h-8 flex items-center justify-center font-black text-sm italic ${index === 0 ? 'bg-[#E8341A] text-white shadow-lg' : 'bg-white/5 text-white/20'}`}>
                                         {index + 1}
                                     </div>
                                     <div className="flex-1">
                                         <p className="text-[11px] font-black text-white uppercase italic tracking-tighter truncate group-hover:text-[#E8341A] transition-colors">{user.name}</p>
-                                        <p className="text-[9px] font-black text-[#E8341A] italic mt-0.5">${user.totalProfit.toLocaleString()}</p>
+                                        <div className="flex justify-between items-center mt-1">
+                                            <p className="text-[9px] font-black text-[#E8341A] italic">${user.totalProfit.toLocaleString()}</p>
+                                            <p className="text-[9px] font-black text-emerald-500 italic">+{calculatePoints(user.totalProfit)} PTS</p>
+                                        </div>
                                     </div>
                                 </div>
                             ))}
+                        </div>
+                    </CyberCard>
+
+                    <CyberCard className="!p-8 border-white/5 bg-[#E8341A]/5 shadow-[0_0_50px_rgba(232,52,26,0.1)]">
+                        <div className="flex items-center gap-4 mb-8 text-[#E8341A]">
+                            <div className="p-3 bg-[#E8341A]/10 border border-[#E8341A]/20">
+                                <Zap size={18} />
+                            </div>
+                            <div>
+                                <h3 className="text-sm font-black uppercase italic tracking-tighter text-white">SISTEMA DE PUNTOS ATÓMICOS</h3>
+                                <p className="text-[7px] font-black uppercase tracking-[0.4em] opacity-40 italic">PROTOCOLO DE RECOMPENSA</p>
+                            </div>
+                        </div>
+                        <div className="space-y-4 border-l border-[#E8341A]/30 pl-6">
+                            <div className="flex justify-between items-center group">
+                                <span className="text-[10px] font-black text-white/40 group-hover:text-white transition-colors uppercase italic tracking-wider">VENTA $0 - $100</span>
+                                <span className="text-[#E8341A] font-black italic">3 PTS</span>
+                            </div>
+                            <div className="flex justify-between items-center group">
+                                <span className="text-[10px] font-black text-white/40 group-hover:text-white transition-colors uppercase italic tracking-wider">VENTA $100 - $200</span>
+                                <span className="text-[#E8341A] font-black italic">8 PTS</span>
+                            </div>
+                            <div className="flex justify-between items-center group">
+                                <span className="text-[10px] font-black text-white/40 group-hover:text-white transition-colors uppercase italic tracking-wider">VENTA $300 - $800</span>
+                                <span className="text-[#E8341A] font-black italic">10 PTS</span>
+                            </div>
+                            <div className="flex justify-between items-center group">
+                                <span className="text-[10px] font-black text-white/40 group-hover:text-white transition-colors uppercase italic tracking-wider">VENTA +$1000</span>
+                                <span className="text-[#E8341A] font-black italic">15 PTS</span>
+                            </div>
+                        </div>
+                        <div className="mt-8 pt-6 border-t border-white/5">
+                            <p className="text-[8px] font-black text-white/20 uppercase tracking-[0.2em] leading-relaxed italic">
+                                EL RANKING SE CALCULA SOBRE EL CIERRE OPERATIVO. LOS PUNTOS DETERMINAN LA POSICIÓN NEURAL EN EL FEED.
+                            </p>
                         </div>
                     </CyberCard>
                     <CyberCard className="!p-12 border-[#00F0FF]/20">
