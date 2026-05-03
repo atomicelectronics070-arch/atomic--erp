@@ -6,8 +6,9 @@ import bcrypt from "bcryptjs"
 
 // PATCH /api/admin/users/[id]
 // Toggle status, update info or reset password
-export async function PATCH(req: Request, { params }: { params: { id: string } }) {
+export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
+        const { id } = await params
         const session = await getServerSession(authOptions)
         if (!session || (session.user.role !== 'ADMIN' && session.user.role !== 'MANAGEMENT')) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
@@ -33,7 +34,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
         }
 
         const user = await prisma.user.update({
-            where: { id: params.id },
+            where: { id },
             data: updateData
         })
 
@@ -46,20 +47,21 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
 }
 
 // DELETE /api/admin/users/[id]
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
+        const { id } = await params
         const session = await getServerSession(authOptions)
         if (!session || (session.user.role !== 'ADMIN' && session.user.role !== 'MANAGEMENT')) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
         }
 
         // We delete only if it's not deleting themselves
-        if (session.user.id === params.id) {
+        if (session.user.id === id) {
             return NextResponse.json({ error: "Cannot delete yourself" }, { status: 400 })
         }
 
         await prisma.user.delete({
-            where: { id: params.id }
+            where: { id }
         })
 
         return NextResponse.json({ success: true })
