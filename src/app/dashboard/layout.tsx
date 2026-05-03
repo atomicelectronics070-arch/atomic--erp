@@ -128,18 +128,18 @@ export default function DashboardLayout({
                     >
                         <X size={24} />
                     </button>
-                    <div className="flex flex-col items-center relative z-10 transition-transform duration-700 group-hover:scale-105">
+                    <Link href="/web" target="_blank" className="flex flex-col items-center relative z-10 transition-transform duration-700 group-hover:scale-105 cursor-pointer">
                         <div className="flex items-center gap-4">
                             <div className="w-2 h-2 rounded-none bg-primary shadow-[0_0_12px_rgba(99,102,241,0.6)] animate-pulse"></div>
                             <span className="text-xl font-black text-white uppercase tracking-[0.4em] italic shadow-sm">ATOMIC</span>
                         </div>
                         <span className="text-[8px] font-black text-slate-500 uppercase tracking-[0.6em] italic mt-2 opacity-60">SOLUTIONS</span>
-                    </div>
+                    </Link>
                 </div>
 
                 <nav className="flex-1 overflow-y-auto px-8 py-12 space-y-4 custom-scrollbar relative">
                     <div className="mb-10 space-y-4">
-                        <NavLink href="/dashboard" icon={<Globe size={20} />} label="Red Social Corporativa" isActive={pathname === '/dashboard'} />                        <NavLink href="/dashboard/analytics" icon={<LayoutDashboard size={20} />} label="Centro de Análisis" isActive={pathname === '/dashboard/analytics'} />
+                        <NavLink href="/dashboard" icon={<Globe size={20} />} label="Red Social Corporativa" isActive={pathname === '/dashboard'} />                        <NavLink href="/dashboard/analytics" icon={<LayoutDashboard size={20} />} label="Centro de Análisis" isActive={pathname === '/dashboard/analytics'} />
                     </div>
 
                     <div className="space-y-10">
@@ -225,17 +225,6 @@ export default function DashboardLayout({
                                 <NavLink href="/dashboard/agenda" icon={<Calendar size={16} />} label="Agenda" isSubItem />
                                 <NavLink href="/dashboard/notes" icon={<Edit3 size={16} />} label="Bloc de Notas" isSubItem />
                                 <NavLink href="/dashboard/blogs" icon={<FileText size={16} />} label="Blog Corporativo" isSubItem />
-                                
-                                <div className="px-5 pt-4">
-                                    <Link
-                                        href="/web"
-                                        target="_blank"
-                                        className="flex items-center space-x-4 px-4 py-3 rounded-none text-[9px] font-black text-primary hover:bg-primary/10 transition-all group border border-primary/20 bg-primary/5 italic shadow-2xl shadow-primary/5"
-                                    >
-                                        <ExternalLink size={16} className="text-primary group-hover:rotate-12 transition-transform" />
-                                        <span className="tracking-[0.2em] uppercase">Página Pública</span>
-                                    </Link>
-                                </div>
                             </CollapsibleSection>
                         )}
 
@@ -263,8 +252,12 @@ export default function DashboardLayout({
 
                 <div className="p-10 shrink-0 border-t border-white/5 bg-white/[0.02]">
                     <div className="flex items-center space-x-6 mb-10 px-2 transition-all group cursor-default">
-                        <div className="w-14 h-14 rounded-none glass-panel !bg-slate-900 border-white/10 shadow-2xl flex items-center justify-center font-black text-lg group-hover:scale-110 transition-transform duration-500 shadow-primary/10 text-white italic">
-                            {session.user?.name?.[0] || "U"}
+                        <div className="w-14 h-14 rounded-none glass-panel !bg-slate-900 border-white/10 shadow-2xl flex items-center justify-center font-black text-lg group-hover:scale-110 transition-transform duration-500 shadow-primary/10 text-white italic overflow-hidden">
+                            {(session?.user as any)?.profilePicture ? (
+                                <img src={(session?.user as any).profilePicture} alt="User" className="w-full h-full object-cover" />
+                            ) : (
+                                session.user?.name?.[0] || "U"
+                            )}
                         </div>
                         <div className="flex-1 overflow-hidden">
                             <p className="text-xs font-black text-white truncate uppercase tracking-tighter italic">{session.user?.name}</p>
@@ -280,7 +273,7 @@ export default function DashboardLayout({
                         <LogOut size={18} className="group-hover:-translate-x-1 transition-transform" />
                         <span className="uppercase tracking-[0.3em]">Cerrar Sesión</span>
                     </Link>
-                </div>           </div>
+                </div>
             </aside>
 
             {/* Main Content Engineering */}
@@ -301,15 +294,32 @@ export default function DashboardLayout({
                             </div>
                             <span className="text-[8px] font-black text-slate-600 uppercase tracking-[0.5em] ml-6 opacity-60">Status: Terminal Operativa</span>
                         </div>
+                        <Link 
+                            href="/web" 
+                            target="_blank"
+                            className="hidden md:flex items-center space-x-3 px-6 py-3 border border-primary/20 bg-primary/5 hover:bg-primary/10 text-primary transition-all group rounded-none"
+                        >
+                            <ExternalLink size={14} className="group-hover:rotate-12 transition-transform" />
+                            <span className="text-[9px] font-black uppercase tracking-[0.3em] italic">Visitar Web</span>
+                        </Link>
                     </div>
                     
                     <div className="flex items-center space-x-10">
                         <div className="flex items-center gap-4 border-r border-white/5 pr-10">
                             <NotificationBell />
                         </div>
-                        <Link href="/dashboard/profile" className="p-4 glass-panel text-slate-500 hover:text-primary transition-all rounded-none shadow-xl hover:scale-105 active:scale-95 border-white/10 group">
-                            <Settings size={22} className="group-hover:rotate-45 transition-transform duration-500" />
+                        
+                        <Link href="/dashboard/profile" className="flex items-center gap-4 p-1 glass-panel !bg-slate-900 border-white/10 shadow-xl hover:scale-105 active:scale-95 transition-all group overflow-hidden pr-6">
+                            <div className="w-12 h-12 rounded-none bg-slate-950 border-r border-white/5 flex items-center justify-center text-primary overflow-hidden">
+                                {(session?.user as any)?.profilePicture ? (
+                                    <img src={(session?.user as any).profilePicture} alt="Profile" className="w-full h-full object-cover" />
+                                ) : (
+                                    <User size={20} />
+                                )}
+                            </div>
+                            <Settings size={18} className="text-slate-500 group-hover:text-primary group-hover:rotate-45 transition-all duration-500" />
                         </Link>
+
                         <div className="hidden lg:flex flex-col items-end border-l border-white/5 pl-10">
                              <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest italic leading-none mb-1">Carga de Datos</span>
                              <span className="text-[11px] font-black text-emerald-400 uppercase tracking-tighter italic">SISTEMA INTERNO</span>
