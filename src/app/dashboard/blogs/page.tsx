@@ -379,88 +379,90 @@ export default function BlogsDashboard() {
       )}
 
       {activeTab === "mis_blogs" && (
-          <div className="space-y-12 animate-in slide-in-from-bottom-6 duration-700 relative z-10">
-            <div className="flex justify-between items-center bg-white/[0.01] p-8 border border-white/5 rounded-none-[2.5rem] backdrop-blur-xl">
-                <div>
-                   <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] italic">Catálogo de Activos Narrativos</h3>
+          <div className="space-y-8 animate-in slide-in-from-bottom-6 duration-700 relative z-10">
+            <div className="flex justify-between items-center bg-white/[0.01] p-6 border border-white/5 rounded-none backdrop-blur-xl">
+                <div className="flex items-center gap-4">
+                    <div className="w-1 h-6 bg-secondary"></div>
+                    <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] italic">Consola de Activos Narrativos</h3>
                 </div>
                 <button 
                     onClick={() => openModal()}
-                    className="flex items-center space-x-6 bg-secondary text-white px-12 py-5 text-[10px] font-black uppercase tracking-[0.3em] hover:bg-white hover:text-secondary transition-all shadow-[0_20px_50px_-10px_rgba(255,99,71,0.5)] rounded-none active:scale-95 italic skew-x-[-12deg] group"
+                    className="flex items-center space-x-4 bg-secondary text-white px-8 py-3 text-[9px] font-black uppercase tracking-[0.3em] hover:bg-white hover:text-secondary transition-all rounded-none italic skew-x-[-12deg] group"
                 >
-                    <div className="skew-x-[12deg] flex items-center gap-4">
-                        <Plus size={20} className="group-hover:rotate-90 transition-transform" />
-                        <span>Redactar / Subir Contenido</span>
+                    <div className="skew-x-[12deg] flex items-center gap-3">
+                        <Plus size={16} />
+                        <span>Nuevo Contenido</span>
                     </div>
                 </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            <div className="grid grid-cols-1 gap-4">
                 {blogs.length === 0 && !loading && (
-                    <div className="col-span-full py-48 text-center glass-panel border border-dashed border-white/5 rounded-none-[4rem] flex flex-col items-center justify-center">
-                        <div className="w-20 h-20 bg-slate-900/60 rounded-none flex items-center justify-center mb-8 border border-white/5 shadow-inner">
-                            <ImageIcon size={32} className="text-slate-800" />
-                        </div>
-                        <p className="text-slate-700 font-black uppercase tracking-[0.6em] text-[11px] italic">Canal desierto: Sin publicaciones detectadas.</p>
+                    <div className="py-24 text-center glass-panel border border-dashed border-white/5 rounded-none flex flex-col items-center justify-center">
+                        <p className="text-slate-700 font-black uppercase tracking-[0.6em] text-[9px] italic text-center">Sin publicaciones detectadas.</p>
                     </div>
                 )}
                 {blogs.map(blog => (
                     <motion.div 
-                        initial={{ opacity: 0, y: 30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
+                        initial={{ opacity: 0, x: -20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
                         key={blog.id} 
-                        className="glass-panel border-white/5 overflow-hidden flex flex-col group hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.8)] hover:border-secondary/30 transition-all rounded-none-[3rem] backdrop-blur-3xl relative"
+                        className="glass-panel border-white/5 overflow-hidden flex items-center group hover:bg-white/[0.02] transition-all rounded-none backdrop-blur-3xl relative p-4 h-24"
                     >
-                        {blog.contentType === 'video' && blog.videoUrl ? (
-                             <div className="relative h-64 bg-slate-950 flex items-center justify-center border-b border-white/5">
-                                 <Video size={48} className="text-slate-700" />
-                                 <div className="absolute top-4 right-4 bg-red-500 text-white text-[8px] font-black px-2 py-1 uppercase tracking-widest">VIDEO</div>
-                             </div>
-                        ) : blog.imageUrl ? (
-                            <div className="relative h-64 overflow-hidden">
-                                <img src={blog.imageUrl} alt={blog.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[1.5s]" />
-                                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent opacity-60" />
+                        {/* Compact Thumbnail */}
+                        <div className="w-24 h-full shrink-0 overflow-hidden border border-white/5 bg-slate-900 flex items-center justify-center">
+                            {blog.contentType === 'video' ? (
+                                <Video size={20} className="text-slate-700" />
+                            ) : blog.imageUrl ? (
+                                <img src={blog.imageUrl} alt={blog.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[1s]" />
+                            ) : (
+                                <ImageIcon size={20} className="text-slate-800" />
+                            )}
+                        </div>
+
+                        {/* Info Section */}
+                        <div className="flex-1 px-8 flex items-center justify-between">
+                            <div className="flex flex-col gap-1 max-w-xl">
+                                <div className="flex items-center gap-3">
+                                    <h3 className="text-sm font-black text-white italic uppercase tracking-tighter truncate group-hover:text-secondary transition-colors">{blog.title}</h3>
+                                    <span className={`text-[7px] font-black uppercase tracking-widest px-2 py-0.5 border ${blog.published ? 'border-emerald-500/20 text-emerald-400 bg-emerald-500/5' : 'border-secondary/20 text-secondary bg-secondary/5'}`}>
+                                        {blog.published ? 'PUBLICADO' : 'BORRADOR'}
+                                    </span>
+                                </div>
+                                <p className="text-[9px] text-slate-600 font-bold uppercase tracking-tight italic line-clamp-1 opacity-60">{blog.excerpt || 'Sín extracto ejecutivo registrado'}</p>
                             </div>
-                        ) : (
-                            <div className="w-full h-64 bg-slate-900/60 flex items-center justify-center border-b border-white/5 shadow-inner">
-                                <ImageIcon size={48} className="text-slate-800 animate-pulse" />
-                            </div>
-                        )}
-                        <div className="p-10 flex-1 flex flex-col relative z-20 bg-slate-950/20">
-                            <div className="flex items-center space-x-3 mb-6">
-                                <span className={`text-[9px] font-black uppercase tracking-[0.4em] px-4 py-1.5 rounded-none border italic shadow-2xl ${blog.published ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-secondary/10 text-secondary border-secondary/20'}`}>
-                                    {blog.published ? 'CONSOLIDADO' : 'BORRADOR'}
-                                </span>
-                                {blog.socialTargets && JSON.parse(blog.socialTargets).length > 0 && (
-                                    <div className="flex gap-1 ml-auto">
+
+                            <div className="flex items-center gap-12">
+                                {/* Social Chips */}
+                                {blog.socialTargets && (
+                                    <div className="flex gap-1">
                                         {JSON.parse(blog.socialTargets).map((t: string) => (
-                                            <div key={t} className="w-6 h-6 rounded-none bg-indigo-500/20 text-indigo-400 flex items-center justify-center border border-indigo-500/30">
+                                            <div key={t} className="w-5 h-5 rounded-none bg-indigo-500/5 text-indigo-500/30 flex items-center justify-center border border-indigo-500/10" title={t}>
                                                 {t === 'facebook' && <Facebook size={10} />}
                                                 {t === 'instagram' && <Instagram size={10} />}
                                                 {t === 'youtube' && <Youtube size={10} />}
-                                                {t === 'tiktok' && <span className="text-[8px] font-black">TK</span>}
+                                                {t === 'tiktok' && <span className="text-[6px] font-black">TK</span>}
                                             </div>
                                         ))}
                                     </div>
                                 )}
-                            </div>
-                            <h3 className="text-2xl font-black text-white line-clamp-2 leading-tight mb-4 italic group-hover:text-secondary transition-colors uppercase tracking-tighter drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">{blog.title}</h3>
-                            <p className="text-[11px] text-slate-500 font-bold line-clamp-3 mb-10 flex-1 italic leading-relaxed uppercase tracking-tight opacity-60 group-hover:opacity-100 transition-opacity">{blog.excerpt || 'SIN EXTRACTO DISPONIBLE'}</p>
-                            
-                            <div className="flex items-center justify-between mt-auto pt-8 border-t border-white/5">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-8 h-8 rounded-none bg-slate-900 border border-white/10 flex items-center justify-center text-[10px] font-black text-slate-500 italic">
-                                        {blog.author?.name?.[0] || 'U'}
+
+                                {/* Metadata */}
+                                <div className="flex items-center gap-4 border-l border-white/5 pl-8 hidden lg:flex">
+                                    <div className="text-right">
+                                        <p className="text-[8px] font-black text-slate-700 uppercase tracking-widest leading-none mb-1">Operador</p>
+                                        <p className="text-[10px] font-black text-white italic opacity-40">{blog.author?.name || 'SISTEMA'}</p>
                                     </div>
-                                    <span className="text-[9px] font-black text-slate-600 uppercase tracking-widest italic">{blog.author?.name || 'OPERADOR'}</span>
                                 </div>
-                                <div className="flex space-x-4 opacity-0 group-hover:opacity-100 transition-all translate-x-10 group-hover:translate-x-0">
-                                    <button onClick={() => openModal(blog)} className="p-4 glass-panel !bg-slate-900 text-slate-600 hover:text-azure-400 hover:rotate-6 transition-all rounded-none border-white/5">
-                                        <Edit size={16} />
+
+                                {/* Actions */}
+                                <div className="flex items-center gap-2">
+                                    <button onClick={() => openModal(blog)} className="p-3 border border-white/5 text-slate-700 hover:text-white hover:border-white/20 transition-all">
+                                        <Edit size={14} />
                                     </button>
-                                    <button onClick={() => handleDelete(blog.id)} className="p-4 glass-panel !bg-slate-900 text-slate-600 hover:text-red-500 hover:-rotate-6 transition-all rounded-none border-white/5">
-                                        <Trash2 size={16} />
+                                    <button onClick={() => handleDelete(blog.id)} className="p-3 border border-white/5 text-slate-700 hover:text-red-500 hover:border-red-500/20 transition-all">
+                                        <Trash2 size={14} />
                                     </button>
                                 </div>
                             </div>

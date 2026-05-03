@@ -297,9 +297,9 @@ export default function DashboardLayout({
                         <div className="hidden sm:flex flex-col">
                             <div className="flex items-center gap-4 mb-1">
                                 <div className="w-2.5 h-2.5 rounded-none bg-primary shadow-[0_0_12px_rgba(99,102,241,0.8)] animate-pulse"></div>
-                                <span className="text-[11px] font-black text-white uppercase tracking-[0.4em] italic leading-none">SISTEMA ERP</span>
+                                <span className="text-[11px] font-black text-white uppercase tracking-[0.4em] italic leading-none">ATOMIC INDUSTRIAS</span>
                             </div>
-                            <span className="text-[8px] font-black text-slate-600 uppercase tracking-[0.5em] ml-6 opacity-60">Status: Sistema Activo</span>
+                            <span className="text-[8px] font-black text-slate-600 uppercase tracking-[0.5em] ml-6 opacity-60">Status: Terminal Operativa</span>
                         </div>
                     </div>
                     
@@ -307,14 +307,12 @@ export default function DashboardLayout({
                         <div className="flex items-center gap-4 border-r border-white/5 pr-10">
                             <NotificationBell />
                         </div>
-                        {(role === "ADMIN" || role === "MANAGEMENT") && (
-                            <Link href="/dashboard/admin/settings" className="p-4 glass-panel text-slate-500 hover:text-primary transition-all rounded-none shadow-xl hover:scale-105 active:scale-95 border-white/10 group">
-                                <Settings size={22} className="group-hover:rotate-45 transition-transform duration-500" />
-                            </Link>
-                        )}
+                        <Link href="/dashboard/profile" className="p-4 glass-panel text-slate-500 hover:text-primary transition-all rounded-none shadow-xl hover:scale-105 active:scale-95 border-white/10 group">
+                            <Settings size={22} className="group-hover:rotate-45 transition-transform duration-500" />
+                        </Link>
                         <div className="hidden lg:flex flex-col items-end border-l border-white/5 pl-10">
                              <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest italic leading-none mb-1">Carga de Datos</span>
-                             <span className="text-[11px] font-black text-emerald-400 uppercase tracking-tighter italic">Nivel Ã“ptimo 99.8%</span>
+                             <span className="text-[11px] font-black text-emerald-400 uppercase tracking-tighter italic">SISTEMA INTERNO</span>
                         </div>
                     </div>
                 </header>

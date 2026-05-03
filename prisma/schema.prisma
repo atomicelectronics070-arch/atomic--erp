@@ -20,6 +20,9 @@ model User {
   isActive     Boolean @default(true)
   resetRequested Boolean @default(false)
   tempResetCode  String?
+  phoneNumber    String?
+  residenceSector String?
+  profilePicture  String?
   receivePromotions Boolean @default(false)
 
   // Registration specific fields
