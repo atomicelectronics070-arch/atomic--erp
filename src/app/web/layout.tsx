@@ -49,6 +49,14 @@ export default function WebLayout({ children }: { children: React.ReactNode }) {
                                 className={pathname === '/web/benefits' ? 'text-[#1E3A8A] border-b-2 border-[#1E3A8A] pb-1' : 'hover:text-[#1E3A8A] transition-colors'}
                             >Beneficios</Link>
                             <Link
+                                href="/web/bajo-pedido"
+                                className={pathname === '/web/bajo-pedido' ? 'text-[#1E3A8A] border-b-2 border-[#1E3A8A] pb-1' : 'hover:text-[#1E3A8A] transition-colors'}
+                            >Bajo Pedido</Link>
+                            <Link
+                                href="/web/trabajos"
+                                className={pathname === '/web/trabajos' ? 'text-[#1E3A8A] border-b-2 border-[#1E3A8A] pb-1' : 'hover:text-[#1E3A8A] transition-colors'}
+                            >Trabajos</Link>
+                            <Link
                                 href="/web/contact"
                                 className={pathname === '/web/contact' ? 'text-[#1E3A8A] border-b-2 border-[#1E3A8A] pb-1' : 'hover:text-[#1E3A8A] transition-colors'}
                             >Contacto</Link>
@@ -162,6 +170,8 @@ export default function WebLayout({ children }: { children: React.ReactNode }) {
                             <ul className="space-y-5 text-[10px] text-slate-500 font-black uppercase tracking-widest">
                                 <li className="hover:text-white transition-colors"><Link href="/web/products">Catálogo</Link></li>
                                 <li className="hover:text-white transition-colors"><Link href="/web/categories">Categorías</Link></li>
+                                <li className="hover:text-white transition-colors"><Link href="/web/bajo-pedido">Bajo Pedido</Link></li>
+                                <li className="hover:text-white transition-colors"><Link href="/web/trabajos">Portafolio Trabajos</Link></li>
                                 <li className="hover:text-white transition-colors"><Link href="/web/contact">Reseñas y Contacto</Link></li>
                                 <li className="hover:text-white transition-colors"><Link href="/login">Acceso</Link></li>
                             </ul>

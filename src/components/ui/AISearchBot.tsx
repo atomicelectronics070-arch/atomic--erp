@@ -2,9 +2,11 @@
 
 import { useState, useRef, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Send, X, Bot, User, RefreshCw, Sparkles } from "lucide-react"
+import { Send, X, Bot, User, RefreshCw, Sparkles, ShoppingCart, ArrowRight } from "lucide-react"
+import { useCart } from "@/context/CartContext"
+import Link from "next/link"
 
-interface Message { role: 'bot' | 'user'; content: string }
+interface Message { role: 'bot' | 'user'; content: string; hasCartButton?: boolean }
 
 const KEYWORD_MAP: Array<{ keys: string[], query: string, reply: string }> = [
     { keys: ['camara','cámara','seguridad','vigilancia','cctv'], query: 'camaras seguridad', reply: 'Tenemos cámaras HD, 4K, con visión nocturna y acceso remoto. He actualizado el catálogo con las mejores opciones de seguridad. ¿Las necesitas para interior o exterior?' },
@@ -18,9 +20,10 @@ const KEYWORD_MAP: Array<{ keys: string[], query: string, reply: string }> = [
     { keys: ['iluminacion','iluminación','led','luz','foco','bombillo'], query: 'iluminacion led smart', reply: 'Iluminación LED smart con control remoto y por voz. Catálogo disponible. ¿Buscas para decoración o iluminación funcional?' },
     { keys: ['energia','energía','solar','bateria','inversor','ups'], query: 'energia solar inversor ups', reply: 'Contamos con soluciones de energía solar, inversores y UPS. He mostrado el catálogo de energía. ¿Cuántos watts necesitas cubrir?' },
     { keys: ['precio','costo','valor','cuanto','cuánto'], query: '', reply: 'Los precios en nuestra web son al público general. Si eres afiliado o distribuidor, inicia sesión para ver tus precios especiales. ¿Qué producto te interesa cotizar?' },
-    { keys: ['envio','envío','delivery','entrega','despacho'], query: '', reply: 'Realizamos envíos a nivel nacional. El costo y tiempo varía según tu ubicación. ¿A qué ciudad necesitas el envío?' },
+    { keys: ['envio','envío','delivery','entrega','despacho'], query: '', reply: '¡Buenas noticias! En tu PRIMERA COMPRA el envío es TOTALMENTE GRATIS. A partir de la segunda compra o en pedidos mayores a $100, también te aplicamos un 10% DE DESCUENTO adicional.' },
     { keys: ['garantia','garantía','soporte','reparacion'], query: '', reply: 'Todos nuestros productos tienen garantía de fábrica. Contamos con soporte técnico directo. ¿Sobre qué producto necesitas información de garantía?' },
     { keys: ['hola','buenos','buenas','saludos','hi'], query: '', reply: '¡Hola! Bienvenido a Atomic. Estoy aquí para ayudarte a encontrar el equipo perfecto. ¿Qué tecnología estás buscando hoy?' },
+    { keys: ['pago','pagar','comprar','carrito','orden'], query: '', reply: 'Puedes pagar mediante transferencia, depósito, tarjeta de débito o Contra Entrega. Recuerda que pedidos mayores a $100 tienen un 10% de descuento.' },
 ]
 
 const FALLBACK_REPLIES = [
@@ -33,12 +36,29 @@ let fallbackIndex = 0
 export const AISearchBot = () => {
     const [isOpen, setIsOpen] = useState(false)
     const [query, setQuery] = useState("")
+    const { totalItems } = useCart()
+    const lastItemsCount = useRef(totalItems)
+    
     const [messages, setMessages] = useState<Message[]>([
         { role: 'bot', content: '¡Hola! Soy el Asistente de Atomic. Puedo ayudarte a encontrar cámaras, power banks, cerraduras smart, antenas, iluminación y más. ¿Qué estás buscando hoy?' }
     ])
     const [isTyping, setIsTyping] = useState(false)
-    const [context, setContext] = useState<string | null>(null) // Context for better follow-ups
+    const [context, setContext] = useState<string | null>(null)
     const bottomRef = useRef<HTMLDivElement>(null)
+
+    // Trigger bot on Add to Cart
+    useEffect(() => {
+        if (totalItems > lastItemsCount.current) {
+            setIsOpen(true)
+            const botMsg: Message = { 
+                role: 'bot', 
+                content: '¡Excelente elección! He visto que añadiste un producto. ¿Te ayudo a finalizar tu pedido? Ve a pagar tu compra y obtén ENVÍO GRATIS por ser tu primera compra. 🚀',
+                hasCartButton: true
+            }
+            setMessages(prev => [...prev, botMsg])
+        }
+        lastItemsCount.current = totalItems
+    }, [totalItems])
 
     useEffect(() => {
         bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -77,7 +97,6 @@ export const AISearchBot = () => {
                 reply = match.reply
                 if (match.query) {
                     updateGlobalSearch(match.query)
-                    // Set context for follow-up intelligence
                     if (match.query.includes('power bank')) setContext('powerbank')
                     else if (match.query.includes('camara')) setContext('camara')
                     else setContext(null)
@@ -107,6 +126,11 @@ export const AISearchBot = () => {
                     <div className="relative w-16 h-16 bg-[#E8341A] text-white flex items-center justify-center rounded-xl shadow-[0_10px_30px_rgba(232,52,26,0.4)] overflow-hidden">
                         <div className="absolute inset-0 bg-gradient-to-tr from-black/20 to-transparent" />
                         {isOpen ? <X size={22} className="relative z-10" /> : <Bot size={26} className="relative z-10 group-hover:scale-110 transition-transform" />}
+                        {totalItems > 0 && !isOpen && (
+                            <span className="absolute top-0 right-0 w-5 h-5 bg-white text-[#E8341A] text-[9px] font-black flex items-center justify-center rounded-none shadow-lg animate-bounce">
+                                {totalItems}
+                            </span>
+                        )}
                         <span className="absolute bottom-1.5 left-1/2 -translate-x-1/2 flex gap-0.5">
                             <span className="w-1 h-1 bg-emerald-400 rounded-full animate-pulse" />
                             <span className="w-1 h-1 bg-emerald-400 rounded-full animate-pulse delay-100" />
@@ -126,7 +150,7 @@ export const AISearchBot = () => {
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 20, scale: 0.95 }}
                         transition={{ duration: 0.2 }}
-                        className="fixed bottom-32 right-8 w-[360px] h-[500px] z-[1000] flex flex-col bg-slate-900 border border-slate-700/60 rounded-2xl overflow-hidden shadow-[0_30px_80px_rgba(0,0,0,0.8)]"
+                        className="fixed bottom-32 right-8 w-[360px] h-[550px] z-[1000] flex flex-col bg-slate-900 border border-slate-700/60 rounded-2xl overflow-hidden shadow-[0_30px_80px_rgba(0,0,0,0.8)]"
                         style={{ fontFamily: "'IBM Plex Sans', ui-sans-serif, system-ui" }}
                     >
                         {/* Header */}
@@ -143,6 +167,19 @@ export const AISearchBot = () => {
                             </button>
                         </div>
 
+                        {/* Cart Shortcut */}
+                        {totalItems > 0 && (
+                            <Link href="/web/cart" className="bg-emerald-500/10 border-b border-slate-800 p-4 flex items-center justify-between group hover:bg-emerald-500/20 transition-all">
+                                <div className="flex items-center gap-3">
+                                    <ShoppingCart size={16} className="text-emerald-400" />
+                                    <span className="text-[10px] font-black text-white uppercase tracking-widest">Tienes {totalItems} items en carrito</span>
+                                </div>
+                                <div className="flex items-center gap-1 text-emerald-400 text-[9px] font-black uppercase">
+                                    PAGAR <ArrowRight size={12} />
+                                </div>
+                            </Link>
+                        )}
+
                         {/* Messages */}
                         <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 hide-scrollbar">
                             {messages.map((m, i) => (
@@ -155,8 +192,15 @@ export const AISearchBot = () => {
                                     <div className={`w-7 h-7 shrink-0 rounded-lg flex items-center justify-center ${m.role === 'bot' ? 'bg-[#E8341A]/15 text-[#E8341A]' : 'bg-slate-700 text-slate-300'}`}>
                                         {m.role === 'bot' ? <Bot size={14} /> : <User size={14} />}
                                     </div>
-                                    <div className={`max-w-[80%] px-3.5 py-2.5 rounded-xl text-[12px] leading-relaxed font-normal ${m.role === 'bot' ? 'bg-slate-800 text-slate-200 border border-slate-700/50' : 'bg-[#E8341A] text-white'}`}>
-                                        {m.content}
+                                    <div className="flex flex-col gap-2 max-w-[80%]">
+                                        <div className={`px-3.5 py-2.5 rounded-xl text-[12px] leading-relaxed font-normal ${m.role === 'bot' ? 'bg-slate-800 text-slate-200 border border-slate-700/50' : 'bg-[#E8341A] text-white'}`}>
+                                            {m.content}
+                                        </div>
+                                        {m.hasCartButton && (
+                                            <Link href="/web/cart" className="w-full bg-[#E8341A] text-white py-2 rounded-lg text-center text-[10px] font-black uppercase tracking-widest hover:bg-red-500 transition-all">
+                                                Ir al Carrito Ahora
+                                            </Link>
+                                        )}
                                     </div>
                                 </motion.div>
                             ))}
