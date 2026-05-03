@@ -4,12 +4,13 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { BookOpen, PlayCircle, Clock, CheckCircle2, ChevronRight, GraduationCap, Lock, Calendar } from "lucide-react"
 
-export default async function CourseDetailPage({ params }: { params: { slug: string } }) {
+export default async function CourseDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+    const { slug } = await params
     const session = await getServerSession(authOptions)
     const userId = session?.user?.id
 
     const course = await prisma.course.findUnique({
-        where: { slug: params.slug },
+        where: { slug },
         include: {
             category: true,
             lessons: {

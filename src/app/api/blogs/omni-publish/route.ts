@@ -69,9 +69,9 @@ export async function POST(req: Request) {
       
       const aiResponse = await callNemotron(aiPrompt);
       const parts = aiResponse.split('\n');
-      generatedTitle = parts.find(p => p.startsWith('TITULO:'))?.replace('TITULO:', '').trim() || "Nueva Actualización";
-      finalText = parts.find(p => p.startsWith('COPY:'))?.replace('COPY:', '').trim() || "¡Mira nuestra nueva actualización!";
-      generatedHashtags = parts.find(p => p.startsWith('HASHTAGS:'))?.replace('HASHTAGS:', '').trim() || "#Actualizacion";
+      generatedTitle = parts.find((p: string) => p.startsWith('TITULO:'))?.replace('TITULO:', '').trim() || "Nueva Actualización";
+      finalText = parts.find((p: string) => p.startsWith('COPY:'))?.replace('COPY:', '').trim() || "¡Mira nuestra nueva actualización!";
+      generatedHashtags = parts.find((p: string) => p.startsWith('HASHTAGS:'))?.replace('HASHTAGS:', '').trim() || "#Actualizacion";
     } 
     else if (text && !imageUrl && !videoUrl) {
       // SOLO TEXTO -> IA mejora y extrae título
@@ -80,9 +80,9 @@ export async function POST(req: Request) {
       
       const aiResponse = await callNemotron(aiPrompt);
       const parts = aiResponse.split('\n');
-      generatedTitle = parts.find(p => p.startsWith('TITULO:'))?.replace('TITULO:', '').trim() || "Publicación de Blog";
-      finalText = parts.find(p => p.startsWith('COPY:'))?.replace('COPY:', '').trim() || text;
-      generatedHashtags = parts.find(p => p.startsWith('HASHTAGS:'))?.replace('HASHTAGS:', '').trim() || "#Blog";
+      generatedTitle = parts.find((p: string) => p.startsWith('TITULO:'))?.replace('TITULO:', '').trim() || "Publicación de Blog";
+      finalText = parts.find((p: string) => p.startsWith('COPY:'))?.replace('COPY:', '').trim() || text;
+      generatedHashtags = parts.find((p: string) => p.startsWith('HASHTAGS:'))?.replace('HASHTAGS:', '').trim() || "#Blog";
       
       // La imagen aquí tendría que generarse con un modelo como Stable Diffusion, por ahora un placeholder
       finalImageUrl = "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=1200"; 
@@ -93,17 +93,17 @@ export async function POST(req: Request) {
       const aiPrompt = `Crea un texto súper atractivo para acompañar la publicación de un nuevo video corporativo. Genera título y hashtags. Formato:\nTITULO: [título]\nCOPY: [texto]\nHASHTAGS: [hashtags]`;
       const aiResponse = await callNemotron(aiPrompt);
       const parts = aiResponse.split('\n');
-      generatedTitle = parts.find(p => p.startsWith('TITULO:'))?.replace('TITULO:', '').trim() || "Nuevo Video";
-      finalText = parts.find(p => p.startsWith('COPY:'))?.replace('COPY:', '').trim() || "¡No te pierdas nuestro nuevo video!";
-      generatedHashtags = parts.find(p => p.startsWith('HASHTAGS:'))?.replace('HASHTAGS:', '').trim() || "#Video";
+      generatedTitle = parts.find((p: string) => p.startsWith('TITULO:'))?.replace('TITULO:', '').trim() || "Nuevo Video";
+      finalText = parts.find((p: string) => p.startsWith('COPY:'))?.replace('COPY:', '').trim() || "¡No te pierdas nuestro nuevo video!";
+      generatedHashtags = parts.find((p: string) => p.startsWith('HASHTAGS:'))?.replace('HASHTAGS:', '').trim() || "#Video";
     }
     else if (text && imageUrl) {
        // TIENE AMBOS -> Solo extraemos un buen título y hashtags
        const aiPrompt = `Extrae un título corto (max 6 palabras) y 5 hashtags relevantes del siguiente texto: "${text}". Formato:\nTITULO: [título]\nHASHTAGS: [hashtags]`;
        const aiResponse = await callNemotron(aiPrompt);
        const parts = aiResponse.split('\n');
-       generatedTitle = parts.find(p => p.startsWith('TITULO:'))?.replace('TITULO:', '').trim() || text.substring(0, 30) + "...";
-       generatedHashtags = parts.find(p => p.startsWith('HASHTAGS:'))?.replace('HASHTAGS:', '').trim() || "#Atomic";
+       generatedTitle = parts.find((p: string) => p.startsWith('TITULO:'))?.replace('TITULO:', '').trim() || text.substring(0, 30) + "...";
+       generatedHashtags = parts.find((p: string) => p.startsWith('HASHTAGS:'))?.replace('HASHTAGS:', '').trim() || "#Atomic";
     }
 
     if (generateVideo) {

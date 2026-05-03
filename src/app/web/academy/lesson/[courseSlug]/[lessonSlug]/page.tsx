@@ -6,13 +6,14 @@ import { revalidatePath } from "next/cache"
 import LessonPlayer from "./LessonPlayer"
 import { sendWhatsAppMessage } from "@/lib/whatsapp/service"
 
-export default async function LessonPage({ params }: { params: { courseSlug: string, lessonSlug: string } }) {
+export default async function LessonPage({ params }: { params: Promise<{ courseSlug: string, lessonSlug: string }> }) {
+    const { courseSlug, lessonSlug } = await params
     const session = await getServerSession(authOptions)
     const userId = session?.user?.id || "public"
     const isPublic = !session
 
     const course = await prisma.course.findUnique({
-        where: { slug: params.courseSlug },
+        where: { slug: courseSlug },
         include: {
             category: true,
             enrollments: { where: { userId } },
@@ -29,10 +30,10 @@ export default async function LessonPage({ params }: { params: { courseSlug: str
     
     // Redirect only if authenticated but not enrolled
     if (!isPublic && course.enrollments.length === 0) {
-        redirect(`/web/academy/course/${params.courseSlug}`)
+        redirect(`/web/academy/course/${courseSlug}`)
     }
 
-    const lesson = course.lessons.find(l => l.slug === params.lessonSlug)
+    const lesson = course.lessons.find(l => l.slug === lessonSlug)
     if (!lesson) notFound()
 
     const lessonIndex = course.lessons.findIndex(l => l.id === lesson.id)
@@ -84,8 +85,8 @@ export default async function LessonPage({ params }: { params: { courseSlug: str
             } catch (e) { console.error("Error sending WhatsApp completion message", e) }
         }
 
-        revalidatePath(`/web/academy/lesson/${params.courseSlug}/${params.lessonSlug}`)
-        revalidatePath(`/web/academy/course/${params.courseSlug}`)
+        revalidatePath(`/web/academy/lesson/${courseSlug}/${lessonSlug}`)
+        revalidatePath(`/web/academy/course/${courseSlug}`)
     }
 
     return (

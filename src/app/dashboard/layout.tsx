@@ -8,7 +8,6 @@ import { useState, useEffect } from "react"
 import { ChevronDown, ChevronRight } from "lucide-react"
 import NotificationBell from "@/components/NotificationBell"
 import { AISearchBot } from "@/components/ui/AISearchBot"
-import { JarvisAI } from "@/components/ui/JarvisAI"
 
 export default function DashboardLayout({
     children,
@@ -27,15 +26,17 @@ export default function DashboardLayout({
     })
     const router = useRouter()
     const pathname = usePathname()
+    const isDashboard = pathname.startsWith("/dashboard")
 
     useEffect(() => {
-        if (status === "unauthenticated") {
+        // Solo redirigir a login si estamos intentando acceder a una ruta de dashboard
+        if (status === "unauthenticated" && isDashboard) {
             router.push("/login")
         }
-    }, [status, router])
+    }, [status, router, isDashboard])
 
     useEffect(() => {
-        if (session?.user?.id) {
+        if (session?.user?.id && isDashboard) {
             const fetchUnread = async () => {
                 try {
                     const res = await fetch("/api/messages?type=unread")
@@ -51,7 +52,11 @@ export default function DashboardLayout({
             const interval = setInterval(fetchUnread, 60000)
             return () => clearInterval(interval)
         }
-    }, [session])
+    }, [session, isDashboard])
+
+    if (!isDashboard) {
+        return <>{children}</>
+    }
 
     if (status === "loading" || !session) {
         return (
@@ -299,7 +304,7 @@ export default function DashboardLayout({
                     </div>
                 </div>
             </main>
-            <JarvisAI />
+            {/* JarvisAI removido temporalmente por petición del usuario */}
         </div>
     )
 }

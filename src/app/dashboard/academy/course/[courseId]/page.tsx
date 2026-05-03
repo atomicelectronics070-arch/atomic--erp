@@ -8,17 +8,18 @@ import CourseManagerClient from "./CourseManagerClient"
 import { ChevronLeft, GraduationCap } from "lucide-react"
 
 interface Props {
-    params: { courseId: string }
+    params: Promise<{ courseId: string }>
 }
 
 export default async function CourseManagerPage({ params }: Props) {
+    const { courseId } = await params
     const session = await getServerSession(authOptions)
     if (!session || (session.user.role !== "ADMIN" && session.user.role !== "MANAGEMENT")) {
         redirect("/dashboard")
     }
 
     const course = await prisma.course.findUnique({
-        where: { id: params.courseId },
+        where: { id: courseId },
         include: {
             category: true,
             lessons: { orderBy: { order: "asc" } }

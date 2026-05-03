@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect, useCallback } from "react"
-import { ShoppingBag, ChevronRight, ArrowRight, Shield, Zap, Truck, ChevronLeft, Hexagon, Star, X, Smartphone, Database, Sparkles, Code, Bot, Download } from "lucide-react"
+import { ShoppingBag, ChevronRight, ArrowRight, Shield, Zap, Truck, ChevronLeft, Hexagon, Star, X, Smartphone, Database, Sparkles, Code, Bot, Download, Search } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
@@ -53,7 +53,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
     )
 
     const featuredProducts = (() => {
-        let consolesCount = 0;
+        const seenCategories = new Set<string>();
         // Prioritize PS5 Pro for the single console spot
         const sorted = [...filteredProducts].sort((a, b) => {
             if (a.name.includes('PS5 Pro')) return -1;
@@ -67,8 +67,8 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
             const isTech = text.includes('power bank') || text.includes('powerbank') || text.includes('banco de poder') || text.includes('espia') || text.includes('espía') || text.includes('oculta');
             
             if (isConsole) {
-                if (consolasCount < 1) {
-                    consolasCount++;
+                if (!seenCategories.has('consoles')) {
+                    seenCategories.add('consoles');
                     return true;
                 }
                 return false;

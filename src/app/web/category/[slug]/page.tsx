@@ -5,12 +5,13 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { calculateDiscountedPrice } from "@/lib/utils/pricing"
 
-export default async function CategoryPage({ params }: { params: { slug: string } }) {
+export default async function CategoryPage({ params }: { params: Promise<{ slug: string }> }) {
+    const { slug } = await params
     const session = await getServerSession(authOptions)
     const userRole = session?.user?.role
 
     const category = await prisma.category.findUnique({
-        where: { slug: params.slug },
+        where: { slug },
         include: {
             products: {
                 where: { isDeleted: false, isActive: true }
@@ -63,7 +64,7 @@ export default async function CategoryPage({ params }: { params: { slug: string 
                 </div>
 
                 {/* Special Banner for Consoles */}
-                {params.slug === 'consolas-de-video-juegos' && (
+                {slug === 'consolas-de-video-juegos' && (
                     <div className="mb-20 bg-gradient-to-br from-[#E8341A]/10 to-transparent border border-[#E8341A]/20 p-8 md:p-12 relative overflow-hidden group">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-[#E8341A]/10 blur-[80px] -translate-y-1/2 translate-x-1/2 group-hover:scale-125 transition-transform duration-700" />
                         <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">

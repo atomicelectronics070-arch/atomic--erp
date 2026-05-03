@@ -12,6 +12,17 @@ import jsPDF from "jspdf"
 import autoTable from "jspdf-autotable"
 import { calculateDiscountedPrice } from "@/lib/utils/pricing"
 
+const safeParseArray = (str: any, fallback: any = []) => {
+    if (!str) return fallback;
+    if (Array.isArray(str)) return str;
+    try {
+        const parsed = JSON.parse(str);
+        return Array.isArray(parsed) ? parsed : fallback;
+    } catch (e) {
+        return fallback;
+    }
+};
+
 type QuoteItem = {
     id: string
     productId: string
@@ -26,6 +37,7 @@ interface Product {
     description: string | null
     price: number
     sku: string | null
+    images?: string | null // Added images property
 }
 
 interface QuotationClientProps {
@@ -58,6 +70,14 @@ export default function QuotationClient({ initialProducts, initialHistory, nextN
     const [items, setItems] = useState<QuoteItem[]>([
         { id: "1", productId: "", description: "", quantity: 1, unitPrice: 0 }
     ])
+
+    // Utility for safe product lookup to avoid implicit any
+    const findProduct = (productId?: string, description?: string) => {
+        return initialProducts.find((p: Product) => 
+            (productId && p.sku === productId) || 
+            (description && p.name === description)
+        );
+    };
     const [discountPercent, setDiscountPercent] = useState(0)
     const [status, setStatus] = useState<"PENDIENTE" | "CERRADO" | "ABANDONADO">("PENDIENTE")
     const [quoteHistory, setQuoteHistory] = useState(initialHistory)
@@ -259,9 +279,17 @@ export default function QuotationClient({ initialProducts, initialHistory, nextN
                                     >
                                         <div className="col-span-1">
                                             <div className="w-10 h-10 bg-white/5 border border-white/5 flex items-center justify-center relative overflow-hidden group-hover:border-[#E8341A]/30 transition-all">
-                                                {initialProducts.find(p => p.sku === item.productId || p.name === item.description)?.images ? (
-                                                    <img src={safeParseArray(initialProducts.find(p => p.sku === item.productId || p.name === item.description)?.images)[0]} className="w-full h-full object-contain" />
-                                                ) : <ImageIcon size={14} className="text-white/10" />}
+                                                {(() => {
+                                                    const product = findProduct(item.productId, item.description);
+                                                    const images = product?.images;
+                                                    if (images && images !== 'null') {
+                                                        const parsedImages = safeParseArray(images);
+                                                        if (parsedImages.length > 0) {
+                                                            return <img src={parsedImages[0]} className="w-full h-full object-contain" alt="preview" />;
+                                                        }
+                                                    }
+                                                    return <ImageIcon size={14} className="text-white/10" />;
+                                                })()}
                                             </div>
                                         </div>
                                         <div className="col-span-1">
@@ -277,7 +305,7 @@ export default function QuotationClient({ initialProducts, initialHistory, nextN
                                             />
                                             {showProductList === item.id && (
                                                 <div className="absolute top-full left-0 w-full bg-slate-950 border border-white/10 shadow-2xl z-50 max-h-48 overflow-y-auto backdrop-blur-3xl">
-                                                    {initialProducts.filter(p => p.name.toLowerCase().includes(item.description.toLowerCase())).map(p => (
+                                                    {initialProducts.filter((p: Product) => p.name.toLowerCase().includes(item.description.toLowerCase())).map((p: Product) => (
                                                         <button key={p.id} onClick={() => selectProduct(item.id, p)} className="w-full text-left p-3 hover:bg-white/5 border-b border-white/5 flex items-center gap-3">
                                                             <div className="w-8 h-8 bg-white/5 border border-white/5 shrink-0 overflow-hidden">
                                                                 {p.images && safeParseArray(p.images).length > 0 && <img src={safeParseArray(p.images)[0]} className="w-full h-full object-contain" />}

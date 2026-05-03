@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 
 async function requireAdmin() {
     const session = await getServerSession(authOptions)
@@ -10,7 +10,7 @@ async function requireAdmin() {
 }
 
 export async function POST(
-    req: Request,
+    req: NextRequest,
     { params }: { params: Promise<{ courseId: string }> }
 ) {
     const { courseId } = await params;
@@ -39,7 +39,7 @@ export async function POST(
 }
 
 export async function GET(
-    req: Request,
+    req: NextRequest,
     { params }: { params: Promise<{ courseId: string }> }
 ) {
     const { courseId } = await params;

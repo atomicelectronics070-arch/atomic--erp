@@ -5,12 +5,13 @@ import { notFound, redirect } from "next/navigation"
 import { ShieldCheck, Award, Printer, Download, ChevronLeft } from "lucide-react"
 import Link from "next/link"
 
-export default async function CertificatePage({ params }: { params: { enrollmentId: string } }) {
+export default async function CertificatePage({ params }: { params: Promise<{ enrollmentId: string }> }) {
+    const { enrollmentId } = await params
     const session = await getServerSession(authOptions)
     if (!session) redirect("/login")
 
     const enrollment = await prisma.courseEnrollment.findUnique({
-        where: { id: params.enrollmentId },
+        where: { id: enrollmentId },
         include: {
             user: true,
             course: {

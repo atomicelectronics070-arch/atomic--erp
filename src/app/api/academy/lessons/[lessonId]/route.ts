@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 
 async function requireAdmin() {
     const session = await getServerSession(authOptions)
@@ -10,9 +10,10 @@ async function requireAdmin() {
 }
 
 export async function PATCH(
-    req: Request,
-    { params }: { params: { lessonId: string } }
+    req: NextRequest,
+    { params }: { params: Promise<{ lessonId: string }> }
 ) {
+    const { lessonId } = await params
     const session = await requireAdmin()
     if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
@@ -21,7 +22,7 @@ export async function PATCH(
 
     try {
         const lesson = await prisma.lesson.update({
-            where: { id: params.lessonId },
+            where: { id: lessonId },
             data: {
                 ...(title !== undefined && { title }),
                 ...(content !== undefined && { content }),
@@ -37,14 +38,15 @@ export async function PATCH(
 }
 
 export async function DELETE(
-    req: Request,
-    { params }: { params: { lessonId: string } }
+    req: NextRequest,
+    { params }: { params: Promise<{ lessonId: string }> }
 ) {
+    const { lessonId } = await params
     const session = await requireAdmin()
     if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
     try {
-        await prisma.lesson.delete({ where: { id: params.lessonId } })
+        await prisma.lesson.delete({ where: { id: lessonId } })
         return NextResponse.json({ success: true })
     } catch (error) {
         console.error("[LESSON_DELETE]", error)

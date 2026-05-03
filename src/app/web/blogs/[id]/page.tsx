@@ -3,9 +3,10 @@ import { notFound } from "next/navigation"
 import Link from "next/link"
 import { ArrowLeft, Clock, User } from "lucide-react"
 
-export default async function BlogArticlePage({ params }: { params: { id: string } }) {
+export default async function BlogArticlePage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params
     const blog = await prisma.blog.findUnique({
-        where: { id: params.id },
+        where: { id },
         include: { author: { select: { name: true } } }
     })
 

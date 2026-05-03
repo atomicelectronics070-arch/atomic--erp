@@ -5,12 +5,13 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { calculateDiscountedPrice } from "@/lib/utils/pricing"
 
-export default async function CollectionPage({ params }: { params: { slug: string } }) {
+export default async function CollectionPage({ params }: { params: Promise<{ slug: string }> }) {
+    const { slug } = await params
     const session = await getServerSession(authOptions)
     const userRole = session?.user?.role
 
     const collection = await prisma.collection.findUnique({
-        where: { slug: params.slug },
+        where: { slug },
         include: {
             products: {
                 where: { isDeleted: false, isActive: true }

@@ -4,6 +4,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Search, ShoppingCart, User, Shield, Zap, CheckCircle2 } from "lucide-react"
 import { useCart } from "@/context/CartContext"
+import { motion, AnimatePresence } from "framer-motion"
 
 import { AISearchBot } from "@/components/ui/AISearchBot"
 

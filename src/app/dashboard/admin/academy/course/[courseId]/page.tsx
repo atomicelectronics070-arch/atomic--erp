@@ -1,11 +1,12 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { use, useState, useEffect } from "react"
 import { PlayCircle, Plus, Save, ChevronLeft, GripVertical, Edit3, Trash2, Globe, Lock, BookOpen } from "lucide-react"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 
-export default function CourseLessonsAdmin({ params }: { params: { courseId: string } }) {
+export default function CourseLessonsAdmin({ params: paramsPromise }: { params: Promise<{ courseId: string }> }) {
+    const params = use(paramsPromise)
     const [course, setCourse] = useState<any>(null)
     const [lessons, setLessons] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
