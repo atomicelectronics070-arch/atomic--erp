@@ -13,6 +13,29 @@ export default function LoginPage() {
     const [section, setSection] = useState("VENDEDOR")
     const [error, setError] = useState("")
     const [loading, setLoading] = useState(false)
+    const [showReset, setShowReset] = useState(false)
+
+    const handleResetRequest = async () => {
+        if (!email) return setError("Ingrese su email para continuar")
+        setLoading(true)
+        try {
+            const res = await fetch("/api/auth/reset-request", {
+                method: "POST",
+                body: JSON.stringify({ email })
+            })
+            const data = await res.json()
+            if (data.success) {
+                alert(data.message)
+                setShowReset(false)
+            } else {
+                setError(data.error)
+            }
+        } catch (e) {
+            setError("Error de conexión")
+        } finally {
+            setLoading(false)
+        }
+    }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -164,8 +187,40 @@ export default function LoginPage() {
                             </div>
                         </form>
 
-                        <div className="mt-10 pt-8 border-t border-white/10 text-center">
-                            <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest">
+                        <div className="mt-10 pt-8 border-t border-white/10 flex flex-col gap-4">
+                            {!showReset ? (
+                                <button 
+                                    onClick={() => setShowReset(true)}
+                                    className="text-[10px] font-black text-white/30 uppercase tracking-widest hover:text-[#E8341A] transition-colors italic"
+                                >
+                                    ¿OLVIDÓ SU CLAVE DE ENCRIPTACIÓN?
+                                </button>
+                            ) : (
+                                <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2">
+                                    <p className="text-[9px] font-black text-[#E8341A] uppercase tracking-widest italic">SOLICITUD DE RESETEO DE EMERGENCIA</p>
+                                    <div className="flex gap-2">
+                                        <input 
+                                            type="email"
+                                            placeholder="CONFIRME SU CORREO..."
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
+                                            className="flex-1 bg-white/5 border border-white/10 px-4 py-3 text-[10px] font-black text-white outline-none focus:border-[#E8341A] italic"
+                                        />
+                                        <button 
+                                            onClick={handleResetRequest}
+                                            className="bg-[#E8341A] px-4 py-3 text-[10px] font-black text-white uppercase italic"
+                                        >
+                                            ENVIAR
+                                        </button>
+                                    </div>
+                                    <button 
+                                        onClick={() => setShowReset(false)}
+                                        className="text-[8px] font-black text-white/20 uppercase tracking-widest hover:text-white transition-colors"
+                                    >
+                                        CANCELAR SOLICITUD
+                                    </div>
+                            )}
+                            <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest mt-4">
                                 ¿Sin acceso autorizado?{" "}
                                 <Link href="/register" className="text-[#E8341A] hover:text-[#C0280F] transition-colors font-black ml-1">
                                     Sincronizar Nuevo Elemento

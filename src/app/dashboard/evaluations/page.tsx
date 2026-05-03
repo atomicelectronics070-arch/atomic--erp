@@ -19,7 +19,10 @@ import {
     X,
     UserPlus,
     Building2,
-    Award
+    Award,
+    ShieldOff,
+    Key,
+    Trash2
 } from "lucide-react"
 import { getJobProfile, upsertJobProfile } from "@/lib/actions/jobProfiles"
 import { useSession } from "next-auth/react"
@@ -35,6 +38,42 @@ export default function JobProfilesPage() {
     const [users, setUsers] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
     const [searchTerm, setSearchTerm] = useState("")
+
+    const toggleUserStatus = async (userId: string, current: boolean) => {
+        if (!confirm(`¿Desea ${current ? 'DESACTIVAR' : 'ACTIVAR'} el acceso de este asesor?`)) return
+        try {
+            const res = await fetch(`/api/admin/users/${userId}`, {
+                method: "PATCH",
+                body: JSON.stringify({ isActive: !current })
+            })
+            if (res.ok) loadUsers()
+        } catch (e) { console.error(e) }
+    }
+
+    const approveReset = async (userId: string) => {
+        if (!confirm("¿Autorizar generación de código de reseteo temporal? Esto cambiará la contraseña del asesor.")) return
+        try {
+            const res = await fetch(`/api/admin/users/${userId}`, {
+                method: "PATCH",
+                body: JSON.stringify({ approveReset: true })
+            })
+            if (res.ok) {
+                const data = await res.json()
+                alert(`Código temporal generado: ${data.user.tempResetCode}`)
+                loadUsers()
+            }
+        } catch (e) { console.error(e) }
+    }
+
+    const deleteUser = async (userId: string) => {
+        if (!confirm("¿ESTÁ SEGURO DE ELIMINAR ESTE ASESOR? Esta acción es irreversible y borrará todos sus perfiles asociados.")) return
+        try {
+            const res = await fetch(`/api/admin/users/${userId}`, {
+                method: "DELETE"
+            })
+            if (res.ok) loadUsers()
+        } catch (e) { console.error(e) }
+    }
 
     // Form State
     const [formData, setFormData] = useState({
@@ -224,9 +263,9 @@ export default function JobProfilesPage() {
                                 <thead className="text-[10px] text-slate-600 uppercase font-black tracking-[0.4em] bg-white/[0.02]">
                                     <tr>
                                         <th className="px-12 py-10 italic">Identidad_Laboral</th>
-                                        <th className="px-10 py-10 italic">Rango_Sist</th>
-                                        <th className="px-10 py-10 italic">Status_Ficha</th>
-                                        <th className="px-12 py-10 text-right italic">Gestión</th>
+                                        <th className="px-10 py-10 italic">Seguridad_Status</th>
+                                        <th className="px-10 py-10 italic">Acceso_Sistema</th>
+                                        <th className="px-12 py-10 text-right italic">Gestión_Total</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-white/5">
@@ -236,36 +275,71 @@ export default function JobProfilesPage() {
                                         <tr key={u.id} className="hover:bg-white/[0.03] transition-all group">
                                             <td className="px-12 py-8">
                                                 <div className="flex items-center space-x-6">
-                                                    <div className="w-14 h-14 bg-slate-950 border border-white/5 flex items-center justify-center text-primary font-black text-lg group-hover:bg-primary group-hover:text-white transition-all rounded-none shadow-inner italic">
+                                                    <div className={`w-14 h-14 bg-slate-950 border ${u.resetRequested ? 'border-red-500 animate-pulse' : 'border-white/5'} flex items-center justify-center text-primary font-black text-lg transition-all rounded-none shadow-inner italic`}>
                                                         {u.name?.[0] || u.email?.[0]}
                                                     </div>
                                                     <div>
-                                                        <p className="font-black text-white text-base tracking-tighter uppercase italic group-hover:text-primary transition-colors">{u.name || (u.email.split('@')[0])}</p>
+                                                        <div className="flex items-center gap-3">
+                                                            <p className="font-black text-white text-base tracking-tighter uppercase italic group-hover:text-primary transition-colors">{u.name || (u.email.split('@')[0])}</p>
+                                                            {u.resetRequested && (
+                                                                <span className="bg-red-500/10 border border-red-500/30 text-red-500 text-[7px] font-black px-2 py-0.5 tracking-widest animate-pulse">RESET PENDIENTE</span>
+                                                            )}
+                                                        </div>
                                                         <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.3em] mt-1 italic">{u.email}</p>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td className="px-10 py-8">
-                                                <span className="text-[10px] font-black text-azure-400 bg-azure-500/10 px-4 py-1.5 border border-azure-400/20 uppercase tracking-[0.3em] italic">{u.role}</span>
+                                                <div className="flex flex-col gap-2">
+                                                    <div className="flex items-center gap-3">
+                                                        <span className={`text-[9px] font-black px-3 py-1 border italic ${u.isActive ? 'border-emerald-500/20 text-emerald-500 bg-emerald-500/5' : 'border-red-500/20 text-red-500 bg-red-500/5'}`}>
+                                                            {u.isActive ? 'HABILITADO' : 'DESACTIVADO'}
+                                                        </span>
+                                                        <span className="text-[9px] font-black text-slate-600 italic tracking-widest">{u.role}</span>
+                                                    </div>
+                                                    {u.tempResetCode && (
+                                                        <div className="bg-primary/10 border border-primary/20 p-2 flex items-center justify-between gap-4">
+                                                            <span className="text-[8px] font-black text-primary uppercase">CÓDIGO TEMPORAL:</span>
+                                                            <span className="text-[10px] font-black text-white italic tracking-[0.2em]">{u.tempResetCode}</span>
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </td>
                                             <td className="px-10 py-8">
-                                                <div className="flex items-center gap-3">
-                                                    <div className={`w-2 h-2 rounded-none ${u.jobProfile ? 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]' : 'bg-slate-800'}`} />
-                                                    <span className={`text-[10px] font-black uppercase tracking-widest italic ${u.jobProfile ? 'text-emerald-500' : 'text-slate-700'}`}>
-                                                        {u.jobProfile ? 'CONFIGURADA' : 'PENDIENTE'}
-                                                    </span>
+                                                <div className="flex items-center gap-4">
+                                                    <button 
+                                                        onClick={() => toggleUserStatus(u.id, u.isActive)}
+                                                        className={`p-3 border transition-all ${u.isActive ? 'border-white/5 text-slate-500 hover:text-red-500' : 'border-primary/30 text-primary hover:bg-primary/10'}`}
+                                                        title={u.isActive ? "Desactivar Acceso" : "Activar Acceso"}
+                                                    >
+                                                        {u.isActive ? <ShieldOff size={18} /> : <ShieldCheck size={18} />}
+                                                    </button>
+                                                    <button 
+                                                        onClick={() => approveReset(u.id)}
+                                                        className={`p-3 border transition-all ${u.resetRequested ? 'bg-red-500 border-red-600 text-white animate-bounce' : 'border-white/5 text-slate-500 hover:text-primary'}`}
+                                                        title="Autorizar Reseteo"
+                                                    >
+                                                        <Key size={18} />
+                                                    </button>
                                                 </div>
                                             </td>
                                             <td className="px-12 py-8 text-right">
-                                                <button
-                                                    onClick={() => handleSelectUser(u)}
-                                                    className="bg-primary text-white px-8 py-4 text-[10px] font-black uppercase tracking-[0.3em] hover:bg-white hover:text-primary transition-all rounded-none italic skew-x-[-12deg] shadow-2xl shadow-primary/20 group"
-                                                >
-                                                    <div className="skew-x-[12deg] flex items-center gap-3">
-                                                        <span>{u.jobProfile ? "Editar Perfil" : "Crear Perfil"}</span>
-                                                        <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
-                                                    </div>
-                                                </button>
+                                                <div className="flex justify-end items-center gap-3">
+                                                    <button
+                                                        onClick={() => handleSelectUser(u)}
+                                                        className="p-4 border border-white/5 bg-slate-950 text-slate-500 hover:text-white hover:border-white/20 transition-all"
+                                                        title="Editar Perfil Laboral"
+                                                    >
+                                                        <FileText size={18} />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => deleteUser(u.id)}
+                                                        className="p-4 border border-white/5 bg-slate-950 text-slate-500 hover:text-red-500 hover:border-red-500/20 transition-all"
+                                                        title="Eliminar Asesor"
+                                                    >
+                                                        <Trash2 size={18} />
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
                                     ))}

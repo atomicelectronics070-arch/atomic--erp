@@ -48,9 +48,14 @@ export const authOptions: NextAuthOptions = {
                     throw new Error("Credenciales inválidas")
                 }
 
+                if (user.isActive === false) {
+                    console.error("[AUTH] User account is deactivated")
+                    throw new Error("Su cuenta ha sido desactivada por administración.")
+                }
+
                 if (user.status !== "APPROVED" && user.status !== "ACTIVE") {
                     console.error("[AUTH] User status not allowed:", user.status)
-                    throw new Error("Su cuenta está pendiente de aprobación o inactiva.")
+                    throw new Error("Su cuenta está pendiente de aprobación.")
                 }
 
                 console.error("[AUTH] Login successful for:", user.email)

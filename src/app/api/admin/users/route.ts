@@ -38,6 +38,9 @@ export async function GET(req: Request) {
                 email: true,
                 role: true,
                 status: true,
+                isActive: true,
+                resetRequested: true,
+                tempResetCode: true,
             },
             orderBy: [
                 { role: "asc" },

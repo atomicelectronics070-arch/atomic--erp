@@ -17,6 +17,9 @@ model User {
   cedula       String? @unique
   role         String  @default("SALESPERSON")
   status       String  @default("PENDING")
+  isActive     Boolean @default(true)
+  resetRequested Boolean @default(false)
+  tempResetCode  String?
   receivePromotions Boolean @default(false)
 
   // Registration specific fields
