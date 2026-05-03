@@ -34,6 +34,33 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [openMenuId, setOpenMenuId] = useState<string | null>(null)
     const [rankingFilter, setRankingFilter] = useState<'value' | 'count' | 'name'>('value')
+    const [isQuickSaleOpen, setIsQuickSaleOpen] = useState(false)
+    const [quickSaleData, setQuickSaleData] = useState({ amount: 0, salespersonId: "", client: "VENTA RÁPIDA RANKING" })
+    const isAdmin = session?.user?.role === "ADMIN" || session?.user?.role === "MANAGEMENT"
+
+    const handleQuickSale = async () => {
+        if (!quickSaleData.amount || !quickSaleData.salespersonId) return
+        setIsSubmitting(true)
+        try {
+            const res = await fetch("/api/finance", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    ...quickSaleData,
+                    status: "PAGADO",
+                    type: "Venta Directa",
+                    date: new Date().toISOString().split('T')[0]
+                })
+            })
+            if (res.ok) {
+                setIsQuickSaleOpen(false)
+                setQuickSaleData({ amount: 0, salespersonId: "", client: "VENTA RÁPIDA RANKING" })
+                await refreshData()
+            }
+        } finally {
+            setIsSubmitting(false)
+        }
+    }
 
     const calculatePoints = (value: number) => {
         if (value > 1000) return 15;
@@ -183,15 +210,25 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
                                     <p className="text-[8px] font-black text-white/30 uppercase tracking-[0.4em] italic">TOP DESEMPEÑO GLOBAL</p>
                                 </div>
                             </div>
-                            <select 
-                                value={rankingFilter}
-                                onChange={(e: any) => setRankingFilter(e.target.value)}
-                                className="bg-black/40 border border-white/10 text-[9px] font-black text-white uppercase tracking-widest px-4 py-2 outline-none focus:border-[#E8341A] italic"
-                            >
-                                <option value="value">MONTO ($)</option>
-                                <option value="count">VENTAS (#)</option>
-                                <option value="name">ASESOR</option>
-                            </select>
+                            <div className="flex items-center gap-4">
+                                {isAdmin && (
+                                    <button 
+                                        onClick={() => setIsQuickSaleOpen(true)}
+                                        className="bg-[#E8341A] text-white px-4 py-2 text-[8px] font-black uppercase tracking-widest italic hover:scale-105 transition-all shadow-[0_10px_20px_-5px_rgba(232,52,26,0.4)]"
+                                    >
+                                        + INGRESO
+                                    </button>
+                                )}
+                                <select 
+                                    value={rankingFilter}
+                                    onChange={(e: any) => setRankingFilter(e.target.value)}
+                                    className="bg-black/40 border border-white/10 text-[9px] font-black text-white uppercase tracking-widest px-4 py-2 outline-none focus:border-[#E8341A] italic"
+                                >
+                                    <option value="value">MONTO ($)</option>
+                                    <option value="count">VENTAS (#)</option>
+                                    <option value="name">ASESOR</option>
+                                </select>
+                            </div>
                         </div>
                         <div className="space-y-3">
                             {[...ranking].sort((a, b) => {
@@ -313,6 +350,52 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
                     </GlassPanel>
                 </div>
             </div>
+
+            {/* QUICK SALE MODAL */}
+            <AnimatePresence>
+                {isQuickSaleOpen && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-8 bg-slate-950/90 backdrop-blur-3xl">
+                        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="bg-slate-950 border border-white/10 p-12 max-w-lg w-full space-y-10 shadow-[0_0_100px_rgba(232,52,26,0.2)]">
+                            <div className="flex justify-between items-center border-b border-white/5 pb-6">
+                                <h2 className="text-2xl font-black text-white uppercase italic tracking-tighter">REGISTRO <span className="text-[#E8341A]">RÁPIDO</span></h2>
+                                <button onClick={() => setIsQuickSaleOpen(false)}><X size={24} className="text-white/20 hover:text-white" /></button>
+                            </div>
+                            
+                            <div className="space-y-8">
+                                <div className="space-y-4">
+                                    <label className="text-[9px] font-black text-white/30 uppercase tracking-widest italic">SELECCIONAR ASESOR</label>
+                                    <select 
+                                        className="w-full bg-white/5 border border-white/10 p-5 text-xs font-black text-white uppercase italic outline-none focus:border-[#E8341A]"
+                                        value={quickSaleData.salespersonId}
+                                        onChange={(e) => setQuickSaleData({...quickSaleData, salespersonId: e.target.value})}
+                                    >
+                                        <option value="">ELIJA UN ASESOR...</option>
+                                        {ranking.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
+                                    </select>
+                                </div>
+                                <div className="space-y-4">
+                                    <label className="text-[9px] font-black text-white/30 uppercase tracking-widest italic">MONTO DE VENTA ($)</label>
+                                    <input 
+                                        type="number"
+                                        className="w-full bg-white/5 border border-white/10 p-5 text-2xl font-black text-white outline-none focus:border-[#E8341A] italic"
+                                        placeholder="0.00"
+                                        value={quickSaleData.amount}
+                                        onChange={(e) => setQuickSaleData({...quickSaleData, amount: parseFloat(e.target.value)})}
+                                    />
+                                </div>
+                            </div>
+
+                            <button 
+                                onClick={handleQuickSale}
+                                disabled={isSubmitting}
+                                className="w-full bg-[#E8341A] text-white py-6 font-black uppercase tracking-[0.4em] text-[10px] italic hover:bg-white hover:text-[#E8341A] transition-all"
+                            >
+                                {isSubmitting ? "PROCESANDO..." : "CONFIRMAR INGRESO"}
+                            </button>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     )
 }
