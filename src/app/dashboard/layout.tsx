@@ -113,65 +113,63 @@ export default function DashboardLayout({
                     />
                 )}
             </AnimatePresence>
-
             {/* Sidebar - Precision Glass Engineering */}
             <aside className={`
-                fixed inset-y-0 left-0 w-80 flex flex-col glass-panel !bg-slate-950/60 !border-r !border-white/5 z-40
+                fixed inset-y-0 left-0 w-64 flex flex-col glass-panel !bg-slate-950/80 !border-r !border-white/5 z-40
                 transition-transform duration-500 ease-out
                 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
             `}>
-                <div className="h-40 flex flex-col items-center justify-center px-10 border-b border-white/5 relative group bg-white/[0.02]">
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div className="h-24 flex flex-col items-center justify-center px-6 border-b border-white/5 relative group bg-white/[0.02]">
                     <button
                         onClick={() => setSidebarOpen(false)}
-                        className="absolute top-8 right-8 text-slate-500 hover:text-primary transition-all hover:rotate-90 z-10"
+                        className="absolute top-4 right-4 text-slate-500 hover:text-primary transition-all lg:hidden"
                     >
-                        <X size={24} />
+                        <X size={20} />
                     </button>
                     <Link href="/web" target="_blank" className="flex flex-col items-center relative z-10 transition-transform duration-700 group-hover:scale-105 cursor-pointer">
-                        <div className="flex items-center gap-4">
-                            <div className="w-2 h-2 rounded-none bg-primary shadow-[0_0_12px_rgba(99,102,241,0.6)] animate-pulse"></div>
-                            <span className="text-xl font-black text-white uppercase tracking-[0.4em] italic shadow-sm">ATOMIC</span>
+                        <div className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 rounded-none bg-primary shadow-[0_0_8px_rgba(99,102,241,0.6)] animate-pulse"></div>
+                            <span className="text-base font-black text-white uppercase tracking-[0.3em] italic">ATOMIC</span>
                         </div>
-                        <span className="text-[8px] font-black text-slate-500 uppercase tracking-[0.6em] italic mt-2 opacity-60">SOLUTIONS</span>
+                        <span className="text-[7px] font-black text-slate-600 uppercase tracking-[0.5em] italic mt-1">SOLUTIONS</span>
                     </Link>
                 </div>
 
-                <nav className="flex-1 overflow-y-auto px-8 py-12 space-y-4 custom-scrollbar relative">
-                    <div className="mb-10 space-y-4">
-                        <NavLink href="/dashboard" icon={<Globe size={20} />} label="Red Social Corporativa" isActive={pathname === '/dashboard'} />                        <NavLink href="/dashboard/analytics" icon={<LayoutDashboard size={20} />} label="Centro de Análisis" isActive={pathname === '/dashboard/analytics'} />
+                <nav className="flex-1 overflow-y-auto px-4 py-8 space-y-2 custom-scrollbar relative">
+                    <div className="mb-6 space-y-2">
+                        <NavLink href="/dashboard" icon={<Globe size={18} />} label="Red Social" isActive={pathname === '/dashboard'} />
+                        <NavLink href="/dashboard/analytics" icon={<LayoutDashboard size={18} />} label="Análisis" isActive={pathname === '/dashboard/analytics'} />
                     </div>
 
-                    <div className="space-y-10">
+                    <div className="space-y-6">
                         {(role === "ADMIN" || role === "MANAGEMENT" || role === "SALESPERSON" || role === "AFILIADO") && (
                             <>
                                 <CollapsibleSection
-                                    label="Aplicaciones"
+                                    label="Apps"
                                     isOpen={openSections.operaciones}
                                     onToggle={() => toggleSection('operaciones')}
                                 >
-                                    <NavLink href="/dashboard/quotes" icon={<FileText size={16} />} label="Cotizaciones" isSubItem />
-                                    <NavLink href="/dashboard/prices" icon={<Tag size={16} />} label="Lista de Precios" isSubItem />
-                                    <NavLink href="/dashboard/shop" icon={<ShoppingBag size={16} />} label="Inventario" isSubItem />
+                                    <NavLink href="/dashboard/quotes" icon={<FileText size={14} />} label="Cotizaciones" isSubItem />
+                                    <NavLink href="/dashboard/prices" icon={<Tag size={14} />} label="Lista Precios" isSubItem />
+                                    <NavLink href="/dashboard/shop" icon={<ShoppingBag size={14} />} label="Inventario" isSubItem />
                                 </CollapsibleSection>
 
                                 <CollapsibleSection
-                                    label="Almacenamiento"
+                                    label="Archivo"
                                     isOpen={openSections.almacenamiento ?? false}
                                     onToggle={() => toggleSection('almacenamiento')}
                                 >
-                                    <NavLink href="/dashboard/storage" icon={<Database size={16} />} label="Archivos" isSubItem />
-                                    <NavLink href="/dashboard/documents" icon={<FileText size={16} />} label="Emisión Documentos" isSubItem />
-                                    <NavLink href="/dashboard/quotes" icon={<BrainCircuit size={16} />} label="Cotizador Smart" isSubItem />
+                                    <NavLink href="/dashboard/storage" icon={<Database size={14} />} label="Nube" isSubItem />
+                                    <NavLink href="/dashboard/documents" icon={<FileText size={14} />} label="Documentos" isSubItem />
                                 </CollapsibleSection>
 
                                 <CollapsibleSection
-                                    label="Base de Datos"
+                                    label="CRM"
                                     isOpen={openSections.crm ?? false}
                                     onToggle={() => toggleSection('crm')}
                                 >
-                                    <NavLink href="/dashboard/crm" icon={<Users size={16} />} label="Directorio CRM" isSubItem />
-                                    <NavLink href="/dashboard/whatsapp" icon={<MessageSquare size={16} />} label="WhatsApp & CRM" isSubItem />
+                                    <NavLink href="/dashboard/crm" icon={<Users size={14} />} label="Clientes" isSubItem />
+                                    <NavLink href="/dashboard/whatsapp" icon={<MessageSquare size={14} />} label="WhatsApp" isSubItem />
                                 </CollapsibleSection>
 
                                 <CollapsibleSection
@@ -179,157 +177,107 @@ export default function DashboardLayout({
                                     isOpen={openSections.finanzas ?? false}
                                     onToggle={() => toggleSection('finanzas')}
                                 >
-                                    <NavLink href="/dashboard/finance" icon={<DollarSign size={16} />} label="Gestión Financiera" isSubItem />
-                                </CollapsibleSection>
-
-                                <CollapsibleSection
-                                    label="Contratos"
-                                    isOpen={openSections.contratos ?? false}
-                                    onToggle={() => toggleSection('contratos')}
-                                >
-                                    <NavLink href="/dashboard/contracts" icon={<CheckSquare size={16} />} label="Gestión de Contratos" isSubItem />
+                                    <NavLink href="/dashboard/finance" icon={<DollarSign size={14} />} label="Gestión" isSubItem />
                                 </CollapsibleSection>
                             </>
                         )}
 
-                        {(role === "ADMIN" || role === "MANAGEMENT" || role === "COORDINATOR" || role === "COORD_ASSISTANT" || role === "SALESPERSON" || role === "EDITOR" || role === "AFILIADO") && (
+                        {(role === "ADMIN" || role === "MANAGEMENT" || role === "COORDINATOR" || role === "COORD_ASSISTANT") && (
                             <CollapsibleSection
-                                label="Configuración de Academia"
-                                isOpen={openSections.ia ?? false}
-                                onToggle={() => toggleSection('ia')}
-                            >
-                                <NavLink href="/dashboard/academy" icon={<GraduationCap size={16} />} label="Portal Educativo" isSubItem />
-                                {(role === "ADMIN" || role === "MANAGEMENT") && (
-                                    <NavLink href="/dashboard/academy/admin" icon={<Settings size={16} />} label="Panel de Control" isSubItem />
-                                )}
-                            </CollapsibleSection>
-                        )}
-
-                        {(role === "ADMIN" || role === "MANAGEMENT" || role === "COORDINATOR" || role === "COORD_ASSISTANT" || role === "SALESPERSON") && (role === "ADMIN" || role === "MANAGEMENT" || role === "COORDINATOR") && (
-                            <CollapsibleSection
-                                label="Recursos Humanos"
+                                label="RRHH"
                                 isOpen={openSections.rrhh}
                                 onToggle={() => toggleSection('rrhh')}
                             >
-                                <NavLink href="/dashboard/evaluations" icon={<Users size={16} />} label="Control de Asesores" isSubItem />
+                                <NavLink href="/dashboard/evaluations" icon={<Users size={14} />} label="Asesores" isSubItem />
                             </CollapsibleSection>
                         )}
 
-                        {(role === "ADMIN" || role === "MANAGEMENT" || role === "SALESPERSON" || role === "AFILIADO") && (
-                            <CollapsibleSection
-                                label="Comunicación"
-                                isOpen={openSections.comunicacion}
-                                onToggle={() => toggleSection('comunicacion')}
-                            >
-                                <NavLink href="/dashboard/whatsapp" icon={<MessageSquare size={16} />} label="Canal WhatsApp" isSubItem />
-                                <NavLink href="/dashboard/agenda" icon={<Calendar size={16} />} label="Agenda" isSubItem />
-                                <NavLink href="/dashboard/notes" icon={<Edit3 size={16} />} label="Bloc de Notas" isSubItem />
-                                <NavLink href="/dashboard/blogs" icon={<FileText size={16} />} label="Blog Corporativo" isSubItem />
-                            </CollapsibleSection>
-                        )}
-
-                        {(role === "ADMIN" || role === "MANAGEMENT") && (
-                            <CollapsibleSection
-                                label="Configuración"
-                                isOpen={openSections.config}
-                                onToggle={() => toggleSection('config')}
-                            >
-                                <NavLink href="/dashboard/admin/prompt" icon={<Settings size={16} />} label="IA Configuración" isSubItem />
-                            </CollapsibleSection>
-                        )}
-
-                        {role === "ADMIN" && (
-                            <CollapsibleSection
-                                label="Extracción de Datos"
-                                isOpen={openSections.herramientas ?? true}
-                                onToggle={() => toggleSection('herramientas')}
-                            >
-                                <NavLink href="/dashboard/scraper" icon={<Bot size={16} />} label="Scraper Pro" isSubItem />
-                            </CollapsibleSection>
-                        )}
+                        <CollapsibleSection
+                            label="Academia"
+                            isOpen={openSections.ia ?? false}
+                            onToggle={() => toggleSection('ia')}
+                        >
+                            <NavLink href="/dashboard/academy" icon={<GraduationCap size={14} />} label="Cursos" isSubItem />
+                        </CollapsibleSection>
                     </div>
                 </nav>
 
-                <div className="p-10 shrink-0 border-t border-white/5 bg-white/[0.02]">
-                    <div className="flex items-center space-x-6 mb-10 px-2 transition-all group cursor-default">
-                        <div className="w-14 h-14 rounded-none glass-panel !bg-slate-900 border-white/10 shadow-2xl flex items-center justify-center font-black text-lg group-hover:scale-110 transition-transform duration-500 shadow-primary/10 text-white italic overflow-hidden">
+                <div className="p-6 shrink-0 border-t border-white/5 bg-white/[0.01]">
+                    <div className="flex items-center space-x-4 mb-6 px-2">
+                        <div className="w-10 h-10 rounded-none border border-white/10 flex items-center justify-center font-black text-sm text-white italic overflow-hidden bg-slate-900">
                             {(session?.user as any)?.profilePicture ? (
-                                <img src={(session?.user as any).profilePicture} alt="User" className="w-full h-full object-cover" />
+                                <img src={(session?.user as any).profilePicture} alt="U" className="w-full h-full object-cover" />
                             ) : (
                                 session.user?.name?.[0] || "U"
                             )}
                         </div>
                         <div className="flex-1 overflow-hidden">
-                            <p className="text-xs font-black text-white truncate uppercase tracking-tighter italic">{session.user?.name}</p>
-                            <div className="flex items-center gap-2 mt-1">
-                                <div className="w-1 h-1 rounded-none bg-emerald-500 animate-pulse"></div>
-                                <p className="text-[9px] font-black text-primary uppercase tracking-[0.3em] truncate italic opacity-80">
-                                    {role === "COORD_ASSISTANT" ? "ASIST. COORD" : role === "ADMIN" ? "ADMINISTRADOR" : role === "MANAGEMENT" ? "GERENCIA" : role === "COORDINATOR" ? "COORDINADOR" : role === "SALESPERSON" ? "VENDEDOR" : role === "AFILIADO" ? "AFILIADO" : role}
-                                </p>
-                            </div>
+                            <p className="text-[10px] font-black text-white truncate uppercase italic">{session.user?.name}</p>
+                            <p className="text-[8px] font-black text-primary uppercase tracking-widest truncate italic opacity-60">
+                                {role}
+                            </p>
                         </div>
                     </div>
-                    <Link href="/api/auth/signout" className="flex items-center space-x-4 px-5 py-4 text-[10px] font-black text-slate-500 hover:text-red-400 rounded-none transition-all hover:bg-red-500/5 group border border-transparent hover:border-red-500/20 italic">
-                        <LogOut size={18} className="group-hover:-translate-x-1 transition-transform" />
-                        <span className="uppercase tracking-[0.3em]">Cerrar Sesión</span>
+                    <Link href="/api/auth/signout" className="flex items-center space-x-3 px-4 py-3 text-[9px] font-black text-slate-500 hover:text-red-400 rounded-none transition-all hover:bg-red-500/5 group italic border border-transparent hover:border-red-500/10">
+                        <LogOut size={14} />
+                        <span className="uppercase tracking-widest">Cerrar Sesión</span>
                     </Link>
                 </div>
             </aside>
 
             {/* Main Content Engineering */}
-            <main className={`flex-1 flex flex-col h-full overflow-hidden relative z-10 transition-all duration-700 ${sidebarOpen ? "lg:ml-80" : ""}`}>
+            <main className={`flex-1 flex flex-col h-full overflow-hidden relative z-10 transition-all duration-500 ${sidebarOpen ? "lg:ml-64" : ""}`}>
                 {/* Precision Glass Header */}
-                <header className="h-28 glass-panel !bg-slate-950/40 !border-b !border-white/5 flex items-center justify-between px-10 lg:px-16 shrink-0 z-50 backdrop-blur-3xl shadow-2xl">
-                    <div className="flex items-center space-x-10">
+                <header className="h-16 lg:h-20 glass-panel !bg-slate-950/60 !border-b !border-white/5 flex items-center justify-between px-6 lg:px-10 shrink-0 z-50 backdrop-blur-3xl shadow-xl">
+                    <div className="flex items-center space-x-6">
                         <button
                             onClick={() => setSidebarOpen(!sidebarOpen)}
-                            className="p-4 glass-panel text-slate-500 hover:text-white transition-all rounded-none shadow-xl hover:scale-105 active:scale-95 border-white/10"
+                            className="p-3 glass-panel text-slate-500 hover:text-white transition-all rounded-none border-white/5"
                         >
-                            <Menu size={28} />
+                            <Menu size={20} />
                         </button>
                         <div className="hidden sm:flex flex-col">
-                            <div className="flex items-center gap-4 mb-1">
-                                <div className="w-2.5 h-2.5 rounded-none bg-primary shadow-[0_0_12px_rgba(99,102,241,0.8)] animate-pulse"></div>
-                                <span className="text-[11px] font-black text-white uppercase tracking-[0.4em] italic leading-none">ATOMIC INDUSTRIAS</span>
+                            <div className="flex items-center gap-2">
+                                <div className="w-1.5 h-1.5 rounded-none bg-primary shadow-[0_0_8px_rgba(99,102,241,0.8)] animate-pulse"></div>
+                                <span className="text-[10px] font-black text-white uppercase tracking-[0.3em] italic">ATOMIC INDUSTRIAS</span>
                             </div>
-                            <span className="text-[8px] font-black text-slate-600 uppercase tracking-[0.5em] ml-6 opacity-60">Status: Terminal Operativa</span>
                         </div>
                         <Link 
                             href="/web" 
                             target="_blank"
-                            className="hidden md:flex items-center space-x-3 px-6 py-3 border border-primary/20 bg-primary/5 hover:bg-primary/10 text-primary transition-all group rounded-none"
+                            className="hidden md:flex items-center space-x-2 px-4 py-2 border border-primary/20 bg-primary/5 hover:bg-primary/10 text-primary transition-all rounded-none"
                         >
-                            <ExternalLink size={14} className="group-hover:rotate-12 transition-transform" />
-                            <span className="text-[9px] font-black uppercase tracking-[0.3em] italic">Visitar Web</span>
+                            <ExternalLink size={12} />
+                            <span className="text-[8px] font-black uppercase tracking-widest italic">Visitar Web</span>
                         </Link>
                     </div>
                     
-                    <div className="flex items-center space-x-10">
-                        <div className="flex items-center gap-4 border-r border-white/5 pr-10">
+                    <div className="flex items-center space-x-6">
+                        <div className="flex items-center gap-4 pr-6 border-r border-white/5">
                             <NotificationBell />
                         </div>
                         
-                        <Link href="/dashboard/profile" className="flex items-center gap-4 p-1 glass-panel !bg-slate-900 border-white/10 shadow-xl hover:scale-105 active:scale-95 transition-all group overflow-hidden pr-6">
-                            <div className="w-12 h-12 rounded-none bg-slate-950 border-r border-white/5 flex items-center justify-center text-primary overflow-hidden">
+                        <Link href="/dashboard/profile" className="flex items-center gap-3 p-1 glass-panel !bg-slate-900 border-white/10 hover:scale-105 transition-all group pr-4">
+                            <div className="w-8 h-8 bg-slate-950 flex items-center justify-center text-primary overflow-hidden border-r border-white/5">
                                 {(session?.user as any)?.profilePicture ? (
-                                    <img src={(session?.user as any).profilePicture} alt="Profile" className="w-full h-full object-cover" />
+                                    <img src={(session?.user as any).profilePicture} alt="P" className="w-full h-full object-cover" />
                                 ) : (
-                                    <User size={20} />
+                                    <User size={14} />
                                 )}
                             </div>
-                            <Settings size={18} className="text-slate-500 group-hover:text-primary group-hover:rotate-45 transition-all duration-500" />
+                            <Settings size={14} className="text-slate-500 group-hover:rotate-45 transition-transform" />
                         </Link>
 
-                        <div className="hidden lg:flex flex-col items-end border-l border-white/5 pl-10">
-                             <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest italic leading-none mb-1">Carga de Datos</span>
-                             <span className="text-[11px] font-black text-emerald-400 uppercase tracking-tighter italic">SISTEMA INTERNO</span>
+                        <div className="hidden lg:flex flex-col items-end border-l border-white/5 pl-6">
+                             <span className="text-[9px] font-black text-emerald-400 uppercase tracking-tighter italic leading-none">SISTEMA INTERNO</span>
+                             <span className="text-[7px] text-slate-600 font-black uppercase tracking-widest">v4.0.1</span>
                         </div>
                     </div>
                 </header>
 
                 {/* Performance Scrollable Region */}
                 <div className="flex-1 overflow-y-auto relative z-0 scrollbar-hide">
-                    <div className="mx-auto max-w-[1600px] p-10 lg:p-16 min-h-full">
+                    <div className="mx-auto max-w-[1800px] p-4 lg:p-8 min-h-full">
                         {children}
                     </div>
                 </div>
