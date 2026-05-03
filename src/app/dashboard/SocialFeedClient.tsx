@@ -86,8 +86,8 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
     return (
         <div className="w-full space-y-16 pb-32 relative z-10">
             <div className="fixed inset-0 pointer-events-none z-0">
-                <div className="absolute top-[20%] left-[-10%] w-[40%] h-[40%] bg-[#E8341A]/5 blur-[150px] animate-pulse" />
-                <div className="absolute bottom-[20%] right-[-10%] w-[35%] h-[35%] bg-[#00F0FF]/5 blur-[130px] animate-pulse" style={{ animationDelay: '2s' }} />
+                <div className="absolute top-[20%] left-[-10%] w-[30%] h-[30%] bg-[#E8341A]/5 blur-[80px]" />
+                <div className="absolute bottom-[20%] right-[-10%] w-[25%] h-[25%] bg-[#00F0FF]/5 blur-[80px]" />
             </div>
 
             <div className="flex flex-col lg:flex-row gap-16 items-start relative z-10">
@@ -130,7 +130,7 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
                     <div className="space-y-12">
                         <AnimatePresence mode="popLayout">
                             {posts.map((post, i) => (
-                                <motion.div layout initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} key={post.id}>
+                                <motion.div layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} key={post.id}>
                                     <CyberCard className="!p-8 relative group bg-slate-950/20 border-white/5">
                                         <div className="flex items-center justify-between mb-6">
                                             <div className="flex items-center gap-4">

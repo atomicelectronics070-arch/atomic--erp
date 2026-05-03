@@ -18,10 +18,10 @@ export default function DashboardLayout({
     const [sidebarOpen, setSidebarOpen] = useState(false)
     const [unreadCount, setUnreadCount] = useState(0)
     const [openSections, setOpenSections] = useState<Record<string, boolean>>({
-        operaciones: true,
+        operaciones: false,
         rrhh: false,
-        comunicacion: true,
-        ia: true,
+        comunicacion: false,
+        ia: false,
         config: false
     })
     const router = useRouter()
