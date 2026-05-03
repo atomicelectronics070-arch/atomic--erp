@@ -195,13 +195,13 @@ export default function DashboardLayout({
 
                         {(role === "ADMIN" || role === "MANAGEMENT" || role === "COORDINATOR" || role === "COORD_ASSISTANT" || role === "SALESPERSON" || role === "EDITOR" || role === "AFILIADO") && (
                             <CollapsibleSection
-                                label="Cerebro IA"
-                                isOpen={openSections.ia}
+                                label="Configuración de Academia"
+                                isOpen={openSections.ia ?? false}
                                 onToggle={() => toggleSection('ia')}
                             >
-                                <NavLink href="/academy" icon={<GraduationCap size={16} />} label="Academia Pro" isSubItem />
+                                <NavLink href="/dashboard/academy" icon={<GraduationCap size={16} />} label="Portal Educativo" isSubItem />
                                 {(role === "ADMIN" || role === "MANAGEMENT") && (
-                                    <NavLink href="/dashboard/academy" icon={<Settings size={16} />} label="Gestión Academia" isSubItem />
+                                    <NavLink href="/dashboard/academy/admin" icon={<Settings size={16} />} label="Panel de Control" isSubItem />
                                 )}
                             </CollapsibleSection>
                         )}
