@@ -139,8 +139,7 @@ export default function DashboardLayout({
 
                 <nav className="flex-1 overflow-y-auto px-8 py-12 space-y-4 custom-scrollbar relative">
                     <div className="mb-10 space-y-4">
-                        <NavLink href="/dashboard" icon={<Globe size={20} />} label="Red Social Corporativa" isActive={pathname === '/dashboard'} />
-                        <NavLink href="/dashboard/analytics" icon={<LayoutDashboard size={20} />} label="Centro de AnÃ¡lisis" isActive={pathname === '/dashboard/analytics'} />
+                        <NavLink href="/dashboard" icon={<Globe size={20} />} label="Red Social Corporativa" isActive={pathname === '/dashboard'} />                        <NavLink href="/dashboard/analytics" icon={<LayoutDashboard size={20} />} label="Centro de Análisis" isActive={pathname === '/dashboard/analytics'} />
                     </div>
 
                     <div className="space-y-10">
@@ -212,7 +211,7 @@ export default function DashboardLayout({
                                 isOpen={openSections.rrhh}
                                 onToggle={() => toggleSection('rrhh')}
                             >
-                                <NavLink href="/dashboard/evaluations" icon={<Users size={16} />} label="Creación de Perfiles" isSubItem />
+                                <NavLink href="/dashboard/evaluations" icon={<Users size={16} />} label="Control de Asesores" isSubItem />
                             </CollapsibleSection>
                         )}
 
@@ -222,9 +221,9 @@ export default function DashboardLayout({
                                 isOpen={openSections.comunicacion}
                                 onToggle={() => toggleSection('comunicacion')}
                             >
-                                <NavLink href="/dashboard/whatsapp" icon={<MessageSquare size={16} />} label="WhatsApp & CRM" isSubItem />
+                                <NavLink href="/dashboard/whatsapp" icon={<MessageSquare size={16} />} label="Canal WhatsApp" isSubItem />
                                 <NavLink href="/dashboard/agenda" icon={<Calendar size={16} />} label="Agenda" isSubItem />
-                                <NavLink href="/dashboard/notes" icon={<Edit3 size={16} />} label="Bloc Notas" isSubItem />
+                                <NavLink href="/dashboard/notes" icon={<Edit3 size={16} />} label="Bloc de Notas" isSubItem />
                                 <NavLink href="/dashboard/blogs" icon={<FileText size={16} />} label="Blog Corporativo" isSubItem />
                                 
                                 <div className="px-5 pt-4">
@@ -234,7 +233,7 @@ export default function DashboardLayout({
                                         className="flex items-center space-x-4 px-4 py-3 rounded-none text-[9px] font-black text-primary hover:bg-primary/10 transition-all group border border-primary/20 bg-primary/5 italic shadow-2xl shadow-primary/5"
                                     >
                                         <ExternalLink size={16} className="text-primary group-hover:rotate-12 transition-transform" />
-                                        <span className="tracking-[0.2em] uppercase">PÃ¡gina PÃºblica</span>
+                                        <span className="tracking-[0.2em] uppercase">Página Pública</span>
                                     </Link>
                                 </div>
                             </CollapsibleSection>
@@ -242,18 +241,17 @@ export default function DashboardLayout({
 
                         {(role === "ADMIN" || role === "MANAGEMENT") && (
                             <CollapsibleSection
-                                label="ConfiguraciÃ³n"
+                                label="Configuración"
                                 isOpen={openSections.config}
                                 onToggle={() => toggleSection('config')}
                             >
-                                <NavLink href="/dashboard/admin/prompt" icon={<Settings size={16} />} label="IA Config" isSubItem />
-                                <NavLink href="/dashboard/admin/users" icon={<Users size={16} />} label="Mi Equipo" isSubItem />
+                                <NavLink href="/dashboard/admin/prompt" icon={<Settings size={16} />} label="IA Configuración" isSubItem />
                             </CollapsibleSection>
                         )}
 
                         {role === "ADMIN" && (
                             <CollapsibleSection
-                                label="Herramientas"
+                                label="Extracción de Datos"
                                 isOpen={openSections.herramientas ?? true}
                                 onToggle={() => toggleSection('herramientas')}
                             >
@@ -280,9 +278,9 @@ export default function DashboardLayout({
                     </div>
                     <Link href="/api/auth/signout" className="flex items-center space-x-4 px-5 py-4 text-[10px] font-black text-slate-500 hover:text-red-400 rounded-none transition-all hover:bg-red-500/5 group border border-transparent hover:border-red-500/20 italic">
                         <LogOut size={18} className="group-hover:-translate-x-1 transition-transform" />
-                        <span className="uppercase tracking-[0.3em]">Cerrar SesiÃ³n</span>
+                        <span className="uppercase tracking-[0.3em]">Cerrar Sesión</span>
                     </Link>
-                </div>
+                </div>           </div>
             </aside>
 
             {/* Main Content Engineering */}
