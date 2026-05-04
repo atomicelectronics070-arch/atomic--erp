@@ -401,5 +401,38 @@ export async function searchProductsForTaxonomy(query: string) {
         orderBy: { name: 'asc' }
     })
 }
+export async function getStoreSettings() {
+    try {
+        const setting = await prisma.systemSetting.findUnique({
+            where: { key: 'store_settings' }
+        })
+        if (setting) {
+            return JSON.parse(setting.value)
+        }
+        return {
+            currency: 'USD',
+            shippingCost: 0,
+            freeShippingThreshold: 0,
+            bannerText: '',
+            bannerActive: false,
+            banners: {
+                software: {},
+                automation: {},
+                gaming: {}
+            }
+        }
+    } catch (e) {
+        return null
+    }
+}
 
-
+export async function updateStoreSettings(data: any) {
+    await prisma.systemSetting.upsert({
+        where: { key: 'store_settings' },
+        update: { value: JSON.stringify(data) },
+        create: { key: 'store_settings', value: JSON.stringify(data) }
+    })
+    revalidatePath('/dashboard/shop')
+    revalidatePath('/web')
+    return { success: true }
+}

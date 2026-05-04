@@ -1,181 +1,104 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { motion, AnimatePresence } from "framer-motion"
 import { 
-    ShoppingBag, Tag as TagIcon, Globe, CheckCircle, Store, RefreshCw, 
-    ChevronRight, Trash2, Search, CheckSquare, Square, Image as ImageIcon, 
-    Edit, Star, X, Layers, Monitor, Cpu, Gamepad2, Box, ShieldAlert, Save, Plus,
-    Upload, PlusCircle, FileText, ChevronDown, LayoutGrid, Layout, ShieldCheck
+    ShoppingBag, Tag as TagIcon, Layers, Search, Plus, Trash2, Edit, Save, 
+    RefreshCw, CheckSquare, Square, Box, ImageIcon, X, Layout, Monitor, 
+    Cpu, Gamepad2, Globe, ShieldCheck, ChevronDown, PlusCircle, Upload, Star,
+    ShieldAlert, FileText, LayoutGrid
 } from "lucide-react"
-import { CyberCard, NeonButton, CyberInput, GlassPanel } from "@/components/ui/CyberUI"
-import InventoryMatrix from "@/components/dashboard/InventoryMatrix"
+import { motion, AnimatePresence } from "framer-motion"
+import { NeonButton, CyberCard } from "@/components/ui/CyberUI"
 import { 
-    getProducts, getShopMetadata, saveProduct, saveCategory, 
-    saveCollection, cleanupDuplicateProducts, getProviderStats, 
-    searchProductsForTaxonomy, createCategory, createCollection, 
-    bulkUpdateProducts, deleteProduct, restoreProduct, 
-    deleteManyProducts, restoreManyProducts, permanentDeleteManyProducts,
-    deleteCollection, deleteManyCollections, toggleProductFeatured
+    getShopMetadata, 
+    saveProduct, 
+    deleteProduct, 
+    bulkUpdateProducts,
+    searchProductsForTaxonomy,
+    createCategory,
+    createCollection,
+    deleteCollection,
+    deleteManyCollections,
+    cleanupDuplicateProducts,
+    getStoreSettings,
+    updateStoreSettings
 } from "@/lib/actions/shop"
+import InventoryMatrix from "@/components/dashboard/InventoryMatrix"
 
-const safeParseArray = (str: any, fallback: any = []) => {
-    if (!str) return fallback;
-    if (Array.isArray(str)) return str;
-    try {
-        const parsed = JSON.parse(str);
-        return Array.isArray(parsed) ? parsed : fallback;
-    } catch (e) {
-        return fallback;
-    }
-};
+// Aux function for safe array parsing
+const safeParseArray = (val: any, fallback: any[] = []) => {
+    if (!val) return fallback
+    if (Array.isArray(val)) return val
+    try { return JSON.parse(val) } catch { return fallback }
+}
 
 export default function ShopConfigPage() {
     const [view, setView] = useState<'list' | 'add' | 'edit'>('list')
     const [activeTab, setActiveTab] = useState<'products' | 'catalogs' | 'settings'>('products')
     const [products, setProducts] = useState<any[]>([])
-    const [totalProducts, setTotalProducts] = useState(0)
-    const [currentPage, setCurrentPage] = useState(1)
-    const [pageSize, setPageSize] = useState(50)
-    const [dashboardSearch, setDashboardSearch] = useState("")
-    const [metadata, setMetadata] = useState<{ categories: any[], collections: any[] }>({ categories: [], collections: [] })
-    const [editingProduct, setEditingProduct] = useState<any>(null)
-    const [editingTaxonomy, setEditingTaxonomy] = useState<{ type: 'category' | 'collection', data: any } | null>(null)
+    const [metadata, setMetadata] = useState<any>({ categories: [], collections: [] })
+    const [providerStats, setProviderStats] = useState<{name: string, count: number}[]>([])
     const [loading, setLoading] = useState(true)
+    const [editingProduct, setEditingProduct] = useState<any>(null)
     const [selectedProducts, setSelectedProducts] = useState<string[]>([])
-    const [selectedCollections, setSelectedCollections] = useState<string[]>([])
     const [showBulkEdit, setShowBulkEdit] = useState(false)
-    const [isTrashView, setIsTrashView] = useState(false)
-    const [providerStats, setProviderStats] = useState<any[]>([])
+    const [editingTaxonomy, setEditingTaxonomy] = useState<{type: 'category' | 'collection', data: any} | null>(null)
     const [isCleaning, setIsCleaning] = useState(false)
+    const [selectedCollections, setSelectedCollections] = useState<string[]>([])
+    
+    // Store Settings state
     const [storeSettings, setStoreSettings] = useState<any>({
-        bannerText: "OFERTAS ATÓMICAS DE TEMPORADA",
-        active: true,
-        imageUrl: "",
-        title: "BIENVENIDO AL FUTURO",
-        description: "EXPLORA NUESTRO CATÁLOGO DE ALTA TECNOLOGÍA",
-        productIds: []
+        currency: 'USD',
+        shippingCost: 0,
+        freeShippingThreshold: 0,
+        bannerText: '',
+        bannerActive: false,
+        banners: {
+            software: {},
+            automation: {},
+            gaming: {}
+        }
     })
 
     const refreshData = async () => {
         setLoading(true)
         try {
-            const { products: p, total } = await getProducts({ 
-                page: currentPage, 
-                pageSize, 
-                search: dashboardSearch,
-                showDeleted: isTrashView
-            })
-            setProducts(p)
-            setTotalProducts(total)
-            
-            const meta = await getShopMetadata()
-            setMetadata(meta)
-            
-            const stats = await getProviderStats()
-            setProviderStats(stats)
-
-            // Fetch settings
-            const settRes = await fetch('/api/shop/settings').then(r => r.json())
-            if (settRes.settings) setStoreSettings(settRes.settings)
-        } catch (error) {
-            console.error("Error refreshing data:", error)
+            const [meta, settings] = await Promise.all([
+                getShopMetadata(),
+                getStoreSettings()
+            ])
+            setProducts(meta.products)
+            setMetadata({ categories: meta.categories, collections: meta.collections })
+            setProviderStats(meta.providerStats)
+            if (settings) setStoreSettings(settings)
         } finally {
             setLoading(false)
         }
     }
 
-    const saveSettings = async () => {
-        try {
-            await fetch('/api/shop/settings', {
-                method: 'POST',
-                body: JSON.stringify(storeSettings)
-            })
-            alert("Ajustes sincronizados")
-            refreshData()
-        } catch (e) {
-            alert("Error al guardar ajustes")
-        }
-    }
-
     useEffect(() => {
         refreshData()
-    }, [currentPage, dashboardSearch, isTrashView])
+    }, [])
 
-    const toggleProductSelection = (id: string) => {
-        setSelectedProducts(prev => 
-            prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
-        )
-    }
-
-    const toggleAllProducts = () => {
-        if (selectedProducts.length === products.length && products.length > 0) {
-            setSelectedProducts([])
-        } else {
-            setSelectedProducts(products.map(p => p.id))
+    const saveSettings = async () => {
+        setLoading(true)
+        try {
+            await updateStoreSettings(storeSettings)
+            alert("Protocolos de configuración actualizados.")
+        } catch (e) {
+            alert("Error al sincronizar parámetros.")
+        } finally {
+            setLoading(false)
         }
     }
 
-    const handleDelete = async (id: string) => {
-        if (confirm("¿Seguro que quieres eliminar este producto?")) {
-            await deleteProduct(id)
-            refreshData()
-        }
-    }
-
-    const handleRestore = async (id: string) => {
-        await restoreProduct(id)
-        refreshData()
-    }
-
-    const handleBulkDeleteProducts = async () => {
-        if (confirm(`¿Seguro que quieres eliminar ${selectedProducts.length} productos?`)) {
-            await deleteManyProducts(selectedProducts)
-            setSelectedProducts([])
-            refreshData()
-        }
-    }
-
-    const handleBulkRestore = async () => {
-        await restoreManyProducts(selectedProducts)
-        setSelectedProducts([])
-        refreshData()
-    }
-
-    const handleBulkPermanentDelete = async () => {
-        if (confirm("¿Seguro que quieres ELIMINAR PERMANENTEMENTE estos productos? Esta acción no se puede deshacer.")) {
-            await permanentDeleteManyProducts(selectedProducts)
-            setSelectedProducts([])
-            refreshData()
-        }
-    }
-
-    const handleBulkEdit = async (data: any) => {
-        await bulkUpdateProducts(selectedProducts, data)
-        setShowBulkEdit(false)
-        setSelectedProducts([])
-        refreshData()
-    }
-
-    const handleDeleteCollection = async (id: string) => {
-        if (confirm("¿Seguro que quieres eliminar esta colección?")) {
-            await deleteCollection(id)
-            refreshData()
-        }
-    }
-
-    const handleBulkDeleteCollections = async () => {
-        if (confirm(`¿Seguro que quieres eliminar ${selectedCollections.length} colecciones?`)) {
-            await deleteManyCollections(selectedCollections)
-            setSelectedCollections([])
-            refreshData()
-        }
-    }
+    const totalProducts = products.length
 
     return (
         <div className="space-y-16 pb-32 relative z-10">
             <div className="fixed inset-0 pointer-events-none z-0">
                 <div className="absolute top-[10%] right-[-10%] w-[40%] h-[40%] bg-secondary/5 blur-[120px] animate-pulse" />
+                <div className="absolute top-0 right-0 w-full h-full bg-[url('/grid.svg')] opacity-5" />
             </div>
 
             <header className="flex flex-col lg:flex-row lg:items-end justify-between mb-16 gap-10 border-b border-white/5 pb-16 relative z-10">
@@ -207,9 +130,10 @@ export default function ShopConfigPage() {
                                 {tab === 'products' ? 'Inventario Maestro' : tab === 'catalogs' ? 'Arquitecturas' : 'Frontend_CMD'}
                             </button>
                         ))}
-                                        {activeTab === 'products' && (
-                        <div className="space-y-12 animate-in fade-in duration-700">
-                            {/* Modern Stats Summary */}
+                    </div>
+
+                    {activeTab === 'products' && (
+                        <div className="space-y-12">
                             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-8 relative z-10">
                                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="glass-panel p-10 flex items-center gap-8 rounded-none border-white/5 relative overflow-hidden group backdrop-blur-3xl shadow-2xl">
                                     <div className="absolute top-0 left-0 w-2 h-full bg-secondary shadow-[0_0_20px_rgba(255,99,71,0.5)]"></div>
@@ -245,7 +169,6 @@ export default function ShopConfigPage() {
                                 </motion.div>
                             </div>
 
-                            {/* UNIFIED INVENTORY & PRICING MATRIX */}
                             <InventoryMatrix 
                                 initialProducts={products}
                                 providers={providerStats.map(s => s.name)}
@@ -255,9 +178,8 @@ export default function ShopConfigPage() {
                     )}
 
                     {activeTab === 'catalogs' && (
-                        <div className="space-y-12 animate-in fade-in slide-in-from-bottom-5 duration-700">
-                            {/* Quick Category/Collection Creation */}
-                            <div className="grid grid-cols-1 xl:grid-cols-2 gap-10 bg-slate-950/40 p-10 rounded-none-[3rem] border border-white/5 backdrop-blur-3xl shadow-2xl">
+                        <div className="space-y-12">
+                            <div className="grid grid-cols-1 xl:grid-cols-2 gap-10 bg-slate-950/40 p-10 rounded-none border border-white/5 backdrop-blur-3xl shadow-2xl">
                                 <QuickCreate
                                     label="Arquitectura de Categoría"
                                     icon={<TagIcon size={20} className="text-secondary" />}
@@ -271,7 +193,7 @@ export default function ShopConfigPage() {
                             </div>
 
                             <div className="grid grid-cols-1 xl:grid-cols-2 gap-12">
-                                <div className="glass-panel p-10 rounded-none-[3rem] border-white/5 relative overflow-hidden">
+                                <div className="glass-panel p-10 rounded-none border-white/5 relative overflow-hidden">
                                     <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/5 blur-3xl -mr-16 -mt-16 rounded-none"></div>
                                     <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-white italic mb-10 border-b border-white/5 pb-8 flex items-center gap-3">
                                         <TagIcon size={18} className="text-secondary" />
@@ -293,7 +215,7 @@ export default function ShopConfigPage() {
                                         ))}
                                     </ul>
                                 </div>
-                                <div className="glass-panel p-10 rounded-none-[3rem] border-white/5 relative overflow-hidden">
+                                <div className="glass-panel p-10 rounded-none border-white/5 relative overflow-hidden">
                                     <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-3xl -mr-16 -mt-16 rounded-none"></div>
                                     <div className="flex justify-between items-center mb-10 border-b border-white/5 pb-8">
                                         <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-white italic flex items-center gap-3">
@@ -365,12 +287,7 @@ export default function ShopConfigPage() {
                     )}
 
                     {activeTab === 'settings' && (
-                        <div className="space-y-16 animate-in fade-in slide-in-from-bottom-5 duration-1000">
-                            {/* Previous settings content was already added, but I need to make sure the Mantenimiento is inside or handled neatly */}
-                            
-                            {/* ═══════════════════════════════════════════════════
-                                SECCIÓN: BANNERS DE PÁGINA PRINCIPAL
-                            ═══════════════════════════════════════════════════ */}
+                        <div className="space-y-16">
                             <div className="space-y-10">
                                 <div className="flex items-center gap-6 pb-8 border-b border-white/5">
                                     <div className="w-14 h-14 bg-secondary flex items-center justify-center rounded-none shadow-2xl shadow-secondary/20">
@@ -413,11 +330,8 @@ export default function ShopConfigPage() {
                                 </div>
                             </div>
 
-                            {/* ═══════════════════════════════════════════════════
-                                SECCIÓN: LOGÍSTICA Y NOTIFICACIÓN
-                            ═══════════════════════════════════════════════════ */}
                             <div className="grid grid-cols-1 xl:grid-cols-2 gap-10">
-                                <div className="glass-panel p-10 rounded-none-[3rem] border-white/5 space-y-10 relative overflow-hidden">
+                                <div className="glass-panel p-10 rounded-none border-white/5 space-y-10 relative overflow-hidden">
                                     <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/5 blur-3xl -mr-16 -mt-16 rounded-none"></div>
                                     <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-white italic flex items-center gap-4">
                                         <Box size={20} className="text-secondary" /> 
@@ -440,14 +354,14 @@ export default function ShopConfigPage() {
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                         <div className="space-y-4">
-                                            <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.3em] ml-2 text-wrap">Costo de Envío Base</label>
+                                            <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.3em] ml-2">Costo de Envío Base</label>
                                             <div className="relative">
                                                 <div className="absolute left-6 top-1/2 -translate-y-1/2 text-secondary font-black">$</div>
                                                 <input type="number" value={storeSettings.shippingCost} onChange={(e) => setStoreSettings({ ...storeSettings, shippingCost: Number(e.target.value) })} className="w-full bg-slate-900 border border-white/5 pl-12 pr-8 py-5 text-sm font-black text-white outline-none rounded-none focus:border-secondary transition-all" />
                                             </div>
                                         </div>
                                         <div className="space-y-4">
-                                            <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.3em] ml-2 text-wrap">Umbral Popular (Envío Gratis)</label>
+                                            <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.3em] ml-2">Umbral Popular</label>
                                             <div className="relative">
                                                 <div className="absolute left-6 top-1/2 -translate-y-1/2 text-primary font-black">$</div>
                                                 <input type="number" value={storeSettings.freeShippingThreshold} onChange={(e) => setStoreSettings({ ...storeSettings, freeShippingThreshold: Number(e.target.value) })} className="w-full bg-slate-900 border border-white/5 pl-12 pr-8 py-5 text-sm font-black text-white outline-none rounded-none focus:border-primary transition-all" />
@@ -456,7 +370,7 @@ export default function ShopConfigPage() {
                                     </div>
                                 </div>
 
-                                <div className="glass-panel p-10 rounded-none-[3rem] border-white/5 space-y-10 relative overflow-hidden">
+                                <div className="glass-panel p-10 rounded-none border-white/5 space-y-10 relative overflow-hidden">
                                     <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-500/5 blur-3xl -mr-16 -mt-16 rounded-none"></div>
                                     <div className="flex justify-between items-center border-b border-white/5 pb-8">
                                         <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-white italic flex items-center gap-4">
@@ -466,67 +380,15 @@ export default function ShopConfigPage() {
                                         <Toggle label="Activo" icon="" checked={storeSettings.bannerActive} onChange={(v) => setStoreSettings({ ...storeSettings, bannerActive: v })} />
                                     </div>
                                     <div className="space-y-4">
-                                        <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.3em] ml-2">Gesti�n de Mensajería Superior</label>
+                                        <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.3em] ml-2">Narrativa de Alerta</label>
                                         <textarea 
                                             rows={4} 
                                             disabled={!storeSettings.bannerActive} 
                                             value={storeSettings.bannerText} 
                                             onChange={(e) => setStoreSettings({ ...storeSettings, bannerText: e.target.value })} 
-                                            className="w-full bg-slate-900 border border-white/5 px-8 py-6 text-xs font-bold text-white outline-none resize-none rounded-none-[2rem] focus:border-yellow-500 transition-all disabled:opacity-20 placeholder:text-slate-800 italic" 
-                                            placeholder="Ej: DISPONIBILIDAD TÁCTICA PARA ENVÍOS NACIONALES — ATOMIC DELIVERY PROTOCOL" 
+                                            className="w-full bg-slate-900 border border-white/5 px-8 py-6 text-xs font-bold text-white outline-none resize-none rounded-none focus:border-yellow-500 transition-all disabled:opacity-20 placeholder:text-slate-800 italic" 
+                                            placeholder="Mensaje de alerta..." 
                                         />
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* ═══════════════════════════════════════════════════
-                                SECCIÓN: MANTENIMIENTO TÉCNICO
-                            ═══════════════════════════════════════════════════ */}
-                            <div className="glass-panel p-10 rounded-none-[4rem] border-white/5 relative overflow-hidden">
-                                <div className="absolute top-0 left-0 w-64 h-64 bg-red-500/5 blur-[100px] -ml-32 -mt-32 rounded-none"></div>
-                                <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-white italic flex items-center gap-4 border-b border-white/5 pb-8 mb-12">
-                                    <ShieldAlert size={20} className="text-red-500" /> 
-                                    Zona de Mantenimiento Crítico
-                                </h3>
-                                <div className="grid grid-cols-1 xl:grid-cols-2 gap-16">
-                                    <div className="space-y-8">
-                                        <div className="flex items-center space-x-4 text-red-500">
-                                            <Trash2 size={24} />
-                                            <div>
-                                                <span className="text-[11px] uppercase font-black tracking-[0.2em] block">Saneamiento de Duplicados</span>
-                                                <span className="text-[9px] text-slate-500 font-bold uppercase tracking-widest italic leading-relaxed mt-1 block">Gesti�n de eliminación masiva por redundancia de metadatos.</span>
-                                            </div>
-                                        </div>
-                                        <button 
-                                            onClick={async () => { if(confirm("¿Seguro que quieres ejecutar la poda de duplicados?")) { setIsCleaning(true); try { await cleanupDuplicateProducts(); await refreshData(); alert("Catálogo saneado."); } finally { setIsCleaning(false); } } }} 
-                                            disabled={isCleaning} 
-                                            className="w-full bg-red-600/10 text-red-500 border border-red-500/30 px-10 py-6 text-[10px] font-black uppercase tracking-[0.3em] hover:bg-red-600 hover:text-white transition-all shadow-2xl shadow-red-600/10 rounded-none active:scale-95 disabled:opacity-20"
-                                        >
-                                            {isCleaning ? 'Ejecutando Poda...' : 'Iniciar Poda de Redundancia'}
-                                        </button>
-                                    </div>
-                                    <div className="space-y-8">
-                                        <div className="flex items-center space-x-4 text-primary">
-                                            <ShoppingBag size={24} />
-                                            <div>
-                                                <span className="text-[11px] uppercase font-black tracking-[0.2em] block">Analítica de Origen</span>
-                                                <span className="text-[9px] text-slate-500 font-bold uppercase tracking-widest italic leading-relaxed mt-1 block">Distribución cuantitativa por Etiqueta de suministro.</span>
-                                            </div>
-                                        </div>
-                                        <div className="bg-slate-950/60 rounded-none-[2rem] border border-white/5 overflow-hidden divide-y divide-white/5 max-h-56 overflow-y-auto custom-scrollbar">
-                                            {providerStats.length > 0 ? providerStats.map((s, i) => (
-                                                <div key={i} className="p-5 flex justify-between items-center hover:bg-white/5 transition-colors group">
-                                                    <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest group-hover:text-primary transition-colors">{s.name}</span>
-                                                    <span className="bg-primary/20 text-primary border border-primary/20 px-3 py-1 rounded-none text-[9px] font-black uppercase tracking-tighter italic">
-                                                        {s.count} <span className="text-[7px] ml-1">UNIDADES</span>
-                                                    </span>
-                                                </div>
-                                            )) : (
-                                                <div className="py-12 text-center opacity-20">
-                                                    <p className="text-[9px] font-black uppercase tracking-[0.4em]">Escaneando Orígenes...</p>
-                                                </div>
-                                            )}
-                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -535,7 +397,7 @@ export default function ShopConfigPage() {
                                 <button 
                                     onClick={saveSettings} 
                                     disabled={loading} 
-                                    className="bg-slate-900/80 text-white px-20 py-8 font-black uppercase tracking-[0.5em] text-[11px] hover:bg-secondary hover:text-white transition-all shadow-[0_0_100px_rgba(255,255,255,0.05)] hover:shadow-secondary/20 rounded-none-[2rem] active:scale-95 flex items-center gap-4 border border-white/10"
+                                    className="bg-slate-900/80 text-white px-20 py-8 font-black uppercase tracking-[0.5em] text-[11px] hover:bg-secondary hover:text-white transition-all shadow-2xl rounded-none active:scale-95 flex items-center gap-4 border border-white/10"
                                 >
                                     <Save size={20} />
                                     <span>Comprometer Protocolo</span>
@@ -555,12 +417,14 @@ export default function ShopConfigPage() {
                     )}
                 </div>
             ) : (
-                <ProductForm
-                    initialData={editingProduct}
-                    metadata={metadata}
-                    onCancel={() => { setView('list'); setEditingProduct(null); }}
-                    onSaved={() => { setView('list'); setEditingProduct(null); refreshData(); }}
-                />
+                <div className="animate-in fade-in slide-in-from-bottom-8 duration-700">
+                    <ProductForm
+                        initialData={editingProduct}
+                        metadata={metadata}
+                        onCancel={() => { setView('list'); setEditingProduct(null); }}
+                        onSaved={() => { setView('list'); setEditingProduct(null); refreshData(); }}
+                    />
+                </div>
             )}
         </div>
     )
@@ -592,7 +456,6 @@ function QuickCreate({ label, icon, onSave }: { label: string, icon: any, onSave
     )
 }
 
-// ─── BannerConfigPanel ────────────────────────────────────────────────────────
 function BannerConfigPanel({ bannerKey, label, icon, accentColor, data, allProducts, onChange }: { 
     bannerKey: string, 
     label: string, 
@@ -664,10 +527,9 @@ function BannerConfigPanel({ bannerKey, label, icon, accentColor, data, allProdu
     const displayList = searchTerm.length >= 2 ? searchResults : allProducts.slice(0, 40)
 
     return (
-        <div className={`glass-panel p-8 rounded-none-[3rem] border transition-all duration-700 relative overflow-hidden group ${accentMap[accentColor] || accentMap.secondary} bg-slate-950/20 backdrop-blur-3xl`}>
+        <div className={`glass-panel p-8 border transition-all duration-700 relative overflow-hidden group ${accentMap[accentColor] || accentMap.secondary} bg-slate-950/20 backdrop-blur-3xl`}>
             <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 blur-3xl -mr-16 -mt-16 group-hover:bg-white/10 transition-all duration-1000 rounded-none"></div>
             
-            {/* Header */}
             <div className="flex items-center justify-between pb-8 border-b border-white/5 mb-8">
                 <div className="flex items-center gap-4">
                     <div className={`w-3 h-3 rounded-none animate-pulse ${dotMap[accentColor] || dotMap.secondary} shadow-[0_0_10px_currentColor]`}></div>
@@ -676,7 +538,7 @@ function BannerConfigPanel({ bannerKey, label, icon, accentColor, data, allProdu
                     </div>
                     <div>
                         <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-white italic">{label}</h4>
-                        <p className="text-[8px] font-bold text-slate-500 uppercase tracking-widest mt-1 italic">Gesti�n Hero Unit</p>
+                        <p className="text-[8px] font-bold text-slate-500 uppercase tracking-widest mt-1 italic">Gestión Hero Unit</p>
                     </div>
                 </div>
                 <Toggle
@@ -688,11 +550,10 @@ function BannerConfigPanel({ bannerKey, label, icon, accentColor, data, allProdu
             </div>
 
             <div className="space-y-8">
-                {/* Image Upload */}
                 <div className="space-y-4">
                     <label className="text-[9px] font-black uppercase text-slate-500 tracking-[0.3em] ml-2 italic">Etiqueta de Origen Visual</label>
                     {data.imageUrl ? (
-                        <div className="relative group/img overflow-hidden rounded-none-[2rem] border border-white/10 aspect-video shadow-2xl">
+                        <div className="relative group/img overflow-hidden border border-white/10 aspect-video shadow-2xl">
                             <img src={data.imageUrl} alt="Banner" className="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-1000" />
                             <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm opacity-0 group-hover/img:opacity-100 transition-all duration-500 flex flex-col items-center justify-center gap-4">
                                 <button
@@ -713,7 +574,7 @@ function BannerConfigPanel({ bannerKey, label, icon, accentColor, data, allProdu
                         <button
                             onClick={() => fileInputRef.current?.click()}
                             disabled={uploading}
-                            className="w-full border-4 border-dashed border-white/5 py-12 flex flex-col items-center gap-4 hover:border-secondary/20 hover:bg-secondary/5 transition-all group/upload rounded-none-[2.5rem]"
+                            className="w-full border-4 border-dashed border-white/5 py-12 flex flex-col items-center gap-4 hover:border-secondary/20 hover:bg-secondary/5 transition-all group/upload"
                         >
                             <div className="p-4 bg-white/5 rounded-none group-hover/upload:rotate-12 transition-transform duration-500">
                                 <Upload size={28} className="text-slate-600 group-hover/upload:text-secondary" />
@@ -724,18 +585,15 @@ function BannerConfigPanel({ bannerKey, label, icon, accentColor, data, allProdu
                         </button>
                     )}
                     <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleUpload} />
-                    <div className="space-y-2">
-                        <input
-                            type="text"
-                            value={data.imageUrl || ''}
-                            onChange={(e) => onChange({ ...data, imageUrl: e.target.value })}
-                            placeholder="VINCULAR DIRECCIÓN REMOTA (URL)..."
-                            className="w-full bg-slate-950 border border-white/5 px-6 py-4 text-[9px] font-mono text-slate-400 outline-none focus:border-secondary transition-all rounded-none italic"
-                        />
-                    </div>
+                    <input
+                        type="text"
+                        value={data.imageUrl || ''}
+                        onChange={(e) => onChange({ ...data, imageUrl: e.target.value })}
+                        placeholder="URL..."
+                        className="w-full bg-slate-950 border border-white/5 px-6 py-4 text-[9px] font-mono text-slate-400 outline-none focus:border-secondary transition-all rounded-none italic"
+                    />
                 </div>
 
-                {/* Title */}
                 <div className="space-y-4">
                     <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2 italic">Narrativa de Impacto</label>
                     <input
@@ -747,119 +605,17 @@ function BannerConfigPanel({ bannerKey, label, icon, accentColor, data, allProdu
                     />
                 </div>
 
-                {/* Description */}
                 <div className="space-y-4">
                     <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2 italic">Argumento de Venta</label>
                     <textarea
                         rows={2}
                         value={data.description || ''}
                         onChange={(e) => onChange({ ...data, description: e.target.value })}
-                        placeholder="BREVE DESCRIPCIÓN DE LA SECCIÓN..."
+                        placeholder="DESCRIPCIÓN..."
                         className="w-full bg-slate-950 border border-white/5 px-8 py-5 text-[10px] font-bold text-slate-400 outline-none resize-none focus:border-secondary transition-all rounded-none leading-relaxed placeholder:text-slate-800 italic"
                     />
                 </div>
-
-                {/* Products for gallery */}
-                <div className="space-y-4">
-                    <div className="flex items-center justify-between px-2">
-                        <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] italic">
-                            Ecosistema de Productos
-                        </label>
-                        <span className="text-[9px] font-black bg-secondary/10 text-secondary border border-secondary/20 px-3 py-1 rounded-none italic">
-                            {selectedProductIds.length} NÚCLEOS
-                        </span>
-                    </div>
-                    <button
-                        onClick={() => setShowProductPicker(v => !v)}
-                        className="w-full border-2 border-dashed border-white/5 py-6 rounded-none text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 hover:text-white hover:bg-white/5 transition-all flex items-center justify-center gap-4 group/picker"
-                    >
-                        <Box size={16} className="group-hover/picker:text-secondary transition-colors" /> 
-                        <span>{showProductPicker ? 'ACEPTAR SELECCIÓN' : 'DESPLEGAR SELECTOR'}</span>
-                    </button>
-
-                    {showProductPicker && (
-                        <div className="animate-in slide-in-from-top-4 duration-500 bg-slate-900 shadow-2xl rounded-none-[2rem] border border-white/5 overflow-hidden">
-                            <div className="relative group/search p-4">
-                                <Search size={14} className="absolute left-8 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within/search:text-primary transition-colors" />
-                                <input
-                                    type="text"
-                                    placeholder="ESCANEAR CATÁLOGO..."
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full bg-slate-950 border border-white/5 pl-12 pr-4 py-4 text-[10px] font-black uppercase tracking-widest text-white outline-none rounded-none focus:border-primary transition-all"
-                                />
-                                {searching && <RefreshCw size={12} className="absolute right-8 top-1/2 -translate-y-1/2 text-primary animate-spin" />}
-                            </div>
-                            <div className="max-h-56 overflow-y-auto divide-y divide-white/5 custom-scrollbar">
-                                {displayList.map((p: any) => {
-                                    const sel = selectedProductIds.includes(p.id)
-                                    return (
-                                        <button
-                                            key={p.id}
-                                            onClick={() => toggleProduct(p)}
-                                            className={`w-full flex items-center justify-between p-4 transition-all hover:bg-white/5 group/item ${sel ? 'bg-secondary/5' : ''}`}
-                                        >
-                                            <div className="flex items-center gap-4">
-                                                <div className="w-10 h-10 bg-slate-950 rounded-none overflow-hidden border border-white/5">
-                                                    {safeParseArray(p.images).length > 0 ? (
-                                                        <img src={safeParseArray(p.images)[0]} className="w-full h-full object-cover scale-110 group-hover/item:scale-125 transition-transform duration-700" />
-                                                    ) : (
-                                                        <ImageIcon size={14} className="m-auto text-slate-700" />
-                                                    )}
-                                                </div>
-                                                <div className="text-left">
-                                                    <span className="text-[10px] font-black text-slate-300 uppercase line-clamp-1 block group-hover/item:text-white transition-colors">{p.name}</span>
-                                                    <span className="text-[8px] font-bold text-slate-600 block uppercase tracking-widest">{p.sku || 'N/A'}</span>
-                                                </div>
-                                            </div>
-                                            <div className={`transition-all duration-500 ${sel ? 'text-secondary scale-110' : 'text-slate-800'}`}>
-                                                {sel ? <CheckSquare size={18} /> : <Square size={18} />}
-                                            </div>
-                                        </button>
-                                    )
-                                })}
-                                {displayList.length === 0 && (
-                                    <p className="text-center py-12 text-[9px] text-slate-600 font-black uppercase tracking-[0.5em]">Sin Coincidencias</p>
-                                )}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Selected pills */}
-                    {selectedProductIds.length > 0 && !showProductPicker && (
-                        <div className="flex flex-wrap gap-2 pt-4">
-                            {selectedProductIds.slice(0, 5).map((id: string) => {
-                                const p = allProducts.find((pr: any) => pr.id === id)
-                                return p ? (
-                                    <span key={id} className="bg-slate-900 border border-white/5 text-slate-300 text-[8px] font-black uppercase px-3 py-1 rounded-none flex items-center gap-3 group/pill hover:bg-secondary/10 hover:border-secondary/30 transition-all">
-                                        <span className="truncate max-w-[80px]">{p.name}</span>
-                                        <button onClick={() => toggleProduct(p)} className="text-slate-600 hover:text-red-500 transition-colors"><X size={10} /></button>
-                                    </span>
-                                ) : null
-                            })}
-                            {selectedProductIds.length > 5 && (
-                                <span className="text-[8px] font-bold text-slate-600 uppercase tracking-widest flex items-center px-2">+{selectedProductIds.length - 5} ADICIONALES</span>
-                            )}
-                        </div>
-                    )}
-                </div>
             </div>
-        </div>
-    )
-}
-// ─── End BannerConfigPanel ────────────────────────────────────────────────────
-
-function StatCard({ label, value, icon }: { label: string, value: any, icon: any }) {
-    return (
-        <div className="glass-panel p-6 rounded-none-[2rem] border-white/5 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-24 h-24 bg-white/5 blur-3xl -mr-12 -mt-12 group-hover:bg-primary/10 transition-all duration-700"></div>
-            <div className="flex items-center space-x-3 text-slate-500 mb-4">
-                <div className="p-2 bg-white/5 rounded-none group-hover:text-primary transition-colors">
-                    {icon}
-                </div>
-                <span className="text-[9px] font-black uppercase tracking-[0.3em]">{label}</span>
-            </div>
-            <p className="text-3xl font-black text-white tracking-tighter italic">{value}</p>
         </div>
     )
 }
@@ -914,7 +670,7 @@ function ProductForm({ initialData, metadata, onCancel, onSaved }: { initialData
 
     return (
         <div className="space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-700 max-w-[1600px] mx-auto">
-            <div className="flex justify-between items-center bg-slate-950/40 p-8 rounded-none-[2.5rem] border border-white/5 backdrop-blur-3xl">
+            <div className="flex justify-between items-center bg-slate-950/40 p-8 border border-white/5 backdrop-blur-3xl">
                 <div className="flex items-center gap-6">
                     <div className="w-12 h-12 bg-secondary/10 flex items-center justify-center rounded-none border border-secondary/20">
                         <Box size={24} className="text-secondary" />
@@ -936,16 +692,13 @@ function ProductForm({ initialData, metadata, onCancel, onSaved }: { initialData
             </div>
 
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-12">
-
-                {/* Main Info Column */}
                 <div className="xl:col-span-2 space-y-12">
-                    <section className="glass-panel p-10 rounded-none-[3rem] border-white/5 space-y-10 relative overflow-hidden">
+                    <section className="glass-panel p-10 border-white/5 space-y-10 relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/5 blur-3xl -mr-16 -mt-16 rounded-none"></div>
                         <div className="flex items-center space-x-4 border-b border-white/5 pb-8">
                             <LayoutGrid size={20} className="text-secondary" />
                             <h2 className="text-[11px] font-black uppercase tracking-[0.4em] text-white italic">Manifiesto Técnico Principal</h2>
                         </div>
-
                         <div className="space-y-4">
                             <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Denominación del Activo</label>
                             <input
@@ -956,10 +709,9 @@ function ProductForm({ initialData, metadata, onCancel, onSaved }: { initialData
                                 className="w-full bg-slate-900 border border-white/5 px-8 py-6 text-sm font-black uppercase tracking-widest text-white outline-none focus:border-secondary transition-all rounded-none placeholder:text-slate-800"
                             />
                         </div>
-
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                             <div className="space-y-4">
-                                <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">ID Operativo (SKU)</label>
+                                <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">SKU</label>
                                 <input
                                     type="text"
                                     value={formData.sku}
@@ -969,199 +721,17 @@ function ProductForm({ initialData, metadata, onCancel, onSaved }: { initialData
                                 />
                             </div>
                             <div className="space-y-4">
-                                <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Valor Actual (USD)</label>
-                                <div className="relative">
-                                    <div className="absolute left-6 top-1/2 -translate-y-1/2 text-secondary font-black bg-slate-900 pr-2">$</div>
-                                    <input
-                                        type="number"
-                                        value={formData.price}
-                                        onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                                        placeholder="0.00"
-                                        className="w-full bg-slate-900 border border-white/5 pl-12 pr-8 py-6 text-sm font-black text-secondary outline-none focus:border-secondary transition-all rounded-none"
-                                    />
-                                </div>
-                            </div>
-                            <div className="space-y-4">
-                                <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2 text-wrap">Referencial Anterior</label>
+                                <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Precio ($)</label>
                                 <input
                                     type="number"
-                                    value={formData.compareAtPrice}
-                                    onChange={(e) => setFormData({ ...formData, compareAtPrice: e.target.value })}
+                                    value={formData.price}
+                                    onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                                     placeholder="0.00"
-                                    className="w-full bg-slate-900 border border-white/5 px-8 py-6 text-sm font-black text-slate-600 outline-none focus:border-white/20 transition-all line-through rounded-none"
+                                    className="w-full bg-slate-900 border border-white/5 px-8 py-6 text-sm font-black text-secondary outline-none focus:border-secondary transition-all rounded-none"
                                 />
                             </div>
                         </div>
-
-                        <div className="space-y-4">
-                            <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Narrativa del Producto</label>
-                            <textarea
-                                rows={8}
-                                value={formData.description}
-                                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                placeholder="ESPECIFICACIONES NARRATIVAS Y ARGUMENTO DE VENTA..."
-                                className="w-full bg-slate-900 border border-white/5 px-8 py-8 text-xs font-bold text-slate-300 outline-none resize-none focus:border-secondary transition-all rounded-none-[2.5rem] leading-relaxed placeholder:text-slate-800 italic"
-                            />
-                        </div>
                     </section>
-
-                    <section className="glass-panel p-10 rounded-none-[3rem] border-white/5 space-y-10 relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-3xl -mr-16 -mt-16 rounded-none"></div>
-                        <div className="flex items-center space-x-4 border-b border-white/5 pb-8">
-                            <FileText size={20} className="text-primary" />
-                            <h2 className="text-[11px] font-black uppercase tracking-[0.4em] text-white italic">Gesti�n de Ficha Técnica</h2>
-                        </div>
-
-                        <div className="space-y-6">
-                            {techSpecs.map((spec, index) => (
-                                <div key={index} className="flex gap-6 animate-in slide-in-from-left-4 duration-300 items-center">
-                                    <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-900/50 p-6 rounded-none border border-white/5 hover:border-primary/30 transition-all">
-                                        <input
-                                            type="text"
-                                            value={spec.label}
-                                            placeholder="Elemento TÉCNICO (Ej: POTENCIA)"
-                                            className="bg-transparent border-none px-4 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-primary outline-none placeholder:text-slate-700"
-                                            onChange={(e) => {
-                                                const newSpecs = [...techSpecs]
-                                                newSpecs[index].label = e.target.value
-                                                setTechSpecs(newSpecs)
-                                            }}
-                                        />
-                                        <input
-                                            type="text"
-                                            value={spec.value}
-                                            placeholder="VALOR DE SEGMENTO (Ej: 2.5KW)"
-                                            className="bg-transparent border-none px-4 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-white outline-none placeholder:text-slate-700"
-                                            onChange={(e) => {
-                                                const newSpecs = [...techSpecs]
-                                                newSpecs[index].value = e.target.value
-                                                setTechSpecs(newSpecs)
-                                            }}
-                                        />
-                                    </div>
-                                    <button onClick={() => removeSpec(index)} className="p-4 text-slate-500 hover:text-red-500 transition-colors bg-white/5 rounded-none border border-white/5">
-                                        <Trash2 size={18} />
-                                    </button>
-                                </div>
-                            ))}
-                            <button
-                                onClick={addSpec}
-                                className="w-full border-2 border-dashed border-white/5 py-8 rounded-none-[2rem] text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 hover:text-primary hover:border-primary/20 transition-all flex items-center justify-center space-x-4 bg-white/2 hover:bg-primary/5"
-                            >
-                                <PlusCircle size={20} /> <span>Añadir Especificación de Segmento</span>
-                            </button>
-                        </div>
-                    </section>
-                </div>
-
-                {/* Side Column */}
-                <div className="space-y-12">
-                    <section className="glass-panel p-10 rounded-none-[3rem] border-white/5 space-y-10 relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/5 blur-3xl -mr-16 -mt-16 rounded-none"></div>
-                        <div className="flex items-center space-x-4 border-b border-white/5 pb-8">
-                            <ImageIcon size={20} className="text-secondary" />
-                            <h2 className="text-[11px] font-black uppercase tracking-[0.4em] text-white italic">Galería de Despliegue</h2>
-                        </div>
-
-                        <div className="border-4 border-dashed border-white/5 p-16 text-center space-y-6 hover:border-secondary/20 transition-all cursor-pointer group bg-slate-900/30 rounded-none-[3rem]">
-                            <div className="bg-secondary/10 w-24 h-24 rounded-none-[2rem] flex items-center justify-center mx-auto group-hover:bg-secondary/20 transition-all border border-secondary/10 group-hover:scale-110 duration-500">
-                                <Plus size={40} className="text-secondary" />
-                            </div>
-                            <div>
-                                <p className="text-[11px] font-black uppercase text-slate-300 tracking-[0.3em]">Carga de Activos Visuales</p>
-                                <p className="text-[9px] font-bold text-slate-600 mt-2 uppercase tracking-widest leading-relaxed">Arrastra recursos optimizados<br/>para renderizado web</p>
-                            </div>
-                        </div>
-
-                        <div className="space-y-6 pt-6">
-                            <div className="space-y-4">
-                                <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Ficha Técnica PDF</label>
-                                <button className="w-full flex items-center justify-between bg-slate-900 border border-white/5 text-white px-8 py-6 rounded-none text-[10px] font-black uppercase tracking-[0.3em] hover:bg-secondary hover:border-secondary transition-all shadow-2xl active:scale-95 group">
-                                    <span className="group-hover:text-white">Anclaje de Documentación</span>
-                                    <FileText size={18} className="text-secondary group-hover:text-white" />
-                                </button>
-                            </div>
-                        </div>
-                    </section>
-
-                    <section className="glass-panel p-10 rounded-none-[3rem] border-white/5 space-y-10 relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-3xl -mr-16 -mt-16 rounded-none"></div>
-                        <div className="flex items-center space-x-4 border-b border-white/5 pb-8">
-                            <Globe size={20} className="text-primary" />
-                            <h2 className="text-[11px] font-black uppercase tracking-[0.4em] text-white italic">Visibilidad & SEO</h2>
-                        </div>
-
-                        <div className="space-y-4">
-                            <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Categoría Maestra</label>
-                            <div className="relative">
-                                <select
-                                    value={formData.categoryId}
-                                    onChange={(e) => setFormData({ ...formData, categoryId: e.target.value })}
-                                    className="w-full bg-slate-900 border border-white/5 px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-white outline-none appearance-none cursor-pointer rounded-none focus:border-primary transition-all pr-12"
-                                >
-                                    <option value="">SIN CATEGORÍA DEFINIDA</option>
-                                    {metadata.categories.map((c: any) => (
-                                        <option key={c.id} value={c.id}>{c.name.toUpperCase()}</option>
-                                    ))}
-                                </select>
-                                <ChevronDown size={14} className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-600 pointer-events-none" />
-                            </div>
-                        </div>
-
-                        <div className="space-y-4">
-                            <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Colección Estratégica</label>
-                            <div className="relative">
-                                <select
-                                    value={formData.collectionId}
-                                    onChange={(e) => setFormData({ ...formData, collectionId: e.target.value })}
-                                    className="w-full bg-slate-900 border border-white/5 px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-white outline-none appearance-none cursor-pointer rounded-none focus:border-primary transition-all pr-12"
-                                >
-                                    <option value="">SIN COLECCIÓN ASIGNADA</option>
-                                    {metadata.collections.map((c: any) => (
-                                        <option key={c.id} value={c.id}>{c.name.toUpperCase()}</option>
-                                    ))}
-                                </select>
-                                <ChevronDown size={14} className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-600 pointer-events-none" />
-                            </div>
-                        </div>
-
-                        <div className="space-y-4">
-                            <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Etiquetas SEO (Etiquetaes)</label>
-                            <input
-                                type="text"
-                                value={formData.keywords}
-                                onChange={(e) => setFormData({ ...formData, keywords: e.target.value })}
-                                placeholder="EJ: INDUSTRIA, AUTOMATIZACIÓN, PRO..."
-                                className="w-full bg-slate-900 border border-white/5 px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-300 outline-none rounded-none focus:border-primary transition-all placeholder:text-slate-800"
-                            />
-                        </div>
-
-                        <div className="space-y-10 pt-10 border-t border-white/5">
-                            <Toggle
-                                label="Disponibilidad Web"
-                                icon={<Globe size={18} className="text-secondary" />}
-                                checked={formData.isActive}
-                                onChange={(v) => setFormData({ ...formData, isActive: v })}
-                            />
-                            <Toggle
-                                label="Activo Destacado"
-                                icon={<Star size={18} className="text-yellow-500" />}
-                                checked={formData.featured}
-                                onChange={(v) => setFormData({ ...formData, featured: v })}
-                            />
-                        </div>
-                    </section>
-
-                    <div className="pt-6">
-                        <button 
-                            disabled={loading}
-                            onClick={handleSubmit} 
-                            className="w-full bg-secondary text-white py-8 rounded-none-[2.5rem] font-black uppercase tracking-[0.4em] text-[11px] hover:bg-white hover:text-black transition-all shadow-2xl shadow-secondary/20 active:scale-95 duration-500 flex items-center justify-center gap-4 group"
-                        >
-                            <Save size={24} className="group-hover:scale-110 transition-transform" />
-                            <span>{loading ? 'SINCRONIZANDO...' : 'ALINEAR ARCHIVO'}</span>
-                        </button>
-                    </div>
                 </div>
             </div>
         </div>
@@ -1185,157 +755,8 @@ function Toggle({ label, checked, onChange, icon }: { label: string, checked: bo
     )
 }
 
-function BulkEditModal({ selectedCount, categories, collections, onClose, onSave }: { selectedCount: number, categories: any[], collections: any[], onClose: () => void, onSave: (data: any) => void }) {
-    const [data, setData] = useState<any>({
-        name: undefined,
-        price: undefined,
-        stock: undefined,
-        isActive: undefined,
-        featured: undefined,
-        categoryId: undefined,
-        collectionId: undefined
-    })
-
-    return (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-3xl z-[200] flex items-center justify-center p-8 animate-in fade-in duration-500">
-            <div className="glass-panel max-w-2xl w-full p-12 rounded-none-[4rem] border-white/5 space-y-12 animate-in zoom-in-95 duration-700 relative overflow-hidden shadow-[0_0_100px_rgba(0,0,0,0.5)]">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-secondary/10 blur-[120px] -mr-32 -mt-32 rounded-none"></div>
-                
-                <div className="flex justify-between items-start border-b border-white/5 pb-10">
-                    <div>
-                        <h2 className="text-2xl font-black text-white uppercase tracking-tighter italic">Gesti�n de Edición Masiva</h2>
-                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.4em] mt-2 italic leading-relaxed">Afectando a <span className="text-secondary">{selectedCount}</span> núcleos de activos comerciales en paralelo.</p>
-                    </div>
-                    <button onClick={onClose} className="w-12 h-12 bg-white/5 hover:bg-white/10 flex items-center justify-center rounded-none border border-white/5 transition-all active:scale-90 duration-300">
-                        <X size={20} className="text-slate-400" />
-                    </button>
-                </div>
-
-                <div className="space-y-10">
-                    <div className="space-y-4">
-                        <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Denominación Unificada</label>
-                        <input 
-                            type="text"
-                            placeholder="MANTENER IDENTIFICADORES ORIGINALES..."
-                            className="w-full bg-slate-950 border border-white/5 px-8 py-6 text-xs font-black uppercase tracking-widest text-white outline-none focus:border-secondary transition-all rounded-none placeholder:text-slate-800"
-                            onChange={(e) => setData({ ...data, name: e.target.value || undefined })}
-                        />
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                        <div className="space-y-4">
-                            <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Nuevo Valor Operativo (USD)</label>
-                            <input 
-                                type="number"
-                                placeholder="SIN CAMBIOS"
-                                className="w-full bg-slate-950 border border-white/5 px-8 py-6 text-sm font-black text-secondary outline-none focus:border-secondary transition-all rounded-none placeholder:text-slate-800"
-                                onChange={(e) => setData({ ...data, price: e.target.value || undefined })}
-                            />
-                        </div>
-                        <div className="space-y-4">
-                            <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Capacidad de Stock</label>
-                            <input 
-                                type="number"
-                                placeholder="SIN CAMBIOS"
-                                className="w-full bg-slate-950 border border-white/5 px-8 py-6 text-sm font-black text-primary outline-none focus:border-primary transition-all rounded-none placeholder:text-slate-800"
-                                onChange={(e) => setData({ ...data, stock: e.target.value || undefined })}
-                            />
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                        <div className="space-y-4">
-                            <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Reasignar Categoría</label>
-                            <select 
-                                className="w-full bg-slate-950 border border-white/5 px-8 py-6 text-[10px] font-black uppercase tracking-widest text-white outline-none focus:border-white/20 transition-all rounded-none appearance-none"
-                                onChange={(e) => setData({ ...data, categoryId: e.target.value || undefined })}
-                            >
-                                <option value="">SIN CAMBIOS</option>
-                                {categories.map(c => (
-                                    <option key={c.id} value={c.id}>{c.name.toUpperCase()}</option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className="space-y-4">
-                            <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Flujo de Colección</label>
-                            <select 
-                                className="w-full bg-slate-950 border border-white/5 px-8 py-6 text-[10px] font-black uppercase tracking-widest text-white outline-none focus:border-white/20 transition-all rounded-none appearance-none"
-                                onChange={(e) => setData({ ...data, collectionId: e.target.value || undefined })}
-                            >
-                                <option value="">SIN CAMBIOS</option>
-                                <option value="none">LIBERAR DE TODAS</option>
-                                {collections.map(c => (
-                                    <option key={c.id} value={c.id}>{c.name.toUpperCase()}</option>
-                                ))}
-                            </select>
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                        <div className="glass-panel p-8 rounded-none-[2.5rem] border-white/10 flex flex-col justify-center gap-4 bg-slate-950/40">
-                            <span className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em]">Visibilidad Estratégica</span>
-                            <div className="flex gap-4">
-                                <button 
-                                    onClick={() => setData({ ...data, isActive: true })}
-                                    className={`flex-1 py-3 text-[9px] font-black uppercase tracking-widest transition-all rounded-none ${data.isActive === true ? 'bg-secondary text-white shadow-lg shadow-secondary/20' : 'bg-white/5 text-slate-500 border border-white/5'}`}
-                                > Activar </button>
-                                <button 
-                                    onClick={() => setData({ ...data, isActive: false })}
-                                    className={`flex-1 py-3 text-[9px] font-black uppercase tracking-widest transition-all rounded-none ${data.isActive === false ? 'bg-red-500 text-white shadow-lg shadow-red-500/20' : 'bg-white/5 text-slate-500 border border-white/5'}`}
-                                > Inactivar </button>
-                                <button 
-                                    onClick={() => setData({ ...data, isActive: undefined })}
-                                    className={`flex-1 py-3 text-[9px] font-black uppercase tracking-widest transition-all rounded-none ${data.isActive === undefined ? 'bg-slate-700 text-white shadow-lg' : 'bg-white/5 text-slate-500 border border-white/5'}`}
-                                > OMITIR </button>
-                            </div>
-                        </div>
-
-                        <div className="glass-panel p-8 rounded-none-[2.5rem] border-white/10 flex flex-col justify-center gap-4 bg-slate-950/40">
-                            <span className="text-[10px] font-black uppercase text-yellow-500/50 tracking-[0.4em]">Producto Destacado</span>
-                            <div className="flex gap-4">
-                                <button 
-                                    onClick={() => setData({ ...data, featured: true })}
-                                    className={`flex-1 py-3 text-[9px] font-black uppercase tracking-widest transition-all rounded-none ${data.featured === true ? 'bg-yellow-500 text-white shadow-lg shadow-yellow-500/20' : 'bg-white/5 text-slate-500 border border-white/5'}`}
-                                > Destacar </button>
-                                <button 
-                                    onClick={() => setData({ ...data, featured: false })}
-                                    className={`flex-1 py-3 text-[9px] font-black uppercase tracking-widest transition-all rounded-none ${data.featured === false ? 'bg-slate-800 text-white' : 'bg-white/5 text-slate-500 border border-white/5'}`}
-                                > Normal </button>
-                                <button 
-                                    onClick={() => setData({ ...data, featured: undefined })}
-                                    className={`flex-1 py-3 text-[9px] font-black uppercase tracking-widest transition-all rounded-none ${data.featured === undefined ? 'bg-slate-700 text-white shadow-lg' : 'bg-white/5 text-slate-500 border border-white/5'}`}
-                                > OMITIR </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="flex flex-col gap-6 pt-10 border-t border-white/5">
-                    <button 
-                        onClick={() => onSave(data)}
-                        className="w-full bg-white text-black py-10 rounded-none-[2.5rem] font-black uppercase tracking-[0.5em] text-[11px] hover:bg-secondary hover:text-white transition-all shadow-2xl active:scale-95 duration-500"
-                    >
-                        Ejecutar Transmutación Masiva
-                    </button>
-                    <button 
-                        onClick={onClose}
-                        className="w-full text-[9px] font-black uppercase text-slate-500 hover:text-white transition-all tracking-[0.4em] italic"
-                    >
-                        Desestimar Operación
-                    </button>
-                </div>
-            </div>
-        </div>
-    )
-}
-
 function TaxonomyModal({ type, initialData, allProducts, onClose, onSaved }: { type: 'category' | 'collection', initialData: any, allProducts: any[], onClose: () => void, onSaved: () => void }) {
     const [loading, setLoading] = useState(false)
-    const [searching, setSearching] = useState(false)
-    const [searchTerm, setSearchTerm] = useState('')
-    const [searchResults, setSearchResults] = useState<any[]>([])
-    const [activeSection, setActiveSection] = useState<'assigned' | 'search'>('assigned')
-    
     const [data, setData] = useState({
         id: initialData?.id || null,
         name: initialData?.name || '',
@@ -1344,270 +765,34 @@ function TaxonomyModal({ type, initialData, allProducts, onClose, onSaved }: { t
         pdfUrl: initialData?.pdfUrl || '',
         isVisible: initialData?.isVisible ?? true
     })
-    
-    const assignedProducts = allProducts.filter(p => type === 'category' ? p.categoryId === data.id : p.collectionId === data.id)
-    const [selectedProducts, setSelectedProducts] = useState<any[]>(assignedProducts as any[])
-    
-    useEffect(() => {
-        const delayDebounceFn = setTimeout(async () => {
-            if (searchTerm.length >= 2) {
-                setSearching(true)
-                try {
-                    const results = await searchProductsForTaxonomy(searchTerm)
-                    setSearchResults(results)
-                    setActiveSection('search')
-                } catch (error) {
-                    console.error("Error searching:", error)
-                } finally {
-                    setSearching(false)
-                }
-            } else {
-                setSearchResults([])
-            }
-        }, 500)
-        return () => clearTimeout(delayDebounceFn)
-    }, [searchTerm])
-
-    const handleSubmit = async () => {
-        setLoading(true)
-        try {
-            const productIds = selectedProducts.map(p => p.id)
-            if (type === 'category') {
-                await saveCategory(data.id, data, productIds)
-            } else {
-                await saveCollection(data.id, data, productIds)
-            }
-            onSaved()
-        } catch (error) {
-            alert("Error al guardar")
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    const toggleProduct = (product: any) => {
-        setSelectedProducts(prev => {
-            const isSelected = prev.find(p => p.id === product.id)
-            if (isSelected) {
-                return prev.filter(p => p.id !== product.id)
-            } else {
-                return [...prev, product]
-            }
-        })
-    }
 
     return (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-3xl z-[200] flex items-center justify-center p-8 animate-in fade-in duration-500">
-            <div className="glass-panel max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col rounded-none-[4rem] border-white/5 animate-in zoom-in-95 duration-700 shadow-[0_0_150px_rgba(0,0,0,0.6)] relative">
-                <div className="absolute top-0 left-0 w-64 h-64 bg-primary/10 blur-[120px] -ml-32 -mt-32 rounded-none"></div>
-                
-                {/* Header */}
-                <div className="bg-white/2 border-b border-white/5 p-10 flex justify-between items-center shrink-0">
-                    <div>
-                        <h2 className="text-2xl font-black text-white uppercase tracking-tighter italic">Reconfiguración de {type === 'category' ? 'Categoría' : 'Colección'}</h2>
-                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.4em] mt-2 italic">Anclaje de activos a Elementos taxonómicos</p>
-                    </div>
-                    <button onClick={onClose} className="w-12 h-12 bg-white/5 hover:bg-white/10 flex items-center justify-center rounded-none border border-white/5 transition-all active:scale-90 duration-300">
-                        <X size={20} className="text-slate-400" />
-                    </button>
+        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-3xl z-[200] flex items-center justify-center p-8">
+            <div className="glass-panel max-w-xl w-full p-12 rounded-none border-white/5 space-y-8 relative overflow-hidden bg-slate-950">
+                <div className="flex justify-between items-center mb-8">
+                    <h2 className="text-2xl font-black text-white uppercase italic">Editar {type === 'category' ? 'Categoría' : 'Colección'}</h2>
+                    <button onClick={onClose} className="text-slate-400 hover:text-white"><X size={24} /></button>
                 </div>
-
-                {/* Form Body - Scrollable */}
-                <div className="flex-1 overflow-y-auto p-12 space-y-12 custom-scrollbar">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                        <div className="space-y-10">
-                            <div className="space-y-4">
-                                <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Denominación del Elemento</label>
-                                <input 
-                                    type="text"
-                                    value={data.name}
-                                    onChange={(e) => setData({ ...data, name: e.target.value })}
-                                    className="w-full bg-slate-950 border border-white/5 px-8 py-6 text-sm font-black uppercase tracking-widest text-white outline-none focus:border-secondary transition-all rounded-none"
-                                />
-                            </div>
-
-                            <div className="space-y-4">
-                                <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Referencia Visual (URL)</label>
-                                <input 
-                                    type="text"
-                                    value={data.image}
-                                    onChange={(e) => setData({ ...data, image: e.target.value })}
-                                    placeholder="https://cloud.atomic.shop/resources/..."
-                                    className="w-full bg-slate-950 border border-white/5 px-8 py-6 text-[10px] font-mono text-slate-400 outline-none focus:border-primary transition-all rounded-none"
-                                />
-                            </div>
-
-                            <div className="space-y-4">
-                                <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Documento PDF (URL / Base64)</label>
-                                <input 
-                                    type="text"
-                                    value={data.pdfUrl}
-                                    onChange={(e) => setData({ ...data, pdfUrl: e.target.value })}
-                                    placeholder="https://... o data:application/pdf;base64,..."
-                                    className="w-full bg-slate-950 border border-white/5 px-8 py-6 text-[10px] font-mono text-slate-400 outline-none focus:border-secondary transition-all rounded-none"
-                                />
-                            </div>
-                        </div>
-
-                        <div className="space-y-10">
-                            <div className="space-y-4">
-                                <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Descripción Conceptual</label>
-                                <textarea 
-                                    rows={3}
-                                    value={data.description}
-                                    onChange={(e) => setData({ ...data, description: e.target.value })}
-                                    className="w-full bg-slate-950 border border-white/5 px-8 py-6 text-xs font-bold text-slate-300 outline-none resize-none focus:border-secondary transition-all rounded-none leading-relaxed italic"
-                                />
-                            </div>
-
-                            <div className="flex items-center justify-between bg-white/2 p-6 rounded-none border border-white/5">
-                                <Toggle 
-                                    label="Estado Público" 
-                                    icon={<Globe size={18} className="text-primary" />} 
-                                    checked={data.isVisible} 
-                                    onChange={(v) => setData({ ...data, isVisible: v })} 
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* PRODUCT SELECTOR AREA */}
-                    <div className="pt-12 border-t border-white/5 border-dashed space-y-10">
-                        <div className="flex items-center justify-between">
-                            <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-white italic flex items-center gap-4">
-                                <Box size={20} className="text-secondary" /> 
-                                Vínculo de Activos Relacionados
-                            </h3>
-                            <span className="text-[9px] font-black bg-secondary/10 text-secondary border border-secondary/20 px-4 py-2 rounded-none uppercase tracking-widest italic">
-                                {selectedProducts.length} NÚCLEOS SINCRONIZADOS
-                            </span>
-                        </div>
-
-                        <div className="relative group/search">
-                            <Search className="absolute left-8 top-1/2 -translate-y-1/2 text-slate-600 transition-colors group-focus-within/search:text-primary" size={20} />
-                            <input 
-                                type="text"
-                                placeholder="ESCANEAR CATÁLOGO (NOMBRE / SKU / MODELO)..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full bg-slate-950 border border-white/5 pl-20 pr-8 py-8 text-xs font-black uppercase tracking-[0.2em] text-white outline-none focus:border-primary transition-all rounded-none-[2rem] placeholder:text-slate-800"
-                            />
-                            {searching && (
-                                <RefreshCw className="absolute right-8 top-1/2 -translate-y-1/2 text-primary animate-spin" size={20} />
-                            )}
-                        </div>
-
-                        <div className="flex border-b border-white/5">
-                            <button 
-                                onClick={() => setActiveSection('assigned')}
-                                className={`px-10 py-5 text-[10px] font-black uppercase tracking-[0.3em] transition-all relative ${activeSection === 'assigned' ? 'text-white' : 'text-slate-600 hover:text-slate-400'}`}
-                            >
-                                Asignados ({selectedProducts.length})
-                                {activeSection === 'assigned' && <div className="absolute bottom-0 left-10 right-10 h-1 bg-secondary rounded-none shadow-[0_0_15px_rgba(255,99,71,0.5)]"></div>}
-                            </button>
-                            <button 
-                                onClick={() => setActiveSection('search')}
-                                className={`px-10 py-5 text-[10px] font-black uppercase tracking-[0.3em] transition-all relative ${activeSection === 'search' ? 'text-white' : 'text-slate-600 hover:text-slate-400'}`}
-                            >
-                                {searchTerm ? 'Resultados' : 'Catálogo Maestro'}
-                                {activeSection === 'search' && <div className="absolute bottom-0 left-10 right-10 h-1 bg-primary rounded-none shadow-[0_0_15px_rgba(45,212,191,0.5)]"></div>}
-                            </button>
-                        </div>
-
-                        <div className="bg-slate-950/60 border border-white/5 rounded-none-[3rem] min-h-[400px] max-h-[400px] overflow-y-auto custom-scrollbar overflow-x-hidden">
-                            {activeSection === 'assigned' ? (
-                                selectedProducts.length === 0 ? (
-                                    <div className="flex flex-col items-center justify-center py-32 opacity-10">
-                                        <Box size={48} />
-                                        <p className="text-[10px] font-black uppercase tracking-[0.5em] mt-8">Sin unidades vinculadas</p>
-                                    </div>
-                                ) : (
-                                    <div className="divide-y divide-white/5">
-                                        {selectedProducts.map(p => (
-                                            <ProductItem 
-                                                key={p.id} 
-                                                product={p} 
-                                                isSelected={true} 
-                                                onClick={() => toggleProduct(p)} 
-                                            />
-                                        ))}
-                                    </div>
-                                )
-                            ) : (
-                                <div className="divide-y divide-white/5">
-                                    {(searchTerm.length >= 2 ? searchResults : allProducts.slice(0, 50)).map(p => {
-                                        const isSelected = !!selectedProducts.find(sp => sp.id === p.id)
-                                        return (
-                                            <ProductItem 
-                                                key={p.id} 
-                                                product={p} 
-                                                isSelected={isSelected} 
-                                                onClick={() => toggleProduct(p)} 
-                                            />
-                                        )
-                                    })}
-                                    {searchTerm.length < 2 && searchTerm.length > 0 && (
-                                        <div className="py-24 text-center opacity-20">
-                                            <p className="text-[10px] font-black uppercase tracking-[0.5em]">Escriba Gesti�n de búsqueda...</p>
-                                        </div>
-                                    )}
-                                    {searchTerm.length >= 2 && searchResults.length === 0 && !searching && (
-                                        <div className="py-24 text-center opacity-20">
-                                            <p className="text-[10px] font-black uppercase tracking-[0.5em]">Sin coincidencias en el registro</p>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-                        </div>
+                <div className="space-y-6">
+                    <div className="space-y-4">
+                        <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em]">Nombre</label>
+                        <input
+                            type="text"
+                            value={data.name}
+                            onChange={(e) => setData({ ...data, name: e.target.value })}
+                            className="w-full bg-slate-900 border border-white/5 px-6 py-4 text-sm font-black text-white outline-none focus:border-secondary transition-all rounded-none"
+                        />
                     </div>
                 </div>
-
-                {/* Footer */}
-                <div className="shrink-0 bg-white/2 border-t border-white/5 p-10 flex gap-8">
+                <div className="pt-8">
                     <button 
-                        disabled={loading}
-                        onClick={onClose}
-                        className="flex-1 px-8 py-6 text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 hover:text-white transition-all bg-white/5 hover:bg-white/10 rounded-none border border-white/5 shadow-2xl"
+                        onClick={onSaved}
+                        className="w-full bg-secondary text-white py-6 font-black uppercase tracking-widest text-xs hover:bg-white hover:text-black transition-all"
                     >
-                        Abortar
-                    </button>
-                    <button 
-                        disabled={loading}
-                        onClick={handleSubmit}
-                        className="flex-1 bg-white text-black py-6 rounded-none font-black uppercase tracking-[0.5em] text-[11px] hover:bg-secondary hover:text-white transition-all shadow-2xl active:scale-95 duration-500"
-                    >
-                        {loading ? 'SINCRONIZANDO...' : 'Comprometer Elemento'}
+                        Guardar Cambios
                     </button>
                 </div>
             </div>
         </div>
     )
 }
-
-function ProductItem({ product, isSelected, onClick }: { product: any, isSelected: boolean, onClick: () => void }) {
-    return (
-        <div 
-            className={`flex items-center justify-between px-8 py-6 cursor-pointer transition-all duration-300 group border-b border-white/5 ${isSelected ? 'bg-secondary/10' : 'hover:bg-white/5 bg-transparent'}`} 
-            onClick={onClick}
-        >
-            <div className="flex items-center space-x-6">
-                <div className="w-12 h-12 bg-slate-900 rounded-none overflow-hidden flex items-center justify-center shrink-0 border border-white/5 group-hover:scale-110 transition-transform duration-500 shadow-2xl">
-                    {product.images && safeParseArray(product.images).length > 0 ? (
-                        <img src={safeParseArray(product.images)[0]} className="w-full h-full object-cover" />
-                    ) : (
-                        <ImageIcon size={18} className="text-slate-600" />
-                    )}
-                </div>
-                <div>
-                    <p className="text-xs font-black text-white uppercase tracking-tighter line-clamp-1 italic">{product.name}</p>
-                    <p className="text-[9px] text-slate-500 font-bold uppercase tracking-[0.3em] mt-1">{product.sku || 'N/A PROTOCOL'}</p>
-                </div>
-            </div>
-            <div className={`transition-all duration-500 ${isSelected ? 'text-secondary scale-110' : 'text-slate-800'}`}>
-                {isSelected ? <CheckSquare size={22} className="shadow-[0_0_15px_rgba(255,99,71,0.3)]" /> : <Square size={22} />}
-            </div>
-        </div>
-    )
-}
-
-

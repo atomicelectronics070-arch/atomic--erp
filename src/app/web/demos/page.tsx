@@ -65,12 +65,12 @@ export default function DemosPage() {
                     </button>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <div className="flex flex-wrap gap-12 justify-center">
                     {demos.map((demo) => (
                         <motion.div 
                             key={demo.id}
                             whileHover={{ y: -10 }}
-                            className="bg-white border border-slate-100 p-12 shadow-xl relative overflow-hidden group cursor-pointer"
+                            className="bg-white border border-slate-100 p-12 shadow-xl relative overflow-hidden group cursor-pointer w-full md:w-[calc(50%-24px)]"
                             onClick={() => setActiveChat(demo)}
                         >
                             <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${demo.gradient} opacity-5 group-hover:opacity-10 transition-all rounded-bl-full`} />

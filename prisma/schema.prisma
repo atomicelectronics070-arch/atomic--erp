@@ -87,6 +87,7 @@ model User {
   lessonProgress    LessonProgress[]
   phoneRanking      PhoneRanking?
   publicationRanking PublicationRanking?
+  salesRanking      SalesRanking?
 }
 
 
@@ -843,6 +844,25 @@ model LessonProgress {
   updatedAt   DateTime @updatedAt
 
   @@unique([userId, lessonId])
+}
+
+model SalesRanking {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  currentWeekAmount Float   @default(0)
+  historicalAmount  Float   @default(0)
+  lastReset       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model SalesWeeklyGoal {
+  id          String   @id @default(cuid())
+  amount      Float    @default(0)
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model PhoneRanking {

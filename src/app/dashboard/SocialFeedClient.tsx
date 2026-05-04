@@ -9,6 +9,7 @@ import {
 } from "lucide-react"
 import PhoneRankingPanel from "@/components/dashboard/PhoneRankingPanel"
 import PublicationRankingPanel from "@/components/dashboard/PublicationRankingPanel"
+import SalesRankingPanel from "@/components/dashboard/SalesRankingPanel"
 import { createPost, toggleLike, addComment, fetchFeed, getSalesRanking, deletePost } from "@/lib/actions/social"
 import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
@@ -140,6 +141,7 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
                         </div>
                     </motion.div>
 
+                    <SalesRankingPanel isAdmin={isAdmin} />
                     <PhoneRankingPanel isAdmin={isAdmin} />
                     <PublicationRankingPanel isAdmin={isAdmin} />
 
