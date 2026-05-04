@@ -24,6 +24,7 @@ export default function WhatsAppDashboard() {
   const role = session?.user?.role || 'USER';
   
   const [view, setView] = useState<'dashboard' | 'chats' | 'intelligence' | 'training'>('dashboard');
+  const [activeInstance, setActiveInstance] = useState('corporate_main');
   const [status, setStatus] = useState('disconnected');
   const [socketConnected, setSocketConnected] = useState(false);
   const [qr, setQr] = useState<string | null>(null);
