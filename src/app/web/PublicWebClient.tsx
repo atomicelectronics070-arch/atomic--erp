@@ -631,75 +631,67 @@ function WebShowcase() {
 
 function HeroBanner({ settings }: { settings: any }) {
     const banners = [
-        { url: "/banners/hero.png", title: settings?.bannerText || "PRECISIÓN A ESCALA GLOBAL", active: true },
-        { url: "/banners/solutions.png", title: "TECNOLOGÍA DE ÉLITE", active: true },
-        { url: "/banners/elite.png", title: "SOLUCIONES CORPORATIVAS", active: true }
+        { 
+            url: "/banners/hero.png", 
+            title: "CATÁLOGO DE SOLUCIONES 2026", 
+            subtitle: "Sistemas ERP y Automatización",
+            pdf: "/pdfs/catalogo_general.pdf",
+            accent: "from-blue-600/20"
+        },
+        { 
+            url: "/banners/solutions.png", 
+            title: "SOLUCIONES TECNOLÓGICAS DE ÉLITE", 
+            subtitle: "Infraestructura y Seguridad",
+            pdf: "/pdfs/catalogo_elite.pdf",
+            accent: "from-red-600/20"
+        }
     ]
 
-    const [current, setCurrent] = useState(0)
-
-    useEffect(() => {
-        const t = setInterval(() => {
-            setCurrent(prev => (prev + 1) % banners.length)
-        }, 8000)
-        return () => clearInterval(t)
-    }, [])
-
     return (
-        <section className="relative w-full h-[70vh] min-h-[500px] bg-slate-900 overflow-hidden">
-            <AnimatePresence mode="wait">
-                <motion.div
-                    key={current}
-                    initial={{ opacity: 0, scale: 1.1 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    transition={{ duration: 1.5 }}
-                    className="absolute inset-0"
-                >
-                    <img 
-                        src={banners[current].url} 
-                        alt="Hero Banner" 
-                        className="w-full h-full object-cover opacity-70"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#F8FAFC] via-transparent to-transparent" />
-                    <div className="absolute inset-0 bg-slate-950/20" />
-                </motion.div>
-            </AnimatePresence>
+        <section className="w-full bg-slate-900 py-1 border-b border-white/5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-1 px-1">
+                {banners.map((b, i) => (
+                    <motion.div 
+                        key={i}
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.8, delay: i * 0.2 }}
+                        className="relative h-[60vh] min-h-[400px] overflow-hidden group cursor-pointer"
+                    >
+                        <div className="absolute inset-0 transition-transform duration-1000 group-hover:scale-110">
+                            <img src={b.url} alt={b.title} className="w-full h-full object-cover opacity-80" />
+                            <div className={`absolute inset-0 bg-gradient-to-br ${b.accent} to-transparent mix-blend-overlay`} />
+                            <div className="absolute inset-0 bg-slate-950/40 group-hover:bg-slate-950/20 transition-all duration-700" />
+                        </div>
+                        
+                        <div className="absolute inset-0 p-12 flex flex-col justify-end">
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.5 + (i * 0.2) }}
+                                className="space-y-6"
+                            >
+                                <span className="text-[10px] font-black text-white/60 uppercase tracking-[0.5em] italic">{b.subtitle}</span>
+                                <h2 className="text-4xl lg:text-5xl font-black text-white uppercase italic tracking-tighter leading-none max-w-sm">
+                                    {b.title}
+                                </h2>
+                                <a 
+                                    href={b.pdf} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="inline-flex items-center gap-4 bg-white text-slate-950 px-10 py-5 text-[11px] font-black uppercase tracking-[0.3em] hover:bg-blue-600 hover:text-white transition-all shadow-2xl skew-x-[-10deg]"
+                                >
+                                    <span className="skew-x-[10deg] flex items-center gap-3">
+                                        VER MÁS <ArrowRight size={16} />
+                                    </span>
+                                </a>
+                            </motion.div>
+                        </div>
 
-            <div className="relative z-10 h-full max-w-7xl mx-auto px-6 flex flex-col justify-center">
-                <motion.div
-                    key={`text-${current}`}
-                    initial={{ opacity: 0, x: -30 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.8, delay: 0.5 }}
-                    className="max-w-3xl"
-                >
-                    <div className="flex items-center gap-3 mb-6">
-                        <div className="w-12 h-1 bg-blue-600" />
-                        <span className="text-[10px] font-black text-white uppercase tracking-[0.5em] italic">ATOMIC_SYSTEMS_v7</span>
-                    </div>
-                    <h1 className="text-6xl md:text-8xl font-black text-white uppercase tracking-tighter italic leading-[0.85] mb-8">
-                        {banners[current].title}
-                    </h1>
-                    <div className="flex flex-wrap gap-6">
-                        <button className="bg-[#1E3A8A] text-white px-12 py-5 font-black uppercase tracking-[0.3em] text-xs hover:bg-white hover:text-[#1E3A8A] transition-all shadow-2xl active:scale-95">
-                            Explorar Catálogo
-                        </button>
-                        <button className="border-2 border-white/20 text-white px-12 py-5 font-black uppercase tracking-[0.3em] text-xs hover:bg-white/10 transition-all backdrop-blur-sm active:scale-95">
-                            Soporte Técnico
-                        </button>
-                    </div>
-                </motion.div>
-            </div>
-
-            {/* Slider Dots */}
-            <div className="absolute bottom-12 left-6 z-20 flex gap-3">
-                {banners.map((_, i) => (
-                    <button 
-                        key={i} 
-                        onClick={() => setCurrent(i)}
-                        className={`h-1.5 transition-all duration-500 ${current === i ? 'w-12 bg-blue-600' : 'w-4 bg-white/20 hover:bg-white/40'}`}
-                    />
+                        {/* Decorative Corner */}
+                        <div className="absolute top-0 right-0 w-24 h-24 border-t-2 border-r-2 border-white/10 group-hover:border-white/40 transition-colors m-8" />
+                    </motion.div>
                 ))}
             </div>
         </section>
