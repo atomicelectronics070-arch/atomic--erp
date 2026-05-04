@@ -9,153 +9,121 @@ datasource db {
 }
 
 model User {
-  id           String  @id @default(cuid())
-  email        String  @unique
-  passwordHash String
-  name         String?
-  lastName     String?
-  cedula       String? @unique
-  role         String  @default("SALESPERSON")
-  status       String  @default("PENDING")
-  isActive     Boolean @default(true)
-  resetRequested Boolean @default(false)
-  tempResetCode  String?
-  phoneNumber    String?
-  residenceSector String?
-  profilePicture  String?
-  receivePromotions Boolean @default(false)
-
-  // Registration specific fields
-  profileData  String?
-  aspirations  String?
-  availability String?
-
-  teamId String?
-  team   Team?   @relation(fields: [teamId], references: [id])
-  
-  referredById String?
-  referredBy   User?   @relation("UserReferrals", fields: [referredById], references: [id])
-  referrals    User[]  @relation("UserReferrals")
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  conversations Quote[]
-  clients       Client[]
-  evaluations   Evaluation[] @relation("Evaluator")
-  receivedEvals Evaluation[] @relation("Evaluatee")
-
-  waOwnedChats WAConversation[] @relation("ConversationOwner")
-  StorageFile  StorageFile[]
-
-  // Internal Messaging Relations
-  sentMessages     InternalMessage[] @relation("MessageSender")
-  receivedMessages InternalMessage[] @relation("MessageReceiver")
-
-  // Productivity
-  notes            Note[]  @relation("UserNotes")
-  events           Event[] @relation("UserEvents")
-
-  // Notifications & Finance
-  notifications    Notification[]
-  receivedTickets  PaymentTicket[] @relation("TicketReceiver")
-  issuedTickets    PaymentTicket[] @relation("TicketIssuer")
-
-  // Cognitive Prompts
-  promptConfigs    UserPromptConfig[]
-  workCycles       WorkCycle[]
-  transactions     Transaction[]      @relation("UserTransactions")
-  // Web and Content
-  webOrders        WebOrder[]         @relation("WebOrderAssignee")
-  canCreateBlogs   Boolean            @default(false)
-  blogs            Blog[]             @relation("UserBlogs")
-
-  // --- SOCIAL NETWORK RELATIONS ---
-  socialPosts      SocialPost[]       @relation("UserPosts")
-  socialComments   SocialComment[]    @relation("UserComments")
-  socialLikes      SocialLike[]       @relation("UserLikes")
-  socialTags       SocialTag[]        @relation("UserTags")
-
-  // Quarterly Planning & HR
-  quarterlyPlans   QuarterlyPlan[]    @relation("AssignedPlans")
-  quarterlyTasks   QuarterlyTask[]
-  jobProfile       JobProfile?        @relation("JobProfile")
-  socialSettings   SocialSettings?
-
-  // Academy Progress
-  courseEnrollments CourseEnrollment[]
-  lessonProgress    LessonProgress[]
-  phoneRanking      PhoneRanking?
+  id                 String              @id @default(cuid())
+  email              String              @unique
+  passwordHash       String
+  name               String?
+  role               String              @default("SALESPERSON")
+  status             String              @default("PENDING")
+  profileData        String?
+  aspirations        String?
+  availability       String?
+  teamId             String?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  canCreateBlogs     Boolean             @default(false)
+  cedula             String?             @unique
+  lastName           String?
+  receivePromotions  Boolean             @default(false)
+  referredById       String?
+  isActive           Boolean             @default(true)
+  resetRequested     Boolean             @default(false)
+  tempResetCode      String?
+  phoneNumber        String?
+  profilePicture     String?
+  residenceSector    String?
+  blogs              Blog[]              @relation("UserBlogs")
+  clients            Client[]
+  courseEnrollments  CourseEnrollment[]
+  receivedEvals      Evaluation[]        @relation("Evaluatee")
+  evaluations        Evaluation[]        @relation("Evaluator")
+  events             Event[]             @relation("UserEvents")
+  receivedMessages   InternalMessage[]   @relation("MessageReceiver")
+  sentMessages       InternalMessage[]   @relation("MessageSender")
+  jobProfile         JobProfile?         @relation("JobProfile")
+  lessonProgress     LessonProgress[]
+  notes              Note[]              @relation("UserNotes")
+  notifications      Notification[]
+  issuedTickets      PaymentTicket[]     @relation("TicketIssuer")
+  receivedTickets    PaymentTicket[]     @relation("TicketReceiver")
+  phoneRanking       PhoneRanking?
   publicationRanking PublicationRanking?
-  salesRanking      SalesRanking?
+  quarterlyTasks     QuarterlyTask[]
+  conversations      Quote[]
+  salesRanking       SalesRanking?
+  socialComments     SocialComment[]     @relation("UserComments")
+  socialLikes        SocialLike[]        @relation("UserLikes")
+  socialPosts        SocialPost[]        @relation("UserPosts")
+  socialSettings     SocialSettings?
+  socialTags         SocialTag[]         @relation("UserTags")
+  StorageFile        StorageFile[]
+  transactions       Transaction[]       @relation("UserTransactions")
+  referredBy         User?               @relation("UserReferrals", fields: [referredById], references: [id])
+  referrals          User[]              @relation("UserReferrals")
+  team               Team?               @relation(fields: [teamId], references: [id])
+  promptConfigs      UserPromptConfig[]
+  waOwnedChats       WAConversation[]    @relation("ConversationOwner")
+  webOrders          WebOrder[]          @relation("WebOrderAssignee")
+  workCycles         WorkCycle[]
+  quarterlyPlans     QuarterlyPlan[]     @relation("AssignedPlans")
 }
-
 
 model Team {
   id          String   @id @default(cuid())
   name        String   @unique
   description String?
-  members     User[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  members     User[]
 }
 
 model Client {
-  id               String   @id @default(cuid())
-  name             String   // Can be full name or company name
-  firstName        String?  // Nombres
-  lastName         String?  // Apellidos
+  id               String     @id @default(cuid())
+  name             String
+  firstName        String?
+  lastName         String?
   email            String?
   phone            String?
-  requirement      String?  // Requerimiento de ingreso
-  city             String?  // Ciudad
-  status           String   @default("PROSPECTO") // Estado de atencion
-  source           String   @default("MANUAL")
-  lastContact      DateTime @default(now())
-  retargetingCount Int      @default(0)
-  campaignsSent    Int      @default(0) // Campañas enviadas
-  purchaseCount    Int      @default(0) // Veces que compro
-
-  salespersonId String
-  salesperson   User   @relation(fields: [salespersonId], references: [id])
-
-  category      String   @default("GENERAL") // Custom list/category
-  waContactId   String?  @unique
-  waContact     WAContact? @relation(fields: [waContactId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  quotes Quote[]
+  requirement      String?
+  city             String?
+  status           String     @default("PROSPECTO")
+  source           String     @default("MANUAL")
+  lastContact      DateTime   @default(now())
+  retargetingCount Int        @default(0)
+  campaignsSent    Int        @default(0)
+  purchaseCount    Int        @default(0)
+  salespersonId    String
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  category         String     @default("GENERAL")
+  waContactId      String?    @unique
+  salesperson      User       @relation(fields: [salespersonId], references: [id])
+  waContact        WAContact? @relation(fields: [waContactId], references: [id])
+  quotes           Quote[]
 }
 
 model Product {
-  id             String  @id @default(cuid())
+  id             String      @id @default(cuid())
   name           String
   description    String?
   price          Float
   compareAtPrice Float?
-  sku            String? @unique
-
-  categoryId String?
-  category   Category? @relation(fields: [categoryId], references: [id])
-
-  collectionId String?
-  collection   Collection? @relation(fields: [collectionId], references: [id])
-
-  images       String? // Store as JSON array string
-  specSheetUrl String?
-  keywords     String? // Comma separated
-  stock        Int     @default(0)
-  isActive     Boolean @default(true)
-  featured     Boolean @default(false)
-  specs        String? // JSON string for technical specs
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  isDeleted Boolean @default(false)
-  provider  String?
+  sku            String?     @unique
+  categoryId     String?
+  collectionId   String?
+  images         String?
+  specSheetUrl   String?
+  keywords       String?
+  stock          Int         @default(0)
+  isActive       Boolean     @default(true)
+  featured       Boolean     @default(false)
+  specs          String?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  isDeleted      Boolean     @default(false)
+  provider       String?
+  category       Category?   @relation(fields: [categoryId], references: [id])
+  collection     Collection? @relation(fields: [collectionId], references: [id])
 
   @@index([categoryId])
   @@index([collectionId])
@@ -168,155 +136,136 @@ model Category {
   name        String    @unique
   slug        String    @unique
   description String?
-  image       String?
-  pdfUrl      String?   @db.Text
-  isVisible   Boolean   @default(true)
-  products    Product[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  isVisible   Boolean   @default(true)
+  image       String?
+  pdfUrl      String?
+  products    Product[]
 }
 
 model Collection {
   id          String    @id @default(cuid())
   name        String    @unique
   slug        String    @unique
-  description String?   @db.Text // Usado para el texto de presentación
-  image       String?
-  pdfUrl      String?   @db.Text
-  isVisible   Boolean   @default(true)
-  products    Product[]
+  description String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  isVisible   Boolean   @default(true)
+  image       String?
+  pdfUrl      String?
+  products    Product[]
 }
 
 model Quote {
-  id            String @id @default(cuid())
-  quoteNumber   String @unique // Format: PROP-MM-NNN
-  clientId      String
-  client        Client @relation(fields: [clientId], references: [id])
-  salespersonId String
-  salesperson   User   @relation(fields: [salespersonId], references: [id])
-
-  subtotal Float
-  tax      Float
-  discount Float @default(0)
-  total    Float
-
-  pdfUrl String?
-  status String  @default("DRAFT")
-
-  // New professional fields
-  warrantyComments String?
-  deliveryAddress  String?
-  
-  // Historical UI persistence fields
-  clientName      String?   // Allows quotes without forced CRM client
-  discountPercent Float     @default(0)
-  itemsData       String?   // JSON string of quote items array
-  
-  // Numbering and Matrix Matrix
-  globalQuoteNumber String? // Global sequence across all users
-  advisorName       String? // Persisted advisor name used during generation
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                String   @id @default(cuid())
+  quoteNumber       String   @unique
+  clientId          String
+  salespersonId     String
+  subtotal          Float
+  tax               Float
+  discount          Float    @default(0)
+  total             Float
+  pdfUrl            String?
+  status            String   @default("DRAFT")
+  warrantyComments  String?
+  deliveryAddress   String?
+  clientName        String?
+  discountPercent   Float    @default(0)
+  itemsData         String?
+  globalQuoteNumber String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  advisorName       String?
+  client            Client   @relation(fields: [clientId], references: [id])
+  salesperson       User     @relation(fields: [salespersonId], references: [id])
 }
 
 model WebOrder {
-  id              String   @id @default(cuid())
-  orderNumber     String   @unique 
-  customerName    String
-  customerEmail   String
-  customerPhone   String?
-  companyName     String?
-  status          String   @default("NUEVO") // NUEVO, PROCESANDO, COTIZADO, CERRADO
-  itemsData       String   // JSON string of cart items
-  totalAmount     Float
-  notes           String?
-  
+  id                    String   @id @default(cuid())
+  orderNumber           String   @unique
+  customerName          String
+  customerEmail         String
+  customerPhone         String?
+  companyName           String?
+  status                String   @default("NUEVO")
+  itemsData             String
+  totalAmount           Float
+  notes                 String?
   assignedSalespersonId String?
-  assignedSalesperson   User? @relation("WebOrderAssignee", fields: [assignedSalespersonId], references: [id])
-
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  assignedSalesperson   User?    @relation("WebOrderAssignee", fields: [assignedSalespersonId], references: [id])
 }
 
 model Transaction {
-  id         String   @id @default(cuid())
-  trxId      String   @unique // Format: TRX-000
-  client     String
-  date       DateTime @default(now())
-  amount     Float    // This will be used as the PVP for display after approval
-  pvp        Float    @default(0) // Explicit PVP field
-  cost       Float    @default(0)
-  profit     Float    @default(0)
-  commission Float    @default(0)
-  status     String   @default("PENDIENTE") // PENDIENTE, APROBADO, CANCELADO
-  type       String   @default("Venta Directa")
-  proofUrl   String?  // URL/Base64 of the quote/attachment (cotizacion)
-
-  bonus      Float    @default(0)
-  quoteNumber String?
-
+  id            String   @id @default(cuid())
+  trxId         String   @unique
+  client        String
+  date          DateTime @default(now())
+  amount        Float
+  cost          Float    @default(0)
+  profit        Float    @default(0)
+  commission    Float    @default(0)
+  status        String   @default("PENDIENTE")
+  type          String   @default("Venta Directa")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
   salespersonId String?
+  proofUrl      String?
+  pvp           Float    @default(0)
+  bonus         Float    @default(0)
+  quoteNumber   String?
   salesperson   User?    @relation("UserTransactions", fields: [salespersonId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
 
 model Evaluation {
-  id          String @id @default(cuid())
-  evaluatorId String
-  evaluator   User   @relation("Evaluator", fields: [evaluatorId], references: [id])
-  evaluateeId String
-  evaluatee   User   @relation("Evaluatee", fields: [evaluateeId], references: [id])
-
+  id           String   @id @default(cuid())
+  evaluatorId  String
+  evaluateeId  String
   score        Float
-  rubricData   String // JSON string with detailed scores
+  rubricData   String
   observations String?
-  cycleDay     Int     @default(1)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  cycleDay     Int      @default(1)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  evaluatee    User     @relation("Evaluatee", fields: [evaluateeId], references: [id])
+  evaluator    User     @relation("Evaluator", fields: [evaluatorId], references: [id])
 }
 
 model WorkCycle {
-  id            String   @id @default(cuid())
+  id            String     @id @default(cuid())
   userId        String
-  user          User     @relation(fields: [userId], references: [id])
   role          String
   startDate     DateTime?
   endDate       DateTime?
   fixedPay      Float?
   commissionPct Float?
+  functions     String     @default("[]")
+  isActive      Boolean    @default(false)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
   contractUrl   String?
-  functions     String   @default("[]") // JSON string array of job functions
-  isActive      Boolean  @default(false)
-  
   dailyLogs     DailyLog[]
-  
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  user          User       @relation(fields: [userId], references: [id])
 }
 
 model DailyLog {
-  id          String    @id @default(cuid())
-  cycleId     String
-  cycle       WorkCycle @relation(fields: [cycleId], references: [id])
-  dayNumber   Int       // Day 1 to 30
-  date        DateTime  @default(now())
-  content     String    // JSON string { "funcName": "progress text" }
-  
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id        String    @id @default(cuid())
+  cycleId   String
+  dayNumber Int
+  date      DateTime  @default(now())
+  content   String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  cycle     WorkCycle @relation(fields: [cycleId], references: [id])
 }
 
 model ExtractionTemplate {
   id        String   @id @default(cuid())
   domain    String   @unique
   name      String?
-  selectors String // JSON string with title, price, images, etc.
+  selectors String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -325,68 +274,59 @@ model ExtractionHistory {
   id           String   @id @default(cuid())
   url          String
   domain       String
-  status       String   @default("PENDING") // PENDING, PROCESSING, COMPLETED, ERROR
+  status       String   @default("PENDING")
   itemCount    Int      @default(0)
   errorMessage String?
   exportUrl    String?
   createdAt    DateTime @default(now())
 }
 
-// --- WHATSAPP CRM MODELS ---
-
 model WAContact {
   id            String           @id @default(cuid())
-  whatsappId    String           @unique // The phone number or WhatsApp ID
+  whatsappId    String           @unique
   name          String?
   profilePic    String?
   createdAt     DateTime         @default(now())
   updatedAt     DateTime         @updatedAt
-  conversations WAConversation[]
   client        Client?
+  conversations WAConversation[]
 
   @@index([whatsappId])
 }
 
 model WAConversation {
-  id        String    @id @default(cuid())
-  contactId String
-  contact   WAContact @relation(fields: [contactId], references: [id])
-  status    String    @default("NEW") // NEW, OPEN, PENDING, RESOLVED, CLOSED
-  priority  String    @default("MEDIUM") // LOW, MEDIUM, HIGH, URGENT
-
-  ownerId String?
-  owner   User?   @relation("ConversationOwner", fields: [ownerId], references: [id])
-
-  lastMessageAt DateTime @default(now())
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  messages    WAMessage[]
-  notes       WANote[]
-  tags        WATag[]
-  assignments WAAssignment[]
+  id            String         @id @default(cuid())
+  contactId     String
+  status        String         @default("NEW")
+  priority      String         @default("MEDIUM")
+  ownerId       String?
+  lastMessageAt DateTime       @default(now())
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  assignments   WAAssignment[]
+  contact       WAContact      @relation(fields: [contactId], references: [id])
+  owner         User?          @relation("ConversationOwner", fields: [ownerId], references: [id])
+  messages      WAMessage[]
+  notes         WANote[]
+  tags          WATag[]        @relation("WAConversationToWATag")
 
   @@index([status])
   @@index([contactId])
 }
 
 model WAMessage {
-  id             String         @id @default(cuid())
-  conversationId String
-  conversation   WAConversation @relation(fields: [conversationId], references: [id])
-
-  whatsappMessageId String? @unique // ID from WhatsApp Cloud API
-  direction         String // INBOUND, OUTBOUND
-  type              String  @default("text") // text, image, audio, document, template
-  body              String? @default("")
+  id                String         @id @default(cuid())
+  conversationId    String
+  whatsappMessageId String?        @unique
+  direction         String
+  type              String         @default("text")
+  body              String?        @default("")
   mediaUrl          String?
-
-  status       String  @default("SENT") // SENT, DELIVERED, READ, FAILED
-  errorMessage String?
-
-  senderId String? // User ID if OUTBOUND
-
-  createdAt DateTime @default(now())
+  status            String         @default("SENT")
+  errorMessage      String?
+  senderId          String?
+  createdAt         DateTime       @default(now())
+  conversation      WAConversation @relation(fields: [conversationId], references: [id])
 
   @@index([conversationId])
   @@index([direction])
@@ -396,26 +336,26 @@ model WATag {
   id            String           @id @default(cuid())
   name          String           @unique
   color         String?          @default("#FF5733")
-  conversations WAConversation[]
+  conversations WAConversation[] @relation("WAConversationToWATag")
 }
 
 model WANote {
   id             String         @id @default(cuid())
   conversationId String
-  conversation   WAConversation @relation(fields: [conversationId], references: [id])
   authorId       String
   content        String
   createdAt      DateTime       @default(now())
+  conversation   WAConversation @relation(fields: [conversationId], references: [id])
 }
 
 model WAAssignment {
   id              String         @id @default(cuid())
   conversationId  String
-  conversation    WAConversation @relation(fields: [conversationId], references: [id])
   assignerId      String?
   assigneeId      String
   previousOwnerId String?
   createdAt       DateTime       @default(now())
+  conversation    WAConversation @relation(fields: [conversationId], references: [id])
 }
 
 model WATemplate {
@@ -423,71 +363,57 @@ model WATemplate {
   name      String   @unique
   category  String?
   language  String   @default("es")
-  content   String // The text with variables like {{1}}
+  content   String
   status    String   @default("APPROVED")
   createdAt DateTime @default(now())
 }
-
-// --- STORAGE MODULE ---
 
 model StorageFolder {
   id         String          @id @default(cuid())
   name       String
   parentId   String?
-  parent     StorageFolder?  @relation("FolderHierarchy", fields: [parentId], references: [id])
-  subfolders StorageFolder[] @relation("FolderHierarchy")
-  files      StorageFile[]
   createdAt  DateTime        @default(now())
   updatedAt  DateTime        @updatedAt
+  files      StorageFile[]
+  parent     StorageFolder?  @relation("FolderHierarchy", fields: [parentId], references: [id])
+  subfolders StorageFolder[] @relation("FolderHierarchy")
 }
 
 model StorageFile {
-  id   String @id @default(cuid())
-  name String
-  url  String
-  size Int    @default(0) // in bytes
-
-  folderId String?
-  folder   StorageFolder? @relation(fields: [folderId], references: [id])
-
+  id         String         @id @default(cuid())
+  name       String
+  url        String
+  size       Int            @default(0)
+  folderId   String?
   uploaderId String
-  uploader   User   @relation(fields: [uploaderId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+  folder     StorageFolder? @relation(fields: [folderId], references: [id])
+  uploader   User           @relation(fields: [uploaderId], references: [id])
 }
-
-// --- SYSTEM CONFIG ---
 
 model SystemSetting {
   id          String   @id @default(cuid())
   key         String   @unique
-  value       String // Text content, like prompts or JSON
+  value       String
   description String?
   updatedAt   DateTime @updatedAt
 }
 
-// --- INTERNAL MESSAGING MODULE ---
-
 model InternalMessage {
-  id          String   @id @default(cuid())
-  subject     String
-  type        String   @default("Mensaje Simple") // Notificacion, Tarea, Mensaje Simple, URGENTE
-  content     String
-  status      String   @default("Recibido") // Recibido, En proceso, Completado
-  isRead      Boolean  @default(false)
-
-  senderId    String
-  sender      User     @relation("MessageSender", fields: [senderId], references: [id])
-
-  receiverId  String
-  receiver    User     @relation("MessageReceiver", fields: [receiverId], references: [id])
-
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id         String   @id @default(cuid())
+  subject    String
+  type       String   @default("Mensaje Simple")
+  content    String
+  status     String   @default("Recibido")
+  isRead     Boolean  @default(false)
+  senderId   String
+  receiverId String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  receiver   User     @relation("MessageReceiver", fields: [receiverId], references: [id])
+  sender     User     @relation("MessageSender", fields: [senderId], references: [id])
 }
-
-// --- PRODUCTIVITY MODULE ---
 
 model Note {
   id        String   @id @default(cuid())
@@ -496,9 +422,9 @@ model Note {
   color     String?
   pinned    Boolean  @default(false)
   userId    String
-  user      User     @relation("UserNotes", fields: [userId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  user      User     @relation("UserNotes", fields: [userId], references: [id])
 }
 
 model Event {
@@ -510,350 +436,288 @@ model Event {
   color       String?
   allDay      Boolean  @default(false)
   userId      String
-  user        User     @relation("UserEvents", fields: [userId], references: [id])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  user        User     @relation("UserEvents", fields: [userId], references: [id])
 }
-
-// --- NOTIFICATIONS MODULE ---
 
 model Notification {
   id        String   @id @default(cuid())
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
   title     String
   message   String
-  type      String   // MESSAGE, GOAL, TICKET, SYSTEM
-  relatedId String?  // ID of the related entity (e.g. ticket id, message id)
+  type      String
+  relatedId String?
   isRead    Boolean  @default(false)
   createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
 }
-
-// --- FINANCE MODULE ---
 
 model PaymentTicket {
-  id         String   @id @default(cuid())
-  issueDate  DateTime @default(now())
-  dueDate    DateTime
-  amount     Float
-  concept    String
-  status     String   @default("PENDING") // PENDING, PAID, CANCELLED
-
-  adminId    String
-  admin      User     @relation("TicketIssuer", fields: [adminId], references: [id])
-
-  advisorId  String
-  advisor    User     @relation("TicketReceiver", fields: [advisorId], references: [id])
-
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id        String   @id @default(cuid())
+  issueDate DateTime @default(now())
+  dueDate   DateTime
+  amount    Float
+  concept   String
+  status    String   @default("PENDING")
+  adminId   String
+  advisorId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  admin     User     @relation("TicketIssuer", fields: [adminId], references: [id])
+  advisor   User     @relation("TicketReceiver", fields: [advisorId], references: [id])
 }
-
-// --- COGNITIVE CONFIG (AI PROMPTS) ---
 
 model UserPromptConfig {
   id        String   @id @default(cuid())
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  type      String   // CAPACITADOR, TUTOR
+  type      String
   prompt    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
 
   @@unique([userId, type])
 }
 
 model SavedPrompt {
   id        String   @id @default(cuid())
-  name      String   // "Prompt de Ventas Agresivo"
-  type      String   // CAPACITADOR, TUTOR
+  name      String
+  type      String
   content   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-// --- BLOG MODULE ---
-
 model Blog {
-  id            String   @id @default(cuid())
-  title         String
-  excerpt       String?
-  content       String   @db.Text
-  imageUrl      String?
-  published     Boolean  @default(false)
-
-  // Social Publishing
-  contentType   String   @default("article") // "article" | "video"
-  videoUrl      String?  // URL for video content
-  socialTargets String?  // JSON: ["facebook","instagram","youtube","tiktok"]
-  publishResults String? // JSON: { facebook: { success, postId, error }, ... }
-
-  // Macabre Matrix: Environments & Accounts
-  environmentId String?
-  environment   Environment? @relation(fields: [environmentId], references: [id])
-  targetAccounts String?      // JSON: ["account_id_1", "account_id_2"]
-
-  authorId  String
-  author    User     @relation("UserBlogs", fields: [authorId], references: [id])
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             String       @id @default(cuid())
+  title          String
+  excerpt        String?
+  content        String
+  imageUrl       String?
+  published      Boolean      @default(false)
+  authorId       String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  contentType    String       @default("article")
+  publishResults String?
+  socialTargets  String?
+  videoUrl       String?
+  environmentId  String?
+  targetAccounts String?
+  author         User         @relation("UserBlogs", fields: [authorId], references: [id])
+  environment    Environment? @relation(fields: [environmentId], references: [id])
 }
 
 model Environment {
-  id          String   @id @default(cuid())
-  name        String   @unique
+  id          String          @id @default(cuid())
+  name        String          @unique
   description String?
-  accounts    SocialAccount[]
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
   blogs       Blog[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  accounts    SocialAccount[]
 }
 
 model SocialAccount {
-  id            String   @id @default(cuid())
-  name          String   // e.g. "CUENTA 1", "FB_VENTAS_01"
-  platform      String   // facebook, instagram, youtube, tiktok
-  externalId    String?  // Optional platform internal ID
+  id            String      @id @default(cuid())
+  name          String
+  platform      String
+  externalId    String?
   environmentId String
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
   environment   Environment @relation(fields: [environmentId], references: [id])
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
 }
 
-// Social Platform Credentials
 model SocialSettings {
   id                  String   @id @default(cuid())
-  userId              String?  @unique // Link to user, null means global
-  user                User?    @relation(fields: [userId], references: [id])
-
-  // Facebook / Instagram (Meta Graph API)
   metaPageId          String?
   metaPageToken       String?
   metaInstagramActId  String?
-  // YouTube (Google OAuth)
   youtubeChannelId    String?
   youtubeRefreshToken String?
-  // TikTok
   tiktokAccessToken   String?
   tiktokOpenId        String?
-
-  updatedAt DateTime @updatedAt
-  createdAt DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  createdAt           DateTime @default(now())
+  userId              String?  @unique
+  user                User?    @relation(fields: [userId], references: [id])
 }
 
-// --- SOCIAL NETWORK MODULE ---
-
 model SocialPost {
-  id        String   @id @default(cuid())
-  content   String?  @db.Text
-  mediaUrls String?  // JSON array of base64 strings or media URLs
-  
+  id        String          @id @default(cuid())
+  content   String?
+  mediaUrls String?
   authorId  String
-  author    User     @relation("UserPosts", fields: [authorId], references: [id])
-  
-  likes     SocialLike[]
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
   comments  SocialComment[]
+  likes     SocialLike[]
+  author    User            @relation("UserPosts", fields: [authorId], references: [id])
   tags      SocialTag[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
 
 model SocialComment {
-  id        String   @id @default(cuid())
-  content   String   @db.Text
-  
+  id        String     @id @default(cuid())
+  content   String
   postId    String
-  post      SocialPost @relation(fields: [postId], references: [id], onDelete: Cascade)
-  
   authorId  String
-  author    User     @relation("UserComments", fields: [authorId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  author    User       @relation("UserComments", fields: [authorId], references: [id])
+  post      SocialPost @relation(fields: [postId], references: [id], onDelete: Cascade)
 }
 
 model SocialLike {
-  id        String   @id @default(cuid())
-  
+  id        String     @id @default(cuid())
   postId    String
-  post      SocialPost @relation(fields: [postId], references: [id], onDelete: Cascade)
-  
   userId    String
-  user      User     @relation("UserLikes", fields: [userId], references: [id])
+  createdAt DateTime   @default(now())
+  post      SocialPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User       @relation("UserLikes", fields: [userId], references: [id])
 
-  createdAt DateTime @default(now())
-  
   @@unique([postId, userId])
 }
 
 model SocialTag {
-  id        String   @id @default(cuid())
-  
-  postId    String
-  post      SocialPost @relation(fields: [postId], references: [id], onDelete: Cascade)
-  
-  userId    String
-  user      User     @relation("UserTags", fields: [userId], references: [id])
+  id     String     @id @default(cuid())
+  postId String
+  userId String
+  post   SocialPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user   User       @relation("UserTags", fields: [userId], references: [id])
 
   @@unique([postId, userId])
 }
 
 model QuarterlyPlan {
-  id              String   @id @default(cuid())
-  name            String
-  objective       String?
-  participants    String?  // JSON string: ["VENDEDORES", "SOCIOS", "AFILIADOS"]
-  notifyUsers     Boolean  @default(false)
-  
-  // Metrics Configuration
-  postsPerDay        Int     @default(3)
-  retargetingPerWeek Int     @default(1)
-  leadsPerWeek       Int     @default(25)
-  
-  // Admin Metrics
-  adminMeetingsPerWeek Int     @default(1)
-  adminProvideDbPerWeek Int    @default(5)
-
-  status          String   @default("ACTIVO") // ACTIVO, COMPLETADO, ARCHIVADO
-  
-  assignedUsers   User[]   @relation("AssignedPlans")
-  
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  
-  tasks           QuarterlyTask[]
+  id                    String          @id @default(cuid())
+  name                  String
+  objective             String?
+  participants          String?
+  notifyUsers           Boolean         @default(false)
+  postsPerDay           Int             @default(3)
+  retargetingPerWeek    Int             @default(1)
+  leadsPerWeek          Int             @default(25)
+  adminMeetingsPerWeek  Int             @default(1)
+  adminProvideDbPerWeek Int             @default(5)
+  status                String          @default("ACTIVO")
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
+  tasks                 QuarterlyTask[]
+  assignedUsers         User[]          @relation("AssignedPlans")
 }
 
 model QuarterlyTask {
-  id        String   @id @default(cuid())
+  id        String        @id @default(cuid())
   planId    String
-  plan      QuarterlyPlan @relation(fields: [planId], references: [id])
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  
-  type      String   // POST, RETARGETING, CRM
-  week      Int      // 1-12 (for 3 months)
-  day       Int?     // 1-7
-  
-  content   String?  // JSON string for URLs or lead references
-  count     Int      @default(0) // Current progress count
-  required  Int      @default(0) // Required count from plan
-  status    String   @default("PENDING") // PENDING, COMPLETED
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  type      String
+  week      Int
+  day       Int?
+  content   String?
+  count     Int           @default(0)
+  required  Int           @default(0)
+  status    String        @default("PENDING")
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  plan      QuarterlyPlan @relation(fields: [planId], references: [id])
+  user      User          @relation(fields: [userId], references: [id])
 }
 
 model JobProfile {
-  id          String   @id @default(cuid())
-  userId      String   @unique
-  user        User     @relation("JobProfile", fields: [userId], references: [id])
-  
-  title       String   // e.g. Senior Sales Advisor
-  description String?  @db.Text
-  skills      String?  @db.Text // JSON string
-  responsibilities String? @db.Text // JSON string
-  benefits    String?  @db.Text // JSON string
-  
-  templateName String? // Company wide template name
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id               String   @id @default(cuid())
+  userId           String   @unique
+  title            String
+  description      String?
+  skills           String?
+  responsibilities String?
+  benefits         String?
+  templateName     String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  user             User     @relation("JobProfile", fields: [userId], references: [id])
 }
-
-// --- ACADEMY MODULE (TEACHING PLATFORM) ---
 
 model AcademyCategory {
   id          String   @id @default(cuid())
   name        String   @unique
   slug        String   @unique
-  description String?  @db.Text
+  description String?
   image       String?
-  courses     Course[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  courses     Course[]
 }
 
 model Course {
-  id          String   @id @default(cuid())
+  id          String             @id @default(cuid())
   title       String
-  slug        String   @unique
-  description String?  @db.Text
+  slug        String             @unique
+  description String?
   imageUrl    String?
-  
   categoryId  String
-  category    AcademyCategory @relation(fields: [categoryId], references: [id])
-  
-  lessons     Lesson[]
+  published   Boolean            @default(false)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  category    AcademyCategory    @relation(fields: [categoryId], references: [id])
   enrollments CourseEnrollment[]
-  
-  published   Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  lessons     Lesson[]
 }
 
 model Lesson {
-  id          String   @id @default(cuid())
-  title       String
-  slug        String
-  content     String   @db.Text // Markdown or HTML content
-  videoUrl    String?
-  order       Int      @default(0)
-  
-  courseId    String
-  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  
-  progress    LessonProgress[]
-  quizData    String?  @db.Text // JSON string with questions and answers
-
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String           @id @default(cuid())
+  title     String
+  slug      String
+  content   String
+  videoUrl  String?
+  order     Int              @default(0)
+  courseId  String
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  quizData  String?
+  course    Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  progress  LessonProgress[]
 
   @@unique([courseId, slug])
 }
 
 model CourseEnrollment {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   courseId    String
-  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  
-  status      String   @default("IN_PROGRESS") // IN_PROGRESS, COMPLETED
-  progress    Int      @default(0) // Percentage 0-100
-  
-  enrolledAt  DateTime @default(now())
+  status      String    @default("IN_PROGRESS")
+  progress    Int       @default(0)
+  enrolledAt  DateTime  @default(now())
   completedAt DateTime?
-  updatedAt   DateTime @updatedAt
+  updatedAt   DateTime  @updatedAt
+  course      Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, courseId])
 }
 
 model LessonProgress {
-  id          String   @id @default(cuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  lessonId    String
-  lesson      Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
-  
-  completed   Boolean  @default(false)
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(cuid())
+  userId    String
+  lessonId  String
+  completed Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  lesson    Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, lessonId])
 }
 
 model SalesRanking {
-  id              String   @id @default(cuid())
-  userId          String   @unique
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  currentWeekAmount Float   @default(0)
-  historicalAmount  Float   @default(0)
-  lastReset       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  currentWeekAmount Float    @default(0)
+  historicalAmount  Float    @default(0)
+  lastReset         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model SalesWeeklyGoal {
@@ -866,13 +730,13 @@ model SalesWeeklyGoal {
 }
 
 model PhoneRanking {
-  id              String   @id @default(cuid())
-  userId          String   @unique
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  currentWeekCount Int     @default(0)
-  historicalCount  Int     @default(0)
-  lastReset       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id               String   @id @default(cuid())
+  userId           String   @unique
+  currentWeekCount Int      @default(0)
+  historicalCount  Int      @default(0)
+  lastReset        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model WeeklyGoal {
@@ -885,13 +749,13 @@ model WeeklyGoal {
 }
 
 model PublicationRanking {
-  id              String   @id @default(cuid())
-  userId          String   @unique
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  currentWeekCount Int     @default(0)
-  historicalCount  Int     @default(0)
-  lastReset       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id               String   @id @default(cuid())
+  userId           String   @unique
+  currentWeekCount Int      @default(0)
+  historicalCount  Int      @default(0)
+  lastReset        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model PublicationWeeklyGoal {

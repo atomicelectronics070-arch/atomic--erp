@@ -76,9 +76,10 @@ interface PublicWebClientProps {
     initialProducts: any[]
     metadata: { categories: any[], collections: any[] }
     userRole?: string
+    storeSettings?: any
 }
 
-export default function PublicWebClient({ initialProducts, metadata, userRole }: PublicWebClientProps) {
+export default function PublicWebClient({ initialProducts, metadata, userRole, storeSettings }: PublicWebClientProps) {
     const [searchQuery, setSearchQuery] = useState("")
 
     useEffect(() => {
@@ -139,6 +140,9 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
     return (
         <div className="min-h-screen bg-[#F8FAFC] text-slate-900 selection:bg-[#1E3A8A]/20 pb-20 font-sans">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6 }}>
+
+                {/* 0. HERO BANNER */}
+                <HeroBanner settings={storeSettings} />
 
                 {/* 1. CATEGORÍAS */}
                 <CategoriesBanner categories={metadata.categories} />
@@ -622,5 +626,82 @@ function WebShowcase() {
                 )}
             </AnimatePresence>
         </div>
+    )
+}
+
+function HeroBanner({ settings }: { settings: any }) {
+    const banners = [
+        { url: "/banners/hero.png", title: settings?.bannerText || "PRECISIÓN A ESCALA GLOBAL", active: true },
+        { url: "/banners/solutions.png", title: "TECNOLOGÍA DE ÉLITE", active: true },
+        { url: "/banners/elite.png", title: "SOLUCIONES CORPORATIVAS", active: true }
+    ]
+
+    const [current, setCurrent] = useState(0)
+
+    useEffect(() => {
+        const t = setInterval(() => {
+            setCurrent(prev => (prev + 1) % banners.length)
+        }, 8000)
+        return () => clearInterval(t)
+    }, [])
+
+    return (
+        <section className="relative w-full h-[70vh] min-h-[500px] bg-slate-900 overflow-hidden">
+            <AnimatePresence mode="wait">
+                <motion.div
+                    key={current}
+                    initial={{ opacity: 0, scale: 1.1 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 1.5 }}
+                    className="absolute inset-0"
+                >
+                    <img 
+                        src={banners[current].url} 
+                        alt="Hero Banner" 
+                        className="w-full h-full object-cover opacity-70"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#F8FAFC] via-transparent to-transparent" />
+                    <div className="absolute inset-0 bg-slate-950/20" />
+                </motion.div>
+            </AnimatePresence>
+
+            <div className="relative z-10 h-full max-w-7xl mx-auto px-6 flex flex-col justify-center">
+                <motion.div
+                    key={`text-${current}`}
+                    initial={{ opacity: 0, x: -30 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.8, delay: 0.5 }}
+                    className="max-w-3xl"
+                >
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="w-12 h-1 bg-blue-600" />
+                        <span className="text-[10px] font-black text-white uppercase tracking-[0.5em] italic">ATOMIC_SYSTEMS_v7</span>
+                    </div>
+                    <h1 className="text-6xl md:text-8xl font-black text-white uppercase tracking-tighter italic leading-[0.85] mb-8">
+                        {banners[current].title}
+                    </h1>
+                    <div className="flex flex-wrap gap-6">
+                        <button className="bg-[#1E3A8A] text-white px-12 py-5 font-black uppercase tracking-[0.3em] text-xs hover:bg-white hover:text-[#1E3A8A] transition-all shadow-2xl active:scale-95">
+                            Explorar Catálogo
+                        </button>
+                        <button className="border-2 border-white/20 text-white px-12 py-5 font-black uppercase tracking-[0.3em] text-xs hover:bg-white/10 transition-all backdrop-blur-sm active:scale-95">
+                            Soporte Técnico
+                        </button>
+                    </div>
+                </motion.div>
+            </div>
+
+            {/* Slider Dots */}
+            <div className="absolute bottom-12 left-6 z-20 flex gap-3">
+                {banners.map((_, i) => (
+                    <button 
+                        key={i} 
+                        onClick={() => setCurrent(i)}
+                        className={`h-1.5 transition-all duration-500 ${current === i ? 'w-12 bg-blue-600' : 'w-4 bg-white/20 hover:bg-white/40'}`}
+                    />
+                ))}
+            </div>
+        </section>
     )
 }
