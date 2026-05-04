@@ -253,7 +253,6 @@ export default function ShopConfigPage() {
                             />
                         </div>
                     )}
-             )}
 
                     {activeTab === 'catalogs' && (
                         <div className="space-y-12 animate-in fade-in slide-in-from-bottom-5 duration-700">

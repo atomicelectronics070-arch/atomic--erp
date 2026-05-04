@@ -13,7 +13,7 @@ import {
 const BANNERS = [
   {
     id: "sence-face",
-    image: "/banners/WhatsApp Image 2026-05-04 at 5.55.26 PM.jpeg",
+    image: "/banners/banner2.jpg",
     title: "SENCE FACE",
     subtitle: "Tecnología de Reconocimiento Facial Corporativo",
     description: "Solución de control de acceso e identificación biométrica con IA. Precisión militar para entornos empresariales.",
@@ -23,7 +23,7 @@ const BANNERS = [
   },
   {
     id: "operacion-espias",
-    image: "/banners/WhatsApp Image 2026-05-04 at 5.54.16 PM (1).jpeg",
+    image: "/banners/banner1.jpg",
     title: "OPERACIÓN INTEL",
     subtitle: "Inteligencia Corporativa en Tiempo Real",
     description: "Sistema de vigilancia y análisis de datos para proteger activos estratégicos de su organización.",
