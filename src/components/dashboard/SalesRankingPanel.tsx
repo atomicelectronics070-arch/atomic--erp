@@ -177,7 +177,7 @@ export default function SalesRankingPanel({ isAdmin }: { isAdmin: boolean }) {
 
                     <div className="space-y-4">
                         {ranking.length > 0 ? (
-                            ranking.map((entry, index) => (
+                            ranking.map((entry: any, index: number) => (
                                 <div key={entry.id} className="relative group">
                                     <div className="flex items-center gap-4 mb-2">
                                         <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-black text-xs text-navy border border-slate-200 overflow-hidden shrink-0">
@@ -244,7 +244,7 @@ export default function SalesRankingPanel({ isAdmin }: { isAdmin: boolean }) {
                     </div>
 
                     <CyberCard className="!p-6 space-y-4 bg-slate-50/50">
-                        {ranking.map((entry) => (
+                        {ranking.map((entry: any) => (
                             <div key={`hist-${entry.id}`} className="flex justify-between items-center border-b border-slate-200/50 pb-3 last:border-0 last:pb-0">
                                 <span className="text-[9px] font-black text-navy/40 uppercase italic">{entry.user.name}</span>
                                 <span className="text-[10px] font-black text-navy italic">${(entry.historicalAmount + entry.currentWeekAmount).toLocaleString()}</span>

@@ -78,11 +78,11 @@ export default function InventoryMatrix({ initialProducts, providers, onRefresh 
         })
 
         // Calculate averages
-        return Object.entries(stats).map(([name, s]) => ({
+        return Object.entries(stats).map(([name, s]: [string, any]) => ({
             name,
             ...s,
             avgMargin: s.count > 0 ? (s.totalProfit / (s.totalProfit + s.totalCost)) * 100 : 0
-        })).sort((a, b) => b.totalProfit - a.totalProfit)
+        })).sort((a: any, b: any) => b.totalProfit - a.totalProfit)
     }, [initialProducts])
 
     // Filtration Logic
@@ -97,10 +97,10 @@ export default function InventoryMatrix({ initialProducts, providers, onRefresh 
     }, [initialProducts, search, providerFilter, costRange])
 
     const stats = useMemo(() => {
-        const totalCost = filteredProducts.reduce((acc, p) => acc + (p.buyPrice || 0), 0)
-        const totalPVP = filteredProducts.reduce((acc, p) => acc + p.price, 0)
+        const totalCost = filteredProducts.reduce((acc: number, p: any) => acc + (p.buyPrice || 0), 0)
+        const totalPVP = filteredProducts.reduce((acc: number, p: any) => acc + p.price, 0)
         const avgMargin = filteredProducts.length > 0 
-            ? filteredProducts.reduce((acc, p) => {
+            ? filteredProducts.reduce((acc: number, p: any) => {
                 const cost = p.buyPrice || 0
                 if (cost === 0) return acc + 100
                 return acc + ((p.price - cost) / p.price) * 100
@@ -110,14 +110,14 @@ export default function InventoryMatrix({ initialProducts, providers, onRefresh 
     }, [filteredProducts])
 
     const handleApplyRules = async (toSelected = false) => {
-        const targets = toSelected ? initialProducts.filter(p => selectedIds.includes(p.id)) : filteredProducts
+        const targets = toSelected ? initialProducts.filter((p: any) => selectedIds.includes(p.id)) : filteredProducts
         if (!confirm(`\u00bfSeguro que quieres actualizar el precio de ${targets.length} productos basado en las reglas de margen?`)) return
         
         setIsUpdating(true)
         try {
-            const updates = targets.map(p => {
+            const updates = targets.map((p: any) => {
                 const cost = p.buyPrice || 0
-                const rule = rules.find(r => cost >= r.minCost && cost < r.maxCost)
+                const rule = rules.find((r: any) => cost >= r.minCost && cost < r.maxCost)
                 const margin = rule ? rule.margin : 15 // Default margin if no rule
                 // Price = Cost / (1 - margin/100) -> Standard retail margin formula
                 // Or Price = Cost * (1 + margin/100) -> Markup formula. 
@@ -192,7 +192,7 @@ export default function InventoryMatrix({ initialProducts, providers, onRefresh 
                                 className="bg-slate-900 border border-white/10 px-6 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 outline-none focus:border-secondary italic"
                             >
                                 <option value="all">TODOS LOS PROVEEDORES</option>
-                                {providers.map(p => <option key={p} value={p}>{p}</option>)}
+                                {providers.map((p: any) => <option key={p} value={p}>{p}</option>)}
                             </select>
                             <button 
                                 onClick={() => setShowRules(!showRules)}
@@ -237,7 +237,7 @@ export default function InventoryMatrix({ initialProducts, providers, onRefresh 
                                 <h3 className="text-[11px] font-black text-white uppercase tracking-[0.4em] italic">Análisis de Rentabilidad por Proveedor</h3>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                                {providerAnalytics.map((stat, i) => (
+                                {providerAnalytics.map((stat: any, i: number) => (
                                     <div key={i} className="bg-slate-900/50 border border-white/5 p-8 relative group hover:border-azure-500/30 transition-all">
                                         <div className="absolute top-0 right-0 p-4">
                                             <span className="text-[8px] font-black text-slate-700 uppercase tracking-widest">#{i+1} RENDIMIENTO</span>
@@ -302,9 +302,9 @@ export default function InventoryMatrix({ initialProducts, providers, onRefresh 
                                 <button onClick={() => setRules([...rules, { id: Date.now().toString(), minCost: 0, maxCost: 0, margin: 0 }])} className="text-[10px] font-black text-secondary hover:underline uppercase tracking-widest">A\u00f1adir Rango_CMD</button>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                                {rules.map((rule, idx) => (
+                                {rules.map((rule: any, idx: number) => (
                                     <div key={rule.id} className="bg-slate-900/50 p-6 border border-white/5 relative group">
-                                        <button onClick={() => setRules(rules.filter(r => r.id !== rule.id))} className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-none flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><X size={12}/></button>
+                                        <button onClick={() => setRules(rules.filter((r: any) => r.id !== rule.id))} className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-none flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><X size={12}/></button>
                                         <div className="space-y-6">
                                             <div className="flex items-center justify-between">
                                                 <span className="text-[9px] font-black text-slate-600 uppercase tracking-widest">Rango {idx + 1}</span>
@@ -352,7 +352,7 @@ export default function InventoryMatrix({ initialProducts, providers, onRefresh 
                         <thead>
                             <tr className="bg-white/[0.02] border-b border-white/5 text-[9px] font-black uppercase tracking-[0.3em] text-slate-500 italic">
                                 <th className="px-8 py-8 w-16">
-                                    <button onClick={() => setSelectedIds(selectedIds.length === filteredProducts.length ? [] : filteredProducts.map(p => p.id))} className="text-slate-800 hover:text-secondary transition-colors">
+                                    <button onClick={() => setSelectedIds(selectedIds.length === filteredProducts.length ? [] : filteredProducts.map((p: any) => p.id))} className="text-slate-800 hover:text-secondary transition-colors">
                                         {selectedIds.length === filteredProducts.length && filteredProducts.length > 0 ? <CheckSquare size={18} className="text-secondary" /> : <Square size={18} />}
                                     </button>
                                 </th>
@@ -374,7 +374,7 @@ export default function InventoryMatrix({ initialProducts, providers, onRefresh 
                                     </td>
                                 </tr>
                             ) : (
-                                filteredProducts.map((p) => {
+                                filteredProducts.map((p: any) => {
                                     const cost = p.buyPrice || 0
                                     const profit = p.price - cost
                                     const marginPercent = p.price > 0 ? (profit / p.price) * 100 : 0

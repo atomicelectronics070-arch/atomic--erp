@@ -121,7 +121,7 @@ export default function ShopConfigPage() {
             {view === 'list' ? (
                 <div className="space-y-12 animate-in fade-in duration-700">
                     <div className="flex gap-4 p-2 bg-white/5 border border-white/10 w-fit backdrop-blur-3xl">
-                        {['products', 'catalogs', 'settings'].map((tab) => (
+                        {['products', 'catalogs', 'settings'].map((tab: string) => (
                             <button
                                 key={tab}
                                 onClick={() => setActiveTab(tab as any)}
@@ -171,7 +171,7 @@ export default function ShopConfigPage() {
 
                             <InventoryMatrix 
                                 initialProducts={products}
-                                providers={providerStats.map(s => s.name)}
+                                providers={providerStats.map((s: any) => s.name)}
                                 onRefresh={refreshData}
                             />
                         </div>
@@ -200,7 +200,7 @@ export default function ShopConfigPage() {
                                         Jerarquía de Categorías
                                     </h3>
                                     <ul className="space-y-4">
-                                        {metadata.categories.map(c => (
+                                        {metadata.categories.map((c: any) => (
                                             <li key={c.id} className="flex justify-between items-center p-5 bg-slate-900/50 hover:bg-white/5 transition-all group rounded-none border border-white/5 hover:border-secondary/20">
                                                 <div>
                                                     <span className="font-black text-white italic text-sm uppercase tracking-tighter group-hover:text-secondary transition-colors">{c.name}</span>
@@ -239,8 +239,8 @@ export default function ShopConfigPage() {
                                                 <p className="text-[10px] font-black uppercase tracking-[0.4em]">Sin Colecciones Definidas</p>
                                             </div>
                                         ) : (
-                                            metadata.collections.map(c => {
-                                                const productCount = products.filter(p => p.collectionId === c.id).length;
+                                            metadata.collections.map((c: any) => {
+                                                const productCount = products.filter((p: any) => p.collectionId === c.id).length;
                                                 const isSelected = selectedCollections.includes(c.id);
                                                 return (
                                                     <li key={c.id} className={`flex justify-between items-center p-5 transition-all group rounded-none border ${isSelected ? 'bg-secondary/10 border-secondary/30 shadow-2xl shadow-secondary/10' : 'bg-slate-900/50 border-white/5 hover:border-primary/20 hover:bg-white/5'}`}>
