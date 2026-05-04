@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Trophy, Phone, Plus, History, DollarSign, Target, Award, Loader2 } from "lucide-react"
+import { Trophy, Phone, Plus, History, DollarSign, Target, Award, Loader2, Zap } from "lucide-react"
 import { CyberCard } from "@/components/ui/CyberUI"
 import { motion, AnimatePresence } from "framer-motion"
 
