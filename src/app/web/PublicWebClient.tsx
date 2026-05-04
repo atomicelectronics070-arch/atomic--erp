@@ -468,11 +468,8 @@ function CollectionBanner({ collection, products, reverse, userRole }: { collect
 
                             <div ref={galleryRef} className="flex gap-4 overflow-x-auto pb-6 pt-2 px-2 hide-scrollbar snap-x flex-1 items-center">
                                 {products.map((p: any, idx: number) => (
-                                    <motion.div 
+                                    <div 
                                         key={p.id}
-                                        initial={{ opacity: 0, scale: 0.9 }}
-                                        whileInView={{ opacity: 1, scale: 1 }}
-                                        transition={{ delay: idx * 0.05 }}
                                         className="snap-center shrink-0"
                                     >
                                         <Link 
@@ -488,7 +485,7 @@ function CollectionBanner({ collection, products, reverse, userRole }: { collect
                                                 <p className="text-sm font-black text-[#1E3A8A] bg-blue-50 inline-block px-3 py-1.5 rounded-lg border border-blue-100">${calculateDiscountedPrice(p.price, userRole).toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
                                             </div>
                                         </Link>
-                                    </motion.div>
+                                    </div>
                                 ))}
                             </div>
                         </div>
@@ -659,7 +656,13 @@ function HeroBanner({ settings }: { settings: any }) {
                         className="relative h-[60vh] min-h-[400px] overflow-hidden group cursor-pointer"
                     >
                         <div className="absolute inset-0 transition-transform duration-1000 group-hover:scale-110">
-                            <img src={b.url} alt={b.title} className="w-full h-full object-cover opacity-80" />
+                            <img 
+                                src={b.url} 
+                                alt={b.title} 
+                                className="w-full h-full object-cover opacity-80" 
+                                loading="eager"
+                                fetchPriority="high"
+                            />
                             <div className={`absolute inset-0 bg-gradient-to-br ${b.accent} to-transparent mix-blend-overlay`} />
                             <div className="absolute inset-0 bg-slate-950/40 group-hover:bg-slate-950/20 transition-all duration-700" />
                         </div>

@@ -24,12 +24,20 @@ export default async function PublicWebPage() {
         prisma.product.findMany({
             where: { isDeleted: false, isActive: true },
             orderBy: { createdAt: 'desc' },
-            take: 150,
-            include: { 
-                category: { select: { id: true, name: true, slug: true } },
-                collection: { select: { id: true, name: true, slug: true } }
+            take: 100,
+            select: {
+                id: true,
+                name: true,
+                description: true,
+                price: true,
+                images: true,
+                featured: true,
+                collectionId: true,
+                createdAt: true,
+                category: { select: { name: true, slug: true } }
             }
-        })
+        }),
+        getStoreSettings()
     ])
 
     const metadata = { 
