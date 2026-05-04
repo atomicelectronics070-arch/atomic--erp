@@ -5,9 +5,13 @@ import { revalidatePath, unstable_noStore as noStore } from "next/cache"
 
 // CATEGORIES & COLLECTIONS
 export async function getShopMetadata() {
-    const categories = await prisma.category.findMany({ orderBy: { name: 'asc' } })
-    const collections = await prisma.collection.findMany({ orderBy: { name: 'asc' } })
-    return { categories, collections }
+    const [categories, collections, products, providerStats] = await Promise.all([
+        prisma.category.findMany({ orderBy: { name: 'asc' } }),
+        prisma.collection.findMany({ orderBy: { name: 'asc' } }),
+        prisma.product.findMany({ where: { isDeleted: false }, take: 100, orderBy: { createdAt: 'desc' } }),
+        getProviderStats()
+    ])
+    return { categories, collections, products, providerStats }
 }
 
 export async function saveCategory(id: string | null, data: any, productIds: string[] = []) {
