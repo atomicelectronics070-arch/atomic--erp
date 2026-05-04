@@ -24,6 +24,7 @@ export default async function PublicWebPage() {
         prisma.product.findMany({
             where: { isDeleted: false, isActive: true },
             orderBy: { createdAt: 'desc' },
+            take: 150,
             include: { 
                 category: { select: { id: true, name: true, slug: true } },
                 collection: { select: { id: true, name: true, slug: true } }
