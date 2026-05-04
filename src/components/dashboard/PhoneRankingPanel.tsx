@@ -231,7 +231,7 @@ export default function PhoneRankingPanel({ isAdmin }: { isAdmin: boolean }) {
 
                     <div className="space-y-4">
                         {ranking.length > 0 ? (
-                            ranking.map((entry, index) => (
+                            ranking.map((entry: any, index: number) => (
                                 <div key={entry.id} className="relative group">
                                     <div className="flex items-center gap-4 mb-2">
                                         <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-black text-xs text-navy border border-slate-200 overflow-hidden shrink-0">
@@ -298,7 +298,7 @@ export default function PhoneRankingPanel({ isAdmin }: { isAdmin: boolean }) {
                     </div>
 
                     <CyberCard className="!p-6 space-y-4 bg-slate-50/50">
-                        {ranking.map((entry) => (
+                        {ranking.map((entry: any) => (
                             <div key={`hist-${entry.id}`} className="flex justify-between items-center border-b border-slate-200/50 pb-3 last:border-0 last:pb-0">
                                 <div className="flex items-center gap-3">
                                     <span className="text-[9px] font-black text-navy/40 uppercase italic">{entry.user.name}</span>
@@ -313,7 +313,7 @@ export default function PhoneRankingPanel({ isAdmin }: { isAdmin: boolean }) {
                         <Phone size={24} className="mx-auto mb-3 text-[#1E3A8A] opacity-30" />
                         <p className="text-[9px] font-black text-[#1E3A8A] uppercase tracking-[0.2em] italic mb-1">PROSPECTOS CAPTURADOS</p>
                         <p className="text-xl font-black text-navy italic">
-                            {ranking.reduce((acc, curr) => acc + curr.currentWeekCount, 0)}
+                            {ranking.reduce((acc: number, curr: any) => acc + curr.currentWeekCount, 0)}
                         </p>
                     </div>
                 </div>
