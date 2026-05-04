@@ -18,12 +18,17 @@ interface CartContextType {
     clearCart: () => void
     totalItems: number
     totalPrice: number
+    lastAction: string | null
+    showBotPrompt: boolean
+    setShowBotPrompt: (show: boolean) => void
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined)
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
     const [items, setItems] = useState<CartItem[]>([])
+    const [lastAction, setLastAction] = useState<string | null>(null)
+    const [showBotPrompt, setShowBotPrompt] = useState(false)
 
     // Load cart from localStorage
     useEffect(() => {
@@ -50,6 +55,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
             }
             return [...prev, item]
         })
+        setLastAction(`Añadiste ${item.name}`)
+        setShowBotPrompt(true)
     }
 
     const removeFromCart = (id: string) => {
@@ -79,7 +86,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
             updateQuantity,
             clearCart,
             totalItems,
-            totalPrice
+            totalPrice,
+            lastAction,
+            showBotPrompt,
+            setShowBotPrompt
         }}>
             {children}
         </CartContext.Provider>

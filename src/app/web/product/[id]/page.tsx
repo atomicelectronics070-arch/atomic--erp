@@ -6,19 +6,80 @@ import Link from "next/link"
 import { 
   ShoppingBag, ChevronRight, Star, ArrowRight, Shield, Zap, Truck, 
   Search, ShoppingCart, User, Download, ExternalLink, Power, ArrowLeft, 
-  CheckCircle2, Info, Package
+  CheckCircle2, Info, Package, ImageOff
 } from "lucide-react"
 import { useSession } from "next-auth/react"
 import { useCart } from "@/context/CartContext"
 import { getProductById, getRelatedProducts } from "@/lib/actions/shop"
 import { calculateDiscountedPrice } from "@/lib/utils/pricing"
+import { motion, AnimatePresence } from "framer-motion"
+
+// Enhanced cleaning for damaged image data
+const safeParseArray = (str: any, fallback: any = []) => {
+    if (!str || str === 'null' || str === '[]' || str === '') return fallback;
+    if (Array.isArray(str)) return str.length > 0 ? str : fallback;
+    if (typeof str === 'string') {
+        const trimmed = str.trim();
+        if (trimmed.startsWith('http') || trimmed.startsWith('/') || trimmed.startsWith('data:image')) return [trimmed];
+        try {
+            let cleaned = trimmed;
+            if (cleaned.startsWith('"') && cleaned.endsWith('"')) cleaned = cleaned.substring(1, cleaned.length - 1).replace(/\\"/g, '"');
+            let parsed = JSON.parse(cleaned);
+            if (typeof parsed === 'string') { try { parsed = JSON.parse(parsed); } catch(e) {} }
+            if (Array.isArray(parsed)) return parsed.length > 0 ? parsed : fallback;
+            if (typeof parsed === 'string' && parsed.length > 0) return [parsed];
+        } catch (e) {
+            const urlRegex = /(https?:\/\/[^\s"\]]+)/g;
+            const matches = trimmed.match(urlRegex);
+            if (matches && matches.length > 0) return matches;
+        }
+    }
+    return fallback;
+};
+
+/* ─── Robust Image Component with Fallback ─── */
+function SafeImage({ src, alt, className, fill = false, width, height, ...props }: any) {
+    const [error, setError] = useState(false)
+    const [isLoading, setIsLoading] = useState(true)
+
+    if (!src || error) {
+        return (
+            <div className={`flex flex-col items-center justify-center bg-slate-50 border border-slate-100 p-4 ${className} ${fill ? 'absolute inset-0' : ''}`}>
+                <div className="relative">
+                    <Package className="text-blue-100 w-12 h-12 animate-pulse" strokeWidth={1} />
+                    <ImageOff className="absolute inset-0 m-auto text-blue-200" size={18} />
+                </div>
+                <span className="text-[7px] font-black text-slate-300 uppercase tracking-widest mt-2">Imagen en Sincronización</span>
+            </div>
+        )
+    }
+
+    return (
+        <div className={`relative overflow-hidden ${fill ? 'absolute inset-0 w-full h-full' : ''} ${className}`}>
+            <img
+                src={src}
+                alt={alt}
+                onError={() => setError(true)}
+                onLoad={() => setIsLoading(false)}
+                className={`transition-all duration-700 ${isLoading ? 'scale-110 blur-xl opacity-0' : 'scale-100 blur-0 opacity-100'} ${fill ? 'w-full h-full object-contain' : ''}`}
+                style={{ width: fill ? '100%' : width, height: fill ? '100%' : height }}
+                referrerPolicy="no-referrer"
+                {...props}
+            />
+            {isLoading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-slate-50">
+                    <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                </div>
+            )}
+        </div>
+    )
+}
 
 export default function ProductDetailPage() {
     const { data: session } = useSession()
     const userRole = session?.user?.role
     const { addToCart } = useCart()
     const params = useParams()
-    const router = useRouter()
     const [product, setProduct] = useState<any>(null)
     const [related, setRelated] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
@@ -29,13 +90,13 @@ export default function ProductDetailPage() {
     const handleAddToCart = () => {
         if (!product) return;
         const price = calculateDiscountedPrice(product.price, userRole);
-        const images = product.images ? JSON.parse(product.images) : [];
+        const images = safeParseArray(product.images);
         addToCart({
             id: product.id,
             name: product.name,
             price: price,
             quantity: 1,
-            image: Array.isArray(images) ? images[0] : (typeof images === 'string' ? images : undefined)
+            image: images.length > 0 ? images[0] : undefined
         });
         setAdded(true);
         setTimeout(() => setAdded(false), 2000);
@@ -52,11 +113,11 @@ export default function ProductDetailPage() {
                     const r = await getRelatedProducts(p.categoryId, p.id)
                     setRelated(r)
                 } else {
-                    setErrorMsg("Product returned null from DB. ID: " + params.id)
+                    setErrorMsg("Producto no encontrado en DB.")
                 }
             } catch (error: any) {
                 console.error("Error loading product detail:", error)
-                setErrorMsg(error?.message || "Unknown error occurred")
+                setErrorMsg(error?.message || "Error al cargar detalle")
             }
             setLoading(false)
         }
@@ -78,8 +139,6 @@ export default function ProductDetailPage() {
         return (
             <div className="min-h-screen bg-[#F8FAFC] flex flex-col items-center justify-center space-y-6">
                 <h1 className="text-4xl font-black uppercase text-slate-300 tracking-tighter">Producto no encontrado</h1>
-                {errorMsg && <p className="text-red-500 font-bold max-w-xl text-center border border-red-200 bg-red-50 p-4">{errorMsg}</p>}
-                <p className="text-slate-400">ID Buscado: {params.id}</p>
                 <Link href="/web" className="text-[10px] font-black uppercase tracking-[0.3em] bg-[#1E3A8A] text-white px-8 py-4 hover:bg-blue-800 transition-all flex items-center space-x-3 rounded-none shadow-lg">
                     <ArrowLeft size={14} />
                     <span>Volver al catálogo</span>
@@ -88,31 +147,15 @@ export default function ProductDetailPage() {
         )
     }
 
-    const images = (() => {
-        try {
-            let parsed = product.images ? JSON.parse(product.images) : [];
-            if(typeof parsed === 'string') { try { parsed = JSON.parse(parsed) } catch(e){} }
-            if (Array.isArray(parsed)) return parsed;
-            if (typeof parsed === "string") return [parsed];
-            if (product.images && (product.images.startsWith("http") || product.images.startsWith("/"))) return [product.images];
-            return [];
-        } catch (e) {
-            return []
-        }
-    })()
-
+    const images = safeParseArray(product.images);
     const specs = (() => {
-        try {
-            return product.specs ? JSON.parse(product.specs) : null
-        } catch (e) {
-            return null
-        }
+        try { return product.specs ? JSON.parse(product.specs) : null } catch (e) { return null }
     })()
 
     return (
         <div className="min-h-screen bg-[#F8FAFC] text-slate-900 font-sans">
-            {/* Main Content */}
             <div className="max-w-7xl mx-auto px-6 py-12">
+                
                 {/* Breadcrumbs */}
                 <div className="flex items-center space-x-2 text-[10px] font-black uppercase tracking-widest text-slate-400 mb-12 overflow-x-auto whitespace-nowrap pb-4 md:pb-0">
                     <Link href="/web" className="hover:text-[#1E3A8A] flex items-center">
@@ -125,24 +168,12 @@ export default function ProductDetailPage() {
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-20">
-                    {/* Left: Gallery */}
+                    {/* Gallery */}
                     <div className="space-y-6">
-                        <div className="aspect-square bg-white border border-slate-200 relative overflow-hidden flex items-center justify-center p-12 group shadow-xl">
-                            {images.length > 0 ? (
-                                <img 
-                                    src={images[selectedImage]} 
-                                    alt={product.name}
-                                    referrerPolicy="no-referrer"
-                                    className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105" 
-                                />
-                            ) : (
-                                <div className="flex flex-col items-center justify-center opacity-10">
-                                    <Package size={80} className="text-slate-300" />
-                                    <span className="text-[10px] font-black uppercase tracking-[0.5em] mt-8 text-center italic text-slate-400">Elemento sin imagen<br/>Sincronización Pendiente</span>
-                                </div>
-                            )}
+                        <div className="aspect-square bg-white border border-slate-200 relative overflow-hidden flex items-center justify-center p-12 group shadow-xl rounded-3xl">
+                             <SafeImage src={images[selectedImage]} alt={product.name} fill className="group-hover:scale-105 transition-transform duration-700" />
                             {product.featured && (
-                                <div className="absolute top-8 left-8 bg-[#1E3A8A] text-white text-[8px] font-black uppercase px-3 py-1.5 shadow-lg">Destacado</div>
+                                <div className="absolute top-8 left-8 bg-[#1E3A8A] text-white text-[8px] font-black uppercase px-3 py-1.5 shadow-lg z-10">Destacado</div>
                             )}
                         </div>
                         {images.length > 1 && (
@@ -151,75 +182,58 @@ export default function ProductDetailPage() {
                                     <button 
                                         key={i}
                                         onClick={() => setSelectedImage(i)}
-                                        className={`aspect-square bg-white border transition-all p-3 flex items-center justify-center ${selectedImage === i ? 'border-[#1E3A8A] ring-2 ring-[#1E3A8A]/10' : 'border-slate-200 hover:border-blue-300'}`}
+                                        className={`aspect-square bg-white border transition-all p-3 flex items-center justify-center rounded-2xl overflow-hidden ${selectedImage === i ? 'border-[#1E3A8A] ring-2 ring-[#1E3A8A]/10' : 'border-slate-200 hover:border-blue-300'}`}
                                     >
-                                        <img src={img} alt="" referrerPolicy="no-referrer" className="w-full h-full object-contain" />
+                                        <SafeImage src={img} alt="" className="w-full h-full object-contain" />
                                     </button>
                                 ))}
                             </div>
                         )}
                     </div>
 
-                    {/* Right: Info */}
+                    {/* Info */}
                     <div className="flex flex-col">
                         <div className="flex items-center justify-between mb-4">
                              <span className="text-[10px] font-black text-blue-600 uppercase tracking-[0.3em]">{product.category?.name || 'Varios'}</span>
                              {product.sku && <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] bg-slate-50 px-3 py-1 border border-slate-200">REF: {product.sku}</span>}
                         </div>
-                        <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter leading-[0.85] mb-8 text-[#1E3A8A]">
+                        <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter leading-[0.85] mb-8 text-[#1E3A8A] italic">
                             {product.name}
                         </h1>
                         
                         <div className="flex flex-col mb-12">
                             <div className="flex items-center space-x-6">
-                                <p className="text-5xl font-black text-[#1E3A8A] font-mono tracking-tighter">
+                                <p className="text-5xl font-black text-[#1E3A8A] font-mono tracking-tighter italic">
                                     ${calculateDiscountedPrice(product.price, userRole).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                 </p>
-                                {(userRole === 'AFILIADO' || userRole === 'DISTRIBUIDOR') && (
-                                    <p className="text-2xl text-slate-300 line-through font-bold">
-                                        ${product.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                                    </p>
-                                )}
-                                {product.compareAtPrice && !userRole && (
-                                    <p className="text-2xl text-slate-300 line-through font-bold">
-                                        ${product.compareAtPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                                    </p>
-                                )}
                             </div>
                             {userRole && (userRole === 'AFILIADO' || userRole === 'DISTRIBUIDOR') && (
-                                <p className="text-[10px] font-black text-blue-500 uppercase tracking-widest mt-2">
-                                    Precio especial para {userRole === 'AFILIADO' ? 'Afiliado' : 'Distribuidor'} aplicado
+                                <p className="text-[10px] font-black text-blue-500 uppercase tracking-widest mt-2 italic">
+                                    Precio especial para {userRole} aplicado
                                 </p>
                             )}
                         </div>
 
                         <div className="space-y-10 flex-1">
-                            <div className="p-8 bg-slate-50 border border-slate-100 text-slate-700 relative overflow-hidden group">
-                                <div className="absolute right-0 top-0 h-full w-24 bg-white/40 skew-x-[30deg] translate-x-12"></div>
-                                <p className="text-[9px] font-black uppercase tracking-[0.3em] text-[#1E3A8A] mb-6 flex items-center">
+                            <div className="p-8 bg-white border border-slate-100 text-slate-700 relative overflow-hidden group rounded-3xl shadow-sm">
+                                <div className="absolute right-0 top-0 h-full w-24 bg-blue-50/50 skew-x-[30deg] translate-x-12 group-hover:translate-x-0 transition-transform duration-1000"></div>
+                                <p className="text-[9px] font-black uppercase tracking-[0.3em] text-[#1E3A8A] mb-6 flex items-center italic">
                                     <Info size={14} className="mr-2" /> Descripción Técnica
                                 </p>
                                 <p className="text-sm leading-relaxed font-medium">
-                                    {product.description || "Este equipo ATOMIC representa la vanguardia en tecnología Corporativo, diseñado para optimizar procesos y garantizar máxima durabilidad en entornos exigentes altamente competitivos."}
+                                    {product.description || "Este equipo ATOMIC representa la vanguardia en tecnología Corporativo, diseñado para optimizar procesos y garantizar máxima durabilidad en entornos exigentes."}
                                 </p>
                             </div>
 
                             <div className="space-y-4">
                                 <button 
                                     onClick={handleAddToCart}
-                                    className={`w-full py-6 text-[10px] font-black uppercase tracking-[0.4em] transition-all shadow-xl flex items-center justify-center space-x-4 group rounded-none ${added ? 'bg-emerald-600 text-white' : 'bg-[#1E3A8A] text-white hover:bg-blue-800 shadow-blue-100'}`}
+                                    className={`w-full py-6 text-[10px] font-black uppercase tracking-[0.4em] transition-all shadow-xl flex items-center justify-center space-x-4 group rounded-2xl ${added ? 'bg-emerald-600 text-white' : 'bg-[#1E3A8A] text-white hover:bg-blue-800 shadow-blue-100'}`}
                                 >
                                     {added ? (
-                                        <>
-                                            <CheckCircle2 size={18} />
-                                            <span>¡Añadido!</span>
-                                        </>
+                                        <><CheckCircle2 size={18} /><span>¡Añadido!</span></>
                                     ) : (
-                                        <>
-                                            <ShoppingCart size={18} />
-                                            <span>Añadir al Carrito</span>
-                                            <ArrowRight size={16} className="translate-x-0 group-hover:translate-x-3 transition-transform" />
-                                        </>
+                                        <><ShoppingCart size={18} /><span>Añadir al Carrito</span><ArrowRight size={16} className="translate-x-0 group-hover:translate-x-3 transition-transform" /></>
                                     )}
                                 </button>
                                 
@@ -227,31 +241,26 @@ export default function ProductDetailPage() {
                                     <a 
                                         href={product.specSheetUrl} 
                                         target="_blank" 
-                                        className="w-full border-2 border-slate-200 py-6 text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 hover:text-[#1E3A8A] hover:border-[#1E3A8A] transition-all flex items-center justify-center space-x-3"
+                                        className="w-full border-2 border-slate-200 py-6 text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 hover:text-[#1E3A8A] hover:border-[#1E3A8A] transition-all flex items-center justify-center space-x-3 rounded-2xl"
                                     >
-                                        <Download size={16} />
-                                        <span>Ficha Técnica PDF</span>
+                                        <Download size={16} /><span>Ficha Técnica PDF</span>
                                     </a>
                                 )}
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8 border-t border-slate-100">
                                 <div className="flex items-start space-x-4 group">
-                                    <div className="w-10 h-10 border border-slate-200 flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-all shadow-sm">
-                                        <Truck size={18} />
-                                    </div>
+                                    <div className="w-10 h-10 border border-slate-200 flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-all shadow-sm rounded-xl"><Truck size={18} /></div>
                                     <div className="space-y-1">
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-[#1E3A8A]">Envío Prioritario</p>
-                                        <p className="text-[10px] font-bold text-slate-400 uppercase">Cobertura en todo el país</p>
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-[#1E3A8A]">Envío Nacional</p>
+                                        <p className="text-[10px] font-bold text-slate-400 uppercase">Logística de Alta Precisión</p>
                                     </div>
                                 </div>
                                 <div className="flex items-start space-x-4 group">
-                                    <div className="w-10 h-10 border border-slate-200 flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-all shadow-sm">
-                                        <Shield size={18} />
-                                    </div>
+                                    <div className="w-10 h-10 border border-slate-200 flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-all shadow-sm rounded-xl"><Shield size={18} /></div>
                                     <div className="space-y-1">
                                         <p className="text-[10px] font-black uppercase tracking-widest text-[#1E3A8A]">Garantía Protegida</p>
-                                        <p className="text-[10px] font-bold text-slate-400 uppercase">Soporte directo de fábrica</p>
+                                        <p className="text-[10px] font-bold text-slate-400 uppercase">Soporte Directo</p>
                                     </div>
                                 </div>
                             </div>
@@ -261,10 +270,10 @@ export default function ProductDetailPage() {
 
                 {/* Technical specs */}
                 {specs && Object.keys(specs).length > 0 && (
-                    <div className="mt-40 bg-white border border-slate-200 p-10 md:p-16 shadow-sm">
+                    <div className="mt-40 bg-white border border-slate-200 p-10 md:p-16 shadow-xl rounded-[3rem]">
                         <div className="space-y-2 mb-16">
                             <p className="text-blue-600 text-[10px] font-black uppercase tracking-[0.3em]">Hardware & Performance</p>
-                            <h2 className="text-4xl font-light text-[#1E3A8A] tracking-tighter leading-none">
+                            <h2 className="text-4xl font-light text-[#1E3A8A] tracking-tighter leading-none italic">
                                 Especificaciones <span className="font-black text-[#1E3A8A]">Técnicas Pro</span>
                             </h2>
                         </div>
@@ -284,50 +293,22 @@ export default function ProductDetailPage() {
                     <div className="mt-48 pb-20">
                         <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
                             <div className="space-y-2">
-                                <p className="text-blue-600 text-[10px] font-black uppercase tracking-[0.3em]">Te puede interesar</p>
-                                <h2 className="text-4xl font-light text-[#1E3A8A] tracking-tighter">
-                                    Equipos <span className="font-black text-[#1E3A8A]">Similares</span>
-                                </h2>
+                                <p className="text-blue-600 text-[10px] font-black uppercase tracking-[0.3em]">Complementos Sugeridos</p>
+                                <h2 className="text-4xl font-light text-[#1E3A8A] tracking-tighter italic">Equipos <span className="font-black text-[#1E3A8A]">Similares</span></h2>
                             </div>
-                            <Link href="/web" className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-[#1E3A8A] transition-colors border-b-2 border-slate-100 hover:border-[#1E3A8A] pb-1">Ver catálogo completo</Link>
+                            <Link href="/web" className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-[#1E3A8A] transition-colors border-b-2 border-slate-100 hover:border-[#1E3A8A] pb-1 italic">Ver catálogo completo</Link>
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                             {related.map((p) => (
-                                <Link key={p.id} href={`/web/product/${p.id}`} className="group flex flex-col h-full bg-white border border-slate-200 p-6 hover:shadow-xl hover:border-blue-300 transition-all duration-500 rounded-xl">
-                                    <div className="aspect-square bg-slate-50 relative overflow-hidden flex items-center justify-center p-6 mb-6 rounded-lg">
-                                        {(() => {
-                                            try {
-                                                let rImages = p.images ? JSON.parse(p.images) : [];
-                                                if(typeof rImages === 'string') { try { rImages = JSON.parse(rImages) } catch(e){} }
-                                                if (Array.isArray(rImages)) { rImages = rImages; }
-                                                else if (typeof rImages === "string") { rImages = [rImages]; }
-                                                else if (p.images && (p.images.startsWith("http") || p.images.startsWith("/"))) { rImages = [p.images]; }
-                                                else { rImages = []; }
-                                                return rImages.length > 0 ? (
-                                                    <img 
-                                                        src={rImages[0]} 
-                                                        alt={p.name} 
-                                                        referrerPolicy="no-referrer"
-                                                        className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700" 
-                                                    />
-                                                ) : null;
-                                            } catch (e) { return null }
-                                        })()}
+                                <Link key={p.id} href={`/web/product/${p.id}`} className="group flex flex-col h-full bg-white border border-slate-200 p-6 hover:shadow-2xl hover:border-blue-300 transition-all duration-500 rounded-[2rem]">
+                                    <div className="aspect-square bg-slate-50 relative overflow-hidden flex items-center justify-center p-6 mb-6 rounded-2xl">
+                                         <SafeImage src={safeParseArray(p.images)[0]} alt={p.name} fill className="group-hover:scale-110 transition-transform duration-700" />
                                     </div>
                                     <div className="space-y-4 flex-1 flex flex-col">
                                         <h4 className="text-[10px] font-black uppercase tracking-[0.15em] text-slate-500 group-hover:text-[#1E3A8A] transition-colors leading-tight line-clamp-2 h-8 italic">{p.name}</h4>
                                         <div className="pt-4 border-t border-slate-100 flex items-center justify-between mt-auto">
-                                            <div className="flex flex-col">
-                                                {userRole && (userRole === 'AFILIADO' || userRole === 'DISTRIBUIDOR') && (
-                                                    <p className="text-[9px] text-slate-300 line-through font-mono">
-                                                        ${p.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                                                    </p>
-                                                )}
-                                                <p className="font-mono font-black text-lg text-[#1E3A8A]">
-                                                    ${calculateDiscountedPrice(p.price, userRole).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                                                </p>
-                                            </div>
-                                            <ChevronRight size={14} className="text-slate-200 group-hover:text-[#1E3A8A] group-hover:translate-x-1 transition-all" />
+                                            <p className="font-mono font-black text-lg text-[#1E3A8A] italic">${calculateDiscountedPrice(p.price, userRole).toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
+                                            <div className="w-8 h-8 bg-slate-50 rounded-lg flex items-center justify-center group-hover:bg-[#1E3A8A] group-hover:text-white transition-all"><ChevronRight size={14} /></div>
                                         </div>
                                     </div>
                                 </Link>
@@ -336,7 +317,6 @@ export default function ProductDetailPage() {
                     </div>
                 )}
             </div>
-
         </div>
     )
 }

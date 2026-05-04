@@ -6,9 +6,10 @@ import {
     ShoppingBag, Tag as TagIcon, Globe, CheckCircle, Store, RefreshCw, 
     ChevronRight, Trash2, Search, CheckSquare, Square, Image as ImageIcon, 
     Edit, Star, X, Layers, Monitor, Cpu, Gamepad2, Box, ShieldAlert, Save, Plus,
-    Upload, PlusCircle, FileText, ChevronDown, LayoutGrid, Layout
+    Upload, PlusCircle, FileText, ChevronDown, LayoutGrid, Layout, ShieldCheck
 } from "lucide-react"
 import { CyberCard, NeonButton, CyberInput, GlassPanel } from "@/components/ui/CyberUI"
+import InventoryMatrix from "@/components/dashboard/InventoryMatrix"
 import { 
     getProducts, getShopMetadata, saveProduct, saveCategory, 
     saveCollection, cleanupDuplicateProducts, getProviderStats, 
@@ -206,13 +207,11 @@ export default function ShopConfigPage() {
                                 {tab === 'products' ? 'Inventario Maestro' : tab === 'catalogs' ? 'Arquitecturas' : 'Frontend_CMD'}
                             </button>
                         ))}
-                    </div>
-
-                    {activeTab === 'products' && (
+                                        {activeTab === 'products' && (
                         <div className="space-y-12 animate-in fade-in duration-700">
                             {/* Modern Stats Summary */}
                             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-8 relative z-10">
-                                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="glass-panel p-10 flex items-center gap-8 rounded-none-[3rem] border-white/5 relative overflow-hidden group backdrop-blur-3xl shadow-2xl">
+                                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="glass-panel p-10 flex items-center gap-8 rounded-none border-white/5 relative overflow-hidden group backdrop-blur-3xl shadow-2xl">
                                     <div className="absolute top-0 left-0 w-2 h-full bg-secondary shadow-[0_0_20px_rgba(255,99,71,0.5)]"></div>
                                     <div className="p-5 bg-secondary/10 text-secondary rounded-none group-hover:scale-110 group-hover:rotate-6 transition-all duration-500"><ShoppingBag size={28} /></div>
                                     <div>
@@ -220,7 +219,7 @@ export default function ShopConfigPage() {
                                         <h4 className="text-4xl font-black text-white italic tracking-tighter">{totalProducts}</h4>
                                     </div>
                                 </motion.div>
-                                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="glass-panel p-10 flex items-center gap-8 rounded-none-[3rem] border-white/5 relative overflow-hidden group backdrop-blur-3xl shadow-2xl">
+                                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="glass-panel p-10 flex items-center gap-8 rounded-none border-white/5 relative overflow-hidden group backdrop-blur-3xl shadow-2xl">
                                     <div className="absolute top-0 left-0 w-2 h-full bg-azure-500 shadow-[0_0_20px_rgba(45,212,191,0.5)]"></div>
                                     <div className="p-5 bg-azure-500/10 text-azure-500 rounded-none group-hover:scale-110 group-hover:rotate-6 transition-all duration-500"><TagIcon size={28} /></div>
                                     <div>
@@ -228,7 +227,7 @@ export default function ShopConfigPage() {
                                         <h4 className="text-4xl font-black text-white italic tracking-tighter">{metadata.categories.length}</h4>
                                     </div>
                                 </motion.div>
-                                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="glass-panel p-10 flex items-center gap-8 rounded-none-[3rem] border-white/5 relative overflow-hidden group backdrop-blur-3xl shadow-2xl">
+                                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="glass-panel p-10 flex items-center gap-8 rounded-none border-white/5 relative overflow-hidden group backdrop-blur-3xl shadow-2xl">
                                     <div className="absolute top-0 left-0 w-2 h-full bg-primary shadow-[0_0_20px_rgba(255,255,255,0.2)]"></div>
                                     <div className="p-5 bg-primary/10 text-primary rounded-none group-hover:scale-110 group-hover:rotate-6 transition-all duration-500"><Globe size={28} /></div>
                                     <div>
@@ -236,313 +235,25 @@ export default function ShopConfigPage() {
                                         <h4 className="text-4xl font-black text-white italic tracking-tighter">{providerStats.length}</h4>
                                     </div>
                                 </motion.div>
-                                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="glass-panel p-10 flex items-center gap-8 rounded-none-[3rem] border-white/5 relative overflow-hidden group backdrop-blur-3xl shadow-2xl">
+                                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="glass-panel p-10 flex items-center gap-8 rounded-none border-white/5 relative overflow-hidden group backdrop-blur-3xl shadow-2xl">
                                     <div className="absolute top-0 left-0 w-2 h-full bg-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.5)]"></div>
-                                    <div className="p-5 bg-emerald-500/10 text-emerald-500 rounded-none group-hover:scale-110 group-hover:rotate-6 transition-all duration-500"><CheckCircle size={28} /></div>
+                                    <div className="p-5 bg-emerald-500/10 text-emerald-500 rounded-none group-hover:scale-110 group-hover:rotate-6 transition-all duration-500"><ShieldCheck size={28} /></div>
                                     <div>
-                                        <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.3em] mb-2 italic">En Stock_Live</p>
-                                        <h4 className="text-4xl font-black text-emerald-400 italic tracking-tighter">{products.filter(p => p.stock > 0).length}</h4>
+                                        <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.3em] mb-2 italic">Integridad Matrix</p>
+                                        <h4 className="text-4xl font-black text-emerald-400 italic tracking-tighter">100%</h4>
                                     </div>
                                 </motion.div>
                             </div>
 
-                            <div className="grid grid-cols-1 lg:grid-cols-4 gap-12 items-start">
-                                {/* Sidebar: Insights & Maintenance */}
-                                <div className="lg:col-span-1 space-y-8 sticky top-32">
-                                    <div className="glass-panel p-10 rounded-none-[3rem] border-white/5 relative overflow-hidden backdrop-blur-3xl">
-                                        <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/5 blur-3xl -mr-16 -mt-16 rounded-none"></div>
-                                        <div className="flex items-center space-x-3 text-secondary border-b border-white/5 pb-8 mb-8">
-                                            <Store size={22} className="drop-shadow-[0_0_8px_rgba(255,99,71,0.3)]" />
-                                            <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-white italic">Estructura de Origen</h3>
-                                        </div>
-                                        <div className="space-y-4 max-h-[400px] overflow-y-auto pr-4 custom-scrollbar">
-                                            {providerStats.length > 0 ? providerStats.map((s, i) => (
-                                                <div key={i} className="flex justify-between items-center group cursor-default p-4 hover:bg-white/5 transition-all rounded-none border border-transparent hover:border-white/5">
-                                                    <span className="text-[10px] font-black text-slate-400 uppercase truncate pr-4 group-hover:text-secondary transition-colors italic">{s.name}</span>
-                                                    <span className="text-[10px] font-black text-white bg-slate-900 px-3 py-1 rounded-none border border-white/5 shadow-xl">{s.count} <span className="opacity-40 ml-1">UDS</span></span>
-                                                </div>
-                                            )) : (
-                                                <div className="text-[10px] text-slate-700 italic font-black uppercase text-center py-20 flex flex-col items-center gap-4">
-                                                    <RefreshCw size={32} className="animate-spin opacity-20" />
-                                                    Sincronizando proveedores...
-                                                </div>
-                                            )}
-                                        </div>
-                                        <div className="pt-8 border-t border-white/5 mt-8">
-                                            <button 
-                                                onClick={() => setActiveTab('settings')}
-                                                className="w-full text-center text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 hover:text-secondary transition-all flex items-center justify-center gap-3 italic"
-                                            >
-                                                Gesti�n de Mantenimiento <ChevronRight size={14} />
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <div className="glass-panel p-10 rounded-none-[3rem] border-white/5 relative overflow-hidden group backdrop-blur-3xl">
-                                        <div className="absolute inset-0 bg-gradient-to-br from-secondary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                        <div className="flex items-center space-x-4 mb-8">
-                                            <div className="p-3 bg-secondary/10 text-secondary rounded-none"><Trash2 size={24} /></div>
-                                            <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-white italic">Saneamiento Maestro</h3>
-                                        </div>
-                                        <p className="text-[10px] font-bold uppercase italic text-slate-500 leading-relaxed mb-10">
-                                            Ejecución intensiva de eliminación de colisiones de datos y duplicidad de Elementos para optimizar el rendimiento.
-                                        </p>
-                                        <button 
-                                            onClick={async () => {
-                                                if(confirm("\u00bfEjecutar limpieza de duplicados exactos ahora?")) {
-                                                    setIsCleaning(true);
-                                                    try {
-                                                        await cleanupDuplicateProducts();
-                                                        await refreshData();
-                                                        alert("Cat\u00e1logo saneado correctamente.");
-                                                    } finally {
-                                                        setIsCleaning(false);
-                                                    }
-                                                }
-                                            }}
-                                            disabled={isCleaning}
-                                            className="w-full bg-secondary/10 text-secondary border border-secondary/30 py-5 text-[10px] font-black uppercase tracking-[0.3em] hover:bg-secondary hover:text-white transition-all shadow-2xl rounded-none disabled:opacity-50"
-                                        >
-                                            {isCleaning ? 'Saneando Arquitectura...' : 'Saneamiento de Cat\u00e1logo'}
-                                        </button>
-                                    </div>
-                                </div>
-
-                                {/* Main Content: Search & Table */}
-                                <div className="lg:col-span-3 space-y-12 relative z-10">
-                                    <div className="flex flex-col md:flex-row gap-8 items-center glass-panel !bg-slate-950/40 p-6 rounded-none-[3rem] border border-white/5 shadow-3xl backdrop-blur-3xl relative overflow-hidden group">
-                                        <div className="absolute top-0 left-0 w-1.5 h-full bg-secondary shadow-[0_0_15px_rgba(255,99,71,0.4)] transition-all group-focus-within:h-full"></div>
-                                        <div className="flex-1 relative group w-full">
-                                            <Search className="absolute left-8 top-1/2 -translate-y-1/2 text-slate-700 group-focus-within:text-secondary transition-colors" size={20} />
-                                            <input 
-                                                type="text"
-                                                placeholder="B\u00daSQUEDA T\u00c1CTICA POR SKU, NOMBRE O SEGMENTO_VECT..."
-                                                value={dashboardSearch}
-                                                onChange={(e) => { setDashboardSearch(e.target.value); setCurrentPage(1); }}
-                                                className="w-full bg-slate-950 border border-white/5 pl-20 pr-10 py-6 text-[11px] font-black uppercase tracking-[0.2em] text-white outline-none focus:border-secondary focus:ring-8 focus:ring-secondary/5 transition-all rounded-none-[2rem] placeholder:text-slate-800 italic"
-                                            />
-                                        </div>
-                                        <div className="flex bg-slate-950 border border-white/5 p-2 rounded-none-[2rem] w-full md:w-fit whitespace-nowrap shadow-inner skew-x-[-12deg]">
-                                            <button 
-                                                onClick={() => { setIsTrashView(false); setCurrentPage(1); }}
-                                                className={`skew-x-[12deg] px-10 py-4 text-[10px] font-black uppercase tracking-widest transition-all rounded-none-[1.5rem] ${!isTrashView ? 'bg-secondary text-white shadow-xl shadow-secondary/20' : 'text-slate-600 hover:text-slate-300'}`}
-                                            >
-                                                Activo_OPS
-                                            </button>
-                                            <button 
-                                                onClick={() => { setIsTrashView(true); setCurrentPage(1); }}
-                                                className={`skew-x-[12deg] px-10 py-4 text-[10px] font-black uppercase tracking-widest transition-all rounded-none-[1.5rem] flex items-center gap-3 ${isTrashView ? 'bg-red-500 text-white shadow-xl shadow-red-500/20' : 'text-slate-600 hover:text-red-400'}`}
-                                            >
-                                                <Trash2 size={16} /> Papelera
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <div className="glass-panel rounded-none-[3.5rem] border-white/5 shadow-3xl overflow-hidden backdrop-blur-3xl relative">
-                                        <div className="overflow-x-auto">
-                                            <table className="w-full text-left">
-                                                <thead>
-                                                    <tr className="bg-white/[0.01] text-[9px] font-black uppercase tracking-[0.3em] text-slate-500 border-b border-white/5 italic">
-                                                        <th className="px-8 py-8 w-16">
-                                                            <button onClick={toggleAllProducts} className="text-slate-800 hover:text-secondary transition-colors">
-                                                                {selectedProducts.length === products.length && products.length > 0 ? <CheckSquare size={18} className="text-secondary" /> : <Square size={18} />}
-                                                            </button>
-                                                        </th>
-                                                        <th className="px-8 py-8">Activo</th>
-                                                        <th className="px-8 py-8">Categoría</th>
-                                                        <th className="px-8 py-8">Stock</th>
-                                                        <th className="px-8 py-8">Costo (Neto)</th>
-                                                        <th className="px-8 py-8">PVP (Final)</th>
-                                                        <th className="px-8 py-8 text-right pr-12">Origen</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody className="divide-y divide-white/5">
-                                                    {products.length === 0 ? (
-                                                        <tr>
-                                                            <td colSpan={7} className="py-48 text-center">
-                                                                <div className="flex flex-col items-center space-y-8 opacity-20 group">
-                                                                    <div className="p-8 bg-white/5 rounded-none group-hover:scale-110 transition-transform duration-700">
-                                                                        <ShoppingBag size={80} className="text-slate-500" />
-                                                                    </div>
-                                                                    <p className="uppercase text-xs font-black tracking-[0.6em] text-slate-500 italic">C\u00e1mara de Inventario Vac\u00eda</p>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    ) : (
-                                                        products.map((p) => (
-                                                            <tr key={p.id} className={`hover:bg-white/[0.04] transition-all group ${selectedProducts.includes(p.id) ? 'bg-secondary/5' : ''}`}>
-                                                                <td className="px-10 py-8">
-                                                                    <button 
-                                                                        onClick={() => toggleProductSelection(p.id)} 
-                                                                        className={`transition-all duration-300 ${selectedProducts.includes(p.id) ? 'text-secondary scale-110 drop-shadow-[0_0_8px_rgba(255,99,71,0.4)]' : 'text-slate-800 hover:text-slate-600'}`}
-                                                                    >
-                                                                        {selectedProducts.includes(p.id) ? <CheckSquare size={22} /> : <Square size={22} />}
-                                                                    </button>
-                                                                </td>
-                                                                <td className="px-8 py-6">
-                                                                    <div className="flex items-center space-x-4">
-                                                                        <div className="w-12 h-12 bg-slate-950 border border-white/5 shrink-0 flex items-center justify-center relative group-hover:border-secondary/20 transition-all">
-                                                                            {p.images && p.images !== 'null' && safeParseArray(p.images).length > 0 ? (
-                                                                                <img src={safeParseArray(p.images)[0]} className="w-full h-full object-contain" />
-                                                                            ) : (
-                                                                                <ImageIcon size={18} className="text-slate-800" />
-                                                                            )}
-                                                                        </div>
-                                                                        <div className="max-w-xs">
-                                                                            <p className="text-[11px] font-black text-white line-clamp-1 italic uppercase tracking-tighter">{p.name}</p>
-                                                                            <span className="text-[8px] text-slate-500 font-black uppercase tracking-[0.2em]">{p.sku || 'N/A PROTOCOL'}</span>
-                                                                        </div>
-                                                                    </div>
-                                                                </td>
-                                                                <td className="px-8 py-6">
-                                                                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 bg-slate-900 px-3 py-1.5 border border-white/5 italic">
-                                                                        {p.category?.name || 'GENÉRICO'}
-                                                                    </span>
-                                                                </td>
-                                                                <td className="px-8 py-6">
-                                                                    <p className="text-[11px] font-black text-white italic tracking-tighter">{p.stock} <span className="text-[8px] text-slate-600 ml-0.5">UDS</span></p>
-                                                                </td>
-                                                                <td className="px-8 py-6">
-                                                                    <span className="text-[11px] font-black text-slate-400 italic">${parseFloat(p.buyPrice || 0).toLocaleString()}</span>
-                                                                </td>
-                                                                <td className="px-8 py-6">
-                                                                    <span className="text-[11px] font-black text-secondary italic tracking-tighter">${parseFloat(p.price).toLocaleString()}</span>
-                                                                </td>
-                                                                <td className="px-8 py-6 text-right pr-12">
-                                                                    <span className="text-[8px] font-black text-slate-600 uppercase tracking-widest italic">{p.provider || 'SISTEMA'}</span>
-                                                                </td>
-                                                                <td className="px-10 py-8 text-right pr-16">
-                                                                    <div className="flex items-center justify-end gap-5">
-                                                                        {isTrashView ? (
-                                                                            <button 
-                                                                                onClick={() => handleRestore(p.id)}
-                                                                                className="px-8 py-4 bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 hover:bg-emerald-500 hover:text-white transition-all text-[10px] font-black uppercase tracking-[0.3em] rounded-none shadow-2xl active:scale-95 italic skew-x-[-12deg]"
-                                                                            >
-                                                                                <span className="skew-x-[12deg] block">Restaurar_Vect</span>
-                                                                            </button>
-                                                                        ) : (
-                                                                            <>
-                                                                <button 
-                                                                                    onClick={() => { setEditingProduct(p); setView('edit'); }}
-                                                                                    className="p-4 bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all rounded-none border border-white/5 shadow-2xl active:scale-90 group/btn"
-                                                                                >
-                                                                                    <Edit size={18} className="group-hover/btn:rotate-12 transition-transform" />
-                                                                                </button>
-                                                                                <button
-                                                                                    onClick={async () => {
-                                                                                        await toggleProductFeatured(p.id, !p.featured)
-                                                                                        refreshData()
-                                                                                    }}
-                                                                                    className={`p-4 transition-all rounded-none border shadow-2xl active:scale-90 ${
-                                                                                        p.featured 
-                                                                                            ? 'bg-yellow-500/20 border-yellow-500/30 text-yellow-400 hover:bg-yellow-500 hover:text-white'
-                                                                                            : 'bg-white/5 border-white/5 text-slate-700 hover:bg-yellow-500/10 hover:text-yellow-500'
-                                                                                    }`}
-                                                                                    title={p.featured ? 'Quitar de destacados' : 'Marcar como destacado'}
-                                                                                >
-                                                                                    <Star size={18} />
-                                                                                </button>
-                                                                                <button 
-                                                                                    onClick={() => handleDelete(p.id)}
-                                                                                    className="p-4 bg-red-500/5 hover:bg-red-500 text-red-500 hover:text-white transition-all rounded-none border border-red-500/20 shadow-2xl active:scale-90 group/del"
-                                                                                >
-                                                                                    <Trash2 size={18} className="group-hover/del:scale-110 transition-transform" />
-                                                                                </button>
-                                                                            </>
-                                                                        )}
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                        ))
-                                                    )}
-                                                </tbody>
-                                            </table>
-                                        </div>
-
-                                        {/* Futuristic Pagination */}
-                                        <div className="px-12 py-10 border-t border-white/5 flex flex-col md:flex-row items-center justify-between bg-black/20 gap-8 backdrop-blur-2xl">
-                                            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-600 italic">SEGMENTO {currentPage} <span className="text-slate-800 mx-2">/</span> {Math.ceil(totalProducts / pageSize) || 1} <span className="text-secondary mx-4">|</span> TOTAL {totalProducts} DESPLIEGUES</p>
-                                            <div className="flex items-center space-x-6">
-                                                <button 
-                                                    disabled={currentPage <= 1}
-                                                    onClick={() => setCurrentPage(prev => prev - 1)}
-                                                    className="px-12 py-5 glass-panel border-white/5 text-slate-500 hover:text-white hover:bg-white/5 disabled:opacity-5 transition-all font-black uppercase tracking-[0.4em] text-[10px] rounded-none active:scale-95 shadow-2xl skew-x-[-12deg]"
-                                                >
-                                                    <span className="skew-x-[12deg] block">Retorno_Vect</span>
-                                                </button>
-                                                <button 
-                                                    disabled={currentPage >= Math.ceil(totalProducts / pageSize)}
-                                                    onClick={() => setCurrentPage(prev => prev + 1)}
-                                                    className="px-12 py-5 bg-white/5 border border-white/10 text-slate-300 hover:text-secondary hover:border-secondary/30 disabled:opacity-5 transition-all font-black uppercase tracking-[0.4em] text-[10px] rounded-none active:scale-95 shadow-2xl skew-x-[-12deg]"
-                                                >
-                                                    <span className="skew-x-[12deg] block">Avance_Vect</span>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Elevated Bulk Actions Bar */}
-                                    {selectedProducts.length > 0 && (
-                                        <div className="fixed bottom-12 left-1/2 -translate-x-1/2 glass-panel !bg-slate-950/90 text-white px-12 py-8 flex flex-wrap items-center justify-center gap-12 shadow-[0_50px_100px_rgba(0,0,0,0.8)] z-[500] animate-in slide-in-from-bottom-10 duration-700 rounded-none-[3.5rem] border border-white/10 backdrop-blur-3xl">
-                                            <div className="flex items-center space-x-6 border-r border-white/10 pr-12">
-                                                <div className="w-14 h-14 bg-secondary text-white rounded-none flex items-center justify-center font-black text-2xl italic shadow-[0_0_25px_rgba(255,99,71,0.5)]">{selectedProducts.length}</div>
-                                                <span className="text-[11px] font-black uppercase tracking-[0.5em] text-slate-500 italic">Seleccionados</span>
-                                            </div>
-                                            <div className="flex items-center gap-8">
-                                                {!isTrashView ? (
-                                                    <>
-                                                        <button 
-                                                            onClick={() => setShowBulkEdit(true)}
-                                                            className="flex items-center space-x-4 bg-white/5 text-white hover:bg-white/10 px-10 py-5 text-[10px] font-black uppercase tracking-[0.3em] transition-all rounded-none border border-white/5 skew-x-[-12deg]"
-                                                        >
-                                                            <div className="skew-x-[12deg] flex items-center gap-4"><Edit size={16} className="text-secondary" /> <span>Edici\u00f3n T\u00e1ctica</span></div>
-                                                        </button>
-                                                        <button 
-                                                            onClick={handleBulkDeleteProducts}
-                                                            className="flex items-center space-x-4 bg-red-600/10 text-red-500 hover:bg-red-600 hover:text-white px-10 py-5 text-[10px] font-black uppercase tracking-[0.3em] transition-all rounded-none border border-red-500/20 skew-x-[-12deg]"
-                                                        >
-                                                            <div className="skew-x-[12deg] flex items-center gap-4"><Trash2 size={16} /> <span>Poda Masiva</span></div>
-                                                        </button>
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <button 
-                                                            onClick={handleBulkRestore}
-                                                            className="flex items-center space-x-4 bg-emerald-600/10 text-emerald-500 hover:bg-emerald-600 hover:text-white px-10 py-5 text-[10px] font-black uppercase tracking-[0.3em] transition-all rounded-none border border-emerald-500/20 skew-x-[-12deg]"
-                                                        >
-                                                            <div className="skew-x-[12deg] flex items-center gap-4"><Layers size={16} /> <span>Restaurar Segmento</span></div>
-                                                        </button>
-                                                        <button 
-                                                            onClick={handleBulkPermanentDelete}
-                                                            className="flex items-center space-x-4 bg-red-600/10 text-red-500 hover:bg-red-600 hover:text-white px-10 py-5 text-[10px] font-black uppercase tracking-[0.3em] transition-all rounded-none border border-red-500/20 skew-x-[-12deg]"
-                                                        >
-                                                            <div className="skew-x-[12deg] flex items-center gap-4"><Trash2 size={16} /> <span>Eliminaci\u00f3n Terminal</span></div>
-                                                        </button>
-                                                    </>
-                                                )}
-                                                <button 
-                                                    onClick={() => setSelectedProducts([])}
-                                                    className="w-14 h-14 flex items-center justify-center text-slate-600 hover:text-white transition-all hover:bg-white/5 rounded-none"
-                                                >
-                                                    <X size={28} />
-                                                </button>
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {showBulkEdit && (
-                                        <BulkEditModal 
-                                            selectedCount={selectedProducts.length}
-                                            categories={metadata.categories}
-                                            collections={metadata.collections}
-                                            onClose={() => setShowBulkEdit(false)}
-                                            onSave={handleBulkEdit}
-                                        />
-                                    )}
-                                </div>
-                            </div>
+                            {/* UNIFIED INVENTORY & PRICING MATRIX */}
+                            <InventoryMatrix 
+                                initialProducts={products}
+                                providers={providerStats.map(s => s.name)}
+                                onRefresh={refreshData}
+                            />
                         </div>
                     )}
+             )}
 
                     {activeTab === 'catalogs' && (
                         <div className="space-y-12 animate-in fade-in slide-in-from-bottom-5 duration-700">

@@ -7,6 +7,7 @@ import { useCart } from "@/context/CartContext"
 import { motion, AnimatePresence } from "framer-motion"
 
 import { AISearchBot } from "@/components/ui/AISearchBot"
+import { CartBotOverlay } from "@/components/ui/CartBotOverlay"
 
 export default function WebLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname()
@@ -190,6 +191,7 @@ export default function WebLayout({ children }: { children: React.ReactNode }) {
                 </div>
             </footer>
             <AISearchBot />
+            <CartBotOverlay />
         </div>
     )
 }

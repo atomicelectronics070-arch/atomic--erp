@@ -19,10 +19,10 @@ export default function DashboardLayout({
     const [sidebarOpen, setSidebarOpen] = useState(false)
     const [unreadCount, setUnreadCount] = useState(0)
     const [openSections, setOpenSections] = useState<Record<string, boolean>>({
-        operaciones: false,
+        operaciones: true, // Also open operations by default for convenience
         rrhh: false,
         comunicacion: false,
-        marketing: false,
+        marketing: true,
         ia: false,
         config: false
     })
@@ -142,12 +142,11 @@ export default function DashboardLayout({
                                 </CollapsibleSection>
 
                                 <CollapsibleSection
-                                    label="CRM"
-                                    isOpen={openSections.crm ?? false}
+                                    label="WhatsApp CRM"
+                                    isOpen={openSections.crm ?? true}
                                     onToggle={() => toggleSection('crm')}
                                 >
-                                    <NavLink href="/dashboard/crm" icon={<Users size={14} />} label="Clientes" isSubItem />
-                                    <NavLink href="/dashboard/whatsapp" icon={<MessageSquare size={14} />} label="WhatsApp" isSubItem />
+                                    <NavLink href="/dashboard/whatsapp-crm" icon={<Smartphone size={14} />} label="Centro de Control" isSubItem />
                                 </CollapsibleSection>
 
                                 <CollapsibleSection
@@ -159,11 +158,19 @@ export default function DashboardLayout({
                                 </CollapsibleSection>
 
                                 <CollapsibleSection
+                                    label="Social Hub"
+                                    isOpen={openSections.social ?? true}
+                                    onToggle={() => toggleSection('social')}
+                                >
+                                    <NavLink href="/dashboard/blogs" icon={<Share2 size={14} />} label="Social Command" isSubItem />
+                                </CollapsibleSection>
+
+                                <CollapsibleSection
                                     label="Marketing"
                                     isOpen={openSections.marketing ?? false}
                                     onToggle={() => toggleSection('marketing')}
                                 >
-                                    <NavLink href="/dashboard/blogs" icon={<Edit3 size={14} />} label="Blogs" isSubItem />
+                                    <NavLink href="/dashboard/benefits" icon={<Tag size={14} />} label="Beneficios" isSubItem />
                                 </CollapsibleSection>
                             </>
                         )}
@@ -179,10 +186,11 @@ export default function DashboardLayout({
                         )}
 
                         <CollapsibleSection
-                            label="Academia"
+                            label="Inteligencia"
                             isOpen={openSections.ia ?? false}
                             onToggle={() => toggleSection('ia')}
                         >
+                            <NavLink href="/dashboard/coach" icon={<BrainCircuit size={14} />} label="AI Coach" isSubItem />
                             <NavLink href="/dashboard/academy" icon={<GraduationCap size={14} />} label="Cursos" isSubItem />
                         </CollapsibleSection>
                     </div>

@@ -5,8 +5,10 @@ import {
     ImageIcon, Video, Send, Heart, MessageSquare, 
     MoreHorizontal, Share2, Globe, X, Trophy, Trash2,
     TrendingUp, Award, Zap, Star, Activity, Medal,
-    GraduationCap as School
+    GraduationCap as School, Phone
 } from "lucide-react"
+import PhoneRankingPanel from "@/components/dashboard/PhoneRankingPanel"
+import PublicationRankingPanel from "@/components/dashboard/PublicationRankingPanel"
 import { createPost, toggleLike, addComment, fetchFeed, getSalesRanking, deletePost } from "@/lib/actions/social"
 import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
@@ -137,6 +139,9 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
                             <h1 className="text-4xl font-black tracking-tighter text-navy uppercase italic leading-none">Atomic <span className="text-[#1E3A8A]">Feed</span></h1>
                         </div>
                     </motion.div>
+
+                    <PhoneRankingPanel isAdmin={isAdmin} />
+                    <PublicationRankingPanel isAdmin={isAdmin} />
 
                     <CyberCard className="!p-8 relative group bg-white/40">
                         <div className="flex gap-4 items-start">

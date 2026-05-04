@@ -1,27 +1,31 @@
 "use client"
 
-// Version: 1.0.1 - Force Refresh
+// Version: 1.0.2 - Fixed Broken Images System
 import { useState, useRef, useEffect, useCallback } from "react"
-import { ShoppingBag, ChevronRight, ArrowRight, Shield, Zap, Truck, ChevronLeft, Hexagon, Star, X, Smartphone, Database, Sparkles, Code, Bot, Download, Search } from "lucide-react"
+import { ShoppingBag, ChevronRight, ArrowRight, Shield, Zap, Truck, ChevronLeft, Hexagon, Star, X, Smartphone, Database, Sparkles, Code, Bot, Download, Search, ImageOff, AlertCircle } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
 import { calculateDiscountedPrice } from "@/lib/utils/pricing"
 
+// Enhanced cleaning for damaged image data
 const safeParseArray = (str: any, fallback: any = []) => {
     if (!str || str === 'null' || str === '[]' || str === '') return fallback;
     if (Array.isArray(str)) return str.length > 0 ? str : fallback;
     if (typeof str === 'string') {
         const trimmed = str.trim();
+        // Check if it's a direct URL
         if (trimmed.startsWith('http') || trimmed.startsWith('/') || trimmed.startsWith('data:image')) return [trimmed];
         try {
             let cleaned = trimmed;
+            // Clean quoted strings
             if (cleaned.startsWith('"') && cleaned.endsWith('"')) cleaned = cleaned.substring(1, cleaned.length - 1).replace(/\\"/g, '"');
             let parsed = JSON.parse(cleaned);
             if (typeof parsed === 'string') { try { parsed = JSON.parse(parsed); } catch(e) {} }
             if (Array.isArray(parsed)) return parsed.length > 0 ? parsed : fallback;
             if (typeof parsed === 'string' && parsed.length > 0) return [parsed];
         } catch (e) {
+            // Regex to extract URLs from damaged strings (e.g. text containing URLs without valid JSON structure)
             const urlRegex = /(https?:\/\/[^\s"\]]+)/g;
             const matches = trimmed.match(urlRegex);
             if (matches && matches.length > 0) return matches;
@@ -29,6 +33,44 @@ const safeParseArray = (str: any, fallback: any = []) => {
     }
     return fallback;
 };
+
+/* ─── Robust Image Component with Fallback ─── */
+function SafeImage({ src, alt, className, fill = false, width, height, ...props }: any) {
+    const [error, setError] = useState(false)
+    const [isLoading, setIsLoading] = useState(true)
+
+    if (!src || error) {
+        return (
+            <div className={`flex flex-col items-center justify-center bg-slate-50 border border-slate-100 p-4 ${className} ${fill ? 'absolute inset-0' : ''}`}>
+                <div className="relative">
+                    <Hexagon className="text-blue-100 w-12 h-12 animate-[spin_20s_linear_infinite]" strokeWidth={1} />
+                    <ImageOff className="absolute inset-0 m-auto text-blue-200" size={18} />
+                </div>
+                <span className="text-[7px] font-black text-slate-300 uppercase tracking-widest mt-2">Imagen en Sincronización</span>
+            </div>
+        )
+    }
+
+    return (
+        <div className={`relative overflow-hidden ${fill ? 'absolute inset-0 w-full h-full' : ''} ${className}`}>
+            <img
+                src={src}
+                alt={alt}
+                onError={() => setError(true)}
+                onLoad={() => setIsLoading(false)}
+                className={`transition-all duration-700 ${isLoading ? 'scale-110 blur-xl opacity-0' : 'scale-100 blur-0 opacity-100'} ${fill ? 'w-full h-full object-contain' : ''}`}
+                style={{ width: fill ? '100%' : width, height: fill ? '100%' : height }}
+                referrerPolicy="no-referrer"
+                {...props}
+            />
+            {isLoading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-slate-50">
+                    <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                </div>
+            )}
+        </div>
+    )
+}
 
 interface PublicWebClientProps {
     initialProducts: any[]
@@ -55,7 +97,6 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
 
     const featuredProducts = (() => {
         const seenCategories = new Set<string>();
-        // 1. Initial filter: featured, consoles, or tech keywords
         let base = filteredProducts.filter(p => {
             const text = `${p.name} ${p.description || ''} ${p.category?.name || ''}`.toLowerCase();
             const isConsole = p.category?.slug === 'consolas-de-video-juegos' || text.includes('playstation') || text.includes('ps5') || text.includes('ps4');
@@ -71,7 +112,6 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
             return p.featured || isTech;
         });
 
-        // 2. If we have less than 16, fill with newest products that aren't already there
         if (base.length < 16) {
             const currentIds = new Set(base.map(p => p.id));
             const newest = [...filteredProducts]
@@ -85,7 +125,6 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
     })();
 
     const desiredOrder = ["tecnologia-residencial", "desarrollo", "gaming", "automatizacion"]
-    // Deduplicate collections by slug before rendering
     const seenSlugs = new Set<string>()
     const orderedCollections = desiredOrder
         .map(slug => metadata.collections.find(c => c.slug === slug))
@@ -104,7 +143,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                 {/* 1. CATEGORÍAS */}
                 <CategoriesBanner categories={metadata.categories} />
 
-                {/* 2. PRODUCTOS DESTACADOS — Always filled */}
+                {/* 2. PRODUCTOS DESTACADOS */}
                 <section className="py-12" id="destacados">
                     <div className="max-w-7xl mx-auto px-6">
                         <div className="mb-6 flex items-end justify-between">
@@ -126,7 +165,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                     </div>
                 </section>
 
-                {/* 3. TIENDA PÚBLICA — Professional Search & Catalog */}
+                {/* 3. TIENDA PÚBLICA */}
                 <section className="py-20 border-t border-slate-200" id="productos">
                     <div className="max-w-7xl mx-auto px-6 mb-12">
                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-16">
@@ -137,7 +176,6 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                                 <p className="text-slate-400 text-[10px] uppercase tracking-[0.4em] font-bold">Catálogo de Alta Precisión</p>
                             </div>
 
-                            {/* Professional Search Bar */}
                             <div className="relative group w-full md:w-[400px]">
                                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-hover:text-blue-600 transition-colors" size={18} />
                                 <input 
@@ -235,7 +273,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                     })}
                 </div>
 
-                {/* 6. SOFTWARE & WEB SHOWCASE - Dedicated Section */}
+                {/* 6. SOFTWARE & WEB SHOWCASE */}
                 <section id="demos" className="py-20 max-w-7xl mx-auto px-6">
                     <WebShowcase />
                 </section>
@@ -267,6 +305,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
 
 /* ─── Mini compact card for Destacados ─── */
 function MiniProductCard({ product: p, userRole, delay }: { product: any, userRole?: string, delay: number }) {
+    const imgs = safeParseArray(p.images)
     return (
         <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -279,12 +318,7 @@ function MiniProductCard({ product: p, userRole, delay }: { product: any, userRo
                 className="group flex flex-col bg-white border border-slate-200 hover:border-[#1E3A8A]/60 hover:shadow-xl transition-all duration-300 rounded-lg overflow-hidden"
             >
                 <div className="aspect-square relative bg-slate-50 flex items-center justify-center overflow-hidden">
-                    {(() => {
-                        const imgs = safeParseArray(p.images)
-                        return imgs.length > 0 ? (
-                            <Image src={imgs[0]} alt={p.name} fill className="object-contain p-2 group-hover:scale-110 transition-transform duration-300" referrerPolicy="no-referrer" />
-                        ) : <ShoppingBag className="text-slate-300 w-5 h-5" />
-                    })()}
+                    <SafeImage src={imgs[0]} alt={p.name} fill className="p-2 group-hover:scale-110 transition-transform duration-300" />
                 </div>
                 <div className="p-2">
                     <p className="text-[9px] font-medium text-slate-500 tracking-wide line-clamp-2 leading-tight group-hover:text-[#1E3A8A] transition-colors mb-1">{p.name}</p>
@@ -323,11 +357,9 @@ function InfiniteProductScroll({ products, userRole }: { products: any[], userRo
 
     return (
         <div className="relative">
-            {/* Gradient fade edges */}
             <div className="absolute left-0 top-0 bottom-4 w-16 bg-gradient-to-r from-[#F8FAFC] to-transparent z-10 pointer-events-none" />
             <div className="absolute right-0 top-0 bottom-4 w-16 bg-gradient-to-l from-[#F8FAFC] to-transparent z-10 pointer-events-none" />
 
-            {/* Nav arrows */}
             <button onClick={() => scroll('left')} className="absolute left-2 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center hover:bg-white text-slate-500 shadow-md">
                 <ChevronLeft size={16} />
             </button>
@@ -351,9 +383,7 @@ function InfiniteProductScroll({ products, userRole }: { products: any[], userRo
                         draggable={false}
                     >
                         <div className="h-32 relative bg-slate-50 flex items-center justify-center overflow-hidden border-b border-slate-100">
-                            {safeParseArray(p.images).length > 0 ? (
-                                <Image src={safeParseArray(p.images)[0]} alt={p.name} fill className="object-contain p-3 group-hover:scale-105 transition-transform duration-300" referrerPolicy="no-referrer" />
-                            ) : <ShoppingBag className="text-slate-200 w-7 h-7" />}
+                             <SafeImage src={safeParseArray(p.images)[0]} alt={p.name} fill className="p-3 group-hover:scale-105 transition-transform duration-300" />
                         </div>
                         <div className="p-3">
                             <p className="text-[10px] font-medium text-slate-500 line-clamp-2 leading-snug mb-2 group-hover:text-[#1E3A8A] transition-colors">{p.name}</p>
@@ -361,7 +391,6 @@ function InfiniteProductScroll({ products, userRole }: { products: any[], userRo
                         </div>
                     </Link>
                 ))}
-                {/* Trailing spacer */}
                 <div className="shrink-0 w-8" />
             </div>
         </div>
@@ -388,14 +417,11 @@ function CollectionBanner({ collection, products, reverse, userRole }: { collect
             transition={{ duration: 0.7 }}
             className="group relative bg-white border border-slate-200 hover:border-blue-200 rounded-3xl overflow-hidden shadow-xl transition-all duration-500"
         >
-            {/* Background Glow effects */}
             <div className={`absolute top-0 ${reverse ? 'right-0' : 'left-0'} w-[500px] h-[500px] bg-gradient-to-br ${bgAccent} to-transparent opacity-20 blur-[100px] pointer-events-none`} />
             
             <div className={`flex flex-col lg:flex-row ${reverse ? 'lg:flex-row-reverse' : ''} items-stretch relative z-10`}>
                 
-                {/* Left Side: Premium Text Info */}
                 <div className={`w-full lg:w-[45%] p-10 md:p-14 flex flex-col justify-center relative border-b lg:border-b-0 ${reverse ? 'lg:border-l border-slate-200' : 'lg:border-r border-slate-200'} overflow-hidden`}>
-                    {/* Subtle grid background for text area */}
                     <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.03] pointer-events-none mix-blend-overlay"></div>
                     
                     <div className="relative z-10">
@@ -403,9 +429,6 @@ function CollectionBanner({ collection, products, reverse, userRole }: { collect
                             <span className={`px-3 py-1 text-[9px] font-black uppercase tracking-[0.4em] rounded-full border ${badgeColor} backdrop-blur-sm flex items-center gap-2`}>
                                 <Sparkles size={10} />
                                 Colección Premium
-                            </span>
-                            <span className="px-3 py-1 text-[9px] font-bold uppercase tracking-widest rounded-full border border-slate-200 bg-slate-50 text-slate-400 backdrop-blur-sm">
-                                2026 Edition
                             </span>
                         </div>
 
@@ -422,38 +445,12 @@ function CollectionBanner({ collection, products, reverse, userRole }: { collect
                                 href={`/web/collection/${collection.slug}`}
                                 className={`inline-flex items-center gap-3 text-white text-[11px] font-black uppercase tracking-widest px-8 py-4 rounded-xl transition-all duration-300 bg-[#1E3A8A] border border-[#1E3A8A] ${btnHover} shadow-xl`}
                             >
-                                Explorar Catálogo <ArrowRight size={16} />
+                                Explororar Catálogo <ArrowRight size={16} />
                             </Link>
-                            
-                            {collection.slug === 'desarrollo' || collection.slug === 'software-desarrollo' ? (
-                                <button
-                                    onClick={() => document.getElementById('demos')?.scrollIntoView({ behavior: 'smooth' })}
-                                    className="inline-flex items-center gap-3 text-white text-[11px] font-black uppercase tracking-widest px-8 py-4 rounded-xl transition-all duration-300 bg-gradient-to-r from-blue-600 to-blue-800 border border-blue-500 hover:bg-blue-700 shadow-xl"
-                                >
-                                    Ver Demos Web <Bot size={16} />
-                                </button>
-                            ) : (
-                                <button className="inline-flex items-center justify-center w-12 h-12 rounded-xl transition-all duration-300 bg-slate-50 border border-slate-200 hover:bg-[#1E3A8A] hover:text-white text-slate-400 shadow-xl group/btn">
-                                    <Download size={18} className="group-hover/btn:-translate-y-0.5 transition-transform" />
-                                </button>
-                            )}
-                        </div>
-
-                        {/* Extra trust badges below buttons */}
-                        <div className="flex items-center gap-6 mt-12 pt-8 border-t border-slate-100">
-                            <div className="flex items-center gap-2">
-                                <Shield size={16} className={textAccent} />
-                                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Garantía Total</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <Zap size={16} className={textAccent} />
-                                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Soporte VIP</span>
-                            </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Right Side: Showcase Gallery */}
                 <div className="w-full lg:w-[55%] p-6 md:p-10 relative bg-slate-50">
                     {products.length > 0 ? (
                         <div className="h-full flex flex-col">
@@ -478,16 +475,8 @@ function CollectionBanner({ collection, products, reverse, userRole }: { collect
                                             href={`/web/product/${p.id}`} 
                                             className="block w-48 lg:w-56 group bg-white border border-slate-200 rounded-2xl hover:border-blue-300 transition-all duration-300 p-3 shadow-lg hover:shadow-xl relative overflow-hidden"
                                         >
-                                            <div className="absolute top-0 right-0 p-3 z-10">
-                                                <div className="w-6 h-6 rounded-full bg-slate-50 backdrop-blur-sm flex items-center justify-center border border-slate-100 group-hover:bg-[#1E3A8A] group-hover:text-white transition-all">
-                                                    <ArrowRight size={10} className="opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />
-                                                </div>
-                                            </div>
-
                                             <div className="h-36 lg:h-44 bg-slate-50 flex items-center justify-center relative mb-4 rounded-xl overflow-hidden border border-slate-100">
-                                                {safeParseArray(p.images).length > 0 ? (
-                                                    <Image src={safeParseArray(p.images)[0]} alt={p.name} fill className="object-contain p-4 group-hover:scale-110 transition-transform duration-500" referrerPolicy="no-referrer" />
-                                                ) : <ShoppingBag className="text-slate-200 w-8 h-8" />}
+                                                <SafeImage src={safeParseArray(p.images)[0]} alt={p.name} fill className="p-4 group-hover:scale-110 transition-transform duration-500" />
                                             </div>
                                             
                                             <div className="px-1">
@@ -513,7 +502,7 @@ function CollectionBanner({ collection, products, reverse, userRole }: { collect
     )
 }
 
-/* ─── Categories Banner — silhouette mode for all ─── */
+/* ─── Categories Banner ─── */
 function CategoriesBanner({ categories }: { categories: any[] }) {
     const scrollRef = useRef<HTMLDivElement>(null)
     const scroll = (dir: 'left' | 'right') => {
@@ -549,20 +538,9 @@ function CategoriesBanner({ categories }: { categories: any[] }) {
                                 href={cat.slug === 'desarrollo' || cat.slug === 'software-desarrollo' || cat.slug.includes('diseno') || cat.name.toLowerCase().includes('diseño') ? '/web/demos' : `/web/category/${cat.slug}`}
                                 className="group block relative overflow-hidden w-48 h-60 rounded-xl border border-slate-200 bg-white hover:border-blue-300 hover:shadow-lg transition-all duration-300"
                             >
-                                {/* Always silhouette — invert + brightness to turn any image into a white silhouette */}
                                 <div className="absolute inset-0 flex items-center justify-center p-6">
-                                    {cat.image ? (
-                                        <Image
-                                            src={cat.image}
-                                            alt={cat.name}
-                                            fill
-                                            className="object-contain p-8 opacity-10 group-hover:opacity-30 transition-all duration-500 saturate-0"
-                                        />
-                                    ) : (
-                                        <Hexagon className="w-14 h-14 text-slate-100 group-hover:text-blue-50 transition-colors" strokeWidth={1} />
-                                    )}
+                                    <SafeImage src={cat.image} alt={cat.name} fill className="p-8 opacity-10 group-hover:opacity-30 transition-all duration-500 saturate-0" />
                                 </div>
-                                {/* Subtle blue glow on hover */}
                                 <div className="absolute inset-0 bg-gradient-to-t from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                                 <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-white via-white/95 to-transparent">
                                     <h3 className="text-[#1E3A8A] text-[11px] font-semibold uppercase tracking-tight mb-0.5 group-hover:text-blue-600 transition-colors line-clamp-2">{cat.name}</h3>
@@ -579,64 +557,22 @@ function CategoriesBanner({ categories }: { categories: any[] }) {
     )
 }
 
-/* ─── Web Demo Showcase (Development Section) ─── */
+/* ─── Web Demo Showcase ─── */
 const PORTFOLIO_ITEMS = [
-    {
-        id: 1,
-        title: "Instituto Sucre",
-        category: "Plataforma EduTech",
-        description: "Gestión académica integral. Redujo el tiempo de inscripción de estudiantes en un 80%.",
-        accent: "#6366f1",
-        previewUrl: "/instituto_sucre.html"
-    },
-    {
-        id: 2,
-        title: "Bodegas Logistics",
-        category: "Logística Corporativo",
-        description: "Control de inventario en tiempo real con trazabilidad QR multi-almacén.",
-        accent: "#10b981",
-        previewUrl: "/bodegas.html"
-    },
-    {
-        id: 3,
-        title: "Scraper Pro",
-        category: "Inteligencia Competitiva",
-        description: "Motor automatizado de extracción de datos masivos impulsado por Puppeteer.",
-        accent: "#a855f7",
-        previewUrl: "/scraper/index.html"
-    },
-    {
-        id: 4,
-        title: "Couple Games",
-        category: "Entretenimiento B2C",
-        description: "Aplicación interactiva con micro-animaciones fluidas diseñada para alto engagement.",
-        accent: "#ec4899",
-        previewUrl: "/couples-game/index.html"
-    },
-    {
-        id: 5,
-        title: "SOFT3 Logistics",
-        category: "ERP de Logística",
-        description: "Sistema robusto de gestión de inventarios desarrollado en Laravel para alta escalabilidad.",
-        accent: "#3b82f6",
-        previewUrl: "/soft3.html"
-    }
+    { id: 1, title: "Instituto Sucre", category: "Plataforma EduTech", description: "Gestión académica integral.", accent: "#6366f1", previewUrl: "/instituto_sucre.html" },
+    { id: 2, title: "Bodegas Logistics", category: "Logística Corporativo", description: "Control de inventario QR.", accent: "#10b981", previewUrl: "/bodegas.html" },
+    { id: 3, title: "Scraper Pro", category: "Inteligencia Competitiva", description: "Motor automatizado de datos.", accent: "#a855f7", previewUrl: "/scraper/index.html" },
+    { id: 4, title: "Couple Games", category: "Entretenimiento B2C", description: "App interactiva engagement.", accent: "#ec4899", previewUrl: "/couples-game/index.html" },
+    { id: 5, title: "SOFT3 Logistics", category: "ERP de Logística", description: "Sistema de gestión Laravel.", accent: "#3b82f6", previewUrl: "/soft3.html" }
 ]
 
 function WebShowcase() {
     const [activePreview, setActivePreview] = useState<{url: string, title: string, accent: string} | null>(null)
     const scrollRef = useRef<HTMLDivElement>(null)
-
-    const scroll = (dir: 'left' | 'right') => {
-        scrollRef.current?.scrollBy({ left: dir === 'right' ? 350 : -350, behavior: 'smooth' })
-    }
+    const scroll = (dir: 'left' | 'right') => { scrollRef.current?.scrollBy({ left: dir === 'right' ? 350 : -350, behavior: 'smooth' }) }
 
     return (
         <div className="bg-white border border-slate-200 rounded-2xl p-8 relative overflow-hidden shadow-xl">
-            <div className="absolute top-0 right-0 p-8 opacity-[0.03] text-[#1E3A8A]">
-                <Code size={120} />
-            </div>
-            
             <div className="relative z-10 flex flex-col md:flex-row justify-between items-end mb-10 gap-4">
                 <div>
                     <div className="flex items-center gap-2 text-blue-600 mb-2">
@@ -646,12 +582,8 @@ function WebShowcase() {
                     <h3 className="text-2xl font-black text-[#1E3A8A] uppercase tracking-tight">Showcase de <span className="text-blue-600">Desarrollo</span></h3>
                 </div>
                 <div className="flex gap-2">
-                    <button onClick={() => scroll('left')} className="w-10 h-10 rounded-full border border-slate-200 bg-white text-slate-400 hover:text-blue-600 flex items-center justify-center transition-colors shadow-sm">
-                        <ChevronLeft size={20} />
-                    </button>
-                    <button onClick={() => scroll('right')} className="w-10 h-10 rounded-full border border-slate-200 bg-white text-slate-400 hover:text-blue-600 flex items-center justify-center transition-colors shadow-sm">
-                        <ChevronRight size={20} />
-                    </button>
+                    <button onClick={() => scroll('left')} className="w-10 h-10 rounded-full border border-slate-200 bg-white text-slate-400 hover:text-blue-600 flex items-center justify-center transition-colors shadow-sm"><ChevronLeft size={20} /></button>
+                    <button onClick={() => scroll('right')} className="w-10 h-10 rounded-full border border-slate-200 bg-white text-slate-400 hover:text-blue-600 flex items-center justify-center transition-colors shadow-sm"><ChevronRight size={20} /></button>
                 </div>
             </div>
 
@@ -663,30 +595,10 @@ function WebShowcase() {
                         className="snap-start shrink-0 w-72 bg-slate-50 border border-slate-200 rounded-xl overflow-hidden group cursor-pointer shadow-md hover:shadow-xl transition-all"
                         onClick={() => setActivePreview({ url: item.previewUrl, title: item.title, accent: item.accent })}
                     >
-                        {/* Fake Browser Top */}
-                        <div className="bg-slate-100 px-3 py-2 flex items-center gap-1.5 border-b border-slate-200">
-                            <div className="w-2 h-2 rounded-full bg-red-400" />
-                            <div className="w-2 h-2 rounded-full bg-yellow-400" />
-                            <div className="w-2 h-2 rounded-full bg-green-400" />
-                            <div className="ml-2 flex-1 bg-white h-3 rounded-sm" />
-                        </div>
-                        
-                        {/* Preview Image / Placeholder */}
                         <div className="h-40 relative bg-white flex items-center justify-center overflow-hidden">
-                            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-50 group-hover:opacity-100 transition-opacity" />
-                            <iframe 
-                                src={item.previewUrl} 
-                                title={item.title}
-                                className="w-[400%] h-[400%] origin-top-left scale-[0.25] pointer-events-none opacity-40 group-hover:opacity-80 transition-opacity"
-                                tabIndex={-1}
-                            />
-                            <div className="absolute inset-0 flex flex-col items-center justify-center bg-blue-600/10 opacity-100 group-hover:opacity-0 transition-opacity">
-                                <Smartphone size={32} className="text-blue-600/20 mb-2" />
-                                <span className="text-[10px] font-bold text-blue-600/40 uppercase tracking-widest">Ver Demo</span>
-                            </div>
+                             <iframe src={item.previewUrl} title={item.title} className="w-[400%] h-[400%] origin-top-left scale-[0.25] pointer-events-none opacity-40 group-hover:opacity-80 transition-opacity" />
+                             <div className="absolute inset-0 flex flex-col items-center justify-center bg-blue-600/10 opacity-100 group-hover:opacity-0 transition-opacity"><span className="text-[10px] font-bold text-blue-600/40 uppercase tracking-widest">Ver Demo</span></div>
                         </div>
-
-                        {/* Info */}
                         <div className="p-4 border-t border-slate-100 bg-white">
                             <span className="text-[9px] font-bold uppercase tracking-widest mb-1 block" style={{ color: item.accent }}>{item.category}</span>
                             <h4 className="text-sm font-bold text-slate-800 mb-2">{item.title}</h4>
@@ -696,41 +608,15 @@ function WebShowcase() {
                 ))}
             </div>
 
-            {/* Preview Modal */}
             <AnimatePresence>
                 {activePreview && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 md:p-10"
-                        onClick={() => setActivePreview(null)}
-                    >
-                        <motion.div
-                            initial={{ scale: 0.9, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            exit={{ scale: 0.9, opacity: 0 }}
-                            className="relative w-full h-full max-w-6xl bg-white border border-slate-200 shadow-2xl rounded-xl overflow-hidden flex flex-col"
-                            onClick={(e) => e.stopPropagation()}
-                        >
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 md:p-10" onClick={() => setActivePreview(null)}>
+                        <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="relative w-full h-full max-w-6xl bg-white border border-slate-200 shadow-2xl rounded-xl overflow-hidden flex flex-col" onClick={(e) => e.stopPropagation()}>
                             <div className="h-14 bg-slate-50 border-b border-slate-200 flex items-center justify-between px-6">
-                                <div className="flex items-center gap-4">
-                                    <div className="flex gap-2">
-                                        <button onClick={() => setActivePreview(null)} className="w-3 h-3 rounded-full bg-red-500" />
-                                        <div className="w-3 h-3 rounded-full bg-yellow-500" />
-                                        <div className="w-3 h-3 rounded-full bg-green-500" />
-                                    </div>
-                                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest border-l border-slate-200 pl-4">
-                                        Demo: <span className="text-slate-900">{activePreview.title}</span>
-                                    </span>
-                                </div>
-                                <button onClick={() => setActivePreview(null)} className="text-slate-400 hover:text-slate-900 transition-colors">
-                                    <X size={20} />
-                                </button>
+                                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Demo: <span className="text-slate-900">{activePreview.title}</span></span>
+                                <button onClick={() => setActivePreview(null)} className="text-slate-400 hover:text-slate-900 transition-colors"><X size={20} /></button>
                             </div>
-                            <div className="flex-1 bg-white">
-                                <iframe src={activePreview.url} title="Active Demo" className="w-full h-full border-0" />
-                            </div>
+                            <div className="flex-1 bg-white"><iframe src={activePreview.url} title="Active Demo" className="w-full h-full border-0" /></div>
                         </motion.div>
                     </motion.div>
                 )}

@@ -14,23 +14,26 @@ export default function LoginPage() {
     const [error, setError] = useState("")
     const [loading, setLoading] = useState(false)
     const [showReset, setShowReset] = useState(false)
+    const [success, setSuccess] = useState("")
 
     const handleResetRequest = async () => {
         if (!email) return setError("Ingrese su email para continuar")
         setLoading(true)
+        setError("")
         try {
             const res = await fetch("/api/auth/reset-request", {
                 method: "POST",
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email })
             })
             const data = await res.json()
             if (data.success) {
-                alert(data.message)
+                setSuccess(data.message)
                 setShowReset(false)
             } else {
-                setError(data.error)
+                setError(data.error || "Error al procesar la solicitud")
             }
-        } catch (e) {
+        } catch {
             setError("Error de conexión")
         } finally {
             setLoading(false)
@@ -39,199 +42,232 @@ export default function LoginPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
+        if (!email || !password) {
+            setError("Complete todos los campos")
+            return
+        }
         setLoading(true)
         setError("")
+        setSuccess("")
 
         try {
-            const res = await signIn("credentials", {
+            const result = await signIn("credentials", {
                 redirect: false,
-                email,
+                email: email.trim().toLowerCase(),
                 password,
             })
 
-            if (res?.error) {
-                setError(res.error || "Credenciales inválidas. Por favor verifique su acceso.")
-            } else {
-                // Determine redirect based on selected section
-                let targetPath = "/dashboard"
-                
-                if (section === "CONSUMIDOR") {
-                    targetPath = "/shop" 
-                } else if (section === "CURSOS") {
-                    targetPath = "/dashboard/academy"
-                } else {
-                    targetPath = "/dashboard"
+            if (result?.error) {
+                const errMap: Record<string, string> = {
+                    "Credenciales inválidas": "Email o contraseña incorrectos.",
+                    "Su cuenta está pendiente de aprobación.": "Su cuenta está pendiente de aprobación por el administrador.",
+                    "Su cuenta ha sido desactivada por administración.": "Su cuenta ha sido desactivada. Contacte al administrador.",
+                    "Credenciales incompletas": "Complete todos los campos requeridos.",
                 }
-
+                setError(errMap[result.error] || result.error || "Credenciales inválidas. Verifique su acceso.")
+            } else if (result?.ok) {
+                let targetPath = "/dashboard"
+                if (section === "CONSUMIDOR") targetPath = "/web"
+                else if (section === "CURSOS") targetPath = "/dashboard/academy"
+                else targetPath = "/dashboard"
                 router.push(targetPath)
                 router.refresh()
+            } else {
+                setError("Error inesperado. Intente nuevamente.")
             }
-        } catch (err: any) {
+        } catch {
             setError("Error de conexión con el servidor central.")
         } finally {
             setLoading(false)
         }
     }
 
+    const roles = [
+        { id: "VENDEDOR", label: "Vendedor", icon: <Users size={14} /> },
+        { id: "CONSUMIDOR", label: "Cliente", icon: <ShoppingBag size={14} /> },
+        { id: "CURSOS", label: "Academia", icon: <GraduationCap size={14} /> },
+    ]
+
     return (
         <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC] text-[#0F172A] overflow-hidden relative font-sans">
-            
-            {/* Background Effects */}
+
+            {/* Background */}
             <div className="fixed inset-0 pointer-events-none">
-                <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-[#1E3A8A]/5 blur-[150px] rounded-full" />
-                <div className="absolute bottom-[-10%] left-[-5%] w-[40%] h-[40%] bg-slate-200 blur-[150px] rounded-full" />
+                <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#1E3A8A]/3 rounded-full blur-3xl" />
+                <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-[#3B82F6]/3 rounded-full blur-3xl" />
+                <div className="absolute inset-0 opacity-[0.02]"
+                    style={{ backgroundImage: 'radial-gradient(circle, #1E3A8A 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
             </div>
 
-            <div className="w-full max-w-md relative z-10 p-6">
-                {/* Logo Section */}
-                <div className="text-center mb-10">
-                    <div className="inline-flex items-center gap-3 px-4 py-2 border border-slate-200 bg-white shadow-sm rounded-full mb-6">
-                        <ShieldCheck size={14} className="text-[#1E3A8A]" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Terminal de Acceso Unificado</span>
+            <div className="relative z-10 w-full max-w-md px-6 py-10">
+
+                {/* Logo */}
+                <div className="flex flex-col items-center mb-10">
+                    <div className="flex items-center gap-3 mb-3">
+                        <div className="w-10 h-10 border-2 border-[#1E3A8A] flex items-center justify-center">
+                            <div className="w-3 h-3 bg-[#1E3A8A]" />
+                        </div>
+                        <span className="text-sm font-black text-[#0F172A] tracking-[0.3em] uppercase">ATOMIC ERP</span>
                     </div>
-                    <h1 className="text-5xl font-black tracking-tighter text-[#0F172A] uppercase italic leading-none">
-                        ATOMIC<span className="text-[#1E3A8A]">.</span>
-                    </h1>
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.5em] mt-2 italic">SISTEMA INTEGRAL DE ACCESO</p>
+                    <div className="flex items-center gap-2">
+                        <ShieldCheck size={12} className="text-emerald-500" />
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Acceso Corporativo Seguro</span>
+                    </div>
                 </div>
 
-                <div className="bg-white border border-slate-200 shadow-xl p-8 md:p-10 relative overflow-hidden group">
-                    {/* Inner Glow */}
-                    <div className="absolute -top-24 -right-24 w-48 h-48 bg-[#1E3A8A]/5 blur-[60px] group-hover:bg-[#1E3A8A]/10 transition-all duration-700"></div>
-                    
-                    <div className="relative z-10">
-                        <div className="mb-8 border-l-4 border-[#1E3A8A] pl-6">
-                            <h2 className="text-2xl font-black text-[#0F172A] uppercase tracking-tighter italic">Identificación</h2>
-                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Sincronización de Elemento Operativo</p>
+                {/* Card */}
+                <div className="bg-white border border-slate-200 shadow-2xl shadow-slate-200/80 p-8">
+
+                    <div className="mb-8">
+                        <h1 className="text-xl font-black text-[#0F172A] uppercase tracking-tight mb-1">
+                            Iniciar Sesión
+                        </h1>
+                        <p className="text-[11px] font-medium text-slate-400">Seleccione su perfil de acceso</p>
+                    </div>
+
+                    {/* Alerts */}
+                    {error && (
+                        <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-[11px] font-bold uppercase tracking-wide flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 bg-red-500 rounded-full flex-shrink-0" />
+                            {error}
+                        </div>
+                    )}
+                    {success && (
+                        <div className="mb-4 p-3 bg-emerald-50 border border-emerald-200 text-emerald-700 text-[11px] font-bold uppercase tracking-wide flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full flex-shrink-0" />
+                            {success}
+                        </div>
+                    )}
+
+                    <form onSubmit={handleSubmit} noValidate className="space-y-5">
+
+                        {/* Role selector */}
+                        <div className="grid grid-cols-3 gap-2">
+                            {roles.map((role) => (
+                                <button
+                                    key={role.id}
+                                    type="button"
+                                    onClick={() => setSection(role.id)}
+                                    className={`flex items-center justify-center gap-2 py-3 border transition-all text-[9px] font-black uppercase tracking-widest ${section === role.id ? 'bg-[#1E3A8A] border-[#1E3A8A] text-white shadow-lg shadow-[#1E3A8A]/20' : 'bg-slate-50 border-slate-200 text-slate-400 hover:bg-slate-100'}`}
+                                >
+                                    {role.icon} {role.label}
+                                </button>
+                            ))}
                         </div>
 
-                        {error && (
-                            <div className="mb-6 p-4 bg-red-50 border border-red-100 text-red-600 text-xs font-bold uppercase tracking-widest flex items-center animate-in slide-in-from-top-2">
-                                <Lock size={14} className="mr-3 shrink-0" /> {error}
+                        {/* Email */}
+                        <div className="space-y-2">
+                            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                                Correo Corporativo
+                            </label>
+                            <div className="relative group">
+                                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-[#1E3A8A] transition-colors">
+                                    <Mail size={18} />
+                                </div>
+                                <input
+                                    id="login-email"
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    required
+                                    autoComplete="email"
+                                    className="w-full pl-12 pr-4 py-4 border border-slate-200 bg-slate-50 text-[#0F172A] text-sm font-bold focus:border-[#1E3A8A] focus:bg-white transition-all outline-none placeholder:text-slate-300"
+                                    placeholder="usuario@atomic.com"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Password */}
+                        <div className="space-y-2">
+                            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                                Contraseña
+                            </label>
+                            <div className="relative group">
+                                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-[#1E3A8A] transition-colors">
+                                    <Lock size={18} />
+                                </div>
+                                <input
+                                    id="login-password"
+                                    type="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                    autoComplete="current-password"
+                                    className="w-full pl-12 pr-4 py-4 border border-slate-200 bg-slate-50 text-[#0F172A] text-sm font-bold focus:border-[#1E3A8A] focus:bg-white transition-all outline-none placeholder:text-slate-300"
+                                    placeholder="••••••••••••"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Submit */}
+                        <button
+                            id="login-submit"
+                            type="submit"
+                            disabled={loading}
+                            className="w-full py-5 px-6 bg-[#1E3A8A] hover:bg-[#0F172A] text-white font-black text-[11px] uppercase tracking-[0.25em] transition-all shadow-xl shadow-[#1E3A8A]/10 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 active:scale-[0.98]"
+                        >
+                            {loading ? (
+                                <>
+                                    <Loader2 className="animate-spin" size={18} />
+                                    <span>Verificando...</span>
+                                </>
+                            ) : (
+                                <>
+                                    <span>Iniciar Sesión</span>
+                                    <ArrowRight size={16} />
+                                </>
+                            )}
+                        </button>
+                    </form>
+
+                    {/* Footer links */}
+                    <div className="mt-8 pt-6 border-t border-slate-100 space-y-4">
+                        {!showReset ? (
+                            <button
+                                onClick={() => { setShowReset(true); setError(""); setSuccess("") }}
+                                className="w-full text-[10px] font-black text-slate-300 uppercase tracking-widest hover:text-[#1E3A8A] transition-colors text-center"
+                            >
+                                ¿Olvidó su contraseña?
+                            </button>
+                        ) : (
+                            <div className="space-y-3">
+                                <p className="text-[9px] font-black text-[#1E3A8A] uppercase tracking-widest">Solicitud de Reseteo</p>
+                                <div className="flex gap-2">
+                                    <input
+                                        type="email"
+                                        placeholder="Confirme su correo..."
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        className="flex-1 bg-slate-50 border border-slate-200 px-4 py-3 text-[10px] font-bold text-[#0F172A] outline-none focus:border-[#1E3A8A]"
+                                    />
+                                    <button
+                                        onClick={handleResetRequest}
+                                        disabled={loading}
+                                        className="bg-[#1E3A8A] px-4 py-3 text-[10px] font-black text-white uppercase disabled:opacity-50"
+                                    >
+                                        Enviar
+                                    </button>
+                                </div>
+                                <button
+                                    onClick={() => setShowReset(false)}
+                                    className="text-[8px] font-black text-slate-300 uppercase tracking-widest hover:text-[#0F172A] transition-colors"
+                                >
+                                    Cancelar
+                                </button>
                             </div>
                         )}
 
-                        <form onSubmit={handleSubmit} className="space-y-6">
-                            {/* Role Selection Grid */}
-                            <div className="grid grid-cols-2 gap-3 mb-8">
-                                {[
-                                    { id: 'VENDEDOR', label: 'Vendedor', icon: <Users size={14} /> },
-                                    { id: 'ADMIN', label: 'Admin', icon: <ShieldCheck size={14} /> },
-                                    { id: 'AFILIADO', label: 'Afiliado', icon: <Sparkles size={14} /> },
-                                    { id: 'CONSUMIDOR', label: 'Tienda', icon: <ShoppingBag size={14} /> },
-                                    { id: 'CURSOS', label: 'Academia', icon: <GraduationCap size={14} /> }
-                                ].map((role) => (
-                                    <button
-                                        key={role.id}
-                                        type="button"
-                                        onClick={() => setSection(role.id)}
-                                        className={`flex items-center justify-center gap-2 py-3 border transition-all text-[9px] font-black uppercase tracking-widest ${section === role.id ? 'bg-[#1E3A8A] border-[#1E3A8A] text-white shadow-lg shadow-[#1E3A8A]/20' : 'bg-slate-50 border-slate-200 text-slate-400 hover:bg-slate-100'}`}
-                                    >
-                                        {role.icon} {role.label}
-                                    </button>
-                                ))}
-                            </div>
-
-                            <div className="space-y-2">
-                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                                    Identificador Corporativo
-                                </label>
-                                <div className="relative group">
-                                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-[#1E3A8A] transition-colors">
-                                        <Mail size={18} />
-                                    </div>
-                                    <input
-                                        type="email"
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        required
-                                        className="w-full pl-12 pr-4 py-4 border border-slate-200 bg-slate-50 text-[#0F172A] text-sm font-bold focus:border-[#1E3A8A] focus:bg-white transition-all outline-none placeholder:text-slate-300 italic"
-                                        placeholder="usuario@atomic.com"
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="space-y-2">
-                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                                    Clave de Encriptación
-                                </label>
-                                <div className="relative group">
-                                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-[#1E3A8A] transition-colors">
-                                        <Lock size={18} />
-                                    </div>
-                                    <input
-                                        type="password"
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                        required
-                                        className="w-full pl-12 pr-4 py-4 border border-slate-200 bg-slate-50 text-[#0F172A] text-sm font-bold focus:border-[#1E3A8A] focus:bg-white transition-all outline-none placeholder:text-slate-300"
-                                        placeholder="••••••••••••"
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="pt-2">
-                                <button
-                                    type="submit"
-                                    disabled={loading}
-                                    className="w-full py-5 px-6 bg-[#1E3A8A] hover:bg-[#0F172A] text-white font-black text-[11px] uppercase tracking-[0.25em] transition-all shadow-xl shadow-[#1E3A8A]/10 disabled:opacity-50 flex items-center justify-center active:scale-[0.98] italic"
-                                >
-                                    {loading ? (
-                                        <Loader2 className="animate-spin mr-2" size={18} />
-                                    ) : (
-                                        <>
-                                            Iniciar Sesión <ArrowRight size={16} className="ml-2" />
-                                        </>
-                                    )}
-                                </button>
-                            </div>
-                        </form>
-
-                        <div className="mt-10 pt-8 border-t border-slate-100 flex flex-col gap-4">
-                            {!showReset ? (
-                                <button 
-                                    onClick={() => setShowReset(true)}
-                                    className="text-[10px] font-black text-slate-300 uppercase tracking-widest hover:text-[#1E3A8A] transition-colors italic text-center"
-                                >
-                                    ¿OLVIDÓ SU CLAVE DE ENCRIPTACIÓN?
-                                </button>
-                            ) : (
-                                <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2">
-                                    <p className="text-[9px] font-black text-[#1E3A8A] uppercase tracking-widest italic">SOLICITUD DE RESETEO DE EMERGENCIA</p>
-                                    <div className="flex gap-2">
-                                        <input 
-                                            type="email"
-                                            placeholder="CONFIRME SU CORREO..."
-                                            value={email}
-                                            onChange={(e) => setEmail(e.target.value)}
-                                            className="flex-1 bg-slate-50 border border-slate-200 px-4 py-3 text-[10px] font-black text-[#0F172A] outline-none focus:border-[#1E3A8A] italic"
-                                        />
-                                        <button 
-                                            onClick={handleResetRequest}
-                                            className="bg-[#1E3A8A] px-4 py-3 text-[10px] font-black text-white uppercase italic"
-                                        >
-                                            ENVIAR
-                                        </button>
-                                    </div>
-                                    <button 
-                                        onClick={() => setShowReset(false)}
-                                        className="text-[8px] font-black text-slate-300 uppercase tracking-widest hover:text-[#0F172A] transition-colors"
-                                    >
-                                        CANCELAR SOLICITUD
-                                    </button>
-                                </div>
-                            )}
-                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-4 text-center">
-                                ¿Sin acceso autorizado?{" "}
-                                <Link href="/register" className="text-[#1E3A8A] hover:underline transition-colors font-black ml-1">
-                                    Sincronizar Nuevo Elemento
-                                </Link>
-                            </p>
-                        </div>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center">
+                            ¿Sin acceso?{" "}
+                            <Link href="/register" className="text-[#1E3A8A] hover:underline font-black ml-1">
+                                Solicitar Registro
+                            </Link>
+                        </p>
                     </div>
                 </div>
 
-                <div className="mt-12 text-center flex flex-col items-center gap-4">
+                {/* Footer */}
+                <div className="mt-8 text-center flex flex-col items-center gap-2">
                     <div className="flex items-center gap-2 text-[10px] font-black text-slate-300 uppercase tracking-[0.4em]">
                         <Sparkles size={12} className="text-[#1E3A8A]/40" />
                         Atomic Core System v7.0.0 Stable

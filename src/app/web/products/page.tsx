@@ -183,12 +183,22 @@ export default function ProductsPage() {
                                 >
                                     <div className="aspect-square relative bg-slate-50 overflow-hidden">
                                         {imgs.length > 0 ? (
-                                            <Image src={imgs[0]} alt={p.name} fill className="object-contain p-3 group-hover:scale-105 transition-transform duration-300" referrerPolicy="no-referrer" />
+                                            <img 
+                                                src={imgs[0]} 
+                                                alt={p.name} 
+                                                className="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-300" 
+                                                referrerPolicy="no-referrer"
+                                                onError={(e) => {
+                                                    (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=800&auto=format&fit=crop";
+                                                    (e.target as HTMLImageElement).className = "w-full h-full object-cover opacity-20 grayscale";
+                                                }}
+                                            />
                                         ) : (
-                                            <div className="w-full h-full flex items-center justify-center">
-                                                <ShoppingBag className="text-slate-200 w-8 h-8" />
+                                            <div className="w-full h-full flex items-center justify-center bg-slate-100">
+                                                <ShoppingBag className="text-slate-300 w-10 h-10 animate-pulse" />
                                             </div>
                                         )}
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                                     </div>
                                     <div className="p-3 flex flex-col flex-1">
                                         <p className="text-[10px] font-medium text-slate-500 line-clamp-2 leading-snug group-hover:text-[#1E3A8A] transition-colors flex-1 mb-2">{p.name}</p>

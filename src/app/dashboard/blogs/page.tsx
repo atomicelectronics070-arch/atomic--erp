@@ -395,58 +395,87 @@ export default function BlogsDashboard() {
       </div>
 
       {activeTab === "entornos" && isAdmin && (
-          <div className="space-y-12 animate-in slide-in-from-right-10 duration-700 relative z-10">
-              <div className="flex justify-between items-center mb-10">
-                  <div className="flex items-center gap-4">
-                      <div className="w-1.5 h-10 bg-emerald-500"></div>
-                      <h2 className="text-3xl font-black text-white uppercase tracking-tighter italic">GESTIÓN DE ENTORNOS OPERATIVOS</h2>
+          <div className="space-y-20 animate-in slide-in-from-right-10 duration-1000 relative z-10">
+              <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-12 border-b border-white/5 pb-10">
+                  <div>
+                      <div className="flex items-center gap-4 mb-4">
+                          <div className="w-1.5 h-10 bg-emerald-500 shadow-[0_0_15px_#10b981]"></div>
+                          <h2 className="text-4xl font-black text-white uppercase tracking-tighter italic">MATRIZ DE ENTORNOS OPERATIVOS</h2>
+                      </div>
+                      <p className="text-[10px] text-slate-500 font-black uppercase tracking-[0.4em] italic">Configuración de Frecuencias y Terminales de Red</p>
                   </div>
                   <button 
                     onClick={() => setIsEnvModalOpen(true)}
-                    className="bg-emerald-600 text-white px-8 py-4 text-[10px] font-black uppercase tracking-widest italic skew-x-[-12deg] hover:bg-white hover:text-emerald-600 transition-all"
+                    className="bg-emerald-600 text-white px-10 py-5 text-[11px] font-black uppercase tracking-[0.4em] italic skew-x-[-12deg] hover:bg-white hover:text-emerald-600 transition-all shadow-[0_20px_50px_-15px_rgba(16,185,129,0.3)] active:scale-95 group"
                   >
-                    <div className="skew-x-[12deg] flex items-center gap-3"><Plus size={16} /> NUEVO ENTORNO</div>
+                    <div className="skew-x-[12deg] flex items-center gap-4">
+                        <Plus size={20} className="group-hover:rotate-90 transition-transform" /> 
+                        <span>INICIALIZAR_ENTORNO</span>
+                    </div>
                   </button>
               </div>
 
-              <div className="grid grid-cols-1 gap-10">
+              <div className="space-y-16">
                   {environments.length === 0 && (
-                      <div className="py-20 text-center border border-dashed border-white/5 text-slate-800 uppercase font-black tracking-widest text-[10px] italic">No hay entornos operativos definidos.</div>
+                      <div className="py-40 text-center border-2 border-dashed border-white/5 text-slate-800 uppercase font-black tracking-[1em] text-[12px] italic animate-pulse">SISTEMA_VACÍO: SIN_NODOS_DETECTADOS</div>
                   )}
                   {environments.map(env => (
-                      <div key={env.id} className="glass-panel border-white/5 p-8 backdrop-blur-3xl relative overflow-hidden">
-                          <div className="absolute top-0 right-0 p-8 flex gap-4">
-                              <button onClick={() => { setTargetEnvId(env.id); setIsAccModalOpen(true) }} className="text-[9px] font-black uppercase tracking-widest text-emerald-400 hover:text-white transition-colors flex items-center gap-2 bg-emerald-400/5 px-4 py-2 border border-emerald-400/20">
-                                  <Plus size={12} /> Añadir Cuenta
+                      <div key={env.id} className="glass-panel border-white/5 bg-slate-950/40 p-12 backdrop-blur-3xl relative overflow-hidden group/env border-l-4 border-l-emerald-500/20 hover:border-l-emerald-500 transition-all duration-700">
+                          <div className="absolute top-0 right-0 p-10 flex gap-6 z-20">
+                              <button onClick={() => { setTargetEnvId(env.id); setIsAccModalOpen(true) }} className="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-400 hover:text-white transition-all flex items-center gap-3 bg-emerald-400/5 px-6 py-3 border border-emerald-400/20 hover:bg-emerald-400/20 italic">
+                                  <Plus size={14} /> VINCULAR_CUENTA
                               </button>
-                              <button onClick={() => handleDeleteEnv(env.id)} className="text-slate-700 hover:text-red-500 transition-colors"><Trash2 size={16} /></button>
+                              <button onClick={() => handleDeleteEnv(env.id)} className="text-slate-700 hover:text-red-500 transition-colors p-3 hover:bg-red-500/10"><Trash2 size={20} /></button>
                           </div>
 
-                          <div className="mb-8">
-                              <h3 className="text-2xl font-black text-white uppercase tracking-tighter italic mb-2">{env.name}</h3>
-                              <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold italic">{env.description || 'SIN DESCRIPCIÓN OPERATIVA'}</p>
+                          <div className="mb-12 relative">
+                              <div className="absolute -left-12 top-0 h-full w-1 bg-emerald-500/10" />
+                              <h3 className="text-4xl font-black text-white uppercase tracking-tighter italic mb-4">{env.name}</h3>
+                              <div className="flex items-center gap-6">
+                                  <span className="text-[10px] text-slate-600 uppercase tracking-widest font-black italic">ID_SECTOR: {env.id.slice(-8)}</span>
+                                  <div className="h-[1px] w-20 bg-white/5" />
+                                  <p className="text-[11px] text-slate-500 uppercase tracking-widest font-bold italic">{env.description || 'SIN_DATA_OPERATIVA'}</p>
+                              </div>
                           </div>
 
-                          <div className="flex gap-4 overflow-x-auto pb-4 custom-scrollbar">
+                          <div className="flex gap-6 overflow-x-auto pb-8 custom-scrollbar scroll-smooth">
                               {env.accounts?.length === 0 && (
-                                  <div className="text-[9px] text-slate-800 uppercase tracking-widest font-black italic">Sin cuentas vinculadas.</div>
+                                  <div className="py-10 text-[10px] text-slate-800 uppercase tracking-[0.5em] font-black italic border border-dashed border-white/5 w-full text-center">CANALES_OFFLINE: PENDIENTE_SINCRONIZACIÓN</div>
                               )}
-                              {env.accounts?.map((acc: any) => (
-                                  <div key={acc.id} className="shrink-0 w-48 p-4 bg-slate-950/60 border border-white/5 relative group">
-                                      <button onClick={() => handleDeleteAcc(acc.id)} className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-red-500/40 hover:text-red-500 transition-all"><X size={12} /></button>
-                                      <div className="flex flex-col items-center text-center gap-3">
-                                          <div className="w-10 h-10 bg-white/5 flex items-center justify-center text-slate-500">
-                                              {acc.platform === 'facebook' && <Facebook size={18} />}
-                                              {acc.platform === 'instagram' && <Instagram size={18} />}
-                                              {acc.platform === 'youtube' && <Youtube size={18} />}
-                                              {acc.platform === 'tiktok' && <span className="font-black text-xs">TK</span>}
+                              {env.accounts?.map((acc: any, idx: number) => (
+                                  <div key={acc.id} className="shrink-0 w-64 p-8 bg-black/60 border border-white/5 relative group/acc hover:border-emerald-500/40 transition-all duration-500 shadow-2xl">
+                                      <div className="absolute -top-[1px] -left-[1px] w-8 h-[1px] bg-emerald-500/40" />
+                                      <div className="absolute -top-[1px] -left-[1px] w-[1px] h-8 bg-emerald-500/40" />
+                                      
+                                      <button onClick={() => handleDeleteAcc(acc.id)} className="absolute top-4 right-4 opacity-0 group-hover/acc:opacity-100 text-red-500/40 hover:text-red-500 transition-all"><X size={14} /></button>
+                                      
+                                      <div className="flex flex-col items-center text-center gap-6">
+                                          <div className="relative">
+                                              <div className="absolute inset-0 bg-emerald-500/10 blur-xl rounded-full animate-pulse opacity-0 group-hover/acc:opacity-100 transition-opacity" />
+                                              <div className="relative w-16 h-16 bg-white/5 border border-white/10 flex items-center justify-center text-slate-500 group-hover/acc:text-emerald-400 group-hover/acc:border-emerald-500/30 transition-all">
+                                                  {acc.platform === 'facebook' && <Facebook size={28} />}
+                                                  {acc.platform === 'instagram' && <Instagram size={28} />}
+                                                  {acc.platform === 'youtube' && <Youtube size={28} />}
+                                                  {acc.platform === 'tiktok' && <span className="font-black text-2xl italic">TK</span>}
+                                              </div>
                                           </div>
-                                          <p className="text-[10px] font-black text-white uppercase tracking-widest italic">{acc.name}</p>
-                                          <span className="text-[7px] font-black text-slate-600 uppercase tracking-widest">{acc.platform}</span>
+                                          
+                                          <div>
+                                              <p className="text-[12px] font-black text-white uppercase tracking-[0.2em] italic mb-2 group-hover/acc:text-emerald-400 transition-colors">CUENTA_{idx + 1}</p>
+                                              <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest italic truncate w-40">{acc.name}</p>
+                                          </div>
+                                          
+                                          <div className="flex items-center gap-3 bg-slate-900/80 px-4 py-2 border border-white/5">
+                                              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                              <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest italic">{acc.platform}</span>
+                                          </div>
                                       </div>
                                   </div>
                               ))}
                           </div>
+                          
+                          {/* Decorative Scanline */}
+                          <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent group-hover/env:via-emerald-500 transition-all duration-1000" />
                       </div>
                   ))}
               </div>
@@ -782,21 +811,25 @@ export default function BlogsDashboard() {
                         </div>
 
                         {/* Matrix Deployment Section (NEW MACABRE UI) */}
-                        <div className="p-8 bg-emerald-500/5 border border-emerald-500/10 rounded-none space-y-8">
-                             <div className="flex items-center gap-4 border-b border-emerald-500/10 pb-4">
-                                <Globe size={20} className="text-emerald-500" />
-                                <h3 className="text-sm font-black text-white uppercase tracking-widest italic">MATRIZ DE DESPLIEGUE POR ENTORNO</h3>
+                        <div className="p-12 bg-slate-950 border-2 border-emerald-500/10 rounded-none space-y-10 relative overflow-hidden group/matrix">
+                             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover/matrix:opacity-100 transition-opacity">
+                                <Globe size={40} className="text-emerald-500 animate-[spin_10s_linear_infinite]" />
+                             </div>
+                             
+                             <div className="flex items-center gap-6 border-b border-emerald-500/10 pb-6">
+                                <div className="w-2 h-6 bg-emerald-500 shadow-[0_0_10px_#10b981]" />
+                                <h3 className="text-sm font-black text-white uppercase tracking-[0.4em] italic">MATRIZ DE DESPLIEGUE POR ENTORNO</h3>
                              </div>
 
-                             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                                 <div className="space-y-4">
-                                     <label className="text-[9px] font-black uppercase tracking-widest text-emerald-500 italic">1. Seleccionar Entorno Objetivo</label>
+                             <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+                                 <div className="space-y-6">
+                                     <label className="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-500 italic">1. SELECCIONAR_NODO_OBJETIVO</label>
                                      <select 
-                                        className="w-full bg-slate-950 border border-white/10 p-4 text-xs text-white outline-none focus:border-emerald-500"
+                                        className="w-full bg-black border border-white/10 p-6 text-[11px] font-black text-white outline-none focus:border-emerald-500 transition-all uppercase tracking-widest italic appearance-none cursor-pointer"
                                         value={selectedEnvId}
                                         onChange={e => { setSelectedEnvId(e.target.value); setSelectedAccountIds([]) }}
                                      >
-                                         <option value="">-- SELECCIONAR ENTORNO --</option>
+                                         <option value="">-- SECTOR_NO_DEFINIDO --</option>
                                          {environments.map(e => (
                                              <option key={e.id} value={e.id}>{e.name}</option>
                                          ))}
@@ -804,19 +837,42 @@ export default function BlogsDashboard() {
                                  </div>
 
                                  {selectedEnvId && (
-                                     <div className="space-y-4">
-                                         <label className="text-[9px] font-black uppercase tracking-widest text-emerald-500 italic">2. Activar Cuentas de Destino</label>
-                                         <div className="flex flex-wrap gap-2">
-                                             {environments.find(e => e.id === selectedEnvId)?.accounts?.map((acc: any) => (
-                                                 <button
-                                                    key={acc.id}
-                                                    type="button"
-                                                    onClick={() => toggleAccountSelection(acc.id)}
-                                                    className={`px-4 py-2 text-[9px] font-black uppercase tracking-widest border transition-all ${selectedAccountIds.includes(acc.id) ? 'bg-emerald-500 text-white border-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.4)]' : 'bg-slate-950 text-slate-600 border-white/5 hover:border-emerald-500/30'}`}
-                                                 >
-                                                     {acc.name}
-                                                 </button>
-                                             ))}
+                                     <div className="lg:col-span-2 space-y-8 animate-in slide-in-from-left-4">
+                                         <div className="flex items-center justify-between">
+                                             <label className="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-500 italic">2. FOCO_TÁCTICO: ACTIVAR_TERMINALES</label>
+                                             <div className="flex gap-6">
+                                                 <button type="button" onClick={() => setSelectedAccountIds(environments.find(e => e.id === selectedEnvId)?.accounts?.map((a:any) => a.id) || [])} className="text-[9px] font-black uppercase tracking-widest text-slate-500 hover:text-[#00F0FF] transition-colors italic">SELECCIONAR_TODO</button>
+                                                 <button type="button" onClick={() => setSelectedAccountIds([])} className="text-[9px] font-black uppercase tracking-widest text-slate-500 hover:text-red-500 transition-colors italic">LIMPIAR_FOCO</button>
+                                             </div>
+                                         </div>
+                                         <div className="flex gap-6 overflow-x-auto pb-6 custom-scrollbar scroll-smooth">
+                                             {environments.find(e => e.id === selectedEnvId)?.accounts?.map((acc: any, idx: number) => {
+                                                 const isSelected = selectedAccountIds.includes(acc.id)
+                                                 return (
+                                                     <button
+                                                        key={acc.id}
+                                                        type="button"
+                                                        onClick={() => toggleAccountSelection(acc.id)}
+                                                        className={`shrink-0 w-56 p-8 border-2 transition-all relative overflow-hidden group/btn ${isSelected ? 'bg-emerald-500/10 border-emerald-500 shadow-[0_0_40px_rgba(16,185,129,0.2)]' : 'bg-black/60 border-white/5 hover:border-emerald-500/30'}`}
+                                                     >
+                                                         <div className={`absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 transition-colors ${isSelected ? 'border-white' : 'border-transparent'}`} />
+                                                         {isSelected && <div className="absolute top-2 right-2 text-emerald-400 animate-pulse"><Check size={14}/></div>}
+                                                         
+                                                         <div className="flex flex-col items-center gap-6">
+                                                             <div className={`w-14 h-14 flex items-center justify-center border transition-all ${isSelected ? 'text-emerald-400 border-emerald-500/40 bg-emerald-500/5' : 'text-slate-800 border-white/5 bg-white/[0.02]'}`}>
+                                                                 {acc.platform === 'facebook' && <Facebook size={28} />}
+                                                                 {acc.platform === 'instagram' && <Instagram size={28} />}
+                                                                 {acc.platform === 'youtube' && <Youtube size={28} />}
+                                                                 {acc.platform === 'tiktok' && <span className="font-black text-xl italic">TK</span>}
+                                                             </div>
+                                                             <div className="text-center">
+                                                                 <p className={`text-[11px] font-black uppercase tracking-widest italic truncate w-40 ${isSelected ? 'text-white' : 'text-slate-700'}`}>CUENTA_{idx + 1}</p>
+                                                                 <span className={`text-[8px] font-black uppercase tracking-[0.4em] mt-1 block ${isSelected ? 'text-emerald-500/60' : 'text-slate-800'}`}>{acc.platform}</span>
+                                                             </div>
+                                                         </div>
+                                                     </button>
+                                                 )
+                                             })}
                                          </div>
                                      </div>
                                  )}

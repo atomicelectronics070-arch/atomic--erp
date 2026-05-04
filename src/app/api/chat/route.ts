@@ -17,10 +17,31 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Invalid messages format" }, { status: 400 })
         }
 
-        // 1. Fetch User Data to calculate Days Registered
+        // 1. Fetch User Data with contextual memory (WhatsApp, Quotes, Transactions)
         const dbUser = await prisma.user.findUnique({
             where: { id: session.user.id },
-            select: { createdAt: true, name: true }
+            select: { 
+                createdAt: true, 
+                name: true,
+                waOwnedChats: {
+                    take: 3,
+                    orderBy: { lastMessageAt: 'desc' },
+                    include: {
+                        contact: { select: { name: true } },
+                        messages: { take: 5, orderBy: { createdAt: 'desc' } }
+                    }
+                },
+                conversations: {
+                    take: 3,
+                    orderBy: { createdAt: 'desc' },
+                    select: { quoteNumber: true, total: true, status: true }
+                },
+                transactions: {
+                    take: 3,
+                    orderBy: { createdAt: 'desc' },
+                    select: { amount: true, status: true }
+                }
+            }
         })
 
         if (!dbUser) {
@@ -29,23 +50,40 @@ export async function POST(req: Request) {
 
         const daysRegistered = Math.floor((new Date().getTime() - new Date(dbUser.createdAt).getTime()) / (1000 * 3600 * 24))
 
-        // 2. Comprobar configuración de prompt para este usuario
+        // 2. Format Context for the AI
+        const waContext = dbUser.waOwnedChats.map(chat => 
+            `- Chat con ${chat.contact?.name}: ${chat.messages.map(m => m.body).reverse().join(' | ')}`
+        ).join('\n')
+
+        const quoteContext = dbUser.conversations.map(q => 
+            `- Cotizaci\u00f3n ${q.quoteNumber}: $${q.total} (${q.status})`
+        ).join('\n')
+
+        // 3. Comprobar configuraci\u00f3n de prompt para este usuario
         let userConfig = await prisma.userPromptConfig.findUnique({
             where: {
                 userId_type: { userId: session.user.id, type: botType }
             }
         })
 
-        if (!userConfig || !userConfig.prompt || userConfig.prompt.trim() === "") {
-            return NextResponse.json({ 
-                text: "No tengo configurado un diálogo aún. Por favor, comunícate con tu administrador para que me asigne un modelo de comportamiento." 
-            })
-        }
+        const basePrompt = userConfig?.prompt || "Eres un capacitador de \u00e9lite de Atomic Solutions. Tu misi\u00f3n es guiar al vendedor, ayudarle con documentos y ser su mentor constante."
 
-        const basePrompt = userConfig.prompt
+        // 4. Inject Dynamic Context (MEMORIA ENLAZADA)
+        const systemPrompt = `
+[CONTEXTO DE MEMORIA ENLAZADA - ATOMIC ERP]
+Usuario: ${dbUser.name || 'Asesor'}
+D\u00edas en la Compa\u00f1\u00eda: ${daysRegistered}
 
-        // 3. Inject Dynamic Context
-        const systemPrompt = `[CONTEXTO DEL SISTEMA INYECTADO: Asesor: ${dbUser.name || 'Usuario'}, Días registrado: ${daysRegistered}]\n\n--- INSTRUCCIONES ---\n${basePrompt}`
+RECIENTE EN WHATSAPP CRM:
+${waContext || 'Sin chats recientes vinculados.'}
+
+COTIZACIONES RECIENTES:
+${quoteContext || 'Sin cotizaciones generadas recientemente.'}
+
+--- INSTRUCCIONES DE COMPORTAMIENTO ---
+${basePrompt}
+[FIN DE INSTRUCCIONES]
+`.trim()
 
         // To use Gemini REST API directly without installing extra SDKs
         const GOOGLE_API_KEY = process.env.GOOGLE_GEMINI_API_KEY || process.env.GEMINI_API_KEY
