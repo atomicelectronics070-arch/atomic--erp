@@ -18,6 +18,7 @@ import {
     createCategory,
     createCollection,
     deleteCollection,
+    deleteCategory,
     deleteManyCollections,
     cleanupDuplicateProducts,
     getStoreSettings,
@@ -89,6 +90,37 @@ export default function ShopConfigPage() {
             alert("Error al sincronizar parámetros.")
         } finally {
             setLoading(false)
+        }
+    }
+
+    const handleBulkDeleteCollections = async () => {
+        if (!confirm(`¿Confirmar poda masiva de ${selectedCollections.length} colecciones?`)) return
+        try {
+            await deleteManyCollections(selectedCollections)
+            setSelectedCollections([])
+            refreshData()
+        } catch (e) {
+            alert("Error en la poda masiva.")
+        }
+    }
+
+    const handleDeleteCollection = async (id: string) => {
+        if (!confirm("¿Eliminar este segmento de colección?")) return
+        try {
+            await deleteCollection(id)
+            refreshData()
+        } catch (e) {
+            alert("Error al eliminar.")
+        }
+    }
+
+    const handleDeleteCategory = async (id: string) => {
+        if (!confirm("¿Eliminar esta categoría? Se desvincularán los productos asociados.")) return
+        try {
+            await deleteCategory(id)
+            refreshData()
+        } catch (e) {
+            alert("Error al eliminar categoría.")
         }
     }
 
@@ -209,6 +241,9 @@ export default function ShopConfigPage() {
                                                 <div className="opacity-0 group-hover:opacity-100 transition-all scale-90 group-hover:scale-100">
                                                     <button onClick={() => setEditingTaxonomy({ type: 'category', data: c })} className="p-3 text-slate-400 hover:text-secondary transition-colors bg-white/5 rounded-none">
                                                         <Edit size={16} />
+                                                    </button>
+                                                    <button onClick={() => handleDeleteCategory(c.id)} className="p-3 text-slate-400 hover:text-red-500 transition-colors bg-white/5 rounded-none">
+                                                        <Trash2 size={16} />
                                                     </button>
                                                 </div>
                                             </li>

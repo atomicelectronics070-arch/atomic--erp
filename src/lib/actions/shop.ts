@@ -52,6 +52,12 @@ export async function createCategory(name: string) {
     return cat
 }
 
+export async function deleteCategory(id: string) {
+    await prisma.category.delete({ where: { id } })
+    revalidatePath('/dashboard/shop')
+    return { success: true }
+}
+
 export async function saveCollection(id: string | null, data: any, productIds: string[] = []) {
     const slug = data.name.toLowerCase().replace(/ /g, '-')
     const finalData = {
