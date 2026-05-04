@@ -629,53 +629,52 @@ function WebShowcase() {
 function HeroBanner({ settings }: { settings: any }) {
     const banners = [
         { 
-            url: "/banners/hero.png", 
-            title: "CATÁLOGO DE SOLUCIONES 2026", 
-            subtitle: "Sistemas ERP y Automatización",
-            pdf: "/pdfs/catalogo_general.pdf",
-            accent: "from-blue-600/20"
+            url: "/banners/spy_cameras.png", 
+            title: "GAMA DE CÁMARAS ESPÍA PROFESIONALES", 
+            subtitle: "Tecnología de Vigilancia Discreta",
+            pdf: "/pdfs/catalogo_espia.pdf",
+            accent: "from-slate-900/40"
         },
         { 
-            url: "/banners/solutions.png", 
-            title: "SOLUCIONES TECNOLÓGICAS DE ÉLITE", 
-            subtitle: "Infraestructura y Seguridad",
-            pdf: "/pdfs/catalogo_elite.pdf",
-            accent: "from-red-600/20"
+            url: "/banners/smart_doorbell.png", 
+            title: "PORTERO ELECTRÓNICO SMART", 
+            subtitle: "Seguridad Residencial Avanzada",
+            pdf: "/pdfs/catalogo_smart.pdf",
+            accent: "from-blue-900/40"
         }
     ]
 
     return (
-        <section className="w-full bg-slate-900 py-1 border-b border-white/5">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-1 px-1">
+        <section className="w-full bg-[#F8FAFC]">
+            <div className="flex flex-col gap-4 p-4">
                 {banners.map((b, i) => (
                     <motion.div 
                         key={i}
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        whileInView={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.8, delay: i * 0.2 }}
-                        className="relative h-[60vh] min-h-[400px] overflow-hidden group cursor-pointer"
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 1, delay: i * 0.3 }}
+                        className="relative w-full h-[50vh] min-h-[450px] overflow-hidden group border border-slate-200 rounded-2xl shadow-xl"
                     >
-                        <div className="absolute inset-0 transition-transform duration-1000 group-hover:scale-110">
-                            <img 
-                                src={b.url} 
-                                alt={b.title} 
-                                className="w-full h-full object-cover opacity-80" 
-                                loading="eager"
-                                fetchPriority="high"
-                            />
-                            <div className={`absolute inset-0 bg-gradient-to-br ${b.accent} to-transparent mix-blend-overlay`} />
-                            <div className="absolute inset-0 bg-slate-950/40 group-hover:bg-slate-950/20 transition-all duration-700" />
+                        <div className="absolute inset-0 transition-transform duration-[2000ms] group-hover:scale-105">
+                            <img src={b.url} alt={b.title} className="w-full h-full object-cover" />
+                            <div className={`absolute inset-0 bg-gradient-to-r ${b.accent} to-transparent mix-blend-multiply opacity-60`} />
+                            <div className="absolute inset-0 bg-slate-950/20 group-hover:bg-transparent transition-all duration-1000" />
                         </div>
                         
-                        <div className="absolute inset-0 p-12 flex flex-col justify-end">
+                        <div className="absolute inset-0 p-12 md:p-20 flex flex-col justify-center">
                             <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.5 + (i * 0.2) }}
-                                className="space-y-6"
+                                initial={{ opacity: 0, x: -30 }}
+                                whileInView={{ opacity: 1, x: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.8 + (i * 0.3) }}
+                                className="max-w-2xl space-y-6"
                             >
-                                <span className="text-[10px] font-black text-white/60 uppercase tracking-[0.5em] italic">{b.subtitle}</span>
-                                <h2 className="text-4xl lg:text-5xl font-black text-white uppercase italic tracking-tighter leading-none max-w-sm">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-10 h-[2px] bg-blue-600" />
+                                    <span className="text-[10px] font-black text-white uppercase tracking-[0.6em] italic">{b.subtitle}</span>
+                                </div>
+                                <h2 className="text-5xl lg:text-7xl font-black text-white uppercase italic tracking-tighter leading-none">
                                     {b.title}
                                 </h2>
                                 <a 
@@ -683,17 +682,17 @@ function HeroBanner({ settings }: { settings: any }) {
                                     target="_blank" 
                                     rel="noopener noreferrer"
                                     onClick={(e) => e.stopPropagation()}
-                                    className="inline-flex items-center gap-4 bg-white text-slate-950 px-10 py-5 text-[11px] font-black uppercase tracking-[0.3em] hover:bg-blue-600 hover:text-white transition-all shadow-2xl skew-x-[-10deg]"
+                                    className="inline-flex items-center gap-6 bg-white text-slate-950 px-12 py-6 text-[12px] font-black uppercase tracking-[0.4em] hover:bg-[#1E3A8A] hover:text-white transition-all shadow-2xl relative overflow-hidden group/btn"
                                 >
-                                    <span className="skew-x-[10deg] flex items-center gap-3">
-                                        VER MÁS <ArrowRight size={16} />
+                                    <span className="relative z-10 flex items-center gap-3">
+                                        VER MÁS <ArrowRight size={18} />
                                     </span>
                                 </a>
                             </motion.div>
                         </div>
 
-                        {/* Decorative Corner */}
-                        <div className="absolute top-0 right-0 w-24 h-24 border-t-2 border-r-2 border-white/10 group-hover:border-white/40 transition-colors m-8" />
+                        {/* Corner Accents */}
+                        <div className="absolute top-0 right-0 w-32 h-32 border-t border-r border-white/20 m-8 group-hover:border-white/50 transition-colors" />
                     </motion.div>
                 ))}
             </div>
