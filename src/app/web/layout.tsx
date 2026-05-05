@@ -32,7 +32,7 @@ export default function WebLayout({ children }: { children: React.ReactNode }) {
                             <Link
                                 href="/web/products"
                                 className={pathname.includes('/product') ? 'text-[#1E3A8A] border-b-2 border-[#1E3A8A] pb-1' : 'hover:text-[#1E3A8A] transition-colors'}
-                            >Tienda</Link>
+                            >Productos</Link>
                             <Link
                                 href="/web/categories"
                                 className={pathname === '/web/categories' ? 'text-[#1E3A8A] border-b-2 border-[#1E3A8A] pb-1' : 'hover:text-[#1E3A8A] transition-colors'}

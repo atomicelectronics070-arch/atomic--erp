@@ -104,25 +104,21 @@ export default function PublicWebClient({ initialProducts, metadata, userRole, s
             const isTech = text.includes('power bank') || text.includes('powerbank') || text.includes('banco de poder') || text.includes('espia') || text.includes('espía') || text.includes('oculta');
             
             if (isConsole) {
-                if (!seenCategories.has('consoles')) {
-                    seenCategories.add('consoles');
-                    return true;
-                }
-                return false;
-            }
-            return p.featured || isTech;
-        });
-
-        if (base.length < 16) {
+        const base = filteredProducts.filter(p => 
+            p.featured && 
+            (p.name.toLowerCase().includes('camara') || p.name.toLowerCase().includes('espia'))
+        );
+        
+        if (base.length < 32) {
             const currentIds = new Set(base.map(p => p.id));
-            const newest = [...filteredProducts]
-                .filter(p => !currentIds.has(p.id))
-                .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-                .slice(0, 16 - base.length);
-            base = [...base, ...newest];
+            const moreCameras = filteredProducts.filter(p => 
+                !currentIds.has(p.id) && 
+                (p.name.toLowerCase().includes('camara') || p.name.toLowerCase().includes('espia'))
+            ).slice(0, 32 - base.length);
+            return [...base, ...moreCameras];
         }
 
-        return base;
+        return base.slice(0, 32);
     })();
 
     const desiredOrder = ["tecnologia-residencial", "desarrollo", "gaming", "automatizacion"]
@@ -629,71 +625,32 @@ function WebShowcase() {
 function HeroBanner({ settings }: { settings: any }) {
     const banners = [
         { 
-            url: "/banners/spy_cameras.png", 
-            title: "GAMA DE CÁMARAS ESPÍA PROFESIONALES", 
-            subtitle: "Tecnología de Vigilancia Discreta",
+            url: "/banners/espia.jpeg", 
             pdf: "/pdfs/catalogo_espia.pdf",
-            accent: "from-slate-900/40"
         },
         { 
-            url: "/banners/smart_doorbell.png", 
-            title: "PORTERO ELECTRÓNICO SMART", 
-            subtitle: "Seguridad Residencial Avanzada",
+            url: "/banners/smart.jpeg", 
             pdf: "/pdfs/catalogo_smart.pdf",
-            accent: "from-blue-900/40"
         }
     ]
 
     return (
-        <section className="w-full bg-[#F8FAFC]">
-            <div className="flex flex-col gap-4 p-4">
+        <section className="w-full bg-white">
+            <div className="flex flex-col">
                 {banners.map((b, i) => (
-                    <motion.div 
+                    <div 
                         key={i}
-                        initial={{ opacity: 0, y: 30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 1, delay: i * 0.3 }}
-                        className="relative w-full h-[50vh] min-h-[450px] overflow-hidden group border border-slate-200 rounded-2xl shadow-xl"
+                        className="relative w-full overflow-hidden"
                     >
-                        <div className="absolute inset-0 transition-transform duration-[2000ms] group-hover:scale-105">
-                            <img src={b.url} alt={b.title} className="w-full h-full object-cover" />
-                            <div className={`absolute inset-0 bg-gradient-to-r ${b.accent} to-transparent mix-blend-multiply opacity-60`} />
-                            <div className="absolute inset-0 bg-slate-950/20 group-hover:bg-transparent transition-all duration-1000" />
-                        </div>
-                        
-                        <div className="absolute inset-0 p-12 md:p-20 flex flex-col justify-center">
-                            <motion.div
-                                initial={{ opacity: 0, x: -30 }}
-                                whileInView={{ opacity: 1, x: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: 0.8 + (i * 0.3) }}
-                                className="max-w-2xl space-y-6"
-                            >
-                                <div className="flex items-center gap-4">
-                                    <div className="w-10 h-[2px] bg-blue-600" />
-                                    <span className="text-[10px] font-black text-white uppercase tracking-[0.6em] italic">{b.subtitle}</span>
-                                </div>
-                                <h2 className="text-5xl lg:text-7xl font-black text-white uppercase italic tracking-tighter leading-none">
-                                    {b.title}
-                                </h2>
-                                <a 
-                                    href={b.pdf} 
-                                    target="_blank" 
-                                    rel="noopener noreferrer"
-                                    onClick={(e) => e.stopPropagation()}
-                                    className="inline-flex items-center gap-6 bg-white text-slate-950 px-12 py-6 text-[12px] font-black uppercase tracking-[0.4em] hover:bg-[#1E3A8A] hover:text-white transition-all shadow-2xl relative overflow-hidden group/btn"
-                                >
-                                    <span className="relative z-10 flex items-center gap-3">
-                                        VER MÁS <ArrowRight size={18} />
-                                    </span>
-                                </a>
-                            </motion.div>
-                        </div>
-
-                        {/* Corner Accents */}
-                        <div className="absolute top-0 right-0 w-32 h-32 border-t border-r border-white/20 m-8 group-hover:border-white/50 transition-colors" />
-                    </motion.div>
+                        <img src={b.url} alt="Banner" className="w-full h-auto block" />
+                        <a 
+                            href={b.pdf} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="absolute inset-0 z-10"
+                            aria-label="Ver más"
+                        />
+                    </div>
                 ))}
             </div>
         </section>
