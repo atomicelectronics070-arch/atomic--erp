@@ -52,12 +52,15 @@ export async function POST(req: Request) {
             `- Cotización ${q.quoteNumber}: $${q.total} (${q.status})`
         ).join('\n') || ""
 
-        // 3. Comprobar configuraci\u00f3n de prompt para este usuario
-        let userConfig = await prisma.userPromptConfig.findUnique({
-            where: {
-                userId_type: { userId: session.user.id, type: botType }
-            }
-        })
+        // 3. Comprobar configuración de prompt para este usuario
+        let userConfig = null
+        if (session?.user?.id) {
+            userConfig = await prisma.userPromptConfig.findUnique({
+                where: {
+                    userId_type: { userId: session.user.id, type: botType }
+                }
+            })
+        }
 
         const basePrompt = userConfig?.prompt || "Eres un capacitador de \u00e9lite de Atomic Solutions. Tu misi\u00f3n es guiar al vendedor, ayudarle con documentos y ser su mentor constante."
 
@@ -72,10 +75,10 @@ REGLAS PARA COTIZACIONES:
    [[QUOTATION_JSON:{"topic":"...","clientName":"...","clientEmail":"...","clientPhone":"...","items":[{"code":"...","description":"...","price":0,"quantity":0}]}]]
 
 3. Lenguaje PROFESIONAL, impecable.
-4. Dashboard Advisor: "${dbUser.name}". Public Web Advisor: "ADMINISTRADOR".
+4. Dashboard Advisor: "${name}". Public Web Advisor: "ADMINISTRADOR".
 
 CONTEXTO ACTUAL:
-Asesor: ${dbUser.name || 'Asesor'}
+Asesor: ${name}
 Días en la Compañía: ${daysRegistered}
 
 RECIENTE EN WHATSAPP CRM:
