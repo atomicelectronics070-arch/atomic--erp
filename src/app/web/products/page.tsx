@@ -63,12 +63,52 @@ export default function ProductsPage() {
 
     const filtered = useMemo(() => {
         let p = [...products]
-        if (activeCategory) p = p.filter(x => x.categoryId === activeCategory)
+        
+        // ─── ATOMIC INTELLIGENT CATEGORY MAPPING ───
+        const activeCatObj = categories.find(c => c.id === activeCategory)
+        const catName = activeCatObj?.name?.toLowerCase() || ""
+
+        if (activeCategory) {
+            // Reglas especiales por categoría
+            if (catName.includes('barreras') || catName.includes('motores')) {
+                p = p.filter(x => {
+                    const n = x.name.toLowerCase()
+                    return n.includes('motor') || n.includes('barrera') || x.categoryId === activeCategory
+                })
+            }
+            else if (catName.includes('celular') || catName.includes('computacion') || catName.includes('tablet')) {
+                p = p.filter(x => {
+                    const n = x.name.toLowerCase()
+                    const isDev = n.includes('samsung') || n.includes('iphone') || n.includes('tablet') || n.includes('ipad') || n.includes('laptop') || n.includes('computadora')
+                    return isDev || x.categoryId === activeCategory
+                })
+            }
+            else if (catName.includes('utp')) {
+                p = p.filter(x => (x.provider || '').toLowerCase().includes('fabricable'))
+            }
+            else if (catName.includes('energia') || catName.includes('energía')) {
+                p = p.filter(x => x.name.toLowerCase().includes('generador'))
+            }
+            else if (catName.includes('cerradura')) {
+                p = p.filter(x => x.name.toLowerCase().includes('cerradura') || x.name.toLowerCase().includes('chapa') || x.name.toLowerCase().includes('acceso smart'))
+            }
+            else {
+                p = p.filter(x => x.categoryId === activeCategory)
+            }
+        }
+
+        // Cleanup: Excluir de "Acabados tipo Marmol" lo que no es mármol
+        if (catName.includes('marmol') || catName.includes('mármol')) {
+            p = p.filter(x => !x.name.toLowerCase().includes('papel aluminio') && !x.name.toLowerCase().includes('sierra'))
+        }
+
         if (activeLetter === '#') p = p.filter(x => !/^[a-zA-Z]/.test(x.name))
         else if (activeLetter) p = p.filter(x => x.name.toUpperCase().startsWith(activeLetter))
+        
         if (search) p = p.filter(x => x.name.toLowerCase().includes(search.toLowerCase()) || x.description?.toLowerCase().includes(search.toLowerCase()))
+        
         return p.sort((a, b) => a.name.localeCompare(b.name))
-    }, [products, activeCategory, activeLetter, search])
+    }, [products, activeCategory, activeLetter, search, categories])
 
     const totalPages = Math.ceil(filtered.length / PAGE_SIZE)
     const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
