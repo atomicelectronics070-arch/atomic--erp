@@ -72,6 +72,84 @@ function SafeImage({ src, alt, className, fill = false, width, height, ...props 
     )
 }
 
+/* ─── Phone Catalog Horizontal Strip ─── */
+function PhoneCatalogStrip({ products, userRole }: { products: any[], userRole?: string }) {
+    const scrollRef = useRef<HTMLDivElement>(null)
+    const PHONE_KEYWORDS = ['samsung', 'iphone', 'xiaomi', 'oppo', 'huawei', 'motorola', 'redmi', 'realme', 'vivo', 'honor', 'oneplus', 'celular', 'smartphone', 'móvil', 'movil', 'android', 'tecno', 'infinix', 'itel', 'alcatel', 'nokia']
+
+    const phones = products.filter(p => {
+        const text = `${p.name} ${p.description || ''} ${p.category?.name || ''}`.toLowerCase()
+        return PHONE_KEYWORDS.some(kw => text.includes(kw))
+    })
+
+    if (phones.length === 0) return null
+
+    const scroll = (dir: 'left' | 'right') => {
+        if (!scrollRef.current) return
+        scrollRef.current.scrollBy({ left: dir === 'left' ? -320 : 320, behavior: 'smooth' })
+    }
+
+    return (
+        <section className="py-10 border-t border-slate-100" id="celulares">
+            <div className="max-w-7xl mx-auto px-6">
+                {/* Header */}
+                <div className="mb-5 flex items-center justify-between">
+                    <div>
+                        <h2 className="text-xl font-semibold text-[#1E3A8A] uppercase tracking-widest">
+                            CATÁLOGO DE <span className="font-bold text-blue-600">CELULARES</span>
+                        </h2>
+                        <p className="text-slate-400 text-[10px] mt-1 uppercase tracking-[0.3em] font-medium">Samsung · iPhone · Xiaomi · OPPO y más</p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <button onClick={() => scroll('left')} className="w-8 h-8 flex items-center justify-center border border-slate-200 bg-white hover:border-blue-600 hover:text-blue-600 text-slate-400 rounded-lg transition-all shadow-sm">
+                            <ChevronLeft size={15} />
+                        </button>
+                        <button onClick={() => scroll('right')} className="w-8 h-8 flex items-center justify-center border border-slate-200 bg-white hover:border-blue-600 hover:text-blue-600 text-slate-400 rounded-lg transition-all shadow-sm">
+                            <ChevronRight size={15} />
+                        </button>
+                        <Link href="/web/products" className="text-[10px] font-semibold text-slate-500 hover:text-blue-600 transition-colors flex items-center gap-1 uppercase tracking-widest">
+                            Ver todos <ArrowRight size={12} />
+                        </Link>
+                    </div>
+                </div>
+
+                {/* Horizontal Scroll Strip */}
+                <div
+                    ref={scrollRef}
+                    className="flex gap-3 overflow-x-auto pb-3 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent"
+                    style={{ scrollbarWidth: 'thin' }}
+                >
+                    {phones.map((p: any) => {
+                        const imgs = safeParseArray(p.images)
+                        const price = calculateDiscountedPrice(p.price, userRole)
+                        return (
+                            <Link
+                                key={p.id}
+                                href={`/web/product/${p.id}`}
+                                className="flex-none w-[120px] flex flex-col bg-white border border-slate-100 hover:border-blue-400 hover:shadow-md transition-all duration-200 rounded-xl overflow-hidden group"
+                            >
+                                <div className="w-full h-[100px] relative bg-slate-50 overflow-hidden">
+                                    {imgs.length > 0 ? (
+                                        <SafeImage src={imgs[0]} alt={p.name} fill className="object-contain p-2 group-hover:scale-105 transition-transform duration-300" />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center">
+                                            <Smartphone className="text-slate-200 w-8 h-8" />
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="p-2 flex flex-col flex-1">
+                                    <p className="text-[9px] font-medium text-slate-500 line-clamp-2 leading-snug group-hover:text-blue-600 transition-colors flex-1 mb-1">{p.name}</p>
+                                    <p className="text-[10px] font-bold text-slate-900">${price.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
+                                </div>
+                            </Link>
+                        )
+                    })}
+                </div>
+            </div>
+        </section>
+    )
+}
+
 interface PublicWebClientProps {
     initialProducts: any[]
     metadata: { categories: any[], collections: any[] }
@@ -189,6 +267,9 @@ export default function PublicWebClient({ initialProducts, metadata, userRole, s
                         <SmartIntercomBanner />
                     </div>
                 </div>
+
+                {/* CATALÓGO DE CELULARES — horizontal scroll strip */}
+                <PhoneCatalogStrip products={initialProducts} userRole={userRole} />
 
                 {/* 3. TIENDA PÚBLICA */}
                 <section className="py-20 border-t border-slate-200" id="productos">
