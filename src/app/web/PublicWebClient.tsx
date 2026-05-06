@@ -97,28 +97,42 @@ export default function PublicWebClient({ initialProducts, metadata, userRole, s
     )
 
     const featuredProducts = (() => {
-        const seenCategories = new Set<string>();
-        let base = filteredProducts.filter(p => {
+        let consolasCount = 0;
+        
+        // Primero, asegurarnos de que las cámaras espía estén arriba en el orden
+        const sorted = [...initialProducts].sort((a, b) => {
+            const aIsSpy = a.name.toLowerCase().includes('espia') || a.name.toLowerCase().includes('espía') || a.name.startsWith('CE-');
+            const bIsSpy = b.name.toLowerCase().includes('espia') || b.name.toLowerCase().includes('espía') || b.name.startsWith('CE-');
+            if (aIsSpy && !bIsSpy) return -1;
+            if (!aIsSpy && bIsSpy) return 1;
+
+            if (a.featured && !b.featured) return -1;
+            if (!a.featured && b.featured) return 1;
+
+            return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        });
+
+        return sorted.filter(p => {
             const text = `${p.name} ${p.description || ''} ${p.category?.name || ''}`.toLowerCase();
+            const isComputer = text.includes('computadora') || text.includes('mini pc') || text.includes('minipc') || text.includes('laptop') || text.includes('nuc') || text.includes('minisforum') || text.includes('mac mini');
+            
+            // Bloqueo explícito de computadoras para que no ocupen espacio de destacados
+            if (isComputer) {
+                return false;
+            }
+
             const isConsole = p.category?.slug === 'consolas-de-video-juegos' || text.includes('playstation') || text.includes('ps5') || text.includes('ps4');
-            const isTech = text.includes('power bank') || text.includes('powerbank') || text.includes('banco de poder') || text.includes('espia') || text.includes('espía') || text.includes('oculta');
+            const isTech = text.includes('power bank') || text.includes('powerbank') || text.includes('banco de poder') || text.includes('espia') || text.includes('espía') || text.includes('oculta') || text.includes('multitecnologia') || p.name.startsWith('CE-');
             
             if (isConsole) {
-        const base = filteredProducts.filter(p => 
-            p.featured && 
-            (p.name.toLowerCase().includes('camara') || p.name.toLowerCase().includes('espia'))
-        );
-        
-        if (base.length < 32) {
-            const currentIds = new Set(base.map(p => p.id));
-            const moreCameras = filteredProducts.filter(p => 
-                !currentIds.has(p.id) && 
-                (p.name.toLowerCase().includes('camara') || p.name.toLowerCase().includes('espia'))
-            ).slice(0, 32 - base.length);
-            return [...base, ...moreCameras];
-        }
-
-        return base.slice(0, 32);
+                if (consolasCount < 1) {
+                    consolasCount++;
+                    return true;
+                }
+                return false;
+            }
+            return p.featured || isTech;
+        }).slice(0, 32);
     })();
 
     const desiredOrder = ["tecnologia-residencial", "desarrollo", "gaming", "automatizacion"]
