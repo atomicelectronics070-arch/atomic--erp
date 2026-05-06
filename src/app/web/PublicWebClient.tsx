@@ -219,56 +219,163 @@ export default function PublicWebClient({ initialProducts, metadata, userRole, s
         p.description?.toLowerCase().includes(searchQuery.toLowerCase())
     )
 
+    // ─── ATOMIC REORGANIZATION LOGIC ───
+    const curatedCollections = useMemo(() => {
+        const EXCLUDE_COLLECTIONS = [
+            'domotica', 'automatizacion', 'domotica-y-automatizacion', 
+            'tienda-en-linea-a-medida', 'tecnologia-residencial', 'soft3-logustucs'
+        ];
+
+        let base = metadata.collections.filter(c => {
+            const s = c.slug.toLowerCase();
+            const n = c.name.toLowerCase();
+            return !EXCLUDE_COLLECTIONS.some(ex => s.includes(ex) || n.includes(ex));
+        });
+
+        return base.map(c => {
+            let nc = { ...c };
+            if (c.name.toLowerCase().includes('electronica para negocios movilidad a deportes')) {
+                nc.name = "Movilidad y Deportes";
+            }
+            return nc;
+        }).sort((a, b) => {
+            const aName = a.name.toLowerCase();
+            const bName = b.name.toLowerCase();
+            if (aName.includes('accesorios y varios')) return 1;
+            if (bName.includes('accesorios y varios')) return -1;
+            return 0;
+        });
+    }, [metadata.collections]);
+
+    const getCuratedProducts = (col: any) => {
+        const slug = col.slug.toLowerCase();
+        const colName = col.name.toLowerCase();
+        let products = initialProducts.filter(p => p.collectionId === col.id);
+
+        if (colName.includes('acabados tipo marmol')) {
+            products = products.filter(p => {
+                const n = p.name.toLowerCase();
+                return !n.includes('papel aluminio') && !n.includes('sierra de marmol industrial');
+            });
+        }
+        else if (colName.includes('ambientes') || colName.includes('hambientes')) {
+            const extra = initialProducts.filter(p => {
+                const n = p.name.toLowerCase();
+                const prov = (p.provider || '').toLowerCase();
+                return n.includes('calefactor') && (prov.includes('bp') || prov.includes('banco del perno'));
+            });
+            products = [...new Set([...products, ...extra])];
+        }
+        else if (colName.includes('barreras vehiculares')) {
+            const extra = initialProducts.filter(p => {
+                const n = p.name.toLowerCase();
+                return n.includes('motor de garaje') || n.includes('motor batiente') || n.includes('barrera vehicular') || n.includes('barrera');
+            });
+            products = [...new Set([...products, ...extra])];
+        }
+        else if (slug.includes('utp') || colName.includes('utp')) {
+            products = initialProducts.filter(p => (p.provider || '').toLowerCase().includes('fabricable'));
+        }
+        else if (colName.includes('celulares') || colName.includes('computacion')) {
+            const isDevice = (n: string) => {
+                const ln = n.toLowerCase();
+                return ln.includes('samsung') || ln.includes('iphone') || ln.includes('tablet') || 
+                       ln.includes('ipad') || ln.includes('laptop') || ln.includes('computadora') ||
+                       ln.includes('portatil') || ln.includes('portátil');
+            };
+            products = initialProducts.filter(p => {
+                const n = p.name.toLowerCase();
+                if (['funda', 'case', 'cargador', 'cable', 'mouse', 'teclado'].some(x => n.includes(x))) return false;
+                return isDevice(n);
+            });
+        }
+        else if (colName.includes('cerraduras') || colName.includes('chapa')) {
+            products = initialProducts.filter(p => {
+                const n = p.name.toLowerCase();
+                return n.includes('cerradura') || n.includes('acceso smart') || n.includes('chapa') || n.includes('cerradura smart');
+            });
+        }
+        else if (colName.includes('consolas') || colName.includes('video juegos')) {
+            products = initialProducts.filter(p => {
+                const n = p.name.toLowerCase();
+                return n.includes('playstation') || n.includes('play station') || n.includes('video juego') || 
+                       n.includes('videojuego') || n.includes('consola') || n.includes('control') || n.includes('joistick') || n.includes('joystick');
+            });
+        }
+        else if (colName.includes('energia') || colName.includes('energía')) {
+            products = initialProducts.filter(p => p.name.toLowerCase().includes('generador'));
+        }
+        else if (colName.includes('iluminacion') || colName.includes('iluminación')) {
+            products = initialProducts.filter(p => {
+                const n = p.name.toLowerCase();
+                const prov = (p.provider || '').toLowerCase();
+                const isLuminaria = n.includes('luminaria') || n.includes('lampara') || n.includes('lámpara');
+                return isLuminaria && (prov.includes('bp') || prov.includes('banco del perno'));
+            });
+        }
+        else if (colName.includes('movilidad') || colName.includes('deportes')) {
+            products = initialProducts.filter(p => {
+                const n = p.name.toLowerCase();
+                return n.includes('drone') || n.includes('bicicleta') || n.includes('dron');
+            });
+        }
+        else if (colName.includes('repuestos') || colName.includes('laptop')) {
+            products = initialProducts.filter(p => {
+                const n = p.name.toLowerCase();
+                return n.includes('cargador') || n.includes('bateria') || n.includes('batería') || 
+                       n.includes('teclado') || n.includes('ventilador') || n.includes('cable');
+            });
+        }
+        else if (colName.includes('porteria') || colName.includes('portería')) {
+            products = initialProducts.filter(p => {
+                const n = p.name.toLowerCase();
+                return n.includes('portero') || n.includes('video portero') || n.includes('videoportero');
+            });
+        }
+        else if (colName.includes('desarrollo web')) {
+            products = [{ id: 'v-web-1', name: 'TU TIENDA EN LÍNEA (PLANES)', description: 'Plan $99 / Plan $199 / Plan $299', price: 99, images: '[]', featured: true }];
+        }
+        else if (colName.includes('diseño') || colName.includes('branding')) {
+            products = [
+                { id: 'v-d-1', name: 'ESTRATEGIA DE MARKETING', price: 150, description: 'Planes: Trimestral, Semestral, Anual.', images: '[]' },
+                { id: 'v-d-2', name: 'ELABORACIÓN DE CONTENIDOS', price: 80, description: 'Planes: Trimestral, Semestral, Anual.', images: '[]' },
+                { id: 'v-d-3', name: 'DISEÑO GRÁFICO', price: 60, description: 'Planes: Trimestral, Semestral, Anual.', images: '[]' },
+                { id: 'v-d-4', name: 'DISEÑO DE MARCA', price: 200, description: 'Planes: Trimestral, Semestral, Anual.', images: '[]' }
+            ];
+        }
+        else if (colName.includes('servicios')) {
+            products = [
+                { id: 'v-s-1', name: 'VISITA TÉCNICA', price: 25, description: 'Soporte presencial.', images: '[]' },
+                { id: 'v-s-2', name: 'DIAGNÓSTICO TÉCNICO', price: 45, description: 'Evaluación técnica.', images: '[]' },
+                { id: 'v-s-3', name: 'INSTALACIÓN POR PUNTO', price: 10, description: 'Desde $10 a $35.', images: '[]' }
+            ];
+        }
+
+        return products.slice(0, 10);
+    };
+
     const featuredProducts = (() => {
         let consolasCount = 0;
-        
-        // Primero, asegurarnos de que las cámaras espía estén arriba en el orden
         const sorted = [...initialProducts].sort((a, b) => {
             const aIsSpy = a.name.toLowerCase().includes('espia') || a.name.toLowerCase().includes('espía') || a.name.startsWith('CE-');
             const bIsSpy = b.name.toLowerCase().includes('espia') || b.name.toLowerCase().includes('espía') || b.name.startsWith('CE-');
             if (aIsSpy && !bIsSpy) return -1;
             if (!aIsSpy && bIsSpy) return 1;
-
             if (a.featured && !b.featured) return -1;
             if (!a.featured && b.featured) return 1;
-
             return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
         });
 
         return sorted.filter(p => {
             const text = `${p.name} ${p.description || ''} ${p.category?.name || ''}`.toLowerCase();
-            const isComputer = text.includes('computadora') || text.includes('mini pc') || text.includes('minipc') || text.includes('laptop') || text.includes('nuc') || text.includes('minisforum') || text.includes('mac mini');
-            
-            // Bloqueo explícito de computadoras para que no ocupen espacio de destacados
-            if (isComputer) {
-                return false;
-            }
-
-            const isConsole = p.category?.slug === 'consolas-de-video-juegos' || text.includes('playstation') || text.includes('ps5') || text.includes('ps4');
-            const isTech = text.includes('power bank') || text.includes('powerbank') || text.includes('banco de poder') || text.includes('espia') || text.includes('espía') || text.includes('oculta') || text.includes('multitecnologia') || p.name.startsWith('CE-');
-            
-            if (isConsole) {
-                if (consolasCount < 1) {
-                    consolasCount++;
-                    return true;
-                }
-                return false;
-            }
+            const isComputer = text.includes('computadora') || text.includes('laptop') || text.includes('mini pc');
+            if (isComputer) return false;
+            const isConsole = text.includes('playstation') || text.includes('ps5');
+            const isTech = text.includes('espia') || text.includes('espía') || p.name.startsWith('CE-');
+            if (isConsole) { if (consolasCount < 1) { consolasCount++; return true; } return false; }
             return p.featured || isTech;
         }).slice(0, 32);
     })();
-
-    const desiredOrder = ["tecnologia-residencial", "desarrollo", "gaming", "automatizacion"]
-    const seenSlugs = new Set<string>()
-    const orderedCollections = desiredOrder
-        .map(slug => metadata.collections.find(c => c.slug === slug))
-        .filter(Boolean)
-        .concat(metadata.collections.filter(c => !desiredOrder.includes(c.slug)))
-        .filter((c: any) => {
-            if (seenSlugs.has(c.slug)) return false;
-            seenSlugs.add(c.slug);
-            return true;
-        })
 
     return (
         <div className="min-h-screen bg-[#F8FAFC] text-slate-900 selection:bg-[#1E3A8A]/20 pb-20 font-sans">
@@ -415,10 +522,11 @@ export default function PublicWebClient({ initialProducts, metadata, userRole, s
                     </div>
                 </section>
 
-                {/* 5. COLECCIONES */}
+                {/* 5. COLECCIONES CURADAS */}
                 <div className="py-16 max-w-7xl mx-auto px-6 space-y-16">
-                    {orderedCollections.map((col: any, idx: number) => {
-                        const bProducts = filteredProducts.filter(p => p.collectionId === col.id).slice(0, 10)
+                    {curatedCollections.map((col: any, idx: number) => {
+                        const bProducts = getCuratedProducts(col);
+                        if (bProducts.length === 0) return null;
                         return (
                             <CollectionBanner key={col.id} collection={col} products={bProducts} reverse={idx % 2 !== 0} userRole={userRole} />
                         )
