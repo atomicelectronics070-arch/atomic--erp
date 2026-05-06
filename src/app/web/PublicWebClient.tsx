@@ -40,34 +40,52 @@ const safeParseArray = (str: any, fallback: any = []) => {
 function SafeImage({ src, alt, className, fill = false, width, height, ...props }: any) {
     const [error, setError] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
+    const imgRef = useRef<HTMLImageElement>(null)
+
+    useEffect(() => {
+        // If image is already in cache, it might be complete before React mounts
+        if (imgRef.current?.complete) {
+            setIsLoading(false)
+        }
+    }, [src])
+
+    const handleLoad = () => {
+        setIsLoading(false)
+    }
+
+    const handleError = () => {
+        setIsLoading(false)
+        setError(true)
+    }
 
     if (!src || error) {
         return (
-            <div className={`flex flex-col items-center justify-center bg-slate-50 border border-slate-100 p-4 ${className} ${fill ? 'absolute inset-0' : ''}`}>
+            <div className={`flex flex-col items-center justify-center bg-slate-100 border border-slate-200 p-4 ${className} ${fill ? 'absolute inset-0' : ''}`}>
                 <div className="relative">
-                    <Hexagon className="text-blue-100 w-12 h-12 animate-[spin_20s_linear_infinite]" strokeWidth={1} />
-                    <ImageOff className="absolute inset-0 m-auto text-blue-200" size={18} />
+                    <Hexagon className="text-slate-200 w-12 h-12 animate-[spin_20s_linear_infinite]" strokeWidth={1} />
+                    <ImageOff className="absolute inset-0 m-auto text-slate-300" size={18} />
                 </div>
-                <span className="text-[7px] font-black text-slate-300 uppercase tracking-widest mt-2">Imagen en Sincronización</span>
+                <span className="text-[7px] font-bold text-slate-400 uppercase tracking-widest mt-2">No disponible</span>
             </div>
         )
     }
 
     return (
-        <div className={`relative overflow-hidden ${fill ? 'absolute inset-0 w-full h-full' : ''} ${className}`}>
+        <div className={`relative overflow-hidden bg-slate-50 ${fill ? 'absolute inset-0 w-full h-full' : ''} ${className}`}>
             <img
+                ref={imgRef}
                 src={src}
                 alt={alt}
-                onError={() => setError(true)}
-                onLoad={() => setIsLoading(false)}
+                onLoad={handleLoad}
+                onError={handleError}
                 className={`transition-all duration-700 ${isLoading ? 'scale-110 blur-xl opacity-0' : 'scale-100 blur-0 opacity-100'} ${fill ? 'w-full h-full object-contain' : ''}`}
                 style={{ width: fill ? '100%' : width, height: fill ? '100%' : height }}
                 referrerPolicy="no-referrer"
                 {...props}
             />
             {isLoading && (
-                <div className="absolute inset-0 flex items-center justify-center bg-slate-50">
-                    <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                <div className="absolute inset-0 flex items-center justify-center bg-slate-50/50 backdrop-blur-sm">
+                    <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
                 </div>
             )}
         </div>
