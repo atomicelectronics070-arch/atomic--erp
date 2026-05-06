@@ -157,6 +157,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole, s
                 {/* 1. CATEGORÍAS */}
                 <CategoriesBanner categories={metadata.categories} />
 
+
                 {/* 2. PRODUCTOS DESTACADOS */}
                 <section className="py-12" id="destacados">
                     <div className="max-w-7xl mx-auto px-6">
@@ -178,6 +179,16 @@ export default function PublicWebClient({ initialProducts, metadata, userRole, s
                         </div>
                     </div>
                 </section>
+
+                {/* BANNERS — after featured, contained boxes */}
+                <div className="max-w-7xl mx-auto px-6 pb-2 flex flex-col gap-4">
+                    <div className="rounded-xl overflow-hidden border border-slate-100 shadow-sm" style={{maxHeight: '380px'}}>
+                        <SpyCameraBanner />
+                    </div>
+                    <div className="rounded-xl overflow-hidden border border-slate-100 shadow-sm" style={{maxHeight: '380px'}}>
+                        <SmartIntercomBanner />
+                    </div>
+                </div>
 
                 {/* 3. TIENDA PÚBLICA */}
                 <section className="py-20 border-t border-slate-200" id="productos">
