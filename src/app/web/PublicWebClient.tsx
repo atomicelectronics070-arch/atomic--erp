@@ -1,7 +1,7 @@
 "use client"
 
 // Version: 1.0.2 - Fixed Broken Images System
-import { useState, useRef, useEffect, useCallback } from "react"
+import { useState, useRef, useEffect, useCallback, useMemo } from "react"
 import { ShoppingBag, ChevronRight, ArrowRight, Shield, Zap, Truck, ChevronLeft, Hexagon, Star, X, Smartphone, Database, Sparkles, Code, Bot, Download, Search, ImageOff, AlertCircle } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
