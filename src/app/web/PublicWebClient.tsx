@@ -220,29 +220,37 @@ export default function PublicWebClient({ initialProducts, metadata, userRole, s
     )
 
     // ─── ATOMIC REORGANIZATION LOGIC ───
-    const curatedCollections = useMemo(() => {
-        const EXCLUDE_COLLECTIONS = [
-            'domotica', 'automatizacion', 'domotica-y-automatizacion', 
-            'tienda-en-linea-a-medida', 'tecnologia-residencial', 'soft3-logustucs'
-        ];
-
-        let base = metadata.collections.filter(c => {
-            const s = c.slug.toLowerCase();
-            const n = c.name.toLowerCase();
-            return !EXCLUDE_COLLECTIONS.some(ex => s.includes(ex) || n.includes(ex));
+    const curatedCategories = useMemo(() => {
+        const EXCLUDE = ['domotica', 'automatizacion', 'tienda en linea a medida', 'tecnologia residencial', 'soft3 logustucs'];
+        let base = metadata.categories.filter(c => {
+            const n = (c.name || '').toLowerCase();
+            return !EXCLUDE.some(ex => n.includes(ex));
         });
-
         return base.map(c => {
             let nc = { ...c };
-            if (c.name.toLowerCase().includes('electronica para negocios movilidad a deportes')) {
-                nc.name = "Movilidad y Deportes";
-            }
+            if (nc.name.toLowerCase().includes('electronica para negocios movilidad a deportes')) nc.name = "Movilidad y Deportes";
             return nc;
         }).sort((a, b) => {
-            const aName = a.name.toLowerCase();
-            const bName = b.name.toLowerCase();
-            if (aName.includes('accesorios y varios')) return 1;
-            if (bName.includes('accesorios y varios')) return -1;
+            if (a.name.toLowerCase().includes('accesorios y varios')) return 1;
+            if (b.name.toLowerCase().includes('accesorios y varios')) return -1;
+            return 0;
+        });
+    }, [metadata.categories]);
+
+    const curatedCollections = useMemo(() => {
+        const EXCLUDE = ['domotica', 'automatizacion', 'tienda-en-linea-a-medida', 'tecnologia-residencial', 'soft3-logustucs'];
+        let base = metadata.collections.filter(c => {
+            const s = (c.slug || '').toLowerCase();
+            const n = (c.name || '').toLowerCase();
+            return !EXCLUDE.some(ex => s.includes(ex) || n.includes(ex));
+        });
+        return base.map(c => {
+            let nc = { ...c };
+            if (nc.name.toLowerCase().includes('electronica para negocios movilidad a deportes')) nc.name = "Movilidad y Deportes";
+            return nc;
+        }).sort((a, b) => {
+            if (a.name.toLowerCase().includes('accesorios y varios')) return 1;
+            if (b.name.toLowerCase().includes('accesorios y varios')) return -1;
             return 0;
         });
     }, [metadata.collections]);
@@ -382,7 +390,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole, s
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6 }}>
 
                 {/* 1. CATEGORÍAS */}
-                <CategoriesBanner categories={metadata.categories} />
+                <CategoriesBanner categories={curatedCategories} />
 
 
                 {/* 2. PRODUCTOS DESTACADOS */}
