@@ -100,11 +100,13 @@ ${basePrompt}
             })
         }
 
+        interface ChatMessage { role: 'user' | 'model' | 'assistant'; content: string; }
+
         const payload = {
             system_instruction: {
                 parts: [{ text: systemPrompt }]
             },
-            contents: messages.map(msg => ({
+            contents: (messages as ChatMessage[]).map((msg) => ({
                 role: msg.role === 'user' ? 'user' : 'model',
                 parts: [{ text: msg.content }]
             })),
