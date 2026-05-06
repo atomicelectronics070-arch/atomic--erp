@@ -95,10 +95,30 @@ function SafeImage({ src, alt, className, fill = false, width, height, ...props 
 /* ─── Phone Catalog Horizontal Strip ─── */
 function PhoneCatalogStrip({ products, userRole }: { products: any[], userRole?: string }) {
     const scrollRef = useRef<HTMLDivElement>(null)
-    const PHONE_KEYWORDS = ['samsung', 'iphone', 'xiaomi', 'oppo', 'huawei', 'motorola', 'redmi', 'realme', 'vivo', 'honor', 'oneplus', 'celular', 'smartphone', 'móvil', 'movil', 'android', 'tecno', 'infinix', 'itel', 'alcatel', 'nokia']
+    const PHONE_KEYWORDS = [
+        'samsung', 'iphone', 'xiaomi', 'oppo', 'motorola', 'redmi', 'realme', 
+        'honor', 'infinix', 'smartphone', 'celular', 'tablet', 'ipad', 'galaxy tab',
+        'tecno spark', 'tecno camon', 'tecno pova', 'tecno pop', 'tecno phantom'
+    ]
+    const EXCLUDE_KEYWORDS = [
+        'funda', 'case', 'mica', 'protector', 'cargador', 'cable', 'audifonos', 
+        'earbuds', 'watch', 'reloj', 'smartwatch', 'soporte', 'audífono', 
+        'parlante', 'speaker', 'bateria', 'batería', 'vidrio templado'
+    ]
 
     const phones = products.filter(p => {
-        const text = `${p.name} ${p.description || ''} ${p.category?.name || ''}`.toLowerCase()
+        const name = p.name.toLowerCase()
+        const category = (p.category?.name || '').toLowerCase()
+        const text = `${p.name} ${p.description || ''} ${category}`.toLowerCase()
+        
+        // 1. Evitar accesorios (si la palabra prohibida está en el nombre)
+        const isAccessory = EXCLUDE_KEYWORDS.some(kw => name.includes(kw))
+        if (isAccessory) return false
+
+        // 2. Si es de una categoría de celulares o tablets, es válido
+        if (category.includes('celular') || category.includes('tablet') || category.includes('telefon')) return true
+
+        // 3. Si coincide con palabras clave específicas y no es accesorio
         return PHONE_KEYWORDS.some(kw => text.includes(kw))
     })
 
