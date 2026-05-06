@@ -258,7 +258,20 @@ export default function PublicWebClient({ initialProducts, metadata, userRole, s
     const getCuratedProducts = (col: any) => {
         const slug = col.slug.toLowerCase();
         const colName = col.name.toLowerCase();
-        let products = initialProducts.filter(p => p.collectionId === col.id);
+        
+        // Determinar si es una sección "especial" que requiere búsqueda global
+        const isSpecialSection = 
+            colName.includes('barreras') || colName.includes('celulares') || 
+            colName.includes('computacion') || colName.includes('cerraduras') || 
+            colName.includes('consolas') || colName.includes('energia') || 
+            colName.includes('iluminacion') || colName.includes('movilidad') || 
+            colName.includes('deportes') || colName.includes('repuestos') || 
+            colName.includes('porteria') || colName.includes('desarrollo') || 
+            colName.includes('branding') || colName.includes('servicios') ||
+            colName.includes('ambientes');
+
+        // Si es especial, buscamos en TODO el set de productos iniciales. Si no, solo en su colección.
+        let products = isSpecialSection ? [...initialProducts] : initialProducts.filter(p => p.collectionId === col.id);
 
         if (colName.includes('acabados tipo marmol')) {
             products = products.filter(p => {

@@ -12,8 +12,8 @@ export default async function PublicWebPage() {
     const userRole = session?.user?.role
 
     // Fetch essential data in parallel on the server
-    // Three-query strategy: Priority (Spy) + Phones/Tablets + Recent
-    const [categories, collections, priorityProducts, phoneProducts, recentProducts, settings] = await Promise.all([
+    // Three-query strategy: Priority (Spy) + Curated (Phones/Motors/etc) + Recent
+    const [categories, collections, priorityProducts, curatedProducts, recentProducts, settings] = await Promise.all([
         prisma.category.findMany({ 
             where: { isVisible: true }, 
             orderBy: { name: 'asc' } 
@@ -35,7 +35,7 @@ export default async function PublicWebPage() {
             orderBy: { createdAt: 'desc' },
             select: { id: true, name: true, description: true, price: true, images: true, featured: true, provider: true, collectionId: true, createdAt: true, category: { select: { name: true, slug: true } } }
         }),
-        // Priority 2: Phones and Tablets (Guarantee they show up in the strip)
+        // Priority 2: Curated items for storefront strips (Phones, Tablets, Motors, Security, etc.)
         prisma.product.findMany({
             where: {
                 isDeleted: false,
@@ -44,15 +44,27 @@ export default async function PublicWebPage() {
                     { category: { name: { contains: 'celular', mode: 'insensitive' } } },
                     { category: { name: { contains: 'tablet', mode: 'insensitive' } } },
                     { category: { name: { contains: 'telefon', mode: 'insensitive' } } },
+                    { category: { name: { contains: 'barrera', mode: 'insensitive' } } },
+                    { category: { name: { contains: 'motor', mode: 'insensitive' } } },
+                    { category: { name: { contains: 'cerradura', mode: 'insensitive' } } },
+                    { category: { name: { contains: 'portero', mode: 'insensitive' } } },
                     { name: { contains: 'iphone', mode: 'insensitive' } },
                     { name: { contains: 'samsung galaxy', mode: 'insensitive' } },
                     { name: { contains: 'xiaomi redmi', mode: 'insensitive' } },
                     { name: { contains: 'ipad', mode: 'insensitive' } },
+                    { name: { contains: 'motor de garaje', mode: 'insensitive' } },
+                    { name: { contains: 'motor batiente', mode: 'insensitive' } },
+                    { name: { contains: 'barrera vehicular', mode: 'insensitive' } },
+                    { name: { contains: 'calefactor', mode: 'insensitive' } },
+                    { name: { contains: 'luminaria', mode: 'insensitive' } },
+                    { name: { contains: 'generador', mode: 'insensitive' } },
+                    { name: { contains: 'playstation', mode: 'insensitive' } },
+                    { name: { contains: 'laptop', mode: 'insensitive' } },
                 ]
             },
-            take: 200,
+            take: 400,
             orderBy: { createdAt: 'desc' },
-            select: { id: true, name: true, description: true, price: true, images: true, featured: true, provider: true, collectionId: true, createdAt: true, category: { select: { name: true, slug: true } } }
+            select: { id: true, name: true, description: true, price: true, images: true, featured: true, provider: true, collectionId: true, createdAt: true, category: { select: { name: true, slug: true, id: true } } }
         }),
         // Priority 3: Most recent products to fill the catalog
         prisma.product.findMany({
@@ -64,14 +76,14 @@ export default async function PublicWebPage() {
         getStoreSettings()
     ])
 
-    // Merge: priority products first, then phones, then fill with recent (deduplicated)
+    // Merge: priority products first, then curated, then fill with recent (deduplicated)
     const priorityIds = new Set([
         ...priorityProducts.map((p: any) => p.id),
-        ...phoneProducts.map((p: any) => p.id)
+        ...curatedProducts.map((p: any) => p.id)
     ])
     const products = [
         ...priorityProducts,
-        ...phoneProducts,
+        ...curatedProducts,
         ...recentProducts.filter((p: any) => !priorityIds.has(p.id))
     ]
 
