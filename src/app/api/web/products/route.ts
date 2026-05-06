@@ -38,6 +38,7 @@ export async function GET(req: Request) {
                     collectionId: true,
                     isActive: true,
                     featured: true,
+                    provider: true,
                     stock: true,
                     sku: true,
                     specSheetUrl: true,

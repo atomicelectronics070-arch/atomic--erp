@@ -238,7 +238,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole, s
     }, [metadata.categories]);
 
     const curatedCollections = useMemo(() => {
-        const EXCLUDE = ['domotica', 'automatizacion', 'tienda-en-linea-a-medida', 'tecnologia-residencial', 'soft3-logustucs'];
+        const EXCLUDE = ['domotica', 'tienda-en-linea-a-medida', 'tecnologia-residencial', 'soft3-logustucs'];
         let base = metadata.collections.filter(c => {
             const s = (c.slug || '').toLowerCase();
             const n = (c.name || '').toLowerCase();
@@ -246,7 +246,9 @@ export default function PublicWebClient({ initialProducts, metadata, userRole, s
         });
         return base.map(c => {
             let nc = { ...c };
-            if (nc.name.toLowerCase().includes('electronica para negocios movilidad a deportes')) nc.name = "Movilidad y Deportes";
+            const lowName = nc.name.toLowerCase();
+            if (lowName.includes('automatizacion')) nc.name = "Barreras Vehiculares";
+            if (lowName.includes('electronica para negocios movilidad a deportes')) nc.name = "Movilidad y Deportes";
             return nc;
         }).sort((a, b) => {
             if (a.name.toLowerCase().includes('accesorios y varios')) return 1;
