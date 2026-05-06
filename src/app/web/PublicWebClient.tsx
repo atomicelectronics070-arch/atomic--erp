@@ -96,14 +96,17 @@ function SafeImage({ src, alt, className, fill = false, width, height, ...props 
 function PhoneCatalogStrip({ products, userRole }: { products: any[], userRole?: string }) {
     const scrollRef = useRef<HTMLDivElement>(null)
     const PHONE_KEYWORDS = [
-        'samsung', 'iphone', 'xiaomi', 'oppo', 'motorola', 'redmi', 'realme', 
-        'honor', 'infinix', 'smartphone', 'celular', 'tablet', 'ipad', 'galaxy tab',
+        'samsung galaxy', 'iphone', 'xiaomi redmi', 'xiaomi poco', 'oppo', 'motorola', 
+        'smartphone', 'celular', 'tablet', 'ipad', 'galaxy tab', 'honor', 'infinix',
         'tecno spark', 'tecno camon', 'tecno pova', 'tecno pop', 'tecno phantom'
     ]
     const EXCLUDE_KEYWORDS = [
         'funda', 'case', 'mica', 'protector', 'cargador', 'cable', 'audifonos', 
         'earbuds', 'watch', 'reloj', 'smartwatch', 'soporte', 'audífono', 
-        'parlante', 'speaker', 'bateria', 'batería', 'vidrio templado'
+        'parlante', 'speaker', 'bateria', 'batería', 'vidrio templado',
+        'laptop', 'portatil', 'portátil', 'mini pc', 'minipc', 'computadora', 
+        'nuc', 'consola', 'playstation', 'nintendo', 'monitor', 'teclado', 'mouse',
+        'televisor', 'smart tv', 'lavadora', 'refrigeradora', 'aire acondicionado'
     ]
 
     const phones = products.filter(p => {
@@ -111,15 +114,22 @@ function PhoneCatalogStrip({ products, userRole }: { products: any[], userRole?:
         const category = (p.category?.name || '').toLowerCase()
         const text = `${p.name} ${p.description || ''} ${category}`.toLowerCase()
         
-        // 1. Evitar accesorios (si la palabra prohibida está en el nombre)
-        const isAccessory = EXCLUDE_KEYWORDS.some(kw => name.includes(kw))
-        if (isAccessory) return false
+        // 1. Exclusión agresiva de no-celulares y accesorios
+        if (EXCLUDE_KEYWORDS.some(kw => name.includes(kw) || category.includes(kw))) return false
 
-        // 2. Si es de una categoría de celulares o tablets, es válido
-        if (category.includes('celular') || category.includes('tablet') || category.includes('telefon')) return true
+        // 2. Si la categoría es explícitamente de celulares/tablets, es un SI
+        const isPhoneCategory = category.includes('celular') || category.includes('tablet') || category.includes('telefon')
+        if (isPhoneCategory) return true
 
-        // 3. Si coincide con palabras clave específicas y no es accesorio
-        return PHONE_KEYWORDS.some(kw => text.includes(kw))
+        // 3. Si es de marcas conocidas, verificar que no sea un accesorio genérico
+        const isTargetBrand = PHONE_KEYWORDS.some(kw => text.includes(kw))
+        if (isTargetBrand) {
+            // Si es marca pero no tiene palabras de 'dispositivo', ser más estricto
+            const isDevice = text.includes('gb') || text.includes('ram') || text.includes('pantalla') || text.includes('display') || text.includes('sim')
+            return isDevice || text.includes('celular') || text.includes('smartphone') || text.includes('tablet')
+        }
+
+        return false
     })
 
     if (phones.length === 0) return null
@@ -136,7 +146,7 @@ function PhoneCatalogStrip({ products, userRole }: { products: any[], userRole?:
                 <div className="mb-5 flex items-center justify-between">
                     <div>
                         <h2 className="text-xl font-semibold text-[#1E3A8A] uppercase tracking-widest">
-                            CATÁLOGO DE <span className="font-bold text-blue-600">CELULARES</span>
+                            CATÁLOGO DE <span className="font-bold text-blue-600">CELULARES Y TABLETS</span>
                         </h2>
                         <p className="text-slate-400 text-[10px] mt-1 uppercase tracking-[0.3em] font-medium">Samsung · iPhone · Xiaomi · OPPO y más</p>
                     </div>
