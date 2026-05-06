@@ -12,8 +12,8 @@ export default async function PublicWebPage() {
     const userRole = session?.user?.role
 
     // Fetch essential data in parallel on the server
-    // This is MUCH faster than client-side fetch because it's direct DB access
-    const [categories, collections, products, settings] = await Promise.all([
+    // Two-query strategy to guarantee spy cameras ALWAYS appear in featured
+    const [categories, collections, priorityProducts, recentProducts, settings] = await Promise.all([
         prisma.category.findMany({ 
             where: { isVisible: true }, 
             orderBy: { name: 'asc' } 
@@ -21,10 +21,19 @@ export default async function PublicWebPage() {
         prisma.collection.findMany({ 
             where: { isVisible: true } 
         }),
+        // Priority 1: ALL featured products + Multitecnología (spy cameras) — no take limit
         prisma.product.findMany({
-            where: { isDeleted: false, isActive: true },
+            where: { 
+                isDeleted: false, 
+                isActive: true,
+                OR: [
+                    { featured: true },
+                    { provider: { contains: 'multitecnologia', mode: 'insensitive' } },
+                    { provider: { contains: 'Multitecnología', mode: 'insensitive' } },
+                    { name: { startsWith: 'CE-' } },
+                ]
+            },
             orderBy: { createdAt: 'desc' },
-            take: 100,
             select: {
                 id: true,
                 name: true,
@@ -32,6 +41,25 @@ export default async function PublicWebPage() {
                 price: true,
                 images: true,
                 featured: true,
+                provider: true,
+                collectionId: true,
+                createdAt: true,
+                category: { select: { name: true, slug: true } }
+            }
+        }),
+        // Priority 2: Most recent products to fill the catalog
+        prisma.product.findMany({
+            where: { isDeleted: false, isActive: true },
+            orderBy: { createdAt: 'desc' },
+            take: 150,
+            select: {
+                id: true,
+                name: true,
+                description: true,
+                price: true,
+                images: true,
+                featured: true,
+                provider: true,
                 collectionId: true,
                 createdAt: true,
                 category: { select: { name: true, slug: true } }
@@ -39,6 +67,13 @@ export default async function PublicWebPage() {
         }),
         getStoreSettings()
     ])
+
+    // Merge: priority products first, then fill with recent (deduplicated)
+    const priorityIds = new Set(priorityProducts.map((p: any) => p.id))
+    const products = [
+        ...priorityProducts,
+        ...recentProducts.filter((p: any) => !priorityIds.has(p.id))
+    ]
 
     const metadata = { 
         categories: JSON.parse(JSON.stringify(categories)), 
