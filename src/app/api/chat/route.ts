@@ -5,59 +5,52 @@ import { prisma } from "@/lib/prisma"
 
 export async function POST(req: Request) {
     try {
+        const body = await req.json()
+        const { messages, botType = "CAPACITADOR" } = body 
+
         const session = await getServerSession(authOptions)
-        if (!session || !session.user?.id) {
+        const isPublic = botType === "PUBLIC_BOT"
+
+        if (!session?.user?.id && !isPublic) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
         }
 
-        const body = await req.json()
-        const { messages, botType = "CAPACITADOR" } = body // Expected format: [{ role: 'user' | 'model', content: '...' }]
-
-        if (!messages || !Array.isArray(messages)) {
-            return NextResponse.json({ error: "Invalid messages format" }, { status: 400 })
-        }
-
-        // 1. Fetch User Data with contextual memory (WhatsApp, Quotes, Transactions)
-        const dbUser = await prisma.user.findUnique({
-            where: { id: session.user.id },
-            select: { 
-                createdAt: true, 
-                name: true,
-                waOwnedChats: {
-                    take: 3,
-                    orderBy: { lastMessageAt: 'desc' },
-                    include: {
-                        contact: { select: { name: true } },
-                        messages: { take: 5, orderBy: { createdAt: 'desc' } }
-                    }
-                },
-                conversations: {
-                    take: 3,
-                    orderBy: { createdAt: 'desc' },
-                    select: { quoteNumber: true, total: true, status: true }
-                },
-                transactions: {
-                    take: 3,
-                    orderBy: { createdAt: 'desc' },
-                    select: { amount: true, status: true }
+        // 1. Fetch User Data if session exists
+        let dbUser = null
+        if (session?.user?.id) {
+            dbUser = await prisma.user.findUnique({
+                where: { id: session.user.id },
+                select: { 
+                    createdAt: true, 
+                    name: true,
+                    waOwnedChats: {
+                        take: 3,
+                        orderBy: { lastMessageAt: 'desc' },
+                        include: {
+                            contact: { select: { name: true } },
+                            messages: { take: 5, orderBy: { createdAt: 'desc' } }
+                        }
+                    },
+                    conversations: {
+                        take: 3,
+                        orderBy: { createdAt: 'desc' },
+                        select: { quoteNumber: true, total: true, status: true }
+                    },
                 }
-            }
-        })
-
-        if (!dbUser) {
-            return NextResponse.json({ error: "User not found" }, { status: 404 })
+            })
         }
 
-        const daysRegistered = Math.floor((new Date().getTime() - new Date(dbUser.createdAt).getTime()) / (1000 * 3600 * 24))
+        const name = dbUser?.name || (isPublic ? "CLIENTE WEB" : "Asesor")
+        const daysRegistered = dbUser ? Math.floor((new Date().getTime() - new Date(dbUser.createdAt).getTime()) / (1000 * 3600 * 24)) : 0
 
-        // 2. Format Context for the AI
-        const waContext = dbUser.waOwnedChats.map(chat => 
+        // 2. Format Context
+        const waContext = dbUser?.waOwnedChats?.map(chat => 
             `- Chat con ${chat.contact?.name}: ${chat.messages.map(m => m.body).reverse().join(' | ')}`
-        ).join('\n')
+        ).join('\n') || ""
 
-        const quoteContext = dbUser.conversations.map(q => 
-            `- Cotizaci\u00f3n ${q.quoteNumber}: $${q.total} (${q.status})`
-        ).join('\n')
+        const quoteContext = dbUser?.conversations?.map(q => 
+            `- Cotización ${q.quoteNumber}: $${q.total} (${q.status})`
+        ).join('\n') || ""
 
         // 3. Comprobar configuraci\u00f3n de prompt para este usuario
         let userConfig = await prisma.userPromptConfig.findUnique({
@@ -70,9 +63,20 @@ export async function POST(req: Request) {
 
         // 4. Inject Dynamic Context (MEMORIA ENLAZADA)
         const systemPrompt = `
-[CONTEXTO DE MEMORIA ENLAZADA - ATOMIC ERP]
-Usuario: ${dbUser.name || 'Asesor'}
-D\u00edas en la Compa\u00f1\u00eda: ${daysRegistered}
+[SISTEMA DE ASISTENCIA ATOMIC - MÓDULO DE COTIZACIONES]
+Eres un asistente de élite. Tienes la capacidad de GENERAR COTIZACIONES FORMALES en PDF.
+
+REGLAS PARA COTIZACIONES:
+1. Si el usuario solicita una cotización, solicita: Nombre Cliente, Correo, Teléfono, Asunto y Lista de Productos (Código, Desc, Precio, Cant).
+2. Al confirmar, genera este bloque al final:
+   [[QUOTATION_JSON:{"topic":"...","clientName":"...","clientEmail":"...","clientPhone":"...","items":[{"code":"...","description":"...","price":0,"quantity":0}]}]]
+
+3. Lenguaje PROFESIONAL, impecable.
+4. Dashboard Advisor: "${dbUser.name}". Public Web Advisor: "ADMINISTRADOR".
+
+CONTEXTO ACTUAL:
+Asesor: ${dbUser.name || 'Asesor'}
+Días en la Compañía: ${daysRegistered}
 
 RECIENTE EN WHATSAPP CRM:
 ${waContext || 'Sin chats recientes vinculados.'}
@@ -82,7 +86,6 @@ ${quoteContext || 'Sin cotizaciones generadas recientemente.'}
 
 --- INSTRUCCIONES DE COMPORTAMIENTO ---
 ${basePrompt}
-[FIN DE INSTRUCCIONES]
 `.trim()
 
         // To use Gemini REST API directly without installing extra SDKs
