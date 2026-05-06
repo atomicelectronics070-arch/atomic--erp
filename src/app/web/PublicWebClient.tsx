@@ -97,32 +97,29 @@ function PhoneCatalogStrip({ products, userRole }: { products: any[], userRole?:
     const scrollRef = useRef<HTMLDivElement>(null)
     const PHONE_BRANDS = ['samsung', 'iphone', 'xiaomi', 'oppo', 'motorola', 'redmi', 'realme', 'honor', 'infinix', 'tecno', 'ipad', 'apple']
     const DEVICE_INDICATORS = ['gb', 'ram', 'inch', 'display', 'pantalla', 'sim', 'dual', 'android', 'ios', '4g', '5g', 'lte', 'snapdragon', 'helio', 'dimensity']
-    const PURE_ACCESSORY_KEYWORDS = ['funda para', 'estuche para', 'case for', 'mica de', 'protector de', 'cargador para', 'cable usb', 'repuesto', 'bateria para', 'batería para']
+    const PURE_ACCESSORY_KEYWORDS = [
+        'funda para', 'estuche para', 'case for', 'mica de', 'protector de', 
+        'cargador para', 'cable usb', 'repuesto', 'bateria para', 'batería para',
+        'teclado', 'keyboard', 'mouse', 'raton', 'ratón', 'banco de poder', 
+        'power bank', 'powerbank', 'audifonos', 'audífono', 'cargador original'
+    ]
 
     const phones = products.filter(p => {
         const name = p.name.toLowerCase()
         const category = (p.category?.name || '').toLowerCase()
-        const text = `${p.name} ${p.description || ''} ${category}`.toLowerCase()
         
-        // 1. Si es explícitamente un accesorio de un dispositivo, excluir
+        // 1. Si es explícitamente un accesorio o periférico, excluir
         if (PURE_ACCESSORY_KEYWORDS.some(kw => name.includes(kw))) return false
         
-        // 2. Si la categoría es de celulares, es un fuerte candidato
-        const isPhoneCategory = category.includes('celular') || category.includes('tablet') || category.includes('telef')
-        
-        // 3. Heurística de dispositivo móvil: tiene marca conocida Y (tiene indicadores de specs O es de categoría celular)
+        // 2. Heurística de dispositivo móvil
         const hasBrand = PHONE_BRANDS.some(brand => name.includes(brand))
         const hasSpecs = DEVICE_INDICATORS.some(spec => name.includes(spec))
+        const isPhoneCategory = category.includes('celular') || category.includes('tablet') || category.includes('telef')
 
-        // Si tiene marca y specs, es casi seguro un dispositivo
         if (hasBrand && hasSpecs) return true
-        
-        // Si es categoría celular y tiene marca, también
         if (isPhoneCategory && hasBrand) return true
 
-        // Casos especiales para iPhone/iPad
         if (name.includes('iphone') || name.includes('ipad')) {
-            // Pero excluir si es solo el cable o cargador
             if (name.includes('cable') || name.includes('cargador') || name.includes('adapter')) return false
             return true
         }
@@ -155,7 +152,7 @@ function PhoneCatalogStrip({ products, userRole }: { products: any[], userRole?:
                         <button onClick={() => scroll('right')} className="w-8 h-8 flex items-center justify-center border border-slate-200 bg-white hover:border-blue-600 hover:text-blue-600 text-slate-400 rounded-lg transition-all shadow-sm">
                             <ChevronRight size={15} />
                         </button>
-                        <Link href="/web/products" className="text-[10px] font-semibold text-slate-500 hover:text-blue-600 transition-colors flex items-center gap-1 uppercase tracking-widest">
+                        <Link href="/web/phones" className="text-[10px] font-semibold text-slate-500 hover:text-blue-600 transition-colors flex items-center gap-1 uppercase tracking-widest">
                             Ver todos <ArrowRight size={12} />
                         </Link>
                     </div>
