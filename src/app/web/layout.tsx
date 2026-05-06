@@ -58,6 +58,10 @@ export default function WebLayout({ children }: { children: React.ReactNode }) {
                                 className={pathname === '/web/trabajos' ? 'text-[#1E3A8A] border-b-2 border-[#1E3A8A] pb-1' : 'hover:text-[#1E3A8A] transition-colors'}
                             >Trabajos</Link>
                             <Link
+                                href="/web/repuestos"
+                                className={pathname === '/web/repuestos' ? 'text-[#1E3A8A] border-b-2 border-[#1E3A8A] pb-1' : 'hover:text-[#1E3A8A] transition-colors'}
+                            >Repuestos</Link>
+                            <Link
                                 href="/web/contact"
                                 className={pathname === '/web/contact' ? 'text-[#1E3A8A] border-b-2 border-[#1E3A8A] pb-1' : 'hover:text-[#1E3A8A] transition-colors'}
                             >Contacto</Link>
