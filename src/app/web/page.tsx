@@ -50,7 +50,7 @@ export default async function PublicWebPage() {
                     { name: { contains: 'ipad', mode: 'insensitive' } },
                 ]
             },
-            take: 100,
+            take: 200,
             orderBy: { createdAt: 'desc' },
             select: { id: true, name: true, description: true, price: true, images: true, featured: true, provider: true, collectionId: true, createdAt: true, category: { select: { name: true, slug: true } } }
         }),

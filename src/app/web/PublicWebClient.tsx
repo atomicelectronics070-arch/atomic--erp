@@ -95,38 +95,36 @@ function SafeImage({ src, alt, className, fill = false, width, height, ...props 
 /* ─── Phone Catalog Horizontal Strip ─── */
 function PhoneCatalogStrip({ products, userRole }: { products: any[], userRole?: string }) {
     const scrollRef = useRef<HTMLDivElement>(null)
-    const PHONE_KEYWORDS = [
-        'samsung galaxy', 'iphone', 'xiaomi redmi', 'xiaomi poco', 'oppo', 'motorola', 
-        'smartphone', 'celular', 'tablet', 'ipad', 'galaxy tab', 'honor', 'infinix',
-        'tecno spark', 'tecno camon', 'tecno pova', 'tecno pop', 'tecno phantom'
-    ]
-    const EXCLUDE_KEYWORDS = [
-        'funda', 'case', 'mica', 'protector', 'cargador', 'cable', 'audifonos', 
-        'earbuds', 'watch', 'reloj', 'smartwatch', 'soporte', 'audífono', 
-        'parlante', 'speaker', 'bateria', 'batería', 'vidrio templado',
-        'laptop', 'portatil', 'portátil', 'mini pc', 'minipc', 'computadora', 
-        'nuc', 'consola', 'playstation', 'nintendo', 'monitor', 'teclado', 'mouse',
-        'televisor', 'smart tv', 'lavadora', 'refrigeradora', 'aire acondicionado'
-    ]
+    const PHONE_BRANDS = ['samsung', 'iphone', 'xiaomi', 'oppo', 'motorola', 'redmi', 'realme', 'honor', 'infinix', 'tecno', 'ipad', 'apple']
+    const DEVICE_INDICATORS = ['gb', 'ram', 'inch', 'display', 'pantalla', 'sim', 'dual', 'android', 'ios', '4g', '5g', 'lte', 'snapdragon', 'helio', 'dimensity']
+    const PURE_ACCESSORY_KEYWORDS = ['funda para', 'estuche para', 'case for', 'mica de', 'protector de', 'cargador para', 'cable usb', 'repuesto', 'bateria para', 'batería para']
 
     const phones = products.filter(p => {
         const name = p.name.toLowerCase()
         const category = (p.category?.name || '').toLowerCase()
         const text = `${p.name} ${p.description || ''} ${category}`.toLowerCase()
         
-        // 1. Exclusión agresiva de no-celulares y accesorios
-        if (EXCLUDE_KEYWORDS.some(kw => name.includes(kw) || category.includes(kw))) return false
+        // 1. Si es explícitamente un accesorio de un dispositivo, excluir
+        if (PURE_ACCESSORY_KEYWORDS.some(kw => name.includes(kw))) return false
+        
+        // 2. Si la categoría es de celulares, es un fuerte candidato
+        const isPhoneCategory = category.includes('celular') || category.includes('tablet') || category.includes('telef')
+        
+        // 3. Heurística de dispositivo móvil: tiene marca conocida Y (tiene indicadores de specs O es de categoría celular)
+        const hasBrand = PHONE_BRANDS.some(brand => name.includes(brand))
+        const hasSpecs = DEVICE_INDICATORS.some(spec => name.includes(spec))
 
-        // 2. Si la categoría es explícitamente de celulares/tablets, es un SI
-        const isPhoneCategory = category.includes('celular') || category.includes('tablet') || category.includes('telefon')
-        if (isPhoneCategory) return true
+        // Si tiene marca y specs, es casi seguro un dispositivo
+        if (hasBrand && hasSpecs) return true
+        
+        // Si es categoría celular y tiene marca, también
+        if (isPhoneCategory && hasBrand) return true
 
-        // 3. Si es de marcas conocidas, verificar que no sea un accesorio genérico
-        const isTargetBrand = PHONE_KEYWORDS.some(kw => text.includes(kw))
-        if (isTargetBrand) {
-            // Si es marca pero no tiene palabras de 'dispositivo', ser más estricto
-            const isDevice = text.includes('gb') || text.includes('ram') || text.includes('pantalla') || text.includes('display') || text.includes('sim')
-            return isDevice || text.includes('celular') || text.includes('smartphone') || text.includes('tablet')
+        // Casos especiales para iPhone/iPad
+        if (name.includes('iphone') || name.includes('ipad')) {
+            // Pero excluir si es solo el cable o cargador
+            if (name.includes('cable') || name.includes('cargador') || name.includes('adapter')) return false
+            return true
         }
 
         return false
