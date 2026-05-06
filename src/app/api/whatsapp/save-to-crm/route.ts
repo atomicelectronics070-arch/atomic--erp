@@ -44,7 +44,7 @@ export async function POST(req: Request) {
                 category,
                 requirement,
                 updatedAt: new Date()
-            },
+            } as any,
             create: {
                 firstName,
                 lastName,
@@ -57,7 +57,7 @@ export async function POST(req: Request) {
                 salespersonId: session.user.id,
                 waContactId: waContact.id,
                 source: "WHATSAPP"
-            }
+            } as any
         })
 
         return NextResponse.json(client)

@@ -48,7 +48,7 @@ export const authOptions: NextAuthOptions = {
                     throw new Error("Credenciales inválidas")
                 }
 
-                if (user.isActive === false) {
+                if ((user as any).isActive === false) {
                     console.error("[AUTH] User account is deactivated")
                     throw new Error("Su cuenta ha sido desactivada por administración.")
                 }

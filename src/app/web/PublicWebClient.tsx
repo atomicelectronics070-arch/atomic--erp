@@ -7,6 +7,8 @@ import Link from "next/link"
 import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
 import { calculateDiscountedPrice } from "@/lib/utils/pricing"
+import SpyCameraBanner from "@/components/web/SpyCameraBanner"
+import SmartIntercomBanner from "@/components/web/SmartIntercomBanner"
 
 // Enhanced cleaning for damaged image data
 const safeParseArray = (str: any, fallback: any = []) => {
@@ -229,9 +231,6 @@ export default function PublicWebClient({ initialProducts, metadata, userRole, s
         <div className="min-h-screen bg-[#F8FAFC] text-slate-900 selection:bg-[#1E3A8A]/20 pb-20 font-sans">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6 }}>
 
-                {/* 0. HERO BANNER */}
-                <HeroBanner settings={storeSettings} />
-
                 {/* 1. CATEGORÍAS */}
                 <CategoriesBanner categories={metadata.categories} />
 
@@ -260,6 +259,10 @@ export default function PublicWebClient({ initialProducts, metadata, userRole, s
 
                 {/* BANNERS — after featured, contained boxes */}
                 <div className="max-w-7xl mx-auto px-6 pb-2 flex flex-col gap-4">
+                    {/* Move the Whatsapp images HeroBanner here as well */}
+                    <div className="rounded-xl overflow-hidden border border-slate-100 shadow-sm">
+                        <HeroBanner settings={storeSettings} />
+                    </div>
                     <div className="rounded-xl overflow-hidden border border-slate-100 shadow-sm" style={{maxHeight: '380px'}}>
                         <SpyCameraBanner />
                     </div>
