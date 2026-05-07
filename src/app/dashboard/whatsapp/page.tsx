@@ -334,12 +334,12 @@ export default function WhatsAppDashboard() {
                                             <p className="text-[14px] font-black text-white uppercase tracking-[0.4em] italic">ESCANEA PARA CONECTAR</p>
                                             <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest italic max-w-[250px] mx-auto leading-relaxed">Abre WhatsApp en tu terminal {'>'} Dispositivos vinculados {'>'} Vincular dispositivo.</p>
                                             <a 
-                                                href={`${WHATSAPP_SERVER}/api/whatsapp/qr/${activeInstance}`} 
+                                                href={`${WHATSAPP_SERVER}/api/whatsapp/qr/${activeInstance}/image`} 
                                                 target="_blank" 
                                                 rel="noreferrer"
-                                                className="block text-[9px] text-[#00F0FF] hover:underline uppercase font-bold"
+                                                className="block text-[11px] text-[#00F0FF] hover:underline uppercase font-black bg-[#00F0FF]/10 p-3 border border-[#00F0FF]/20"
                                             >
-                                                ¿No ves el código? Ver datos crudos del QR
+                                                🚀 ABRIR QR EN PESTAÑA NUEVA (SOLUCIÓN FINAL)
                                             </a>
                                         </div>
                                         <button onClick={resetNode} className="text-[10px] font-black text-[#00F0FF] uppercase tracking-widest hover:underline flex items-center gap-3 mx-auto opacity-60 hover:opacity-100 transition-all">
