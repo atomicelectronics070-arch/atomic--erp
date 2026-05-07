@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSession } from 'next-auth/react';
 import axios from 'axios';
@@ -36,6 +36,7 @@ export default function WhatsAppDashboard() {
   const [backendOnline, setBackendOnline] = useState<boolean | null>(null);
   const [messageInput, setMessageInput] = useState('');
   const [deepAnalysis, setDeepAnalysis] = useState<string | null>(null);
+  const pollingRef = useRef<any>(null);
 
   // Advanced Config
   const [botPlan, setBotPlan] = useState("Foco en cierre de ventas rápido y amabilidad técnica extrema.");
@@ -80,6 +81,30 @@ export default function WhatsAppDashboard() {
 
     return () => { socket.disconnect(); };
   }, [activeInstance, actualUserId]);
+
+  // 🔄 POLLING FALLBACK: Si el socket no entrega el QR, lo buscamos por HTTP
+  useEffect(() => {
+    if (pollingRef.current) clearInterval(pollingRef.current);
+    if (status === 'connected') return;
+
+    pollingRef.current = setInterval(async () => {
+      try {
+        const res = await axios.get(`${WHATSAPP_SERVER}/api/whatsapp/qr/${activeInstance}`);
+        const data = res.data;
+        if (data.status === 'qr' && data.qr) {
+          setQr(data.qr);
+          setStatus('initializing');
+        } else if (data.status === 'connected') {
+          setStatus('connected');
+          setQr(null);
+          clearInterval(pollingRef.current);
+          fetchChats();
+        }
+      } catch (e) { /* silencio */ }
+    }, 3000);
+
+    return () => clearInterval(pollingRef.current);
+  }, [status, activeInstance]);
 
   useEffect(() => {
     setStatus('disconnected'); setQr(null); setChats([]); setSelectedChat(null); setMessages([]);
