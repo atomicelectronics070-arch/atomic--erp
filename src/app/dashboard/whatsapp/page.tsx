@@ -88,7 +88,7 @@ export default function WhatsAppDashboard() {
 
   const fetchChats = async () => {
     try {
-      const res = await axios.get(`${API_BASE}/whatsapp/chats/${activeInstance}`);
+      const res = await axios.get(`${WHATSAPP_SERVER}/api/whatsapp/chats/${activeInstance}`);
       setChats(res.data); setStatus('connected');
     } catch (e) { setStatus('disconnected'); }
   };
@@ -97,7 +97,7 @@ export default function WhatsAppDashboard() {
     setSelectedChat(chat);
     setDeepAnalysis(null);
     try {
-      const res = await axios.get(`${API_BASE}/whatsapp/messages/${activeInstance}/${chat.id}`);
+      const res = await axios.get(`${WHATSAPP_SERVER}/api/whatsapp/messages/${activeInstance}/${chat.id}`);
       setMessages(res.data);
     } catch (e) { console.error(e); }
   };
@@ -106,11 +106,25 @@ export default function WhatsAppDashboard() {
     setLoading(true);
     setQr(null);
     try { 
-        await axios.post(`${WHATSAPP_SERVER}/init`, { id: activeInstance }); 
+        await axios.post(`${WHATSAPP_SERVER}/api/whatsapp/init`, { id: activeInstance }); 
         setStatus('initializing');
     } catch (e) { 
         console.error(e); 
         alert("Falla en el despliegue del nodo. Verifique el servidor de WhatsApp.");
+    }
+    setLoading(false);
+  };
+
+  const resetNode = async () => {
+    setLoading(true);
+    setQr(null);
+    try {
+        await axios.post(`${WHATSAPP_SERVER}/api/whatsapp/reset`, { id: activeInstance });
+        setStatus('initializing');
+        alert("Nodo reiniciado. Esperando nuevo QR...");
+    } catch (e) {
+        console.error(e);
+        alert("Error al reiniciar el nodo.");
     }
     setLoading(false);
   };
@@ -290,8 +304,8 @@ export default function WhatsAppDashboard() {
                                             <p className="text-[14px] font-black text-white uppercase tracking-[0.4em] italic">ESCANEA PARA CONECTAR</p>
                                             <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest italic max-w-[250px] mx-auto leading-relaxed">Abre WhatsApp en tu terminal {'>'} Dispositivos vinculados {'>'} Vincular dispositivo.</p>
                                         </div>
-                                        <button onClick={initWhatsApp} className="text-[10px] font-black text-[#00F0FF] uppercase tracking-widest hover:underline flex items-center gap-3 mx-auto opacity-60 hover:opacity-100 transition-all">
-                                            <RefreshCw size={14} /> FORZAR REGENERACI\u00d3N
+                                        <button onClick={resetNode} className="text-[10px] font-black text-[#00F0FF] uppercase tracking-widest hover:underline flex items-center gap-3 mx-auto opacity-60 hover:opacity-100 transition-all">
+                                            <RefreshCw size={14} /> FORZAR REGENERACI\u00d3N / RESET
                                         </button>
                                     </div>
                                 )}
@@ -315,7 +329,7 @@ export default function WhatsAppDashboard() {
                                              <button onClick={() => setView('chats')} className="w-full bg-[#00F0FF] text-slate-950 py-5 font-black uppercase italic tracking-[0.4em] text-xs hover:bg-white transition-all shadow-[0_20px_40px_-10px_rgba(0,240,255,0.2)]">
                                                 ACCEDER AL RADAR
                                             </button>
-                                            <button onClick={initWhatsApp} className="text-[9px] font-black text-red-500/50 hover:text-red-500 uppercase tracking-widest transition-all italic">REINICIAR_TRANSMISI\u00d3N</button>
+                                            <button onClick={resetNode} className="text-[9px] font-black text-red-500/50 hover:text-red-500 uppercase tracking-widest transition-all italic">REINICIAR_TRANSMISI\u00d3N / LOGOUT</button>
                                         </div>
                                     </div>
                                 )}
