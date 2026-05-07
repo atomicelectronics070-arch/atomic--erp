@@ -89,18 +89,23 @@ export default function WhatsAppDashboard() {
 
     pollingRef.current = setInterval(async () => {
       try {
+        console.log(`POLLING QR FOR: ${activeInstance}...`);
         const res = await axios.get(`${WHATSAPP_SERVER}/api/whatsapp/qr/${activeInstance}`);
         const data = res.data;
+        console.log("POLLING DATA:", data);
         if (data.status === 'qr' && data.qr) {
           setQr(data.qr);
           setStatus('initializing');
-        } else if (data.status === 'connected') {
+        } else if (data.status === 'connected' || data.status === 'ready') {
+          console.log("NODE READY VIA POLLING");
           setStatus('connected');
           setQr(null);
           clearInterval(pollingRef.current);
           fetchChats();
         }
-      } catch (e) { /* silencio */ }
+      } catch (e) { 
+          console.error("POLLING ERROR:", e);
+      }
     }, 3000);
 
     return () => clearInterval(pollingRef.current);
@@ -328,6 +333,14 @@ export default function WhatsAppDashboard() {
                                         <div className="space-y-4">
                                             <p className="text-[14px] font-black text-white uppercase tracking-[0.4em] italic">ESCANEA PARA CONECTAR</p>
                                             <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest italic max-w-[250px] mx-auto leading-relaxed">Abre WhatsApp en tu terminal {'>'} Dispositivos vinculados {'>'} Vincular dispositivo.</p>
+                                            <a 
+                                                href={`${WHATSAPP_SERVER}/api/whatsapp/qr/${activeInstance}`} 
+                                                target="_blank" 
+                                                rel="noreferrer"
+                                                className="block text-[9px] text-[#00F0FF] hover:underline uppercase font-bold"
+                                            >
+                                                ¿No ves el código? Ver datos crudos del QR
+                                            </a>
                                         </div>
                                         <button onClick={resetNode} className="text-[10px] font-black text-[#00F0FF] uppercase tracking-widest hover:underline flex items-center gap-3 mx-auto opacity-60 hover:opacity-100 transition-all">
                                             <RefreshCw size={14} /> FORZAR REGENERACI\u00d3N / RESET
