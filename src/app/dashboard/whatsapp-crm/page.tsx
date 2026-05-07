@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { QRCodeCanvas } from 'qrcode.react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSession } from 'next-auth/react';
 import axios from 'axios';
@@ -28,12 +29,14 @@ export default function WhatsAppCRMDashboard() {
   const [activeTab, setActiveTab] = useState<'chats' | 'crm'>('chats');
   const [status, setStatus] = useState('disconnected');
   const [socketConnected, setSocketConnected] = useState(false);
+  const [qr, setQr] = useState<string | null>(null);
   const [chats, setChats] = useState<any[]>([]);
   const [selectedChat, setSelectedChat] = useState<any>(null);
   const [messages, setMessages] = useState<any[]>([]);
   const [messageInput, setMessageInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [activeInstance, setActiveInstance] = useState(actualUserId === 'main' ? 'INSTANCE_MAIN' : `INSTANCE_${actualUserId}`);
+  const [activeInstance, setActiveInstance] = useState('corporate_main');
+  const pollingRef = useRef<any>(null);
 
   // CRM State
   const [crmGroups, setCrmGroups] = useState<Record<string, any[]>>({});
@@ -60,9 +63,17 @@ export default function WhatsAppCRMDashboard() {
     socket.on('connect', () => setSocketConnected(true));
     socket.on('disconnect', () => setSocketConnected(false));
     
+    socket.on('qr', (data: any) => { 
+        if (data.id === activeInstance || !data.id) { 
+            setQr(data.qr); 
+            setStatus('initializing'); 
+        } 
+    });
+
     socket.on('ready', (data: any) => { 
-        if (data.id === activeInstance) { 
+        if (data.id === activeInstance || !data.id) { 
             setStatus('connected'); 
+            setQr(null);
             fetchChats(); 
         } 
     });
@@ -73,11 +84,54 @@ export default function WhatsAppCRMDashboard() {
     return () => { socket.disconnect(); };
   }, [activeInstance, actualUserId]);
 
+  // 🔄 POLLING FALLBACK
+  useEffect(() => {
+    if (pollingRef.current) clearInterval(pollingRef.current);
+    if (status === 'connected') return;
+
+    pollingRef.current = setInterval(async () => {
+      try {
+        const res = await axios.get(`${WHATSAPP_SERVER}/api/whatsapp/qr/${activeInstance}`);
+        const data = res.data;
+        if (data.status === 'qr' && data.qr) {
+          setQr(data.qr);
+          setStatus('initializing');
+        } else if (data.status === 'connected' || data.status === 'ready') {
+          setStatus('connected');
+          setQr(null);
+          clearInterval(pollingRef.current);
+          fetchChats();
+        }
+      } catch (e) { }
+    }, 3000);
+
+    return () => clearInterval(pollingRef.current);
+  }, [status, activeInstance]);
+
   const fetchChats = async () => {
     try {
-      const res = await axios.get(`${API_BASE}/whatsapp/chats/${activeInstance}`);
+      const res = await axios.get(`${WHATSAPP_SERVER}/api/whatsapp/chats/${activeInstance}`);
       setChats(res.data); setStatus('connected');
     } catch (e) { setStatus('disconnected'); }
+  };
+
+  const initWhatsApp = async () => {
+    setLoading(true); setQr(null);
+    try { 
+        await axios.post(`${WHATSAPP_SERVER}/api/whatsapp/init`, { id: activeInstance }); 
+        setStatus('initializing');
+    } catch (e) { alert("Falla en el despliegue del nodo."); }
+    setLoading(false);
+  };
+
+  const resetNode = async () => {
+    setLoading(true); setQr(null);
+    try {
+        await axios.post(`${WHATSAPP_SERVER}/api/whatsapp/reset`, { id: activeInstance });
+        setStatus('initializing');
+        alert("Nodo reiniciado. Esperando nuevo QR...");
+    } catch (e) { alert("Error al reiniciar el nodo."); }
+    setLoading(false);
   };
 
   const fetchCrmGroups = async () => {
@@ -296,8 +350,41 @@ export default function WhatsAppCRMDashboard() {
                     </>
                 ) : (
                     <div className="flex-1 flex flex-col items-center justify-center p-24 text-center">
-                        <MessageSquare size={80} className="text-white/5 mb-8" />
-                        <p className="text-2xl font-black uppercase tracking-[0.5em] italic text-white/10">ESPERANDO_FRECUENCIA</p>
+                        <AnimatePresence mode="wait">
+                            {status === 'disconnected' && !loading && (
+                                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
+                                    <MessageSquare size={80} className="text-white/5 mb-8 mx-auto" />
+                                    <p className="text-2xl font-black uppercase tracking-[0.5em] italic text-white/20">SISTEMA_OFFLINE</p>
+                                    <button onClick={initWhatsApp} className="bg-[#00F0FF] text-slate-950 px-12 py-5 font-black uppercase tracking-widest italic hover:bg-white transition-all">
+                                        INICIAR VINCULACIÓN
+                                    </button>
+                                </motion.div>
+                            )}
+
+                            {(loading || (status === 'initializing' && !qr)) && (
+                                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
+                                    <div className="w-20 h-20 border-4 border-t-[#00F0FF] border-[#00F0FF]/20 rounded-full animate-spin mx-auto" />
+                                    <p className="text-[10px] font-black uppercase tracking-[0.8em] text-[#00F0FF] animate-pulse italic">Sincronizando_Núcleo...</p>
+                                </motion.div>
+                            )}
+
+                            {status === 'initializing' && qr && (
+                                <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="space-y-10">
+                                    <div className="bg-white p-6 inline-block shadow-[0_0_50px_rgba(0,240,255,0.2)]">
+                                        <QRCodeCanvas value={qr} size={280} level="H" includeMargin />
+                                    </div>
+                                    <div className="space-y-4">
+                                        <p className="text-xl font-black uppercase italic tracking-tighter">ESCANEA PARA VINCULAR</p>
+                                        <a href={`${WHATSAPP_SERVER}/api/whatsapp/qr/${activeInstance}/image`} target="_blank" rel="noreferrer" className="block text-[11px] text-[#00F0FF] hover:underline uppercase font-black bg-[#00F0FF]/10 p-3 border border-[#00F0FF]/20">
+                                            🚀 ABRIR QR EN PESTAÑA NUEVA (SOLUCIÓN FINAL)
+                                        </a>
+                                    </div>
+                                    <button onClick={resetNode} className="text-[10px] font-black text-white/30 hover:text-[#00F0FF] uppercase tracking-widest transition-all italic">
+                                        REINTENTAR / RESET
+                                    </button>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </div>
                 )
             ) : (
