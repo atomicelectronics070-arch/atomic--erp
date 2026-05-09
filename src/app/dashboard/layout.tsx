@@ -147,6 +147,7 @@ export default function DashboardLayout({
                                     onToggle={() => toggleSection('crm')}
                                 >
                                     <NavLink href="/dashboard/whatsapp-crm" icon={<Smartphone size={14} />} label="Centro de Control" isSubItem />
+                                    <NavLink href="/dashboard/crm-historicos" icon={<Database size={14} />} label="CRM Históricos" isSubItem />
                                 </CollapsibleSection>
 
                                 <CollapsibleSection
