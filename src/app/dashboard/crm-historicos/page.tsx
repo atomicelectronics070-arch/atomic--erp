@@ -232,6 +232,7 @@ export default function CRMHistoricosPage() {
                             <div className="grid grid-cols-2 gap-8 max-w-4xl">
                                 <InputField label="Nombres" value={editForm.firstName || ""} onChange={(v: string) => setEditForm({...editForm, firstName: v})} />
                                 <InputField label="Apellidos" value={editForm.lastName || ""} onChange={(v: string) => setEditForm({...editForm, lastName: v})} />
+                                <InputField label="Cédula / Identidad" value={editForm.cedula || ""} onChange={(v: string) => setEditForm({...editForm, cedula: v})} />
                                 <InputField label="Email" value={editForm.email || ""} onChange={(v: string) => setEditForm({...editForm, email: v})} />
                                 <InputField label="Teléfono (WA)" value={editForm.phone || ""} onChange={(v: string) => setEditForm({...editForm, phone: v})} />
                                 <InputField label="Ciudad / Sede" value={editForm.city || ""} onChange={(v: string) => setEditForm({...editForm, city: v})} />
@@ -297,9 +298,17 @@ export default function CRMHistoricosPage() {
                                             </div>
                                         </div>
                                     </div>
-                                    <button onClick={handleSaveClient} className="bg-white/5 border border-white/10 hover:bg-white/10 text-white px-6 py-3 font-black uppercase tracking-widest italic transition-all flex items-center gap-2">
-                                        <Save size={14} /> GUARDAR CAMBIOS
-                                    </button>
+                                    <div className="flex gap-4">
+                                        <button 
+                                            onClick={() => window.location.href=`/dashboard/quotes?clientId=${selectedClient.id}`}
+                                            className="bg-indigo-600/20 border border-indigo-500/50 hover:bg-indigo-600 text-white px-6 py-3 font-black uppercase tracking-widest italic transition-all flex items-center gap-2 shadow-[0_0_15px_rgba(79,70,229,0.3)]"
+                                        >
+                                            <FileText size={14} /> COTIZACIÓN FORMAL
+                                        </button>
+                                        <button onClick={handleSaveClient} className="bg-white/5 border border-white/10 hover:bg-white/10 text-white px-6 py-3 font-black uppercase tracking-widest italic transition-all flex items-center gap-2">
+                                            <Save size={14} /> GUARDAR CAMBIOS
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
 
@@ -315,27 +324,35 @@ export default function CRMHistoricosPage() {
                                 {activeTab === "DATOS" && (
                                     <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
                                         {/* Metrics Row */}
-                                        <div className="grid grid-cols-3 gap-6">
-                                            <div className="bg-slate-900 border border-white/5 p-6 border-l-4 border-l-emerald-500">
-                                                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 italic mb-2">VENTAS CERRADAS</p>
-                                                <p className="text-4xl font-black text-white italic">{selectedClient.purchaseCount || 0}</p>
+                                        <div className="grid grid-cols-4 gap-4">
+                                            <div className="bg-slate-900 border border-white/5 p-4 border-l-4 border-l-emerald-500 flex flex-col justify-between">
+                                                <p className="text-[9px] font-black uppercase tracking-widest text-slate-500 italic mb-1">VENTAS CERRADAS</p>
+                                                <p className="text-3xl font-black text-white italic">{selectedClient.purchaseCount || 0}</p>
                                             </div>
-                                            <div className="bg-slate-900 border border-white/5 p-6 border-l-4 border-l-[#00F0FF]">
-                                                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 italic mb-2">COTIZACIONES (PLAYLIST)</p>
-                                                <p className="text-4xl font-black text-white italic">{selectedClient.quotes?.length || 0}</p>
+                                            <div className="bg-slate-900 border border-white/5 p-4 border-l-4 border-l-[#00F0FF] flex flex-col justify-between">
+                                                <p className="text-[9px] font-black uppercase tracking-widest text-slate-500 italic mb-1">COTIZACIONES (PLAYLIST)</p>
+                                                <p className="text-3xl font-black text-white italic">{selectedClient.quotes?.length || 0}</p>
                                             </div>
-                                            <div className="bg-slate-900 border border-white/5 p-6 border-l-4 border-l-indigo-500">
-                                                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 italic mb-2">CAMPAÑAS ENVIADAS</p>
-                                                <p className="text-4xl font-black text-white italic">{selectedClient.campaignsSent || 0}</p>
+                                            <div className="bg-slate-900 border border-white/5 p-4 border-l-4 border-l-indigo-500 flex flex-col justify-between">
+                                                <p className="text-[9px] font-black uppercase tracking-widest text-slate-500 italic mb-1">PROMOCIONES ENVIADAS</p>
+                                                <p className="text-3xl font-black text-white italic">{selectedClient.campaignsSent || 0}</p>
+                                            </div>
+                                            <div className="bg-slate-900 border border-white/5 p-4 border-l-4 border-l-amber-500 flex flex-col justify-between">
+                                                <p className="text-[9px] font-black uppercase tracking-widest text-slate-500 italic mb-1">ÚLTIMA PROMOCIÓN</p>
+                                                <p className="text-[12px] font-black text-white italic mt-2">
+                                                    {selectedClient.lastPromotion ? new Date(selectedClient.lastPromotion).toLocaleDateString() : 'NUNCA'}
+                                                </p>
                                             </div>
                                         </div>
 
                                         <div className="grid grid-cols-2 gap-8">
                                             <InputField label="Nombres" value={editForm.firstName || ""} onChange={(v: string) => setEditForm({...editForm, firstName: v})} />
                                             <InputField label="Apellidos" value={editForm.lastName || ""} onChange={(v: string) => setEditForm({...editForm, lastName: v})} />
+                                            <InputField label="Cédula / Identidad" value={editForm.cedula || ""} onChange={(v: string) => setEditForm({...editForm, cedula: v})} />
                                             <InputField label="Email Corporativo / Personal" value={editForm.email || ""} onChange={(v: string) => setEditForm({...editForm, email: v})} />
                                             <InputField label="Línea Directa (WhatsApp)" value={editForm.phone || ""} onChange={(v: string) => setEditForm({...editForm, phone: v})} />
                                             <InputField label="Ubicación Geográfica" value={editForm.city || ""} onChange={(v: string) => setEditForm({...editForm, city: v})} />
+                                            <InputField label="Etiquetas (Atención al Cliente)" value={editForm.tags || ""} onChange={(v: string) => setEditForm({...editForm, tags: v})} />
                                             
                                             <div className="space-y-3">
                                                 <label className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30 italic">Estado de Proceso</label>
@@ -357,8 +374,49 @@ export default function CRMHistoricosPage() {
 
                                 {activeTab === "HISTORIAL" && (
                                     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col h-full">
-                                        <div className="flex-1 bg-slate-900 border border-white/5 p-8 overflow-y-auto font-mono text-[11px] text-slate-300 leading-relaxed whitespace-pre-wrap custom-scrollbar shadow-inner">
-                                            {editForm.requirement || "NO HAY REGISTROS HISTÓRICOS AÚN. INICIA LA BITÁCORA."}
+                                        <div className="flex-1 bg-slate-900/80 border border-white/5 overflow-hidden flex flex-col shadow-inner">
+                                            <div className="bg-slate-950 p-4 border-b border-white/10 flex items-center justify-between">
+                                                <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-[#00F0FF] italic flex items-center gap-2">
+                                                    <Database size={12}/> BITÁCORA DE OBSERVACIONES DE CLIENTE
+                                                </h3>
+                                            </div>
+                                            <div className="flex-1 overflow-y-auto custom-scrollbar p-0">
+                                                <table className="w-full text-left text-[11px] text-slate-300">
+                                                    <thead className="bg-slate-900 border-b border-white/10 text-[9px] uppercase tracking-widest text-slate-500 font-black italic sticky top-0 backdrop-blur-xl">
+                                                        <tr>
+                                                            <th className="p-4 border-r border-white/5">Fecha y Hora</th>
+                                                            <th className="p-4 border-r border-white/5">Autor</th>
+                                                            <th className="p-4">Observación Registrada</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {(!editForm.requirement || editForm.requirement.trim() === "") ? (
+                                                            <tr>
+                                                                <td colSpan={3} className="p-8 text-center text-slate-500 font-mono italic">NO HAY REGISTROS HISTÓRICOS AÚN. INICIA LA BITÁCORA.</td>
+                                                            </tr>
+                                                        ) : (
+                                                            editForm.requirement.split('\n').filter((l: string) => l.trim() !== "").reverse().map((line: string, i: number) => {
+                                                                // Parse format: [timestamp] Author: Note
+                                                                const match = line.match(/\[(.*?)\] (.*?): (.*)/);
+                                                                if (match) {
+                                                                    return (
+                                                                        <tr key={i} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors font-mono group">
+                                                                            <td className="p-4 border-r border-white/5 whitespace-nowrap text-indigo-400 group-hover:text-indigo-300">{match[1]}</td>
+                                                                            <td className="p-4 border-r border-white/5 whitespace-nowrap text-[#00F0FF]/80 group-hover:text-[#00F0FF] font-bold">{match[2]}</td>
+                                                                            <td className="p-4 text-white/80 group-hover:text-white">{match[3]}</td>
+                                                                        </tr>
+                                                                    );
+                                                                }
+                                                                return (
+                                                                    <tr key={i} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors font-mono">
+                                                                        <td colSpan={3} className="p-4 text-white/80">{line}</td>
+                                                                    </tr>
+                                                                );
+                                                            })
+                                                        )}
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         </div>
                                         <div className="bg-slate-900 border border-white/10 p-6 shadow-2xl">
                                             <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-[#00F0FF] italic mb-4 flex items-center gap-2">

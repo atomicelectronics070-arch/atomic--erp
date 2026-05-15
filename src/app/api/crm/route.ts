@@ -51,7 +51,10 @@ export async function POST(req: Request) {
                 source: body.source || "MANUAL",
                 salespersonId: salesperson.id,
                 campaignsSent: body.campaignsSent || 0,
-                purchaseCount: body.purchaseCount || 0
+                purchaseCount: body.purchaseCount || 0,
+                cedula: body.cedula || null,
+                lastPromotion: body.lastPromotion ? new Date(body.lastPromotion) : null,
+                tags: body.tags || null
             }
         })
         return NextResponse.json(client)
