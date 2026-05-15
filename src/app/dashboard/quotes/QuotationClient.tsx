@@ -7,7 +7,7 @@ import {
     User, ShieldCheck, Mail, Phone, MapPin, 
     MessageSquare, History, X, ChevronRight,
     Briefcase, Save, Clock, Search, CheckCircle2,
-    FileText, Zap, Building2, Tag, Percent, ShoppingCart
+    FileText, Zap, Building2, Tag, Percent, ShoppingCart, Wand2, Upload, AlertTriangle, Download
 } from "lucide-react"
 import jsPDF from "jspdf"
 import autoTable from "jspdf-autotable"
@@ -85,6 +85,14 @@ export default function QuotationClient({ initialProducts, initialHistory, nextN
     const [isHistoryOpen, setIsHistoryOpen] = useState(false)
     const [showProductList, setShowProductList] = useState<string | null>(null)
 
+    // Quick Generator States
+    const [quickText, setQuickText] = useState("")
+    const [quickImage, setQuickImage] = useState<string | null>(null)
+    const [quickWarning, setQuickWarning] = useState<string | null>(null)
+    const [isExtracting, setIsExtracting] = useState(false)
+    const [quickSuccess, setQuickSuccess] = useState(false)
+    const quickInputRef = useRef<HTMLInputElement>(null)
+
     const taxRate = 0.15 
     const subtotal = items.reduce((acc, item) => acc + (item.quantity * item.unitPrice), 0)
     const discountAmount = subtotal * (discountPercent / 100)
@@ -140,6 +148,63 @@ export default function QuotationClient({ initialProducts, initialHistory, nextN
             { id: "2", productId: "SKU-002", description: "Grabador NVR 16 Canales 4K", quantity: 1, unitPrice: 350.00 },
             { id: "3", productId: "SRV-001", description: "Instalación y Configuración del Sistema", quantity: 1, unitPrice: 150.00 }
         ])
+    }
+
+    const handleQuickImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (file) {
+            const reader = new FileReader()
+            reader.onloadend = () => {
+                setQuickImage(reader.result as string)
+            }
+            reader.readAsDataURL(file)
+        }
+    }
+
+    const handleQuickGenerate = async () => {
+        if (!quickText.trim()) return;
+        setIsExtracting(true)
+        setQuickWarning(null)
+        setQuickSuccess(false)
+        try {
+            const res = await fetch("/api/quotes/extract", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ text: quickText })
+            })
+            const json = await res.json()
+            if (json.success && json.data) {
+                const data = json.data
+                if (data.clientName) setClientName(data.clientName)
+                if (data.clientCity) setClientCity(data.clientCity)
+                if (data.clientPhone) setClientPhone(data.clientPhone)
+                if (data.quoteSubject) setQuoteSubject(data.quoteSubject)
+                
+                if (data.items && data.items.length > 0) {
+                    const newItems = data.items.map((i: any, index: number) => ({
+                        id: `quick-${Date.now()}-${index}`,
+                        productId: `GEN-${Math.floor(Math.random() * 1000)}`,
+                        description: i.description || "Producto Genérico",
+                        quantity: i.quantity || 1,
+                        unitPrice: i.unitPrice || 0,
+                        customImage: index === 0 && quickImage ? quickImage : undefined
+                    }))
+                    setItems(newItems)
+                }
+                
+                if (data.missingInfo) {
+                    setQuickWarning(data.missingInfo)
+                } else {
+                    setQuickSuccess(true)
+                }
+            } else {
+                setQuickWarning("Error extrayendo datos. Intenta de nuevo.")
+            }
+        } catch (e) {
+            setQuickWarning("Error de red al conectar con Jarvis.")
+        } finally {
+            setIsExtracting(false)
+        }
     }
 
     const handleGeneratePDF = async () => {
@@ -217,8 +282,9 @@ export default function QuotationClient({ initialProducts, initialHistory, nextN
         // Table
         autoTable(doc, {
             startY: 90,
-            head: [["ITEM", "DESCRIPCIÓN", "CANT", "UNITARIO", "TOTAL"]],
+            head: [["IMG", "ITEM", "DESCRIPCIÓN", "CANT", "UNITARIO", "TOTAL"]],
             body: items.map(i => [
+                '', // Placeholder for image
                 i.productId, 
                 i.description, 
                 i.quantity, 
@@ -226,15 +292,36 @@ export default function QuotationClient({ initialProducts, initialHistory, nextN
                 `$${(i.quantity * i.unitPrice).toFixed(2)}`
             ]),
             theme: 'grid',
-            headStyles: { fillColor: [79, 70, 229], textColor: 255, fontStyle: 'bold', fontSize: 9 },
-            bodyStyles: { fontSize: 9, textColor: 50 },
+            headStyles: { fillColor: primaryColor, textColor: 255, fontStyle: 'bold', fontSize: 9 },
+            bodyStyles: { fontSize: 9, textColor: 50, minCellHeight: 14 },
             alternateRowStyles: { fillColor: [250, 250, 250] },
             columnStyles: {
-                0: { cellWidth: 30 },
-                1: { cellWidth: 80 },
-                2: { cellWidth: 20, halign: 'center' },
-                3: { cellWidth: 25, halign: 'right' },
-                4: { cellWidth: 25, halign: 'right' }
+                0: { cellWidth: 15, halign: 'center' },
+                1: { cellWidth: 25 },
+                2: { cellWidth: 70 },
+                3: { cellWidth: 15, halign: 'center' },
+                4: { cellWidth: 25, halign: 'right' },
+                5: { cellWidth: 25, halign: 'right' }
+            },
+            didDrawCell: function(data) {
+                if (data.column.index === 0 && data.cell.section === 'body') {
+                    const item = items[data.row.index];
+                    let imgToDraw = item.customImage;
+                    
+                    if (!imgToDraw) {
+                        const product = findProduct(item.productId, item.description);
+                        if (product?.images && product.images !== 'null') {
+                            const parsed = safeParseArray(product.images);
+                            if (parsed.length > 0) imgToDraw = parsed[0];
+                        }
+                    }
+
+                    if (imgToDraw) {
+                        try {
+                            doc.addImage(imgToDraw, data.cell.x + 2, data.cell.y + 2, 10, 10);
+                        } catch(e) {}
+                    }
+                }
             }
         });
         
@@ -513,6 +600,59 @@ export default function QuotationClient({ initialProducts, initialHistory, nextN
                 {/* Right Column: Totals & State */}
                 <div className="lg:col-span-1 space-y-8">
                     
+                    {/* Generador Rápido */}
+                    <div className="bg-gradient-to-br from-indigo-50 to-white p-6 rounded-xl border border-indigo-100 shadow-sm">
+                        <div className="flex items-center gap-2 mb-4 text-indigo-700">
+                            <Wand2 size={18} />
+                            <h2 className="text-sm font-black uppercase tracking-wider">Generador Rápido (IA)</h2>
+                        </div>
+                        <p className="text-[10px] font-bold text-slate-500 mb-4 leading-relaxed">
+                            Pega el texto desordenado de WhatsApp o notas. La IA extraerá cliente, productos y valores automáticamente.
+                        </p>
+                        <textarea 
+                            value={quickText}
+                            onChange={(e) => setQuickText(e.target.value)}
+                            placeholder="Ej: cotizame a juan perez 2 camaras a 15 y un dvr a 40 para quito su tel es 0999"
+                            className="w-full bg-white border border-indigo-200 rounded-lg p-3 text-xs font-medium text-[#0F172A] outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 min-h-[100px] resize-none mb-4"
+                        />
+                        
+                        {quickWarning && (
+                            <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-2 text-amber-700">
+                                <AlertTriangle size={14} className="shrink-0 mt-0.5" />
+                                <p className="text-[10px] font-bold leading-tight">{quickWarning}</p>
+                            </div>
+                        )}
+
+                        <div className="flex gap-2">
+                            <button 
+                                onClick={() => quickInputRef.current?.click()}
+                                className="flex-1 flex items-center justify-center gap-1 bg-white border border-indigo-200 text-indigo-600 font-bold text-[10px] py-2 rounded-lg hover:bg-indigo-50 transition-colors"
+                            >
+                                <Upload size={12} /> {quickImage ? "Imagen Lista" : "Subir 1 Imagen"}
+                            </button>
+                            <input type="file" accept="image/*" hidden ref={quickInputRef} onChange={handleQuickImageUpload} />
+                            
+                            <button 
+                                onClick={handleQuickGenerate}
+                                disabled={isExtracting || !quickText.trim()}
+                                className="flex-1 flex items-center justify-center gap-1 bg-indigo-600 text-white font-bold text-[10px] py-2 rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition-all shadow-sm"
+                            >
+                                {isExtracting ? "Analizando..." : "Auto-Completar"}
+                            </button>
+                        </div>
+
+                        {quickSuccess && (
+                            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mt-4">
+                                <button 
+                                    onClick={handleGeneratePDF}
+                                    className="w-full flex items-center justify-center gap-2 bg-[#0F172A] text-white font-bold text-[11px] py-3 rounded-lg hover:bg-slate-800 transition-all shadow-md"
+                                >
+                                    <Download size={14} /> DESCARGAR COTIZACIÓN
+                                </button>
+                            </motion.div>
+                        )}
+                    </div>
+
                     <div className="bg-white p-8 rounded-xl border border-slate-200 shadow-sm sticky top-32">
                         <h2 className="text-sm font-black text-[#0F172A] uppercase tracking-wider mb-6 flex items-center gap-2 border-b border-slate-100 pb-4">
                             <Calculator className="text-indigo-600" size={16} /> Totales
