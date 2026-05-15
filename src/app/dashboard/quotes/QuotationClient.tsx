@@ -30,6 +30,7 @@ type QuoteItem = {
     description: string
     quantity: number
     unitPrice: number
+    customImage?: string
 }
 
 interface Product {
@@ -110,9 +111,35 @@ export default function QuotationClient({ initialProducts, initialHistory, nextN
             ...item,
             productId: product.sku || product.id.substring(0, 6),
             description: product.name,
-            unitPrice: product.price
+            unitPrice: product.price,
+            customImage: product.images ? safeParseArray(product.images)[0] : undefined
         } : item))
         setShowProductList(null)
+    }
+
+    const handleImageUpload = (id: string, e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (file) {
+            const reader = new FileReader()
+            reader.onloadend = () => {
+                setItems(items.map(item => item.id === id ? { ...item, customImage: reader.result as string } : item))
+            }
+            reader.readAsDataURL(file)
+        }
+    }
+
+    const handleFillTest = () => {
+        setClientName("Empresa de Prueba S.A.")
+        setClientCity("Quito, Ecuador")
+        setClientPhone("0991234567")
+        setEmailNotSpecified(true)
+        setQuoteSubject("Suministro de Equipos de Prueba para Proyecto Alpha")
+        setDiscountPercent(5)
+        setItems([
+            { id: "1", productId: "SKU-001", description: "Cámara Domo IP 4MP Avanzada", quantity: 5, unitPrice: 120.50 },
+            { id: "2", productId: "SKU-002", description: "Grabador NVR 16 Canales 4K", quantity: 1, unitPrice: 350.00 },
+            { id: "3", productId: "SRV-001", description: "Instalación y Configuración del Sistema", quantity: 1, unitPrice: 150.00 }
+        ])
     }
 
     const handleGeneratePDF = async () => {
@@ -301,6 +328,13 @@ export default function QuotationClient({ initialProducts, initialHistory, nextN
                 </div>
                 <div className="flex items-center gap-4">
                     <button 
+                        onClick={handleFillTest}
+                        className="px-4 py-2.5 bg-amber-50 text-amber-600 hover:bg-amber-100 font-bold text-sm rounded-lg transition-all flex items-center gap-2 shadow-sm"
+                        title="Rellenar cotización genérica de prueba"
+                    >
+                        <Zap size={16}/> Prueba
+                    </button>
+                    <button 
                         onClick={() => setIsHistoryOpen(true)} 
                         className="px-5 py-2.5 bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-800 font-bold text-sm rounded-lg transition-all flex items-center gap-2 shadow-sm"
                     >
@@ -403,8 +437,18 @@ export default function QuotationClient({ initialProducts, initialHistory, nextN
                                         className="grid grid-cols-12 gap-4 items-center bg-white p-2 border border-slate-200 rounded-lg group hover:border-indigo-300 transition-all relative"
                                     >
                                         <div className="col-span-1">
-                                            <div className="w-10 h-10 bg-slate-50 border border-slate-100 rounded-md flex items-center justify-center relative overflow-hidden group-hover:border-indigo-200 transition-all mx-auto">
+                                            <div className="w-10 h-10 bg-slate-50 border border-slate-100 rounded-md flex items-center justify-center relative overflow-hidden group-hover:border-indigo-200 transition-all mx-auto cursor-pointer">
+                                                <input 
+                                                    type="file" 
+                                                    accept="image/*" 
+                                                    className="absolute inset-0 opacity-0 cursor-pointer z-10" 
+                                                    title="Añadir/Cambiar imagen"
+                                                    onChange={(e) => handleImageUpload(item.id, e)}
+                                                />
                                                 {(() => {
+                                                    if (item.customImage) {
+                                                        return <img src={item.customImage} className="w-full h-full object-contain" alt="preview" />;
+                                                    }
                                                     const product = findProduct(item.productId, item.description);
                                                     const images = product?.images;
                                                     if (images && images !== 'null') {
