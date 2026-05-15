@@ -31,7 +31,7 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
     
     const [activeCommentPost, setActiveCommentPost] = useState<string | null>(null)
     const [isSubmitting, setIsSubmitting] = useState(false)
-    const [rankingFilter, setRankingFilter] = useState<'points' | 'value' | 'count' | 'name' | 'quotes'>('quotes')
+    const [rankingFilter, setRankingFilter] = useState<'points' | 'count' | 'name' | 'quotes' | 'contacts'>('quotes')
     const [isQuickSaleOpen, setIsQuickSaleOpen] = useState(false)
     const [quickSaleData, setQuickSaleData] = useState({ amount: 0, salespersonId: "", client: "VENTA RÁPIDA RANKING" })
     
@@ -46,6 +46,7 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     ...quickSaleData,
+                    profit: quickSaleData.amount, // Set profit equal to amount so points calculate correctly
                     status: "PAGADO",
                     type: "Venta Directa",
                     date: new Date().toISOString().split('T')[0]
@@ -272,8 +273,8 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
                             >
                                 <option value="quotes">Cotizaciones Generadas</option>
                                 <option value="points">Puntos Acumulados</option>
-                                <option value="value">Volumen de Ventas ($)</option>
-                                <option value="count">Cantidad de Ventas</option>
+                                <option value="count">Ventas Realizadas</option>
+                                <option value="contacts">Número de Teléfonos Obtenidos</option>
                             </select>
                         </div>
 
@@ -281,8 +282,8 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
                             {[...ranking].sort((a, b) => {
                                 if (rankingFilter === 'quotes') return (b.quotesCount || 0) - (a.quotesCount || 0);
                                 if (rankingFilter === 'points') return (b.points || 0) - (a.points || 0);
-                                if (rankingFilter === 'value') return (b.totalProfit || 0) - (a.totalProfit || 0);
                                 if (rankingFilter === 'count') return (b.salesCount || 0) - (a.salesCount || 0);
+                                if (rankingFilter === 'contacts') return (b.contactsCount || 0) - (a.contactsCount || 0);
                                 return a.name.localeCompare(b.name);
                             }).map((user, index) => (
                                 <div key={user.id} className={`flex flex-col p-3 rounded-xl border ${index === 0 ? 'bg-amber-50 border-amber-200' : 'bg-white border-slate-100'} transition-all`}>
