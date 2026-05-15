@@ -22,7 +22,8 @@ import {
     Award,
     ShieldOff,
     Key,
-    Trash2
+    Trash2,
+    Search
 } from "lucide-react"
 import { getJobProfile, upsertJobProfile } from "@/lib/actions/jobProfiles"
 import { useSession } from "next-auth/react"
