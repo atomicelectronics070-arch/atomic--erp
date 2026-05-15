@@ -7,7 +7,7 @@ import {
     Shield, Globe, Zap, Image as ImageIcon, Box, Layout, ArrowRight, 
     Tag as TagIcon, Settings, ShoppingBag, Layers, RefreshCw, MoreVertical, 
     CheckCircle, CheckCircle2, Star, CheckSquare, Square, Monitor, Cpu, ShieldAlert, 
-    Upload, PlusCircle, FileText, ChevronDown, Store
+    Upload, PlusCircle, FileText, ChevronDown, Store, Gamepad2
 } from "lucide-react"
 import { CyberCard, NeonButton, CyberInput, GlassPanel } from "@/components/ui/CyberUI"
 import { 
