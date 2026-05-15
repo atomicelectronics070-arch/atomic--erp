@@ -165,7 +165,7 @@ export default function AdvancedCRMPage() {
                             className="w-full bg-white/[0.02] border border-white/5 p-3 pl-10 text-[9px] font-black uppercase tracking-widest outline-none focus:border-indigo-500/30 transition-all italic"
                         />
                     </div>
-                    <button onClick={() => { setEditingClient(null); setFormData({ firstName: "", lastName: "", email: "", phone: "", city: "", requirement: "", status: "PROSPECTO", purchaseCount: 0 }); setIsPanelOpen(true); }} className="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-3 text-[9px] font-black uppercase tracking-widest italic transition-all hover:scale-105 active:scale-95 flex items-center gap-2 shadow-xl shadow-indigo-600/10">
+                    <button onClick={() => { setEditingClient(null); setFormData({ firstName: "", lastName: "", email: "", phone: "", city: "", requirement: "", status: "PROSPECTO", purchaseCount: 0, campaignsSent: 0 }); setIsPanelOpen(true); }} className="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-3 text-[9px] font-black uppercase tracking-widest italic transition-all hover:scale-105 active:scale-95 flex items-center gap-2 shadow-xl shadow-indigo-600/10">
                         <UserPlus size={14} />
                         <span>NUEVO LEAD</span>
                     </button>
