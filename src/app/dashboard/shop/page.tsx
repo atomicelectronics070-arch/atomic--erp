@@ -30,12 +30,7 @@ import {
     toggleProductFeatured,
     saveProduct,
     saveCategory,
-    saveCollection,
-    createCategory,
-    createCollection,
-    deleteCategory,
-    deleteCollection,
-    deleteManyCollections
+    saveCollection
 } from "@/lib/actions/shop"
 
 export default function ShopConfigPage() {
