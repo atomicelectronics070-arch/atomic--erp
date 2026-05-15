@@ -34,7 +34,7 @@ export default function ShopConfigPage() {
                         <span className="text-[10px] uppercase font-black tracking-[0.6em] italic">E-COMMERCE PROTOCOL V6.2 // MASTER</span>
                     </div>
                     <h1 className="text-7xl font-black text-white uppercase tracking-tighter leading-none italic">
-                        CENTRO DE <span className="text-secondary neon-text">CAT+¸LOGO</span>
+                        CENTRO DE <span className="text-secondary neon-text">CAT+\ufffdLOGO</span>
                     </h1>
                 </motion.div>
                 <div className="flex gap-4">
@@ -74,7 +74,7 @@ export default function ShopConfigPage() {
                                     <div className="absolute top-0 left-0 w-2 h-full bg-azure-500 shadow-[0_0_20px_rgba(45,212,191,0.5)]"></div>
                                     <div className="p-5 bg-azure-500/10 text-azure-500 rounded-none group-hover:scale-110 group-hover:rotate-6 transition-all duration-500"><TagIcon size={28} /></div>
                                     <div>
-                                        <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.3em] mb-2 italic">Elementos de Categor+°a</p>
+                                        <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.3em] mb-2 italic">Elementos de Categor+\ufffda</p>
                                         <h4 className="text-4xl font-black text-white italic tracking-tighter">{metadata.categories.length}</h4>
                                     </div>
                                 </motion.div>
@@ -123,7 +123,7 @@ export default function ShopConfigPage() {
                                                 onClick={() => setActiveTab('settings')}
                                                 className="w-full text-center text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 hover:text-secondary transition-all flex items-center justify-center gap-3 italic"
                                             >
-                                                Gesti¥+¢n de Mantenimiento <ChevronRight size={14} />
+                                                Gesti\ufffd+\ufffdn de Mantenimiento <ChevronRight size={14} />
                                             </button>
                                         </div>
                                     </div>
@@ -135,7 +135,7 @@ export default function ShopConfigPage() {
                                             <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-white italic">Saneamiento Maestro</h3>
                                         </div>
                                         <p className="text-[10px] font-bold uppercase italic text-slate-500 leading-relaxed mb-10">
-                                            Ejecuci+¶n intensiva de eliminaci+¶n de colisiones de datos y duplicidad de Elementos para optimizar el rendimiento.
+                                            Ejecuci+\ufffdn intensiva de eliminaci+\ufffdn de colisiones de datos y duplicidad de Elementos para optimizar el rendimiento.
                                         </p>
                                         <button 
                                             onClick={async () => {
@@ -407,12 +407,12 @@ export default function ShopConfigPage() {
                             {/* Quick Category/Collection Creation */}
                             <div className="grid grid-cols-1 xl:grid-cols-2 gap-10 bg-slate-950/40 p-10 rounded-none-[3rem] border border-white/5 backdrop-blur-3xl shadow-2xl">
                                 <QuickCreate
-                                    label="Arquitectura de Categor+°a"
+                                    label="Arquitectura de Categor+\ufffda"
                                     icon={<TagIcon size={20} className="text-secondary" />}
                                     onSave={async (name) => { await createCategory(name); refreshData(); }}
                                 />
                                 <QuickCreate
-                                    label="Definici+¶n de Colecci+¶n"
+                                    label="Definici+\ufffdn de Colecci+\ufffdn"
                                     icon={<Layers size={20} className="text-primary" />}
                                     onSave={async (name) => { await createCollection(name); refreshData(); }}
                                 />
@@ -423,7 +423,7 @@ export default function ShopConfigPage() {
                                     <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/5 blur-3xl -mr-16 -mt-16 rounded-none"></div>
                                     <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-white italic mb-10 border-b border-white/5 pb-8 flex items-center gap-3">
                                         <TagIcon size={18} className="text-secondary" />
-                                        Jerarqu+°a de Categor+°as
+                                        Jerarqu+\ufffda de Categor+\ufffdas
                                     </h3>
                                     <ul className="space-y-4">
                                         {metadata.categories.map(c => (
@@ -446,7 +446,7 @@ export default function ShopConfigPage() {
                                     <div className="flex justify-between items-center mb-10 border-b border-white/5 pb-8">
                                         <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-white italic flex items-center gap-3">
                                             <Layers size={18} className="text-primary" />
-                                            Colecciones Estrat+Ægicas
+                                            Colecciones Estrat+\ufffdgicas
                                         </h3>
                                         {selectedCollections.length > 0 && (
                                             <button 
@@ -516,9 +516,9 @@ export default function ShopConfigPage() {
                         <div className="space-y-16 animate-in fade-in slide-in-from-bottom-5 duration-1000">
                             {/* Previous settings content was already added, but I need to make sure the Mantenimiento is inside or handled neatly */}
                             
-                            {/* ‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…
-                                SECCI+ÙN: BANNERS DE P+¸GINA PRINCIPAL
-                            ‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú… */}
+                            {/* \ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd
+                                SECCI+\ufffdN: BANNERS DE P+\ufffdGINA PRINCIPAL
+                            \ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd */}
                             <div className="space-y-10">
                                 <div className="flex items-center gap-6 pb-8 border-b border-white/5">
                                     <div className="w-14 h-14 bg-secondary flex items-center justify-center rounded-none shadow-2xl shadow-secondary/20">
@@ -526,14 +526,14 @@ export default function ShopConfigPage() {
                                     </div>
                                     <div>
                                         <h3 className="text-lg font-black uppercase tracking-[0.3em] text-white italic">Arquitectura Hero Visual</h3>
-                                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.4em] mt-1">Configuraci+¶n t+Æcnica de narrativa visual en el frontend p+¶blico</p>
+                                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.4em] mt-1">Configuraci+\ufffdn t+\ufffdcnica de narrativa visual en el frontend p+\ufffdblico</p>
                                     </div>
                                 </div>
 
                                 <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
                                     <BannerConfigPanel
                                         bannerKey="software"
-                                        label="Divisi+¶n Software"
+                                        label="Divisi+\ufffdn Software"
                                         icon={<Monitor size={20} className="text-secondary" />}
                                         accentColor="secondary"
                                         data={storeSettings.banners?.software || {}}
@@ -542,7 +542,7 @@ export default function ShopConfigPage() {
                                     />
                                     <BannerConfigPanel
                                         bannerKey="automation"
-                                        label="Divisi+¶n Industria"
+                                        label="Divisi+\ufffdn Industria"
                                         icon={<Cpu size={20} className="text-primary" />}
                                         accentColor="primary"
                                         data={storeSettings.banners?.automation || {}}
@@ -551,7 +551,7 @@ export default function ShopConfigPage() {
                                     />
                                     <BannerConfigPanel
                                         bannerKey="gaming"
-                                        label="Divisi+¶n Consumo"
+                                        label="Divisi+\ufffdn Consumo"
                                         icon={<Gamepad2 size={20} className="text-purple-500" />}
                                         accentColor="purple"
                                         data={storeSettings.banners?.gaming || {}}
@@ -561,15 +561,15 @@ export default function ShopConfigPage() {
                                 </div>
                             </div>
 
-                            {/* ‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…
-                                SECCI+ÙN: LOG+ÏSTICA Y NOTIFICACI+ÙN
-                            ‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú… */}
+                            {/* \ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd
+                                SECCI+\ufffdN: LOG+\ufffdSTICA Y NOTIFICACI+\ufffdN
+                            \ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd */}
                             <div className="grid grid-cols-1 xl:grid-cols-2 gap-10">
                                 <div className="glass-panel p-10 rounded-none-[3rem] border-white/5 space-y-10 relative overflow-hidden">
                                     <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/5 blur-3xl -mr-16 -mt-16 rounded-none"></div>
                                     <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-white italic flex items-center gap-4">
                                         <Box size={20} className="text-secondary" /> 
-                                        Par+Ìmetros de Transacci+¶n
+                                        Par+\ufffdmetros de Transacci+\ufffdn
                                     </h3>
                                     
                                     <div className="space-y-4">
@@ -579,7 +579,7 @@ export default function ShopConfigPage() {
                                             onChange={(e) => setStoreSettings({ ...storeSettings, currency: e.target.value })}
                                             className="w-full bg-slate-900 border border-white/5 px-8 py-5 text-xs font-black uppercase tracking-widest text-white outline-none rounded-none focus:border-secondary transition-all appearance-none"
                                         >
-                                            <option value="USD">D+¶lares Americanos (USD)</option>
+                                            <option value="USD">D+\ufffdlares Americanos (USD)</option>
                                             <option value="COP">Pesos Colombianos (COP)</option>
                                             <option value="MXN">Pesos Mexicanos (MXN)</option>
                                             <option value="EUR">Euros (EUR)</option>
@@ -588,14 +588,14 @@ export default function ShopConfigPage() {
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                         <div className="space-y-4">
-                                            <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.3em] ml-2 text-wrap">Costo de Env+°o Base</label>
+                                            <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.3em] ml-2 text-wrap">Costo de Env+\ufffdo Base</label>
                                             <div className="relative">
                                                 <div className="absolute left-6 top-1/2 -translate-y-1/2 text-secondary font-black">$</div>
                                                 <input type="number" value={storeSettings.shippingCost} onChange={(e) => setStoreSettings({ ...storeSettings, shippingCost: Number(e.target.value) })} className="w-full bg-slate-900 border border-white/5 pl-12 pr-8 py-5 text-sm font-black text-white outline-none rounded-none focus:border-secondary transition-all" />
                                             </div>
                                         </div>
                                         <div className="space-y-4">
-                                            <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.3em] ml-2 text-wrap">Umbral Popular (Env+°o Gratis)</label>
+                                            <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.3em] ml-2 text-wrap">Umbral Popular (Env+\ufffdo Gratis)</label>
                                             <div className="relative">
                                                 <div className="absolute left-6 top-1/2 -translate-y-1/2 text-primary font-black">$</div>
                                                 <input type="number" value={storeSettings.freeShippingThreshold} onChange={(e) => setStoreSettings({ ...storeSettings, freeShippingThreshold: Number(e.target.value) })} className="w-full bg-slate-900 border border-white/5 pl-12 pr-8 py-5 text-sm font-black text-white outline-none rounded-none focus:border-primary transition-all" />
@@ -609,32 +609,32 @@ export default function ShopConfigPage() {
                                     <div className="flex justify-between items-center border-b border-white/5 pb-8">
                                         <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-white italic flex items-center gap-4">
                                             <Star size={20} className="text-yellow-500 shadow-[0_0_10px_rgba(234,179,8,0.4)]" /> 
-                                            Difusi+¶n de Alertas Hero
+                                            Difusi+\ufffdn de Alertas Hero
                                         </h3>
                                         <Toggle label="Activo" icon="" checked={storeSettings.bannerActive} onChange={(v) => setStoreSettings({ ...storeSettings, bannerActive: v })} />
                                     </div>
                                     <div className="space-y-4">
-                                        <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.3em] ml-2">Gesti¥+¢n de Mensajer+°a Superior</label>
+                                        <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.3em] ml-2">Gesti\ufffd+\ufffdn de Mensajer+\ufffda Superior</label>
                                         <textarea 
                                             rows={4} 
                                             disabled={!storeSettings.bannerActive} 
                                             value={storeSettings.bannerText} 
                                             onChange={(e) => setStoreSettings({ ...storeSettings, bannerText: e.target.value })} 
                                             className="w-full bg-slate-900 border border-white/5 px-8 py-6 text-xs font-bold text-white outline-none resize-none rounded-none-[2rem] focus:border-yellow-500 transition-all disabled:opacity-20 placeholder:text-slate-800 italic" 
-                                            placeholder="Ej: DISPONIBILIDAD T+¸CTICA PARA ENV+ÏOS NACIONALES ‘«ˆ ATOMIC DELIVERY PROTOCOL" 
+                                            placeholder="Ej: DISPONIBILIDAD T+\ufffdCTICA PARA ENV+\ufffdOS NACIONALES \ufffd\ufffd\ufffd ATOMIC DELIVERY PROTOCOL" 
                                         />
                                     </div>
                                 </div>
                             </div>
 
-                            {/* ‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…
-                                SECCI+ÙN: MANTENIMIENTO T+ÎCNICO
-                            ‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú…‘Ú… */}
+                            {/* \ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd
+                                SECCI+\ufffdN: MANTENIMIENTO T+\ufffdCNICO
+                            \ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd */}
                             <div className="glass-panel p-10 rounded-none-[4rem] border-white/5 relative overflow-hidden">
                                 <div className="absolute top-0 left-0 w-64 h-64 bg-red-500/5 blur-[100px] -ml-32 -mt-32 rounded-none"></div>
                                 <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-white italic flex items-center gap-4 border-b border-white/5 pb-8 mb-12">
                                     <ShieldAlert size={20} className="text-red-500" /> 
-                                    Zona de Mantenimiento Cr+°tico
+                                    Zona de Mantenimiento Cr+\ufffdtico
                                 </h3>
                                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-16">
                                     <div className="space-y-8">
@@ -642,11 +642,11 @@ export default function ShopConfigPage() {
                                             <Trash2 size={24} />
                                             <div>
                                                 <span className="text-[11px] uppercase font-black tracking-[0.2em] block">Saneamiento de Duplicados</span>
-                                                <span className="text-[9px] text-slate-500 font-bold uppercase tracking-widest italic leading-relaxed mt-1 block">Gesti¥+¢n de eliminaci+¶n masiva por redundancia de metadatos.</span>
+                                                <span className="text-[9px] text-slate-500 font-bold uppercase tracking-widest italic leading-relaxed mt-1 block">Gesti\ufffd+\ufffdn de eliminaci+\ufffdn masiva por redundancia de metadatos.</span>
                                             </div>
                                         </div>
                                         <button 
-                                            onClick={async () => { if(confirm("-+Seguro que quieres ejecutar la poda de duplicados?")) { setIsCleaning(true); try { await cleanupDuplicateProducts(); await refreshData(); alert("Cat+Ìlogo saneado."); } finally { setIsCleaning(false); } } }} 
+                                            onClick={async () => { if(confirm("-+Seguro que quieres ejecutar la poda de duplicados?")) { setIsCleaning(true); try { await cleanupDuplicateProducts(); await refreshData(); alert("Cat+\ufffdlogo saneado."); } finally { setIsCleaning(false); } } }} 
                                             disabled={isCleaning} 
                                             className="w-full bg-red-600/10 text-red-500 border border-red-500/30 px-10 py-6 text-[10px] font-black uppercase tracking-[0.3em] hover:bg-red-600 hover:text-white transition-all shadow-2xl shadow-red-600/10 rounded-none active:scale-95 disabled:opacity-20"
                                         >
@@ -657,8 +657,8 @@ export default function ShopConfigPage() {
                                         <div className="flex items-center space-x-4 text-primary">
                                             <ShoppingBag size={24} />
                                             <div>
-                                                <span className="text-[11px] uppercase font-black tracking-[0.2em] block">Anal+°tica de Origen</span>
-                                                <span className="text-[9px] text-slate-500 font-bold uppercase tracking-widest italic leading-relaxed mt-1 block">Distribuci+¶n cuantitativa por Etiqueta de suministro.</span>
+                                                <span className="text-[11px] uppercase font-black tracking-[0.2em] block">Anal+\ufffdtica de Origen</span>
+                                                <span className="text-[9px] text-slate-500 font-bold uppercase tracking-widest italic leading-relaxed mt-1 block">Distribuci+\ufffdn cuantitativa por Etiqueta de suministro.</span>
                                             </div>
                                         </div>
                                         <div className="bg-slate-950/60 rounded-none-[2rem] border border-white/5 overflow-hidden divide-y divide-white/5 max-h-56 overflow-y-auto custom-scrollbar">
@@ -671,7 +671,7 @@ export default function ShopConfigPage() {
                                                 </div>
                                             )) : (
                                                 <div className="py-12 text-center opacity-20">
-                                                    <p className="text-[9px] font-black uppercase tracking-[0.4em]">Escaneando Or+°genes...</p>
+                                                    <p className="text-[9px] font-black uppercase tracking-[0.4em]">Escaneando Or+\ufffdgenes...</p>
                                                 </div>
                                             )}
                                         </div>
@@ -740,7 +740,7 @@ function QuickCreate({ label, icon, onSave }: { label: string, icon: any, onSave
     )
 }
 
-// ‘ˆ«‘ˆ«‘ˆ« BannerConfigPanel ‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«
+// \ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd BannerConfigPanel \ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd
 function BannerConfigPanel({ bannerKey, label, icon, accentColor, data, allProducts, onChange }: { 
     bannerKey: string, 
     label: string, 
@@ -824,7 +824,7 @@ function BannerConfigPanel({ bannerKey, label, icon, accentColor, data, allProdu
                     </div>
                     <div>
                         <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-white italic">{label}</h4>
-                        <p className="text-[8px] font-bold text-slate-500 uppercase tracking-widest mt-1 italic">Gesti¥+¢n Hero Unit</p>
+                        <p className="text-[8px] font-bold text-slate-500 uppercase tracking-widest mt-1 italic">Gesti\ufffd+\ufffdn Hero Unit</p>
                     </div>
                 </div>
                 <Toggle
@@ -877,7 +877,7 @@ function BannerConfigPanel({ bannerKey, label, icon, accentColor, data, allProdu
                             type="text"
                             value={data.imageUrl || ''}
                             onChange={(e) => onChange({ ...data, imageUrl: e.target.value })}
-                            placeholder="VINCULAR DIRECCI+ÙN REMOTA (URL)..."
+                            placeholder="VINCULAR DIRECCI+\ufffdN REMOTA (URL)..."
                             className="w-full bg-slate-950 border border-white/5 px-6 py-4 text-[9px] font-mono text-slate-400 outline-none focus:border-secondary transition-all rounded-none italic"
                         />
                     </div>
@@ -902,7 +902,7 @@ function BannerConfigPanel({ bannerKey, label, icon, accentColor, data, allProdu
                         rows={2}
                         value={data.description || ''}
                         onChange={(e) => onChange({ ...data, description: e.target.value })}
-                        placeholder="BREVE DESCRIPCI+ÙN DE LA SECCI+ÙN..."
+                        placeholder="BREVE DESCRIPCI+\ufffdN DE LA SECCI+\ufffdN..."
                         className="w-full bg-slate-950 border border-white/5 px-8 py-5 text-[10px] font-bold text-slate-400 outline-none resize-none focus:border-secondary transition-all rounded-none leading-relaxed placeholder:text-slate-800 italic"
                     />
                 </div>
@@ -914,7 +914,7 @@ function BannerConfigPanel({ bannerKey, label, icon, accentColor, data, allProdu
                             Ecosistema de Productos
                         </label>
                         <span className="text-[9px] font-black bg-secondary/10 text-secondary border border-secondary/20 px-3 py-1 rounded-none italic">
-                            {selectedProductIds.length} N+‹CLEOS
+                            {selectedProductIds.length} N+\ufffdCLEOS
                         </span>
                     </div>
                     <button
@@ -922,7 +922,7 @@ function BannerConfigPanel({ bannerKey, label, icon, accentColor, data, allProdu
                         className="w-full border-2 border-dashed border-white/5 py-6 rounded-none text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 hover:text-white hover:bg-white/5 transition-all flex items-center justify-center gap-4 group/picker"
                     >
                         <Box size={16} className="group-hover/picker:text-secondary transition-colors" /> 
-                        <span>{showProductPicker ? 'ACEPTAR SELECCI+ÙN' : 'DESPLEGAR SELECTOR'}</span>
+                        <span>{showProductPicker ? 'ACEPTAR SELECCI+\ufffdN' : 'DESPLEGAR SELECTOR'}</span>
                     </button>
 
                     {showProductPicker && (
@@ -931,7 +931,7 @@ function BannerConfigPanel({ bannerKey, label, icon, accentColor, data, allProdu
                                 <Search size={14} className="absolute left-8 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within/search:text-primary transition-colors" />
                                 <input
                                     type="text"
-                                    placeholder="ESCANEAR CAT+¸LOGO..."
+                                    placeholder="ESCANEAR CAT+\ufffdLOGO..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                     className="w-full bg-slate-950 border border-white/5 pl-12 pr-4 py-4 text-[10px] font-black uppercase tracking-widest text-white outline-none rounded-none focus:border-primary transition-all"
@@ -995,7 +995,7 @@ function BannerConfigPanel({ bannerKey, label, icon, accentColor, data, allProdu
         </div>
     )
 }
-// ‘ˆ«‘ˆ«‘ˆ« End BannerConfigPanel ‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«‘ˆ«
+// \ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd End BannerConfigPanel \ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd
 
 function StatCard({ label, value, icon }: { label: string, value: any, icon: any }) {
     return (
@@ -1069,9 +1069,9 @@ function ProductForm({ initialData, metadata, onCancel, onSaved }: { initialData
                     </div>
                     <div>
                         <h2 className="text-xl font-black uppercase tracking-tighter text-white italic">
-                            {formData.id ? 'Refactorizaci+¶n de Activo' : 'Creaci+¶n de Nueva Entidad'}
+                            {formData.id ? 'Refactorizaci+\ufffdn de Activo' : 'Creaci+\ufffdn de Nueva Entidad'}
                         </h2>
-                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.3em] mt-1">Configuraci+¶n t+Æcnica de especificaciones comerciales</p>
+                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.3em] mt-1">Configuraci+\ufffdn t+\ufffdcnica de especificaciones comerciales</p>
                     </div>
                 </div>
                 <div className="flex gap-4">
@@ -1091,11 +1091,11 @@ function ProductForm({ initialData, metadata, onCancel, onSaved }: { initialData
                         <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/5 blur-3xl -mr-16 -mt-16 rounded-none"></div>
                         <div className="flex items-center space-x-4 border-b border-white/5 pb-8">
                             <LayoutGrid size={20} className="text-secondary" />
-                            <h2 className="text-[11px] font-black uppercase tracking-[0.4em] text-white italic">Manifiesto T+Æcnico Principal</h2>
+                            <h2 className="text-[11px] font-black uppercase tracking-[0.4em] text-white italic">Manifiesto T+\ufffdcnico Principal</h2>
                         </div>
 
                         <div className="space-y-4">
-                            <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Denominaci+¶n del Activo</label>
+                            <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Denominaci+\ufffdn del Activo</label>
                             <input
                                 type="text"
                                 value={formData.name}
@@ -1157,7 +1157,7 @@ function ProductForm({ initialData, metadata, onCancel, onSaved }: { initialData
                         <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-3xl -mr-16 -mt-16 rounded-none"></div>
                         <div className="flex items-center space-x-4 border-b border-white/5 pb-8">
                             <FileText size={20} className="text-primary" />
-                            <h2 className="text-[11px] font-black uppercase tracking-[0.4em] text-white italic">Gesti¥+¢n de Ficha T+Æcnica</h2>
+                            <h2 className="text-[11px] font-black uppercase tracking-[0.4em] text-white italic">Gesti\ufffd+\ufffdn de Ficha T+\ufffdcnica</h2>
                         </div>
 
                         <div className="space-y-6">
@@ -1167,7 +1167,7 @@ function ProductForm({ initialData, metadata, onCancel, onSaved }: { initialData
                                         <input
                                             type="text"
                                             value={spec.label}
-                                            placeholder="Elemento T+ÎCNICO (Ej: POTENCIA)"
+                                            placeholder="Elemento T+\ufffdCNICO (Ej: POTENCIA)"
                                             className="bg-transparent border-none px-4 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-primary outline-none placeholder:text-slate-700"
                                             onChange={(e) => {
                                                 const newSpecs = [...techSpecs]
@@ -1196,7 +1196,7 @@ function ProductForm({ initialData, metadata, onCancel, onSaved }: { initialData
                                 onClick={addSpec}
                                 className="w-full border-2 border-dashed border-white/5 py-8 rounded-none-[2rem] text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 hover:text-primary hover:border-primary/20 transition-all flex items-center justify-center space-x-4 bg-white/2 hover:bg-primary/5"
                             >
-                                <PlusCircle size={20} /> <span>A+¶adir Especificaci+¶n de Segmento</span>
+                                <PlusCircle size={20} /> <span>A+\ufffdadir Especificaci+\ufffdn de Segmento</span>
                             </button>
                         </div>
                     </section>
@@ -1208,7 +1208,7 @@ function ProductForm({ initialData, metadata, onCancel, onSaved }: { initialData
                         <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/5 blur-3xl -mr-16 -mt-16 rounded-none"></div>
                         <div className="flex items-center space-x-4 border-b border-white/5 pb-8">
                             <ImageIcon size={20} className="text-secondary" />
-                            <h2 className="text-[11px] font-black uppercase tracking-[0.4em] text-white italic">Galer+°a de Despliegue</h2>
+                            <h2 className="text-[11px] font-black uppercase tracking-[0.4em] text-white italic">Galer+\ufffda de Despliegue</h2>
                         </div>
 
                         <div className="border-4 border-dashed border-white/5 p-16 text-center space-y-6 hover:border-secondary/20 transition-all cursor-pointer group bg-slate-900/30 rounded-none-[3rem]">
@@ -1223,9 +1223,9 @@ function ProductForm({ initialData, metadata, onCancel, onSaved }: { initialData
 
                         <div className="space-y-6 pt-6">
                             <div className="space-y-4">
-                                <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Ficha T+Æcnica PDF</label>
+                                <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Ficha T+\ufffdcnica PDF</label>
                                 <button className="w-full flex items-center justify-between bg-slate-900 border border-white/5 text-white px-8 py-6 rounded-none text-[10px] font-black uppercase tracking-[0.3em] hover:bg-secondary hover:border-secondary transition-all shadow-2xl active:scale-95 group">
-                                    <span className="group-hover:text-white">Anclaje de Documentaci+¶n</span>
+                                    <span className="group-hover:text-white">Anclaje de Documentaci+\ufffdn</span>
                                     <FileText size={18} className="text-secondary group-hover:text-white" />
                                 </button>
                             </div>
@@ -1240,14 +1240,14 @@ function ProductForm({ initialData, metadata, onCancel, onSaved }: { initialData
                         </div>
 
                         <div className="space-y-4">
-                            <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Categor+°a Maestra</label>
+                            <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Categor+\ufffda Maestra</label>
                             <div className="relative">
                                 <select
                                     value={formData.categoryId}
                                     onChange={(e) => setFormData({ ...formData, categoryId: e.target.value })}
                                     className="w-full bg-slate-900 border border-white/5 px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-white outline-none appearance-none cursor-pointer rounded-none focus:border-primary transition-all pr-12"
                                 >
-                                    <option value="">SIN CATEGOR+ÏA DEFINIDA</option>
+                                    <option value="">SIN CATEGOR+\ufffdA DEFINIDA</option>
                                     {metadata.categories.map((c: any) => (
                                         <option key={c.id} value={c.id}>{c.name.toUpperCase()}</option>
                                     ))}
@@ -1257,14 +1257,14 @@ function ProductForm({ initialData, metadata, onCancel, onSaved }: { initialData
                         </div>
 
                         <div className="space-y-4">
-                            <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Colecci+¶n Estrat+Ægica</label>
+                            <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Colecci+\ufffdn Estrat+\ufffdgica</label>
                             <div className="relative">
                                 <select
                                     value={formData.collectionId}
                                     onChange={(e) => setFormData({ ...formData, collectionId: e.target.value })}
                                     className="w-full bg-slate-900 border border-white/5 px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-white outline-none appearance-none cursor-pointer rounded-none focus:border-primary transition-all pr-12"
                                 >
-                                    <option value="">SIN COLECCI+ÙN ASIGNADA</option>
+                                    <option value="">SIN COLECCI+\ufffdN ASIGNADA</option>
                                     {metadata.collections.map((c: any) => (
                                         <option key={c.id} value={c.id}>{c.name.toUpperCase()}</option>
                                     ))}
@@ -1279,7 +1279,7 @@ function ProductForm({ initialData, metadata, onCancel, onSaved }: { initialData
                                 type="text"
                                 value={formData.keywords}
                                 onChange={(e) => setFormData({ ...formData, keywords: e.target.value })}
-                                placeholder="EJ: INDUSTRIA, AUTOMATIZACI+ÙN, PRO..."
+                                placeholder="EJ: INDUSTRIA, AUTOMATIZACI+\ufffdN, PRO..."
                                 className="w-full bg-slate-900 border border-white/5 px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-300 outline-none rounded-none focus:border-primary transition-all placeholder:text-slate-800"
                             />
                         </div>
@@ -1351,8 +1351,8 @@ function BulkEditModal({ selectedCount, categories, collections, onClose, onSave
                 
                 <div className="flex justify-between items-start border-b border-white/5 pb-10">
                     <div>
-                        <h2 className="text-2xl font-black text-white uppercase tracking-tighter italic">Gesti¥+¢n de Edici+¶n Masiva</h2>
-                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.4em] mt-2 italic leading-relaxed">Afectando a <span className="text-secondary">{selectedCount}</span> n+¶cleos de activos comerciales en paralelo.</p>
+                        <h2 className="text-2xl font-black text-white uppercase tracking-tighter italic">Gesti\ufffd+\ufffdn de Edici+\ufffdn Masiva</h2>
+                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.4em] mt-2 italic leading-relaxed">Afectando a <span className="text-secondary">{selectedCount}</span> n+\ufffdcleos de activos comerciales en paralelo.</p>
                     </div>
                     <button onClick={onClose} className="w-12 h-12 bg-white/5 hover:bg-white/10 flex items-center justify-center rounded-none border border-white/5 transition-all active:scale-90 duration-300">
                         <X size={20} className="text-slate-400" />
@@ -1361,7 +1361,7 @@ function BulkEditModal({ selectedCount, categories, collections, onClose, onSave
 
                 <div className="space-y-10">
                     <div className="space-y-4">
-                        <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Denominaci+¶n Unificada</label>
+                        <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Denominaci+\ufffdn Unificada</label>
                         <input 
                             type="text"
                             placeholder="MANTENER IDENTIFICADORES ORIGINALES..."
@@ -1393,7 +1393,7 @@ function BulkEditModal({ selectedCount, categories, collections, onClose, onSave
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                         <div className="space-y-4">
-                            <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Reasignar Categor+°a</label>
+                            <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Reasignar Categor+\ufffda</label>
                             <select 
                                 className="w-full bg-slate-950 border border-white/5 px-8 py-6 text-[10px] font-black uppercase tracking-widest text-white outline-none focus:border-white/20 transition-all rounded-none appearance-none"
                                 onChange={(e) => setData({ ...data, categoryId: e.target.value || undefined })}
@@ -1405,7 +1405,7 @@ function BulkEditModal({ selectedCount, categories, collections, onClose, onSave
                             </select>
                         </div>
                         <div className="space-y-4">
-                            <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Flujo de Colecci+¶n</label>
+                            <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Flujo de Colecci+\ufffdn</label>
                             <select 
                                 className="w-full bg-slate-950 border border-white/5 px-8 py-6 text-[10px] font-black uppercase tracking-widest text-white outline-none focus:border-white/20 transition-all rounded-none appearance-none"
                                 onChange={(e) => setData({ ...data, collectionId: e.target.value || undefined })}
@@ -1421,7 +1421,7 @@ function BulkEditModal({ selectedCount, categories, collections, onClose, onSave
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                         <div className="glass-panel p-8 rounded-none-[2.5rem] border-white/10 flex flex-col justify-center gap-4 bg-slate-950/40">
-                            <span className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em]">Visibilidad Estrat+Ægica</span>
+                            <span className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em]">Visibilidad Estrat+\ufffdgica</span>
                             <div className="flex gap-4">
                                 <button 
                                     onClick={() => setData({ ...data, isActive: true })}
@@ -1463,13 +1463,13 @@ function BulkEditModal({ selectedCount, categories, collections, onClose, onSave
                         onClick={() => onSave(data)}
                         className="w-full bg-white text-black py-10 rounded-none-[2.5rem] font-black uppercase tracking-[0.5em] text-[11px] hover:bg-secondary hover:text-white transition-all shadow-2xl active:scale-95 duration-500"
                     >
-                        Ejecutar Transmutaci+¶n Masiva
+                        Ejecutar Transmutaci+\ufffdn Masiva
                     </button>
                     <button 
                         onClick={onClose}
                         className="w-full text-[9px] font-black uppercase text-slate-500 hover:text-white transition-all tracking-[0.4em] italic"
                     >
-                        Desestimar Operaci+¶n
+                        Desestimar Operaci+\ufffdn
                     </button>
                 </div>
             </div>
@@ -1552,8 +1552,8 @@ function TaxonomyModal({ type, initialData, allProducts, onClose, onSaved }: { t
                 {/* Header */}
                 <div className="bg-white/2 border-b border-white/5 p-10 flex justify-between items-center shrink-0">
                     <div>
-                        <h2 className="text-2xl font-black text-white uppercase tracking-tighter italic">Reconfiguraci+¶n de {type === 'category' ? 'Categor+°a' : 'Colecci+¶n'}</h2>
-                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.4em] mt-2 italic">Anclaje de activos a Elementos taxon+¶micos</p>
+                        <h2 className="text-2xl font-black text-white uppercase tracking-tighter italic">Reconfiguraci+\ufffdn de {type === 'category' ? 'Categor+\ufffda' : 'Colecci+\ufffdn'}</h2>
+                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.4em] mt-2 italic">Anclaje de activos a Elementos taxon+\ufffdmicos</p>
                     </div>
                     <button onClick={onClose} className="w-12 h-12 bg-white/5 hover:bg-white/10 flex items-center justify-center rounded-none border border-white/5 transition-all active:scale-90 duration-300">
                         <X size={20} className="text-slate-400" />
@@ -1565,7 +1565,7 @@ function TaxonomyModal({ type, initialData, allProducts, onClose, onSaved }: { t
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                         <div className="space-y-10">
                             <div className="space-y-4">
-                                <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Denominaci+¶n del Elemento</label>
+                                <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Denominaci+\ufffdn del Elemento</label>
                                 <input 
                                     type="text"
                                     value={data.name}
@@ -1599,7 +1599,7 @@ function TaxonomyModal({ type, initialData, allProducts, onClose, onSaved }: { t
 
                         <div className="space-y-10">
                             <div className="space-y-4">
-                                <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Descripci+¶n Conceptual</label>
+                                <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Descripci+\ufffdn Conceptual</label>
                                 <textarea 
                                     rows={3}
                                     value={data.description}
@@ -1610,7 +1610,7 @@ function TaxonomyModal({ type, initialData, allProducts, onClose, onSaved }: { t
 
                             <div className="flex items-center justify-between bg-white/2 p-6 rounded-none border border-white/5">
                                 <Toggle 
-                                    label="Estado P+¶blico" 
+                                    label="Estado P+\ufffdblico" 
                                     icon={<Globe size={18} className="text-primary" />} 
                                     checked={data.isVisible} 
                                     onChange={(v) => setData({ ...data, isVisible: v })} 
@@ -1624,10 +1624,10 @@ function TaxonomyModal({ type, initialData, allProducts, onClose, onSaved }: { t
                         <div className="flex items-center justify-between">
                             <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-white italic flex items-center gap-4">
                                 <Box size={20} className="text-secondary" /> 
-                                V+°nculo de Activos Relacionados
+                                V+\ufffdnculo de Activos Relacionados
                             </h3>
                             <span className="text-[9px] font-black bg-secondary/10 text-secondary border border-secondary/20 px-4 py-2 rounded-none uppercase tracking-widest italic">
-                                {selectedProducts.length} N+‹CLEOS SINCRONIZADOS
+                                {selectedProducts.length} N+\ufffdCLEOS SINCRONIZADOS
                             </span>
                         </div>
 
@@ -1635,7 +1635,7 @@ function TaxonomyModal({ type, initialData, allProducts, onClose, onSaved }: { t
                             <Search className="absolute left-8 top-1/2 -translate-y-1/2 text-slate-600 transition-colors group-focus-within/search:text-primary" size={20} />
                             <input 
                                 type="text"
-                                placeholder="ESCANEAR CAT+¸LOGO (NOMBRE / SKU / MODELO)..."
+                                placeholder="ESCANEAR CAT+\ufffdLOGO (NOMBRE / SKU / MODELO)..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className="w-full bg-slate-950 border border-white/5 pl-20 pr-8 py-8 text-xs font-black uppercase tracking-[0.2em] text-white outline-none focus:border-primary transition-all rounded-none-[2rem] placeholder:text-slate-800"
@@ -1657,7 +1657,7 @@ function TaxonomyModal({ type, initialData, allProducts, onClose, onSaved }: { t
                                 onClick={() => setActiveSection('search')}
                                 className={`px-10 py-5 text-[10px] font-black uppercase tracking-[0.3em] transition-all relative ${activeSection === 'search' ? 'text-white' : 'text-slate-600 hover:text-slate-400'}`}
                             >
-                                {searchTerm ? 'Resultados' : 'Cat+Ìlogo Maestro'}
+                                {searchTerm ? 'Resultados' : 'Cat+\ufffdlogo Maestro'}
                                 {activeSection === 'search' && <div className="absolute bottom-0 left-10 right-10 h-1 bg-primary rounded-none shadow-[0_0_15px_rgba(45,212,191,0.5)]"></div>}
                             </button>
                         </div>
@@ -1696,7 +1696,7 @@ function TaxonomyModal({ type, initialData, allProducts, onClose, onSaved }: { t
                                     })}
                                     {searchTerm.length < 2 && searchTerm.length > 0 && (
                                         <div className="py-24 text-center opacity-20">
-                                            <p className="text-[10px] font-black uppercase tracking-[0.5em]">Escriba Gesti¥+¢n de b+¶squeda...</p>
+                                            <p className="text-[10px] font-black uppercase tracking-[0.5em]">Escriba Gesti\ufffd+\ufffdn de b+\ufffdsqueda...</p>
                                         </div>
                                     )}
                                     {searchTerm.length >= 2 && searchResults.length === 0 && !searching && (

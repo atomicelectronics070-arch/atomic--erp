@@ -3,36 +3,36 @@ import Link from "next/link"
 
 export default function BenefitsPage() {
     const benefits = [
-        { icon: <Shield size={24} />, title: "Seguridad Inteligente 24/7", desc: "Monitoreo constante con detección de anomalías mediante IA para una protección total." },
-        { icon: <Zap size={24} />, title: "Ahorro Energético", desc: "Optimización automática de luces y dispositivos para reducir drásticamente el costo de las planillas." },
-        { icon: <Smartphone size={24} />, title: "Control Total Móvil", desc: "Gestione toda su residencia desde cualquier parte del mundo con una interfaz intuitiva." },
-        { icon: <TrendingUp size={24} />, title: "Valorización Inmobiliaria", desc: "Aumente el valor de mercado de su propiedad integrando infraestructura de vanguardia." },
-        { icon: <Sun size={24} />, title: "Confort Adaptativo", desc: "Sistemas que aprenden sus preferencias de clima e iluminación para un hogar siempre perfecto." },
-        { icon: <Droplets size={24} />, title: "Prevención de Inundaciones", desc: "Sensores que detectan fugas de agua y cierran válvulas automáticamente para evitar daños." },
-        { icon: <Eye size={24} />, title: "Disuasión Activa", desc: "Cámaras que emiten alertas sonoras y visuales al detectar intrusos antes de que ingresen." },
-        { icon: <Mic size={24} />, title: "Integración JARVIS", desc: "Sincronización total con nuestro asistente de voz para comandos naturales y fluidos." },
+        { icon: <Shield size={24} />, title: "Seguridad Inteligente 24/7", desc: "Monitoreo constante con detecci\u00f3n de anomal\u00edas mediante IA para una protecci\u00f3n total." },
+        { icon: <Zap size={24} />, title: "Ahorro Energ\u00e9tico", desc: "Optimizaci\u00f3n autom\u00e1tica de luces y dispositivos para reducir dr\u00e1sticamente el costo de las planillas." },
+        { icon: <Smartphone size={24} />, title: "Control Total M\u00f3vil", desc: "Gestione toda su residencia desde cualquier parte del mundo con una interfaz intuitiva." },
+        { icon: <TrendingUp size={24} />, title: "Valorizaci\u00f3n Inmobiliaria", desc: "Aumente el valor de mercado de su propiedad integrando infraestructura de vanguardia." },
+        { icon: <Sun size={24} />, title: "Confort Adaptativo", desc: "Sistemas que aprenden sus preferencias de clima e iluminaci\u00f3n para un hogar siempre perfecto." },
+        { icon: <Droplets size={24} />, title: "Prevenci\u00f3n de Inundaciones", desc: "Sensores que detectan fugas de agua y cierran v\u00e1lvulas autom\u00e1ticamente para evitar da\u00f1os." },
+        { icon: <Eye size={24} />, title: "Disuasi\u00f3n Activa", desc: "C\u00e1maras que emiten alertas sonoras y visuales al detectar intrusos antes de que ingresen." },
+        { icon: <Mic size={24} />, title: "Integraci\u00f3n JARVIS", desc: "Sincronizaci\u00f3n total con nuestro asistente de voz para comandos naturales y fluidos." },
         { icon: <Film size={24} />, title: "Escenas Personalizadas", desc: "Configure ambientes con un solo toque: 'Modo Cine', 'Modo Cena' o 'Modo Salida'." },
-        { icon: <Heart size={24} />, title: "Cuidado de Familia", desc: "Siga de cerca el bienestar de adultos mayores y niños con alertas de actividad inusual." },
-        { icon: <Waves size={24} />, title: "Optimización de Agua", desc: "Gestión inteligente del consumo hídrico en interiores y exteriores." },
-        { icon: <Moon size={24} />, title: "Iluminación Circadiana", desc: "Luces que cambian de tonalidad según la hora del día para mejorar su ciclo de sueño." },
-        { icon: <Lock size={24} />, title: "Cerraduras Biométricas", desc: "Acceso seguro mediante huella o rostro, olvidando para siempre las llaves físicas." },
+        { icon: <Heart size={24} />, title: "Cuidado de Familia", desc: "Siga de cerca el bienestar de adultos mayores y ni\u00f1os con alertas de actividad inusual." },
+        { icon: <Waves size={24} />, title: "Optimizaci\u00f3n de Agua", desc: "Gesti\u00f3n inteligente del consumo h\u00eddrico en interiores y exteriores." },
+        { icon: <Moon size={24} />, title: "Iluminaci\u00f3n Circadiana", desc: "Luces que cambian de tonalidad seg\u00fan la hora del d\u00eda para mejorar su ciclo de sue\u00f1o." },
+        { icon: <Lock size={24} />, title: "Cerraduras Biom\u00e9tricas", desc: "Acceso seguro mediante huella o rostro, olvidando para siempre las llaves f\u00edsicas." },
         { icon: <Bell size={24} />, title: "Notificaciones Real-Time", desc: "Alertas inmediatas en su smartphone sobre cualquier evento relevante en su hogar." },
-        { icon: <Music size={24} />, title: "Audio Multi-room", desc: "Música ambiental sincronizada en todas las habitaciones con fidelidad audiófila." },
+        { icon: <Music size={24} />, title: "Audio Multi-room", desc: "M\u00fasica ambiental sincronizada en todas las habitaciones con fidelidad audi\u00f3fila." },
         { icon: <UserPlus size={24} />, title: "Accesos Remotos", desc: "Abra la puerta a visitas o personal de servicio desde su oficina con total seguridad." },
-        { icon: <Leaf size={24} />, title: "Sustentabilidad", desc: "Reduzca su huella de carbono mediante una gestión eficiente de recursos." },
-        { icon: <WindowIcon size={24} />, title: "Persianas Inteligentes", desc: "Apertura y cierre según la posición del sol para proteger muebles y ahorrar energía." },
-        { icon: <Search size={24} />, title: "Vigilancia con IA", desc: "Reconocimiento de personas, vehículos y mascotas para filtrar falsas alarmas." },
-        { icon: <Tool size={24} />, title: "Mantenimiento Preventivo", desc: "El sistema le avisa cuándo un equipo necesita revisión antes de que falle." },
-        { icon: <Shield size={24} />, title: "Seguros más Económicos", desc: "Las aseguradoras ofrecen mejores primas para hogares con sistemas de seguridad activa." },
-        { icon: <Layout size={24} />, title: "Interfaz Unificada", desc: "Diga adiós a tener 20 aplicaciones; controle todo desde un solo ecosistema Atomic." },
-        { icon: <Key size={24} />, title: "Privacidad Encriptada", desc: "Sus datos y videos viajan con encriptación de grado militar para su total tranquilidad." },
-        { icon: <Waves size={24} />, title: "Riego Inteligente", desc: "Riegue su jardín solo cuando es necesario, basándose en el pronóstico del clima." },
-        { icon: <Thermometer size={24} />, title: "Calidad de Aire", desc: "Monitoreo de CO2 y partículas para activar purificadores y ventilación." },
-        { icon: <Battery size={24} />, title: "Respaldo Energético", desc: "Integración con sistemas solares y UPS para mantener la casa viva durante apagones." },
-        { icon: <Monitor size={24} />, title: "Entretenimiento Next-Gen", desc: "Cine en casa con automatización de proyector, sonido y cortinas en segundos." },
-        { icon: <Puzzle size={24} />, title: "Escalabilidad Modular", desc: "Empiece con lo básico y añada funciones según sus necesidades y presupuesto." },
-        { icon: <HelpCircle size={24} />, title: "Soporte Remoto", desc: "Nuestro equipo técnico puede diagnosticar y optimizar su sistema a distancia." },
-        { icon: <Smile size={24} />, title: "Paz Mental", desc: "La tranquilidad de saber que su hogar y su familia están protegidos por tecnología élite." }
+        { icon: <Leaf size={24} />, title: "Sustentabilidad", desc: "Reduzca su huella de carbono mediante una gesti\u00f3n eficiente de recursos." },
+        { icon: <WindowIcon size={24} />, title: "Persianas Inteligentes", desc: "Apertura y cierre seg\u00fan la posici\u00f3n del sol para proteger muebles y ahorrar energ\u00eda." },
+        { icon: <Search size={24} />, title: "Vigilancia con IA", desc: "Reconocimiento de personas, veh\u00edculos y mascotas para filtrar falsas alarmas." },
+        { icon: <Tool size={24} />, title: "Mantenimiento Preventivo", desc: "El sistema le avisa cu\u00e1ndo un equipo necesita revisi\u00f3n antes de que falle." },
+        { icon: <Shield size={24} />, title: "Seguros m\u00e1s Econ\u00f3micos", desc: "Las aseguradoras ofrecen mejores primas para hogares con sistemas de seguridad activa." },
+        { icon: <Layout size={24} />, title: "Interfaz Unificada", desc: "Diga adi\u00f3s a tener 20 aplicaciones; controle todo desde un solo ecosistema Atomic." },
+        { icon: <Key size={24} />, title: "Privacidad Encriptada", desc: "Sus datos y videos viajan con encriptaci\u00f3n de grado militar para su total tranquilidad." },
+        { icon: <Waves size={24} />, title: "Riego Inteligente", desc: "Riegue su jard\u00edn solo cuando es necesario, bas\u00e1ndose en el pron\u00f3stico del clima." },
+        { icon: <Thermometer size={24} />, title: "Calidad de Aire", desc: "Monitoreo de CO2 y part\u00edculas para activar purificadores y ventilaci\u00f3n." },
+        { icon: <Battery size={24} />, title: "Respaldo Energ\u00e9tico", desc: "Integraci\u00f3n con sistemas solares y UPS para mantener la casa viva durante apagones." },
+        { icon: <Monitor size={24} />, title: "Entretenimiento Next-Gen", desc: "Cine en casa con automatizaci\u00f3n de proyector, sonido y cortinas en segundos." },
+        { icon: <Puzzle size={24} />, title: "Escalabilidad Modular", desc: "Empiece con lo b\u00e1sico y a\u00f1ada funciones seg\u00fan sus necesidades y presupuesto." },
+        { icon: <HelpCircle size={24} />, title: "Soporte Remoto", desc: "Nuestro equipo t\u00e9cnico puede diagnosticar y optimizar su sistema a distancia." },
+        { icon: <Smile size={24} />, title: "Paz Mental", desc: "La tranquilidad de saber que su hogar y su familia est\u00e1n protegidos por tecnolog\u00eda \u00e9lite." }
     ]
 
     return (
@@ -73,13 +73,13 @@ export default function BenefitsPage() {
                     <div className="flex flex-col lg:flex-row gap-32 items-center">
                         <div className="lg:w-1/2 space-y-16">
                             <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter leading-none italic text-[#1E3A8A]">
-                                ¿CÓMO <span className="text-blue-600">AHORRAR</span> <br/> CON TU SISTEMA?
+                                \u00bfC\u00d3MO <span className="text-blue-600">AHORRAR</span> <br/> CON TU SISTEMA?
                             </h2>
                             <div className="space-y-12">
                                 {[
-                                    { id: "01", title: "Detección de Presencia", desc: "El sistema apaga automáticamente luces y clima en zonas desocupadas." },
-                                    { id: "02", title: "Gestión de Horarios Pico", desc: "Programación inteligente de alto consumo en tarifas eléctricas reducidas." },
-                                    { id: "03", title: "Uso de Dimmers y LED", desc: "Reducción imperceptible del brillo para ahorrar hasta un 20% mensual." }
+                                    { id: "01", title: "Detecci\u00f3n de Presencia", desc: "El sistema apaga autom\u00e1ticamente luces y clima en zonas desocupadas." },
+                                    { id: "02", title: "Gesti\u00f3n de Horarios Pico", desc: "Programaci\u00f3n inteligente de alto consumo en tarifas el\u00e9ctricas reducidas." },
+                                    { id: "03", title: "Uso de Dimmers y LED", desc: "Reducci\u00f3n imperceptible del brillo para ahorrar hasta un 20% mensual." }
                                 ].map((item, i) => (
                                     <div key={i} className="flex gap-8 group">
                                         <div className="text-4xl font-black text-slate-200 group-hover:text-blue-600 transition-colors italic leading-none">{item.id}</div>
@@ -97,9 +97,9 @@ export default function BenefitsPage() {
                             <ul className="space-y-8 text-[9px] font-bold uppercase tracking-[0.3em]">
                                 <li className="flex items-center gap-6 text-slate-400 hover:text-slate-900 transition-colors"><CheckCircle2 size={12} className="text-blue-600" /> Actualizaciones de Firmware Mensuales</li>
                                 <li className="flex items-center gap-6 text-slate-400 hover:text-slate-900 transition-colors"><CheckCircle2 size={12} className="text-blue-600" /> Limpieza de Sensores y Lentes Opticos</li>
-                                <li className="flex items-center gap-6 text-slate-400 hover:text-slate-900 transition-colors"><CheckCircle2 size={12} className="text-blue-600" /> Auditoría de Seguridad Digital</li>
+                                <li className="flex items-center gap-6 text-slate-400 hover:text-slate-900 transition-colors"><CheckCircle2 size={12} className="text-blue-600" /> Auditor\u00eda de Seguridad Digital</li>
                             </ul>
-                            <button className="w-full py-5 bg-[#1E3A8A] text-white hover:bg-blue-700 transition-all text-[9px] font-black uppercase tracking-[0.4em] italic shadow-lg">Agendar Revisión Técnica</button>
+                            <button className="w-full py-5 bg-[#1E3A8A] text-white hover:bg-blue-700 transition-all text-[9px] font-black uppercase tracking-[0.4em] italic shadow-lg">Agendar Revisi\u00f3n T\u00e9cnica</button>
                         </div>
                     </div>
                 </div>
@@ -109,10 +109,10 @@ export default function BenefitsPage() {
             <section className="py-40 text-center relative overflow-hidden bg-white">
                 <div className="absolute inset-0 bg-blue-500/[0.02] blur-[120px]" />
                 <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic mb-12 relative z-10 text-[#1E3A8A]">
-                    ¿LISTO PARA <span className="text-blue-600">TRANSFORMAR</span> <br/> TU HOGAR?
+                    \u00bfLISTO PARA <span className="text-blue-600">TRANSFORMAR</span> <br/> TU HOGAR?
                 </h2>
                 <Link href="/web/contact" className="inline-flex items-center gap-4 px-16 py-6 bg-blue-600 text-white font-black uppercase tracking-[0.4em] text-[12px] italic hover:scale-105 transition-all relative z-10 shadow-2xl">
-                    Solicitar Consultoría <ArrowRight size={16} />
+                    Solicitar Consultor\u00eda <ArrowRight size={16} />
                 </Link>
             </section>
         </div>
