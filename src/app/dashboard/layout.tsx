@@ -3,7 +3,7 @@
 import { useSession } from "next-auth/react"
 import { useRouter, usePathname } from "next/navigation"
 import Link from "next/link"
-import { Home, Users, FileText, Settings, LogOut, CheckSquare, Sun, Moon, LayoutDashboard, Tag, Database, MessageSquare, ExternalLink, ShoppingBag, Menu, X, Calendar, Edit3, Mail, BrainCircuit, Bot, Globe, BarChart3, GraduationCap, Code2, User, Smartphone, Share2 } from "lucide-react"
+import { Home, Users, FileText, Settings, LogOut, CheckSquare, Sun, Moon, LayoutDashboard, Tag, Database, MessageSquare, ExternalLink, ShoppingBag, Menu, X, Calendar, Edit3, Mail, BrainCircuit, Bot, Globe, BarChart3, GraduationCap, Code2, User, Smartphone, Share2, Map, Layers, DollarSign } from "lucide-react"
 import { useState, useEffect } from "react"
 import { ChevronDown, ChevronRight } from "lucide-react"
 import NotificationBell from "@/components/NotificationBell"
@@ -193,6 +193,15 @@ export default function DashboardLayout({
                         >
                             <NavLink href="/dashboard/coach" icon={<BrainCircuit size={14} />} label="AI Coach" isSubItem />
                             <NavLink href="/dashboard/academy" icon={<GraduationCap size={14} />} label="Cursos" isSubItem />
+                            <NavLink href="/dashboard/bot-ruta" icon={<Bot size={14} />} label="Bot Ruta" isSubItem />
+                        </CollapsibleSection>
+
+                        <CollapsibleSection
+                            label="Publicidad"
+                            isOpen={openSections.publicidad ?? false}
+                            onToggle={() => toggleSection('publicidad')}
+                        >
+                            <NavLink href="/dashboard/landing-pages" icon={<Map size={14} />} label="Landing Pages" isSubItem />
                         </CollapsibleSection>
                     </div>
                 </nav>
