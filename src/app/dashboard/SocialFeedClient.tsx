@@ -5,14 +5,13 @@ import {
     ImageIcon, Video, Send, Heart, MessageSquare, 
     MoreHorizontal, Share2, Globe, X, Trophy, Trash2,
     TrendingUp, Award, Zap, Star, Activity, Medal,
-    GraduationCap as School, Phone
+    GraduationCap as School, Phone, Plus, Users
 } from "lucide-react"
 import PhoneRankingPanel from "@/components/dashboard/PhoneRankingPanel"
 import PublicationRankingPanel from "@/components/dashboard/PublicationRankingPanel"
 import SalesRankingPanel from "@/components/dashboard/SalesRankingPanel"
 import { createPost, toggleLike, addComment, fetchFeed, getSalesRanking, deletePost } from "@/lib/actions/social"
 import { motion, AnimatePresence } from "framer-motion"
-import Image from "next/image"
 import Link from "next/link"
 
 interface SocialFeedClientProps {
@@ -20,8 +19,6 @@ interface SocialFeedClientProps {
     initialRanking: any[]
     session: any
 }
-
-import { CyberCard, NeonButton, CyberInput, GlassPanel } from "@/components/ui/CyberUI"
 
 export default function SocialFeedClient({ initialPosts, initialRanking, session }: SocialFeedClientProps) {
     const [posts, setPosts] = useState<any[]>(initialPosts)
@@ -31,14 +28,13 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
     const [mediaFile, setMediaFile] = useState<string | null>(null)
     const [mediaType, setMediaType] = useState<"image" | "video" | null>(null)
     const fileInputRef = useRef<HTMLInputElement>(null)
-    const videoInputRef = useRef<HTMLInputElement>(null)
-    const [commentTexts, setCommentTexts] = useState<Record<string, string>>({})
+    
     const [activeCommentPost, setActiveCommentPost] = useState<string | null>(null)
     const [isSubmitting, setIsSubmitting] = useState(false)
-    const [openMenuId, setOpenMenuId] = useState<string | null>(null)
     const [rankingFilter, setRankingFilter] = useState<'points' | 'value' | 'count' | 'name' | 'quotes'>('quotes')
     const [isQuickSaleOpen, setIsQuickSaleOpen] = useState(false)
     const [quickSaleData, setQuickSaleData] = useState({ amount: 0, salespersonId: "", client: "VENTA RÁPIDA RANKING" })
+    
     const isAdmin = session?.user?.role === "ADMIN" || session?.user?.role === "MANAGEMENT"
 
     const handleQuickSale = async () => {
@@ -63,14 +59,6 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
         } finally {
             setIsSubmitting(false)
         }
-    }
-
-    const calculatePoints = (value: number) => {
-        if (value > 1000) return 15;
-        if (value >= 300) return 10;
-        if (value >= 100) return 8;
-        if (value > 0) return 3;
-        return 0;
     }
 
     const refreshData = async () => {
@@ -100,7 +88,7 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
     }
 
     const handleDelete = async (postId: string) => {
-        if (confirm("¿Seguro que quieres eliminar esta transmisión?")) {
+        if (confirm("¿Estás seguro de que quieres eliminar esta publicación?")) {
             await deletePost(postId, session.user.id)
             refreshData()
         }
@@ -123,122 +111,172 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
     }
 
     return (
-        <div className="w-full space-y-16 pb-32 relative z-10">
-            <div className="fixed inset-0 pointer-events-none z-0">
-                <div className="absolute top-[20%] left-[-10%] w-[30%] h-[30%] bg-[#1E3A8A]/5 blur-[80px]" />
-                <div className="absolute bottom-[20%] right-[-10%] w-[25%] h-[25%] bg-[#00F0FF]/5 blur-[80px]" />
+        <div className="w-full min-h-screen bg-[#F8FAFC] pb-32">
+            
+            {/* SaaS Header */}
+            <div className="bg-white border-b border-slate-200 px-8 py-6 mb-8 flex flex-col md:flex-row justify-between items-center gap-6 shadow-sm sticky top-0 z-40">
+                <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg">
+                        <Globe size={24} />
+                    </div>
+                    <div>
+                        <h1 className="text-2xl font-black text-[#0F172A] tracking-tight">Social & Ranking</h1>
+                        <p className="text-sm text-slate-500 font-medium flex items-center gap-2">
+                            <span className="text-indigo-600 font-bold">Feed Corporativo</span> • Interacción Global
+                        </p>
+                    </div>
+                </div>
             </div>
 
-            <div className="flex flex-col lg:flex-row gap-16 items-start relative z-10">
-                <div className="flex-1 space-y-16 w-full">
-                    <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col md:flex-row justify-between items-center gap-6 border-b border-slate-200 pb-8">
-                        <div className="space-y-2">
-                            <div className="flex items-center space-x-3 text-[#1E3A8A]">
-                                <Globe size={16} />
-                                <span className="text-[9px] uppercase font-black tracking-[0.4em] italic opacity-60">RED SOCIAL CORPORATIVA // ALPHA NODO</span>
-                            </div>
-                            <h1 className="text-4xl font-black tracking-tighter text-navy uppercase italic leading-none">Atomic <span className="text-[#1E3A8A]">Feed</span></h1>
-                        </div>
-                    </motion.div>
+            <div className="max-w-7xl mx-auto px-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+                
+                {/* Left Column: Feed & Posts */}
+                <div className="lg:col-span-8 space-y-8">
+                    
+                    {/* Render Old Panels if they exist, wrapping them cleanly */}
+                    <div className="hidden">
+                        <SalesRankingPanel isAdmin={isAdmin} />
+                        <PhoneRankingPanel isAdmin={isAdmin} />
+                        <PublicationRankingPanel isAdmin={isAdmin} />
+                    </div>
 
-                    <SalesRankingPanel isAdmin={isAdmin} />
-                    <PhoneRankingPanel isAdmin={isAdmin} />
-                    <PublicationRankingPanel isAdmin={isAdmin} />
-
-                    <CyberCard className="!p-8 relative group bg-white/40">
+                    {/* Create Post Box */}
+                    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
                         <div className="flex gap-4 items-start">
-                            <div className="w-12 h-12 bg-[#1E3A8A]/5 border border-[#1E3A8A]/10 flex items-center justify-center font-black text-xl text-[#1E3A8A] italic shrink-0">
+                            <div className="w-10 h-10 rounded-full bg-indigo-100 border border-indigo-200 flex items-center justify-center font-black text-lg text-indigo-700 shrink-0">
                                 {session.user?.name?.[0] || "U"}
                             </div>
-                            <div className="flex-1 space-y-6">
+                            <div className="flex-1 space-y-4">
                                 <textarea 
                                     value={newPostContent}
                                     onChange={(e) => setNewPostContent(e.target.value)}
-                                    placeholder="COMPARTIR ACTUALIZACIÓN OPERATIVA..."
-                                    className="w-full bg-transparent border-none outline-none resize-none text-lg font-black text-navy placeholder:text-navy/5 uppercase tracking-tighter italic min-h-[60px]"
+                                    placeholder="¿Qué quieres compartir con el equipo hoy?"
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-lg p-4 outline-none resize-none text-sm font-medium text-[#0F172A] placeholder:text-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all min-h-[100px]"
                                 />
-                                <div className="flex items-center justify-between border-t border-slate-200 pt-6">
-                                    <div className="flex items-center gap-3">
-                                        <button onClick={() => fileInputRef.current?.click()} className="px-4 py-2 text-[8px] font-black uppercase tracking-widest text-navy/30 hover:text-navy bg-white/5 transition-all italic">IMAGEN</button>
+                                
+                                {mediaFile && (
+                                    <div className="relative inline-block border border-slate-200 rounded-lg overflow-hidden">
+                                        <img src={mediaFile} className="h-32 w-auto object-cover" />
+                                        <button onClick={() => setMediaFile(null)} className="absolute top-2 right-2 p-1 bg-white rounded-full shadow-md text-slate-500 hover:text-red-500">
+                                            <X size={14} />
+                                        </button>
+                                    </div>
+                                )}
+
+                                <div className="flex items-center justify-between pt-2">
+                                    <div className="flex items-center gap-2">
+                                        <button 
+                                            onClick={() => fileInputRef.current?.click()} 
+                                            className="flex items-center gap-2 px-3 py-2 text-xs font-bold text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all"
+                                        >
+                                            <ImageIcon size={16} /> Añadir Imagen
+                                        </button>
                                         <input type="file" accept="image/*" hidden ref={fileInputRef} onChange={(e) => handleFileChange(e, "image")} />
                                     </div>
-                                    <button onClick={handleCreatePost} disabled={(!newPostContent.trim() && !mediaFile) || isSubmitting} className="bg-[#1E3A8A] text-navy px-6 py-2 text-[9px] font-black uppercase tracking-widest italic hover:scale-105 transition-all">
-                                        {isSubmitting ? "SYNC..." : "PUBLICAR"}
+                                    <button 
+                                        onClick={handleCreatePost} 
+                                        disabled={(!newPostContent.trim() && !mediaFile) || isSubmitting} 
+                                        className="bg-indigo-600 text-white px-6 py-2.5 rounded-lg text-sm font-bold shadow-sm hover:bg-indigo-700 disabled:opacity-50 transition-all flex items-center gap-2"
+                                    >
+                                        {isSubmitting ? "Publicando..." : <><Send size={16} /> Publicar</>}
                                     </button>
                                 </div>
                             </div>
                         </div>
-                    </CyberCard>
+                    </div>
 
-                    <div className="space-y-12">
+                    {/* Feed Posts */}
+                    <div className="space-y-6">
                         <AnimatePresence mode="popLayout">
                             {posts.map((post, i) => (
-                                <motion.div layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} key={post.id}>
-                                    <CyberCard className="!p-8 relative group bg-white/20 border-slate-200">
-                                        <div className="flex items-center justify-between mb-6">
-                                            <div className="flex items-center gap-4">
-                                                <div className="w-10 h-10 bg-white/5 border border-slate-200 flex items-center justify-center font-black text-sm text-navy italic">
+                                <motion.div layout initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} key={post.id}>
+                                    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                                        <div className="flex items-center justify-between mb-4">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center font-black text-sm text-slate-600">
                                                     {post.author.name[0]}
                                                 </div>
                                                 <div>
-                                                    <p className="text-lg font-black text-navy uppercase tracking-tighter italic">{post.author.name}</p>
-                                                    <p className="text-[8px] font-black text-[#1E3A8A] uppercase tracking-[0.3em] italic">{post.author.role}</p>
+                                                    <p className="text-sm font-black text-[#0F172A]">{post.author.name}</p>
+                                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{post.author.role}</p>
                                                 </div>
                                             </div>
+                                            {(isAdmin || post.author.id === session.user?.id) && (
+                                                <button onClick={() => handleDelete(post.id)} className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all">
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            )}
                                         </div>
-                                        <p className="text-lg font-black text-navy/80 uppercase tracking-tighter italic leading-snug mb-6">{post.content}</p>
+                                        
+                                        <p className="text-sm text-slate-700 font-medium leading-relaxed mb-4 whitespace-pre-wrap">{post.content}</p>
+                                        
                                         {post.mediaUrl && (
-                                            <div className="mb-6 border border-slate-200 overflow-hidden rounded-sm">
-                                                <img src={post.mediaUrl} className="w-full max-h-[400px] object-contain bg-black/40" />
+                                            <div className="mb-4 border border-slate-200 overflow-hidden rounded-lg">
+                                                <img src={post.mediaUrl} className="w-full max-h-[500px] object-cover" />
                                             </div>
                                         )}
-                                        <div className="flex gap-8 border-t border-slate-200 pt-6">
-                                            <button onClick={() => handleLike(post.id)} className={`flex items-center gap-2 text-[8px] font-black uppercase tracking-widest italic ${post.likes.some((l: any) => l.userId === session.user?.id) ? 'text-[#1E3A8A]' : 'text-navy/20 hover:text-navy'}`}>
-                                                <Heart size={14} /> {post.likes.length}
+                                        
+                                        <div className="flex gap-4 border-t border-slate-100 pt-4 mt-2">
+                                            <button 
+                                                onClick={() => handleLike(post.id)} 
+                                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${post.likes.some((l: any) => l.userId === session.user?.id) ? 'text-rose-500 bg-rose-50' : 'text-slate-500 hover:bg-slate-50'}`}
+                                            >
+                                                <Heart size={16} className={post.likes.some((l: any) => l.userId === session.user?.id) ? "fill-rose-500" : ""} /> 
+                                                {post.likes.length} Me Gusta
                                             </button>
-                                            <button onClick={() => setActiveCommentPost(activeCommentPost === post.id ? null : post.id)} className="flex items-center gap-2 text-[8px] font-black uppercase tracking-widest text-navy/20 hover:text-navy transition-all italic">
-                                                <MessageSquare size={14} /> {post.comments?.length || 0}
+                                            <button 
+                                                onClick={() => setActiveCommentPost(activeCommentPost === post.id ? null : post.id)} 
+                                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-500 hover:bg-slate-50 transition-all"
+                                            >
+                                                <MessageSquare size={16} /> 
+                                                {post.comments?.length || 0} Comentarios
                                             </button>
                                         </div>
-                                    </CyberCard>
+                                    </div>
                                 </motion.div>
                             ))}
                         </AnimatePresence>
                     </div>
                 </div>
 
-                <div className="w-full lg:w-[450px] space-y-12 sticky top-32">
-                    <CyberCard className="!p-8 border-slate-200 bg-white/20">
-                        <div className="flex items-center justify-between mb-8">
-                            <div className="flex items-center gap-4">
-                                <Trophy className="text-[#1E3A8A]" size={24} />
+                {/* Right Column: Sidebar Panels */}
+                <div className="lg:col-span-4 space-y-6">
+                    
+                    {/* Ranking Panel */}
+                    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 sticky top-32">
+                        <div className="flex items-center justify-between mb-6">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center">
+                                    <Trophy size={20} />
+                                </div>
                                 <div>
-                                    <h3 className="text-xl font-black text-navy uppercase italic tracking-tighter">RANKING ASESORES</h3>
-                                    <p className="text-[8px] font-black text-navy/30 uppercase tracking-[0.4em] italic">TOP DESEMPEÑO GLOBAL</p>
+                                    <h3 className="text-sm font-black text-[#0F172A] tracking-tight">Ranking Asesores</h3>
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Top Desempeño</p>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-4">
-                                {isAdmin && (
-                                    <button 
-                                        onClick={() => setIsQuickSaleOpen(true)}
-                                        className="bg-[#1E3A8A] text-navy px-4 py-2 text-[8px] font-black uppercase tracking-widest italic hover:scale-105 transition-all shadow-[0_10px_20px_-5px_rgba(232,52,26,0.4)]"
-                                    >
-                                        + INGRESO
-                                    </button>
-                                )}
-                                <select 
-                                    value={rankingFilter}
-                                    onChange={(e: any) => setRankingFilter(e.target.value)}
-                                    className="bg-black/40 border border-white/10 text-[9px] font-black text-navy uppercase tracking-widest px-4 py-2 outline-none focus:border-[#1E3A8A] italic"
+                            {isAdmin && (
+                                <button 
+                                    onClick={() => setIsQuickSaleOpen(true)}
+                                    className="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-colors flex items-center gap-1"
                                 >
-                                    <option value="quotes">COTIZACIONES (#)</option>
-                                    <option value="points">PUNTOS (TOTAL)</option>
-                                    <option value="value">MONTO ($)</option>
-                                    <option value="count">VENTAS (#)</option>
-                                    <option value="name">ASESOR</option>
-                                </select>
-                            </div>
+                                    <Plus size={12} /> Ingreso
+                                </button>
+                            )}
                         </div>
+
+                        <div className="mb-6">
+                            <select 
+                                value={rankingFilter}
+                                onChange={(e: any) => setRankingFilter(e.target.value)}
+                                className="w-full bg-slate-50 border border-slate-200 text-xs font-bold text-[#0F172A] rounded-lg px-3 py-2 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                            >
+                                <option value="quotes">Cotizaciones Generadas</option>
+                                <option value="points">Puntos Acumulados</option>
+                                <option value="value">Volumen de Ventas ($)</option>
+                                <option value="count">Cantidad de Ventas</option>
+                            </select>
+                        </div>
+
                         <div className="space-y-3">
                             {[...ranking].sort((a, b) => {
                                 if (rankingFilter === 'quotes') return (b.quotesCount || 0) - (a.quotesCount || 0);
@@ -247,155 +285,151 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
                                 if (rankingFilter === 'count') return (b.salesCount || 0) - (a.salesCount || 0);
                                 return a.name.localeCompare(b.name);
                             }).map((user, index) => (
-                                <div key={user.id} className={`flex flex-col p-4 border ${index === 0 ? 'bg-[#1E3A8A]/5 border-[#1E3A8A]/20' : 'bg-white/[0.01] border-slate-200'} transition-all group gap-3`}>
-                                    <div className="flex items-center gap-4">
-                                        <div className={`w-6 h-6 flex items-center justify-center font-black text-[10px] italic ${index === 0 ? 'bg-[#1E3A8A] text-navy' : 'bg-white/5 text-navy/20'}`}>
+                                <div key={user.id} className={`flex flex-col p-3 rounded-xl border ${index === 0 ? 'bg-amber-50 border-amber-200' : 'bg-white border-slate-100'} transition-all`}>
+                                    <div className="flex items-center gap-3">
+                                        <div className={`w-6 h-6 rounded-full flex items-center justify-center font-black text-[10px] ${index === 0 ? 'bg-amber-500 text-white shadow-sm' : 'bg-slate-100 text-slate-500'}`}>
                                             {index + 1}
                                         </div>
                                         <div className="flex-1 flex items-center justify-between">
-                                            <p className="text-[10px] font-black text-navy uppercase italic tracking-tighter truncate group-hover:text-[#1E3A8A] transition-colors">{user.name}</p>
-                                            <div className="flex items-center gap-4">
-                                                <p className="text-[10px] font-black text-[#1E3A8A] italic">${user.totalProfit.toLocaleString()}</p>
-                                                <div className="px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 text-[8px] font-black text-emerald-500 italic">
-                                                    {user.points || 0} PTS
-                                                </div>
+                                            <p className="text-xs font-black text-[#0F172A] truncate">{user.name}</p>
+                                            <div className="flex items-center gap-3">
+                                                <p className="text-xs font-black text-emerald-600">${user.totalProfit.toLocaleString()}</p>
+                                                <span className="px-2 py-0.5 bg-indigo-50 border border-indigo-100 rounded text-[10px] font-black text-indigo-600">
+                                                    {user.points || 0} pts
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
                                     
-                                    {/* MICRO-STATS HORIZONTAL */}
-                                    <div className="grid grid-cols-3 gap-6 pl-10">
-                                        <div className="space-y-1">
-                                            <div className="flex justify-between items-center text-[7px] font-black text-navy/20 uppercase italic">
-                                                <span>COTIZACIONES</span>
-                                                <span className="text-blue-400">{user.quotesCount}</span>
+                                    {/* Progress Bars */}
+                                    <div className="grid grid-cols-3 gap-4 mt-3 pl-9">
+                                        <div className="space-y-1.5">
+                                            <div className="flex justify-between items-center text-[8px] font-bold text-slate-500 uppercase">
+                                                <span>Cotiz.</span>
+                                                <span className="text-blue-600">{user.quotesCount}</span>
                                             </div>
-                                            <div className="h-0.5 w-full bg-white/5 rounded-none overflow-hidden">
-                                                <div className="h-full bg-blue-500" style={{ width: `${Math.min((user.quotesCount / 50) * 100, 100)}%` }}></div>
-                                            </div>
-                                        </div>
-                                        <div className="space-y-1">
-                                            <div className="flex justify-between items-center text-[7px] font-black text-navy/20 uppercase italic">
-                                                <span>CRM CONTACTS</span>
-                                                <span className="text-violet-400">{user.contactsCount}</span>
-                                            </div>
-                                            <div className="h-0.5 w-full bg-white/5 rounded-none overflow-hidden">
-                                                <div className="h-full bg-violet-500" style={{ width: `${Math.min((user.contactsCount / 100) * 100, 100)}%` }}></div>
+                                            <div className="h-1 w-full bg-slate-100 rounded-full overflow-hidden">
+                                                <div className="h-full bg-blue-500 rounded-full" style={{ width: `${Math.min((user.quotesCount / 50) * 100, 100)}%` }}></div>
                                             </div>
                                         </div>
-                                        <div className="space-y-1">
-                                            <div className="flex justify-between items-center text-[7px] font-black text-navy/20 uppercase italic">
-                                                <span>VENTAS</span>
-                                                <span className="text-emerald-400">{user.salesCount}</span>
+                                        <div className="space-y-1.5">
+                                            <div className="flex justify-between items-center text-[8px] font-bold text-slate-500 uppercase">
+                                                <span>Leads</span>
+                                                <span className="text-violet-600">{user.contactsCount}</span>
                                             </div>
-                                            <div className="h-0.5 w-full bg-white/5 rounded-none overflow-hidden">
-                                                <div className="h-full bg-emerald-500" style={{ width: `${Math.min((user.salesCount / 20) * 100, 100)}%` }}></div>
+                                            <div className="h-1 w-full bg-slate-100 rounded-full overflow-hidden">
+                                                <div className="h-full bg-violet-500 rounded-full" style={{ width: `${Math.min((user.contactsCount / 100) * 100, 100)}%` }}></div>
+                                            </div>
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <div className="flex justify-between items-center text-[8px] font-bold text-slate-500 uppercase">
+                                                <span>Ventas</span>
+                                                <span className="text-emerald-600">{user.salesCount}</span>
+                                            </div>
+                                            <div className="h-1 w-full bg-slate-100 rounded-full overflow-hidden">
+                                                <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${Math.min((user.salesCount / 20) * 100, 100)}%` }}></div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             ))}
                         </div>
-                    </CyberCard>
+                    </div>
 
-                    <CyberCard className="!p-8 border-slate-200 bg-[#1E3A8A]/5 shadow-[0_0_50px_rgba(232,52,26,0.1)]">
-                        <div className="flex items-center gap-4 mb-8 text-[#1E3A8A]">
-                            <div className="p-3 bg-[#1E3A8A]/10 border border-[#1E3A8A]/20">
-                                <Zap size={18} />
+                    {/* Point System Guide */}
+                    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
+                                <Activity size={16} />
                             </div>
                             <div>
-                                <h3 className="text-sm font-black uppercase italic tracking-tighter text-navy">SISTEMA DE PUNTOS ATÓMICOS</h3>
-                                <p className="text-[7px] font-black uppercase tracking-[0.4em] opacity-40 italic">PROTOCOLO DE RECOMPENSA</p>
+                                <h3 className="text-sm font-black text-[#0F172A] tracking-tight">Sistema de Puntos</h3>
+                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Métricas de Desempeño</p>
                             </div>
                         </div>
-                        <div className="space-y-4 border-l border-[#1E3A8A]/30 pl-6">
-                            <div className="flex justify-between items-center group">
-                                <span className="text-[10px] font-black text-navy/40 group-hover:text-navy transition-colors uppercase italic tracking-wider">VENTA $0 - $100</span>
-                                <span className="text-[#1E3A8A] font-black italic">3 PTS</span>
+                        <div className="space-y-3">
+                            <div className="flex justify-between items-center text-xs font-medium text-slate-600 p-2 hover:bg-slate-50 rounded-lg transition-colors">
+                                <span>Venta $0 - $100</span>
+                                <span className="font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">3 pts</span>
                             </div>
-                            <div className="flex justify-between items-center group">
-                                <span className="text-[10px] font-black text-navy/40 group-hover:text-navy transition-colors uppercase italic tracking-wider">VENTA $100 - $200</span>
-                                <span className="text-[#1E3A8A] font-black italic">8 PTS</span>
+                            <div className="flex justify-between items-center text-xs font-medium text-slate-600 p-2 hover:bg-slate-50 rounded-lg transition-colors">
+                                <span>Venta $100 - $200</span>
+                                <span className="font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">8 pts</span>
                             </div>
-                            <div className="flex justify-between items-center group">
-                                <span className="text-[10px] font-black text-navy/40 group-hover:text-navy transition-colors uppercase italic tracking-wider">VENTA $300 - $800</span>
-                                <span className="text-[#1E3A8A] font-black italic">10 PTS</span>
+                            <div className="flex justify-between items-center text-xs font-medium text-slate-600 p-2 hover:bg-slate-50 rounded-lg transition-colors">
+                                <span>Venta $300 - $800</span>
+                                <span className="font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">10 pts</span>
                             </div>
-                            <div className="flex justify-between items-center group">
-                                <span className="text-[10px] font-black text-navy/40 group-hover:text-navy transition-colors uppercase italic tracking-wider">VENTA +$1000</span>
-                                <span className="text-[#1E3A8A] font-black italic">15 PTS</span>
+                            <div className="flex justify-between items-center text-xs font-medium text-slate-600 p-2 hover:bg-slate-50 rounded-lg transition-colors">
+                                <span>Venta +$1000</span>
+                                <span className="font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">15 pts</span>
                             </div>
-                            <div className="flex justify-between items-center group border-t border-slate-200 pt-4">
-                                <span className="text-[10px] font-black text-azure-400 group-hover:text-navy transition-colors uppercase italic tracking-wider">CADA COTIZACIÓN</span>
-                                <span className="text-azure-400 font-black italic">2 PTS</span>
-                            </div>
-                        </div>
-                        <div className="mt-8 pt-6 border-t border-slate-200">
-                            <p className="text-[8px] font-black text-navy/20 uppercase tracking-[0.2em] leading-relaxed italic">
-                                EL RANKING SE CALCULA SOBRE EL CIERRE OPERATIVO. LOS PUNTOS DETERMINAN LA POSICIÓN NEURAL EN EL FEED.
-                            </p>
-                        </div>
-                    </CyberCard>
-                    <CyberCard className="!p-12 border-[#00F0FF]/20">
-                        <div className="flex items-center gap-6 mb-12">
-                            <School className="text-[#00F0FF] neon-text" size={40} />
-                            <div>
-                                <h3 className="text-3xl font-black text-navy uppercase italic tracking-tighter">ACADEMIA</h3>
-                                <p className="text-[10px] font-black text-navy/30 uppercase tracking-[0.5em] italic">NEURAL TRAINING // DISPONIBLE</p>
+                            <div className="flex justify-between items-center text-xs font-medium text-slate-600 p-2 bg-blue-50/50 rounded-lg border border-blue-100">
+                                <span className="text-blue-700">Cotización Generada</span>
+                                <span className="font-bold text-blue-700 bg-blue-100 px-2 py-0.5 rounded">2 pts</span>
                             </div>
                         </div>
-                        <div className="space-y-6">
-                            <div className="p-6 bg-white/[0.02] border border-slate-200 space-y-4 group cursor-pointer hover:border-[#00F0FF]/30 transition-all">
-                                <p className="text-[10px] font-black text-[#00F0FF] uppercase tracking-widest italic">CURSO DESTACADO</p>
-                                <p className="text-sm font-black text-navy uppercase italic tracking-tighter">Maestría en Ventas Atómicas</p>
-                                <div className="flex justify-between items-center text-[9px] font-black text-navy/20 uppercase italic">
-                                    <span>12 Módulos</span>
-                                    <span className="text-emerald-400">Gratis p/ Staff</span>
+                    </div>
+
+                    {/* Academy Panel */}
+                    <div className="bg-gradient-to-br from-slate-900 to-[#0F172A] rounded-xl shadow-lg border border-slate-800 p-8 text-white relative overflow-hidden">
+                        <div className="absolute top-0 right-0 p-4 opacity-10">
+                            <School size={80} />
+                        </div>
+                        <div className="relative z-10">
+                            <h3 className="text-lg font-black tracking-tight mb-1">Academia Interna</h3>
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-6">Capacitación y Recursos</p>
+                            
+                            <div className="bg-white/10 border border-white/20 rounded-lg p-4 mb-6 backdrop-blur-sm">
+                                <p className="text-[10px] font-black text-indigo-300 uppercase tracking-wider mb-1">CURSO DESTACADO</p>
+                                <p className="text-sm font-bold text-white mb-3">Técnicas de Cierre Empresarial</p>
+                                <div className="flex justify-between items-center text-xs font-medium text-slate-300">
+                                    <span>8 Módulos</span>
+                                    <span className="text-emerald-400 font-bold">Gratis Staff</span>
                                 </div>
                             </div>
-                            <Link href="/dashboard/academy" className="block text-center py-4 bg-[#00F0FF]/10 border border-[#00F0FF]/30 text-[9px] font-black text-[#00F0FF] uppercase tracking-[0.3em] italic hover:bg-[#00F0FF] hover:text-slate-950 transition-all">
-                                ACCEDER A CAPACITACIÓN
+                            
+                            <Link href="/dashboard/academy" className="block w-full text-center py-3 bg-white text-[#0F172A] rounded-lg text-xs font-black uppercase tracking-wider hover:bg-indigo-50 transition-colors shadow-sm">
+                                Ingresar al Portal
                             </Link>
                         </div>
-                    </CyberCard>
-
-                    <GlassPanel className="p-10 text-center border-slate-200 opacity-60">
-                        <Activity className="mx-auto mb-6 text-[#1E3A8A] neon-text" size={32} />
-                        <p className="text-[10px] font-black text-navy/20 uppercase tracking-[0.5em] italic">NEURAL ENGINE ACTIVE</p>
-                    </GlassPanel>
+                    </div>
                 </div>
             </div>
 
-            {/* QUICK SALE MODAL */}
+            {/* Quick Sale Modal */}
             <AnimatePresence>
                 {isQuickSaleOpen && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-8 bg-white/90 backdrop-blur-3xl">
-                        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="bg-white border border-white/10 p-12 max-w-lg w-full space-y-10 shadow-[0_0_100px_rgba(232,52,26,0.2)]">
-                            <div className="flex justify-between items-center border-b border-slate-200 pb-6">
-                                <h2 className="text-2xl font-black text-navy uppercase italic tracking-tighter">REGISTRO <span className="text-[#1E3A8A]">RÁPIDO</span></h2>
-                                <button onClick={() => setIsQuickSaleOpen(false)}><X size={24} className="text-navy/20 hover:text-navy" /></button>
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setIsQuickSaleOpen(false)} />
+                        <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="relative bg-white border border-slate-200 p-8 rounded-2xl max-w-md w-full space-y-6 shadow-2xl">
+                            <div className="flex justify-between items-center border-b border-slate-100 pb-4">
+                                <h2 className="text-lg font-black text-[#0F172A] flex items-center gap-2">
+                                    <Zap size={20} className="text-amber-500" /> Registro Rápido
+                                </h2>
+                                <button onClick={() => setIsQuickSaleOpen(false)} className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg"><X size={18} /></button>
                             </div>
                             
-                            <div className="space-y-8">
-                                <div className="space-y-4">
-                                    <label className="text-[9px] font-black text-navy/30 uppercase tracking-widest italic">SELECCIONAR ASESOR</label>
+                            <div className="space-y-4">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Seleccionar Asesor</label>
                                     <select 
-                                        className="w-full bg-white/5 border border-white/10 p-5 text-xs font-black text-navy uppercase italic outline-none focus:border-[#1E3A8A]"
+                                        className="w-full bg-slate-50 border border-slate-200 p-3 rounded-lg text-sm font-bold text-[#0F172A] outline-none focus:border-indigo-500"
                                         value={quickSaleData.salespersonId}
                                         onChange={(e) => setQuickSaleData({...quickSaleData, salespersonId: e.target.value})}
                                     >
-                                        <option value="">ELIJA UN ASESOR...</option>
+                                        <option value="">Elegir asesor...</option>
                                         {ranking.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
                                     </select>
                                 </div>
-                                <div className="space-y-4">
-                                    <label className="text-[9px] font-black text-navy/30 uppercase tracking-widest italic">MONTO DE VENTA ($)</label>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Monto de Venta ($)</label>
                                     <input 
                                         type="number"
-                                        className="w-full bg-white/5 border border-white/10 p-5 text-2xl font-black text-navy outline-none focus:border-[#1E3A8A] italic"
+                                        className="w-full bg-slate-50 border border-slate-200 p-3 rounded-lg text-2xl font-black text-[#0F172A] outline-none focus:border-indigo-500"
                                         placeholder="0.00"
-                                        value={quickSaleData.amount}
-                                        onChange={(e) => setQuickSaleData({...quickSaleData, amount: parseFloat(e.target.value)})}
+                                        value={quickSaleData.amount || ""}
+                                        onChange={(e) => setQuickSaleData({...quickSaleData, amount: parseFloat(e.target.value) || 0})}
                                     />
                                 </div>
                             </div>
@@ -403,9 +437,9 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
                             <button 
                                 onClick={handleQuickSale}
                                 disabled={isSubmitting}
-                                className="w-full bg-[#1E3A8A] text-navy py-6 font-black uppercase tracking-[0.4em] text-[10px] italic hover:bg-white hover:text-[#1E3A8A] transition-all"
+                                className="w-full bg-indigo-600 text-white py-3.5 rounded-lg font-bold text-sm hover:bg-indigo-700 transition-all shadow-sm"
                             >
-                                {isSubmitting ? "PROCESANDO..." : "CONFIRMAR INGRESO"}
+                                {isSubmitting ? "Procesando..." : "Confirmar Ingreso"}
                             </button>
                         </motion.div>
                     </div>
