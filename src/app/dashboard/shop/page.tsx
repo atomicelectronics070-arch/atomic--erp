@@ -30,7 +30,12 @@ import {
     toggleProductFeatured,
     saveProduct,
     saveCategory,
-    saveCollection
+    saveCollection,
+    createCategory,
+    createCollection,
+    deleteCategory,
+    deleteCollection,
+    deleteManyCollections
 } from "@/lib/actions/shop"
 
 export default function ShopConfigPage() {
@@ -140,6 +145,12 @@ export default function ShopConfigPage() {
         }
     }
 
+    const toggleProductSelection = (id: string) => {
+        setSelectedProducts(prev => 
+            prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
+        )
+    }
+
     const handleCleanupDuplicates = async () => {
         if (!confirm("¿Ejecutar saneamiento de catálogo?")) return
         setIsCleaning(true)
@@ -198,18 +209,18 @@ export default function ShopConfigPage() {
         } catch (e) { alert("Error en la eliminación permanente.") }
     }
 
-    const handleDeleteProduct = async (id: string) => {
+    const handleDelete = async (id: string) => {
         if (!confirm("¿Mover producto a la papelera?")) return
         await deleteProduct(id)
         refreshData()
     }
 
-    const handleRestoreProduct = async (id: string) => {
+    const handleRestore = async (id: string) => {
         await restoreProduct(id)
         refreshData()
     }
 
-    const handlePermanentDeleteProduct = async (id: string) => {
+    const handlePermanentDelete = async (id: string) => {
         if (!confirm("¿ELIMINAR PERMANENTEMENTE? Esta acción no se puede deshacer.")) return
         await permanentDeleteProduct(id)
         refreshData()
