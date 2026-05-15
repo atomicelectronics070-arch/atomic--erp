@@ -1,11 +1,21 @@
 "use client"
 
-import { useState } from "react"
-import { motion } from "framer-motion"
-import { ShoppingCart, LayoutDashboard, Zap, Code2, CheckCircle2, ChevronRight, MessageSquare, Briefcase, Mail, Send, ArrowRight, PlayCircle, Star, Phone } from "lucide-react"
+import { useState, useRef } from "react"
+import { motion, AnimatePresence } from "framer-motion"
+import { ShoppingCart, LayoutDashboard, Zap, Code2, CheckCircle2, ChevronRight, MessageSquare, Briefcase, Mail, Send, ArrowRight, PlayCircle, Star, Phone, Volume2, VolumeX, X } from "lucide-react"
 
 export default function TiendasOnlineLanding() {
     const [form, setForm] = useState({ name: "", phone: "", email: "", business: "", message: "" })
+    const [isMuted, setIsMuted] = useState(true)
+    const [selectedPlan, setSelectedPlan] = useState<any>(null)
+    const videoRef = useRef<HTMLVideoElement>(null)
+    
+    const toggleMute = () => {
+        if (videoRef.current) {
+            videoRef.current.muted = !isMuted
+            setIsMuted(!isMuted)
+        }
+    }
     
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
@@ -91,17 +101,26 @@ export default function TiendasOnlineLanding() {
         <div className="font-sans text-[#0F172A] bg-[#F8FAFC]">
             
             {/* 0. HERO SECTION WITH VIDEO */}
-            <section className="relative w-full h-[90vh] flex items-center justify-center overflow-hidden bg-black">
+            <section className="relative w-full h-[75vh] md:h-[85vh] flex items-center justify-center overflow-hidden bg-black">
                 <video 
+                    ref={videoRef}
                     autoPlay 
                     loop 
-                    muted 
+                    muted={isMuted} 
                     playsInline 
-                    className="absolute inset-0 w-full h-full object-cover opacity-50"
+                    className="absolute inset-0 w-full h-full object-contain md:object-cover opacity-60"
                 >
                     <source src="/assets/ecommerce/hero-video.mp4" type="video/mp4" />
                 </video>
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent pointer-events-none" />
+                
+                <button 
+                    onClick={toggleMute}
+                    className="absolute bottom-8 right-8 z-20 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white p-4 rounded-full transition-all shadow-xl"
+                    title={isMuted ? "Activar sonido" : "Silenciar"}
+                >
+                    {isMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
+                </button>
                 
                 <div className="relative z-10 max-w-5xl mx-auto px-6 text-center space-y-8">
                     <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
@@ -162,16 +181,17 @@ export default function TiendasOnlineLanding() {
                             </div>
 
                             <ul className="space-y-4 flex-1 mb-8">
-                                {plan.features.map((feat, idx) => (
+                                {plan.features.slice(0, 4).map((feat: string, idx: number) => (
                                     <li key={idx} className="flex items-start gap-3">
                                         <CheckCircle2 size={18} className="text-emerald-500 shrink-0 mt-0.5" />
                                         <span className="text-sm font-bold text-slate-700">{feat}</span>
                                     </li>
                                 ))}
+                                <li className="text-xs font-bold text-indigo-500 mt-2">+ Ver todos los beneficios</li>
                             </ul>
 
-                            <button className={`w-full py-3.5 rounded-xl font-bold text-sm transition-all ${plan.popular ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-md' : 'bg-slate-50 hover:bg-slate-100 text-[#0F172A] border border-slate-200'}`}>
-                                Comenzar Proyecto
+                            <button onClick={() => setSelectedPlan(plan)} className={`w-full py-3.5 rounded-xl font-bold text-sm transition-all ${plan.popular ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-md' : 'bg-slate-50 hover:bg-slate-100 text-[#0F172A] border border-slate-200'}`}>
+                                Ver Detalles del Plan
                             </button>
                         </motion.div>
                     ))}
@@ -207,8 +227,8 @@ export default function TiendasOnlineLanding() {
                         </div>
 
                         <div className="flex-1 relative">
-                            <div className="aspect-[4/5] w-full max-w-md mx-auto rounded-3xl overflow-hidden shadow-2xl relative border-8 border-slate-50">
-                                <img src="/assets/ecommerce/img1.jpeg" alt="Ejemplo de Gestor" className="w-full h-full object-cover" />
+                            <div className="aspect-[4/5] w-full max-w-md mx-auto rounded-3xl overflow-hidden shadow-2xl relative border-8 border-slate-50 bg-slate-900">
+                                <img src="/assets/ecommerce/img1.jpeg" alt="Ejemplo de Gestor" className="w-full h-full object-contain" />
                                 <div className="absolute inset-0 bg-gradient-to-t from-indigo-900/80 to-transparent flex items-end p-8">
                                     <div className="bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-xl w-full text-white">
                                         <p className="font-black text-sm uppercase tracking-wider mb-1">Control Total</p>
@@ -254,8 +274,8 @@ export default function TiendasOnlineLanding() {
                     </div>
 
                     <div className="flex-1 w-full max-w-md relative">
-                        <div className="aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl relative border-8 border-slate-800">
-                            <img src="/assets/ecommerce/img2.jpeg" alt="Desarrollo a medida" className="w-full h-full object-cover" />
+                        <div className="aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl relative border-8 border-slate-800 bg-slate-900">
+                            <img src="/assets/ecommerce/img2.jpeg" alt="Desarrollo a medida" className="w-full h-full object-contain" />
                         </div>
                     </div>
                 </div>
@@ -323,6 +343,51 @@ export default function TiendasOnlineLanding() {
                     </div>
                 </div>
             </footer>
+
+            {/* PLAN DETAILS MODAL */}
+            <AnimatePresence>
+                {selectedPlan && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setSelectedPlan(null)} />
+                        <motion.div 
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className="bg-white w-full max-w-2xl rounded-3xl shadow-2xl relative z-10 overflow-hidden"
+                        >
+                            <button onClick={() => setSelectedPlan(null)} className="absolute top-4 right-4 p-2 bg-slate-100 hover:bg-slate-200 rounded-full text-slate-500 transition-colors z-20">
+                                <X size={20} />
+                            </button>
+                            
+                            <div className={`h-3 w-full ${selectedPlan.popular ? 'bg-indigo-600' : 'bg-slate-300'}`} />
+                            
+                            <div className="p-8 md:p-10 max-h-[85vh] overflow-y-auto">
+                                <h3 className="text-3xl font-black text-[#0F172A] mb-2">{selectedPlan.name}</h3>
+                                <p className="text-slate-500 font-medium mb-6">{selectedPlan.description}</p>
+                                
+                                <div className="flex items-baseline gap-2 mb-8">
+                                    <span className="text-5xl font-black text-indigo-600">{selectedPlan.price}</span>
+                                    <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">/ {selectedPlan.period}</span>
+                                </div>
+
+                                <div className="space-y-4 mb-10 bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                                    <h4 className="font-bold text-[#0F172A] uppercase tracking-wider text-xs mb-4">¿Qué incluye este ecosistema?</h4>
+                                    {selectedPlan.features.map((feat: string, idx: number) => (
+                                        <div key={idx} className="flex items-start gap-3">
+                                            <CheckCircle2 size={20} className="text-emerald-500 shrink-0" />
+                                            <span className="text-sm font-bold text-slate-700">{feat}</span>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <button onClick={() => { setSelectedPlan(null); document.getElementById('contacto')?.scrollIntoView({ behavior: 'smooth' }) }} className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-black text-lg transition-all shadow-lg shadow-indigo-600/20 flex items-center justify-center gap-2">
+                                    Iniciar Proyecto Ahora <ArrowRight size={20} />
+                                </button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     )
 }
