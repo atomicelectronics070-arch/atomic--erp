@@ -8,7 +8,7 @@ import {
     MessageSquare, Clock, MapPin, Phone, Mail, Edit2, 
     Save, X, Filter, BarChart3, ChevronRight, Zap, Target,
     List, MoreHorizontal, LayoutGrid, CheckCircle2, AlertCircle,
-    PlayCircle, Folders, PhoneCall, Tag, Trash2, ArrowRight
+    PlayCircle, Folders, PhoneCall, Tag, Trash2, ArrowRight, ShoppingBag
 } from "lucide-react"
 
 export default function CRMHistoricosPage() {
