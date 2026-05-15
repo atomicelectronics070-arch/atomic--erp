@@ -6,8 +6,8 @@ import { useSearchParams } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { 
     Plus, DollarSign, Calendar, Users, X, Send, 
-    CreditCard, Tag, CheckCircle2, AlertCircle, Clock,
-    Target, ShieldCheck, ChevronRight, ArrowUpRight
+    CreditCard, Tag, CheckCircle2, Clock, Target,
+    ShieldCheck
 } from "lucide-react"
 
 interface Ticket {
@@ -57,9 +57,9 @@ export default function PaymentTickets() {
             const el = ticketRefs.current[targetTicketId]
             if (el) {
                 el.scrollIntoView({ behavior: 'smooth', block: 'center' })
-                el.classList.add('ring-4', 'ring-secondary', 'ring-offset-8', 'ring-offset-slate-950')
+                el.classList.add('ring-2', 'ring-indigo-500', 'ring-offset-2')
                 setTimeout(() => {
-                    el.classList.remove('ring-4', 'ring-secondary', 'ring-offset-8', 'ring-offset-slate-950')
+                    el.classList.remove('ring-2', 'ring-indigo-500', 'ring-offset-2')
                 }, 5000)
             }
         }
@@ -135,126 +135,112 @@ export default function PaymentTickets() {
 
     if (loading && tickets.length === 0) {
         return (
-            <div className="flex flex-col items-center justify-center py-40 space-y-8 animate-pulse text-slate-800">
-                <div className="w-16 h-16 border-4 border-white/5 border-t-secondary rounded-none animate-spin shadow-2xl" />
-                <p className="text-[10px] font-black uppercase tracking-[0.5em] italic">Sincronizando Archivos de Liquidación...</p>
+            <div className="flex flex-col items-center justify-center py-40 space-y-4 text-slate-500">
+                <div className="w-12 h-12 border-4 border-slate-100 border-t-indigo-600 rounded-full animate-spin" />
+                <p className="text-sm font-bold uppercase tracking-wider">Cargando Liquidaciones...</p>
             </div>
         )
     }
 
     return (
-        <div className="space-y-16 animate-in fade-in duration-1000 relative z-10">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-10">
+        <div className="space-y-8">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                 <div>
-                    <div className="flex items-center space-x-4 mb-4 text-emerald-400">
-                        <DollarSign size={20} className="drop-shadow-[0_0_8px_rgba(52,211,153,0.5)]" />
-                        <span className="text-[10px] uppercase font-black tracking-[0.6em]">Elemento DE RECEPCIÓN</span>
-                    </div>
-                    <h2 className="text-5xl font-black text-white italic uppercase tracking-tighter">
-                        Tickets de <span className="text-secondary underline decoration-secondary/30 underline-offset-8 decoration-4">Pago</span>
+                    <h2 className="text-xl font-black text-[#0F172A] tracking-tight flex items-center gap-2">
+                        <CreditCard className="text-indigo-600" size={24} /> Tickets de Pago
                     </h2>
-                    <p className="text-slate-500 font-bold text-xs uppercase tracking-[0.3em] mt-3 italic max-w-xl leading-relaxed">
-                        {isAdmin ? "Emisión y control táctico de incentivos para el equipo operativo de élite." : "Historial de liquidaciones autorizadas y ciclos de pago pendientes."}
+                    <p className="text-sm text-slate-500 font-medium mt-1">
+                        {isAdmin ? "Emisión y control de incentivos para el equipo comercial." : "Historial de liquidaciones autorizadas y pagos pendientes."}
                     </p>
                 </div>
                 {isAdmin && (
                     <button
                         onClick={() => setIsModalOpen(true)}
-                        className="bg-secondary text-white px-12 py-5 font-black uppercase tracking-[0.4em] text-[10px] flex items-center space-x-4 hover:bg-white hover:text-secondary transition-all shadow-[0_20px_50px_-10px_rgba(255,99,71,0.5)] rounded-none active:scale-95 group italic skew-x-[-12deg]"
+                        className="bg-indigo-600 text-white px-6 py-2.5 rounded-lg font-bold text-sm flex items-center gap-2 hover:bg-indigo-700 transition-all shadow-sm"
                     >
-                        <div className="flex items-center gap-4 skew-x-[12deg]">
-                            <Plus size={22} className="group-hover:rotate-90 transition-transform" />
-                            <span>Emitir Liquidación</span>
-                        </div>
+                        <Plus size={18} /> Emitir Liquidación
                     </button>
                 )}
             </div>
 
             {/* Tickets Grid */}
             {tickets.length === 0 ? (
-                <div className="text-center py-48 glass-panel border-white/5 rounded-none-[4rem] shadow-[0_50px_100px_rgba(0,0,0,0.6)] backdrop-blur-3xl overflow-hidden relative">
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/[0.02] to-transparent pointer-events-none" />
-                    <div className="w-24 h-24 bg-slate-900/60 rounded-none flex items-center justify-center mx-auto mb-10 border border-white/5 shadow-inner">
-                        <CreditCard size={48} className="text-slate-800" />
+                <div className="text-center py-24 bg-white border border-slate-200 rounded-xl shadow-sm">
+                    <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100">
+                        <CreditCard size={32} className="text-slate-300" />
                     </div>
-                    <p className="text-slate-700 font-black uppercase tracking-[0.6em] text-[11px] italic">Sin registros de liquidación autorizados.</p>
-                    <p className="text-[9px] text-slate-800 font-black uppercase tracking-[0.4em] mt-4">Gesti�n de Búsqueda: 100%</p>
+                    <p className="text-slate-500 font-bold uppercase tracking-wider text-sm">Sin registros de liquidación</p>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {tickets.map(ticket => (
                         <div 
                             key={ticket.id} 
                             ref={el => { ticketRefs.current[ticket.id] = el }}
-                            className={`glass-panel border-t-4 p-10 shadow-[0_40px_80px_-20px_rgba(0,0,0,0.7)] hover:shadow-[0_60px_120px_-30px_rgba(0,0,0,1)] transition-all relative overflow-hidden group rounded-none-[3.5rem] backdrop-blur-3xl border-white/5 ${
-                                ticket.status === 'PAGADO' ? 'border-t-emerald-500/50' : 
-                                ticket.status === 'RECIBIDO' ? 'border-t-azure-500/50' :
-                                'border-t-secondary/50'
+                            className={`bg-white border p-6 shadow-sm hover:shadow-md transition-all rounded-xl relative ${
+                                ticket.status === 'PAGADO' ? 'border-emerald-200' : 
+                                ticket.status === 'RECIBIDO' ? 'border-blue-200' :
+                                'border-amber-200'
                             }`}
                         >
-                            <div className="absolute -top-10 -right-10 p-4 opacity-[0.02] group-hover:opacity-[0.08] group-hover:scale-125 group-hover:rotate-12 transition-all text-white blur-sm">
-                                <DollarSign size={200} />
-                            </div>
-
-                            <div className="flex justify-between items-start mb-12 relative z-10">
-                                <div className="flex flex-col gap-4">
-                                    <span className={`px-5 py-2 text-[9px] font-black uppercase tracking-[0.4em] border rounded-none shadow-2xl skew-x-[-10deg] italic ${
-                                        ticket.status === 'PAGADO' ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20 shadow-emerald-500/10' : 
-                                        ticket.status === 'RECIBIDO' ? 'text-azure-400 bg-azure-500/10 border-azure-500/20 shadow-azure-500/10' :
-                                        'text-secondary bg-secondary/10 border-secondary/20 shadow-secondary/10'
+                            <div className="flex justify-between items-start mb-6">
+                                <div className="flex flex-col gap-3">
+                                    <span className={`px-3 py-1 text-[10px] font-bold uppercase tracking-wider rounded-md w-fit ${
+                                        ticket.status === 'PAGADO' ? 'text-emerald-700 bg-emerald-50 border border-emerald-100' : 
+                                        ticket.status === 'RECIBIDO' ? 'text-blue-700 bg-blue-50 border border-blue-100' :
+                                        'text-amber-700 bg-amber-50 border border-amber-100'
                                     }`}>
-                                        <div className="skew-x-[10deg]">{ticket.status}</div>
+                                        {ticket.status}
                                     </span>
                                     {isAdmin && (
                                         <select 
                                             value={ticket.status}
                                             onChange={(e) => handleStatusUpdate(ticket.id, e.target.value)}
-                                            className="text-[9px] font-black uppercase tracking-[0.3em] bg-slate-950/60 text-slate-500 border border-white/5 rounded-none px-4 py-2.5 outline-none cursor-pointer hover:bg-white hover:text-black transition-all shadow-inner italic"
+                                            className="text-[10px] font-bold uppercase tracking-wider bg-slate-50 text-slate-600 border border-slate-200 rounded-md px-2 py-1.5 outline-none cursor-pointer focus:border-indigo-500"
                                         >
                                             <option value="PENDIENTE">PENDIENTE</option>
-                                            <option value="RECIBIDO">CONF. RECIBIDO</option>
-                                            <option value="PAGADO">CONF. PAGADO</option>
-                                            <option value="CANCELADO">CANCELAR Elemento</option>
+                                            <option value="RECIBIDO">RECIBIDO</option>
+                                            <option value="PAGADO">PAGADO</option>
+                                            <option value="CANCELADO">CANCELAR</option>
                                         </select>
                                     )}
                                 </div>
                                 <div className="text-right">
-                                    <span className="text-[10px] font-black text-slate-600 tracking-[0.2em] uppercase italic">
+                                    <span className="text-[10px] font-bold text-slate-400 uppercase">
                                         {(new Date(ticket.issueDate)).toLocaleDateString()}
                                     </span>
-                                    <div className="h-1 w-12 bg-white/5 ms-auto mt-2 rounded-none" />
                                 </div>
                             </div>
 
-                            <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.5em] mb-4 ml-2 italic leading-relaxed">Concepto Maestro</p>
-                            <h3 className="text-2xl font-black text-white mb-8 h-20 overflow-hidden leading-tight italic uppercase tracking-tighter group-hover:text-secondary transition-colors line-clamp-2 drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">{ticket.concept}</h3>
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Concepto de Pago</p>
+                            <h3 className="text-lg font-black text-[#0F172A] mb-6 line-clamp-2 leading-snug">{ticket.concept}</h3>
 
-                            <div className="space-y-6 mb-12 relative z-10 bg-slate-950/40 p-6 rounded-none border border-white/5 shadow-inner">
+                            <div className="space-y-3 mb-6 bg-slate-50 p-4 rounded-lg border border-slate-100">
                                 {isAdmin && (
-                                    <div className="flex items-center text-xs text-slate-400 font-black tracking-wide group-hover:translate-x-2 transition-transform">
-                                        <div className="p-2 bg-slate-900 rounded-none mr-4 border border-white/5"><Users size={18} className="text-slate-600" /></div>
-                                        <span className="truncate uppercase italic text-[11px] tracking-tighter">{ticket.advisor.name}</span>
+                                    <div className="flex items-center text-xs font-bold text-slate-600">
+                                        <Users size={14} className="mr-3 text-slate-400" />
+                                        <span className="truncate">{ticket.advisor.name}</span>
                                     </div>
                                 )}
-                                <div className="flex items-center text-xs text-slate-400 font-black tracking-wide group-hover:translate-x-2 transition-transform delay-75">
-                                    <div className="p-2 bg-slate-900 rounded-none mr-4 border border-white/5"><Calendar size={18} className="text-secondary/50" /></div>
-                                    <span className="uppercase text-[11px]">Vence: <span className="text-white italic tracking-tighter">{(new Date(ticket.dueDate)).toLocaleDateString()}</span></span>
+                                <div className="flex items-center text-xs font-bold text-slate-600">
+                                    <Calendar size={14} className="mr-3 text-amber-500" />
+                                    <span>Vence: {(new Date(ticket.dueDate)).toLocaleDateString()}</span>
                                 </div>
-                                <div className="flex items-center text-xs text-slate-400 font-black tracking-wide group-hover:translate-x-2 transition-transform delay-150">
-                                    <div className="p-2 bg-slate-900 rounded-none mr-4 border border-white/5"><Target size={18} className="text-azure-500/50" /></div>
-                                    <span className="uppercase text-[11px]">ID: <span className="text-slate-600 italic tracking-tighter font-black">{ticket.id.slice(0,12).toUpperCase()}</span></span>
+                                <div className="flex items-center text-xs font-bold text-slate-500">
+                                    <Target size={14} className="mr-3 text-slate-300" />
+                                    <span className="truncate">ID: {ticket.id.slice(0,8).toUpperCase()}</span>
                                 </div>
                             </div>
 
-                            <div className="pt-8 border-t border-white/5 flex flex-col gap-8 relative z-10">
+                            <div className="pt-6 border-t border-slate-100 flex flex-col gap-6">
                                 <div className="flex justify-between items-end">
                                     <div>
-                                        <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.5em] mb-3 ml-2 italic">Liquidación Neta</p>
-                                        <p className="text-5xl font-black text-white tracking-tighter drop-shadow-[0_0_20px_rgba(255,255,255,0.25)] group-hover:scale-105 transition-transform duration-700 italic">${ticket.amount.toLocaleString()}</p>
+                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Monto a Liquidar</p>
+                                        <p className="text-3xl font-black text-[#0F172A]">${ticket.amount.toLocaleString()}</p>
                                     </div>
                                     <div className="text-right">
-                                        <p className="text-[9px] font-black text-slate-700 uppercase tracking-[0.2em] italic mb-2">Autorizado_R:</p>
-                                        <span className="text-[10px] text-slate-500 font-black uppercase italic tracking-tighter border-b border-white/5 pb-1">{ticket.admin.name}</span>
+                                        <p className="text-[9px] font-bold text-slate-400 uppercase mb-1">Autorizado por:</p>
+                                        <span className="text-[10px] font-bold text-slate-600">{ticket.admin.name}</span>
                                     </div>
                                 </div>
                                 
@@ -265,12 +251,9 @@ export default function PaymentTickets() {
                                             animate={{ opacity: 1, y: 0 }}
                                             exit={{ opacity: 0, y: 10 }}
                                             onClick={() => handleStatusUpdate(ticket.id, 'RECIBIDO')}
-                                            className="w-full bg-white text-black py-5 text-[11px] font-black uppercase tracking-[0.4em] flex items-center justify-center gap-4 hover:bg-secondary hover:text-white transition-all rounded-none shadow-[0_20px_50px_rgba(255,255,255,0.15)] active:scale-95 italic skew-x-[-8deg] group/btn"
+                                            className="w-full bg-slate-900 text-white py-3 text-[11px] font-bold uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-slate-800 transition-colors rounded-lg shadow-sm"
                                         >
-                                            <div className="flex items-center gap-4 skew-x-[8deg]">
-                                                <CheckCircle2 size={20} className="group-hover/btn:scale-110 transition-transform" />
-                                                Confirmar Elemento Recepción
-                                            </div>
+                                            <CheckCircle2 size={16} /> Confirmar Recepción
                                         </motion.button>
                                     )}
                                     
@@ -278,10 +261,9 @@ export default function PaymentTickets() {
                                         <motion.div 
                                             initial={{ opacity: 0 }}
                                             animate={{ opacity: 1 }}
-                                            className="w-full bg-azure-500/5 text-azure-400 py-5 text-[10px] font-black uppercase tracking-[0.4em] flex items-center justify-center gap-4 border border-azure-500/20 rounded-none italic shadow-2xl shadow-azure-500/5"
+                                            className="w-full bg-blue-50 text-blue-600 py-3 text-[11px] font-bold uppercase tracking-wider flex items-center justify-center gap-2 border border-blue-200 rounded-lg"
                                         >
-                                            <Clock size={20} className="animate-pulse" />
-                                            Detallesoría en Progreso
+                                            <Clock size={16} /> Pago en Progreso
                                         </motion.div>
                                     )}
                                 </AnimatePresence>
@@ -294,111 +276,109 @@ export default function PaymentTickets() {
             {/* Emit Modal for Admin */}
             <AnimatePresence>
                 {isModalOpen && isAdmin && (
-                    <div className="fixed inset-0 z-[400] flex items-center justify-center p-8">
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-8">
                         <motion.div 
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            className="absolute inset-0 bg-slate-950/95 backdrop-blur-3xl" 
+                            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" 
                             onClick={() => setIsModalOpen(false)} 
                         />
                         <motion.div 
-                            initial={{ opacity: 0, scale: 0.9, y: 30 }}
+                            initial={{ opacity: 0, scale: 0.95, y: 10 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.9, y: 30 }}
-                            className="glass-panel !bg-slate-950/60 w-full max-w-2xl shadow-[0_0_150px_rgba(0,0,0,1)] border border-white/10 overflow-hidden rounded-none-[4rem] relative z-10 backdrop-blur-3xl"
+                            exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                            className="bg-white w-full max-w-xl shadow-2xl border border-slate-200 overflow-hidden rounded-2xl relative z-10 flex flex-col"
                         >
-                            <div className="p-14 bg-white/[0.01] border-b border-white/5 flex justify-between items-center text-white relative overflow-hidden">
-                                <div className="absolute top-0 right-0 p-8 opacity-5">
-                                    <CreditCard size={120} />
-                                </div>
-                                <div className="relative z-10">
-                                    <h3 className="text-4xl font-black uppercase italic tracking-tighter">Emitir <span className="text-secondary">Liquidación</span></h3>
-                                    <p className="text-[10px] text-slate-500 uppercase tracking-[0.6em] mt-3 font-black italic">Ecosistema de Tesorería Central</p>
+                            <div className="p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center shadow-sm">
+                                        <CreditCard size={24} />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-xl font-black text-[#0F172A] tracking-tight">Emitir Liquidación</h3>
+                                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mt-1">Nuevo Ticket de Pago</p>
+                                    </div>
                                 </div>
                                 <button 
                                     onClick={() => setIsModalOpen(false)} 
-                                    className="p-5 bg-slate-900 border border-white/10 rounded-none text-slate-600 hover:text-white hover:rotate-90 transition-all duration-500 shadow-2xl relative z-10"
+                                    className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-200 rounded-lg transition-colors"
                                 >
-                                    <X size={32} />
+                                    <X size={20} />
                                 </button>
                             </div>
 
-                            <form onSubmit={handleSubmit} className="p-14 space-y-10">
-                                <div className="space-y-8">
-                                    <div className="space-y-4">
-                                        <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] mb-2 ml-2 italic">Asesor Destinatario / Elemento Receptor</label>
-                                        <div className="relative group">
-                                            <Users className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-700 group-focus-within:text-secondary transition-colors" size={20} />
-                                            <select
-                                                required
-                                                value={formData.advisorId}
-                                                onChange={e => setFormData({ ...formData, advisorId: e.target.value })}
-                                                className="w-full bg-slate-950/60 border border-white/5 pl-16 pr-8 py-6 rounded-none-[2rem] text-[12px] font-black uppercase tracking-widest text-white focus:border-secondary outline-none transition-all cursor-pointer h-[75px] shadow-inner italic"
-                                            >
-                                                <option value="">IDENTIFICAR Elemento...</option>
-                                                {advisors.map(adv => (
-                                                    <option key={adv.id} value={adv.id} className="bg-slate-950 text-white">{adv.name} ({adv.role})</option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <div className="grid grid-cols-2 gap-10">
-                                        <div className="space-y-4">
-                                            <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] mb-2 ml-2 italic">Fecha Emisión</label>
-                                            <input
-                                                type="date" required
-                                                value={formData.issueDate}
-                                                onChange={e => setFormData({ ...formData, issueDate: e.target.value })}
-                                                className="w-full bg-slate-950/60 border border-white/5 py-6 px-10 rounded-none-[2rem] text-[12px] font-black text-white focus:border-secondary outline-none transition-all shadow-inner"
-                                            />
-                                        </div>
-                                        <div className="space-y-4">
-                                            <label className="block text-[10px] font-black text-secondary uppercase tracking-[0.5em] mb-2 ml-2 italic">Límite Detallesoría</label>
-                                            <input
-                                                type="date" required
-                                                value={formData.dueDate}
-                                                onChange={e => setFormData({ ...formData, dueDate: e.target.value })}
-                                                className="w-full bg-secondary/10 text-secondary border border-secondary/20 py-6 px-10 rounded-none-[2rem] text-[12px] font-black focus:border-secondary transition-all shadow-2xl shadow-secondary/5 italic"
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-4">
-                                        <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] mb-2 ml-2 italic">Incentivo Neto de Liquidación ($)</label>
-                                        <div className="relative group">
-                                            <DollarSign className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-800" size={28} />
-                                            <input
-                                                type="number" required min="1" step="0.01"
-                                                value={formData.amount}
-                                                onChange={e => setFormData({ ...formData, amount: e.target.value })}
-                                                className="w-full bg-slate-950/60 border border-white/5 pl-18 pr-8 py-8 text-4xl font-black text-emerald-400 focus:border-secondary outline-none transition-all rounded-none-[2.5rem] placeholder:text-slate-900 shadow-inner italic"
-                                                placeholder="0.00"
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-4">
-                                        <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] mb-2 ml-2 italic">Concepto Maestro / Especificaciones</label>
-                                        <div className="relative group">
-                                            <Tag className="absolute left-6 top-8 text-slate-800" size={24} />
-                                            <textarea
-                                                required rows={3}
-                                                value={formData.concept}
-                                                onChange={e => setFormData({ ...formData, concept: e.target.value.toUpperCase() })}
-                                                className="w-full bg-slate-950/60 border border-white/5 pl-18 pr-10 py-8 text-[11px] font-black uppercase tracking-widest text-white focus:border-secondary outline-none resize-none transition-all rounded-none-[2.5rem] placeholder:text-slate-900 shadow-inner italic leading-relaxed"
-                                                placeholder="DESCRIPCIÓN DEL CICLO OPERATIVO..."
-                                            ></textarea>
-                                        </div>
+                            <form onSubmit={handleSubmit} className="p-8 space-y-6">
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Asesor / Beneficiario</label>
+                                    <div className="relative group">
+                                        <Users className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors" size={18} />
+                                        <select
+                                            required
+                                            value={formData.advisorId}
+                                            onChange={e => setFormData({ ...formData, advisorId: e.target.value })}
+                                            className="w-full bg-slate-50 border border-slate-200 pl-12 pr-4 py-3 rounded-lg text-sm font-bold text-[#0F172A] focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all cursor-pointer h-[46px]"
+                                        >
+                                            <option value="">Seleccionar Asesor...</option>
+                                            {advisors.map(adv => (
+                                                <option key={adv.id} value={adv.id}>{adv.name} ({adv.role})</option>
+                                            ))}
+                                        </select>
                                     </div>
                                 </div>
 
-                                <button type="submit" className="w-full bg-secondary hover:bg-white hover:text-secondary text-white font-black py-8 uppercase tracking-[0.6em] text-[11px] flex items-center justify-center space-x-6 transition-all shadow-[0_25px_60px_-10px_rgba(255,99,71,0.6)] rounded-none-[2.5rem] active:scale-95 italic skew-x-[-12deg] group/btn">
-                                    <div className="flex items-center gap-6 skew-x-[12deg]">
-                                        <Send size={24} className="group-hover/btn:translate-x-2 group-hover/btn:rotate-12 transition-all" />
-                                        <span>AUTORIZAR Y NOTIFICAR</span>
+                                <div className="grid grid-cols-2 gap-6">
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Fecha de Emisión</label>
+                                        <input
+                                            type="date" required
+                                            value={formData.issueDate}
+                                            onChange={e => setFormData({ ...formData, issueDate: e.target.value })}
+                                            className="w-full bg-slate-50 border border-slate-200 py-3 px-4 rounded-lg text-sm font-bold text-[#0F172A] focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all"
+                                        />
                                     </div>
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold text-amber-600 uppercase tracking-wider ml-1">Fecha Límite</label>
+                                        <input
+                                            type="date" required
+                                            value={formData.dueDate}
+                                            onChange={e => setFormData({ ...formData, dueDate: e.target.value })}
+                                            className="w-full bg-amber-50 text-amber-700 border border-amber-200 py-3 px-4 rounded-lg text-sm font-bold focus:border-amber-400 outline-none transition-all"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-indigo-600 uppercase tracking-wider ml-1">Monto a Liquidar ($)</label>
+                                    <div className="relative group">
+                                        <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+                                        <input
+                                            type="number" required min="1" step="0.01"
+                                            value={formData.amount}
+                                            onChange={e => setFormData({ ...formData, amount: e.target.value })}
+                                            className="w-full bg-slate-50 border border-slate-200 pl-12 pr-4 py-4 text-2xl font-black text-[#0F172A] focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all rounded-lg"
+                                            placeholder="0.00"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Concepto / Especificaciones</label>
+                                    <div className="relative group">
+                                        <Tag className="absolute left-4 top-4 text-slate-400" size={18} />
+                                        <textarea
+                                            required rows={3}
+                                            value={formData.concept}
+                                            onChange={e => setFormData({ ...formData, concept: e.target.value })}
+                                            className="w-full bg-slate-50 border border-slate-200 pl-12 pr-4 py-4 text-sm font-bold text-[#0F172A] focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none resize-none transition-all rounded-lg"
+                                            placeholder="Descripción del pago..."
+                                        ></textarea>
+                                    </div>
+                                </div>
+
+                                <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 text-sm flex items-center justify-center gap-2 transition-all rounded-lg shadow-md mt-4">
+                                    <Send size={18} />
+                                    <span>Autorizar y Emitir Ticket</span>
                                 </button>
                             </form>
                         </motion.div>
@@ -408,5 +388,3 @@ export default function PaymentTickets() {
         </div>
     )
 }
-
-
