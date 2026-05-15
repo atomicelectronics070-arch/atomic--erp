@@ -4,23 +4,13 @@ import { useSession } from "next-auth/react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Bot, Send, Upload, Phone, CheckCircle2, Settings, Users, Image as ImageIcon, X, Plus, Camera } from "lucide-react"
 
-type Phase = "onboarding"|"plan"|"company"|"start_prompt"|"active"|"upload_mode"|"phone_mode"
+type Phase = "onboarding"|"loading_ads"|"ads_ready"|"upload_mode"|"phone_mode"
 
-interface BotMsg { id: string; from: "bot"|"user"; text?: string; type?: "buttons"|"products"|"upload"|"phone_form" }
+interface BotMsg { id: string; from: "bot"|"user"; text?: string; type?: "buttons"|"products"|"upload"|"phone_form"|"ad_texts"|"ad_images" }
 
 const INITIAL_MSGS: BotMsg[] = [
-  { id:"1", from:"bot", text:"¡Hola! 👋 Bienvenido a Atomic Industries. Soy tu asistente de ruta. Estoy aquí para guiarte en tu proceso de incorporación y actividades semanales. ¿Listo para comenzar?" },
+  { id:"1", from:"bot", text:"¡Hola! 👋 Bienvenido a Atomic Industries. Soy tu asistente de ruta. Estoy aquí para asignarte tus productos estratégicos del día, generar tus diseños y darte los copys para que publiques." },
 ]
-
-const FLOW: Record<Phase, { next: Phase; botReply: string }> = {
-  onboarding: { next:"plan", botReply:"Perfecto. Te explico nuestro **plan de contratación**: El primer mes trabajarás bajo comisión con guía total de nuestro equipo. Tendrás capacitación constante en los grupos de trabajo activo. Si vemos buenos resultados, recibirás **bonos de $20 a $40 dólares por semana** por rendimiento. Al pasar el primer mes, iremos potenciando tu ingreso hasta llegar a un sueldo sólido. ¿Todo claro?" },
-  plan: { next:"company", botReply:"Ahora te presento la empresa 🏠 Somos una empresa **residencial** que distribuye productos electrónicos y tecnológicos, buscando brindar oportunidades laborales a personas que desean trabajar **desde casa**, generando conexiones únicas con capacitación constante. ¿Deseas comenzar tu período laboral?" },
-  company: { next:"start_prompt", botReply:"¿Deseas iniciar tu período laboral con Atomic Industries?" },
-  start_prompt: { next:"active", botReply:"¡Excelente! Con gusto te daré tus primeros anuncios para que los publiques. Voy a seleccionar 3 productos de nuestro catálogo para ti..." },
-  active: { next:"upload_mode", botReply:"Aquí están tus anuncios de la semana. Recuerda: entre más publiques, más ventajas y bonos acumulas. Tu meta esta semana es subir al menos **5 capturas** de tus publicaciones. ¿Listo para subir tus capturas?" },
-  upload_mode: { next:"phone_mode", botReply:"¡Perfecto! Recuerda anotar todos los contactos de Messenger que te escriban. Los **miércoles** envía una promoción a tus clientes. Los **lunes** revisa tus chats recibidos del fin de semana. ¿Tienes números de teléfono de clientes para registrar?" },
-  phone_mode: { next:"phone_mode", botReply:"Ingresa el número y te ayudaré a registrarlo en el historial de clientes." },
-}
 
 export default function BotRutaPage() {
   const { data: session } = useSession()
@@ -41,11 +31,21 @@ export default function BotRutaPage() {
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior:"smooth" }) }, [messages])
 
+  const [generatedAds, setGeneratedAds] = useState<any[]>([])
+
   useEffect(() => {
     fetch("/api/public/shop/products").then(r=>r.json()).then(d => {
       const all = d.products || []
-      const shuffled = all.sort(() => Math.random()-0.5).slice(0,3)
-      setProducts(shuffled)
+      // Prioritize some categories
+      const priorities = ["portero", "campana", "barrera", "antena", "cerradura", "motor", "espia"]
+      const matched = all.filter((p: any) => priorities.some(pr => p.name.toLowerCase().includes(pr)))
+      const others = all.filter((p: any) => !priorities.some(pr => p.name.toLowerCase().includes(pr)))
+      
+      const shuffledMatched = matched.sort(() => Math.random() - 0.5)
+      const shuffledOthers = others.sort(() => Math.random() - 0.5)
+      
+      const selected = [...shuffledMatched.slice(0, 2), ...shuffledOthers.slice(0, 1)].sort(() => Math.random() - 0.5)
+      setProducts(selected)
     }).catch(()=>{})
   }, [])
 
@@ -53,18 +53,72 @@ export default function BotRutaPage() {
     setMessages(prev => [...prev, { id: Date.now().toString(), from:"bot", text, type }])
   }
 
-  const handleUserReply = (text: string) => {
-    setMessages(prev => [...prev, { id: Date.now().toString(), from:"user", text }])
-    const f = FLOW[phase]
-    if (!f) return
+  const handleDownloadPDF = () => {
+    const htmlContent = `
+      <html><head><title>Material Publicitario</title><style>body{font-family:sans-serif;padding:40px;color:#333;line-height:1.6} h1{color:#1E3A8A} .ad-box{border:2px dashed #CBD5E1;padding:20px;border-radius:10px;margin-bottom:20px;background:#F8FAFC} pre{white-space:pre-wrap;font-family:inherit;margin:0}</style></head>
+      <body>
+        <h1>Material Publicitario - Atomic Industries</h1>
+        <p>Querido asesor a continuación se sitúan los textos que podrás usar para desarrollar tus publicaciones. Es importante que no te saltes estas indicaciones:</p>
+        <p>1. <b>Título:</b> Colocarás el título que te proporcionamos pero puedes modificar a tu gusto. Es ley que tenga algún emoji.<br/>2. <b>Precio:</b> Colocaremos el precio exacto.<br/>3. <b>Descripción:</b> Copia y pega la descripción, o personalízala para tener mejores resultados.<br/>4. <b>Ubicación:</b> Lugares sugeridos para posicionar tu anuncio en clientes de tecnología residencial.<br/>5. <b>Palabras claves:</b> Copiar y pegar.<br/>6. <b>SKU:</b> No pondremos nada.</p>
+        <hr/>
+        ${generatedAds.map(ad => `<div class="ad-box"><pre>${ad.text}</pre></div>`).join("")}
+        <script>window.print();</script>
+      </body></html>
+    `;
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    window.open(url, '_blank');
+  };
+
+  const startAdGeneration = () => {
+    setMessages(prev => [...prev, { id: Date.now().toString(), from:"user", text:"Comenzar mi día de trabajo" }])
+    setPhase("loading_ads")
     setTimeout(() => {
-      addBotMsg(f.botReply)
-      if (f.next === "active") {
-        setTimeout(() => addBotMsg("", "products"), 800)
-        setTimeout(() => addBotMsg("", "upload"), 1600)
-      }
-      setPhase(f.next)
-    }, 600)
+      addBotMsg("Buscando productos estratégicos y generando diseños publicitarios con Inteligencia Artificial. Esto tomará unos segundos... ⏳")
+      
+      setTimeout(() => {
+        const locations = ["Cumbayá, Quito", "Samborondón, Guayaquil", "La Carolina, Quito", "Valle de los Tumbaco", "Urdesa, Guayaquil"]
+        const ads = products.map(p => {
+          const randomLocation = locations[Math.floor(Math.random() * locations.length)]
+          const priceStr = p.price ? `$${p.price.toFixed(2)}` : "Consultar precio"
+          // Pollinations AI prompt for realistic banner
+          const prompt = `Professional commercial advertisement banner for ${p.name}, clean white background, high quality lighting, generic standard features text, with a small flag of Ecuador and a simple black and white atom logo in the corner, 4k resolution`
+          const imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?nologo=true&width=1080&height=1080`
+          
+          return {
+            id: p.id,
+            img: imgUrl,
+            text: `**Título:** 🌟 Increíble ${p.name} 🚀\n**Precio:** ${priceStr}\n**Descripción:** Mejora la seguridad y comodidad de tu hogar o negocio con este producto élite. Calidad garantizada, soporte continuo e instalación profesional. ¡Aprovecha ahora!\n**Ubicación:** ${randomLocation}\n**SKU:**\n**Palabras claves:** #tecnologia #seguridad #ecuador #atomicindustries #hogar #innovacion`
+          }
+        })
+        
+        setGeneratedAds(ads)
+        
+        addBotMsg("Querido asesor a continuación se sitúan los textos que podrás usar para desarrollar tus publicaciones. Es importante que no te saltes estas indicaciones:\n\n1. En **Título** usa uno llamativo con emojis.\n2. En **Precio** usa el indicado.\n3. En **Descripción** puedes copiarla o mejorarla para personalizarla.\n4. En **Ubicación** usa nuestras sugerencias estratégicas.\n5. En **Palabras claves** pégalas tal cual.\n6. En **SKU** no pongas nada.")
+        
+        setTimeout(() => {
+            addBotMsg("", "ad_texts")
+            setTimeout(() => {
+                addBotMsg("Aquí tienes los diseños generados especialmente para ti, con la bandera de Ecuador y nuestro logo en formato profesional:", "ad_images")
+                setPhase("ads_ready")
+            }, 1000)
+        }, 1000)
+
+      }, 2500)
+    }, 500)
+  }
+
+  const handleUserReply = (text: string) => {
+    // Custom logic if user types something
+    setMessages(prev => [...prev, { id: Date.now().toString(), from:"user", text }])
+    if (phase === "onboarding") {
+        startAdGeneration()
+    } else if (phase === "ads_ready") {
+        setPhase("upload_mode")
+        addBotMsg("¡Excelente! Ahora procede a publicar estos anuncios. Cuando termines, sube tus evidencias aquí mismo.", "upload")
+    } else {
+        addBotMsg("Recibido. Usa los botones correspondientes a tu fase actual o sube tus capturas/teléfonos.")
+    }
   }
 
   const handleSend = () => {
@@ -210,31 +264,49 @@ export default function BotRutaPage() {
         {/* Messages */}
         <div className="flex-1 overflow-y-auto p-6 space-y-4">
           {messages.map(msg => {
-            if (msg.type === "products") {
+            if (msg.type === "ad_texts") {
               return (
-                <div key={msg.id} className="grid grid-cols-3 gap-3 max-w-2xl">
-                  {products.map((p,i) => (
-                    <div key={i} className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
-                      <div className="h-24 bg-slate-100 flex items-center justify-center overflow-hidden">
-                        {p.images?.[0] ? <img src={p.images[0]} className="w-full h-full object-cover" alt={p.name}/> : <ImageIcon size={24} className="text-slate-300"/>}
-                      </div>
-                      <div className="p-2">
-                        <p className="text-xs font-bold text-[#0F172A] truncate">{p.name}</p>
-                        <p className="text-xs text-indigo-600 font-black">${p.price?.toFixed(2)}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                  <div key={msg.id} className="max-w-2xl space-y-4">
+                      {generatedAds.map((ad, i) => (
+                          <div key={i} className="bg-slate-50 border border-slate-200 rounded-xl p-4 shadow-sm font-sans text-sm text-slate-700 whitespace-pre-wrap">
+                              {ad.text.split('\n').map((line: string, idx: number) => {
+                                  const isBold = line.startsWith('**') && line.includes('**', 2);
+                                  if (isBold) {
+                                      const parts = line.split('**');
+                                      return <p key={idx} className="mb-1"><strong>{parts[1]}</strong>{parts.slice(2).join('')}</p>
+                                  }
+                                  return <p key={idx} className="mb-1">{line}</p>
+                              })}
+                          </div>
+                      ))}
+                      <button onClick={handleDownloadPDF} className="mt-2 bg-indigo-100 text-indigo-700 px-4 py-2 rounded-lg font-bold text-xs hover:bg-indigo-200 transition-colors">
+                          📄 Descargar Textos en PDF
+                      </button>
+                  </div>
               )
+            }
+            if (msg.type === "ad_images") {
+                return (
+                  <div key={msg.id} className="max-w-2xl mt-2">
+                      <p className="text-sm font-medium text-slate-600 mb-3">{msg.text}</p>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          {generatedAds.map((ad, i) => (
+                              <div key={i} className="rounded-xl overflow-hidden shadow-md border border-slate-200 bg-white">
+                                  <img src={ad.img} className="w-full aspect-square object-cover" alt="Publicidad Generada" />
+                              </div>
+                          ))}
+                      </div>
+                  </div>
+                )
             }
             if (msg.type === "upload") {
               return (
                 <div key={msg.id} className="max-w-md">
                   <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-4 space-y-3">
-                    <p className="text-sm font-bold text-indigo-700">📸 Meta semanal: {rewardConfig.goal || "5 capturas mínimo"}</p>
-                    <p className="text-xs text-slate-600 font-medium">Sube capturas mostrando cada publicación de forma independiente. Cada captura = 1 publicación.</p>
+                    <p className="text-sm font-bold text-indigo-700">📸 Sube tus evidencias</p>
+                    <p className="text-xs text-slate-600 font-medium">Recuerda que cada captura debe mostrar una publicación independiente en tus redes.</p>
                     <label className="flex items-center gap-2 bg-white border border-indigo-200 text-indigo-700 px-4 py-2.5 rounded-lg font-bold text-sm cursor-pointer hover:bg-indigo-50 transition-colors w-full justify-center">
-                      <Camera size={16}/> Subir Capturas
+                      <Camera size={16}/> Seleccionar Imágenes
                       <input type="file" accept="image/*" multiple className="hidden" onChange={handleScreenshotUpload}/>
                     </label>
                     {screenshots.length > 0 && (
@@ -251,17 +323,16 @@ export default function BotRutaPage() {
                     <Bot size={16} className="text-indigo-600"/>
                   </div>
                 )}
-                <div className={`max-w-[75%] px-4 py-3 rounded-2xl text-sm font-medium shadow-sm ${msg.from==="bot" ? "bg-slate-50 border border-slate-200 text-[#0F172A] rounded-tl-sm" : "bg-indigo-600 text-white rounded-tr-sm"}`}>
+                <div className={`max-w-[75%] px-4 py-3 rounded-2xl text-sm font-medium shadow-sm ${msg.from==="bot" ? "bg-slate-50 border border-slate-200 text-[#0F172A] rounded-tl-sm whitespace-pre-wrap" : "bg-indigo-600 text-white rounded-tr-sm"}`}>
                   {msg.text?.split("**").map((part, i) => i%2===1 ? <strong key={i}>{part}</strong> : <span key={i}>{part}</span>)}
                   {phase==="onboarding" && msg.id==="1" && (
-                    <div className="flex gap-2 mt-3">
-                      <button onClick={() => handleUserReply("¡Listo! Cuéntame más.")} className="bg-indigo-600 text-white px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-indigo-700 transition-colors">¡Listo!</button>
+                    <div className="flex gap-2 mt-4">
+                      <button onClick={startAdGeneration} className="bg-indigo-600 text-white px-5 py-2 rounded-lg text-xs font-bold hover:bg-indigo-700 transition-colors w-full shadow-sm">🚀 Comenzar mi día de trabajo</button>
                     </div>
                   )}
-                  {phase==="company" && msg.from==="bot" && (
-                    <div className="flex gap-2 mt-3">
-                      <button onClick={() => handleUserReply("Sí, deseo empezar")} className="bg-emerald-500 text-white px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-emerald-600 transition-colors">✅ Sí</button>
-                      <button onClick={() => handleUserReply("No por ahora")} className="bg-slate-200 text-slate-700 px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-slate-300 transition-colors">❌ No</button>
+                  {phase==="ads_ready" && msg.type==="ad_images" && (
+                    <div className="flex gap-2 mt-4">
+                      <button onClick={() => { setPhase("upload_mode"); addBotMsg("¡Excelente! Ahora procede a publicar. Cuando termines, sube tus evidencias.", "upload") }} className="bg-emerald-500 text-white px-5 py-2 rounded-lg text-xs font-bold hover:bg-emerald-600 transition-colors w-full shadow-sm">📸 Ya publiqué, subir evidencias</button>
                     </div>
                   )}
                 </div>
