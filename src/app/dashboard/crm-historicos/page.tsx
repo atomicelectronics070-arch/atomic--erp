@@ -7,8 +7,8 @@ import {
     Search, Plus, UserPlus, FileText, Database, User, Calendar, 
     MessageSquare, Clock, MapPin, Phone, Mail, Edit2, 
     Save, X, Filter, BarChart3, ChevronRight, Zap, Target,
-    List, MoreHorizontal, LayoutGrid, CheckCircle2, AlertCircle,
-    PlayCircle, Folders, PhoneCall, Tag, Trash2, ArrowRight, ShoppingBag
+    PlayCircle, Folders, PhoneCall, Tag, Trash2, ArrowRight, ShoppingBag, Copy, ExternalLink,
+    TrendingUp, MessageCircle, Share, RefreshCw
 } from "lucide-react"
 
 export default function CRMHistoricosPage() {
@@ -76,6 +76,80 @@ export default function CRMHistoricosPage() {
         setEditForm({ status: "PROSPECTO", source: "MANUAL", purchaseCount: 0 })
         setActiveTab("RESUMEN")
         setIsDrawerOpen(true)
+    }
+
+    const handleAddPromotion = async () => {
+        if (!selectedClient) return
+        try {
+            const updatedClient = {
+                ...selectedClient,
+                campaignsSent: (selectedClient.campaignsSent || 0) + 1,
+                lastPromotion: new Date().toISOString()
+            }
+            const res = await fetch(`/api/crm/${selectedClient.id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(updatedClient)
+            })
+            if (res.ok) {
+                const data = await res.json()
+                setSelectedClient(data)
+                setEditForm({ ...editForm, campaignsSent: data.campaignsSent, lastPromotion: data.lastPromotion })
+                fetchClients()
+            }
+        } catch(e) {
+            console.error(e)
+        }
+    }
+
+    const handleDuplicateQuote = async (quote: any) => {
+        if (!confirm("¿Deseas duplicar esta cotización?")) return;
+        
+        try {
+            const newQuoteData = {
+                quoteNumber: quote.quoteNumber + "-COPY-" + Math.floor(Math.random() * 1000),
+                globalQuoteNumber: quote.globalQuoteNumber,
+                clientName: selectedClient.name,
+                clientEmail: selectedClient.email,
+                clientPhone: selectedClient.phone,
+                city: selectedClient.city,
+                subtotal: quote.subtotal,
+                tax: quote.tax,
+                discountPercent: quote.discountPercent || 0,
+                total: quote.total,
+                items: JSON.parse(quote.itemsData || "[]"),
+                deliveryAddress: quote.deliveryAddress,
+                warrantyComments: quote.warrantyComments,
+                advisorName: quote.advisorName,
+                status: "DRAFT",
+                quoteSubject: "Copia de " + quote.quoteNumber
+            };
+
+            const res = await fetch("/api/quotes", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(newQuoteData)
+            });
+
+            if (res.ok) {
+                // Refresh client data to fetch the new quote
+                fetchClients();
+                alert("Cotización duplicada con éxito. Revisa el listado.");
+            }
+        } catch(e) {
+            console.error(e)
+        }
+    }
+
+    const handleAddTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter' && e.currentTarget.value.trim() !== '') {
+            const newTag = e.currentTarget.value.trim().toUpperCase()
+            const currentTags = editForm.tags ? editForm.tags.split(',').map((t: string) => t.trim()) : []
+            if (!currentTags.includes(newTag)) {
+                setEditForm({ ...editForm, tags: [...currentTags, newTag].join(', ') })
+            }
+            e.currentTarget.value = ''
+        }
     }
 
     const handleSaveClient = async () => {
@@ -291,9 +365,30 @@ export default function CRMHistoricosPage() {
                                                 </div>
                                             </td>
                                             <td className="py-4 px-6">
-                                                <div className="space-y-1">
-                                                    <div className="flex items-center gap-2 text-sm text-slate-600"><Mail size={12} className="text-slate-400" /> {client.email || '—'}</div>
-                                                    <div className="flex items-center gap-2 text-sm text-slate-600"><Phone size={12} className="text-slate-400" /> {client.phone || '—'}</div>
+                                                <div className="space-y-1.5">
+                                                    <div className="flex items-center gap-2 text-sm text-slate-600 group/item">
+                                                        <Mail size={12} className="text-slate-400" /> 
+                                                        <span className="truncate max-w-[150px]">{client.email || '—'}</span>
+                                                        {client.email && (
+                                                            <button onClick={(e) => { e.stopPropagation(); navigator.clipboard.writeText(client.email) }} className="opacity-0 group-hover/item:opacity-100 p-1 hover:bg-slate-200 rounded text-slate-400 transition-all">
+                                                                <Copy size={10} />
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                    <div className="flex items-center gap-2 text-sm text-slate-600 group/item">
+                                                        <Phone size={12} className="text-slate-400" /> 
+                                                        {client.phone || '—'}
+                                                        {client.phone && (
+                                                            <>
+                                                                <button onClick={(e) => { e.stopPropagation(); navigator.clipboard.writeText(client.phone) }} className="opacity-0 group-hover/item:opacity-100 p-1 hover:bg-slate-200 rounded text-slate-400 transition-all">
+                                                                    <Copy size={10} />
+                                                                </button>
+                                                                <a href={`https://wa.me/${client.phone.replace(/\D/g, '')}`} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()} className="opacity-0 group-hover/item:opacity-100 p-1 hover:bg-emerald-100 hover:text-emerald-600 rounded text-slate-400 transition-all">
+                                                                    <MessageCircle size={10} />
+                                                                </a>
+                                                            </>
+                                                        )}
+                                                    </div>
                                                 </div>
                                             </td>
                                             <td className="py-4 px-6">
@@ -395,13 +490,27 @@ export default function CRMHistoricosPage() {
                                                 </select>
                                             </div>
                                             <div className="flex-1 space-y-2">
-                                                <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Asignación en Playlists (Etiquetas)</label>
+                                                <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Etiquetas Dinámicas</label>
+                                                <div className="flex flex-wrap gap-2 mb-2 min-h-[32px] bg-slate-50 border border-slate-200 p-2 rounded-lg">
+                                                    {editForm.tags ? editForm.tags.split(',').filter(Boolean).map((tag: string, i: number) => (
+                                                        <span key={i} className="px-2 py-1 bg-indigo-100 text-indigo-700 text-[10px] font-bold rounded flex items-center gap-1 group">
+                                                            {tag.trim().toUpperCase()}
+                                                            <button 
+                                                                onClick={() => {
+                                                                    const tArr = editForm.tags.split(',').map((t: string) => t.trim())
+                                                                    tArr.splice(i, 1)
+                                                                    setEditForm({...editForm, tags: tArr.join(', ')})
+                                                                }} 
+                                                                className="opacity-0 group-hover:opacity-100 ml-1 hover:text-red-500"
+                                                            ><X size={10}/></button>
+                                                        </span>
+                                                    )) : <span className="text-xs text-slate-400 italic py-1">Sin etiquetas</span>}
+                                                </div>
                                                 <input 
                                                     type="text"
-                                                    placeholder="Ej: VIP, Navidad, Corporativo..."
-                                                    value={editForm.tags || ""}
-                                                    onChange={(e) => setEditForm({...editForm, tags: e.target.value})}
-                                                    className="w-full bg-slate-50 border border-slate-200 p-3 text-sm font-bold text-[#0F172A] rounded-lg outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all uppercase"
+                                                    placeholder="Escribe y presiona Enter para añadir..."
+                                                    onKeyDown={handleAddTag}
+                                                    className="w-full bg-slate-50 border border-slate-200 p-2.5 text-sm font-bold text-[#0F172A] rounded-lg outline-none focus:border-indigo-500 transition-all uppercase placeholder:normal-case placeholder:text-slate-400 placeholder:font-normal"
                                                 />
                                             </div>
                                         </div>
@@ -429,8 +538,13 @@ export default function CRMHistoricosPage() {
                                                     <MetricCard label="Compras" value={editForm.purchaseCount || 0} icon={<ShoppingBag size={18} className="text-emerald-500" />} />
                                                     <MetricCard label="Cotizaciones" value={editForm.quotes?.length || 0} icon={<FileText size={18} className="text-blue-500" />} />
                                                     <MetricCard label="Promociones" value={editForm.campaignsSent || 0} icon={<Zap size={18} className="text-amber-500" />} />
-                                                    <div className="bg-slate-50 border border-slate-100 rounded-lg p-4">
-                                                        <div className="flex items-center gap-2 mb-2"><Calendar size={18} className="text-indigo-500" /> <span className="text-[10px] font-black uppercase text-slate-500">Última Promo</span></div>
+                                                    <div className="bg-slate-50 border border-slate-100 rounded-lg p-4 relative group">
+                                                        <div className="flex justify-between items-start mb-2">
+                                                            <div className="flex items-center gap-2"><Calendar size={18} className="text-indigo-500" /> <span className="text-[10px] font-black uppercase text-slate-500">Última Promo</span></div>
+                                                            <button onClick={handleAddPromotion} title="Registrar Promoción Hoy" className="p-1.5 bg-amber-100 text-amber-600 hover:bg-amber-500 hover:text-white rounded transition-colors opacity-0 group-hover:opacity-100 shadow-sm">
+                                                                <Zap size={14} />
+                                                            </button>
+                                                        </div>
                                                         <p className="text-lg font-bold text-[#0F172A]">{editForm.lastPromotion ? new Date(editForm.lastPromotion).toLocaleDateString() : 'Ninguna'}</p>
                                                     </div>
                                                 </div>
@@ -509,13 +623,18 @@ export default function CRMHistoricosPage() {
                                         ) : (
                                             <div className="grid grid-cols-2 gap-6">
                                                 {selectedClient.quotes.map((q: any) => (
-                                                    <div key={q.id} className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm hover:shadow-md hover:border-indigo-200 transition-all group flex flex-col justify-between">
+                                                    <div key={q.id} className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm hover:shadow-md hover:border-indigo-200 transition-all group flex flex-col justify-between relative">
+                                                        <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                            <button onClick={() => handleDuplicateQuote(q)} className="p-1.5 bg-slate-100 text-slate-600 hover:bg-indigo-100 hover:text-indigo-600 rounded transition-colors" title="Duplicar Cotización">
+                                                                <Copy size={14} />
+                                                            </button>
+                                                        </div>
                                                         <div>
                                                             <div className="flex justify-between items-start mb-4">
                                                                 <div className="w-10 h-10 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
                                                                     <FileText size={20} />
                                                                 </div>
-                                                                <span className="text-xs font-bold px-2.5 py-1 bg-slate-100 text-slate-600 rounded-md uppercase">{q.status}</span>
+                                                                <span className="text-[10px] font-black px-2.5 py-1 bg-slate-100 text-slate-600 rounded-md uppercase mr-6">{q.status}</span>
                                                             </div>
                                                             <h4 className="text-lg font-black text-[#0F172A] mb-1">{q.quoteNumber}</h4>
                                                             <p className="text-xs font-medium text-slate-500 mb-6">{new Date(q.createdAt).toLocaleDateString()}</p>
