@@ -7,7 +7,7 @@ import {
     User, ShieldCheck, Mail, Phone, MapPin, 
     MessageSquare, History, X, ChevronRight,
     Briefcase, Save, Clock, Search, CheckCircle2,
-    FileText, Zap, Building2, Tag, Percent
+    FileText, Zap, Building2, Tag, Percent, ShoppingCart
 } from "lucide-react"
 import jsPDF from "jspdf"
 import autoTable from "jspdf-autotable"

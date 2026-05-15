@@ -7,6 +7,7 @@ import {
     Search, Plus, UserPlus, FileText, Database, User, Calendar, 
     MessageSquare, Clock, MapPin, Phone, Mail, Edit2, 
     Save, X, Filter, BarChart3, ChevronRight, Zap, Target,
+    List, MoreHorizontal, LayoutGrid, CheckCircle2, AlertCircle,
     PlayCircle, Folders, PhoneCall, Tag, Trash2, ArrowRight, ShoppingBag, Copy, ExternalLink,
     TrendingUp, MessageCircle, Share, RefreshCw
 } from "lucide-react"
