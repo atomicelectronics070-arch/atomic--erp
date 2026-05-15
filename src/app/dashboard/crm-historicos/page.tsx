@@ -36,6 +36,11 @@ export default function CRMHistoricosPage() {
     const [activeTab, setActiveTab] = useState<"RESUMEN" | "BITACORA" | "COTIZACIONES">("RESUMEN")
     const [newObservation, setNewObservation] = useState("")
 
+    // Pendientes State
+    const [isAddingPendiente, setIsAddingPendiente] = useState(false)
+    const [pendienteForm, setPendienteForm] = useState({ type: "Nota de venta", description: "" })
+    const [expandedPendientes, setExpandedPendientes] = useState<Record<string, boolean>>({})
+
     useEffect(() => {
         fetchClients()
         if (isAdmin) fetchUsers()
@@ -149,6 +154,58 @@ export default function CRMHistoricosPage() {
                 setEditForm({ ...editForm, tags: [...currentTags, newTag].join(', ') })
             }
             e.currentTarget.value = ''
+        }
+    }
+
+    const handleAddPendiente = async () => {
+        if (!pendienteForm.description.trim()) return;
+        const newPendiente = {
+            id: Math.random().toString(36).substr(2, 9),
+            type: pendienteForm.type,
+            description: pendienteForm.description,
+            date: new Date().toISOString()
+        }
+        
+        let currentPendientes = []
+        if (editForm.pendientes) {
+            try { currentPendientes = JSON.parse(editForm.pendientes) } catch(e) {}
+        }
+        
+        const updatedPendientes = JSON.stringify([...currentPendientes, newPendiente])
+        const updatedClient = { ...editForm, pendientes: updatedPendientes }
+        setEditForm(updatedClient)
+        
+        if (selectedClient?.id) {
+            fetch(`/api/crm/${selectedClient.id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(updatedClient)
+            }).then(() => fetchClients())
+        }
+        
+        setIsAddingPendiente(false)
+        setPendienteForm({ type: "Nota de venta", description: "" })
+    }
+
+    const handleRemovePendiente = async (idToRemove: string, e: any) => {
+        e.stopPropagation();
+        if (!confirm("¿Estás seguro de eliminar este pendiente? Ya ha sido resuelto?")) return;
+        let currentPendientes = []
+        if (editForm.pendientes) {
+            try { currentPendientes = JSON.parse(editForm.pendientes) } catch(e) {}
+        }
+        
+        const filtered = currentPendientes.filter((p: any) => p.id !== idToRemove)
+        const updatedPendientes = JSON.stringify(filtered)
+        const updatedClient = { ...editForm, pendientes: updatedPendientes }
+        setEditForm(updatedClient)
+        
+        if (selectedClient?.id) {
+            fetch(`/api/crm/${selectedClient.id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(updatedClient)
+            }).then(() => fetchClients())
         }
     }
 
@@ -515,6 +572,59 @@ export default function CRMHistoricosPage() {
                                             </div>
                                         </div>
 
+                                        {/* PENDIENTES SECTION */}
+                                        <div className="bg-white p-8 rounded-xl border border-slate-200 shadow-sm">
+                                            <div className="flex justify-between items-center mb-6 border-b border-slate-100 pb-4">
+                                                <h3 className="text-sm font-black uppercase tracking-wider text-[#0F172A] flex items-center gap-2">
+                                                    <AlertCircle size={16} className="text-amber-500" /> Tareas Pendientes
+                                                </h3>
+                                                <button onClick={() => setIsAddingPendiente(true)} className="text-xs font-bold bg-slate-100 text-slate-600 hover:bg-amber-100 hover:text-amber-600 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1">
+                                                    <Plus size={14} /> Añadir Pendiente
+                                                </button>
+                                            </div>
+                                            
+                                            <div className="flex flex-wrap gap-3">
+                                                {(() => {
+                                                    let parsedPendientes = [];
+                                                    try { parsedPendientes = editForm.pendientes ? JSON.parse(editForm.pendientes) : []; } catch(e) {}
+                                                    
+                                                    if (parsedPendientes.length === 0) {
+                                                        return <p className="text-sm text-slate-400 italic w-full text-center py-4">No hay tareas pendientes asociadas a este cliente.</p>
+                                                    }
+
+                                                    return parsedPendientes.map((p: any) => (
+                                                        <div key={p.id} className="relative group bg-slate-50 border border-slate-200 rounded-lg p-3 w-full sm:w-[calc(50%-6px)] shadow-sm">
+                                                            <div className="flex justify-between items-start">
+                                                                <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 bg-white border border-slate-200 rounded text-amber-600 mb-2 inline-block shadow-sm">
+                                                                    {p.type}
+                                                                </span>
+                                                                <div className="flex items-center gap-1">
+                                                                    <button 
+                                                                        onClick={() => setExpandedPendientes({...expandedPendientes, [p.id]: !expandedPendientes[p.id]})}
+                                                                        className="p-1 text-slate-400 hover:bg-slate-200 hover:text-slate-700 rounded transition-colors"
+                                                                        title="Ver descripción"
+                                                                    >
+                                                                        <MoreHorizontal size={14} />
+                                                                    </button>
+                                                                    <button 
+                                                                        onClick={(e) => handleRemovePendiente(p.id, e)}
+                                                                        className="p-1 text-slate-400 hover:bg-red-100 hover:text-red-500 rounded transition-colors"
+                                                                        title="Eliminar pendiente"
+                                                                    >
+                                                                        <Trash2 size={14} />
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                            <p className={`text-sm text-[#0F172A] font-medium transition-all overflow-hidden ${expandedPendientes[p.id] ? '' : 'line-clamp-2'}`}>
+                                                                {p.description}
+                                                            </p>
+                                                            <p className="text-[9px] font-bold text-slate-400 mt-2 uppercase">{new Date(p.date).toLocaleDateString()}</p>
+                                                        </div>
+                                                    ));
+                                                })()}
+                                            </div>
+                                        </div>
+
                                         <div className="bg-white p-8 rounded-xl border border-slate-200 shadow-sm">
                                             <h3 className="text-sm font-black uppercase tracking-wider text-[#0F172A] mb-6 flex items-center gap-2 border-b border-slate-100 pb-4">
                                                 <User size={16} className="text-indigo-600" /> Información Principal
@@ -655,6 +765,67 @@ export default function CRMHistoricosPage() {
                                 )}
                             </div>
                         </motion.div>
+                        
+                        {/* PENDIENTES MODAL */}
+                        {isAddingPendiente && (
+                            <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+                                <motion.div 
+                                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                                    className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
+                                    onClick={() => setIsAddingPendiente(false)}
+                                />
+                                <motion.div 
+                                    initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
+                                    className="relative bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 border border-slate-200"
+                                >
+                                    <h3 className="text-lg font-black text-[#0F172A] mb-4 flex items-center gap-2">
+                                        <AlertCircle size={20} className="text-amber-500" /> Añadir Nuevo Pendiente
+                                    </h3>
+                                    
+                                    <div className="space-y-4">
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Tipo de Pendiente</label>
+                                            <select 
+                                                value={pendienteForm.type}
+                                                onChange={(e) => setPendienteForm({...pendienteForm, type: e.target.value})}
+                                                className="w-full bg-slate-50 border border-slate-200 p-3 text-sm font-bold text-[#0F172A] rounded-lg outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all"
+                                            >
+                                                <option value="Nota de venta">Nota de Venta</option>
+                                                <option value="Devolución">Devolución</option>
+                                                <option value="Cancelación de pedido">Cancelación de Pedido</option>
+                                                <option value="Garantía">Garantía</option>
+                                                <option value="Otro">Otro Asunto</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Descripción del Problema/Pendiente</label>
+                                            <textarea 
+                                                value={pendienteForm.description}
+                                                onChange={(e) => setPendienteForm({...pendienteForm, description: e.target.value})}
+                                                placeholder="Describe el problema, número de orden asociado o situación actual..."
+                                                className="w-full bg-slate-50 border border-slate-200 p-3 text-sm font-medium text-[#0F172A] rounded-lg outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all min-h-[120px] resize-none"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="mt-6 flex gap-3">
+                                        <button 
+                                            onClick={() => setIsAddingPendiente(false)}
+                                            className="flex-1 px-4 py-2.5 bg-slate-100 text-slate-600 font-bold rounded-lg hover:bg-slate-200 transition-colors"
+                                        >
+                                            Cancelar
+                                        </button>
+                                        <button 
+                                            onClick={handleAddPendiente}
+                                            className="flex-1 px-4 py-2.5 bg-amber-500 text-white font-bold rounded-lg hover:bg-amber-600 transition-colors shadow-sm"
+                                        >
+                                            Guardar Pendiente
+                                        </button>
+                                    </div>
+                                </motion.div>
+                            </div>
+                        )}
                     </>
                 )}
             </AnimatePresence>

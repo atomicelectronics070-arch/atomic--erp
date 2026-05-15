@@ -26,7 +26,8 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
                 purchaseCount: body.purchaseCount,
                 cedula: body.cedula,
                 lastPromotion: body.lastPromotion ? new Date(body.lastPromotion) : null,
-                tags: body.tags
+                tags: body.tags,
+                pendientes: body.pendientes
             }
         })
         return NextResponse.json(client)
