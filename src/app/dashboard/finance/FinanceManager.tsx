@@ -304,9 +304,14 @@ export default function FinanceManager() {
                                     <td className="px-6 py-4 text-right">
                                         <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all">
                                             {isAdmin && (
-                                                <button onClick={() => handleOpenModal(item)} className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors">
-                                                    <Edit3 size={16} />
-                                                </button>
+                                                <>
+                                                    <button onClick={() => handleOpenModal(item)} className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors">
+                                                        <Edit3 size={16} />
+                                                    </button>
+                                                    <button onClick={() => handleDelete(item.id)} className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors">
+                                                        <Trash2 size={16} />
+                                                    </button>
+                                                </>
                                             )}
                                         </div>
                                     </td>
