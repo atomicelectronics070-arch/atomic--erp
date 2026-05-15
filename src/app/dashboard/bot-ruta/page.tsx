@@ -296,6 +296,13 @@ export default function BotRutaPage() {
                               </div>
                           ))}
                       </div>
+                      {phase==="ads_ready" && (
+                        <div className="flex gap-2 mt-4">
+                          <button onClick={() => { setPhase("upload_mode"); addBotMsg("¡Excelente! Ahora procede a publicar. Cuando termines, sube tus evidencias.", "upload") }} className="bg-emerald-500 text-white px-5 py-3 rounded-lg text-sm font-bold hover:bg-emerald-600 transition-colors w-full shadow-sm">
+                              📸 Ya publiqué, subir evidencias
+                          </button>
+                        </div>
+                      )}
                   </div>
                 )
             }
@@ -328,11 +335,6 @@ export default function BotRutaPage() {
                   {phase==="onboarding" && msg.id==="1" && (
                     <div className="flex gap-2 mt-4">
                       <button onClick={startAdGeneration} className="bg-indigo-600 text-white px-5 py-2 rounded-lg text-xs font-bold hover:bg-indigo-700 transition-colors w-full shadow-sm">🚀 Comenzar mi día de trabajo</button>
-                    </div>
-                  )}
-                  {phase==="ads_ready" && msg.type==="ad_images" && (
-                    <div className="flex gap-2 mt-4">
-                      <button onClick={() => { setPhase("upload_mode"); addBotMsg("¡Excelente! Ahora procede a publicar. Cuando termines, sube tus evidencias.", "upload") }} className="bg-emerald-500 text-white px-5 py-2 rounded-lg text-xs font-bold hover:bg-emerald-600 transition-colors w-full shadow-sm">📸 Ya publiqué, subir evidencias</button>
                     </div>
                   )}
                 </div>
