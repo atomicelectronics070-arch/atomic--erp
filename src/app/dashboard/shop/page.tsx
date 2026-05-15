@@ -19,7 +19,18 @@ import {
     getStoreSettings,
     updateStoreSettings,
     searchProductsForTaxonomy,
-    cleanupDuplicateProducts
+    cleanupDuplicateProducts,
+    bulkUpdateProducts,
+    deleteManyProducts,
+    restoreManyProducts,
+    permanentDeleteManyProducts,
+    deleteProduct,
+    restoreProduct,
+    permanentDeleteProduct,
+    toggleProductFeatured,
+    saveProduct,
+    saveCategory,
+    saveCollection
 } from "@/lib/actions/shop"
 
 export default function ShopConfigPage() {
@@ -40,16 +51,26 @@ export default function ShopConfigPage() {
     const [isTrashView, setIsTrashView] = useState(false)
     const [providerStats, setProviderStats] = useState<any[]>([])
     const [isCleaning, setIsCleaning] = useState(false)
+    const [storeSettings, setStoreSettings] = useState<any>({
+        currency: 'USD',
+        shippingCost: 0,
+        freeShippingThreshold: 0,
+        bannerText: '',
+        bannerActive: false,
+        banners: { software: {}, automation: {}, gaming: {} }
+    })
 
     const refreshData = async () => {
         setLoading(true)
         try {
-            const [pRes, mRes] = await Promise.all([
+            const [pRes, mRes, sRes] = await Promise.all([
                 fetch(`/api/public/shop/products?page=${currentPage}&limit=${pageSize}&search=${dashboardSearch}&isTrash=${isTrashView}`),
-                fetch('/api/web/metadata')
+                fetch('/api/web/metadata'),
+                fetch('/api/shop/settings')
             ])
             const pData = await pRes.json()
             const mData = await mRes.json()
+            const sData = await sRes.json()
             
             setProducts(pData.products || [])
             setTotalProducts(pData.total || 0)
@@ -57,6 +78,7 @@ export default function ShopConfigPage() {
                 categories: mData.categories || [],
                 collections: mData.collections || []
             })
+            if (sData) setStoreSettings(sData)
             
             // Extract provider stats from products
             const statsMap: Record<string, number> = {}
@@ -80,7 +102,7 @@ export default function ShopConfigPage() {
     const saveSettings = async () => {
         setLoading(true)
         try {
-            const res = await updateStoreSettings({ /* shop settings logic */ })
+            const res = await updateStoreSettings(storeSettings)
             if (res.success) alert("Protocolo comprometido.")
         } finally {
             setLoading(false)
@@ -128,6 +150,69 @@ export default function ShopConfigPage() {
         } finally {
             setIsCleaning(false)
         }
+    }
+
+    const toggleAllProducts = () => {
+        if (selectedProducts.length === products.length && products.length > 0) {
+            setSelectedProducts([])
+        } else {
+            setSelectedProducts(products.map(p => p.id))
+        }
+    }
+
+    const handleBulkEdit = async (data: any) => {
+        setLoading(true)
+        try {
+            await bulkUpdateProducts(selectedProducts, data)
+            setShowBulkEdit(false)
+            setSelectedProducts([])
+            refreshData()
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const handleBulkDeleteProducts = async () => {
+        if (!confirm(`¿Mover ${selectedProducts.length} productos a la papelera?`)) return
+        try {
+            await deleteManyProducts(selectedProducts)
+            setSelectedProducts([])
+            refreshData()
+        } catch (e) { alert("Error en el borrado masivo.") }
+    }
+
+    const handleBulkRestore = async () => {
+        try {
+            await restoreManyProducts(selectedProducts)
+            setSelectedProducts([])
+            refreshData()
+        } catch (e) { alert("Error en la restauración.") }
+    }
+
+    const handleBulkPermanentDelete = async () => {
+        if (!confirm("¡ADVERTENCIA! Estos productos se eliminarán de forma PERMANENTE. ¿Continuar?")) return
+        try {
+            await permanentDeleteManyProducts(selectedProducts)
+            setSelectedProducts([])
+            refreshData()
+        } catch (e) { alert("Error en la eliminación permanente.") }
+    }
+
+    const handleDeleteProduct = async (id: string) => {
+        if (!confirm("¿Mover producto a la papelera?")) return
+        await deleteProduct(id)
+        refreshData()
+    }
+
+    const handleRestoreProduct = async (id: string) => {
+        await restoreProduct(id)
+        refreshData()
+    }
+
+    const handlePermanentDeleteProduct = async (id: string) => {
+        if (!confirm("¿ELIMINAR PERMANENTEMENTE? Esta acción no se puede deshacer.")) return
+        await permanentDeleteProduct(id)
+        refreshData()
     }
 
     return (
