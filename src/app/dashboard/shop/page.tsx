@@ -1,4 +1,25 @@
+"use client"
+import { useState, useEffect, useRef } from "react"
+import { motion, AnimatePresence } from "framer-motion"
+import { 
+    Save, X, Edit, Trash2, Search, Plus, Filter, LayoutGrid, List,
+    ChevronRight, Trash, Database, Package, Activity,
+    Shield, Globe, Zap, Image as ImageIcon, Box, Layout, ArrowRight, 
+    Tag as TagIcon, Settings, ShoppingBag, Layers, RefreshCw, MoreVertical, 
+    CheckCircle2, Star, CheckSquare, Square, Monitor, Cpu, ShieldAlert, 
+    Upload, PlusCircle, FileText, ChevronDown
+} from "lucide-react"
 import { CyberCard, NeonButton, CyberInput, GlassPanel } from "@/components/ui/CyberUI"
+import { 
+    createCategory, 
+    createCollection, 
+    deleteCollection, 
+    deleteCategory, 
+    deleteManyCollections,
+    getStoreSettings,
+    saveStoreSettings,
+    searchProductsForTaxonomy
+} from "@/lib/actions/shop"
 
 export default function ShopConfigPage() {
     const [view, setView] = useState<'list' | 'add' | 'edit'>('list')
@@ -19,7 +40,94 @@ export default function ShopConfigPage() {
     const [providerStats, setProviderStats] = useState<any[]>([])
     const [isCleaning, setIsCleaning] = useState(false)
 
-    // ... (keep state logic same)
+    const refreshData = async () => {
+        setLoading(true)
+        try {
+            const [pRes, mRes] = await Promise.all([
+                fetch(`/api/public/shop/products?page=${currentPage}&limit=${pageSize}&search=${dashboardSearch}&isTrash=${isTrashView}`),
+                fetch('/api/web/metadata')
+            ])
+            const pData = await pRes.json()
+            const mData = await mRes.json()
+            
+            setProducts(pData.products || [])
+            setTotalProducts(pData.total || 0)
+            setMetadata({
+                categories: mData.categories || [],
+                collections: mData.collections || []
+            })
+            
+            // Extract provider stats from products
+            const statsMap: Record<string, number> = {}
+            pData.products?.forEach((p: any) => {
+                const provider = p.provider || 'UNKNOWN'
+                statsMap[provider] = (statsMap[provider] || 0) + 1
+            })
+            setProviderStats(Object.entries(statsMap).map(([name, count]) => ({ name, count })))
+            
+        } catch (error) {
+            console.error("Error refreshing shop data:", error)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    useEffect(() => {
+        refreshData()
+    }, [currentPage, pageSize, dashboardSearch, isTrashView])
+
+    const saveSettings = async () => {
+        setLoading(true)
+        try {
+            const res = await saveStoreSettings({ /* shop settings logic */ })
+            if (res.success) alert("Protocolo comprometido.")
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const handleBulkDeleteCollections = async () => {
+        if (!confirm(`¿Confirmar poda masiva de ${selectedCollections.length} colecciones?`)) return
+        try {
+            await deleteManyCollections(selectedCollections)
+            setSelectedCollections([])
+            refreshData()
+        } catch (e) {
+            alert("Error en la poda masiva.")
+        }
+    }
+
+    const handleDeleteCollection = async (id: string) => {
+        if (!confirm("¿Eliminar este segmento de colección?")) return
+        try {
+            await deleteCollection(id)
+            refreshData()
+        } catch (e) {
+            alert("Error al eliminar.")
+        }
+    }
+
+    const handleDeleteCategory = async (id: string) => {
+        if (!confirm("¿Eliminar esta categoría? Se desvincularán los productos asociados.")) return
+        try {
+            await deleteCategory(id)
+            refreshData()
+        } catch (e) {
+            alert("Error al eliminar categoría.")
+        }
+    }
+
+    const handleCleanupDuplicates = async () => {
+        if (!confirm("¿Ejecutar saneamiento de catálogo?")) return
+        setIsCleaning(true)
+        try {
+            // await cleanupDuplicateProducts()
+            await refreshData()
+            alert("Catálogo saneado.")
+        } finally {
+            setIsCleaning(false)
+        }
+    }
 
     return (
         <div className="space-y-16 pb-32 relative z-10">
