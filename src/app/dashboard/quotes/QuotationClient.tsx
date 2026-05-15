@@ -220,69 +220,71 @@ export default function QuotationClient({ initialProducts, initialHistory, nextN
         }
 
         const doc = new jsPDF()
-        const primaryColor = [79, 70, 229] // Indigo-600
-        const secondaryColor = [15, 23, 42] // Slate-900
-        const lightGray = [241, 245, 249] // Slate-100
+        const primaryColor = [15, 23, 42] // Slate-900
+        const accentColor = [79, 70, 229] // Indigo-600
         
-        // Header Banner
-        doc.setFillColor(secondaryColor[0], secondaryColor[1], secondaryColor[2])
-        doc.rect(0, 0, 210, 40, 'F')
+        // Logo / Company Name
+        doc.setFont("helvetica", "bold")
+        doc.setFontSize(26)
+        doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2])
+        doc.text("ATOMIC", 14, 25)
         
-        doc.setFontSize(24)
-        doc.setTextColor(255, 255, 255)
-        doc.text("ATOMIC ERP", 14, 25)
+        doc.setFont("helvetica", "normal")
+        doc.setFontSize(14)
+        doc.setTextColor(accentColor[0], accentColor[1], accentColor[2])
+        doc.text("INDUSTRIES", 57, 25)
         
-        doc.setFontSize(10)
-        doc.setTextColor(200, 200, 200)
-        doc.text("Soluciones Tecnológicas e Industriales", 14, 32)
+        doc.setFontSize(9)
+        doc.setTextColor(100, 100, 100)
+        doc.text("Soluciones Tecnológicas e Industriales de Alto Rendimiento", 14, 32)
+        doc.text("División Corporativa | Quito, Ecuador", 14, 37)
         
         // Quote Info Right Side
-        doc.setFontSize(20)
-        doc.setTextColor(255, 255, 255)
-        doc.text("COTIZACIÓN", 195, 20, { align: "right" })
-        
-        doc.setFontSize(12)
+        doc.setFontSize(22)
+        doc.setFont("helvetica", "bold")
         doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2])
-        doc.text(quoteNumber, 195, 28, { align: "right" })
-        
-        doc.setFontSize(9)
-        doc.setTextColor(200, 200, 200)
-        doc.text(`Fecha: ${new Date().toLocaleDateString()}`, 195, 34, { align: "right" })
-        
-        // Client Info Block
-        doc.setFillColor(lightGray[0], lightGray[1], lightGray[2])
-        doc.rect(14, 45, 90, 35, 'F')
+        doc.text("COTIZACIÓN", 195, 25, { align: "right" })
         
         doc.setFontSize(10)
-        doc.setTextColor(secondaryColor[0], secondaryColor[1], secondaryColor[2])
+        doc.setFont("helvetica", "normal")
+        doc.setTextColor(100, 100, 100)
+        doc.text(`Doc No.: ${quoteNumber}`, 195, 32, { align: "right" })
+        doc.text(`Fecha: ${new Date().toLocaleDateString()}`, 195, 37, { align: "right" })
+        
+        doc.setDrawColor(220, 220, 220)
+        doc.line(14, 42, 196, 42) // Separator line
+        
+        // Client Info
+        doc.setFontSize(10)
         doc.setFont("helvetica", "bold")
-        doc.text("PREPARADO PARA:", 18, 52)
+        doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2])
+        doc.text("PREPARADO PARA:", 14, 52)
         
         doc.setFont("helvetica", "normal")
         doc.setFontSize(9)
-        doc.text(clientName, 18, 58)
-        doc.text(`Email: ${emailNotSpecified ? "No especificado" : clientEmail}`, 18, 64)
-        doc.text(`Tel: ${clientPhone}`, 18, 70)
-        doc.text(`Ciudad: ${clientCity}`, 18, 76)
+        doc.setTextColor(50, 50, 50)
+        doc.text(clientName.toUpperCase(), 14, 58)
+        doc.text(`Ciudad: ${clientCity}`, 14, 63)
+        doc.text(`Tel: ${clientPhone}`, 14, 68)
+        doc.text(`Email: ${emailNotSpecified ? "No especificado" : clientEmail}`, 14, 73)
         
-        // Project Info Block
-        doc.setFillColor(lightGray[0], lightGray[1], lightGray[2])
-        doc.rect(106, 45, 90, 35, 'F')
-        
+        // Project Info
         doc.setFontSize(10)
         doc.setFont("helvetica", "bold")
-        doc.text("DETALLES DEL PROYECTO:", 110, 52)
+        doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2])
+        doc.text("DETALLES DEL PROYECTO:", 106, 52)
         
         doc.setFont("helvetica", "normal")
         doc.setFontSize(9)
-        doc.text(quoteSubject.substring(0, 45), 110, 58)
-        doc.text(`Asesor: ${advisorName}`, 110, 64)
-        doc.text(`Estado Inicial: ${status}`, 110, 70)
+        doc.setTextColor(50, 50, 50)
+        const splitSubject = doc.splitTextToSize(quoteSubject.toUpperCase(), 85)
+        doc.text(splitSubject, 106, 58)
+        doc.text(`Asesor Comercial: ${advisorName}`, 106, 68 + ((splitSubject.length - 1) * 4))
         
         // Table
         autoTable(doc, {
-            startY: 90,
-            head: [["IMG", "ITEM", "DESCRIPCIÓN", "CANT", "UNITARIO", "TOTAL"]],
+            startY: 85,
+            head: [["IMG", "CÓDIGO", "DESCRIPCIÓN", "CANT", "UNITARIO", "TOTAL"]],
             body: items.map(i => [
                 '', // Placeholder for image
                 i.productId, 
@@ -291,10 +293,9 @@ export default function QuotationClient({ initialProducts, initialHistory, nextN
                 `$${i.unitPrice.toFixed(2)}`, 
                 `$${(i.quantity * i.unitPrice).toFixed(2)}`
             ]),
-            theme: 'grid',
-            headStyles: { fillColor: primaryColor, textColor: 255, fontStyle: 'bold', fontSize: 9 },
-            bodyStyles: { fontSize: 9, textColor: 50, minCellHeight: 14 },
-            alternateRowStyles: { fillColor: [250, 250, 250] },
+            theme: 'plain',
+            headStyles: { fillColor: [248, 250, 252], textColor: [15, 23, 42], fontStyle: 'bold', fontSize: 9, lineWidth: 0.1, lineColor: [226, 232, 240] },
+            bodyStyles: { fontSize: 9, textColor: 50, minCellHeight: 14, lineWidth: 0.1, lineColor: [226, 232, 240] },
             columnStyles: {
                 0: { cellWidth: 15, halign: 'center' },
                 1: { cellWidth: 25 },
@@ -328,11 +329,13 @@ export default function QuotationClient({ initialProducts, initialHistory, nextN
         const finalY = (doc as any).lastAutoTable.finalY + 10;
         
         // Totals Block
-        doc.setFillColor(lightGray[0], lightGray[1], lightGray[2])
+        doc.setFillColor(248, 250, 252)
         doc.rect(130, finalY, 66, 35, 'F')
+        doc.setDrawColor(226, 232, 240)
+        doc.rect(130, finalY, 66, 35, 'S')
         
         doc.setFontSize(10)
-        doc.setTextColor(secondaryColor[0], secondaryColor[1], secondaryColor[2])
+        doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2])
         doc.setFont("helvetica", "bold")
         doc.text("Subtotal:", 135, finalY + 8)
         doc.setFont("helvetica", "normal")
@@ -350,7 +353,6 @@ export default function QuotationClient({ initialProducts, initialHistory, nextN
             doc.setFont("helvetica", "normal")
             doc.text(`-$${discountAmount.toFixed(2)}`, 190, finalY + 24, { align: "right" })
             
-            // Adjust finalY to fit the total below discount
             doc.setFontSize(12)
             doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2])
             doc.setFont("helvetica", "bold")
@@ -369,7 +371,7 @@ export default function QuotationClient({ initialProducts, initialHistory, nextN
         doc.setTextColor(150, 150, 150)
         doc.setFont("helvetica", "normal")
         doc.text("Condiciones: Esta cotización tiene una validez de 15 días. Los valores incluyen IVA.", 14, 280)
-        doc.text("Forma de pago: Según acuerdo comercial vigente.", 14, 285)
+        doc.text("Forma de pago: Según acuerdo comercial vigente. Los productos están sujetos a disponibilidad de stock.", 14, 285)
 
         doc.save(`${quoteNumber}_${clientName.replace(/\s+/g, "_")}.pdf`)
 
