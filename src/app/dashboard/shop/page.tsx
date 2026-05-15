@@ -1958,4 +1958,15 @@ function ProductItem({ product, isSelected, onClick }: { product: any, isSelecte
     )
 }
 
+function safeParseArray(data: any, fallback: any[] = []): any[] {
+    if (!data) return fallback
+    if (Array.isArray(data)) return data
+    try {
+        const parsed = typeof data === 'string' ? JSON.parse(data) : data
+        return Array.isArray(parsed) ? parsed : fallback
+    } catch (e) {
+        return fallback
+    }
+}
+
 
