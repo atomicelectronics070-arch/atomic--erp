@@ -134,11 +134,11 @@ export async function POST(req: Request) {
         
         if (targets.includes('instagram')) {
             const match = formatsResponse.match(/\[INSTAGRAM\]([\s\S]*?)\[\/INSTAGRAM\]/i);
-            platformContents.instagram = match ? match[1].trim() : `${finalText} 🚀\n\n${generatedHashtags}`;
+            platformContents.instagram = match ? match[1].trim() : `${finalText}\n\n${generatedHashtags}`;
         }
         if (targets.includes('facebook')) {
             const match = formatsResponse.match(/\[FACEBOOK\]([\s\S]*?)\[\/FACEBOOK\]/i);
-            platformContents.facebook = match ? match[1].trim() : `¡Hola! 👋\n${finalText}`;
+            platformContents.facebook = match ? match[1].trim() : `Hola!\n${finalText}`;
         }
         if (targets.includes('youtube')) {
             const match = formatsResponse.match(/\[YOUTUBE\]([\s\S]*?)\[\/YOUTUBE\]/i);
