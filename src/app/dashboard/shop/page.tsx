@@ -17,8 +17,9 @@ import {
     deleteCategory, 
     deleteManyCollections,
     getStoreSettings,
-    saveStoreSettings,
-    searchProductsForTaxonomy
+    updateStoreSettings,
+    searchProductsForTaxonomy,
+    cleanupDuplicateProducts
 } from "@/lib/actions/shop"
 
 export default function ShopConfigPage() {
@@ -79,7 +80,7 @@ export default function ShopConfigPage() {
     const saveSettings = async () => {
         setLoading(true)
         try {
-            const res = await saveStoreSettings({ /* shop settings logic */ })
+            const res = await updateStoreSettings({ /* shop settings logic */ })
             if (res.success) alert("Protocolo comprometido.")
         } finally {
             setLoading(false)
@@ -121,7 +122,7 @@ export default function ShopConfigPage() {
         if (!confirm("¿Ejecutar saneamiento de catálogo?")) return
         setIsCleaning(true)
         try {
-            // await cleanupDuplicateProducts()
+            await cleanupDuplicateProducts()
             await refreshData()
             alert("Catálogo saneado.")
         } finally {
