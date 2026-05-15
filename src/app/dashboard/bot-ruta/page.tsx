@@ -411,7 +411,7 @@ export default function BotRutaPage() {
           </div>
 
           {/* Phone mode toggle */}
-          {phase==="upload_mode" || phase==="active" || phase==="phone_mode" ? (
+          {phase==="upload_mode" || phase==="phone_mode" ? (
             <button onClick={() => { setPhase("phone_mode"); addBotMsg("¡Perfecto! Ingresa el número de teléfono de tu cliente y lo registraremos. Recuerda: es muy importante intentar obtener los datos, aunque no son obligatorios si el cliente no desea proporcionarlos.") }} className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-3 rounded-xl font-bold text-sm hover:bg-blue-700 transition-colors">
               <Phone size={16}/> Registrar Teléfono
             </button>
