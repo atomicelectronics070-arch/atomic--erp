@@ -15,7 +15,6 @@ import {
   Users, Database, Layout, List, Phone, MapPin,
   Mail, Save, History, ExternalLink, MoreVertical
 } from 'lucide-react';
-import { CyberCard, NeonButton, CyberInput, GlassPanel } from '@/components/ui/CyberUI';
 
 const API_BASE = '/api';
 const WHATSAPP_SERVER = process.env.NEXT_PUBLIC_WHATSAPP_SERVER_URL || 'http://localhost:3001';
@@ -84,7 +83,7 @@ export default function WhatsAppCRMDashboard() {
     return () => { socket.disconnect(); };
   }, [activeInstance, actualUserId]);
 
-  // 🔄 POLLING FALLBACK
+  // POLLING FALLBACK
   useEffect(() => {
     if (pollingRef.current) clearInterval(pollingRef.current);
     if (status === 'connected') return;
@@ -120,7 +119,7 @@ export default function WhatsAppCRMDashboard() {
     try { 
         await axios.post(`${WHATSAPP_SERVER}/api/whatsapp/init`, { id: activeInstance }); 
         setStatus('initializing');
-    } catch (e) { alert("Falla en el despliegue del nodo."); }
+    } catch (e) { alert("Falla en la vinculación del nodo."); }
     setLoading(false);
   };
 
@@ -147,7 +146,6 @@ export default function WhatsAppCRMDashboard() {
       const res = await axios.get(`${API_BASE}/whatsapp/messages/${activeInstance}/${chat.id}`);
       setMessages(res.data);
       
-      // Pre-fill save form
       setSaveFormData(prev => ({
         ...prev,
         whatsappId: chat.id.split('@')[0],
@@ -176,43 +174,34 @@ export default function WhatsAppCRMDashboard() {
         if (res.status === 200) {
             setIsSaveModalOpen(false);
             fetchCrmGroups();
-            alert("CONTACTO SINCRONIZADO CON ÉXITO AL CRM");
+            alert("Contacto sincronizado con éxito al CRM.");
         }
     } catch (e) {
-        alert("ERROR AL GUARDAR EN CRM");
+        alert("Error al guardar en el CRM.");
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#020617] text-slate-200 font-sans selection:bg-[#00F0FF]/30">
-      
-      {/* Background FX */}
-      <div className="fixed inset-0 pointer-events-none opacity-20">
-        <div className="absolute top-0 left-0 w-full h-full bg-[url('/grid.svg')] bg-repeat opacity-10" />
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#00F0FF]/10 blur-[120px] animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-500/10 blur-[120px] animate-pulse delay-700" />
-      </div>
-
-      <div className="relative z-10 flex h-screen overflow-hidden">
+    <div className="flex h-[calc(100vh-4rem)] bg-slate-50 font-sans border-t border-slate-200">
         
         {/* SIDEBAR: NAVIGATOR */}
-        <div className="w-[380px] border-r border-white/5 bg-slate-950/50 backdrop-blur-3xl flex flex-col">
-            <div className="p-8 border-b border-white/5 space-y-6">
+        <div className="w-[380px] bg-white border-r border-slate-200 flex flex-col shadow-sm z-10">
+            <div className="p-6 border-b border-slate-100 space-y-6">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <div className="w-2 h-2 bg-[#00F0FF] shadow-[0_0_10px_#00F0FF] animate-pulse" />
-                        <h1 className="text-xl font-black uppercase tracking-tighter italic">WHATSAPP <span className="text-[#00F0FF]">CRM</span></h1>
+                        <div className={`w-2.5 h-2.5 rounded-full ${status === 'connected' ? 'bg-emerald-500' : 'bg-slate-300'}`} />
+                        <h1 className="text-xl font-black text-[#0F172A] tracking-tight">WhatsApp CRM</h1>
                     </div>
-                    <div className="flex bg-slate-900/50 p-1 border border-white/5">
+                    <div className="flex bg-slate-100 p-1 rounded-lg border border-slate-200">
                         <button 
                             onClick={() => setActiveTab('chats')}
-                            className={`p-2 transition-all ${activeTab === 'chats' ? 'bg-[#00F0FF] text-slate-950' : 'text-slate-500 hover:text-white'}`}
+                            className={`p-2 transition-all rounded-md flex items-center justify-center ${activeTab === 'chats' ? 'bg-white shadow-sm text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}
                         >
                             <MessageSquare size={16} />
                         </button>
                         <button 
                             onClick={() => setActiveTab('crm')}
-                            className={`p-2 transition-all ${activeTab === 'crm' ? 'bg-indigo-500 text-white' : 'text-slate-500 hover:text-white'}`}
+                            className={`p-2 transition-all rounded-md flex items-center justify-center ${activeTab === 'crm' ? 'bg-white shadow-sm text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}
                         >
                             <Users size={16} />
                         </button>
@@ -220,68 +209,80 @@ export default function WhatsAppCRMDashboard() {
                 </div>
 
                 <div className="relative">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600" size={14} />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
                     <input 
                         type="text" 
-                        placeholder="BUSCAR FRECUENCIA..." 
-                        className="w-full bg-slate-900/50 border border-white/5 pl-12 pr-4 py-3 text-[10px] font-black uppercase tracking-widest italic outline-none focus:border-[#00F0FF]/30 transition-all"
+                        placeholder="Buscar conversaciones..." 
+                        className="w-full bg-slate-50 border border-slate-200 pl-10 pr-4 py-2.5 rounded-lg text-sm font-medium text-slate-700 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder:text-slate-400"
                     />
                 </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto custom-scrollbar">
+            <div className="flex-1 overflow-y-auto custom-scrollbar bg-slate-50/50">
                 <AnimatePresence mode="wait">
                     {activeTab === 'chats' ? (
-                        <motion.div key="chats" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="divide-y divide-white/5">
+                        <motion.div key="chats" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="divide-y divide-slate-100">
                             {chats.map(chat => (
                                 <div 
                                     key={chat.id} 
                                     onClick={() => selectChat(chat)}
-                                    className={`p-6 cursor-pointer hover:bg-white/[0.02] transition-all group relative ${selectedChat?.id === chat.id ? 'bg-[#00F0FF]/5' : ''}`}
+                                    className={`p-5 cursor-pointer hover:bg-slate-100 transition-all group relative ${selectedChat?.id === chat.id ? 'bg-indigo-50/50' : 'bg-white'}`}
                                 >
-                                    {selectedChat?.id === chat.id && <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#00F0FF]" />}
-                                    <div className="flex justify-between items-start mb-2">
-                                        <h4 className="text-[11px] font-black uppercase tracking-tight italic group-hover:text-[#00F0FF] transition-colors truncate">
+                                    {selectedChat?.id === chat.id && <div className="absolute left-0 top-0 bottom-0 w-1 bg-indigo-600 rounded-r" />}
+                                    <div className="flex justify-between items-start mb-1">
+                                        <h4 className="text-sm font-bold text-[#0F172A] truncate pr-2">
                                             {chat.name || chat.id.split('@')[0]}
                                         </h4>
-                                        <span className="text-[8px] font-black text-slate-700 uppercase italic">
+                                        <span className="text-xs font-semibold text-slate-400 whitespace-nowrap">
                                             {chat.t && new Date(chat.t * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                         </span>
                                     </div>
-                                    <p className="text-[9px] font-bold text-slate-500 truncate italic">
-                                        {chat.lastMessage?.body || 'LISTA_EN_ESPERA...'}
+                                    <p className="text-xs text-slate-500 truncate font-medium">
+                                        {chat.lastMessage?.body || 'Esperando mensajes...'}
                                     </p>
                                 </div>
                             ))}
+                            {chats.length === 0 && status === 'connected' && (
+                                <div className="p-8 text-center">
+                                    <p className="text-sm text-slate-500 font-medium">No hay chats recientes</p>
+                                </div>
+                            )}
                         </motion.div>
                     ) : (
-                        <motion.div key="crm" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="p-4 space-y-4">
+                        <motion.div key="crm" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="p-4 space-y-3">
                             {Object.entries(crmGroups).map(([cat, list]) => (
-                                <div key={cat} className="space-y-2">
+                                <div key={cat} className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
                                     <button 
                                         onClick={() => setSelectedCategory(selectedCategory === cat ? null : cat)}
-                                        className={`w-full flex items-center justify-between p-4 border border-white/5 transition-all ${selectedCategory === cat ? 'bg-indigo-500/10 border-indigo-500/30' : 'bg-slate-900/30 hover:bg-white/5'}`}
+                                        className={`w-full flex items-center justify-between p-4 transition-all ${selectedCategory === cat ? 'bg-indigo-50 border-b border-indigo-100' : 'hover:bg-slate-50'}`}
                                     >
                                         <div className="flex items-center gap-3">
-                                            <Database size={12} className={selectedCategory === cat ? 'text-indigo-400' : 'text-slate-500'} />
-                                            <span className="text-[10px] font-black uppercase tracking-widest italic">{cat}</span>
+                                            <Database size={16} className={selectedCategory === cat ? 'text-indigo-600' : 'text-slate-400'} />
+                                            <span className="text-xs font-bold text-[#0F172A] uppercase tracking-wider">{cat}</span>
                                         </div>
-                                        <span className="text-[9px] font-black opacity-30">{list.length}</span>
+                                        <span className="bg-slate-100 text-slate-600 text-xs font-bold px-2 py-1 rounded-md">{list.length}</span>
                                     </button>
                                     <AnimatePresence>
                                         {selectedCategory === cat && (
-                                            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden space-y-1 pl-4">
+                                            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden bg-slate-50">
+                                                <div className="p-2 space-y-1">
                                                 {list.map(client => (
-                                                    <div key={client.id} className="p-4 bg-white/[0.02] border border-white/5 hover:border-indigo-500/30 cursor-pointer transition-all">
-                                                        <p className="text-[10px] font-black uppercase italic">{client.firstName} {client.lastName}</p>
-                                                        <p className="text-[8px] font-bold text-slate-500 italic mt-1">{client.phone}</p>
+                                                    <div key={client.id} className="p-3 bg-white border border-slate-100 rounded-lg hover:border-indigo-200 cursor-pointer transition-all shadow-sm">
+                                                        <p className="text-sm font-bold text-[#0F172A]">{client.firstName} {client.lastName}</p>
+                                                        <p className="text-xs font-medium text-slate-500 mt-1">{client.phone}</p>
                                                     </div>
                                                 ))}
+                                                </div>
                                             </motion.div>
                                         )}
                                     </AnimatePresence>
                                 </div>
                             ))}
+                            {Object.keys(crmGroups).length === 0 && (
+                                <div className="p-8 text-center">
+                                    <p className="text-sm text-slate-500 font-medium">No hay grupos en el CRM</p>
+                                </div>
+                            )}
                         </motion.div>
                     )}
                 </AnimatePresence>
@@ -289,44 +290,44 @@ export default function WhatsAppCRMDashboard() {
         </div>
 
         {/* MAIN AREA: INTERACTION */}
-        <div className="flex-1 flex flex-col bg-black/40 relative overflow-hidden">
+        <div className="flex-1 flex flex-col relative bg-white">
             {activeTab === 'chats' ? (
                 selectedChat ? (
                     <>
                         {/* Chat Header */}
-                        <div className="p-8 border-b border-white/5 bg-slate-950/80 backdrop-blur-xl flex justify-between items-center z-20">
-                            <div className="flex items-center gap-6">
-                                <div className="w-14 h-14 bg-slate-900 border border-white/10 flex items-center justify-center font-black text-xl text-[#00F0FF] italic">
+                        <div className="px-8 py-6 border-b border-slate-200 bg-white flex justify-between items-center z-20 shadow-sm">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 bg-indigo-50 border border-indigo-100 rounded-xl flex items-center justify-center font-black text-xl text-indigo-600">
                                     {selectedChat.name?.[0] || selectedChat.id[0]}
                                 </div>
                                 <div>
-                                    <h3 className="text-xl font-black uppercase tracking-tighter italic">{selectedChat.name || selectedChat.id.split('@')[0]}</h3>
-                                    <div className="flex items-center gap-2 mt-1">
-                                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                        <span className="text-[9px] font-black text-emerald-500 uppercase tracking-widest">TRANSMISIÓN_ACTIVA</span>
+                                    <h3 className="text-lg font-black text-[#0F172A]">{selectedChat.name || selectedChat.id.split('@')[0]}</h3>
+                                    <div className="flex items-center gap-2 mt-0.5">
+                                        <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                                        <span className="text-xs font-bold text-slate-500">Conectado</span>
                                     </div>
                                 </div>
                             </div>
-                            <div className="flex gap-4">
+                            <div className="flex gap-3">
                                 <button 
                                     onClick={() => setIsSaveModalOpen(true)}
-                                    className="flex items-center gap-3 bg-white text-slate-950 px-6 py-3 text-[10px] font-black uppercase tracking-widest italic hover:bg-[#00F0FF] transition-all"
+                                    className="flex items-center gap-2 bg-indigo-50 text-indigo-700 border border-indigo-200 px-4 py-2 rounded-lg text-sm font-bold hover:bg-indigo-100 transition-all shadow-sm"
                                 >
-                                    <Save size={14} />
-                                    GUARDAR EN CRM
+                                    <Save size={16} />
+                                    Guardar en CRM
                                 </button>
-                                <button className="p-4 bg-slate-900 border border-white/10 text-slate-500 hover:text-white transition-all"><MoreVertical size={16} /></button>
+                                <button className="p-2 border border-slate-200 rounded-lg text-slate-500 hover:text-[#0F172A] hover:bg-slate-50 transition-all"><MoreVertical size={18} /></button>
                             </div>
                         </div>
 
                         {/* Messages Area */}
-                        <div className="flex-1 overflow-y-auto p-12 space-y-8 custom-scrollbar">
+                        <div className="flex-1 overflow-y-auto p-8 space-y-6 bg-slate-50/50 custom-scrollbar">
                             <AnimatePresence mode="popLayout">
                                 {messages.map((m, i) => (
                                     <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className={`flex ${m.fromMe ? 'justify-end' : 'justify-start'}`}>
-                                        <div className={`p-6 max-w-[70%] text-[13px] font-bold uppercase tracking-tight italic relative ${m.fromMe ? 'bg-indigo-600/20 text-indigo-100 border border-indigo-500/30' : 'bg-slate-900/80 text-slate-100 border border-white/5'}`}>
+                                        <div className={`p-4 max-w-[75%] text-sm font-medium rounded-2xl relative shadow-sm ${m.fromMe ? 'bg-indigo-600 text-white rounded-tr-sm' : 'bg-white text-slate-700 border border-slate-200 rounded-tl-sm'}`}>
                                             {m.body}
-                                            <span className="block mt-2 text-[8px] opacity-30 text-right">
+                                            <span className={`block mt-2 text-[10px] text-right font-bold ${m.fromMe ? 'text-indigo-200' : 'text-slate-400'}`}>
                                                 {new Date(m.timestamp * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                             </span>
                                         </div>
@@ -335,125 +336,137 @@ export default function WhatsAppCRMDashboard() {
                             </AnimatePresence>
                         </div>
 
-                        {/* Input terminal */}
-                        <div className="p-8 border-t border-white/5 bg-slate-950/50 backdrop-blur-xl">
+                        {/* Input Area */}
+                        <div className="p-6 border-t border-slate-200 bg-white">
                             <form onSubmit={(e) => { e.preventDefault(); sendMessage(); }} className="flex gap-4">
                                 <input 
                                     value={messageInput}
                                     onChange={(e) => setMessageInput(e.target.value)}
-                                    placeholder="ESCRIBIR MENSAJE..."
-                                    className="flex-1 bg-slate-900 border border-white/10 p-6 text-sm font-black text-white italic outline-none focus:border-indigo-500/50 transition-all uppercase"
+                                    placeholder="Escribe un mensaje..."
+                                    className="flex-1 bg-slate-50 border border-slate-200 px-6 py-4 rounded-xl text-sm font-medium text-[#0F172A] outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
                                 />
-                                <button className="bg-indigo-600 text-white px-10 hover:bg-indigo-500 transition-all"><Send size={24} /></button>
+                                <button type="submit" disabled={!messageInput || loading} className="bg-indigo-600 text-white px-8 rounded-xl font-bold hover:bg-indigo-700 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                                    <Send size={20} />
+                                </button>
                             </form>
                         </div>
                     </>
                 ) : (
-                    <div className="flex-1 flex flex-col items-center justify-center p-24 text-center">
+                    <div className="flex-1 flex flex-col items-center justify-center p-12 text-center bg-slate-50/50">
                         <AnimatePresence mode="wait">
                             {status === 'disconnected' && !loading && (
-                                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
-                                    <MessageSquare size={80} className="text-white/5 mb-8 mx-auto" />
-                                    <p className="text-2xl font-black uppercase tracking-[0.5em] italic text-white/20">SISTEMA_OFFLINE</p>
-                                    <button onClick={initWhatsApp} className="bg-[#00F0FF] text-slate-950 px-12 py-5 font-black uppercase tracking-widest italic hover:bg-white transition-all">
-                                        INICIAR VINCULACIÓN
+                                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6 max-w-sm w-full">
+                                    <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                                        <MessageSquare size={32} className="text-slate-400" />
+                                    </div>
+                                    <h2 className="text-2xl font-black text-[#0F172A]">Sistema Desconectado</h2>
+                                    <p className="text-sm text-slate-500 font-medium">Vincula tu cuenta de WhatsApp para comenzar a gestionar los chats.</p>
+                                    <button onClick={initWhatsApp} className="w-full bg-indigo-600 text-white px-8 py-3.5 rounded-xl font-bold hover:bg-indigo-700 transition-all shadow-sm mt-4">
+                                        Iniciar Vinculación
                                     </button>
                                 </motion.div>
                             )}
 
                             {(loading || (status === 'initializing' && !qr)) && (
-                                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
-                                    <div className="w-20 h-20 border-4 border-t-[#00F0FF] border-[#00F0FF]/20 rounded-full animate-spin mx-auto" />
-                                    <p className="text-[10px] font-black uppercase tracking-[0.8em] text-[#00F0FF] animate-pulse italic">Sincronizando_Núcleo...</p>
+                                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
+                                    <div className="w-16 h-16 border-4 border-slate-200 border-t-indigo-600 rounded-full animate-spin mx-auto" />
+                                    <p className="text-sm font-bold text-slate-600 tracking-wider uppercase">Sincronizando Servicio...</p>
                                 </motion.div>
                             )}
 
                             {status === 'initializing' && qr && (
-                                <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="space-y-10">
-                                    <div className="bg-white p-6 inline-block shadow-[0_0_50px_rgba(0,240,255,0.2)]">
-                                        <QRCodeCanvas value={qr} size={280} level="H" includeMargin />
+                                <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="space-y-8 max-w-sm w-full bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
+                                    <div className="bg-white p-4 border border-slate-100 rounded-xl inline-block shadow-sm">
+                                        <QRCodeCanvas value={qr} size={240} level="H" includeMargin />
                                     </div>
-                                    <div className="space-y-4">
-                                        <p className="text-xl font-black uppercase italic tracking-tighter">ESCANEA PARA VINCULAR</p>
-                                        <a href={`${WHATSAPP_SERVER}/api/whatsapp/qr/${activeInstance}/image`} target="_blank" rel="noreferrer" className="block text-[11px] text-[#00F0FF] hover:underline uppercase font-black bg-[#00F0FF]/10 p-3 border border-[#00F0FF]/20">
-                                            🚀 ABRIR QR EN PESTAÑA NUEVA (SOLUCIÓN FINAL)
+                                    <div className="space-y-3">
+                                        <h3 className="text-lg font-black text-[#0F172A]">Escanea para Vincular</h3>
+                                        <a href={`${WHATSAPP_SERVER}/api/whatsapp/qr/${activeInstance}/image`} target="_blank" rel="noreferrer" className="block text-xs font-bold text-indigo-600 hover:text-indigo-700 hover:underline bg-indigo-50 py-3 rounded-lg border border-indigo-100 transition-colors">
+                                            Abrir QR en nueva pestaña
                                         </a>
                                     </div>
-                                    <button onClick={resetNode} className="text-[10px] font-black text-white/30 hover:text-[#00F0FF] uppercase tracking-widest transition-all italic">
-                                        REINTENTAR / RESET
+                                    <button onClick={resetNode} className="text-xs font-bold text-slate-400 hover:text-slate-600 transition-all uppercase tracking-wider">
+                                        Reintentar Conexión
                                     </button>
                                 </motion.div>
                             )}
                             
                             {status === 'connected' && (
-                                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
-                                    <MessageSquare size={80} className="text-white/5 mb-8 mx-auto" />
-                                    <p className="text-2xl font-black uppercase tracking-[0.5em] italic text-white/10">ESPERANDO_FRECUENCIA</p>
-                                    <button className="bg-[#25D366] text-white px-12 py-5 font-black uppercase tracking-widest italic hover:bg-[#128C7E] transition-all flex items-center gap-3 mx-auto shadow-[0_0_20px_rgba(37,211,102,0.3)]">
-                                        <MessageSquare size={20} />
-                                        NUEVA TRANSMISIÓN WA
-                                    </button>
+                                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
+                                    <div className="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                                        <CheckCircle2 size={32} className="text-emerald-500" />
+                                    </div>
+                                    <h2 className="text-2xl font-black text-[#0F172A]">Conexión Establecida</h2>
+                                    <p className="text-sm text-slate-500 font-medium">Selecciona un chat del panel lateral para comenzar a enviar mensajes.</p>
                                 </motion.div>
                             )}
                         </AnimatePresence>
                     </div>
                 )
             ) : (
-                <div className="flex-1 flex flex-col p-12 overflow-hidden">
+                <div className="flex-1 flex flex-col p-8 bg-slate-50/50 overflow-hidden">
                     {selectedCategory ? (
-                        <div className="space-y-8 h-full flex flex-col">
-                            <div className="flex justify-between items-end border-b border-white/10 pb-6">
+                        <div className="space-y-8 h-full flex flex-col bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden p-8">
+                            <div className="flex justify-between items-end border-b border-slate-100 pb-6">
                                 <div>
-                                    <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest italic mb-2">BASE DE DATOS ACTIVA</p>
-                                    <h3 className="text-4xl font-black uppercase italic tracking-tighter">{selectedCategory}</h3>
+                                    <p className="text-xs font-bold text-indigo-600 uppercase tracking-widest mb-1">Base de Datos Activa</p>
+                                    <h3 className="text-3xl font-black text-[#0F172A]">{selectedCategory}</h3>
                                 </div>
-                                <div className="text-right">
-                                    <p className="text-[10px] font-black text-slate-500 uppercase italic">CONTACTOS TOTALES</p>
-                                    <p className="text-2xl font-black text-white italic">{crmGroups[selectedCategory]?.length || 0}</p>
+                                <div className="text-right bg-slate-50 px-6 py-3 rounded-xl border border-slate-100">
+                                    <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Total Contactos</p>
+                                    <p className="text-2xl font-black text-[#0F172A]">{crmGroups[selectedCategory]?.length || 0}</p>
                                 </div>
                             </div>
 
-                            <div className="flex-1 overflow-y-auto custom-scrollbar">
+                            <div className="flex-1 overflow-y-auto custom-scrollbar pr-2">
                                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                                     {crmGroups[selectedCategory]?.map(client => (
-                                        <CyberCard key={client.id} className="!p-8 hover:border-indigo-500/50 transition-all group">
-                                            <div className="flex justify-between items-start mb-6">
-                                                <div className="w-12 h-12 bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center font-black text-indigo-400">
+                                        <div key={client.id} className="p-6 bg-white border border-slate-200 rounded-xl hover:shadow-md hover:border-indigo-300 transition-all group relative">
+                                            <div className="flex justify-between items-start mb-5">
+                                                <div className="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center font-black text-lg text-indigo-600 border border-indigo-100">
                                                     {client.firstName?.[0]}
                                                 </div>
-                                                <div className="flex gap-2">
-                                                    <button className="p-2 bg-white/5 text-slate-500 hover:text-white"><History size={14} /></button>
-                                                    <button className="p-2 bg-white/5 text-slate-500 hover:text-white"><ExternalLink size={14} /></button>
+                                                <div className="flex gap-1">
+                                                    <button className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"><History size={16} /></button>
+                                                    <button className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"><ExternalLink size={16} /></button>
                                                 </div>
                                             </div>
-                                            <h4 className="text-lg font-black uppercase italic tracking-tighter mb-1">{client.firstName} {client.lastName}</h4>
-                                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest italic mb-4">{client.phone}</p>
+                                            <h4 className="text-lg font-black text-[#0F172A] mb-1">{client.firstName} {client.lastName}</h4>
+                                            <p className="text-sm font-bold text-slate-500 mb-4">{client.phone}</p>
                                             
-                                            <div className="space-y-3 pt-4 border-t border-white/5">
-                                                <div className="flex items-center gap-3 text-[9px] font-black text-slate-400 italic">
-                                                    <Mail size={12} className="text-indigo-500/50" />
-                                                    <span>{client.email || 'SIN_EMAIL'}</span>
+                                            <div className="space-y-2 pt-4 border-t border-slate-100">
+                                                <div className="flex items-center gap-3 text-xs font-medium text-slate-600">
+                                                    <Mail size={14} className="text-slate-400" />
+                                                    <span className="truncate">{client.email || 'Sin correo electrónico'}</span>
                                                 </div>
-                                                <div className="flex items-center gap-3 text-[9px] font-black text-slate-400 italic">
-                                                    <MapPin size={12} className="text-indigo-500/50" />
-                                                    <span>{client.city || 'SIN_CIUDAD'}</span>
+                                                <div className="flex items-center gap-3 text-xs font-medium text-slate-600">
+                                                    <MapPin size={14} className="text-slate-400" />
+                                                    <span className="truncate">{client.city || 'Ciudad no especificada'}</span>
                                                 </div>
                                             </div>
 
                                             {client.requirement && (
-                                                <div className="mt-6 p-4 bg-black/40 border-l-2 border-indigo-500 text-[9px] font-bold text-slate-300 italic line-clamp-2">
+                                                <div className="mt-5 p-3 bg-slate-50 rounded-lg border border-slate-100 text-xs font-medium text-slate-600 line-clamp-2">
                                                     {client.requirement}
                                                 </div>
                                             )}
-                                        </CyberCard>
+                                        </div>
                                     ))}
+                                    {crmGroups[selectedCategory]?.length === 0 && (
+                                        <div className="col-span-full py-12 text-center text-slate-500 font-medium">
+                                            No hay contactos en esta categoría.
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
                     ) : (
-                        <div className="flex-1 flex flex-col items-center justify-center text-center">
-                            <Database size={80} className="text-white/5 mb-8" />
-                            <p className="text-2xl font-black uppercase tracking-[0.5em] italic text-white/10">SELECCIONAR_BASE_DATOS</p>
+                        <div className="flex-1 flex flex-col items-center justify-center text-center bg-white border border-slate-200 rounded-2xl shadow-sm">
+                            <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-6">
+                                <Database size={32} className="text-slate-300" />
+                            </div>
+                            <h2 className="text-xl font-black text-[#0F172A] mb-2">Selecciona una Categoría</h2>
+                            <p className="text-sm text-slate-500 font-medium max-w-sm">Elige una categoría de la barra lateral para ver y gestionar los contactos del CRM.</p>
                         </div>
                     )}
                 </div>
@@ -463,63 +476,65 @@ export default function WhatsAppCRMDashboard() {
         {/* SAVE TO CRM MODAL */}
         <AnimatePresence>
             {isSaveModalOpen && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-8 bg-slate-950/95 backdrop-blur-3xl">
-                    <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="bg-slate-900 border border-white/10 p-12 max-w-2xl w-full space-y-10 shadow-2xl relative">
-                        <div className="absolute -top-px -left-px w-12 h-px bg-indigo-500 shadow-[0_0_15px_#6366f1]" />
-                        <div className="flex justify-between items-center border-b border-white/5 pb-6">
-                            <div className="space-y-1">
-                                <h2 className="text-3xl font-black text-white uppercase italic tracking-tighter">SINCRONIZAR <span className="text-indigo-400">CRM</span></h2>
-                                <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] italic leading-none">Actualizaci\u00f3n de Inteligencia Comercial</p>
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setIsSaveModalOpen(false)} />
+                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="bg-white p-8 max-w-2xl w-full rounded-2xl shadow-xl relative z-10 border border-slate-200">
+                        <div className="flex justify-between items-center border-b border-slate-100 pb-5 mb-6">
+                            <div>
+                                <h2 className="text-2xl font-black text-[#0F172A] flex items-center gap-3">
+                                    <Save className="text-indigo-600" /> Guardar en CRM
+                                </h2>
+                                <p className="text-sm text-slate-500 font-medium mt-1">Registra este contacto para futuras campañas y seguimiento.</p>
                             </div>
-                            <button onClick={() => setIsSaveModalOpen(false)} className="p-3 bg-white/5 hover:bg-white/10 transition-all"><X size={24} /></button>
+                            <button onClick={() => setIsSaveModalOpen(false)} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-all"><X size={20} /></button>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-8">
-                            <div className="space-y-3">
-                                <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest italic">NOMBRE</label>
+                        <div className="grid grid-cols-2 gap-6 mb-8">
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Nombre</label>
                                 <input 
-                                    className="w-full bg-slate-800 border border-white/5 p-4 text-[12px] font-black text-white italic outline-none focus:border-indigo-500 uppercase"
+                                    className="w-full bg-slate-50 border border-slate-200 px-4 py-3 rounded-lg text-sm font-bold text-[#0F172A] outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                                     value={saveFormData.firstName}
                                     onChange={(e) => setSaveFormData({...saveFormData, firstName: e.target.value})}
                                 />
                             </div>
-                            <div className="space-y-3">
-                                <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest italic">APELLIDO</label>
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Apellido</label>
                                 <input 
-                                    className="w-full bg-slate-800 border border-white/5 p-4 text-[12px] font-black text-white italic outline-none focus:border-indigo-500 uppercase"
+                                    className="w-full bg-slate-50 border border-slate-200 px-4 py-3 rounded-lg text-sm font-bold text-[#0F172A] outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                                     value={saveFormData.lastName}
                                     onChange={(e) => setSaveFormData({...saveFormData, lastName: e.target.value})}
                                 />
                             </div>
-                            <div className="space-y-3">
-                                <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest italic">EMAIL</label>
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Correo Electrónico</label>
                                 <input 
-                                    className="w-full bg-slate-800 border border-white/5 p-4 text-[12px] font-black text-white italic outline-none focus:border-indigo-500 uppercase"
+                                    className="w-full bg-slate-50 border border-slate-200 px-4 py-3 rounded-lg text-sm font-medium text-[#0F172A] outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                                     value={saveFormData.email}
                                     onChange={(e) => setSaveFormData({...saveFormData, email: e.target.value})}
                                 />
                             </div>
-                            <div className="space-y-3">
-                                <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest italic">CIUDAD</label>
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Ciudad</label>
                                 <input 
-                                    className="w-full bg-slate-800 border border-white/5 p-4 text-[12px] font-black text-white italic outline-none focus:border-indigo-500 uppercase"
+                                    className="w-full bg-slate-50 border border-slate-200 px-4 py-3 rounded-lg text-sm font-medium text-[#0F172A] outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                                     value={saveFormData.city}
                                     onChange={(e) => setSaveFormData({...saveFormData, city: e.target.value})}
                                 />
                             </div>
-                            <div className="col-span-2 space-y-3">
-                                <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest italic">LISTA / CATEGOR?A CUSTOM</label>
+                            <div className="col-span-2 space-y-2">
+                                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Categoría / Grupo</label>
                                 <input 
-                                    className="w-full bg-slate-800 border border-indigo-500/30 p-4 text-[12px] font-black text-indigo-400 italic outline-none focus:border-indigo-400 uppercase"
-                                    placeholder="TEMA_01, PROSPECTOS_WEB, ETC..."
+                                    className="w-full bg-white border border-indigo-200 px-4 py-3 rounded-lg text-sm font-bold text-indigo-700 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 shadow-sm"
+                                    placeholder="Ej: CLIENTES_NUEVOS, PROSPECTOS"
                                     value={saveFormData.category}
-                                    onChange={(e) => setSaveFormData({...saveFormData, category: e.target.value})}
+                                    onChange={(e) => setSaveFormData({...saveFormData, category: e.target.value.toUpperCase()})}
                                 />
                             </div>
-                            <div className="col-span-2 space-y-3">
-                                <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest italic">REQUERIMIENTO / NOTA T%CNICA</label>
+                            <div className="col-span-2 space-y-2">
+                                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Notas / Requerimientos</label>
                                 <textarea 
-                                    className="w-full bg-slate-800 border border-white/5 p-4 text-[12px] font-black text-white italic outline-none focus:border-indigo-500 uppercase min-h-[100px] resize-none"
+                                    className="w-full bg-slate-50 border border-slate-200 px-4 py-3 rounded-lg text-sm font-medium text-[#0F172A] outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 min-h-[100px] resize-none"
                                     value={saveFormData.requirement}
                                     onChange={(e) => setSaveFormData({...saveFormData, requirement: e.target.value})}
                                 />
@@ -528,16 +543,16 @@ export default function WhatsAppCRMDashboard() {
 
                         <button 
                             onClick={handleSaveToCrm}
-                            className="w-full bg-indigo-600 text-white py-6 text-[10px] font-black uppercase tracking-[0.5em] italic hover:bg-white hover:text-indigo-600 transition-all shadow-[0_0_50px_rgba(99,102,241,0.3)]"
+                            className="w-full bg-indigo-600 text-white py-4 rounded-xl font-bold hover:bg-indigo-700 transition-all shadow-sm flex justify-center items-center gap-2"
                         >
-                            CONFIRMAR TRASPASO A CRM
+                            <Save size={18} />
+                            Confirmar y Guardar Contacto
                         </button>
                     </motion.div>
                 </div>
             )}
         </AnimatePresence>
 
-      </div>
     </div>
   );
 }

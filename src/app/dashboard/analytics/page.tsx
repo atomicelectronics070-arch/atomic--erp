@@ -136,7 +136,7 @@ export default function DashboardOverview() {
                                 <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748B', fontWeight: 600 }} tickFormatter={(value) => `$${value/1000}k`} />
                                 <Tooltip 
                                     contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', border: '1px solid #E2E8F0', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                                    formatter={(value: number) => [fmt(value), 'Ingresos']}
+                                    formatter={(value: any) => [fmt(value as number), 'Ingresos']}
                                 />
                                 <Area type="monotone" dataKey="total" stroke="#4F46E5" strokeWidth={3} fillOpacity={1} fill="url(#colorTotal)" />
                             </AreaChart>
@@ -160,7 +160,7 @@ export default function DashboardOverview() {
                                 <Tooltip 
                                     cursor={{fill: '#F1F5F9'}}
                                     contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', border: '1px solid #E2E8F0', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                                    formatter={(value: number) => [fmt(value), 'Cierre Diario']}
+                                    formatter={(value: any) => [fmt(value as number), 'Cierre Diario']}
                                 />
                                 <Bar dataKey="total" fill="#3B82F6" radius={[4, 4, 0, 0]} />
                             </BarChart>

@@ -2,11 +2,9 @@
 
 import { useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
-import { motion, AnimatePresence } from "framer-motion"
 import { 
     FileText, FileSignature, Receipt, Download, MapPin, 
-    MessageSquare, CreditCard, User, Sparkles, Target, 
-    Zap, ShieldCheck, ArrowRight, LayoutGrid, CheckCircle2,
+    CreditCard, User, CheckCircle2,
     Upload
 } from "lucide-react"
 import jsPDF from "jspdf"
@@ -51,89 +49,80 @@ export default function DocumentGenerator() {
 
     useEffect(() => {
         if (session?.user?.name) {
-            setAdvisorName(session.user.name.toUpperCase())
+            setAdvisorName(session.user.name)
         }
     }, [session])
 
     const handleGeneratePDF = () => {
         if (!clientName.trim() || !concept.trim()) {
-            alert("⚠️ Etiqueta de Datos Incompleto: Por favor completa los campos de Cliente y Concepto")
+            alert("⚠️ Por favor completa los campos de Cliente y Concepto")
             return
         }
 
         const doc = new jsPDF()
         const title = docType === 'receipt' ? 'RECIBO DE CAJA / VENTA' : docType === 'warranty' ? 'DOCUMENTO DE GARANTÍA' : 'SOLICITUD DE COMPRA'
 
-        // Header Branding - Corporativo White
+        // Header
         doc.setFillColor(255, 255, 255);
         doc.rect(0, 0, 210, 50, 'F');
-
-        try {
-            doc.addImage("/logo_atomic.jpg", "JPEG", 14, 10, 70, 22)
-        } catch (e) {
-            doc.setFontSize(20);
-            doc.setTextColor(234, 88, 12);
-            doc.text("ATOMIC Solutions", 14, 25);
-        }
+        doc.setFontSize(20);
+        doc.setTextColor(30, 58, 138); // indigo-900 equivalent
+        doc.setFont("helvetica", "bold");
+        doc.text("ATOMIC INDUSTRIES", 14, 25);
 
         doc.setFontSize(10);
-        doc.setTextColor(120);
-        doc.setFont("helvetica", "bold");
-        doc.text(title.toUpperCase(), 14, 35);
+        doc.setTextColor(100);
+        doc.text(title, 14, 35);
 
         doc.setFont("helvetica", "normal");
         doc.setFontSize(8);
-        doc.text(`Fecha de Emisión: ${new Date().toLocaleDateString()}`, 14, 40);
-        doc.text(`Nro. Control: ${Math.floor(100000 + Math.random() * 900000)}`, 14, 44);
+        doc.text(`Fecha: ${new Date().toLocaleDateString()}`, 14, 40);
+        doc.text(`Nro. Referencia: ${Math.floor(100000 + Math.random() * 900000)}`, 14, 44);
 
-        doc.setDrawColor(240);
+        doc.setDrawColor(226, 232, 240); // slate-200
         doc.line(14, 50, 196, 50);
 
         // Body
-        doc.setFontSize(11)
-        doc.setTextColor(0)
-        doc.setFont("helvetica", "bold")
-        doc.text("INFORMACIÓN DEL BENEFICIARIO / CLIENTE:", 14, 60)
         doc.setFontSize(10)
-        doc.text(clientName.toUpperCase(), 14, 67)
-
-        doc.setFont("helvetica", "normal")
+        doc.setTextColor(15, 23, 42) // slate-900
+        doc.setFont("helvetica", "bold")
+        doc.text("INFORMACIÓN DEL CLIENTE:", 14, 60)
         doc.setFontSize(9)
-        doc.setTextColor(100)
-        doc.text("ATOMIC Solutions - DIVISIÓN CORPORATIVA", 14, 73)
+        doc.setFont("helvetica", "normal")
+        doc.text(clientName, 14, 66)
 
         const tableBody = [
-            ["DESCRIPCIÓN / CONCEPTO", concept.toUpperCase()],
-            ["FECHA DE REGISTRO", new Date().toLocaleDateString()]
+            ["Concepto", concept],
+            ["Fecha de Registro", new Date().toLocaleDateString()]
         ]
 
         if (docType === 'receipt') {
-            tableBody.push(["MONTO TOTAL RECAUDADO", `$${parseFloat(amount || '0').toLocaleString('es-EC', { minimumFractionDigits: 2 })}`])
-            tableBody.push(["MÉTODO DE PAGO", paymentMethod])
-            tableBody.push(["REFERENCIA DE TRANSACCIÓN", reference || "N/A"])
+            tableBody.push(["Monto Total", `$${parseFloat(amount || '0').toLocaleString('es-EC', { minimumFractionDigits: 2 })}`])
+            tableBody.push(["Método de Pago", paymentMethod])
+            tableBody.push(["Referencia", reference || "N/A"])
         } else if (docType === 'warranty') {
-            tableBody.push(["PERIODO DE COBERTURA", `${warrantyMonths} MESES`])
+            tableBody.push(["Periodo de Cobertura", `${warrantyMonths} MESES`])
             if (warrantyComments) {
-                tableBody.push(["COMENTARIOS TÉCNICOS", warrantyComments.toUpperCase()])
+                tableBody.push(["Detalles Técnicos", warrantyComments])
             }
         } else if (docType === 'purchase_order') {
-            tableBody.push(["CÉDULA / RUC", clientCedula.toUpperCase() || "N/A"])
-            tableBody.push(["CIUDAD", city.toUpperCase() || "N/A"])
-            tableBody.push(["TELÉFONO", clientPhone || "N/A"])
-            tableBody.push(["DIRECCIÓN DE ENTREGA", deliveryAddress.toUpperCase() || "POR DEFINIR"])
-            tableBody.push(["VALOR DEL PEDIDO", `$${parseFloat(amount || '0').toLocaleString('es-EC', { minimumFractionDigits: 2 })}`])
-            tableBody.push(["FORMA DE PAGO", paymentMethod])
-            tableBody.push(["FECHA PEDIDO", orderDate])
-            tableBody.push(["FECHA EST. LLEGADA", estimatedArrival || "POR CONFIRMAR"])
+            tableBody.push(["Cédula / RUC", clientCedula || "N/A"])
+            tableBody.push(["Ciudad", city || "N/A"])
+            tableBody.push(["Teléfono", clientPhone || "N/A"])
+            tableBody.push(["Dirección", deliveryAddress || "POR DEFINIR"])
+            tableBody.push(["Valor", `$${parseFloat(amount || '0').toLocaleString('es-EC', { minimumFractionDigits: 2 })}`])
+            tableBody.push(["Forma de Pago", paymentMethod])
+            tableBody.push(["Fecha Pedido", orderDate])
+            tableBody.push(["Estimado Llegada", estimatedArrival || "POR CONFIRMAR"])
         }
 
         autoTable(doc, {
-            startY: 85,
-            head: [["PARÁMETRO", "DETALLE TÉCNICO"]],
+            startY: 75,
+            head: [["Campo", "Detalle"]],
             body: tableBody,
             theme: 'grid',
-            headStyles: { fillColor: [15, 15, 15], fontStyle: 'bold' },
-            styles: { fontSize: 9, cellPadding: 5 },
+            headStyles: { fillColor: [79, 70, 229], textColor: 255, fontStyle: 'bold' }, // indigo-600
+            styles: { fontSize: 9, cellPadding: 5, textColor: [51, 65, 85] },
             columnStyles: {
                 0: { cellWidth: 50, fontStyle: 'bold' },
                 1: { cellWidth: 130 }
@@ -146,8 +135,8 @@ export default function DocumentGenerator() {
 
         if (docType === 'warranty') {
             doc.setFontSize(8)
-            doc.setTextColor(150)
-            const terms = "Esta garantía cubre defectos de fabricación en hardware y componentes electrónicos bajo condiciones normales de operación Corporativo. No aplica para daños por picos de voltaje, humedad extrema o manipulación por personal no autorizado por ATOMIC Solutions."
+            doc.setTextColor(100)
+            const terms = "Esta garantía cubre defectos de fabricación bajo condiciones normales de operación. No aplica para daños por factores externos o manipulación por personal no autorizado por ATOMIC INDUSTRIES."
             const splitTerms = doc.splitTextToSize(terms, 180)
             doc.text(splitTerms, 14, finalY)
             finalY += 15
@@ -155,12 +144,12 @@ export default function DocumentGenerator() {
 
         if (docType === "purchase_order" && productImage && imageDimensions.width > 0) {
             finalY += 10
-            doc.setFontSize(10)
+            doc.setFontSize(9)
             doc.setFont("helvetica", "bold")
-            doc.text("IMAGEN DEL PRODUCTO", 14, finalY)
+            doc.text("IMAGEN REFERENCIAL", 14, finalY)
             finalY += 5
             
-            const targetWidth = 100
+            const targetWidth = 80
             const ratio = imageDimensions.height / imageDimensions.width
             const targetHeight = targetWidth * ratio
             
@@ -172,381 +161,218 @@ export default function DocumentGenerator() {
         doc.setTextColor(0)
         doc.setFont("helvetica", "bold")
         doc.line(14, finalY + 30, 80, finalY + 30)
-        doc.text("FIRMA AUTORIZADA", 14, finalY + 35)
+        doc.text("Firma Autorizada", 14, finalY + 35)
         doc.setFont("helvetica", "normal")
-        doc.text(advisorName.toUpperCase(), 14, finalY + 39)
+        doc.text(advisorName, 14, finalY + 40)
 
         doc.save(`${title.replace(/\s+/g, '_')}_${clientName.replace(/\s+/g, '_')}.pdf`)
     }
 
     return (
-        <div className="space-y-12 pb-32 animate-in fade-in duration-1000 relative">
-             {/* Background Orbs */}
-            <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-                <div className="absolute top-[10%] left-[-10%] w-[45%] h-[45%] rounded-none bg-secondary/5 blur-[120px]" />
-                <div className="absolute bottom-[10%] right-[-10%] w-[35%] h-[35%] rounded-none bg-azure-500/5 blur-[100px]" />
-            </div>
-
+        <div className="space-y-8 pb-32 animate-in fade-in duration-500 font-sans">
+            
             {/* Header */}
-            <header className="flex flex-col lg:flex-row lg:items-end justify-between border-b border-white/5 pb-16 relative z-10 gap-10">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-slate-200 pb-6">
                 <div>
-                     <div className="flex items-center space-x-4 mb-4 text-secondary">
-                        <FileSignature size={20} className="drop-shadow-[0_0_8px_rgba(255,99,71,0.5)]" />
-                        <span className="text-[10px] uppercase font-black tracking-[0.6em] italic">Legal_Document Engine v2.4</span>
-                    </div>
-                    <h1 className="text-6xl font-black text-white uppercase tracking-tighter leading-none italic">
-                        EMISIÓN DE <span className="text-secondary underline decoration-secondary/30 underline-offset-8">DOCUMENTOS</span>
+                    <h1 className="text-3xl font-black text-[#0F172A] flex items-center gap-3">
+                        <FileSignature className="text-indigo-600" /> Generador de Documentos
                     </h1>
-                    <p className="text-slate-500 font-bold text-xs uppercase tracking-[0.3em] mt-5 max-w-xl italic leading-relaxed">
-                        Generación instantánea de instrumentos legales, certificados de garantía y órdenes logísticas bajo estándares corporativos.
+                    <p className="text-sm text-slate-500 font-medium mt-1">
+                        Emisión oficial de recibos, garantías y órdenes comerciales.
                     </p>
                 </div>
-            </header>
+            </div>
 
             {/* Document Type Selector */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <button
                     onClick={() => setDocType("receipt")}
-                    className={`glass-panel p-10 rounded-none-[2.5rem] border transition-all flex flex-col items-center text-center group relative overflow-hidden backdrop-blur-3xl shadow-2xl ${docType === "receipt" ? "border-secondary/40 !bg-secondary/5 scale-105" : "border-white/5 !bg-slate-950/40 opacity-40 hover:opacity-100"}`}
+                    className={`bg-white p-6 rounded-xl border transition-all flex flex-col items-center text-center shadow-sm ${docType === "receipt" ? "border-indigo-600 ring-1 ring-indigo-600" : "border-slate-200 hover:border-indigo-300"}`}
                 >
-                    <div className={`p-6 rounded-none mb-8 transition-all ${docType === "receipt" ? "bg-secondary text-white shadow-[0_0_30px_rgba(255,99,71,0.5)]" : "bg-slate-900 text-slate-600 group-hover:text-white"}`}>
-                        <Receipt size={32} />
+                    <div className={`p-4 rounded-full mb-4 transition-colors ${docType === "receipt" ? "bg-indigo-50 text-indigo-600" : "bg-slate-50 text-slate-400"}`}>
+                        <Receipt size={28} />
                     </div>
-                    <h3 className="font-black text-white uppercase tracking-widest text-xs italic">Recibo de Venta</h3>
-                    <p className="text-[9px] text-slate-500 mt-3 font-black uppercase tracking-[0.3em] italic">Liquidación y Cobro</p>
-                    {docType === "receipt" && <div className="absolute top-4 right-6 text-secondary animate-pulse"><Sparkles size={16} /></div>}
+                    <h3 className="font-bold text-[#0F172A]">Recibo de Venta</h3>
+                    <p className="text-xs text-slate-500 mt-1 font-medium">Liquidación y Comprobantes</p>
                 </button>
 
                 <button
                     onClick={() => setDocType("warranty")}
-                    className={`glass-panel p-10 rounded-none-[2.5rem] border transition-all flex flex-col items-center text-center group relative overflow-hidden backdrop-blur-3xl shadow-2xl ${docType === "warranty" ? "border-azure-500/40 !bg-azure-500/5 scale-105" : "border-white/5 !bg-slate-950/40 opacity-40 hover:opacity-100"}`}
+                    className={`bg-white p-6 rounded-xl border transition-all flex flex-col items-center text-center shadow-sm ${docType === "warranty" ? "border-emerald-500 ring-1 ring-emerald-500" : "border-slate-200 hover:border-emerald-300"}`}
                 >
-                    <div className={`p-6 rounded-none mb-8 transition-all ${docType === "warranty" ? "bg-azure-500 text-slate-950 shadow-[0_0_30px_rgba(45,212,191,0.5)]" : "bg-slate-900 text-slate-600 group-hover:text-white"}`}>
-                        <FileSignature size={32} />
+                    <div className={`p-4 rounded-full mb-4 transition-colors ${docType === "warranty" ? "bg-emerald-50 text-emerald-600" : "bg-slate-50 text-slate-400"}`}>
+                        <CheckCircle2 size={28} />
                     </div>
-                    <h3 className="font-black text-white uppercase tracking-widest text-xs italic">Doc. de Garantía</h3>
-                    <p className="text-[9px] text-slate-500 mt-3 font-black uppercase tracking-[0.3em] italic">Cobertura Técnica</p>
-                    {docType === "warranty" && <div className="absolute top-4 right-6 text-azure-400 animate-pulse"><CheckCircle2 size={16} /></div>}
+                    <h3 className="font-bold text-[#0F172A]">Doc. de Garantía</h3>
+                    <p className="text-xs text-slate-500 mt-1 font-medium">Certificados de Cobertura</p>
                 </button>
 
                 <button
                     onClick={() => setDocType("purchase_order")}
-                    className={`glass-panel p-10 rounded-none-[2.5rem] border transition-all flex flex-col items-center text-center group relative overflow-hidden backdrop-blur-3xl shadow-2xl ${docType === "purchase_order" ? "border-primary/40 !bg-primary/5 scale-105" : "border-white/5 !bg-slate-950/40 opacity-40 hover:opacity-100"}`}
+                    className={`bg-white p-6 rounded-xl border transition-all flex flex-col items-center text-center shadow-sm ${docType === "purchase_order" ? "border-blue-500 ring-1 ring-blue-500" : "border-slate-200 hover:border-blue-300"}`}
                 >
-                    <div className={`p-6 rounded-none mb-8 transition-all ${docType === "purchase_order" ? "bg-primary text-white shadow-[0_0_30px_rgba(255,99,71,0.5)]" : "bg-slate-900 text-slate-600 group-hover:text-white"}`}>
-                        <FileText size={32} />
+                    <div className={`p-4 rounded-full mb-4 transition-colors ${docType === "purchase_order" ? "bg-blue-50 text-blue-600" : "bg-slate-50 text-slate-400"}`}>
+                        <FileText size={28} />
                     </div>
-                    <h3 className="font-black text-white uppercase tracking-widest text-xs italic">Solicitud de Compra</h3>
-                    <p className="text-[9px] text-slate-500 mt-3 font-black uppercase tracking-[0.3em] italic">Orden Logística</p>
-                    {docType === "purchase_order" && <div className="absolute top-4 right-6 text-secondary animate-pulse"><Zap size={16} /></div>}
+                    <h3 className="font-bold text-[#0F172A]">Solicitud de Compra</h3>
+                    <p className="text-xs text-slate-500 mt-1 font-medium">Órdenes Logísticas</p>
                 </button>
             </div>
 
             {/* Document Form */}
-            <div className="glass-panel border-white/5 p-16 rounded-none-[4rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] relative overflow-hidden backdrop-blur-3xl z-10 transition-all">
-                <div className="absolute top-0 left-0 w-2 h-full bg-secondary shadow-[0_0_20px_rgba(255,99,71,0.5)]"></div>
-                
-                <header className="mb-16 flex items-center justify-between border-b border-white/5 pb-10">
-                    <div className="space-y-4">
-                        <h2 className="text-3xl font-black text-white uppercase tracking-tighter italic">
-                            PARÁMETROS DEL <span className="text-secondary">{docType === 'receipt' ? 'RECIBO' : docType === 'warranty' ? 'CERTIFICADO' : 'PEDIDO'}</span>
-                        </h2>
-                        <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.4em] italic leading-none">Inyección de metadata para procesamiento legal</p>
-                    </div>
-                    <div className="p-4 bg-slate-950 border border-white/5 rounded-none text-slate-800 shadow-inner"><LayoutGrid size={24} /></div>
+            <div className="bg-white border border-slate-200 p-8 rounded-xl shadow-sm">
+                <header className="mb-8 border-b border-slate-100 pb-6">
+                    <h2 className="text-lg font-black text-[#0F172A]">
+                        Detalles del {docType === 'receipt' ? 'Recibo' : docType === 'warranty' ? 'Certificado' : 'Pedido'}
+                    </h2>
+                    <p className="text-xs text-slate-500 font-bold uppercase tracking-wider mt-1">Complete los campos requeridos</p>
                 </header>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                    <div className="space-y-4 col-span-2 md:col-span-1">
-                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-2 italic">Identificación del Cliente</label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label className="block text-xs font-bold text-slate-500 mb-1 ml-1">Cliente / Beneficiario</label>
                         <input
-                            type="text"
-                            value={clientName}
-                            onChange={(e) => setClientName(e.target.value.toUpperCase())}
-                            placeholder="EJ: CORPORACIÓN ATOMIC_PRO"
-                            className="w-full px-8 py-6 bg-slate-950 border border-white/5 text-base font-black uppercase tracking-widest text-white outline-none rounded-none-[2rem] focus:border-secondary transition-all shadow-inner placeholder:text-slate-900 italic"
+                            type="text" value={clientName} onChange={(e) => setClientName(e.target.value)} placeholder="Ej: Juan Pérez"
+                            className="w-full bg-slate-50 border border-slate-200 p-3 rounded-lg text-sm font-bold text-[#0F172A] focus:border-indigo-500 outline-none"
                         />
                     </div>
 
-                    <div className="space-y-4 col-span-2 md:col-span-1">
-                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-2 italic">Concepto / Referencia Técnica</label>
+                    <div>
+                        <label className="block text-xs font-bold text-slate-500 mb-1 ml-1">Concepto</label>
                         <input
-                            type="text"
-                            value={concept}
-                            onChange={(e) => setConcept(e.target.value.toUpperCase())}
-                            placeholder="EJ: SOPORTE ESPECIALIZADO NIVEL 4"
-                            className="w-full px-8 py-6 bg-slate-950 border border-white/5 text-base font-black uppercase tracking-widest text-white outline-none rounded-none-[2rem] focus:border-secondary transition-all shadow-inner placeholder:text-slate-900 italic"
+                            type="text" value={concept} onChange={(e) => setConcept(e.target.value)} placeholder="Ej: Servicios Profesionales"
+                            className="w-full bg-slate-50 border border-slate-200 p-3 rounded-lg text-sm font-bold text-[#0F172A] focus:border-indigo-500 outline-none"
                         />
                     </div>
 
-                    <div className="space-y-4 col-span-2 md:col-span-1">
-                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-2 italic flex items-center gap-2">
-                             <User size={14} className="text-secondary" /> Asesor Responsable (Firma_Vect)
-                        </label>
+                    <div>
+                        <label className="block text-xs font-bold text-slate-500 mb-1 ml-1 flex items-center gap-1"><User size={14} className="text-indigo-600"/> Asesor Responsable</label>
                         <input
-                            type="text"
-                            value={advisorName}
-                            onChange={(e) => setAdvisorName(e.target.value.toUpperCase())}
-                            placeholder="NOMBRE DEL ASESOR"
-                            className="w-full px-8 py-6 bg-secondary/5 border border-secondary/20 text-base font-black uppercase tracking-widest text-secondary outline-none rounded-none-[2rem] focus:border-secondary transition-all shadow-2xl placeholder:text-secondary/20 italic"
+                            type="text" value={advisorName} onChange={(e) => setAdvisorName(e.target.value)}
+                            className="w-full bg-white border border-slate-300 p-3 rounded-lg text-sm font-bold text-indigo-700 focus:border-indigo-500 outline-none shadow-sm"
                         />
                     </div>
 
                     {docType === 'warranty' && (
                         <>
-                            <div className="space-y-4">
-                                <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-2 italic">Meses de Cobertura Corporativo</label>
+                            <div>
+                                <label className="block text-xs font-bold text-slate-500 mb-1 ml-1">Meses de Cobertura</label>
                                 <input
-                                    type="number"
-                                    value={warrantyMonths}
-                                    onChange={(e) => setWarrantyMonths(e.target.value)}
-                                    className="w-full px-8 py-6 bg-slate-950 border border-white/5 text-base font-black text-azure-400 outline-none rounded-none-[2rem] focus:border-azure-500 transition-all shadow-inner italic"
+                                    type="number" value={warrantyMonths} onChange={(e) => setWarrantyMonths(e.target.value)}
+                                    className="w-full bg-slate-50 border border-slate-200 p-3 rounded-lg text-sm font-bold text-[#0F172A] focus:border-indigo-500 outline-none"
                                 />
                             </div>
-                            <div className="space-y-4 md:col-span-2">
-                                <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-2 italic">Metadata de Garantía / Restricciones</label>
+                            <div className="md:col-span-2">
+                                <label className="block text-xs font-bold text-slate-500 mb-1 ml-1">Detalles Técnicos</label>
                                 <textarea
-                                    value={warrantyComments}
-                                    onChange={(e) => setWarrantyComments(e.target.value.toUpperCase())}
-                                    placeholder="ESPECIFICACIONES TÉCNICAS O RESTRICCIONES DE HARDWARE..."
-                                    className="w-full px-10 py-8 bg-slate-950 border border-white/5 text-[12px] font-black uppercase tracking-[0.1em] text-slate-400 outline-none rounded-none-[3rem] focus:border-azure-500 transition-all shadow-inner h-40 resize-none italic custom-scrollbar placeholder:text-slate-900 leading-relaxed"
+                                    value={warrantyComments} onChange={(e) => setWarrantyComments(e.target.value)} rows={3}
+                                    className="w-full bg-slate-50 border border-slate-200 p-3 rounded-lg text-sm text-[#0F172A] focus:border-indigo-500 outline-none resize-none"
                                 />
-                            </div>
-                            <div className="space-y-4 col-span-2">
-                                <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-2 italic flex items-center gap-3">
-                                    <MapPin size={14} className="text-secondary" /> Coordenadas de Entrega Log�stica
-                                </label>
-                                <input
-                                    type="text"
-                                    value={deliveryAddress}
-                                    onChange={(e) => setDeliveryAddress(e.target.value.toUpperCase())}
-                                    placeholder="PROVINCIA, CIUDAD, CALLE Y Elemento DE ENTREGA..."
-                                    className="w-full px-8 py-6 bg-slate-950 border border-white/5 text-base font-black uppercase tracking-widest text-white outline-none rounded-none-[2rem] focus:border-secondary transition-all shadow-inner placeholder:text-slate-900 italic"
-                                />
-                            </div>
-                            <div className="space-y-4 col-span-2">
-                                <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-2 italic">Imagen del Producto</label>
-                                <div className="relative group flex items-center gap-6">
-                                    <label className="flex-1 cursor-pointer group bg-slate-950 border-2 border-dashed border-white/10 hover:border-secondary/50 rounded-none-[2rem] p-8 transition-all flex flex-col items-center justify-center gap-4">
-                                        <Upload className="text-slate-700 group-hover:text-secondary transition-colors" size={32} />
-                                        <span className="text-[10px] font-black text-slate-600 group-hover:text-white uppercase tracking-[0.3em] italic">Subir Imagen Referencial</span>
-                                        <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} />
-                                    </label>
-                                    {productImage && (
-                                        <div className="w-24 h-24 rounded-none border border-secondary/30 overflow-hidden shrink-0">
-                                            <img src={productImage} alt="Preview" className="w-full h-full object-cover" />
-                                        </div>
-                                    )}
-                                </div>
                             </div>
                         </>
                     )}
 
                     {docType === 'receipt' && (
                         <>
-                            <div className="space-y-4">
-                                <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-2 italic">Monto de Liquidación ($)</label>
-                                <div className="relative">
-                                    <div className="absolute left-8 top-1/2 -translate-y-1/2 text-secondary font-black italic">$</div>
-                                    <input
-                                        type="number"
-                                        step="0.01"
-                                        value={amount}
-                                        onChange={(e) => setAmount(e.target.value)}
-                                        placeholder="0.00"
-                                        className="w-full pl-14 pr-8 py-6 bg-slate-950 border border-white/5 text-xl font-black text-white outline-none rounded-none-[2rem] focus:border-secondary transition-all shadow-inner italic"
-                                    />
-                                </div>
+                            <div>
+                                <label className="block text-xs font-bold text-slate-500 mb-1 ml-1">Monto ($)</label>
+                                <input
+                                    type="number" step="0.01" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="0.00"
+                                    className="w-full bg-slate-50 border border-slate-200 p-3 rounded-lg text-sm font-black text-[#0F172A] focus:border-indigo-500 outline-none"
+                                />
                             </div>
-                            <div className="space-y-4">
-                                <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-2 italic">Método de Transferencia_Vect</label>
+                            <div>
+                                <label className="block text-xs font-bold text-slate-500 mb-1 ml-1">Método de Pago</label>
                                 <select
-                                    value={paymentMethod}
-                                    onChange={(e) => setPaymentMethod(e.target.value)}
-                                    className="w-full px-8 py-6 bg-slate-950 border border-white/5 text-xs font-black uppercase tracking-widest text-azure-400 outline-none rounded-none-[2rem] focus:border-azure-500 transition-all shadow-inner italic appearance-none"
+                                    value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)}
+                                    className="w-full bg-slate-50 border border-slate-200 p-3 rounded-lg text-sm font-bold text-[#0F172A] focus:border-indigo-500 outline-none appearance-none"
                                 >
                                     <option value="TRANSFERENCIA">TRANSFERENCIA</option>
                                     <option value="EFECTIVO">EFECTIVO</option>
-                                    <option value="TARJETA">TARJETA_CC</option>
-                                    <option value="CHEQUE">CHEQUE_BANC</option>
+                                    <option value="TARJETA">TARJETA</option>
+                                    <option value="CHEQUE">CHEQUE</option>
                                 </select>
                             </div>
-                            <div className="space-y-4 md:col-span-2 border-t border-white/5 pt-10 mt-6">
-                                <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-2 italic flex items-center gap-3">
-                                    <CreditCard size={14} className="text-secondary" /> Número de Referencia / ID Comprobante
-                                </label>
+                            <div className="md:col-span-2 border-t border-slate-100 pt-6">
+                                <label className="block text-xs font-bold text-slate-500 mb-1 ml-1 flex items-center gap-1"><CreditCard size={14}/> Referencia / Comprobante</label>
                                 <input
-                                    type="text"
-                                    value={reference}
-                                    onChange={(e) => setReference(e.target.value.toUpperCase())}
-                                    placeholder="NRO. LOTE / NRO. TRANSFERENCIA_HASH"
-                                    className="w-full px-8 py-6 bg-slate-950 border border-white/5 text-base font-black uppercase tracking-widest text-white outline-none rounded-none-[2rem] focus:border-secondary transition-all shadow-inner placeholder:text-slate-900 italic"
+                                    type="text" value={reference} onChange={(e) => setReference(e.target.value)} placeholder="Nro. Transacción"
+                                    className="w-full bg-slate-50 border border-slate-200 p-3 rounded-lg text-sm text-[#0F172A] focus:border-indigo-500 outline-none"
                                 />
-                            </div>
-                            <div className="space-y-4 col-span-2">
-                                <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-2 italic flex items-center gap-3">
-                                    <MapPin size={14} className="text-secondary" /> Coordenadas de Entrega Log�stica
-                                </label>
-                                <input
-                                    type="text"
-                                    value={deliveryAddress}
-                                    onChange={(e) => setDeliveryAddress(e.target.value.toUpperCase())}
-                                    placeholder="PROVINCIA, CIUDAD, CALLE Y Elemento DE ENTREGA..."
-                                    className="w-full px-8 py-6 bg-slate-950 border border-white/5 text-base font-black uppercase tracking-widest text-white outline-none rounded-none-[2rem] focus:border-secondary transition-all shadow-inner placeholder:text-slate-900 italic"
-                                />
-                            </div>
-                            <div className="space-y-4 col-span-2">
-                                <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-2 italic">Imagen del Producto</label>
-                                <div className="relative group flex items-center gap-6">
-                                    <label className="flex-1 cursor-pointer group bg-slate-950 border-2 border-dashed border-white/10 hover:border-secondary/50 rounded-none-[2rem] p-8 transition-all flex flex-col items-center justify-center gap-4">
-                                        <Upload className="text-slate-700 group-hover:text-secondary transition-colors" size={32} />
-                                        <span className="text-[10px] font-black text-slate-600 group-hover:text-white uppercase tracking-[0.3em] italic">Subir Imagen Referencial</span>
-                                        <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} />
-                                    </label>
-                                    {productImage && (
-                                        <div className="w-24 h-24 rounded-none border border-secondary/30 overflow-hidden shrink-0">
-                                            <img src={productImage} alt="Preview" className="w-full h-full object-cover" />
-                                        </div>
-                                    )}
-                                </div>
                             </div>
                         </>
                     )}
 
                     {docType === 'purchase_order' && (
                         <>
-                            <div className="space-y-4">
-                                <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-2 italic">Cédula / RUC Cliente</label>
-                                <input
-                                    type="text"
-                                    value={clientCedula}
-                                    onChange={(e) => setClientCedula(e.target.value)}
-                                    className="w-full px-8 py-6 bg-slate-950 border border-white/5 text-base font-black text-white outline-none rounded-none-[2rem] focus:border-secondary transition-all italic"
-                                />
+                            <div>
+                                <label className="block text-xs font-bold text-slate-500 mb-1 ml-1">Cédula / RUC</label>
+                                <input type="text" value={clientCedula} onChange={(e) => setClientCedula(e.target.value)} className="w-full bg-slate-50 border border-slate-200 p-3 rounded-lg text-sm text-[#0F172A] focus:border-indigo-500 outline-none" />
                             </div>
-                            <div className="space-y-4">
-                                <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-2 italic">Ciudad</label>
-                                <input
-                                    type="text"
-                                    value={city}
-                                    onChange={(e) => setCity(e.target.value.toUpperCase())}
-                                    className="w-full px-8 py-6 bg-slate-950 border border-white/5 text-base font-black text-white outline-none rounded-none-[2rem] focus:border-secondary transition-all italic"
-                                />
+                            <div>
+                                <label className="block text-xs font-bold text-slate-500 mb-1 ml-1">Ciudad</label>
+                                <input type="text" value={city} onChange={(e) => setCity(e.target.value)} className="w-full bg-slate-50 border border-slate-200 p-3 rounded-lg text-sm text-[#0F172A] focus:border-indigo-500 outline-none" />
                             </div>
-                            <div className="space-y-4">
-                                <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-2 italic">Teléfono</label>
-                                <input
-                                    type="text"
-                                    value={clientPhone}
-                                    onChange={(e) => setClientPhone(e.target.value)}
-                                    className="w-full px-8 py-6 bg-slate-950 border border-white/5 text-base font-black text-white outline-none rounded-none-[2rem] focus:border-secondary transition-all italic"
-                                />
+                            <div>
+                                <label className="block text-xs font-bold text-slate-500 mb-1 ml-1">Teléfono</label>
+                                <input type="text" value={clientPhone} onChange={(e) => setClientPhone(e.target.value)} className="w-full bg-slate-50 border border-slate-200 p-3 rounded-lg text-sm text-[#0F172A] focus:border-indigo-500 outline-none" />
                             </div>
-                            <div className="space-y-4">
-                                <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-2 italic">Valor del Pedido ($)</label>
-                                <input
-                                    type="number"
-                                    value={amount}
-                                    onChange={(e) => setAmount(e.target.value)}
-                                    className="w-full px-8 py-6 bg-slate-950 border border-white/5 text-base font-black text-white outline-none rounded-none-[2rem] focus:border-secondary transition-all italic"
-                                />
+                            <div>
+                                <label className="block text-xs font-bold text-slate-500 mb-1 ml-1">Valor del Pedido ($)</label>
+                                <input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} className="w-full bg-slate-50 border border-slate-200 p-3 rounded-lg text-sm font-black text-[#0F172A] focus:border-indigo-500 outline-none" />
                             </div>
-                            <div className="space-y-4">
-                                <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-2 italic">Forma de Pago</label>
-                                <select
-                                    value={paymentMethod}
-                                    onChange={(e) => setPaymentMethod(e.target.value)}
-                                    className="w-full px-8 py-6 bg-slate-950 border border-white/5 text-xs font-black uppercase tracking-widest text-azure-400 outline-none rounded-none-[2rem] focus:border-azure-500 transition-all italic appearance-none"
-                                >
+                            <div>
+                                <label className="block text-xs font-bold text-slate-500 mb-1 ml-1">Forma de Pago</label>
+                                <select value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)} className="w-full bg-slate-50 border border-slate-200 p-3 rounded-lg text-sm font-bold text-[#0F172A] focus:border-indigo-500 outline-none appearance-none">
                                     <option value="TRANSFERENCIA">TRANSFERENCIA</option>
                                     <option value="DEPOSITO">DEPÓSITO</option>
                                     <option value="EFECTIVO">EFECTIVO</option>
                                 </select>
                             </div>
-                            <div className="space-y-4">
-                                <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-2 italic">Fecha Pedido</label>
-                                <input
-                                    type="date"
-                                    value={orderDate}
-                                    onChange={(e) => setOrderDate(e.target.value)}
-                                    className="w-full px-8 py-6 bg-slate-950 border border-white/5 text-base font-black text-white outline-none rounded-none-[2rem] focus:border-secondary transition-all italic"
-                                />
+                            <div>
+                                <label className="block text-xs font-bold text-slate-500 mb-1 ml-1">Fecha Pedido</label>
+                                <input type="date" value={orderDate} onChange={(e) => setOrderDate(e.target.value)} className="w-full bg-slate-50 border border-slate-200 p-3 rounded-lg text-sm text-[#0F172A] focus:border-indigo-500 outline-none" />
                             </div>
-                            <div className="space-y-4">
-                                <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-2 italic">Fecha Est. Llegada</label>
-                                <input
-                                    type="date"
-                                    value={estimatedArrival}
-                                    onChange={(e) => setEstimatedArrival(e.target.value)}
-                                    className="w-full px-8 py-6 bg-slate-950 border border-white/5 text-base font-black text-white outline-none rounded-none-[2rem] focus:border-secondary transition-all italic"
-                                />
+                            <div>
+                                <label className="block text-xs font-bold text-slate-500 mb-1 ml-1">Fecha Est. Llegada</label>
+                                <input type="date" value={estimatedArrival} onChange={(e) => setEstimatedArrival(e.target.value)} className="w-full bg-slate-50 border border-slate-200 p-3 rounded-lg text-sm text-[#0F172A] focus:border-indigo-500 outline-none" />
                             </div>
-                            <div className="space-y-4 col-span-2">
-                                <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-2 italic flex items-center gap-3">
-                                    <MapPin size={14} className="text-secondary" /> Coordenadas de Entrega Logística
-                                </label>
-                                <input
-                                    type="text"
-                                    value={deliveryAddress}
-                                    onChange={(e) => setDeliveryAddress(e.target.value.toUpperCase())}
-                                    placeholder="PROVINCIA, CIUDAD, CALLE Y Elemento DE ENTREGA..."
-                                    className="w-full px-8 py-6 bg-slate-950 border border-white/5 text-base font-black uppercase tracking-widest text-white outline-none rounded-none-[2rem] focus:border-secondary transition-all shadow-inner placeholder:text-slate-900 italic"
-                                />
-                            </div>
-                            <div className="space-y-4 col-span-2">
-                                <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-2 italic flex items-center gap-3">
-                                    <MapPin size={14} className="text-secondary" /> Coordenadas de Entrega Log�stica
-                                </label>
-                                <input
-                                    type="text"
-                                    value={deliveryAddress}
-                                    onChange={(e) => setDeliveryAddress(e.target.value.toUpperCase())}
-                                    placeholder="PROVINCIA, CIUDAD, CALLE Y Elemento DE ENTREGA..."
-                                    className="w-full px-8 py-6 bg-slate-950 border border-white/5 text-base font-black uppercase tracking-widest text-white outline-none rounded-none-[2rem] focus:border-secondary transition-all shadow-inner placeholder:text-slate-900 italic"
-                                />
-                            </div>
-                            <div className="space-y-4 col-span-2">
-                                <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-2 italic">Imagen del Producto</label>
-                                <div className="relative group flex items-center gap-6">
-                                    <label className="flex-1 cursor-pointer group bg-slate-950 border-2 border-dashed border-white/10 hover:border-secondary/50 rounded-none-[2rem] p-8 transition-all flex flex-col items-center justify-center gap-4">
-                                        <Upload className="text-slate-700 group-hover:text-secondary transition-colors" size={32} />
-                                        <span className="text-[10px] font-black text-slate-600 group-hover:text-white uppercase tracking-[0.3em] italic">Subir Imagen Referencial</span>
-                                        <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} />
-                                    </label>
-                                    {productImage && (
-                                        <div className="w-24 h-24 rounded-none border border-secondary/30 overflow-hidden shrink-0">
-                                            <img src={productImage} alt="Preview" className="w-full h-full object-cover" />
-                                        </div>
-                                    )}
-                                </div>
+                            <div className="md:col-span-2">
+                                <label className="block text-xs font-bold text-slate-500 mb-1 ml-1 flex items-center gap-1"><MapPin size={14}/> Dirección de Entrega</label>
+                                <input type="text" value={deliveryAddress} onChange={(e) => setDeliveryAddress(e.target.value)} className="w-full bg-slate-50 border border-slate-200 p-3 rounded-lg text-sm text-[#0F172A] focus:border-indigo-500 outline-none" />
                             </div>
                         </>
                     )}
+
+                    {(docType === 'warranty' || docType === 'purchase_order') && (
+                        <div className="md:col-span-2 mt-4">
+                            <label className="block text-xs font-bold text-slate-500 mb-2 ml-1">Imagen Referencial (Opcional)</label>
+                            <div className="flex items-center gap-4">
+                                <label className="cursor-pointer border-2 border-dashed border-slate-300 hover:border-indigo-500 hover:bg-indigo-50 transition-colors p-6 rounded-xl flex flex-col items-center justify-center flex-1">
+                                    <Upload className="text-slate-400 mb-2" size={24} />
+                                    <span className="text-xs font-bold text-slate-500">Subir Imagen</span>
+                                    <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} />
+                                </label>
+                                {productImage && (
+                                    <div className="w-24 h-24 rounded-lg border border-slate-200 overflow-hidden shrink-0 shadow-sm">
+                                        <img src={productImage} alt="Preview" className="w-full h-full object-cover" />
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
                 </div>
 
-                <div className="flex justify-start mt-20 pt-10 border-t border-white/5">
+                <div className="mt-8 pt-6 border-t border-slate-100 flex justify-end">
                     <button
                         onClick={handleGeneratePDF}
-                        className="bg-secondary text-white font-black py-8 px-20 uppercase tracking-[0.5em] text-[11px] flex items-center justify-center gap-6 shadow-[0_25px_60px_-10px_rgba(255,99,71,0.6)] transition-all hover:bg-white hover:text-secondary rounded-none-[3rem] active:scale-95 italic skew-x-[-12deg] group"
+                        className="bg-indigo-600 text-white font-bold py-3 px-8 rounded-lg shadow-sm hover:bg-indigo-700 transition-colors flex items-center gap-2"
                     >
-                         <div className="skew-x-[12deg] flex items-center gap-5">
-                            <Download size={24} className="group-hover:translate-y-1 transition-transform" />
-                            <span>Certificar y Descargar PDF</span>
-                        </div>
+                        <Download size={18} />
+                        Generar PDF
                     </button>
-                    
-                    <div className="ml-auto flex items-center gap-8 opacity-20">
-                         <div className="flex flex-col text-right">
-                             <span className="text-[8px] font-black text-white uppercase tracking-[0.4em]">SECURITY_LEVEL</span>
-                             <span className="text-[10px] font-black text-secondary italic uppercase tracking-widest leading-none">AES-256_SYNC</span>
-                         </div>
-                         <ShieldCheck size={32} className="text-secondary" />
-                    </div>
                 </div>
             </div>
         </div>
     )
 }
-
-
-

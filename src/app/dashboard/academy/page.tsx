@@ -74,172 +74,180 @@ export default function UnifiedAcademyPortal() {
         )
 
     return (
-        <div className="pb-32 space-y-20 animate-in fade-in duration-1000">
+        <div className="pb-32 space-y-12 animate-in fade-in duration-500 font-sans">
             {/* HERO SECTION */}
-            <section className="relative overflow-hidden border-b border-slate-100 pb-20">
-                <div className="absolute top-0 right-0 w-[40%] h-[40%] bg-[#1E3A8A]/5 blur-[120px] pointer-events-none" />
+            <section className="bg-white border-b border-slate-200 py-12 px-8">
                 <motion.div
-                    initial={{ opacity: 0, y: 30 }}
+                    initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="space-y-10"
+                    className="max-w-6xl mx-auto"
                 >
-                    <div className="flex items-center gap-4">
-                        <div className="w-1.5 h-10 bg-[#1E3A8A]"></div>
+                    <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8">
                         <div>
-                            <div className="flex items-center gap-3 mb-2">
-                                <Zap size={14} className="text-[#1E3A8A]" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.6em] text-slate-400 italic">PORTAL EDUCATIVO UNIFICADO</span>
-                            </div>
-                            <h1 className="text-7xl md:text-8xl font-black text-[#0F172A] tracking-tighter uppercase italic leading-none">
-                                ACADE<span className="text-[#1E3A8A]">MIA</span>
+                            <h1 className="text-4xl font-black text-[#0F172A] flex items-center gap-3">
+                                <GraduationCap className="text-indigo-600" size={40} /> Academia Atomic
                             </h1>
+                            <p className="text-base text-slate-500 font-medium mt-3 max-w-2xl">
+                                Portal educativo unificado. Capacitación continua en ventas, procesos técnicos y herramientas corporativas.
+                            </p>
                         </div>
+
+                        {isAdmin && (
+                            <div className="flex gap-4">
+                                <Link href="/dashboard/academy/admin" className="px-5 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-xl font-bold text-sm flex items-center gap-2 hover:bg-slate-50 transition-all shadow-sm">
+                                    <Settings size={18} /> Panel de Control
+                                </Link>
+                                <Link href="/dashboard/academy/course/new" className="px-5 py-2.5 bg-indigo-600 text-white rounded-xl font-bold text-sm flex items-center gap-2 hover:bg-indigo-700 transition-all shadow-sm">
+                                    <Plus size={18} /> Crear Curso
+                                </Link>
+                            </div>
+                        )}
                     </div>
 
-                    <div className="flex flex-wrap gap-12 pt-10">
+                    <div className="flex gap-6 mt-12">
                         {[
-                            { label: "CURSOS", value: totalCourses, icon: BookOpen },
-                            { label: "LECCIONES", value: totalLessons, icon: PlayCircle },
-                            { label: "NODO", value: "ACTIVO", icon: ShieldCheck },
+                            { label: "Cursos Activos", value: totalCourses, icon: BookOpen, color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-100" },
+                            { label: "Lecciones", value: totalLessons, icon: PlayCircle, color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-100" },
+                            { label: "Estado", value: "En Línea", icon: ShieldCheck, color: "text-indigo-600", bg: "bg-indigo-50", border: "border-indigo-100" },
                         ].map((s, i) => (
-                            <div key={i} className="flex items-center gap-4 group">
-                                <div className="w-12 h-12 bg-white border border-slate-100 flex items-center justify-center group-hover:border-[#1E3A8A] transition-all shadow-sm">
-                                    <s.icon size={20} className="text-[#1E3A8A]" />
+                            <div key={i} className={`flex items-center gap-4 ${s.bg} border ${s.border} px-6 py-4 rounded-2xl shadow-sm min-w-[200px]`}>
+                                <div className={`w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm ${s.color}`}>
+                                    <s.icon size={24} />
                                 </div>
                                 <div>
-                                    <p className="text-3xl font-black text-[#0F172A] italic tracking-tighter leading-none">{s.value}</p>
-                                    <p className="text-[8px] font-black uppercase tracking-widest text-slate-400 italic mt-1">{s.label}</p>
+                                    <p className="text-2xl font-black text-[#0F172A]">{s.value}</p>
+                                    <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">{s.label}</p>
                                 </div>
                             </div>
                         ))}
                     </div>
-
-                    {isAdmin && (
-                        <div className="flex flex-wrap gap-6 pt-10">
-                            <Link href="/dashboard/academy/course/new" className="px-10 py-5 bg-[#1E3A8A] text-white text-[10px] font-black uppercase tracking-[0.4em] italic flex items-center gap-4 shadow-xl shadow-[#1E3A8A]/20 hover:scale-105 active:scale-95 transition-all">
-                                <Plus size={18} /> CREAR NUEVO CURSO
-                            </Link>
-                            <Link href="/dashboard/academy/admin" className="px-10 py-5 bg-white border border-slate-200 text-[#0F172A] text-[10px] font-black uppercase tracking-[0.4em] italic flex items-center gap-4 hover:bg-slate-50 transition-all">
-                                <Settings size={18} /> PANEL DE CONTROL
-                            </Link>
-                        </div>
-                    )}
                 </motion.div>
             </section>
 
-            {/* SEARCH & CATEGORIES */}
-            <section className="flex flex-col lg:flex-row gap-8 items-center justify-between">
-                <div className="relative w-full lg:w-96 group">
-                    <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-[#1E3A8A] transition-colors" size={18} />
-                    <input
-                        type="text"
-                        placeholder="BUSCAR EN LA ACADEMIA..."
-                        value={search}
-                        onChange={e => setSearch(e.target.value)}
-                        className="w-full bg-white border border-slate-200 py-5 pl-16 pr-8 text-xs font-black text-[#0F172A] placeholder:text-slate-300 outline-none focus:border-[#1E3A8A] transition-all italic uppercase tracking-widest shadow-sm"
-                    />
-                </div>
-                <div className="flex flex-wrap gap-3">
-                    <button
-                        onClick={() => setActiveCategory(null)}
-                        className={`px-8 py-4 text-[9px] font-black uppercase tracking-widest italic transition-all ${
-                            activeCategory === null ? "bg-[#1E3A8A] text-white shadow-lg shadow-[#1E3A8A]/20" : "bg-white text-slate-400 border border-slate-100 hover:text-[#0F172A] hover:bg-slate-50"
-                        }`}
-                    >
-                        TODOS
-                    </button>
-                    {categories.map(cat => (
+            <div className="max-w-6xl mx-auto px-8 space-y-12">
+                {/* SEARCH & CATEGORIES */}
+                <section className="flex flex-col lg:flex-row gap-6 items-center justify-between bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                    <div className="relative w-full lg:w-96">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                        <input
+                            type="text"
+                            placeholder="Buscar en la academia..."
+                            value={search}
+                            onChange={e => setSearch(e.target.value)}
+                            className="w-full bg-slate-50 border border-slate-200 py-3 pl-12 pr-4 text-sm font-medium text-[#0F172A] rounded-xl outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder:text-slate-400"
+                        />
+                    </div>
+                    <div className="flex flex-wrap gap-2 w-full lg:w-auto overflow-x-auto pb-2 lg:pb-0 hide-scrollbar">
                         <button
-                            key={cat.id}
-                            onClick={() => setActiveCategory(cat.slug === activeCategory ? null : cat.slug)}
-                            className={`px-8 py-4 text-[9px] font-black uppercase tracking-widest italic transition-all ${
-                                activeCategory === cat.slug ? "bg-[#1E3A8A] text-white shadow-lg shadow-[#1E3A8A]/20" : "bg-white text-slate-400 border border-slate-100 hover:text-[#0F172A] hover:bg-slate-50"
+                            onClick={() => setActiveCategory(null)}
+                            className={`px-5 py-2.5 text-sm font-bold rounded-xl transition-all whitespace-nowrap ${
+                                activeCategory === null ? "bg-indigo-600 text-white shadow-sm" : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"
                             }`}
                         >
-                            {CATEGORY_ICONS[cat.slug] || "📚"} {cat.name}
+                            Todos los Cursos
                         </button>
-                    ))}
-                </div>
-            </section>
-
-            {/* COURSES GRID */}
-            <section className="space-y-24">
-                {loading ? (
-                    <div className="flex flex-col items-center justify-center py-40 gap-8">
-                        <div className="w-16 h-16 border-2 border-slate-100 border-t-[#1E3A8A] animate-spin" />
-                        <p className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-300 italic animate-pulse">Sincronizando Módulos...</p>
+                        {categories.map(cat => (
+                            <button
+                                key={cat.id}
+                                onClick={() => setActiveCategory(cat.slug === activeCategory ? null : cat.slug)}
+                                className={`px-5 py-2.5 text-sm font-bold rounded-xl transition-all whitespace-nowrap flex items-center gap-2 ${
+                                    activeCategory === cat.slug ? "bg-indigo-600 text-white shadow-sm" : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"
+                                }`}
+                            >
+                                <span>{CATEGORY_ICONS[cat.slug] || "📚"}</span>
+                                <span>{cat.name}</span>
+                            </button>
+                        ))}
                     </div>
-                ) : filteredCategories.map((cat, idx) => (
-                    <div key={cat.id} className="space-y-12">
-                        <div className="flex items-center gap-6">
-                            <div className="w-10 h-[1px] bg-[#1E3A8A]"></div>
-                            <h2 className="text-3xl font-black uppercase tracking-tighter text-[#0F172A] italic">{cat.name}</h2>
-                            <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest italic">/ {cat.courses.length} CURSOS</span>
+                </section>
+
+                {/* COURSES GRID */}
+                <section className="space-y-16">
+                    {loading ? (
+                        <div className="flex flex-col items-center justify-center py-32 gap-6 bg-white border border-slate-200 rounded-2xl shadow-sm">
+                            <div className="w-12 h-12 border-4 border-slate-100 border-t-indigo-600 rounded-full animate-spin" />
+                            <p className="text-sm font-bold uppercase tracking-wider text-slate-500">Cargando Academia...</p>
                         </div>
+                    ) : filteredCategories.map((cat) => (
+                        <div key={cat.id} className="space-y-6">
+                            <div className="flex items-center gap-4 border-b border-slate-200 pb-4">
+                                <h2 className="text-2xl font-black text-[#0F172A] flex items-center gap-3">
+                                    <span className="text-3xl">{CATEGORY_ICONS[cat.slug] || "📚"}</span>
+                                    {cat.name}
+                                </h2>
+                                <span className="bg-slate-100 text-slate-600 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">{cat.courses.length} Cursos</span>
+                            </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-                            {cat.courses.map(course => (
-                                <div key={course.id} className="group relative bg-white border border-slate-200 hover:border-[#1E3A8A] transition-all duration-500 overflow-hidden flex flex-col shadow-sm hover:shadow-xl">
-                                    {/* Thumbnail */}
-                                    <div className="relative h-48 overflow-hidden bg-slate-900">
-                                        {course.imageUrl ? (
-                                            <img src={course.imageUrl} className="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-all duration-700 group-hover:scale-105" alt={course.title} />
-                                        ) : (
-                                            <div className="w-full h-full flex items-center justify-center opacity-20 text-white">
-                                                <GraduationCap size={64} />
-                                            </div>
-                                        )}
-                                        <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A] via-transparent to-transparent opacity-60" />
-                                        
-                                        {isAdmin && (
-                                            <div className="absolute top-4 left-4 flex gap-2">
-                                                <span className={`px-3 py-1 text-[8px] font-black uppercase tracking-widest border ${course.published ? 'border-emerald-500/50 text-emerald-400 bg-emerald-400/5' : 'border-yellow-500/50 text-yellow-500 bg-yellow-500/5'}`}>
-                                                    {course.published ? 'PÚBLICO' : 'BORRADOR'}
-                                                </span>
-                                            </div>
-                                        )}
-
-                                        <div className="absolute bottom-4 left-4 flex items-center gap-4">
-                                            <div className="flex items-center gap-2 text-[9px] font-black text-white uppercase italic">
-                                                <PlayCircle size={14} className="text-[#1E3A8A]" />
-                                                {course._count.lessons} LECCIONES
-                                            </div>
-                                            {isAdmin && (
-                                                <div className="flex items-center gap-2 text-[9px] font-black text-blue-400 uppercase italic">
-                                                    <Users size={14} />
-                                                    {course._count.enrollments} ALUMNOS
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {cat.courses.map(course => (
+                                    <div key={course.id} className="group bg-white border border-slate-200 rounded-2xl hover:border-indigo-300 transition-all duration-300 overflow-hidden flex flex-col shadow-sm hover:shadow-md">
+                                        {/* Thumbnail */}
+                                        <div className="relative h-48 overflow-hidden bg-slate-100 border-b border-slate-100">
+                                            {course.imageUrl ? (
+                                                <img src={course.imageUrl} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt={course.title} />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center text-slate-300">
+                                                    <GraduationCap size={48} />
                                                 </div>
                                             )}
-                                        </div>
-                                    </div>
-
-                                    {/* Content */}
-                                    <div className="p-8 flex-1 flex flex-col justify-between space-y-6">
-                                        <div>
-                                            <h3 className="text-xl font-black uppercase tracking-tighter italic text-[#0F172A] group-hover:text-[#1E3A8A] transition-colors leading-tight mb-4">{course.title}</h3>
-                                            <p className="text-xs text-slate-400 italic font-medium line-clamp-2 leading-relaxed">{course.description}</p>
-                                        </div>
-
-                                        <div className="pt-8 border-t border-slate-50 flex items-center justify-between">
-                                            <Link href={`/academy/${course.slug}`} className="text-[10px] font-black text-[#1E3A8A] uppercase tracking-widest italic flex items-center gap-3 group/link">
-                                                TOMAR CURSO <ChevronRight size={14} className="group-hover/link:translate-x-1 transition-transform" />
-                                            </Link>
                                             
                                             {isAdmin && (
-                                                <div className="flex items-center gap-4">
-                                                    <Link href={`/dashboard/academy/course/${course.id}`} className="p-3 bg-slate-50 border border-slate-100 text-slate-400 hover:text-[#1E3A8A] hover:border-[#1E3A8A] transition-all">
-                                                        <Edit3 size={16} />
-                                                    </Link>
+                                                <div className="absolute top-4 left-4">
+                                                    <span className={`px-3 py-1.5 text-xs font-bold uppercase tracking-wider rounded-md shadow-sm backdrop-blur-md ${course.published ? 'bg-emerald-500/90 text-white' : 'bg-amber-500/90 text-white'}`}>
+                                                        {course.published ? 'Público' : 'Borrador'}
+                                                    </span>
                                                 </div>
                                             )}
                                         </div>
+
+                                        {/* Content */}
+                                        <div className="p-6 flex-1 flex flex-col justify-between space-y-6">
+                                            <div>
+                                                <h3 className="text-lg font-black text-[#0F172A] group-hover:text-indigo-600 transition-colors leading-tight mb-2 line-clamp-2">{course.title}</h3>
+                                                <p className="text-sm text-slate-500 font-medium line-clamp-2">{course.description}</p>
+                                            </div>
+
+                                            <div className="space-y-6">
+                                                <div className="flex items-center gap-4 text-sm font-bold text-slate-500 bg-slate-50 p-3 rounded-xl border border-slate-100">
+                                                    <div className="flex items-center gap-1.5">
+                                                        <PlayCircle size={16} className="text-indigo-500" />
+                                                        {course._count.lessons} Lecciones
+                                                    </div>
+                                                    {isAdmin && (
+                                                        <div className="flex items-center gap-1.5">
+                                                            <Users size={16} className="text-blue-500" />
+                                                            {course._count.enrollments} Alumnos
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                <div className="flex items-center justify-between">
+                                                    <Link href={`/academy/${course.slug}`} className="flex-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-sm font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors">
+                                                        Tomar Curso <ChevronRight size={16} />
+                                                    </Link>
+                                                    
+                                                    {isAdmin && (
+                                                        <Link href={`/dashboard/academy/course/${course.id}`} className="p-2.5 ml-2 bg-white border border-slate-200 text-slate-400 hover:text-indigo-600 hover:border-indigo-200 rounded-xl transition-all shadow-sm">
+                                                            <Edit3 size={18} />
+                                                        </Link>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                ))}
+                            </div>
                         </div>
-                    </div>
-                ))}
-            </section>
+                    ))}
+                    {filteredCategories.length === 0 && !loading && (
+                        <div className="py-20 text-center bg-white border border-slate-200 rounded-2xl shadow-sm">
+                            <BookOpen size={48} className="text-slate-300 mx-auto mb-4" />
+                            <h3 className="text-xl font-bold text-[#0F172A]">No se encontraron cursos</h3>
+                            <p className="text-slate-500 mt-2">Intenta con otro término de búsqueda o selecciona otra categoría.</p>
+                        </div>
+                    )}
+                </section>
+            </div>
         </div>
     )
 }

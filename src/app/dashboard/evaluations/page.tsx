@@ -40,7 +40,7 @@ export default function JobProfilesPage() {
     const [searchTerm, setSearchTerm] = useState("")
 
     const toggleUserStatus = async (userId: string, current: boolean) => {
-        if (!confirm(`¿Desea ${current ? 'DESACTIVAR' : 'ACTIVAR'} el acceso de este asesor?`)) return
+        if (!confirm(`¿Desea ${current ? 'desactivar' : 'activar'} el acceso de este asesor?`)) return
         try {
             const res = await fetch(`/api/admin/users/${userId}`, {
                 method: "PATCH",
@@ -66,7 +66,7 @@ export default function JobProfilesPage() {
     }
 
     const deleteUser = async (userId: string) => {
-        if (!confirm("¿ESTÁ SEGURO DE ELIMINAR ESTE ASESOR? Esta acción es irreversible y borrará todos sus perfiles asociados.")) return
+        if (!confirm("¿Está seguro de eliminar este asesor? Esta acción es irreversible y borrará todos sus perfiles asociados.")) return
         try {
             const res = await fetch(`/api/admin/users/${userId}`, {
                 method: "DELETE"
@@ -82,7 +82,7 @@ export default function JobProfilesPage() {
         skills: [] as string[],
         responsibilities: [] as string[],
         benefits: [] as string[],
-        templateName: "ESTÁNDAR CORPORATIVO ATOMIC"
+        templateName: "Estándar Corporativo Atomic"
     })
 
     const [newItem, setNewItem] = useState({ type: "", value: "" })
@@ -121,7 +121,7 @@ export default function JobProfilesPage() {
                     skills: JSON.parse(data.skills || "[]"),
                     responsibilities: JSON.parse(data.responsibilities || "[]"),
                     benefits: JSON.parse(data.benefits || "[]"),
-                    templateName: data.templateName || "ESTÁNDAR CORPORATIVO ATOMIC"
+                    templateName: data.templateName || "Estándar Corporativo Atomic"
                 })
                 setView("editor")
             } else {
@@ -146,7 +146,7 @@ export default function JobProfilesPage() {
                 skills: JSON.parse(data.skills || "[]"),
                 responsibilities: JSON.parse(data.responsibilities || "[]"),
                 benefits: JSON.parse(data.benefits || "[]"),
-                templateName: data.templateName || "ESTÁNDAR CORPORATIVO ATOMIC"
+                templateName: data.templateName || "Estándar Corporativo Atomic"
             })
         } else {
             setProfile(null)
@@ -156,7 +156,7 @@ export default function JobProfilesPage() {
                 skills: [],
                 responsibilities: [],
                 benefits: [],
-                templateName: "ESTÁNDAR CORPORATIVO ATOMIC"
+                templateName: "Estándar Corporativo Atomic"
             })
         }
         setLoading(false)
@@ -180,7 +180,7 @@ export default function JobProfilesPage() {
         if (!newItem.value) return
         setFormData(prev => ({
             ...prev,
-            [type]: [...prev[type as keyof typeof prev] as string[], newItem.value.toUpperCase()]
+            [type]: [...prev[type as keyof typeof prev] as string[], newItem.value]
         }))
         setNewItem({ type: "", value: "" })
     }
@@ -197,37 +197,26 @@ export default function JobProfilesPage() {
     )
 
     return (
-        <div className="space-y-12 pb-32 animate-in fade-in duration-1000 relative">
-            {/* Background Orbs */}
-            <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-                <div className="absolute top-[10%] left-[-10%] w-[45%] h-[45%] rounded-none bg-primary/5 blur-[120px]" />
-                <div className="absolute bottom-[10%] right-[-10%] w-[35%] h-[35%] rounded-none bg-secondary/5 blur-[100px]" />
-            </div>
+        <div className="space-y-8 pb-32 animate-in fade-in duration-500 font-sans">
 
             {/* Header */}
-            <header className="flex flex-col lg:flex-row lg:items-end justify-between border-b border-white/5 pb-16 relative z-10 gap-10">
+            <header className="flex flex-col lg:flex-row lg:items-end justify-between border-b border-slate-200 pb-6 relative z-10 gap-6">
                 <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
-                     <div className="flex items-center space-x-4 mb-4 text-primary">
-                        <Award size={20} className="drop-shadow-[0_0_8px_rgba(99,102,241,0.5)]" />
-                        <span className="text-[10px] uppercase font-black tracking-[0.6em] italic">Corporate Talent Architecture v6.0</span>
-                    </div>
-                    <h1 className="text-6xl font-black text-white uppercase tracking-tighter leading-none italic">
-                        PERFILES <span className="text-primary underline decoration-primary/30 underline-offset-8">LABORALES</span>
+                    <h1 className="text-3xl font-black text-[#0F172A] flex items-center gap-3">
+                        <Briefcase className="text-indigo-600" /> Perfiles Laborales
                     </h1>
-                    <p className="text-slate-500 font-bold text-xs uppercase tracking-[0.3em] mt-5 max-w-xl italic leading-relaxed">
-                        Definición de fichas técnicas de talento, competencias críticas y estructura de responsabilidades corporativas.
+                    <p className="text-sm text-slate-500 font-medium mt-1 max-w-xl">
+                        Gestión de fichas técnicas, competencias y permisos de los asesores del equipo.
                     </p>
                 </motion.div>
 
                 {isAdmin && view !== "list" && (
                     <button
                         onClick={() => setView("list")}
-                        className="bg-slate-900 text-white font-black text-[10px] uppercase tracking-[0.4em] px-10 py-5 hover:bg-primary transition-all flex items-center gap-4 rounded-none border border-white/5 shadow-2xl skew-x-[-12deg] group"
+                        className="bg-white border border-slate-200 text-slate-700 px-6 py-2.5 rounded-lg font-bold text-sm hover:bg-slate-50 transition-all flex items-center gap-2 shadow-sm"
                     >
-                         <div className="skew-x-[12deg] flex items-center gap-3">
-                            <ChevronLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
-                            <span>Listado de Asesores</span>
-                        </div>
+                        <ChevronLeft size={18} />
+                        <span>Volver a Asesores</span>
                     </button>
                 )}
             </header>
@@ -239,102 +228,102 @@ export default function JobProfilesPage() {
                         initial={{ opacity: 0, scale: 0.98 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.98 }}
-                        className="glass-panel border-white/5 shadow-2xl overflow-hidden rounded-none-[3.5rem] relative z-10 backdrop-blur-3xl"
+                        className="bg-white border border-slate-200 shadow-sm overflow-hidden rounded-2xl relative z-10"
                     >
-                        <div className="p-10 border-b border-white/5 flex flex-col lg:flex-row justify-between items-center gap-10 bg-white/[0.01]">
+                        <div className="p-6 border-b border-slate-100 flex flex-col md:flex-row justify-between items-center gap-6 bg-slate-50">
                             <div>
-                                <h2 className="text-2xl font-black text-white uppercase tracking-tighter italic">Elementos de Talento Humano</h2>
-                                <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.4em] mt-1 italic">Seleccione un asesor para gestionar su ficha técnica</p>
+                                <h2 className="text-lg font-black text-[#0F172A]">Directorio de Talento Humano</h2>
+                                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mt-1">Seleccione un asesor para gestionar su ficha técnica</p>
                             </div>
-                            <div className="relative w-full lg:w-[450px] group">
-                                <Users className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-700 group-focus-within:text-primary transition-colors" size={20} />
+                            <div className="relative w-full md:w-[350px]">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                                 <input
                                     type="text"
-                                    placeholder="BUSCAR ASESOR..."
+                                    placeholder="Buscar asesor..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full pl-16 pr-8 py-5 bg-slate-950 border border-white/5 text-xs font-black uppercase tracking-widest text-white outline-none rounded-none focus:border-primary transition-all shadow-inner placeholder:text-slate-900 italic"
+                                    className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 text-sm font-medium text-[#0F172A] outline-none rounded-lg focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all shadow-sm"
                                 />
                             </div>
                         </div>
 
                         <div className="overflow-x-auto">
                             <table className="w-full text-left">
-                                <thead className="text-[10px] text-slate-600 uppercase font-black tracking-[0.4em] bg-white/[0.02]">
+                                <thead className="text-xs text-slate-500 uppercase font-bold bg-slate-50 border-b border-slate-100">
                                     <tr>
-                                        <th className="px-12 py-10 italic">Identidad_Laboral</th>
-                                        <th className="px-10 py-10 italic">Seguridad_Status</th>
-                                        <th className="px-10 py-10 italic">Acceso_Sistema</th>
-                                        <th className="px-12 py-10 text-right italic">Gestión_Total</th>
+                                        <th className="px-6 py-4">Identidad Laboral</th>
+                                        <th className="px-6 py-4">Status & Seguridad</th>
+                                        <th className="px-6 py-4">Accesos</th>
+                                        <th className="px-6 py-4 text-right">Gestión</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-white/5">
+                                <tbody className="divide-y divide-slate-100">
                                     {loading ? (
-                                        <tr><td colSpan={4} className="px-12 py-32 text-center text-[10px] font-black text-slate-500 uppercase tracking-[1em] animate-pulse italic">Analizando Base de Datos...</td></tr>
+                                        <tr><td colSpan={4} className="px-6 py-12 text-center text-sm font-bold text-slate-400">Cargando base de datos...</td></tr>
                                     ) : filteredUsers.map((u: any) => (
-                                        <tr key={u.id} className="hover:bg-white/[0.03] transition-all group">
-                                            <td className="px-12 py-8">
-                                                <div className="flex items-center space-x-6">
-                                                    <div className={`w-14 h-14 bg-slate-950 border ${u.resetRequested ? 'border-red-500 animate-pulse' : 'border-white/5'} flex items-center justify-center text-primary font-black text-lg transition-all rounded-none shadow-inner italic`}>
+                                        <tr key={u.id} className="hover:bg-slate-50 transition-colors group">
+                                            <td className="px-6 py-5">
+                                                <div className="flex items-center space-x-4">
+                                                    <div className={`w-12 h-12 bg-indigo-50 border ${u.resetRequested ? 'border-rose-300' : 'border-indigo-100'} flex items-center justify-center text-indigo-600 font-black text-lg rounded-xl shadow-sm`}>
                                                         {u.name?.[0] || u.email?.[0]}
                                                     </div>
                                                     <div>
-                                                        <div className="flex items-center gap-3">
-                                                            <p className="font-black text-white text-base tracking-tighter uppercase italic group-hover:text-primary transition-colors">{u.name || (u.email.split('@')[0])}</p>
+                                                        <div className="flex items-center gap-2">
+                                                            <p className="font-bold text-[#0F172A] text-base group-hover:text-indigo-600 transition-colors">{u.name || (u.email.split('@')[0])}</p>
                                                             {u.resetRequested && (
-                                                                <span className="bg-red-500/10 border border-red-500/30 text-red-500 text-[7px] font-black px-2 py-0.5 tracking-widest animate-pulse">RESET PENDIENTE</span>
+                                                                <span className="bg-rose-100 text-rose-600 text-[10px] font-bold px-2 py-0.5 rounded-md uppercase">Reset Pendiente</span>
                                                             )}
                                                         </div>
-                                                        <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.3em] mt-1 italic">{u.email}</p>
+                                                        <p className="text-xs font-medium text-slate-500 mt-0.5">{u.email}</p>
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="px-10 py-8">
+                                            <td className="px-6 py-5">
                                                 <div className="flex flex-col gap-2">
-                                                    <div className="flex items-center gap-3">
-                                                        <span className={`text-[9px] font-black px-3 py-1 border italic ${u.isActive ? 'border-emerald-500/20 text-emerald-500 bg-emerald-500/5' : 'border-red-500/20 text-red-500 bg-red-500/5'}`}>
-                                                            {u.isActive ? 'HABILITADO' : 'DESACTIVADO'}
+                                                    <div className="flex items-center gap-2">
+                                                        <span className={`text-xs font-bold px-2.5 py-1 rounded-md ${u.isActive ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' : 'bg-rose-50 text-rose-600 border border-rose-200'}`}>
+                                                            {u.isActive ? 'Activo' : 'Desactivado'}
                                                         </span>
-                                                        <span className="text-[9px] font-black text-slate-600 italic tracking-widest">{u.role}</span>
+                                                        <span className="text-xs font-bold text-slate-600 bg-slate-100 px-2.5 py-1 rounded-md">{u.role}</span>
                                                     </div>
                                                     {u.tempResetCode && (
-                                                        <div className="bg-primary/10 border border-primary/20 p-2 flex items-center justify-between gap-4">
-                                                            <span className="text-[8px] font-black text-primary uppercase">CÓDIGO TEMPORAL:</span>
-                                                            <span className="text-[10px] font-black text-white italic tracking-[0.2em]">{u.tempResetCode}</span>
+                                                        <div className="bg-indigo-50 border border-indigo-100 px-3 py-1.5 rounded-md flex items-center gap-2 max-w-fit">
+                                                            <span className="text-[10px] font-bold text-indigo-500 uppercase">Código Temporal:</span>
+                                                            <span className="text-xs font-black text-indigo-700">{u.tempResetCode}</span>
                                                         </div>
                                                     )}
                                                 </div>
                                             </td>
-                                            <td className="px-10 py-8">
-                                                <div className="flex items-center gap-4">
+                                            <td className="px-6 py-5">
+                                                <div className="flex items-center gap-2">
                                                     <button 
                                                         onClick={() => toggleUserStatus(u.id, u.isActive)}
-                                                        className={`p-3 border transition-all ${u.isActive ? 'border-white/5 text-slate-500 hover:text-red-500' : 'border-primary/30 text-primary hover:bg-primary/10'}`}
+                                                        className={`p-2 rounded-lg border transition-all ${u.isActive ? 'border-slate-200 text-slate-400 hover:text-rose-600 hover:bg-rose-50' : 'border-emerald-200 text-emerald-600 bg-emerald-50 hover:bg-emerald-100'}`}
                                                         title={u.isActive ? "Desactivar Acceso" : "Activar Acceso"}
                                                     >
                                                         {u.isActive ? <ShieldOff size={18} /> : <ShieldCheck size={18} />}
                                                     </button>
                                                     <button 
                                                         onClick={() => approveReset(u.id)}
-                                                        className={`p-3 border transition-all ${u.resetRequested ? 'bg-red-500 border-red-600 text-white animate-bounce' : 'border-white/5 text-slate-500 hover:text-primary'}`}
+                                                        className={`p-2 rounded-lg border transition-all ${u.resetRequested ? 'bg-rose-500 border-rose-600 text-white' : 'border-slate-200 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50'}`}
                                                         title="Autorizar Reseteo"
                                                     >
                                                         <Key size={18} />
                                                     </button>
                                                 </div>
                                             </td>
-                                            <td className="px-12 py-8 text-right">
-                                                <div className="flex justify-end items-center gap-3">
+                                            <td className="px-6 py-5 text-right">
+                                                <div className="flex justify-end items-center gap-2">
                                                     <button
                                                         onClick={() => handleSelectUser(u)}
-                                                        className="p-4 border border-white/5 bg-slate-950 text-slate-500 hover:text-white hover:border-white/20 transition-all"
+                                                        className="p-2 border border-slate-200 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-all shadow-sm bg-white"
                                                         title="Editar Perfil Laboral"
                                                     >
                                                         <FileText size={18} />
                                                     </button>
                                                     <button
                                                         onClick={() => deleteUser(u.id)}
-                                                        className="p-4 border border-white/5 bg-slate-950 text-slate-500 hover:text-red-500 hover:border-red-500/20 transition-all"
+                                                        className="p-2 border border-slate-200 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-all shadow-sm bg-white"
                                                         title="Eliminar Asesor"
                                                     >
                                                         <Trash2 size={18} />
@@ -350,132 +339,132 @@ export default function JobProfilesPage() {
                 ) : (
                     <motion.div 
                         key="editor"
-                        initial={{ opacity: 0, y: 40 }}
+                        initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -40 }}
-                        className="grid grid-cols-1 xl:grid-cols-3 gap-12 relative z-10"
+                        exit={{ opacity: 0, y: -20 }}
+                        className="grid grid-cols-1 xl:grid-cols-3 gap-8 relative z-10"
                     >
                         {/* Editor Form */}
-                        <div className="xl:col-span-2 space-y-12">
-                            <div className="glass-panel border-white/10 p-16 rounded-none-[4rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] backdrop-blur-3xl overflow-hidden relative">
-                                <div className="absolute top-0 right-0 p-12 opacity-5 text-primary pointer-events-none -rotate-12"><Briefcase size={200} /></div>
-                                
-                                <div className="flex justify-between items-start mb-16 border-b border-white/5 pb-10">
+                        <div className="xl:col-span-2 space-y-8">
+                            <div className="bg-white border border-slate-200 p-8 rounded-2xl shadow-sm overflow-hidden relative">
+                                <div className="flex justify-between items-start mb-8 border-b border-slate-100 pb-6">
                                     <div>
-                                        <div className="flex items-center space-x-4 mb-4 text-azure-400">
-                                            <Building2 size={20} />
-                                            <span className="text-[10px] uppercase font-black tracking-[0.6em] italic">Configuración de Ficha Técnica</span>
-                                        </div>
-                                        <h2 className="text-4xl font-black text-white uppercase tracking-tighter italic">ARQUITECTURA DE <span className="text-primary">CARGO</span></h2>
-                                        <p className="text-[11px] font-black text-slate-500 uppercase tracking-[0.4em] mt-3 italic leading-none">
-                                            Perfil asignado a: <span className="text-white ml-2 underline decoration-primary/30">{isAdmin ? selectedUser?.name : session?.user?.name}</span>
+                                        <h2 className="text-2xl font-black text-[#0F172A] flex items-center gap-2">
+                                            <Building2 className="text-indigo-600" size={24} /> Arquitectura de Cargo
+                                        </h2>
+                                        <p className="text-sm font-medium text-slate-500 mt-2">
+                                            Perfil asignado a: <span className="text-[#0F172A] font-bold">{isAdmin ? selectedUser?.name : session?.user?.name}</span>
                                         </p>
                                     </div>
                                 </div>
 
-                                <div className="space-y-12">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                                        <div className="space-y-4">
-                                            <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-2 italic">Título del Perfil</label>
+                                <div className="space-y-8">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Título del Perfil</label>
                                             <input 
                                                 type="text"
                                                 disabled={!isAdmin}
                                                 value={formData.title}
-                                                onChange={(e) => setFormData({...formData, title: e.target.value.toUpperCase()})}
-                                                className="w-full bg-slate-950 border border-white/5 px-8 py-6 text-base font-black uppercase tracking-widest text-white outline-none rounded-none focus:border-primary transition-all shadow-inner italic"
-                                                placeholder="EJ: SENIOR SALES ADVISOR"
+                                                onChange={(e) => setFormData({...formData, title: e.target.value})}
+                                                className="w-full bg-slate-50 border border-slate-200 px-4 py-3 text-sm font-bold text-[#0F172A] outline-none rounded-lg focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all disabled:opacity-70 disabled:bg-slate-100"
+                                                placeholder="Ej: Asesor Comercial Senior"
                                             />
                                         </div>
-                                        <div className="space-y-4">
-                                            <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-2 italic">Plantilla de Referencia</label>
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Plantilla de Referencia</label>
                                             <input 
                                                 type="text"
                                                 disabled={!isAdmin}
                                                 value={formData.templateName}
-                                                onChange={(e) => setFormData({...formData, templateName: e.target.value.toUpperCase()})}
-                                                className="w-full bg-slate-950 border border-white/5 px-8 py-6 text-base font-black text-primary outline-none rounded-none focus:border-primary transition-all shadow-inner italic"
+                                                onChange={(e) => setFormData({...formData, templateName: e.target.value})}
+                                                className="w-full bg-white border border-indigo-200 px-4 py-3 text-sm font-bold text-indigo-700 outline-none rounded-lg focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all shadow-sm disabled:opacity-70 disabled:bg-slate-50"
                                             />
                                         </div>
                                     </div>
 
-                                    <div className="space-y-4">
-                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] ml-2 italic">Resumen del Perfil Laboral</label>
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Resumen del Perfil Laboral</label>
                                         <textarea 
                                             disabled={!isAdmin}
                                             value={formData.description}
-                                            onChange={(e) => setFormData({...formData, description: e.target.value.toUpperCase()})}
-                                            className="w-full bg-slate-950 border border-white/5 p-8 text-[12px] font-black italic text-white shadow-inner focus:border-primary transition-all h-32 outline-none resize-none uppercase tracking-widest leading-relaxed placeholder:text-slate-900"
-                                            placeholder="DESCRIBA LA MISIÓN DEL CARGO..."
+                                            onChange={(e) => setFormData({...formData, description: e.target.value})}
+                                            className="w-full bg-slate-50 border border-slate-200 p-4 text-sm font-medium text-[#0F172A] outline-none rounded-lg focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all h-32 resize-none disabled:opacity-70 disabled:bg-slate-100"
+                                            placeholder="Describa la misión del cargo..."
                                         />
                                     </div>
 
                                     {/* List Sections */}
                                     {[
-                                        { id: 'skills', label: 'Competencias & Skills', color: 'text-azure-400', icon: <Zap size={16} /> },
-                                        { id: 'responsibilities', label: 'Responsabilidades Críticas', color: 'text-secondary', icon: <Target size={16} /> },
-                                        { id: 'benefits', label: 'Beneficios & Incentivos', color: 'text-emerald-400', icon: < Award size={16} /> }
+                                        { id: 'skills', label: 'Competencias & Skills', color: 'text-indigo-600', bg: 'bg-indigo-50', border: 'border-indigo-100', icon: <Zap size={18} /> },
+                                        { id: 'responsibilities', label: 'Responsabilidades', color: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-emerald-100', icon: <Target size={18} /> },
+                                        { id: 'benefits', label: 'Beneficios', color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-100', icon: <Award size={18} /> }
                                     ].map(section => (
-                                        <div key={section.id} className="space-y-6">
-                                            <div className="flex justify-between items-center border-b border-white/5 pb-4">
-                                                <div className={`flex items-center gap-4 ${section.color}`}>
+                                        <div key={section.id} className="space-y-4">
+                                            <div className="flex justify-between items-center border-b border-slate-100 pb-3">
+                                                <div className={`flex items-center gap-2 ${section.color}`}>
                                                     {section.icon}
-                                                    <h3 className="text-[11px] font-black uppercase tracking-[0.5em] italic">{section.label}</h3>
+                                                    <h3 className="text-sm font-bold uppercase tracking-wider">{section.label}</h3>
                                                 </div>
                                                 {isAdmin && (
-                                                    <div className="flex gap-4">
+                                                    <div className="flex gap-2">
                                                         <input 
                                                             type="text"
-                                                            placeholder="AÑADIR..."
+                                                            placeholder="Añadir ítem..."
                                                             value={newItem.type === section.id ? newItem.value : ""}
-                                                            onChange={(e) => setNewItem({ type: section.id, value: e.target.value.toUpperCase() })}
-                                                            className="bg-slate-950 border border-white/5 px-6 py-2 text-[9px] font-black uppercase tracking-widest outline-none rounded-none focus:border-primary transition-all w-48 shadow-inner italic placeholder:text-slate-900"
+                                                            onChange={(e) => setNewItem({ type: section.id, value: e.target.value })}
+                                                            className="bg-slate-50 border border-slate-200 px-3 py-1.5 text-sm font-medium outline-none rounded-lg focus:border-indigo-500 w-48"
+                                                            onKeyDown={(e) => { if(e.key === 'Enter') addItem(section.id as any) }}
                                                         />
                                                         <button 
                                                             onClick={() => addItem(section.id as any)}
-                                                            className="bg-primary text-white p-2 hover:bg-white hover:text-primary transition-all rounded-none"
+                                                            className="bg-slate-100 text-slate-600 p-1.5 rounded-lg hover:bg-slate-200 transition-colors"
                                                         >
-                                                            <Plus size={16} />
+                                                            <Plus size={18} />
                                                         </button>
                                                     </div>
                                                 )}
                                             </div>
 
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                                 {formData[section.id as keyof typeof formData] instanceof Array && (formData[section.id as keyof typeof formData] as string[]).map((item, i) => (
                                                     <motion.div 
                                                         layout
                                                         key={i} 
-                                                        className="flex items-center justify-between p-4 bg-slate-950/60 border border-white/5 rounded-none group hover:border-primary/20 transition-all shadow-inner"
+                                                        className={`flex items-start justify-between p-3 ${section.bg} border ${section.border} rounded-xl group`}
                                                     >
-                                                        <div className="flex items-center gap-4">
-                                                            <div className={`w-1 h-4 ${section.color.replace('text-', 'bg-')}/30 group-hover:bg-primary transition-colors`} />
-                                                            <span className="text-[9px] font-black text-slate-400 group-hover:text-white uppercase tracking-[0.2em] italic transition-colors leading-relaxed">{item}</span>
+                                                        <div className="flex items-start gap-3">
+                                                            <div className={`w-1.5 h-1.5 rounded-full mt-1.5 ${section.color.replace('text-', 'bg-')}`} />
+                                                            <span className="text-sm font-medium text-slate-700 leading-snug">{item}</span>
                                                         </div>
                                                         {isAdmin && (
                                                             <button 
                                                                 onClick={() => removeItem(section.id as any, i)}
-                                                                className="text-slate-800 hover:text-red-500 transition-all"
+                                                                className="text-slate-400 hover:text-rose-500 transition-all opacity-0 group-hover:opacity-100 p-1"
                                                             >
-                                                                <X size={14} />
+                                                                <X size={16} />
                                                             </button>
                                                         )}
                                                     </motion.div>
                                                 ))}
+                                                {formData[section.id as keyof typeof formData].length === 0 && (
+                                                    <div className="col-span-full py-4 text-center text-sm text-slate-400 font-medium bg-slate-50 rounded-xl border border-dashed border-slate-200">
+                                                        No hay elementos registrados.
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     ))}
                                 </div>
 
                                 {isAdmin && (
-                                    <div className="mt-20">
+                                    <div className="mt-10 pt-6 border-t border-slate-100">
                                         <button 
                                             onClick={handleSave}
-                                            className="w-full bg-primary text-white px-16 py-7 text-[12px] font-black uppercase tracking-[0.5em] transition-all shadow-[0_25px_60px_-10px_rgba(99,102,241,0.6)] rounded-none-[2.5rem] skew-x-[-12deg] group"
+                                            className="w-full bg-indigo-600 text-white py-4 text-sm font-bold rounded-xl hover:bg-indigo-700 transition-all shadow-sm flex items-center justify-center gap-2"
                                         >
-                                            <div className="skew-x-[12deg] flex items-center justify-center gap-5">
-                                                <Save size={24} className="group-hover:rotate-12 transition-transform" />
-                                                <span>Sincronizar Ficha Técnica</span>
-                                            </div>
+                                            <Save size={18} />
+                                            <span>Guardar Cambios del Perfil</span>
                                         </button>
                                     </div>
                                 )}
@@ -483,45 +472,44 @@ export default function JobProfilesPage() {
                         </div>
 
                         {/* Sidebar Preview */}
-                        <div className="xl:col-span-1 space-y-12">
-                             <div className="glass-panel border-white/10 p-12 rounded-none-[3rem] bg-gradient-to-br from-white/[0.03] to-transparent shadow-2xl backdrop-blur-xl">
-                                <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] italic mb-10 text-center">Identificación Corporativa</h3>
-                                <div className="flex flex-col items-center gap-8 border-b border-white/5 pb-10">
-                                    <div className="w-32 h-32 bg-slate-950 border border-white/10 flex items-center justify-center text-primary text-5xl font-black italic shadow-inner rounded-none group relative overflow-hidden">
-                                        <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="xl:col-span-1 space-y-6">
+                            <div className="bg-white border border-slate-200 p-8 rounded-2xl shadow-sm">
+                                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-6 text-center">Identificación de Asesor</h3>
+                                <div className="flex flex-col items-center gap-6 border-b border-slate-100 pb-6">
+                                    <div className="w-24 h-24 bg-indigo-50 border border-indigo-100 rounded-2xl flex items-center justify-center text-indigo-600 text-3xl font-black shadow-sm">
                                         {isAdmin ? selectedUser?.name?.[0] : session?.user?.name?.[0]}
                                     </div>
                                     <div className="text-center">
-                                        <p className="text-2xl font-black text-white italic tracking-tighter uppercase">{isAdmin ? selectedUser?.name : session?.user?.name}</p>
-                                        <p className="text-[10px] font-black text-primary uppercase tracking-[0.3em] mt-2 italic">{isAdmin ? selectedUser?.role : session?.user?.role}</p>
+                                        <p className="text-xl font-black text-[#0F172A]">{isAdmin ? selectedUser?.name : session?.user?.name}</p>
+                                        <p className="text-xs font-bold text-indigo-600 uppercase tracking-wider mt-1 bg-indigo-50 inline-block px-3 py-1 rounded-full">{isAdmin ? selectedUser?.role : session?.user?.role}</p>
                                     </div>
                                 </div>
-                                <div className="py-10 space-y-8">
-                                    <div className="flex items-center gap-6">
-                                        <div className="p-3 bg-white/5 border border-white/10 text-slate-500"><Clock size={16} /></div>
+                                <div className="py-6 space-y-5">
+                                    <div className="flex items-center gap-4">
+                                        <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-100 text-slate-500"><Clock size={18} /></div>
                                         <div>
-                                            <p className="text-[8px] font-black text-slate-700 uppercase tracking-widest italic mb-1">Última Actualización</p>
-                                            <p className="text-[10px] font-black text-white italic">{profile ? new Date(profile.updatedAt).toLocaleDateString() : 'SIN REGISTRO'}</p>
+                                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">Última Actualización</p>
+                                            <p className="text-sm font-bold text-[#0F172A]">{profile ? new Date(profile.updatedAt).toLocaleDateString() : 'Sin registro'}</p>
                                         </div>
                                     </div>
-                                    <div className="flex items-center gap-6">
-                                        <div className="p-3 bg-white/5 border border-white/10 text-slate-500"><ShieldCheck size={16} /></div>
+                                    <div className="flex items-center gap-4">
+                                        <div className="p-2.5 bg-emerald-50 rounded-xl border border-emerald-100 text-emerald-600"><ShieldCheck size={18} /></div>
                                         <div>
-                                            <p className="text-[8px] font-black text-slate-700 uppercase tracking-widest italic mb-1">Status de Contrato</p>
-                                            <p className="text-[10px] font-black text-emerald-400 italic">ACTIVO_VECT</p>
+                                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">Estado Operativo</p>
+                                            <p className="text-sm font-bold text-emerald-600">Activo</p>
                                         </div>
                                     </div>
                                 </div>
-                                <button className="w-full py-5 border border-white/5 bg-slate-950 text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 hover:text-white hover:bg-white/5 transition-all italic">
-                                    Exportar Ficha PDF
+                                <button className="w-full py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-600 hover:text-indigo-600 hover:border-indigo-200 transition-colors">
+                                    Exportar Resumen (PDF)
                                 </button>
                             </div>
 
-                            <div className="glass-panel border-white/10 p-12 rounded-none-[3rem] bg-slate-950/40 relative overflow-hidden group">
-                                <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity"><Building2 size={120} /></div>
-                                <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] italic mb-6">Misión Corporativa</h3>
-                                <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest leading-loose italic">
-                                    Sincronizar el talento humano con los objetivos Corporativoes de ATOMIC para garantizar una expansión sostenible y de alto rendimiento.
+                            <div className="bg-indigo-50 border border-indigo-100 p-8 rounded-2xl shadow-sm relative overflow-hidden">
+                                <div className="absolute -right-4 -bottom-4 text-indigo-100 opacity-50"><Building2 size={100} /></div>
+                                <h3 className="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-3 relative z-10">Misión Corporativa</h3>
+                                <p className="text-sm font-medium text-slate-700 leading-relaxed relative z-10">
+                                    Sincronizar el talento humano con los objetivos corporativos de Atomic Industries para garantizar una expansión sostenible y de alto rendimiento.
                                 </p>
                             </div>
                         </div>
@@ -531,5 +519,3 @@ export default function JobProfilesPage() {
         </div>
     )
 }
-
-
