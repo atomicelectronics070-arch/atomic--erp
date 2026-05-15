@@ -26,8 +26,8 @@ export default function WebLayout({ children }: { children: React.ReactNode }) {
                         </Link>
                         <div className="hidden md:flex space-x-8 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">
                             <Link
-                                href="/web"
-                                className={pathname === '/web' ? 'text-[#1E3A8A] border-b-2 border-[#1E3A8A] pb-1' : 'hover:text-[#1E3A8A] transition-colors'}
+                                href="/"
+                                className={pathname === '/' ? 'text-[#1E3A8A] border-b-2 border-[#1E3A8A] pb-1' : 'hover:text-[#1E3A8A] transition-colors'}
                             >Inicio</Link>
                             <Link
                                 href="/web/products"

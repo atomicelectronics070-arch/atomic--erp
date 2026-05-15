@@ -37,6 +37,31 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
     
     const isAdmin = session?.user?.role === "ADMIN" || session?.user?.role === "MANAGEMENT"
 
+    // Meta Semanal — shared via localStorage with bot-ruta
+    const [weeklyGoal, setWeeklyGoal] = useState(() => {
+        if (typeof window !== 'undefined') return localStorage.getItem('atomic_weekly_goal') || '5 capturas + 3 contactos'
+        return '5 capturas + 3 contactos'
+    })
+    const [weeklyStart, setWeeklyStart] = useState(() => {
+        if (typeof window !== 'undefined') return localStorage.getItem('atomic_weekly_start') || ''
+        return ''
+    })
+    const [weeklyEnd, setWeeklyEnd] = useState(() => {
+        if (typeof window !== 'undefined') return localStorage.getItem('atomic_weekly_end') || ''
+        return ''
+    })
+    const [goalSaved, setGoalSaved] = useState(false)
+    const [goalEditing, setGoalEditing] = useState(false)
+
+    const saveWeeklyGoal = () => {
+        localStorage.setItem('atomic_weekly_goal', weeklyGoal)
+        localStorage.setItem('atomic_weekly_start', weeklyStart)
+        localStorage.setItem('atomic_weekly_end', weeklyEnd)
+        setGoalSaved(true)
+        setGoalEditing(false)
+        setTimeout(() => setGoalSaved(false), 2500)
+    }
+
     const handleQuickSale = async () => {
         if (!quickSaleData.amount || !quickSaleData.salespersonId) return
         setIsSubmitting(true)
@@ -371,6 +396,71 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
                             </div>
                         </div>
                     </div>
+
+                    {/* 🎯 META SEMANAL WIDGET */}
+                    {isAdmin && (
+                        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                            <div className="flex items-center justify-between mb-4">
+                                <div>
+                                    <h3 className="text-sm font-black text-[#0F172A] flex items-center gap-2">
+                                        🎯 Meta Semanal del Equipo
+                                    </h3>
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Configura los objetivos de la semana</p>
+                                </div>
+                                <button onClick={() => setGoalEditing(!goalEditing)}
+                                    className="text-[10px] font-black text-indigo-600 bg-indigo-50 border border-indigo-100 px-3 py-1.5 rounded-lg hover:bg-indigo-100 transition-colors">
+                                    {goalEditing ? 'Cancelar' : '✏️ Editar'}
+                                </button>
+                            </div>
+
+                            {goalEditing ? (
+                                <div className="space-y-3">
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Meta (descripción)</label>
+                                        <input type="text" value={weeklyGoal} onChange={e => setWeeklyGoal(e.target.value)}
+                                            className="w-full bg-slate-50 border border-slate-200 px-3 py-2.5 rounded-lg text-sm font-bold text-[#0F172A] outline-none focus:border-indigo-500 transition-all"
+                                            placeholder="Ej: 5 capturas + 3 contactos" />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Inicio</label>
+                                            <input type="date" value={weeklyStart} onChange={e => setWeeklyStart(e.target.value)}
+                                                className="w-full bg-slate-50 border border-slate-200 px-3 py-2 rounded-lg text-xs font-bold text-[#0F172A] outline-none focus:border-indigo-500" />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Cierre</label>
+                                            <input type="date" value={weeklyEnd} onChange={e => setWeeklyEnd(e.target.value)}
+                                                className="w-full bg-slate-50 border border-slate-200 px-3 py-2 rounded-lg text-xs font-bold text-[#0F172A] outline-none focus:border-indigo-500" />
+                                        </div>
+                                    </div>
+                                    <button onClick={saveWeeklyGoal}
+                                        className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-lg font-black text-sm transition-all shadow-sm flex items-center justify-center gap-2">
+                                        💾 Guardar Meta
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="space-y-3">
+                                    <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-4">
+                                        <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-1">Objetivo</p>
+                                        <p className="text-lg font-black text-indigo-700">{weeklyGoal}</p>
+                                    </div>
+                                    {weeklyStart && weeklyEnd && (
+                                        <div className="flex items-center gap-2 text-xs font-bold text-slate-500 bg-slate-50 rounded-lg p-3 border border-slate-100">
+                                            <span>📅</span>
+                                            <span>{weeklyStart} → {weeklyEnd}</span>
+                                        </div>
+                                    )}
+                                    {goalSaved && (
+                                        <p className="text-xs font-black text-emerald-600 flex items-center gap-1">✅ Meta guardada para todos los asesores</p>
+                                    )}
+                                    <Link href="/dashboard/bot-ruta"
+                                        className="block w-full text-center text-[10px] font-black text-indigo-600 uppercase tracking-widest hover:underline">
+                                        Ver en Bot Ruta →
+                                    </Link>
+                                </div>
+                            )}
+                        </div>
+                    )}
 
                     {/* Academy Panel */}
                     <div className="bg-gradient-to-br from-slate-900 to-[#0F172A] rounded-xl shadow-lg border border-slate-800 p-8 text-white relative overflow-hidden">

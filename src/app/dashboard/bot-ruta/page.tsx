@@ -29,6 +29,21 @@ export default function BotRutaPage() {
   const [rewardConfig, setRewardConfig] = useState({ start:"", end:"", goal:"5 capturas + 3 contactos" })
   const bottomRef = useRef<HTMLDivElement>(null)
 
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedGoal = localStorage.getItem('atomic_weekly_goal')
+      const savedStart = localStorage.getItem('atomic_weekly_start')
+      const savedEnd = localStorage.getItem('atomic_weekly_end')
+      if (savedGoal || savedStart || savedEnd) {
+        setRewardConfig({
+          goal: savedGoal || "5 capturas + 3 contactos",
+          start: savedStart || "",
+          end: savedEnd || ""
+        })
+      }
+    }
+  }, [])
+
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior:"smooth" }) }, [messages])
 
   const [generatedAds, setGeneratedAds] = useState<any[]>([])
@@ -373,6 +388,63 @@ export default function BotRutaPage() {
         </div>
 
         <div className="p-5 space-y-4">
+          {/* 🎯 META SEMANAL EDITOR (ADMIN ONLY) */}
+          {isAdmin && (
+            <div className="bg-white border border-slate-200 rounded-xl overflow-hidden mb-2">
+              <div className="bg-slate-50 px-4 py-3 border-b border-slate-200 flex justify-between items-center">
+                <span className="text-[10px] font-black text-slate-500 uppercase tracking-wider">Meta Semanal</span>
+                <span className="text-[10px] font-black text-indigo-600">Admin</span>
+              </div>
+              <div className="p-4 space-y-3">
+                <div className="space-y-1">
+                  <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Objetivo</label>
+                  <input
+                    type="text"
+                    value={rewardConfig.goal}
+                    onChange={e => {
+                      const newGoal = e.target.value;
+                      setRewardConfig(p => ({...p, goal: newGoal}));
+                      localStorage.setItem('atomic_weekly_goal', newGoal);
+                    }}
+                    className="w-full bg-slate-50 border border-slate-200 px-3 py-2 rounded-lg text-xs font-bold text-[#0F172A] outline-none focus:border-indigo-500"
+                    placeholder="Ej: 5 capturas + 3 contactos"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="space-y-1">
+                    <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Inicio</label>
+                    <input
+                      type="date"
+                      value={rewardConfig.start}
+                      onChange={e => {
+                        const newStart = e.target.value;
+                        setRewardConfig(p => ({...p, start: newStart}));
+                        localStorage.setItem('atomic_weekly_start', newStart);
+                      }}
+                      className="w-full bg-slate-50 border border-slate-200 px-2 py-2 rounded-lg text-[10px] font-bold text-[#0F172A] outline-none"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Cierre</label>
+                    <input
+                      type="date"
+                      value={rewardConfig.end}
+                      onChange={e => {
+                        const newEnd = e.target.value;
+                        setRewardConfig(p => ({...p, end: newEnd}));
+                        localStorage.setItem('atomic_weekly_end', newEnd);
+                      }}
+                      className="w-full bg-slate-50 border border-slate-200 px-2 py-2 rounded-lg text-[10px] font-bold text-[#0F172A] outline-none"
+                    />
+                  </div>
+                </div>
+                <div className="pt-1">
+                  <p className="text-[9px] text-emerald-600 font-bold">✅ Sincronizado con Dashboard</p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Captures counter */}
           <div className="bg-emerald-50 border border-emerald-100 p-4 rounded-xl">
             <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Capturas Subidas</p>
