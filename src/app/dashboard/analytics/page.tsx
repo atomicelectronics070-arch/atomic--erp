@@ -4,17 +4,19 @@ import { useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
 import { 
     TrendingUp, 
-    Calendar, 
     FileText, 
-    Award, 
     RefreshCw, 
     Target,
     BarChart3,
     Activity,
-    Shield,
-    Users
+    Users,
+    Calendar,
+    ArrowUpRight
 } from "lucide-react"
-import { motion } from "framer-motion"
+import { 
+    AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+    BarChart, Bar
+} from 'recharts'
 import { getDashboardData } from "@/lib/actions/dashboard"
 
 const fmt = (val: number) => 
@@ -48,27 +50,29 @@ export default function DashboardOverview() {
     if (loading && !data) {
         return (
             <div className="h-full flex flex-col items-center justify-center py-40">
-                <div className="w-12 h-12 border-2 border-slate-200 border-t-[#1E3A8A] rounded-none animate-spin" />
-                <p className="mt-8 font-black text-slate-300 tracking-[0.5em] uppercase text-[10px] italic animate-pulse">Sincronizando Estadísticas...</p>
+                <div className="w-12 h-12 border-4 border-slate-100 border-t-indigo-600 rounded-full animate-spin" />
+                <p className="mt-6 font-bold text-slate-400 tracking-widest uppercase text-xs">Cargando Métricas...</p>
             </div>
         )
     }
 
     return (
-        <div className="space-y-12 pb-32 animate-in fade-in duration-700 relative z-10 font-sans">
-            {/* Header Directo y Elegante */}
-            <div className="flex justify-between items-end border-b border-slate-200 pb-8">
-                <div className="space-y-3">
-                    <div className="flex items-center gap-3 text-slate-400">
-                        <BarChart3 size={16} className="text-[#1E3A8A]" />
-                        <span className="text-[9px] uppercase font-black tracking-[0.6em] italic opacity-60">SISTEMA DE INTELIGENCIA COMERCIAL</span>
-                    </div>
-                    <h1 className="text-4xl font-black tracking-tighter text-[#0F172A] uppercase italic leading-none">DATOS Y <span className="text-[#1E3A8A]">MÉTRICAS</span></h1>
+        <div className="space-y-8 pb-32 animate-in fade-in duration-500 font-sans">
+            {/* Header */}
+            <div className="flex justify-between items-end border-b border-slate-200 pb-6">
+                <div>
+                    <h1 className="text-3xl font-black text-[#0F172A] flex items-center gap-3">
+                        <BarChart3 className="text-indigo-600" /> Analytics y Desempeño
+                    </h1>
+                    <p className="text-sm text-slate-500 font-medium mt-1">
+                        Sistema de Inteligencia Comercial e Indicadores Clave.
+                    </p>
                 </div>
                 
                 <button 
                     onClick={loadStats} 
-                    className="p-3 bg-white text-slate-400 hover:text-[#1E3A8A] transition-all border border-slate-200 shadow-sm"
+                    className="p-2.5 bg-white text-slate-500 hover:text-indigo-600 transition-all border border-slate-200 shadow-sm rounded-lg hover:bg-slate-50"
+                    title="Actualizar Datos"
                 >
                     <RefreshCw size={18} className={loading ? "animate-spin" : ""} />
                 </button>
@@ -77,43 +81,114 @@ export default function DashboardOverview() {
             {/* Grid de Datos Principal */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <KPITile 
-                    icon={<TrendingUp size={20} className="text-[#1E3A8A]" />}
+                    icon={<TrendingUp size={20} className="text-indigo-600" />}
+                    iconBg="bg-indigo-50"
                     label="Ventas Totales"
                     value={fmt(data.annualSales)}
-                    meta="HISTORIAL ACUMULADO"
+                    meta="Acumulado del Año"
+                    trend="+12%"
+                    trendPositive={true}
                 />
                 <KPITile 
                     icon={<FileText size={20} className="text-blue-500" />}
+                    iconBg="bg-blue-50"
                     label="Cotizaciones Emitidas"
-                    value={data.quotesCount.toLocaleString()}
-                    meta="TOTAL DEL SISTEMA"
+                    value={data.quotesCount?.toLocaleString() || "0"}
+                    meta="Volumen Histórico"
+                    trend="+8%"
+                    trendPositive={true}
                 />
                 <KPITile 
                     icon={<Users size={20} className="text-emerald-500" />}
-                    label="Usuarios"
-                    value={data.userCount.toLocaleString()}
-                    meta="ACTIVOS EN NODO"
+                    iconBg="bg-emerald-50"
+                    label="Usuarios Activos"
+                    value={data.userCount?.toLocaleString() || "0"}
+                    meta="Nodos en Sistema"
                 />
+            </div>
+
+            {/* Gráficos */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                {/* Ingresos Mensuales (Area Chart) */}
+                <div className="lg:col-span-2 bg-white border border-slate-200 rounded-xl shadow-sm p-6">
+                    <div className="flex justify-between items-center mb-6">
+                        <div>
+                            <h3 className="text-lg font-black text-[#0F172A]">Ingresos Mensuales</h3>
+                            <p className="text-xs text-slate-500 font-bold uppercase tracking-wider mt-1">Últimos 6 Meses</p>
+                        </div>
+                        <div className="flex items-center gap-2 text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full text-xs font-bold">
+                            <TrendingUp size={14} /> Estable
+                        </div>
+                    </div>
+                    
+                    <div className="h-72 w-full">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <AreaChart data={data.charts?.monthly || []} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                                <defs>
+                                    <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#4F46E5" stopOpacity={0.3}/>
+                                        <stop offset="95%" stopColor="#4F46E5" stopOpacity={0}/>
+                                    </linearGradient>
+                                </defs>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
+                                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748B', fontWeight: 600 }} dy={10} />
+                                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748B', fontWeight: 600 }} tickFormatter={(value) => `$${value/1000}k`} />
+                                <Tooltip 
+                                    contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', border: '1px solid #E2E8F0', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                                    formatter={(value: number) => [fmt(value), 'Ingresos']}
+                                />
+                                <Area type="monotone" dataKey="total" stroke="#4F46E5" strokeWidth={3} fillOpacity={1} fill="url(#colorTotal)" />
+                            </AreaChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
+
+                {/* Ingresos Semanales (Bar Chart) */}
+                <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-6">
+                    <div className="mb-6">
+                        <h3 className="text-lg font-black text-[#0F172A]">Rendimiento Semanal</h3>
+                        <p className="text-xs text-slate-500 font-bold uppercase tracking-wider mt-1">Últimos 7 Días</p>
+                    </div>
+                    
+                    <div className="h-72 w-full">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={data.charts?.weekly || []} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
+                                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748B', fontWeight: 600 }} dy={10} />
+                                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748B', fontWeight: 600 }} tickFormatter={(value) => `$${value/1000}k`} />
+                                <Tooltip 
+                                    cursor={{fill: '#F1F5F9'}}
+                                    contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', border: '1px solid #E2E8F0', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                                    formatter={(value: number) => [fmt(value), 'Cierre Diario']}
+                                />
+                                <Bar dataKey="total" fill="#3B82F6" radius={[4, 4, 0, 0]} />
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
+
             </div>
 
             {/* Resumen de Rendimiento Compacto */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-white border border-slate-200 p-8 flex justify-between items-center group hover:border-[#1E3A8A] transition-all shadow-sm">
+                <div className="bg-white border border-slate-200 p-6 rounded-xl flex justify-between items-center group hover:border-indigo-300 transition-all shadow-sm">
                     <div>
-                        <p className="text-[8px] font-black text-slate-400 uppercase tracking-[0.4em] italic mb-2">TICKET PROMEDIO DE VENTA</p>
-                        <p className="text-2xl font-black text-[#0F172A] italic tracking-tighter leading-none">{fmt(data.annualSales / (data.quarterCount || 1))}</p>
+                        <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Ticket Promedio de Venta</p>
+                        <p className="text-3xl font-black text-[#0F172A] tracking-tight">{fmt(data.annualSales / (data.quarterCount || 1))}</p>
                     </div>
-                    <div className="p-3 bg-slate-50 border border-slate-100 text-[#1E3A8A] group-hover:bg-[#1E3A8A] group-hover:text-white transition-all">
-                        <Target size={20} />
+                    <div className="w-14 h-14 bg-indigo-50 rounded-full flex items-center justify-center text-indigo-600 group-hover:scale-110 transition-transform">
+                        <Target size={28} />
                     </div>
                 </div>
-                <div className="bg-white border border-slate-200 p-8 flex justify-between items-center group hover:border-emerald-500 transition-all shadow-sm">
+                
+                <div className="bg-white border border-slate-200 p-6 rounded-xl flex justify-between items-center group hover:border-emerald-300 transition-all shadow-sm">
                     <div>
-                        <p className="text-[8px] font-black text-slate-400 uppercase tracking-[0.4em] italic mb-2">EFICIENCIA DE CONVERSIÓN</p>
-                        <p className="text-2xl font-black text-emerald-600 italic tracking-tighter leading-none">{((data.quarterCount / (data.quotesCount || 1)) * 100).toFixed(1)}%</p>
+                        <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Eficiencia de Conversión</p>
+                        <p className="text-3xl font-black text-emerald-600 tracking-tight">{((data.quarterCount / (data.quotesCount || 1)) * 100).toFixed(1)}%</p>
                     </div>
-                    <div className="p-3 bg-slate-50 border border-slate-100 text-emerald-500 group-hover:bg-emerald-500 group-hover:text-white transition-all">
-                        <Activity size={20} />
+                    <div className="w-14 h-14 bg-emerald-50 rounded-full flex items-center justify-center text-emerald-500 group-hover:scale-110 transition-transform">
+                        <Activity size={28} />
                     </div>
                 </div>
             </div>
@@ -121,19 +196,28 @@ export default function DashboardOverview() {
     )
 }
 
-function KPITile({ icon, label, value, meta }: { icon: any, label: string, value: string, meta: string }) {
+function KPITile({ icon, iconBg, label, value, meta, trend, trendPositive }: any) {
     return (
-        <div className="bg-white border border-slate-200 p-8 space-y-6 hover:border-[#1E3A8A] transition-all group relative overflow-hidden shadow-sm hover:shadow-xl">
-            <div className="absolute top-0 right-0 p-1">
-                <div className="w-1.5 h-1.5 bg-slate-100 group-hover:bg-[#1E3A8A] transition-colors"></div>
+        <div className="bg-white border border-slate-200 p-6 rounded-xl space-y-4 hover:shadow-md transition-all group relative overflow-hidden">
+            <div className="flex justify-between items-start">
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${iconBg}`}>
+                    {icon}
+                </div>
+                {trend && (
+                    <div className={`flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-full ${trendPositive ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
+                        {trendPositive ? <ArrowUpRight size={14} /> : <TrendingUp size={14} className="rotate-180" />}
+                        {trend}
+                    </div>
+                )}
             </div>
-            <div className="flex justify-between items-center">
-                <div className="p-3 bg-slate-50 border border-slate-100 text-slate-400 group-hover:text-[#1E3A8A] transition-colors">{icon}</div>
-                <span className="text-[7px] font-black text-slate-300 uppercase tracking-[0.5em] italic">{meta}</span>
+            
+            <div>
+                <h3 className="text-sm font-bold text-slate-500 mb-1">{label}</h3>
+                <p className="text-3xl font-black text-[#0F172A] tracking-tight">{value}</p>
             </div>
-            <div className="space-y-2">
-                <h3 className="text-[8px] font-black text-slate-400 uppercase tracking-[0.3em] italic group-hover:text-slate-500 transition-colors">{label}</h3>
-                <p className="text-3xl font-black text-[#0F172A] italic tracking-tighter leading-none">{value}</p>
+            
+            <div className="pt-4 border-t border-slate-100">
+                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">{meta}</span>
             </div>
         </div>
     )

@@ -6,10 +6,9 @@ import { motion, AnimatePresence } from "framer-motion"
 import { 
     Plus, Edit, Trash2, Shield, Eye, FileText, 
     Check, X, Image as ImageIcon, BookOpen, 
-    Sparkles, Key, Settings, UserCheck, Layout,
-    ExternalLink, Trash, ShieldCheck, Share2,
-    Video, Facebook, Instagram, Youtube, Twitter,
-    Globe, Server, User as UserIcon, Layers
+    Settings, Layout, Layers, Key,
+    Video, Facebook, Instagram, Youtube,
+    Globe, User as UserIcon, Share2, Search
 } from "lucide-react"
 
 export default function BlogsDashboard() {
@@ -144,7 +143,7 @@ export default function BlogsDashboard() {
     
     const method = editingBlog ? "PUT" : "POST"
     const body: any = { 
-        title: title.toUpperCase(), 
+        title, 
         excerpt, 
         content, 
         imageUrl, 
@@ -165,20 +164,13 @@ export default function BlogsDashboard() {
     })
 
     if (res.ok) {
-        const savedBlog = await res.json()
-        
-        // Social publishing logic here...
-        if (published && (targets.length > 0 || selectedAccountIds.length > 0)) {
-            // Future: Implement matrix publishing per account
-        }
-        
         closeModal()
         fetchBlogs()
     }
   }
 
   const handleDelete = async (id: string) => {
-    if (!confirm("⚠️ Confirmación Crítica: ¿Eliminar este artículo permanentemente?")) return
+    if (!confirm("⚠️ ¿Eliminar este artículo permanentemente?")) return
     const res = await fetch(`/api/blogs?id=${id}`, { method: "DELETE" })
     if (res.ok) fetchBlogs()
   }
@@ -188,7 +180,7 @@ export default function BlogsDashboard() {
       const res = await fetch("/api/environments", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name: envName.toUpperCase(), description: envDesc })
+          body: JSON.stringify({ name: envName, description: envDesc })
       })
       if (res.ok) {
           setEnvName(""); setEnvDesc(""); setIsEnvModalOpen(false); fetchEnvironments()
@@ -206,7 +198,7 @@ export default function BlogsDashboard() {
       const res = await fetch("/api/social-accounts", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name: accName.toUpperCase(), platform: accPlatform, environmentId: targetEnvId })
+          body: JSON.stringify({ name: accName, platform: accPlatform, environmentId: targetEnvId })
       })
       if (res.ok) {
           setAccName(""); setIsAccModalOpen(false); fetchEnvironments()
@@ -217,37 +209,6 @@ export default function BlogsDashboard() {
       if (!confirm("¿Eliminar esta cuenta?")) return
       await fetch(`/api/social-accounts?id=${id}`, { method: "DELETE" })
       fetchEnvironments()
-  }
-
-  const handleOmniPublish = async () => {
-      setIsNemotronProcessing(true)
-      const targets = Object.keys(socialTargets).filter(k => socialTargets[k as keyof typeof socialTargets])
-      
-      try {
-          const res = await fetch("/api/blogs/omni-publish", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                  text: excerpt || content || title,
-                  imageUrl: contentType === 'article' ? imageUrl : null,
-                  videoUrl: contentType === 'video' ? videoUrl : null,
-                  targets,
-                  authorId: (session?.user as any)?.id
-              })
-          })
-          
-          if (res.ok) {
-              closeModal()
-              fetchBlogs()
-              alert("Nemotron procesó y distribuyó exitosamente el contenido.")
-          } else {
-              alert("Error de Nemotron al procesar.")
-          }
-      } catch(e) {
-          console.error(e)
-      } finally {
-          setIsNemotronProcessing(false)
-      }
   }
 
   const handleTogglePermission = async (userId: string, currentVal: boolean) => {
@@ -334,652 +295,436 @@ export default function BlogsDashboard() {
 
   if (!isAdmin && !canPublish) {
     return (
-        <div className="flex flex-col items-center justify-center p-40 text-center animate-in zoom-in duration-700">
-            <div className="w-24 h-24 bg-red-500/10 rounded-none flex items-center justify-center mb-10 border border-red-500/20 shadow-[0_0_50px_rgba(239,68,68,0.2)]">
-                <Shield size={48} className="text-red-500" />
-            </div>
-            <h2 className="text-4xl font-black uppercase tracking-tighter text-white mb-4 italic">ACCESO RESTRINGIDO</h2>
-            <p className="text-slate-500 font-bold uppercase tracking-[0.4em] text-[10px] max-w-sm italic">Privilegios insuficientes para el subsistema de redacción corporativa. Contacte al Elemento de administración.</p>
+        <div className="flex flex-col items-center justify-center p-20 text-center text-slate-500">
+            <Shield size={48} className="text-red-500 mb-4" />
+            <h2 className="text-2xl font-black text-[#0F172A] tracking-tight">Acceso Restringido</h2>
+            <p className="mt-2 font-medium">No cuentas con privilegios para la creación de contenidos.</p>
         </div>
     )
   }
 
   return (
-    <div className="space-y-16 animate-in fade-in duration-1000 relative">
-      {/* Background Orbs */}
-      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-          <div className="absolute top-[10%] left-[-5%] w-[40%] h-[40%] rounded-none bg-secondary/5 blur-[120px]" />
-          <div className="absolute bottom-[20%] right-[-5%] w-[35%] h-[35%] rounded-none bg-azure-500/5 blur-[100px]" />
-      </div>
-
+    <div className="space-y-8 animate-in fade-in duration-500">
       {/* Header */}
-      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-10 border-b border-white/5 pb-16 relative z-10">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-slate-200 pb-6">
           <div>
-              <div className="flex items-center space-x-4 mb-4 text-secondary">
-                  <Share2 size={20} className="drop-shadow-[0_0_8px_rgba(255,99,71,0.5)]" />
-                  <span className="text-[10px] uppercase font-black tracking-[0.6em] italic">Omnicanalidad Corporativa</span>
-              </div>
-              <h1 className="text-6xl font-black text-white uppercase tracking-tighter leading-none italic">SOCIAL <span className="text-secondary underline decoration-secondary/30 underline-offset-8">HUB</span></h1>
-              <p className="text-xs text-slate-500 font-bold uppercase tracking-[0.3em] mt-5 italic leading-relaxed max-w-xl">
-                  Red de distribución multicanal de contenidos estratégicos Atomic Solutions.
+              <h1 className="text-3xl font-black text-[#0F172A] flex items-center gap-3">
+                  <Share2 className="text-indigo-600" /> Omnicanalidad
+              </h1>
+              <p className="text-sm text-slate-500 font-medium mt-1">
+                  Distribución y gestión centralizada de contenidos.
               </p>
           </div>
           {isAdmin && (
-              <div className="flex flex-wrap glass-panel !bg-slate-950/40 p-2 rounded-none border-white/5 shadow-inner ring-1 ring-white/5 backdrop-blur-3xl gap-2">
+              <div className="flex bg-slate-100 p-1.5 rounded-lg border border-slate-200">
                   <button 
                       onClick={() => setActiveTab("mis_blogs")}
-                      className={`px-6 py-3 text-[10px] font-black uppercase tracking-[0.4em] transition-all rounded-none italic skew-x-[-12deg] ${activeTab === 'mis_blogs' ? 'bg-secondary text-white shadow-2xl' : 'text-slate-600 hover:text-white'}`}
+                      className={`px-4 py-2 text-xs font-bold transition-all rounded-md flex items-center gap-2 ${activeTab === 'mis_blogs' ? 'bg-white text-indigo-600 shadow-sm border border-slate-200' : 'text-slate-500 hover:text-slate-700'}`}
                   >
-                      <div className="skew-x-[12deg] flex items-center gap-3"><Layout size={14} /> CONTENIDOS</div>
+                      <Layout size={14} /> Contenidos
                   </button>
                   <button 
                       onClick={() => setActiveTab("entornos")}
-                      className={`px-6 py-3 text-[10px] font-black uppercase tracking-[0.4em] transition-all rounded-none italic skew-x-[-12deg] ${activeTab === 'entornos' ? 'bg-emerald-500 text-white shadow-2xl' : 'text-slate-600 hover:text-white'}`}
+                      className={`px-4 py-2 text-xs font-bold transition-all rounded-md flex items-center gap-2 ${activeTab === 'entornos' ? 'bg-white text-indigo-600 shadow-sm border border-slate-200' : 'text-slate-500 hover:text-slate-700'}`}
                   >
-                      <div className="skew-x-[12deg] flex items-center gap-3"><Layers size={14} /> MATRIZ_ENTORNOS</div>
+                      <Layers size={14} /> Entornos
                   </button>
                   <button 
                       onClick={() => setActiveTab("permisos")}
-                      className={`px-6 py-3 text-[10px] font-black uppercase tracking-[0.4em] transition-all rounded-none italic skew-x-[-12deg] ${activeTab === 'permisos' ? 'bg-azure-500 text-white shadow-2xl' : 'text-slate-600 hover:text-white'}`}
+                      className={`px-4 py-2 text-xs font-bold transition-all rounded-md flex items-center gap-2 ${activeTab === 'permisos' ? 'bg-white text-indigo-600 shadow-sm border border-slate-200' : 'text-slate-500 hover:text-slate-700'}`}
                   >
-                      <div className="skew-x-[12deg] flex items-center gap-3"><Key size={14} /> PERMISOS</div>
+                      <Key size={14} /> Permisos
                   </button>
                   <button 
                       onClick={() => setActiveTab("social_settings")}
-                      className={`px-6 py-3 text-[10px] font-black uppercase tracking-[0.4em] transition-all rounded-none italic skew-x-[-12deg] ${activeTab === 'social_settings' ? 'bg-indigo-500 text-white shadow-2xl' : 'text-slate-600 hover:text-white'}`}
+                      className={`px-4 py-2 text-xs font-bold transition-all rounded-md flex items-center gap-2 ${activeTab === 'social_settings' ? 'bg-white text-indigo-600 shadow-sm border border-slate-200' : 'text-slate-500 hover:text-slate-700'}`}
                   >
-                      <div className="skew-x-[12deg] flex items-center gap-3"><Settings size={14} /> APIS_SOCIALES</div>
+                      <Settings size={14} /> APIs API
                   </button>
               </div>
           )}
       </div>
 
+      {activeTab === "mis_blogs" && (
+          <div className="space-y-6">
+            <div className="flex justify-between items-center bg-white p-6 border border-slate-200 rounded-xl shadow-sm">
+                <div className="flex items-center gap-3">
+                    <BookOpen className="text-slate-400" size={20} />
+                    <h3 className="text-sm font-bold text-slate-600 uppercase tracking-wider">Gestión de Publicaciones</h3>
+                </div>
+                <button 
+                    onClick={() => openModal()}
+                    className="bg-indigo-600 text-white px-6 py-2.5 rounded-lg font-bold text-sm flex items-center gap-2 hover:bg-indigo-700 transition-all shadow-sm"
+                >
+                    <Plus size={18} /> Nuevo Contenido
+                </button>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4">
+                {blogs.length === 0 && !loading && (
+                    <div className="py-20 text-center bg-white border border-slate-200 rounded-xl flex flex-col items-center justify-center">
+                        <FileText size={32} className="text-slate-300 mb-4" />
+                        <p className="text-slate-500 font-bold uppercase tracking-wider text-sm">No hay contenidos publicados.</p>
+                    </div>
+                )}
+                {blogs.map(blog => (
+                    <div key={blog.id} className="bg-white border border-slate-200 p-4 rounded-xl flex items-center gap-6 hover:shadow-md transition-all group">
+                        <div className="w-24 h-24 shrink-0 rounded-lg overflow-hidden bg-slate-50 border border-slate-100 flex items-center justify-center">
+                            {blog.contentType === 'video' ? (
+                                <Video size={24} className="text-slate-400" />
+                            ) : blog.imageUrl ? (
+                                <img src={blog.imageUrl} alt={blog.title} className="w-full h-full object-cover" />
+                            ) : (
+                                <ImageIcon size={24} className="text-slate-300" />
+                            )}
+                        </div>
+
+                        <div className="flex-1 flex justify-between items-center">
+                            <div className="max-w-xl">
+                                <div className="flex items-center gap-3 mb-1">
+                                    <h3 className="text-lg font-black text-[#0F172A] truncate">{blog.title}</h3>
+                                    <span className={`px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-md ${blog.published ? 'text-emerald-700 bg-emerald-50 border border-emerald-100' : 'text-slate-600 bg-slate-100 border border-slate-200'}`}>
+                                        {blog.published ? 'Publicado' : 'Borrador'}
+                                    </span>
+                                </div>
+                                <p className="text-sm text-slate-500 font-medium line-clamp-2">{blog.excerpt || 'Sin extracto...'}</p>
+                            </div>
+
+                            <div className="flex items-center gap-8">
+                                <div className="text-right hidden lg:block">
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase">Autor</p>
+                                    <p className="text-sm font-bold text-[#0F172A]">{blog.author?.name || 'Sistema'}</p>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <button onClick={() => openModal(blog)} className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors">
+                                        <Edit size={18} />
+                                    </button>
+                                    <button onClick={() => handleDelete(blog.id)} className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors">
+                                        <Trash2 size={18} />
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+          </div>
+      )}
+
+      {/* OTHER TABS (Entornos, Permisos, Settings) - Refactored to SaaS Aesthetic */}
       {activeTab === "entornos" && isAdmin && (
-          <div className="space-y-20 animate-in slide-in-from-right-10 duration-1000 relative z-10">
-              <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-12 border-b border-white/5 pb-10">
-                  <div>
-                      <div className="flex items-center gap-4 mb-4">
-                          <div className="w-1.5 h-10 bg-emerald-500 shadow-[0_0_15px_#10b981]"></div>
-                          <h2 className="text-4xl font-black text-white uppercase tracking-tighter italic">MATRIZ DE ENTORNOS OPERATIVOS</h2>
-                      </div>
-                      <p className="text-[10px] text-slate-500 font-black uppercase tracking-[0.4em] italic">Configuración de Frecuencias y Terminales de Red</p>
+          <div className="space-y-6">
+              <div className="flex justify-between items-center bg-white p-6 border border-slate-200 rounded-xl shadow-sm">
+                  <div className="flex items-center gap-3">
+                      <Layers className="text-indigo-600" size={20} />
+                      <h3 className="text-sm font-bold text-slate-600 uppercase tracking-wider">Entornos de Distribución</h3>
                   </div>
                   <button 
                     onClick={() => setIsEnvModalOpen(true)}
-                    className="bg-emerald-600 text-white px-10 py-5 text-[11px] font-black uppercase tracking-[0.4em] italic skew-x-[-12deg] hover:bg-white hover:text-emerald-600 transition-all shadow-[0_20px_50px_-15px_rgba(16,185,129,0.3)] active:scale-95 group"
+                    className="bg-indigo-600 text-white px-6 py-2.5 rounded-lg font-bold text-sm flex items-center gap-2 hover:bg-indigo-700 transition-all shadow-sm"
                   >
-                    <div className="skew-x-[12deg] flex items-center gap-4">
-                        <Plus size={20} className="group-hover:rotate-90 transition-transform" /> 
-                        <span>INICIALIZAR_ENTORNO</span>
-                    </div>
+                    <Plus size={18} /> Nuevo Entorno
                   </button>
               </div>
 
-              <div className="space-y-16">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {environments.length === 0 && (
-                      <div className="py-40 text-center border-2 border-dashed border-white/5 text-slate-800 uppercase font-black tracking-[1em] text-[12px] italic animate-pulse">SISTEMA_VACÍO: SIN_NODOS_DETECTADOS</div>
+                      <div className="col-span-full py-20 text-center bg-white border border-slate-200 rounded-xl">
+                          <p className="text-slate-500 font-bold uppercase tracking-wider text-sm">Sin entornos configurados.</p>
+                      </div>
                   )}
                   {environments.map(env => (
-                      <div key={env.id} className="glass-panel border-white/5 bg-slate-950/40 p-12 backdrop-blur-3xl relative overflow-hidden group/env border-l-4 border-l-emerald-500/20 hover:border-l-emerald-500 transition-all duration-700">
-                          <div className="absolute top-0 right-0 p-10 flex gap-6 z-20">
-                              <button onClick={() => { setTargetEnvId(env.id); setIsAccModalOpen(true) }} className="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-400 hover:text-white transition-all flex items-center gap-3 bg-emerald-400/5 px-6 py-3 border border-emerald-400/20 hover:bg-emerald-400/20 italic">
-                                  <Plus size={14} /> VINCULAR_CUENTA
-                              </button>
-                              <button onClick={() => handleDeleteEnv(env.id)} className="text-slate-700 hover:text-red-500 transition-colors p-3 hover:bg-red-500/10"><Trash2 size={20} /></button>
-                          </div>
-
-                          <div className="mb-12 relative">
-                              <div className="absolute -left-12 top-0 h-full w-1 bg-emerald-500/10" />
-                              <h3 className="text-4xl font-black text-white uppercase tracking-tighter italic mb-4">{env.name}</h3>
-                              <div className="flex items-center gap-6">
-                                  <span className="text-[10px] text-slate-600 uppercase tracking-widest font-black italic">ID_SECTOR: {env.id.slice(-8)}</span>
-                                  <div className="h-[1px] w-20 bg-white/5" />
-                                  <p className="text-[11px] text-slate-500 uppercase tracking-widest font-bold italic">{env.description || 'SIN_DATA_OPERATIVA'}</p>
+                      <div key={env.id} className="bg-white border border-slate-200 p-6 rounded-xl shadow-sm relative">
+                          <div className="flex justify-between items-start mb-6">
+                              <div>
+                                  <h3 className="text-lg font-black text-[#0F172A]">{env.name}</h3>
+                                  <p className="text-sm text-slate-500 mt-1">{env.description || 'Sin descripción'}</p>
+                              </div>
+                              <div className="flex gap-2">
+                                  <button onClick={() => { setTargetEnvId(env.id); setIsAccModalOpen(true) }} className="p-2 text-slate-400 hover:text-indigo-600 bg-slate-50 hover:bg-indigo-50 rounded-lg transition-colors border border-slate-200">
+                                      <Plus size={16} />
+                                  </button>
+                                  <button onClick={() => handleDeleteEnv(env.id)} className="p-2 text-slate-400 hover:text-rose-600 bg-slate-50 hover:bg-rose-50 rounded-lg transition-colors border border-slate-200">
+                                      <Trash2 size={16} />
+                                  </button>
                               </div>
                           </div>
-
-                          <div className="flex gap-6 overflow-x-auto pb-8 custom-scrollbar scroll-smooth">
-                              {env.accounts?.length === 0 && (
-                                  <div className="py-10 text-[10px] text-slate-800 uppercase tracking-[0.5em] font-black italic border border-dashed border-white/5 w-full text-center">CANALES_OFFLINE: PENDIENTE_SINCRONIZACIÓN</div>
-                              )}
-                              {env.accounts?.map((acc: any, idx: number) => (
-                                  <div key={acc.id} className="shrink-0 w-64 p-8 bg-black/60 border border-white/5 relative group/acc hover:border-emerald-500/40 transition-all duration-500 shadow-2xl">
-                                      <div className="absolute -top-[1px] -left-[1px] w-8 h-[1px] bg-emerald-500/40" />
-                                      <div className="absolute -top-[1px] -left-[1px] w-[1px] h-8 bg-emerald-500/40" />
-                                      
-                                      <button onClick={() => handleDeleteAcc(acc.id)} className="absolute top-4 right-4 opacity-0 group-hover/acc:opacity-100 text-red-500/40 hover:text-red-500 transition-all"><X size={14} /></button>
-                                      
-                                      <div className="flex flex-col items-center text-center gap-6">
-                                          <div className="relative">
-                                              <div className="absolute inset-0 bg-emerald-500/10 blur-xl rounded-full animate-pulse opacity-0 group-hover/acc:opacity-100 transition-opacity" />
-                                              <div className="relative w-16 h-16 bg-white/5 border border-white/10 flex items-center justify-center text-slate-500 group-hover/acc:text-emerald-400 group-hover/acc:border-emerald-500/30 transition-all">
-                                                  {acc.platform === 'facebook' && <Facebook size={28} />}
-                                                  {acc.platform === 'instagram' && <Instagram size={28} />}
-                                                  {acc.platform === 'youtube' && <Youtube size={28} />}
-                                                  {acc.platform === 'tiktok' && <span className="font-black text-2xl italic">TK</span>}
-                                              </div>
-                                          </div>
-                                          
-                                          <div>
-                                              <p className="text-[12px] font-black text-white uppercase tracking-[0.2em] italic mb-2 group-hover/acc:text-emerald-400 transition-colors">CUENTA_{idx + 1}</p>
-                                              <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest italic truncate w-40">{acc.name}</p>
-                                          </div>
-                                          
-                                          <div className="flex items-center gap-3 bg-slate-900/80 px-4 py-2 border border-white/5">
-                                              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                              <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest italic">{acc.platform}</span>
-                                          </div>
+                          
+                          <div className="space-y-3">
+                              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Cuentas Vinculadas</p>
+                              {env.accounts?.length === 0 && <p className="text-sm text-slate-400 italic">No hay cuentas</p>}
+                              {env.accounts?.map((acc: any) => (
+                                  <div key={acc.id} className="flex justify-between items-center p-3 bg-slate-50 border border-slate-100 rounded-lg">
+                                      <div className="flex items-center gap-3">
+                                          {acc.platform === 'facebook' && <Facebook size={16} className="text-blue-600" />}
+                                          {acc.platform === 'instagram' && <Instagram size={16} className="text-pink-600" />}
+                                          {acc.platform === 'youtube' && <Youtube size={16} className="text-red-600" />}
+                                          {acc.platform === 'tiktok' && <span className="font-black text-xs">TK</span>}
+                                          <span className="text-sm font-bold text-slate-700">{acc.name}</span>
                                       </div>
+                                      <button onClick={() => handleDeleteAcc(acc.id)} className="text-slate-400 hover:text-rose-500"><X size={14} /></button>
                                   </div>
                               ))}
                           </div>
-                          
-                          {/* Decorative Scanline */}
-                          <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent group-hover/env:via-emerald-500 transition-all duration-1000" />
                       </div>
                   ))}
               </div>
           </div>
       )}
 
-      {/* Env Modal */}
-      <AnimatePresence>
-          {isEnvModalOpen && (
-              <div className="fixed inset-0 z-[500] flex items-center justify-center p-8 bg-slate-950/90 backdrop-blur-3xl">
-                  <div className="glass-panel border-white/10 p-12 max-w-xl w-full relative">
-                      <button onClick={() => setIsEnvModalOpen(false)} className="absolute top-6 right-6 text-slate-500 hover:text-white"><X size={24} /></button>
-                      <h3 className="text-2xl font-black text-white uppercase tracking-tighter italic mb-8">Definir Nuevo Entorno</h3>
-                      <div className="space-y-6">
-                          <input 
-                            type="text" 
-                            placeholder="NOMBRE DEL ENTORNO (EJ: SECTOR_GAMING)" 
-                            className="w-full bg-slate-950 border border-white/10 p-4 text-xs text-white outline-none focus:border-emerald-500"
-                            value={envName}
-                            onChange={e => setEnvName(e.target.value)}
-                          />
-                          <textarea 
-                            placeholder="DESCRIPCIÓN DEL ALCANCE..." 
-                            className="w-full bg-slate-950 border border-white/10 p-4 text-xs text-white outline-none focus:border-emerald-500 h-24"
-                            value={envDesc}
-                            onChange={e => setEnvDesc(e.target.value)}
-                          />
-                          <button onClick={handleCreateEnv} className="w-full bg-emerald-600 text-white py-4 font-black uppercase text-[10px] tracking-widest hover:bg-emerald-500 transition-all">Crear Estructura</button>
-                      </div>
-                  </div>
-              </div>
-          )}
-      </AnimatePresence>
-
-      {/* Account Modal */}
-      <AnimatePresence>
-          {isAccModalOpen && (
-              <div className="fixed inset-0 z-[500] flex items-center justify-center p-8 bg-slate-950/90 backdrop-blur-3xl">
-                  <div className="glass-panel border-white/10 p-12 max-w-xl w-full relative">
-                      <button onClick={() => setIsAccModalOpen(false)} className="absolute top-6 right-6 text-slate-500 hover:text-white"><X size={24} /></button>
-                      <h3 className="text-2xl font-black text-white uppercase tracking-tighter italic mb-8">Vincular Nueva Cuenta</h3>
-                      <div className="space-y-6">
-                          <input 
-                            type="text" 
-                            placeholder="NOMBRE DE LA CUENTA (EJ: CUENTA 1)" 
-                            className="w-full bg-slate-950 border border-white/10 p-4 text-xs text-white outline-none focus:border-emerald-500"
-                            value={accName}
-                            onChange={e => setAccName(e.target.value)}
-                          />
-                          <select 
-                            className="w-full bg-slate-950 border border-white/10 p-4 text-xs text-white outline-none focus:border-emerald-500"
-                            value={accPlatform}
-                            onChange={e => setAccPlatform(e.target.value)}
-                          >
-                              <option value="facebook">FACEBOOK</option>
-                              <option value="instagram">INSTAGRAM</option>
-                              <option value="youtube">YOUTUBE</option>
-                              <option value="tiktok">TIKTOK</option>
-                          </select>
-                          <button onClick={handleCreateAcc} className="w-full bg-emerald-600 text-white py-4 font-black uppercase text-[10px] tracking-widest hover:bg-emerald-500 transition-all">Sincronizar Cuenta</button>
-                      </div>
-                  </div>
-              </div>
-          )}
-      </AnimatePresence>
+      {activeTab === "permisos" && isAdmin && (
+          <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+             <div className="p-6 border-b border-slate-100 bg-slate-50">
+                  <h3 className="text-sm font-bold text-slate-600 uppercase tracking-wider">Privilegios de Redacción</h3>
+             </div>
+             <table className="w-full text-left">
+                 <thead>
+                     <tr className="border-b border-slate-100 bg-white">
+                         <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500">Usuario</th>
+                         <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500">Rol</th>
+                         <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500 text-center">Permiso de Publicación</th>
+                     </tr>
+                 </thead>
+                 <tbody className="divide-y divide-slate-100">
+                     {users.map(u => (
+                         <tr key={u.id} className="hover:bg-slate-50 transition-colors">
+                             <td className="px-6 py-4">
+                                 <div className="flex items-center gap-3">
+                                     <div className="w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-black">
+                                         {u.name?.[0] || 'U'}
+                                     </div>
+                                     <div>
+                                         <div className="font-bold text-[#0F172A]">{u.name || 'Sin Nombre'}</div>
+                                         <div className="text-xs text-slate-500">{u.email}</div>
+                                     </div>
+                                 </div>
+                             </td>
+                             <td className="px-6 py-4">
+                                 <span className="text-xs font-bold text-slate-600 bg-slate-100 px-3 py-1 rounded-full">{u.role}</span>
+                             </td>
+                             <td className="px-6 py-4 text-center">
+                                 <button 
+                                     onClick={() => handleTogglePermission(u.id, u.canCreateBlogs)}
+                                     className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${u.canCreateBlogs ? 'bg-emerald-500' : 'bg-slate-300'}`}
+                                 >
+                                     <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${u.canCreateBlogs ? 'translate-x-6' : 'translate-x-1'}`} />
+                                 </button>
+                             </td>
+                         </tr>
+                     ))}
+                 </tbody>
+             </table>
+          </div>
+      )}
 
       {activeTab === "social_settings" && isAdmin && (
-          <div className="glass-panel border-white/5 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] overflow-hidden rounded-none-[4rem] backdrop-blur-3xl relative z-10 p-12">
-               <div className="flex items-center space-x-4 mb-10 text-indigo-400 border-b border-white/5 pb-6">
-                    <Settings size={24} />
-                    <h2 className="text-2xl font-black text-white uppercase tracking-tighter italic">Configuración de API Keys (Omnicanalidad)</h2>
+          <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-8">
+              <div className="flex items-center space-x-3 mb-8 border-b border-slate-100 pb-4">
+                  <Settings className="text-indigo-600" size={20} />
+                  <h2 className="text-lg font-black text-[#0F172A]">API Keys & Credenciales</h2>
               </div>
               
-              <form onSubmit={handleSaveSettings} className="space-y-12">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+              <form onSubmit={handleSaveSettings} className="space-y-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                       {/* Meta */}
-                      <div className="space-y-6 bg-slate-950/40 p-8 border border-white/5 rounded-none">
-                          <h3 className="text-indigo-400 font-black uppercase tracking-widest text-sm flex items-center gap-2"><Facebook size={18} /> <Instagram size={18} /> Meta Graph API</h3>
-                          <div className="space-y-4">
-                              <label className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-500 italic">Page ID (Facebook)</label>
-                              <input type="text" className="w-full bg-slate-950 border border-white/10 p-4 text-xs text-white" value={socialSettings.metaPageId || ''} onChange={e => setSocialSettings({...socialSettings, metaPageId: e.target.value})} />
+                      <div className="space-y-4 bg-slate-50 p-6 rounded-xl border border-slate-200">
+                          <h3 className="text-[#0F172A] font-bold flex items-center gap-2"><Facebook size={16} className="text-blue-600" /> Meta Graph API</h3>
+                          <div>
+                              <label className="block text-xs font-bold text-slate-500 mb-1">Page ID (Facebook)</label>
+                              <input type="text" className="w-full bg-white border border-slate-300 p-2.5 rounded-lg text-sm" value={socialSettings.metaPageId || ''} onChange={e => setSocialSettings({...socialSettings, metaPageId: e.target.value})} />
                           </div>
-                          <div className="space-y-4">
-                              <label className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-500 italic">Page Access Token</label>
-                              <input type="password" placeholder="••••••••" className="w-full bg-slate-950 border border-white/10 p-4 text-xs text-white" value={socialSettings.metaPageToken || ''} onChange={e => setSocialSettings({...socialSettings, metaPageToken: e.target.value})} />
+                          <div>
+                              <label className="block text-xs font-bold text-slate-500 mb-1">Page Access Token</label>
+                              <input type="password" placeholder="••••••••" className="w-full bg-white border border-slate-300 p-2.5 rounded-lg text-sm" value={socialSettings.metaPageToken || ''} onChange={e => setSocialSettings({...socialSettings, metaPageToken: e.target.value})} />
                           </div>
-                          <div className="space-y-4">
-                              <label className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-500 italic">Instagram Business Account ID</label>
-                              <input type="text" className="w-full bg-slate-950 border border-white/10 p-4 text-xs text-white" value={socialSettings.metaInstagramActId || ''} onChange={e => setSocialSettings({...socialSettings, metaInstagramActId: e.target.value})} />
+                          <div>
+                              <label className="block text-xs font-bold text-slate-500 mb-1">Instagram Business Account ID</label>
+                              <input type="text" className="w-full bg-white border border-slate-300 p-2.5 rounded-lg text-sm" value={socialSettings.metaInstagramActId || ''} onChange={e => setSocialSettings({...socialSettings, metaInstagramActId: e.target.value})} />
                           </div>
                       </div>
 
                       {/* YouTube */}
-                      <div className="space-y-6 bg-slate-950/40 p-8 border border-white/5 rounded-none">
-                          <h3 className="text-red-500 font-black uppercase tracking-widest text-sm flex items-center gap-2"><Youtube size={18} /> YouTube API v3</h3>
-                          <div className="space-y-4">
-                              <label className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-500 italic">Channel ID</label>
-                              <input type="text" className="w-full bg-slate-950 border border-white/10 p-4 text-xs text-white" value={socialSettings.youtubeChannelId || ''} onChange={e => setSocialSettings({...socialSettings, youtubeChannelId: e.target.value})} />
+                      <div className="space-y-4 bg-slate-50 p-6 rounded-xl border border-slate-200">
+                          <h3 className="text-[#0F172A] font-bold flex items-center gap-2"><Youtube size={16} className="text-red-600" /> YouTube API v3</h3>
+                          <div>
+                              <label className="block text-xs font-bold text-slate-500 mb-1">Channel ID</label>
+                              <input type="text" className="w-full bg-white border border-slate-300 p-2.5 rounded-lg text-sm" value={socialSettings.youtubeChannelId || ''} onChange={e => setSocialSettings({...socialSettings, youtubeChannelId: e.target.value})} />
                           </div>
-                          <div className="space-y-4">
-                              <label className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-500 italic">Refresh Token (OAuth2)</label>
-                              <input type="password" placeholder="••••••••" className="w-full bg-slate-950 border border-white/10 p-4 text-xs text-white" value={socialSettings.youtubeRefreshToken || ''} onChange={e => setSocialSettings({...socialSettings, youtubeRefreshToken: e.target.value})} />
-                          </div>
-                      </div>
-
-                      {/* TikTok */}
-                      <div className="space-y-6 bg-slate-950/40 p-8 border border-white/5 rounded-none md:col-span-2">
-                          <h3 className="text-white font-black uppercase tracking-widest text-sm flex items-center gap-2"> TikTok Content Posting API</h3>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                              <div className="space-y-4">
-                                  <label className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-500 italic">Open ID</label>
-                                  <input type="text" className="w-full bg-slate-950 border border-white/10 p-4 text-xs text-white" value={socialSettings.tiktokOpenId || ''} onChange={e => setSocialSettings({...socialSettings, tiktokOpenId: e.target.value})} />
-                              </div>
-                              <div className="space-y-4">
-                                  <label className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-500 italic">Access Token</label>
-                                  <input type="password" placeholder="••••••••" className="w-full bg-slate-950 border border-white/10 p-4 text-xs text-white" value={socialSettings.tiktokAccessToken || ''} onChange={e => setSocialSettings({...socialSettings, tiktokAccessToken: e.target.value})} />
-                              </div>
+                          <div>
+                              <label className="block text-xs font-bold text-slate-500 mb-1">Refresh Token</label>
+                              <input type="password" placeholder="••••••••" className="w-full bg-white border border-slate-300 p-2.5 rounded-lg text-sm" value={socialSettings.youtubeRefreshToken || ''} onChange={e => setSocialSettings({...socialSettings, youtubeRefreshToken: e.target.value})} />
                           </div>
                       </div>
                   </div>
                   <div className="flex justify-end">
-                      <button type="submit" disabled={savingSettings} className="bg-indigo-600 text-white px-12 py-4 text-xs font-black uppercase tracking-widest skew-x-[-12deg] hover:bg-white hover:text-indigo-600 transition-all">
-                          <span className="skew-x-[12deg] block">{savingSettings ? 'Sincronizando...' : 'Guardar Credenciales'}</span>
+                      <button type="submit" disabled={savingSettings} className="bg-indigo-600 text-white px-8 py-2.5 rounded-lg font-bold text-sm hover:bg-indigo-700 transition-all shadow-sm">
+                          {savingSettings ? 'Guardando...' : 'Guardar Credenciales'}
                       </button>
                   </div>
               </form>
           </div>
       )}
 
-      {activeTab === "mis_blogs" && (
-          <div className="space-y-8 animate-in slide-in-from-bottom-6 duration-700 relative z-10">
-            <div className="flex justify-between items-center bg-white/[0.01] p-6 border border-white/5 rounded-none backdrop-blur-xl">
-                <div className="flex items-center gap-4">
-                    <div className="w-1 h-6 bg-secondary"></div>
-                    <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] italic">Consola de Activos Narrativos</h3>
-                </div>
-                <button 
-                    onClick={() => openModal()}
-                    className="flex items-center space-x-4 bg-secondary text-white px-8 py-3 text-[9px] font-black uppercase tracking-[0.3em] hover:bg-white hover:text-secondary transition-all rounded-none italic skew-x-[-12deg] group"
-                >
-                    <div className="skew-x-[12deg] flex items-center gap-3">
-                        <Plus size={16} />
-                        <span>Nuevo Contenido</span>
-                    </div>
-                </button>
-            </div>
-
-            <div className="grid grid-cols-1 gap-4">
-                {blogs.length === 0 && !loading && (
-                    <div className="py-24 text-center glass-panel border border-dashed border-white/5 rounded-none flex flex-col items-center justify-center">
-                        <p className="text-slate-700 font-black uppercase tracking-[0.6em] text-[9px] italic text-center">Sin publicaciones detectadas.</p>
-                    </div>
-                )}
-                {blogs.map(blog => (
-                    <motion.div 
-                        initial={{ opacity: 0, x: -20 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        key={blog.id} 
-                        className="glass-panel border-white/5 overflow-hidden flex items-center group hover:bg-white/[0.02] transition-all rounded-none backdrop-blur-3xl relative p-4 h-24"
-                    >
-                        {/* Compact Thumbnail */}
-                        <div className="w-24 h-full shrink-0 overflow-hidden border border-white/5 bg-slate-900 flex items-center justify-center">
-                            {blog.contentType === 'video' ? (
-                                <Video size={20} className="text-slate-700" />
-                            ) : blog.imageUrl ? (
-                                <img src={blog.imageUrl} alt={blog.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[1s]" />
-                            ) : (
-                                <ImageIcon size={20} className="text-slate-800" />
-                            )}
-                        </div>
-
-                        {/* Info Section */}
-                        <div className="flex-1 px-8 flex items-center justify-between">
-                            <div className="flex flex-col gap-1 max-w-xl">
-                                <div className="flex items-center gap-3">
-                                    <h3 className="text-sm font-black text-white italic uppercase tracking-tighter truncate group-hover:text-secondary transition-colors">{blog.title}</h3>
-                                    <span className={`text-[7px] font-black uppercase tracking-widest px-2 py-0.5 border ${blog.published ? 'border-emerald-500/20 text-emerald-400 bg-emerald-500/5' : 'border-secondary/20 text-secondary bg-secondary/5'}`}>
-                                        {blog.published ? 'PUBLICADO' : 'BORRADOR'}
-                                    </span>
-                                </div>
-                                <p className="text-[9px] text-slate-600 font-bold uppercase tracking-tight italic line-clamp-1 opacity-60">{blog.excerpt || 'Sín extracto ejecutivo registrado'}</p>
-                            </div>
-
-                            <div className="flex items-center gap-12">
-                                {/* Social Chips */}
-                                {blog.socialTargets && (
-                                    <div className="flex gap-1">
-                                        {JSON.parse(blog.socialTargets).map((t: string) => (
-                                            <div key={t} className="w-5 h-5 rounded-none bg-indigo-500/5 text-indigo-500/30 flex items-center justify-center border border-indigo-500/10" title={t}>
-                                                {t === 'facebook' && <Facebook size={10} />}
-                                                {t === 'instagram' && <Instagram size={10} />}
-                                                {t === 'youtube' && <Youtube size={10} />}
-                                                {t === 'tiktok' && <span className="text-[6px] font-black">TK</span>}
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-
-                                {/* Metadata */}
-                                <div className="flex items-center gap-4 border-l border-white/5 pl-8 hidden lg:flex">
-                                    <div className="text-right">
-                                        <p className="text-[8px] font-black text-slate-700 uppercase tracking-widest leading-none mb-1">Operador</p>
-                                        <p className="text-[10px] font-black text-white italic opacity-40">{blog.author?.name || 'SISTEMA'}</p>
-                                    </div>
-                                </div>
-
-                                {/* Actions */}
-                                <div className="flex items-center gap-2">
-                                    <button onClick={() => openModal(blog)} className="p-3 border border-white/5 text-slate-700 hover:text-white hover:border-white/20 transition-all">
-                                        <Edit size={14} />
-                                    </button>
-                                    <button onClick={() => handleDelete(blog.id)} className="p-3 border border-white/5 text-slate-700 hover:text-red-500 hover:border-red-500/20 transition-all">
-                                        <Trash2 size={14} />
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </motion.div>
-                ))}
-            </div>
-          </div>
-      )}
-
-      {activeTab === "permisos" && isAdmin && (
-          <div className="glass-panel border-white/5 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] overflow-hidden rounded-none-[4rem] backdrop-blur-3xl relative z-10">
-            <div className="p-10 border-b border-white/5 bg-white/[0.01]">
-                 <h3 className="text-[11px] font-black text-slate-500 uppercase tracking-[0.6em] italic">Detallesoría de Privilegios de Redacción</h3>
-            </div>
-            <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                    <thead>
-                        <tr className="border-b border-white/5 bg-white/[0.02]">
-                            <th className="px-12 py-8 text-[10px] font-black uppercase tracking-[0.6em] text-slate-600 italic">IDENTIDAD_Elemento</th>
-                            <th className="px-12 py-8 text-[10px] font-black uppercase tracking-[0.6em] text-slate-600 italic">RANGO_SISTEMA</th>
-                            <th className="px-12 py-8 text-[10px] font-black uppercase tracking-[0.6em] text-slate-600 italic text-center">PRIVILEGIO_BLOG</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-white/[0.02]">
-                        {users.map(u => (
-                            <tr key={u.id} className="hover:bg-white/[0.02] transition-colors group">
-                                <td className="px-12 py-8">
-                                    <div className="flex items-center gap-6">
-                                        <div className="w-12 h-12 rounded-none bg-slate-950 border border-white/5 flex items-center justify-center font-black text-slate-700 italic group-hover:border-azure-500/40 transition-colors">
-                                            {u.name?.[0] || 'N'}
-                                        </div>
-                                        <div>
-                                            <div className="font-black text-white text-base uppercase tracking-tighter italic group-hover:text-azure-400 transition-colors">{u.name || 'ANÓNIMO'}</div>
-                                            <div className="text-[10px] text-slate-600 font-bold uppercase tracking-widest">{u.email}</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td className="px-12 py-8">
-                                    <span className="text-[10px] font-black text-slate-500 uppercase border border-white/5 px-4 py-1.5 rounded-none bg-slate-900 italic shadow-inner">
-                                        {u.role}
-                                    </span>
-                                </td>
-                                <td className="px-12 py-8">
-                                    <div className="flex items-center justify-center">
-                                        <button 
-                                            onClick={() => handleTogglePermission(u.id, u.canCreateBlogs)}
-                                            className={`relative inline-flex h-8 w-16 items-center rounded-none transition-all duration-500 shadow-2xl ${u.canCreateBlogs ? 'bg-emerald-500/20 border border-emerald-500/40' : 'bg-slate-900 border border-white/5'}`}
-                                        >
-                                            <span className={`inline-block h-5 w-5 transform rounded-none transition-all duration-500 shadow-inner ${u.canCreateBlogs ? 'translate-x-9 bg-emerald-400' : 'translate-x-2 bg-slate-700'}`} />
-                                            <div className="absolute inset-0 flex items-center justify-between px-3 pointer-events-none">
-                                                 <Check size={10} className={`${u.canCreateBlogs ? 'opacity-100' : 'opacity-0'} text-emerald-400 transition-opacity`} />
-                                                 <X size={10} className={`${!u.canCreateBlogs ? 'opacity-100' : 'opacity-0'} text-slate-700 transition-opacity`} />
-                                            </div>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-          </div>
-      )}
-
       {/* Editor Modal */}
       <AnimatePresence>
           {isModalOpen && (
-              <div className="fixed inset-0 z-[400] flex items-center justify-center p-8">
+              <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
                 <motion.div 
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="absolute inset-0 bg-slate-950/95 backdrop-blur-3xl" 
+                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                    className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" 
                     onClick={closeModal} 
                 />
                 <motion.div 
-                    initial={{ opacity: 0, scale: 0.9, y: 30 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.9, y: 30 }}
-                    className="glass-panel !bg-slate-950/60 w-full max-w-6xl max-h-[90vh] overflow-y-auto border border-white/10 shadow-[0_0_150px_rgba(0,0,0,1)] rounded-none-[4rem] relative z-10 backdrop-blur-3xl p-14 custom-scrollbar"
+                    initial={{ opacity: 0, scale: 0.95, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                    className="bg-white w-full max-w-4xl max-h-[90vh] overflow-y-auto border border-slate-200 shadow-2xl rounded-2xl relative z-10 flex flex-col"
                 >
-                    <div className="flex items-center justify-between mb-16 border-b border-white/5 pb-10">
-                        <div className="flex items-center gap-8">
-                            <div className="p-5 bg-secondary text-white rounded-none shadow-2xl shadow-secondary/30">
-                                <Plus size={32} />
+                    <div className="p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50 rounded-t-2xl">
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center">
+                                <FileText size={24} />
                             </div>
                             <div>
-                                <h2 className="text-4xl font-black uppercase tracking-tighter text-white italic">
-                                    {editingBlog ? 'EDITAR <span className="text-secondary">ACTIVO</span>' : 'REDACTAR <span className="text-secondary">Elemento</span>'}
-                                </h2>
-                                <p className="text-[10px] font-black text-slate-500 mt-3 uppercase tracking-[0.6em] italic">Subsistema de Publicación Corporativa</p>
+                                <h2 className="text-xl font-black text-[#0F172A] tracking-tight">{editingBlog ? 'Editar Contenido' : 'Crear Contenido'}</h2>
+                                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mt-1">Editor Centralizado</p>
                             </div>
                         </div>
-                        <button onClick={closeModal} className="p-5 bg-slate-900 border border-white/10 rounded-none text-slate-600 hover:text-white hover:rotate-90 transition-all duration-500 shadow-2xl">
-                            <X size={32} />
+                        <button onClick={closeModal} className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-200 rounded-lg transition-colors">
+                            <X size={20} />
                         </button>
                     </div>
 
-                    <form onSubmit={handleSaveBlog} className="space-y-12">
-                        {/* Tipo de Contenido Selector */}
-                        <div className="flex gap-4 border-b border-white/5 pb-8">
+                    <form onSubmit={handleSaveBlog} className="p-8 space-y-6">
+                        <div className="flex gap-4 border-b border-slate-100 pb-6">
                             <button
                                 type="button"
                                 onClick={() => setContentType("article")}
-                                className={`flex-1 py-6 flex flex-col items-center gap-3 border transition-all ${contentType === 'article' ? 'bg-primary/10 border-primary text-primary' : 'bg-slate-950/50 border-white/5 text-slate-500 hover:text-white'}`}
+                                className={`flex-1 py-4 flex flex-col items-center gap-2 rounded-xl transition-all border ${contentType === 'article' ? 'bg-indigo-50 border-indigo-200 text-indigo-600' : 'bg-white border-slate-200 text-slate-500 hover:border-indigo-300'}`}
                             >
-                                <FileText size={24} />
-                                <span className="text-[10px] font-black uppercase tracking-widest">Artículo / Imagen</span>
+                                <FileText size={20} /> <span className="text-sm font-bold">Artículo (Blog)</span>
                             </button>
                             <button
                                 type="button"
                                 onClick={() => setContentType("video")}
-                                className={`flex-1 py-6 flex flex-col items-center gap-3 border transition-all ${contentType === 'video' ? 'bg-secondary/10 border-secondary text-secondary' : 'bg-slate-950/50 border-white/5 text-slate-500 hover:text-white'}`}
+                                className={`flex-1 py-4 flex flex-col items-center gap-2 rounded-xl transition-all border ${contentType === 'video' ? 'bg-indigo-50 border-indigo-200 text-indigo-600' : 'bg-white border-slate-200 text-slate-500 hover:border-indigo-300'}`}
                             >
-                                <Video size={24} />
-                                <span className="text-[10px] font-black uppercase tracking-widest">Video (Reel/TikTok/Short)</span>
+                                <Video size={20} /> <span className="text-sm font-bold">Video Social</span>
                             </button>
-                        </div>
-
-                        {/* Matrix Deployment Section (NEW MACABRE UI) */}
-                        <div className="p-12 bg-slate-950 border-2 border-emerald-500/10 rounded-none space-y-10 relative overflow-hidden group/matrix">
-                             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover/matrix:opacity-100 transition-opacity">
-                                <Globe size={40} className="text-emerald-500 animate-[spin_10s_linear_infinite]" />
-                             </div>
-                             
-                             <div className="flex items-center gap-6 border-b border-emerald-500/10 pb-6">
-                                <div className="w-2 h-6 bg-emerald-500 shadow-[0_0_10px_#10b981]" />
-                                <h3 className="text-sm font-black text-white uppercase tracking-[0.4em] italic">MATRIZ DE DESPLIEGUE POR ENTORNO</h3>
-                             </div>
-
-                             <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-                                 <div className="space-y-6">
-                                     <label className="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-500 italic">1. SELECCIONAR_NODO_OBJETIVO</label>
-                                     <select 
-                                        className="w-full bg-black border border-white/10 p-6 text-[11px] font-black text-white outline-none focus:border-emerald-500 transition-all uppercase tracking-widest italic appearance-none cursor-pointer"
-                                        value={selectedEnvId}
-                                        onChange={e => { setSelectedEnvId(e.target.value); setSelectedAccountIds([]) }}
-                                     >
-                                         <option value="">-- SECTOR_NO_DEFINIDO --</option>
-                                         {environments.map(e => (
-                                             <option key={e.id} value={e.id}>{e.name}</option>
-                                         ))}
-                                     </select>
-                                 </div>
-
-                                 {selectedEnvId && (
-                                     <div className="lg:col-span-2 space-y-8 animate-in slide-in-from-left-4">
-                                         <div className="flex items-center justify-between">
-                                             <label className="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-500 italic">2. FOCO_TÁCTICO: ACTIVAR_TERMINALES</label>
-                                             <div className="flex gap-6">
-                                                 <button type="button" onClick={() => setSelectedAccountIds(environments.find(e => e.id === selectedEnvId)?.accounts?.map((a:any) => a.id) || [])} className="text-[9px] font-black uppercase tracking-widest text-slate-500 hover:text-[#00F0FF] transition-colors italic">SELECCIONAR_TODO</button>
-                                                 <button type="button" onClick={() => setSelectedAccountIds([])} className="text-[9px] font-black uppercase tracking-widest text-slate-500 hover:text-red-500 transition-colors italic">LIMPIAR_FOCO</button>
-                                             </div>
-                                         </div>
-                                         <div className="flex gap-6 overflow-x-auto pb-6 custom-scrollbar scroll-smooth">
-                                             {environments.find(e => e.id === selectedEnvId)?.accounts?.map((acc: any, idx: number) => {
-                                                 const isSelected = selectedAccountIds.includes(acc.id)
-                                                 return (
-                                                     <button
-                                                        key={acc.id}
-                                                        type="button"
-                                                        onClick={() => toggleAccountSelection(acc.id)}
-                                                        className={`shrink-0 w-56 p-8 border-2 transition-all relative overflow-hidden group/btn ${isSelected ? 'bg-emerald-500/10 border-emerald-500 shadow-[0_0_40px_rgba(16,185,129,0.2)]' : 'bg-black/60 border-white/5 hover:border-emerald-500/30'}`}
-                                                     >
-                                                         <div className={`absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 transition-colors ${isSelected ? 'border-white' : 'border-transparent'}`} />
-                                                         {isSelected && <div className="absolute top-2 right-2 text-emerald-400 animate-pulse"><Check size={14}/></div>}
-                                                         
-                                                         <div className="flex flex-col items-center gap-6">
-                                                             <div className={`w-14 h-14 flex items-center justify-center border transition-all ${isSelected ? 'text-emerald-400 border-emerald-500/40 bg-emerald-500/5' : 'text-slate-800 border-white/5 bg-white/[0.02]'}`}>
-                                                                 {acc.platform === 'facebook' && <Facebook size={28} />}
-                                                                 {acc.platform === 'instagram' && <Instagram size={28} />}
-                                                                 {acc.platform === 'youtube' && <Youtube size={28} />}
-                                                                 {acc.platform === 'tiktok' && <span className="font-black text-xl italic">TK</span>}
-                                                             </div>
-                                                             <div className="text-center">
-                                                                 <p className={`text-[11px] font-black uppercase tracking-widest italic truncate w-40 ${isSelected ? 'text-white' : 'text-slate-700'}`}>CUENTA_{idx + 1}</p>
-                                                                 <span className={`text-[8px] font-black uppercase tracking-[0.4em] mt-1 block ${isSelected ? 'text-emerald-500/60' : 'text-slate-800'}`}>{acc.platform}</span>
-                                                             </div>
-                                                         </div>
-                                                     </button>
-                                                 )
-                                             })}
-                                         </div>
-                                     </div>
-                                 )}
-                             </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                            <div className="space-y-4">
-                                <label className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-500 ml-2 italic">Identificador Maestro / Título</label>
-                                <input 
-                                    required 
-                                    type="text"
-                                    className="w-full bg-slate-950/60 border border-white/5 p-6 rounded-none-[2rem] text-[15px] font-black uppercase tracking-widest text-white shadow-inner focus:border-secondary transition-all outline-none italic placeholder:text-slate-900"
-                                    value={title}
-                                    onChange={e => setTitle(e.target.value.toUpperCase())}
-                                    placeholder="ESPECIFICAR TÍTULO DEL CONTENIDO..."
-                                />
-                            </div>
-                            
-                            {contentType === 'article' ? (
-                                <div className="space-y-4">
-                                    <label className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-500 ml-2 italic">Punto de Origen Imagen (URL)</label>
-                                    <input 
-                                        type="text"
-                                        className="w-full bg-slate-950/60 border border-white/5 p-6 rounded-none-[2rem] text-[12px] font-black text-azure-400 shadow-inner focus:border-azure-500 transition-all outline-none italic placeholder:text-slate-900"
-                                        value={imageUrl}
-                                        onChange={e => setImageUrl(e.target.value)}
-                                        placeholder="https://cdn.atomic.com/node/img..."
-                                    />
-                                </div>
-                            ) : (
-                                <div className="space-y-4">
-                                    <label className="text-[10px] font-black uppercase tracking-[0.5em] text-secondary ml-2 italic">Punto de Origen Video (URL .mp4)</label>
-                                    <input 
-                                        required
-                                        type="text"
-                                        className="w-full bg-slate-950/60 border border-white/5 p-6 rounded-none-[2rem] text-[12px] font-black text-secondary shadow-inner focus:border-secondary transition-all outline-none italic placeholder:text-slate-900"
-                                        value={videoUrl}
-                                        onChange={e => setVideoUrl(e.target.value)}
-                                        placeholder="https://cdn.atomic.com/node/video.mp4"
-                                    />
-                                </div>
-                            )}
                         </div>
 
                         <div className="space-y-4">
-                            <label className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-500 ml-2 italic">Extracto Ejecutivo / Caption Redes Sociales</label>
-                            <textarea 
-                                className="w-full bg-slate-950/60 border border-white/5 p-8 rounded-none-[2.5rem] text-[12px] font-black text-white shadow-inner focus:border-secondary transition-all outline-none resize-none h-32 italic uppercase tracking-widest leading-relaxed placeholder:text-slate-900"
-                                value={excerpt}
-                                onChange={e => setExcerpt(e.target.value)}
-                                placeholder="BREVE SÍNTESIS PARA COMPARTIR EN REDES..."
-                            />
-                        </div>
-
-                        {contentType === 'article' && (
-                            <div className="space-y-4">
-                                <label className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-500 ml-2 italic flex items-center justify-between pr-4">
-                                    <span>Cuerpo Estructurado del Activo (Blog Web)</span>
-                                    <span className="text-[9px] text-slate-700 font-black normal-case tracking-[0.4em] italic uppercase">FORMATO_NATIVO: HTML_SUPPORTED</span>
-                                </label>
-                                <textarea 
-                                    className="w-full bg-slate-950/40 border border-white/5 p-10 rounded-none-[3rem] text-[13px] font-black text-slate-300 shadow-inner focus:border-secondary transition-all outline-none font-mono h-[500px] leading-loose custom-scrollbar"
-                                    value={content}
-                                    onChange={e => setContent(e.target.value)}
-                                    placeholder="<h1>Title</h1><p>Operational Data...</p>"
+                            <div>
+                                <label className="block text-xs font-bold text-slate-500 mb-1 ml-1 uppercase">Título Principal</label>
+                                <input 
+                                    type="text" required 
+                                    value={title} onChange={e => setTitle(e.target.value)}
+                                    className="w-full bg-slate-50 border border-slate-200 p-3.5 rounded-lg text-[#0F172A] font-bold focus:border-indigo-500 outline-none transition-all"
+                                    placeholder="Ej. Nuevas tendencias tecnológicas 2024"
                                 />
                             </div>
-                        )}
 
-                        <div className="flex flex-wrap items-center gap-8 pt-10 border-t border-white/5">
-                            <button
-                                type="button"
-                                onClick={() => setPublished(!published)}
-                                className={`flex items-center space-x-6 px-10 py-5 border rounded-none text-[10px] font-black uppercase tracking-[0.4em] transition-all italic skew-x-[-12deg] shadow-2xl ${published ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-slate-900 text-slate-600 border-white/5'}`}
-                            >
-                                <div className="skew-x-[12deg] flex items-center gap-4">
-                                    <Check size={18} className={published ? 'opacity-100 scale-100' : 'opacity-0 scale-50 transition-all'} />
-                                    <span>{published ? 'ESTADO: CONSOLIDADO (PÚBLICO)' : 'ESTADO: BORRADOR (Elemento_INTERNO)'}</span>
+                            {contentType === 'article' && (
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-500 mb-1 ml-1 uppercase">Extracto Corto</label>
+                                    <textarea 
+                                        value={excerpt} onChange={e => setExcerpt(e.target.value)}
+                                        className="w-full bg-slate-50 border border-slate-200 p-3.5 rounded-lg text-[#0F172A] font-medium focus:border-indigo-500 outline-none resize-none transition-all"
+                                        rows={2} placeholder="Breve resumen del contenido..."
+                                    />
                                 </div>
+                            )}
+
+                            <div>
+                                <label className="block text-xs font-bold text-slate-500 mb-1 ml-1 uppercase">{contentType === 'article' ? 'Contenido Completo' : 'Descripción del Video'}</label>
+                                <textarea 
+                                    required 
+                                    value={content} onChange={e => setContent(e.target.value)}
+                                    className="w-full bg-slate-50 border border-slate-200 p-4 rounded-lg text-[#0F172A] text-sm focus:border-indigo-500 outline-none min-h-[200px] resize-y transition-all"
+                                    placeholder={contentType === 'article' ? 'Desarrollo del artículo...' : 'Hashtags, descripción, menciones...'}
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {contentType === 'article' ? (
+                                    <div>
+                                        <label className="block text-xs font-bold text-slate-500 mb-1 ml-1 uppercase">URL de Imagen (Portada)</label>
+                                        <input 
+                                            type="url" value={imageUrl} onChange={e => setImageUrl(e.target.value)}
+                                            className="w-full bg-slate-50 border border-slate-200 p-3.5 rounded-lg text-[#0F172A] text-sm focus:border-indigo-500 outline-none"
+                                            placeholder="https://..."
+                                        />
+                                    </div>
+                                ) : (
+                                    <div>
+                                        <label className="block text-xs font-bold text-slate-500 mb-1 ml-1 uppercase">URL del Video (MP4)</label>
+                                        <input 
+                                            type="url" required value={videoUrl} onChange={e => setVideoUrl(e.target.value)}
+                                            className="w-full bg-slate-50 border border-slate-200 p-3.5 rounded-lg text-[#0F172A] text-sm focus:border-indigo-500 outline-none"
+                                            placeholder="https://...mp4"
+                                        />
+                                    </div>
+                                )}
+                                
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-500 mb-1 ml-1 uppercase">Estado de Publicación</label>
+                                    <div className="flex items-center gap-3 mt-3">
+                                        <button 
+                                            type="button"
+                                            onClick={() => setPublished(!published)}
+                                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${published ? 'bg-emerald-500' : 'bg-slate-300'}`}
+                                        >
+                                            <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${published ? 'translate-x-6' : 'translate-x-1'}`} />
+                                        </button>
+                                        <span className="text-sm font-bold text-slate-700">{published ? 'Público Activo' : 'Borrador Privado'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="pt-6 border-t border-slate-100 flex justify-end gap-3">
+                            <button type="button" onClick={closeModal} className="px-6 py-2.5 rounded-lg text-slate-500 font-bold text-sm hover:bg-slate-100 transition-colors border border-transparent">
+                                Cancelar
                             </button>
-                            
-                            <div className="ms-auto flex items-center gap-8">
-                                <button type="button" onClick={closeModal} className="px-10 py-5 text-[10px] font-black uppercase tracking-[0.4em] text-slate-700 hover:text-white transition-all italic">
-                                    CANCELAR_AUD
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={handleOmniPublish}
-                                    disabled={isNemotronProcessing}
-                                    className="bg-indigo-600 text-white px-8 py-5 text-[10px] font-black uppercase tracking-[0.4em] shadow-[0_0_20px_rgba(79,70,229,0.5)] hover:bg-white hover:text-indigo-600 rounded-none active:scale-95 italic skew-x-[-12deg] group transition-all"
-                                >
-                                    <div className="skew-x-[12deg] flex items-center gap-4">
-                                        <Sparkles size={18} className={isNemotronProcessing ? "animate-spin" : "group-hover:rotate-12 transition-transform"} />
-                                        <span>{isNemotronProcessing ? 'NEMOTRON PENSANDO...' : 'AUTO-NEMOTRON'}</span>
-                                    </div>
-                                </button>
-                                <button type="submit" className="bg-secondary text-white px-10 py-5 text-[10px] font-black uppercase tracking-[0.4em] shadow-[0_20px_50px_-10px_rgba(255,99,71,0.6)] hover:bg-white hover:text-secondary rounded-none active:scale-95 italic skew-x-[-12deg] group transition-all">
-                                    <div className="skew-x-[12deg] flex items-center gap-4">
-                                        <ShieldCheck size={18} className="group-hover:scale-110 transition-transform" />
-                                        <span>GUARDAR MANUAL</span>
-                                    </div>
-                                </button>
-                             </div>
+                            <button type="submit" className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-2.5 rounded-lg font-bold text-sm shadow-sm transition-all flex items-center gap-2">
+                                <Check size={18} /> Guardar Contenido
+                            </button>
                         </div>
                     </form>
                 </motion.div>
+              </div>
+          )}
+      </AnimatePresence>
+
+      {/* Env / Acc Modals (Simplified versions for SaaS) */}
+      <AnimatePresence>
+          {isEnvModalOpen && (
+              <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+                  <div className="bg-white p-8 max-w-md w-full rounded-2xl shadow-xl relative border border-slate-200">
+                      <button onClick={() => setIsEnvModalOpen(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-700"><X size={20} /></button>
+                      <h3 className="text-xl font-black text-[#0F172A] mb-6">Nuevo Entorno</h3>
+                      <div className="space-y-4">
+                          <input type="text" placeholder="Nombre del Entorno" className="w-full bg-slate-50 border border-slate-200 p-3 rounded-lg text-sm" value={envName} onChange={e => setEnvName(e.target.value)} />
+                          <textarea placeholder="Descripción..." className="w-full bg-slate-50 border border-slate-200 p-3 rounded-lg text-sm h-24" value={envDesc} onChange={e => setEnvDesc(e.target.value)} />
+                          <button onClick={handleCreateEnv} className="w-full bg-indigo-600 text-white py-3 rounded-lg font-bold text-sm hover:bg-indigo-700">Crear Entorno</button>
+                      </div>
+                  </div>
+              </div>
+          )}
+          {isAccModalOpen && (
+              <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+                  <div className="bg-white p-8 max-w-md w-full rounded-2xl shadow-xl relative border border-slate-200">
+                      <button onClick={() => setIsAccModalOpen(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-700"><X size={20} /></button>
+                      <h3 className="text-xl font-black text-[#0F172A] mb-6">Vincular Cuenta</h3>
+                      <div className="space-y-4">
+                          <input type="text" placeholder="Nombre (Ej. IG Principal)" className="w-full bg-slate-50 border border-slate-200 p-3 rounded-lg text-sm" value={accName} onChange={e => setAccName(e.target.value)} />
+                          <select className="w-full bg-slate-50 border border-slate-200 p-3 rounded-lg text-sm font-bold text-slate-700" value={accPlatform} onChange={e => setAccPlatform(e.target.value)}>
+                              <option value="facebook">Facebook</option>
+                              <option value="instagram">Instagram</option>
+                              <option value="youtube">YouTube</option>
+                              <option value="tiktok">TikTok</option>
+                          </select>
+                          <button onClick={handleCreateAcc} className="w-full bg-indigo-600 text-white py-3 rounded-lg font-bold text-sm hover:bg-indigo-700">Añadir Cuenta</button>
+                      </div>
+                  </div>
               </div>
           )}
       </AnimatePresence>
