@@ -40,9 +40,12 @@ export default function AdvancedCRMPage() {
     // Form/Panel state
     const [isPanelOpen, setIsPanelOpen] = useState(false)
     const [editingClient, setEditingClient] = useState<any>(null)
+    const [isPromoModalOpen, setIsPromoModalOpen] = useState(false)
+    const [promoForm, setPromoForm] = useState({ tipo: "", medio: "", categoria: "" })
+    
     const [formData, setFormData] = useState({
         firstName: "", lastName: "", email: "", phone: "", city: "",
-        requirement: "", status: "PROSPECTO", purchaseCount: 0
+        requirement: "", status: "PROSPECTO", purchaseCount: 0, campaignsSent: 0
     })
 
     const sensors = useSensors(
@@ -102,8 +105,38 @@ export default function AdvancedCRMPage() {
 
     const openEdit = (client: any) => {
         setEditingClient(client)
-        setFormData({ ...client })
+        setFormData({ ...client, campaignsSent: client.campaignsSent || 0 })
         setIsPanelOpen(true)
+    }
+
+    const handleSavePromo = async () => {
+        if (!promoForm.tipo || !promoForm.medio || !promoForm.categoria) {
+            alert("Debe llenar todos los campos de la promoción para continuar.")
+            return
+        }
+        
+        const currentCount = formData.campaignsSent || 0
+        const newCount = currentCount + 1
+        const promoRecord = `\n[PROMO ${new Date().toLocaleDateString()}] Medio: ${promoForm.medio} | Tipo: ${promoForm.tipo} | Cat: ${promoForm.categoria}`
+        
+        const updatedFormData = {
+            ...formData,
+            campaignsSent: newCount,
+            requirement: (formData.requirement || "") + promoRecord
+        }
+        
+        setFormData(updatedFormData)
+        setIsPromoModalOpen(false)
+        setPromoForm({ tipo: "", medio: "", categoria: "" })
+
+        if (editingClient) {
+            const res = await fetch(`/api/crm/${editingClient.id}`, { 
+                method: 'PUT', 
+                headers: {'Content-Type': 'application/json'}, 
+                body: JSON.stringify(updatedFormData) 
+            })
+            if(res.ok) { fetchClients(); }
+        }
     }
 
     const filteredClients = clients.filter(c => 
@@ -202,7 +235,7 @@ export default function AdvancedCRMPage() {
                             
                             <div className="flex-1 space-y-8 overflow-y-auto pr-2 custom-scrollbar-hidden">
                                 {editingClient && (
-                                    <div className="flex gap-4 mb-8">
+                                    <div className="flex flex-wrap gap-4 mb-8">
                                         <button 
                                             onClick={() => {
                                                 const msg = encodeURIComponent(`Hola ${formData.firstName}, te contacto desde Atomic Electronics...`);
@@ -217,6 +250,12 @@ export default function AdvancedCRMPage() {
                                             className="flex-1 bg-indigo-600/10 border border-indigo-500/20 text-indigo-500 py-4 text-[9px] font-black uppercase italic hover:bg-indigo-600 hover:text-white transition-all flex items-center justify-center gap-2"
                                         >
                                             <Briefcase size={14} /> NUEVA COTIZACIÓN
+                                        </button>
+                                        <button 
+                                            onClick={() => setIsPromoModalOpen(true)}
+                                            className="w-full bg-amber-500/10 border border-amber-500/20 text-amber-500 py-4 text-[9px] font-black uppercase italic hover:bg-amber-500 hover:text-white transition-all flex items-center justify-center gap-2"
+                                        >
+                                            <BarChart3 size={14} /> NUEVA PROMOCIÓN ENVIADA ({formData.campaignsSent || 0})
                                         </button>
                                     </div>
                                 )}
@@ -265,6 +304,60 @@ export default function AdvancedCRMPage() {
                                 }} className="p-4 text-[9px] font-black uppercase italic bg-indigo-600 text-white hover:bg-indigo-500 transition-all shadow-xl">GUARDAR DATOS</button>
                             </div>
                         </motion.div>
+                        
+                        {/* Modal Condicionante de Promoción */}
+                        {isPromoModalOpen && (
+                            <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
+                                <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => {}} />
+                                <div className="bg-slate-900 border border-indigo-500/30 p-8 w-full max-w-md relative z-10 shadow-[0_0_50px_rgba(79,70,229,0.2)]">
+                                    <h3 className="text-xl font-black uppercase italic tracking-tighter text-white mb-6">Registro de <span className="text-indigo-500">Promoción</span></h3>
+                                    
+                                    <div className="space-y-4">
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black uppercase text-white/50 italic">Medio de Envío</label>
+                                            <select 
+                                                value={promoForm.medio}
+                                                onChange={e => setPromoForm({...promoForm, medio: e.target.value})}
+                                                className="w-full bg-white/5 border border-white/10 p-4 text-[11px] font-bold text-white uppercase outline-none focus:border-indigo-500"
+                                            >
+                                                <option value="">Seleccione Medio...</option>
+                                                <option value="WhatsApp">WhatsApp</option>
+                                                <option value="Email">Email</option>
+                                                <option value="Llamada">Llamada</option>
+                                                <option value="Físico">Físico / Visita</option>
+                                            </select>
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black uppercase text-white/50 italic">Tipo de Promoción</label>
+                                            <input 
+                                                type="text"
+                                                placeholder="Ej. Descuento 10%, 2x1, Envío Gratis..."
+                                                value={promoForm.tipo}
+                                                onChange={e => setPromoForm({...promoForm, tipo: e.target.value})}
+                                                className="w-full bg-white/5 border border-white/10 p-4 text-[11px] font-bold text-white uppercase outline-none focus:border-indigo-500"
+                                            />
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black uppercase text-white/50 italic">Categoría</label>
+                                            <input 
+                                                type="text"
+                                                placeholder="Ej. Industrial, Herramientas, Black Friday..."
+                                                value={promoForm.categoria}
+                                                onChange={e => setPromoForm({...promoForm, categoria: e.target.value})}
+                                                className="w-full bg-white/5 border border-white/10 p-4 text-[11px] font-bold text-white uppercase outline-none focus:border-indigo-500"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="mt-8 flex gap-4">
+                                        <button onClick={() => setIsPromoModalOpen(false)} className="flex-1 p-4 text-[9px] font-black uppercase border border-white/10 hover:bg-white/5 transition-all text-white/50">CANCELAR</button>
+                                        <button onClick={handleSavePromo} className="flex-1 p-4 text-[9px] font-black uppercase bg-indigo-600 hover:bg-indigo-500 text-white shadow-xl transition-all">REGISTRAR EN ENVÍO</button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </>
                 )}
             </AnimatePresence>
