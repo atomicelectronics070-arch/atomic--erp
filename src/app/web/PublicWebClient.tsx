@@ -356,7 +356,12 @@ export default function PublicWebClient({ initialProducts, metadata, userRole, s
             });
         }
         else if (colName.includes('desarrollo web')) {
-            products = [{ id: 'v-web-1', name: 'TU TIENDA EN LÍNEA (PLANES)', description: 'Plan $99 / Plan $199 / Plan $299', price: 99, images: '[]', featured: true }];
+            products = [
+                { id: 'v-web-1', name: 'GESTOR: DESARROLLO BÁSICO', description: 'Tienda con hasta 50 productos, WhatsApp, Responsive.', price: 199, images: '["/assets/ecommerce/img1.jpeg"]', featured: true },
+                { id: 'v-web-2', name: 'GESTOR: ESTÁNDAR', description: 'Hasta 500 productos, Pagos en línea, Gestor Avanzado, SEO.', price: 299, images: '["/assets/ecommerce/img2.jpeg"]', featured: true },
+                { id: 'v-web-3', name: 'GESTOR: PRO', description: 'Productos Ilimitados, ERP, CRM WhatsApp, Cuentas Multiples.', price: 599, images: '["/assets/ecommerce/img1.jpeg"]', featured: true },
+                { id: 'v-web-4', name: 'GESTOR: PERSONALIZADO', description: 'Arquitectura a medida, Apps Móviles, integraciones API.', price: 999, images: '["/assets/ecommerce/img2.jpeg"]', featured: false }
+            ];
         }
         else if (colName.includes('diseño') || colName.includes('branding')) {
             products = [

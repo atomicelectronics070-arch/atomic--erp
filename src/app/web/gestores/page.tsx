@@ -16,27 +16,51 @@ export default function TiendasOnlineLanding() {
     const plans = [
         {
             name: "Desarrollo Básico",
-            price: "$299",
+            price: "$199",
             period: "pago único",
             description: "Ideal para pequeños emprendimientos que recién comienzan en internet.",
-            features: ["Tienda con hasta 50 productos", "Integración con WhatsApp", "Diseño Responsivo Básico", "Gestor de Contenido Simple", "Soporte por email 30 días"],
+            features: [
+                "Tienda con hasta 50 productos", 
+                "Integración de botón WhatsApp", 
+                "Diseño Responsivo Básico (Móvil y PC)", 
+                "Gestor de Contenido Simple", 
+                "Soporte por email 30 días",
+                "Certificado de Seguridad SSL",
+                "Dominio Gratis por 1 año"
+            ],
             color: "blue"
         },
         {
             name: "Estándar",
-            price: "$499",
+            price: "$299",
             period: "pago único",
             description: "Para negocios establecidos que necesitan una presencia sólida y profesional.",
-            features: ["Hasta 500 productos", "Pasarela de pagos (Stripe/PayPal)", "Gestor Avanzado (Beast Mode)", "SEO Básico Incluido", "Soporte por 3 meses"],
+            features: [
+                "Hasta 500 productos y variaciones", 
+                "Pasarela de pagos (Stripe/PayPal/Tarjetas)", 
+                "Gestor Avanzado (Beast Mode)", 
+                "Optimización SEO Básica", 
+                "Soporte por 3 meses vía WhatsApp",
+                "Panel de analíticas de ventas",
+                "Integración con redes sociales (Pixel)"
+            ],
             color: "indigo",
             popular: true
         },
         {
             name: "Pro",
-            price: "$899",
+            price: "$599",
             period: "pago único",
             description: "E-commerce de alto rendimiento con todas las automatizaciones empresariales.",
-            features: ["Productos ilimitados", "Sistema ERP Integrado", "CRM para WhatsApp", "Cuentas para Vendedores", "Soporte Prioritario 1 Año"],
+            features: [
+                "Productos ilimitados", 
+                "Sistema ERP Integrado para inventario", 
+                "CRM interno para clientes", 
+                "Cuentas para Vendedores/Sucursales", 
+                "Soporte Prioritario 1 Año",
+                "Recuperación de carritos abandonados",
+                "Sistema de Cupones Avanzado"
+            ],
             color: "purple"
         },
         {
@@ -44,7 +68,15 @@ export default function TiendasOnlineLanding() {
             price: "A Medida",
             period: "cotización",
             description: "Desarrollamos soluciones 100% únicas para fábricas o empresas complejas.",
-            features: ["Arquitectura a medida", "Integraciones con APIs externas", "Aplicación móvil opcional", "Diseño UI/UX Exclusivo", "Soporte Dedicado 24/7"],
+            features: [
+                "Arquitectura a medida (React/Node)", 
+                "Integraciones con APIs externas (SAP, etc)", 
+                "Aplicación móvil nativa opcional", 
+                "Diseño UI/UX Exclusivo desde cero", 
+                "Soporte Dedicado 24/7",
+                "Servidores dedicados AWS/Google Cloud",
+                "Contrato de confidencialidad"
+            ],
             color: "slate"
         }
     ]
