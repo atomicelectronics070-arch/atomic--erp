@@ -327,7 +327,7 @@ export default function BotRutaPage() {
         const others = pool.filter((p: any) => !priorities.some(pr => p.name.toLowerCase().includes(pr)))
         
         const shuffledMatched = matched.sort(() => Math.random() - 0.5)
-        const sortedOthersByPrice = others.sort((a, b) => b.price - a.price)
+        const sortedOthersByPrice = others.sort((a: any, b: any) => b.price - a.price)
         
         let selected: any[] = []
         if (shuffledMatched.length >= 2) {
@@ -394,7 +394,7 @@ export default function BotRutaPage() {
         const matched = pool.filter((p: any) => priorities.some(pr => p.name.toLowerCase().includes(pr)))
         const others = pool.filter((p: any) => !priorities.some(pr => p.name.toLowerCase().includes(pr)))
         const shuffledMatched = matched.sort(() => Math.random() - 0.5)
-        const sortedOthersByPrice = others.sort((a, b) => b.price - a.price)
+        const sortedOthersByPrice = others.sort((a: any, b: any) => b.price - a.price)
         
         let selected: any[] = []
         if (shuffledMatched.length >= 2) {
