@@ -1,6 +1,12 @@
 /* Atomic Premium Design System — Navy · White · Slate Gray — v7.0 */
 @import "tailwindcss";
 
+/* ── Global Scale Reduction ── */
+html {
+  font-size: 87.5%; /* 14px base instead of 16px — shrinks all rem-based sizes globally */
+  zoom: 0.9;        /* Browser-level 90% zoom for non-rem elements (padding, borders, etc.) */
+}
+
 @theme {
   --color-background: #F8FAFC;
   --color-foreground: #0F172A;
