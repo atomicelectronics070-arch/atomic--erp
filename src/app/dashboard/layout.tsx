@@ -171,6 +171,7 @@ export default function DashboardLayout({
                                     isOpen={openSections.marketing ?? false}
                                     onToggle={() => toggleSection('marketing')}
                                 >
+                                    <NavLink href="/dashboard/marketing" icon={<BarChart3 size={14} />} label="Command" isSubItem />
                                     <NavLink href="/dashboard/benefits" icon={<Tag size={14} />} label="Beneficios" isSubItem />
                                 </CollapsibleSection>
                             </>
