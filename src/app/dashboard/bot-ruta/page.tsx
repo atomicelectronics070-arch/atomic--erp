@@ -12,6 +12,257 @@ const INITIAL_MSGS: BotMsg[] = [
   { id:"1", from:"bot", text:"\u00a1Hola! \ud83d\udc4b Bienvenido a Atomic Industries. Soy tu asistente de ruta. Estoy aqu\u00ed para asignarte tus productos estrat\u00e9gicos del d\u00eda, generar tus dise\u00f1os y darte los copys para que publiques." },
 ]
 
+const safeParseArray = (str: any, fallback: any = []) => {
+    if (!str || str === 'null' || str === '[]' || str === '') return fallback;
+    if (Array.isArray(str)) return str.length > 0 ? str : fallback;
+    if (typeof str === 'string') {
+        try {
+            let parsed = JSON.parse(str);
+            if (Array.isArray(parsed)) return parsed;
+        } catch (e) {}
+        return [str];
+    }
+    return fallback;
+};
+
+const proxyImg = (url: string): string => {
+    if (!url) return ''
+    if (url.startsWith('/api/img-proxy') || url.startsWith('/') || url.startsWith('data:')) return url
+    return `/api/img-proxy?url=${encodeURIComponent(url)}`
+}
+
+function drawBanner(
+  productName: string, 
+  price: number, 
+  imgUrl: string
+): Promise<string> {
+  return new Promise((resolve) => {
+    const canvas = document.createElement("canvas");
+    canvas.width = 1080;
+    canvas.height = 1080;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) {
+      resolve(imgUrl);
+      return;
+    }
+
+    // 1. Gradient Background
+    const grad = ctx.createLinearGradient(0, 0, 1080, 1080);
+    grad.addColorStop(0, "#0B1329");
+    grad.addColorStop(0.5, "#1C2541");
+    grad.addColorStop(1, "#020617");
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, 1080, 1080);
+
+    // 2. Technological circle lines
+    ctx.strokeStyle = "rgba(59, 130, 246, 0.15)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(540, 540, 480, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(540, 540, 400, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(540, 540, 320, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // 3. Grid lines
+    ctx.strokeStyle = "rgba(59, 130, 246, 0.04)";
+    ctx.lineWidth = 2;
+    const gridSize = 60;
+    for (let x = 0; x < 1080; x += gridSize) {
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, 1080);
+      ctx.stroke();
+    }
+    for (let y = 0; y < 1080; y += gridSize) {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(1080, y);
+      ctx.stroke();
+    }
+
+    // 4. Logo / Top Header
+    ctx.fillStyle = "#3B82F6";
+    ctx.beginPath();
+    ctx.arc(100, 90, 8, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = "#FFFFFF";
+    ctx.font = "bold 32px sans-serif";
+    ctx.fillText("ATOMIC INDUSTRIES", 125, 100);
+
+    ctx.fillStyle = "#60A5FA";
+    ctx.font = "bold 20px sans-serif";
+    ctx.fillText("TECNOLOG\u00cdA Y SEGURIDAD \u00c9LITE", 125, 135);
+
+    // 5. Ecuador Flag
+    const fx = 860;
+    const fy = 70;
+    const fw = 120;
+    const fh = 80;
+    ctx.fillStyle = "#FFDD00"; // Yellow
+    ctx.fillRect(fx, fy, fw, fh / 2);
+    ctx.fillStyle = "#001489"; // Blue
+    ctx.fillRect(fx, fy + fh / 2, fw, fh / 4);
+    ctx.fillStyle = "#DA291C"; // Red
+    ctx.fillRect(fx, fy + fh * 3 / 4, fw, fh / 4);
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.3)";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(fx, fy, fw, fh);
+
+    // 6. Product image panel
+    const cardX = 140;
+    const cardY = 220;
+    const cardW = 800;
+    const cardH = 520;
+    
+    ctx.fillStyle = "#FFFFFF";
+    ctx.beginPath();
+    ctx.roundRect(cardX, cardY, cardW, cardH, 24);
+    ctx.fill();
+
+    ctx.strokeStyle = "rgba(59, 130, 246, 0.3)";
+    ctx.lineWidth = 4;
+    ctx.stroke();
+
+    // 7. Core bottom labels
+    ctx.fillStyle = "rgba(59, 130, 246, 0.1)";
+    ctx.beginPath();
+    ctx.roundRect(140, 930, 240, 50, 10);
+    ctx.fill();
+    ctx.fillStyle = "#60A5FA";
+    ctx.font = "bold 16px sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("\ud8d8\udf2d GARANT\u00cdA OFICIAL", 260, 962);
+
+    ctx.fillStyle = "rgba(16, 185, 129, 0.1)";
+    ctx.beginPath();
+    ctx.roundRect(420, 930, 240, 50, 10);
+    ctx.fill();
+    ctx.fillStyle = "#34D399";
+    ctx.fillText("\ud83d\ude9a ENV\u00cdO A TODO EL PA\u00cdS", 540, 962);
+
+    ctx.fillStyle = "rgba(245, 158, 11, 0.1)";
+    ctx.beginPath();
+    ctx.roundRect(700, 930, 240, 50, 10);
+    ctx.fill();
+    ctx.fillStyle = "#FBBF24";
+    ctx.fillText("\u26a1 SOPORTE CONTINUO", 820, 962);
+
+    ctx.textAlign = "left";
+
+    // Call to Action
+    ctx.fillStyle = "#94A3B8";
+    ctx.font = "18px sans-serif";
+    ctx.fillText("Consulta con tu asesor autorizado de confianza", 140, 1010);
+
+    // 8. Image Load
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.src = proxyImg(imgUrl);
+
+    img.onload = () => {
+      const padding = 50;
+      const fitW = cardW - padding * 2;
+      const fitH = cardH - padding * 2;
+      const imgW = img.width;
+      const imgH = img.height;
+      
+      const ratio = Math.min(fitW / imgW, fitH / imgH);
+      const drawW = imgW * ratio;
+      const drawH = imgH * ratio;
+      const drawX = cardX + (cardW - drawW) / 2;
+      const drawY = cardY + (cardH - drawH) / 2;
+
+      ctx.drawImage(img, drawX, drawY, drawW, drawH);
+
+      // Price Tag Footer Panel
+      const priceTagX = 140;
+      const priceTagY = 770;
+      const priceTagW = 800;
+      const priceTagH = 120;
+      
+      ctx.fillStyle = "#1E293B";
+      ctx.beginPath();
+      ctx.roundRect(priceTagX, priceTagY, priceTagW, priceTagH, 16);
+      ctx.fill();
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.05)";
+      ctx.stroke();
+
+      // Product Name
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = "bold 26px sans-serif";
+      let displayName = productName.toUpperCase();
+      if (displayName.length > 35) {
+        displayName = displayName.substring(0, 32) + "...";
+      }
+      ctx.fillText(displayName, 170, 825);
+      
+      ctx.fillStyle = "#60A5FA";
+      ctx.font = "bold 14px sans-serif";
+      ctx.fillText("EQUIPO ESTRAT\u00c9GICO SELECCIONADO", 170, 855);
+
+      // Price text aligned to the right
+      ctx.fillStyle = "#10B981";
+      ctx.font = "bold 44px sans-serif";
+      ctx.textAlign = "right";
+      const formattedPrice = price ? `$${price.toFixed(2)}` : "CONSULTAR";
+      ctx.fillText(formattedPrice, 910, 835);
+
+      ctx.fillStyle = "#94A3B8";
+      ctx.font = "bold 14px sans-serif";
+      ctx.fillText("PRECIO DE LISTA", 910, 860);
+      ctx.textAlign = "left";
+
+      try {
+        resolve(canvas.toDataURL("image/jpeg", 0.9));
+      } catch (err) {
+        resolve(imgUrl);
+      }
+    };
+
+    img.onerror = () => {
+      // Draw placeholder inside card
+      ctx.fillStyle = "#1E293B";
+      ctx.fillRect(cardX + 10, cardY + 10, cardW - 20, cardH - 20);
+      
+      ctx.fillStyle = "#94A3B8";
+      ctx.font = "bold 28px sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("IMAGEN EN PROCESO", cardX + cardW/2, cardY + cardH/2);
+      ctx.textAlign = "left";
+
+      const priceTagX = 140;
+      const priceTagY = 770;
+      const priceTagW = 800;
+      const priceTagH = 120;
+      ctx.fillStyle = "#1E293B";
+      ctx.beginPath();
+      ctx.roundRect(priceTagX, priceTagY, priceTagW, priceTagH, 16);
+      ctx.fill();
+
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = "bold 26px sans-serif";
+      ctx.fillText(productName.toUpperCase(), 170, 825);
+      
+      ctx.fillStyle = "#10B981";
+      ctx.font = "bold 44px sans-serif";
+      ctx.textAlign = "right";
+      ctx.fillText(price ? `$${price.toFixed(2)}` : "CONSULTAR", 910, 835);
+      ctx.textAlign = "left";
+
+      try {
+        resolve(canvas.toDataURL("image/jpeg", 0.9));
+      } catch (e) {
+        resolve(imgUrl);
+      }
+    };
+  });
+}
+
 export default function BotRutaPage() {
   const { data: session } = useSession()
   const role = (session?.user as any)?.role
@@ -49,19 +300,52 @@ export default function BotRutaPage() {
   const [generatedAds, setGeneratedAds] = useState<any[]>([])
 
   useEffect(() => {
-    fetch("/api/public/shop/products").then(r=>r.json()).then(d => {
-      const all = d.products || []
-      // Prioritize some categories
-      const priorities = ["portero", "campana", "barrera", "antena", "cerradura", "motor", "espia"]
-      const matched = all.filter((p: any) => priorities.some(pr => p.name.toLowerCase().includes(pr)))
-      const others = all.filter((p: any) => !priorities.some(pr => p.name.toLowerCase().includes(pr)))
-      
-      const shuffledMatched = matched.sort(() => Math.random() - 0.5)
-      const shuffledOthers = others.sort(() => Math.random() - 0.5)
-      
-      const selected = [...shuffledMatched.slice(0, 2), ...shuffledOthers.slice(0, 1)].sort(() => Math.random() - 0.5)
-      setProducts(selected)
-    }).catch(()=>{})
+    fetch("/api/web/products?pageSize=100")
+      .then(r => r.json())
+      .then(d => {
+        const all = d.products || []
+        
+        // Filter products with real images
+        const withImages = all.filter((p: any) => {
+          const imgs = safeParseArray(p.images)
+          return imgs && imgs.length > 0 && imgs[0] !== ''
+        })
+        
+        // Select strategic cutoff price
+        let cutoff = 30
+        let pool = withImages.filter((p: any) => p.price >= cutoff)
+        if (pool.length < 3) {
+          cutoff = 10
+          pool = withImages.filter((p: any) => p.price >= cutoff)
+        }
+        if (pool.length < 3) {
+          pool = withImages
+        }
+
+        const priorities = ["portero", "campana", "barrera", "antena", "cerradura", "motor", "espia"]
+        const matched = pool.filter((p: any) => priorities.some(pr => p.name.toLowerCase().includes(pr)))
+        const others = pool.filter((p: any) => !priorities.some(pr => p.name.toLowerCase().includes(pr)))
+        
+        const shuffledMatched = matched.sort(() => Math.random() - 0.5)
+        const sortedOthersByPrice = others.sort((a, b) => b.price - a.price)
+        
+        let selected: any[] = []
+        if (shuffledMatched.length >= 2) {
+          selected = [...shuffledMatched.slice(0, 2)]
+          if (sortedOthersByPrice.length >= 1) {
+            selected.push(sortedOthersByPrice[0])
+          } else if (shuffledMatched.length >= 3) {
+            selected.push(shuffledMatched[2])
+          }
+        } else {
+          selected = [...shuffledMatched, ...sortedOthersByPrice.slice(0, 3 - shuffledMatched.length)]
+        }
+        
+        setProducts(selected.slice(0, 3))
+      })
+      .catch((err) => {
+        console.error("Failed to fetch products on mount:", err)
+      })
   }, [])
 
   const addBotMsg = (text: string, type?: BotMsg["type"]) => {
@@ -85,42 +369,87 @@ export default function BotRutaPage() {
     window.open(url, '_blank');
   };
 
-  const startAdGeneration = () => {
+  const startAdGeneration = async () => {
     setMessages(prev => [...prev, { id: Date.now().toString(), from:"user", text:"Comenzar mi d\u00eda de trabajo" }])
     setPhase("loading_ads")
-    setTimeout(() => {
-      addBotMsg("Buscando productos estrat\u00e9gicos y generando dise\u00f1os publicitarios con Inteligencia Artificial. Esto tomar\u00e1 unos segundos... \u23f3")
-      
-      setTimeout(() => {
-        const locations = ["Cumbay\u00e1, Quito", "Samborond\u00f3n, Guayaquil", "La Carolina, Quito", "Valle de los Tumbaco", "Urdesa, Guayaquil"]
-        const ads = products.map(p => {
-          const randomLocation = locations[Math.floor(Math.random() * locations.length)]
-          const priceStr = p.price ? `$${p.price.toFixed(2)}` : "Consultar precio"
-          // Pollinations AI prompt for realistic banner
-          const prompt = `Professional commercial advertisement banner for ${p.name}, clean white background, high quality lighting, generic standard features text, with a small flag of Ecuador and a simple black and white atom logo in the corner, 4k resolution`
-          const imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?nologo=true&width=1080&height=1080`
-          
-          return {
-            id: p.id,
-            img: imgUrl,
-            text: `**T\u00edtulo:** \ud83c\udf1f Incre\u00edble ${p.name} \ud83d\ude80\n**Precio:** ${priceStr}\n**Descripci\u00f3n:** Mejora la seguridad y comodidad de tu hogar o negocio con este producto \u00e9lite. Calidad garantizada, soporte continuo e instalaci\u00f3n profesional. \u00a1Aprovecha ahora!\n**Ubicaci\u00f3n:** ${randomLocation}\n**SKU:**\n**Palabras claves:** #tecnologia #seguridad #ecuador #atomicindustries #hogar #innovacion`
-          }
+    
+    await new Promise(r => setTimeout(r, 500))
+    addBotMsg("Buscando productos estrat\u00e9gicos y generando dise\u00f1os publicitarios con Inteligencia Artificial. Esto tomar\u00e1 unos segundos... \u23f3")
+    
+    let poolProducts = products
+    if (!poolProducts || poolProducts.length === 0) {
+      try {
+        const res = await fetch("/api/web/products?pageSize=100")
+        const d = await res.json()
+        const all = d.products || []
+        const withImages = all.filter((p: any) => {
+          const imgs = safeParseArray(p.images)
+          return imgs && imgs.length > 0 && imgs[0] !== ''
         })
-        
-        setGeneratedAds(ads)
-        
-        addBotMsg("Querido asesor a continuaci\u00f3n se sit\u00faan los textos que podr\u00e1s usar para desarrollar tus publicaciones. Es importante que no te saltes estas indicaciones:\n\n1. En **T\u00edtulo** usa uno llamativo con emojis.\n2. En **Precio** usa el indicado.\n3. En **Descripci\u00f3n** puedes copiarla o mejorarla para personalizarla.\n4. En **Ubicaci\u00f3n** usa nuestras sugerencias estrat\u00e9gicas.\n5. En **Palabras claves** p\u00e9galas tal cual.\n6. En **SKU** no pongas nada.")
-        
-        setTimeout(() => {
-            addBotMsg("", "ad_texts")
-            setTimeout(() => {
-                addBotMsg("Aqu\u00ed tienes los dise\u00f1os generados especialmente para ti, con la bandera de Ecuador y nuestro logo en formato profesional:", "ad_images")
-                setPhase("ads_ready")
-            }, 1000)
-        }, 1000)
+        let pool = withImages.filter((p: any) => p.price >= 30)
+        if (pool.length < 3) pool = withImages.filter((p: any) => p.price >= 10)
+        if (pool.length < 3) pool = withImages
 
-      }, 2500)
-    }, 500)
+        const priorities = ["portero", "campana", "barrera", "antena", "cerradura", "motor", "espia"]
+        const matched = pool.filter((p: any) => priorities.some(pr => p.name.toLowerCase().includes(pr)))
+        const others = pool.filter((p: any) => !priorities.some(pr => p.name.toLowerCase().includes(pr)))
+        const shuffledMatched = matched.sort(() => Math.random() - 0.5)
+        const sortedOthersByPrice = others.sort((a, b) => b.price - a.price)
+        
+        let selected: any[] = []
+        if (shuffledMatched.length >= 2) {
+          selected = [...shuffledMatched.slice(0, 2)]
+          if (sortedOthersByPrice.length >= 1) selected.push(sortedOthersByPrice[0])
+          else if (shuffledMatched.length >= 3) selected.push(shuffledMatched[2])
+        } else {
+          selected = [...shuffledMatched, ...sortedOthersByPrice.slice(0, 3 - shuffledMatched.length)]
+        }
+        poolProducts = selected.slice(0, 3)
+        setProducts(poolProducts)
+      } catch (err) {
+        console.error("Failed loading fallback products:", err)
+      }
+    }
+
+    if (!poolProducts || poolProducts.length === 0) {
+      addBotMsg("\u26a0\ufe0f Lo siento, no pudimos cargar los productos de tu inventario. Por favor aseg\u00farate de tener productos registrados en el sistema.")
+      setPhase("onboarding")
+      return
+    }
+
+    const locations = ["Cumbay\u00e1, Quito", "Samborond\u00f3n, Guayaquil", "La Carolina, Quito", "Valle de los Tumbaco", "Urdesa, Guayaquil"]
+    
+    // Asynchronously draw gorgeous custom banners for each product
+    const ads = await Promise.all(poolProducts.map(async p => {
+      const randomLocation = locations[Math.floor(Math.random() * locations.length)]
+      const priceStr = p.price ? `$${p.price.toFixed(2)}` : "Consultar precio"
+      
+      const parsedImgs = safeParseArray(p.images)
+      const rawImgUrl = parsedImgs[0] || "https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?w=500"
+      
+      // Draw canvas-based premium advertising banner
+      const generatedBannerDataUrl = await drawBanner(p.name, p.price || 0, rawImgUrl)
+      
+      return {
+        id: p.id,
+        img: generatedBannerDataUrl,
+        text: `**T\u00edtulo:** \ud83c\udf1f \u00a1S\u00faper Oferta! ${p.name} \ud83d\ude80\n**Precio:** ${priceStr}\n**Descripci\u00f3n:** Mejora la seguridad y comodidad de tu hogar o negocio con este equipo de alto rendimiento. Calidad certificada, garant\u00eda autorizada de Atomic Industries y soporte de por vida. \u00a1Aprovecha hoy!\n**Ubicaci\u00f3n:** ${randomLocation}\n**SKU:**\n**Palabras claves:** #tecnologia #seguridad #ecuador #atomicindustries #hogar #innovacion`
+      }
+    }))
+    
+    setGeneratedAds(ads)
+    
+    addBotMsg("\u00a1Publicidad Estrat\u00e9gica Generada! \u2728 Hemos seleccionado 3 de los mejores productos reales de tu inventario (descartando cables y mouses de bajo valor) y generado dise\u00f1os premium con branding oficial, bandera de Ecuador y precios reales de tu cat\u00e1logo.")
+    
+    await new Promise(r => setTimeout(r, 1000))
+    addBotMsg("Querido asesor a continuaci\u00f3n se sit\u00faan los textos que podr\u00e1s usar para desarrollar tus publicaciones. Es importante que no te saltes estas indicaciones:\n\n1. En **T\u00edtulo** usa uno llamativo con emojis.\n2. En **Precio** usa el indicado.\n3. En **Descripci\u00f3n** puedes copiarla o mejorarla para personalizarla.\n4. En **Ubicaci\u00f3n** usa nuestras sugerencias estrat\u00e9gicas.\n5. En **Palabras claves** p\u00e9galas tal cual.\n6. En **SKU** no pongas nada.")
+    
+    await new Promise(r => setTimeout(r, 1000))
+    addBotMsg("", "ad_texts")
+    
+    await new Promise(r => setTimeout(r, 1000))
+    addBotMsg("Aqu\u00ed tienes los dise\u00f1os publicitarios en alta resoluci\u00f3n generados especialmente para ti, listos para descargar y publicar:", "ad_images")
+    setPhase("ads_ready")
   }
 
   const handleUserReply = (text: string) => {
@@ -306,8 +635,15 @@ export default function BotRutaPage() {
                       <p className="text-sm font-medium text-slate-600 mb-3">{msg.text}</p>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           {generatedAds.map((ad, i) => (
-                              <div key={i} className="rounded-xl overflow-hidden shadow-md border border-slate-200 bg-white">
-                                  <img src={ad.img} className="w-full aspect-square object-cover" alt="Publicidad Generada" />
+                              <div key={i} className="rounded-xl overflow-hidden shadow-md border border-slate-200 bg-white flex flex-col">
+                                  <div className="relative aspect-square">
+                                      <img src={ad.img} className="w-full h-full object-cover animate-in fade-in zoom-in duration-300" alt="Publicidad Generada" />
+                                  </div>
+                                  <div className="p-3 border-t border-slate-100 bg-slate-50 flex justify-center">
+                                      <a href={ad.img} download={`publicidad_atomic_${ad.id}.jpg`} className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg font-bold text-[10px] uppercase tracking-wider transition-colors w-full justify-center text-center shadow-sm">
+                                          📥 Descargar Imagen
+                                      </a>
+                                  </div>
                               </div>
                           ))}
                       </div>
