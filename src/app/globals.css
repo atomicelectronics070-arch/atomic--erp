@@ -3,8 +3,7 @@
 
 /* ── Global Scale Reduction ── */
 html {
-  font-size: 100%;
-  overflow: hidden;
+  zoom: 0.75;
 }
 
 @theme {
