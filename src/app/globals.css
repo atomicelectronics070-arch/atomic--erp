@@ -3,8 +3,8 @@
 
 /* ── Global Scale Reduction ── */
 html {
-  font-size: 87.5%; /* 14px base instead of 16px — shrinks all rem-based sizes globally */
-  zoom: 0.9;        /* Browser-level 90% zoom for non-rem elements (padding, borders, etc.) */
+  font-size: 60%;  /* Matches user's 60% browser zoom preference */
+  zoom: 0.6;
 }
 
 @theme {
