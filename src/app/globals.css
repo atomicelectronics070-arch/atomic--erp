@@ -3,7 +3,8 @@
 
 /* ── Global Scale Reduction ── */
 html {
-  font-size: 100%; /* Reset to normal */
+  font-size: 100%;
+  overflow-x: hidden; /* Hides the invisible right gap caused by body zoom */
 }
 
 @theme {
@@ -44,9 +45,10 @@ body {
   font-family: var(--font-sans);
   accent-color: var(--primary);
   letter-spacing: 0.01em;
-  min-height: 100vh;
+  min-height: 133.34vh;
   -webkit-font-smoothing: antialiased;
-  zoom: 0.75; /* Scales all elements uniformly to 75% */
+  zoom: 0.75;
+  width: 133.34vw; /* 100vw / 0.75 — fills full viewport when zoomed at 75% */
 }
 
 /* ── Glass panel (Light) ── */
