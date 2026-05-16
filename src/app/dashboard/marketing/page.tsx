@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useMemo } from "react"
+import React, { useState, useMemo, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { 
     PieChart as PieIcon, TrendingUp, DollarSign, Calendar, Clock, Edit, 
@@ -79,6 +79,36 @@ export default function MarketingDashboard() {
         realBudgetDebited: 0
     });
 
+    const [isLoading, setIsLoading] = useState(true);
+
+    const fetchCampaigns = async () => {
+        try {
+            const [budgetRes, campaignsRes] = await Promise.all([
+                fetch('/api/marketing/budget'),
+                fetch('/api/marketing/campaigns')
+            ]);
+            if (budgetRes.ok) {
+                const budgetData = await budgetRes.json();
+                setMasterBudget(budgetData.totalAmount || 0);
+            }
+            if (campaignsRes.ok) {
+                const campaignsData = await campaignsRes.json();
+                setCampaigns(campaignsData.map((c: any) => ({
+                    ...c,
+                    spendLog: c.spendLogs
+                })));
+            }
+        } catch (error) {
+            console.error("Error loading marketing data", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchCampaigns();
+    }, []);
+
     // Master Calculations
     const masterTax = masterBudget * 0.15;
     const masterUsable = masterBudget - masterTax;
@@ -88,7 +118,20 @@ export default function MarketingDashboard() {
     const selectedCampaign = campaigns.find(c => c.id === selectedCampaignId);
 
     // Handlers
-    const handleAddCampaign = () => {
+    const handleUpdateMasterBudget = async () => {
+        try {
+            await fetch('/api/marketing/budget', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ totalAmount: masterBudget })
+            });
+            alert("Presupuesto Maestro guardado exitosamente");
+        } catch (error) {
+            alert("Error al guardar presupuesto maestro");
+        }
+    };
+
+    const handleAddCampaign = async () => {
         if (newCampaign.assignedBudget! > availableBudget) {
             alert("No puedes exceder el presupuesto maestro disponible.");
             return;
@@ -97,56 +140,68 @@ export default function MarketingDashboard() {
         const tax = newCampaign.assignedBudget! * 0.15;
         const usable = newCampaign.assignedBudget! - tax;
 
-        const campaignToCreate: Campaign = {
-            id: Math.random().toString(36).substr(2, 9),
-            publishedAd: newCampaign.publishedAd!,
-            platform: newCampaign.platform as Platform,
-            assignedBudget: newCampaign.assignedBudget!,
-            taxDeducted: tax,
-            usableBudget: usable,
-            startDate: newCampaign.startDate!,
-            endDate: newCampaign.endDate!,
-            targetHours: newCampaign.targetHours!,
-            currentSpent: newCampaign.currentSpent || 0,
-            status: 'ACTIVE'
-        };
-
-        setCampaigns([campaignToCreate, ...campaigns]);
-        setIsAddModalOpen(false);
-        setNewCampaign({ publishedAd: '', platform: 'Facebook', assignedBudget: 0, startDate: '', endDate: '', targetHours: 0, currentSpent: 0 });
+        try {
+            const response = await fetch('/api/marketing/campaigns', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    publishedAd: newCampaign.publishedAd!,
+                    platform: newCampaign.platform as Platform,
+                    assignedBudget: newCampaign.assignedBudget!,
+                    taxDeducted: tax,
+                    usableBudget: usable,
+                    startDate: newCampaign.startDate!,
+                    endDate: newCampaign.endDate!,
+                    targetHours: newCampaign.targetHours!
+                })
+            });
+            if (response.ok) {
+                await fetchCampaigns();
+                setIsAddModalOpen(false);
+                setNewCampaign({ publishedAd: '', platform: 'Facebook', assignedBudget: 0, startDate: '', endDate: '', targetHours: 0, currentSpent: 0 });
+            }
+        } catch (error) {
+            alert("Error creando campaña");
+        }
     };
 
-    const handleAddSpendEntry = () => {
+    const handleAddSpendEntry = async () => {
         if (!selectedCampaignId || !newSpendEntry.date || newSpendEntry.amount <= 0) return;
-        const entry: SpendEntry = {
-            id: Math.random().toString(36).substr(2, 9),
-            date: newSpendEntry.date,
-            amount: newSpendEntry.amount
-        };
-        setCampaigns(prev => prev.map(c => {
-            if (c.id === selectedCampaignId) {
-                const newLog = [...(c.spendLog || []), entry];
-                const newTotal = newLog.reduce((acc, curr) => acc + curr.amount, 0);
-                return { ...c, spendLog: newLog, currentSpent: newTotal };
+        
+        try {
+            const response = await fetch('/api/marketing/spend', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    campaignId: selectedCampaignId,
+                    date: newSpendEntry.date,
+                    amount: newSpendEntry.amount
+                })
+            });
+            if (response.ok) {
+                await fetchCampaigns();
+                setNewSpendEntry({ date: '', amount: 0 });
             }
-            return c;
-        }));
-        setNewSpendEntry({ date: '', amount: 0 });
+        } catch (error) {
+            alert("Error añadiendo gasto");
+        }
     };
 
-    const handleDeleteSpendEntry = (entryId: string) => {
+    const handleDeleteSpendEntry = async (entryId: string) => {
         if(!confirm("¿Estás seguro de eliminar este registro de gasto?")) return;
-        setCampaigns(prev => prev.map(c => {
-            if (c.id === selectedCampaignId) {
-                const newLog = (c.spendLog || []).filter(e => e.id !== entryId);
-                const newTotal = newLog.reduce((acc, curr) => acc + curr.amount, 0);
-                return { ...c, spendLog: newLog, currentSpent: newTotal };
+        try {
+            const response = await fetch(`/api/marketing/spend/${entryId}`, {
+                method: 'DELETE'
+            });
+            if (response.ok) {
+                await fetchCampaigns();
             }
-            return c;
-        }));
+        } catch (error) {
+            alert("Error eliminando gasto");
+        }
     };
 
-    const handleEditBudget = () => {
+    const handleEditBudget = async () => {
         if (!selectedCampaign) return;
         
         const budgetDifference = editBudgetAmount - selectedCampaign.assignedBudget;
@@ -159,26 +214,37 @@ export default function MarketingDashboard() {
         const tax = editBudgetAmount * 0.15;
         const usable = editBudgetAmount - tax;
 
-        setCampaigns(prev => prev.map(c => {
-            if (c.id === selectedCampaignId) {
-                return { ...c, assignedBudget: editBudgetAmount, taxDeducted: tax, usableBudget: usable };
+        try {
+            const response = await fetch(`/api/marketing/campaigns/${selectedCampaignId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    assignedBudget: editBudgetAmount,
+                    taxDeducted: tax,
+                    usableBudget: usable
+                })
+            });
+            if (response.ok) {
+                await fetchCampaigns();
+                setIsEditBudgetModalOpen(false);
             }
-            return c;
-        }));
-        setIsEditBudgetModalOpen(false);
+        } catch (error) {
+            alert("Error actualizando presupuesto");
+        }
     };
 
-    const handleCloseCampaign = () => {
+    const handleCloseCampaign = async () => {
         if (!selectedCampaign) return;
 
         const investmentDeduction = closeStats.realBudgetDebited;
         const grossMargin = closeStats.realSales - investmentDeduction;
         const minExpectedReturn = selectedCampaign.assignedBudget;
 
-        setCampaigns(prev => prev.map(c => {
-            if (c.id === selectedCampaignId) {
-                return {
-                    ...c,
+        try {
+            const response = await fetch(`/api/marketing/campaigns/${selectedCampaignId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
                     status: 'CLOSED',
                     realEndDate: closeStats.realEndDate,
                     realSales: closeStats.realSales,
@@ -186,11 +252,15 @@ export default function MarketingDashboard() {
                     realBudgetDebited: closeStats.realBudgetDebited,
                     grossMargin,
                     minExpectedReturn
-                };
+                })
+            });
+            if (response.ok) {
+                await fetchCampaigns();
+                setIsCloseModalOpen(false);
             }
-            return c;
-        }));
-        setIsCloseModalOpen(false);
+        } catch (error) {
+            alert("Error cerrando campaña");
+        }
     };
 
     const renderPlatformIcon = (platform: Platform) => {
@@ -207,6 +277,14 @@ export default function MarketingDashboard() {
             </div>
         );
     };
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-slate-50 text-slate-900 p-8 pt-32 lg:p-16 lg:pt-32 font-sans selection:bg-blue-600/20">
@@ -239,6 +317,9 @@ export default function MarketingDashboard() {
                                 icon={Target}
                                 placeholder="Ej: 5000"
                             />
+                            <button onClick={handleUpdateMasterBudget} className="mt-4 w-full py-3 bg-blue-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 shadow-lg shadow-blue-600/30 transition-all flex items-center justify-center gap-2">
+                                <CheckCircle2 size={14} /> Guardar Maestro
+                            </button>
                         </div>
 
                         <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6">
