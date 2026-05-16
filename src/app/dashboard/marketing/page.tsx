@@ -84,8 +84,8 @@ export default function MarketingDashboard() {
     const fetchCampaigns = async () => {
         try {
             const [budgetRes, campaignsRes] = await Promise.all([
-                fetch('/api/marketing/budget'),
-                fetch('/api/marketing/campaigns')
+                fetch('/api/marketing/budget', { cache: 'no-store' }),
+                fetch('/api/marketing/campaigns', { cache: 'no-store' })
             ]);
             if (budgetRes.ok) {
                 const budgetData = await budgetRes.json();
