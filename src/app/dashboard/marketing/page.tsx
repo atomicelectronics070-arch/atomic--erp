@@ -52,6 +52,7 @@ export default function MarketingDashboard() {
     // Modals state
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+    const [isEditBudgetModalOpen, setIsEditBudgetModalOpen] = useState(false);
     const [isCloseModalOpen, setIsCloseModalOpen] = useState(false);
     
     const [selectedCampaignId, setSelectedCampaignId] = useState<string | null>(null);
@@ -69,6 +70,7 @@ export default function MarketingDashboard() {
 
     const [updateSpent, setUpdateSpent] = useState<number>(0);
     const [newSpendEntry, setNewSpendEntry] = useState<{date: string, amount: number}>({ date: '', amount: 0 });
+    const [editBudgetAmount, setEditBudgetAmount] = useState<number>(0);
     
     const [closeStats, setCloseStats] = useState({
         realEndDate: '',
@@ -142,6 +144,28 @@ export default function MarketingDashboard() {
             }
             return c;
         }));
+    };
+
+    const handleEditBudget = () => {
+        if (!selectedCampaign) return;
+        
+        const budgetDifference = editBudgetAmount - selectedCampaign.assignedBudget;
+        
+        if (budgetDifference > availableBudget) {
+            alert("No puedes exceder el presupuesto maestro disponible.");
+            return;
+        }
+
+        const tax = editBudgetAmount * 0.15;
+        const usable = editBudgetAmount - tax;
+
+        setCampaigns(prev => prev.map(c => {
+            if (c.id === selectedCampaignId) {
+                return { ...c, assignedBudget: editBudgetAmount, taxDeducted: tax, usableBudget: usable };
+            }
+            return c;
+        }));
+        setIsEditBudgetModalOpen(false);
     };
 
     const handleCloseCampaign = () => {
@@ -277,7 +301,14 @@ export default function MarketingDashboard() {
                                     {/* Budget Breakdown */}
                                     <div className="bg-slate-50 rounded-xl p-5 border border-slate-100">
                                         <div className="flex justify-between items-center mb-4 pb-4 border-b border-slate-200">
-                                            <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Presupuesto Asignado</span>
+                                            <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                                                Presupuesto Asignado
+                                                {campaign.status === 'ACTIVE' && (
+                                                    <button onClick={() => { setSelectedCampaignId(campaign.id); setEditBudgetAmount(campaign.assignedBudget); setIsEditBudgetModalOpen(true); }} className="p-1 bg-slate-200 hover:bg-blue-100 text-slate-500 hover:text-blue-600 rounded transition-colors" title="Editar Presupuesto">
+                                                        <Edit size={12} />
+                                                    </button>
+                                                )}
+                                            </span>
                                             <span className="font-black text-slate-800">${campaign.assignedBudget.toFixed(2)}</span>
                                         </div>
                                         <div className="flex justify-between items-center mb-2">
@@ -556,6 +587,44 @@ export default function MarketingDashboard() {
                                     <p className="text-xl font-black text-slate-800">${selectedCampaign.currentSpent.toFixed(2)}</p>
                                 </div>
                                 <button onClick={() => setIsUpdateModalOpen(false)} className="px-8 py-3 bg-slate-900 text-white text-xs font-black uppercase tracking-widest hover:bg-blue-600 rounded-xl shadow-lg transition-all">Cerrar</button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+
+                {/* EDIT BUDGET MODAL */}
+                {isEditBudgetModalOpen && selectedCampaign && (
+                    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+                        <motion.div 
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            className="w-full max-w-md bg-white rounded-[2rem] shadow-2xl border border-slate-200 overflow-hidden"
+                        >
+                            <div className="bg-slate-100 p-8 text-center border-b border-slate-200">
+                                <DollarSign size={32} className="text-blue-600 mx-auto mb-4" />
+                                <h3 className="text-lg font-black uppercase tracking-widest text-slate-800 italic">Modificar Presupuesto</h3>
+                                <p className="text-xs text-slate-500 font-bold mt-2 uppercase tracking-widest">{selectedCampaign.publishedAd}</p>
+                            </div>
+                            <div className="p-8">
+                                <CyberInput 
+                                    label="Nuevo Presupuesto Asignado (Bruto)" 
+                                    type="number"
+                                    value={editBudgetAmount || ''} 
+                                    onChange={(v) => setEditBudgetAmount(Number(v))} 
+                                />
+                                <div className="mt-4 flex justify-between items-center bg-blue-50 p-4 rounded-xl border border-blue-100">
+                                    <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest">Nueva Reserva IVA</span>
+                                    <span className="font-black text-red-500 text-sm">-${(editBudgetAmount * 0.15).toFixed(2)}</span>
+                                </div>
+                                <div className="mt-2 flex justify-between items-center bg-blue-600 p-4 rounded-xl text-white shadow-lg">
+                                    <span className="text-[10px] font-black uppercase tracking-widest">Nueva Inversión Neta</span>
+                                    <span className="font-black text-lg">${(editBudgetAmount * 0.85).toFixed(2)}</span>
+                                </div>
+                            </div>
+                            <div className="p-6 border-t border-slate-200 flex gap-4">
+                                <button onClick={() => setIsEditBudgetModalOpen(false)} className="flex-1 py-4 text-xs font-black uppercase tracking-widest text-slate-500 hover:bg-slate-100 transition-colors rounded-xl">Cancelar</button>
+                                <button onClick={handleEditBudget} className="flex-1 py-4 bg-blue-600 text-white text-xs font-black uppercase tracking-widest hover:bg-blue-700 shadow-lg shadow-blue-600/30 transition-all rounded-xl">Guardar Cambios</button>
                             </div>
                         </motion.div>
                     </div>
