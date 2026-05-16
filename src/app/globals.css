@@ -4,7 +4,7 @@
 /* ── Global Scale Reduction ── */
 html {
   font-size: 100%;
-  overflow-x: hidden; /* Hides the invisible right gap caused by body zoom */
+  overflow: hidden;
 }
 
 @theme {
@@ -45,10 +45,10 @@ body {
   font-family: var(--font-sans);
   accent-color: var(--primary);
   letter-spacing: 0.01em;
-  min-height: 133.34vh;
+  min-height: 100vh;
   -webkit-font-smoothing: antialiased;
-  zoom: 0.75;
-  width: 133.34vw; /* 100vw / 0.75 — fills full viewport when zoomed at 75% */
+  margin: 0;
+  padding: 0;
 }
 
 /* ── Glass panel (Light) ── */
