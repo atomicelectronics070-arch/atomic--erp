@@ -476,11 +476,16 @@ export default function MarketingDashboard() {
                                                     <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest flex items-center gap-2">
                                                         <TrendingUp size={12} /> Gasto Neto (Plataforma)
                                                     </span>
-                                                    <div className="text-right">
-                                                        <span className={`font-black text-xl ${campaign.currentSpent > campaign.usableBudget ? 'text-red-500' : 'text-slate-800'}`}>
-                                                            ${campaign.currentSpent.toFixed(2)}
+                                                    <div className="text-right flex flex-col items-end">
+                                                        <div>
+                                                            <span className={`font-black text-xl ${campaign.currentSpent > campaign.usableBudget ? 'text-red-500' : 'text-slate-800'}`}>
+                                                                ${campaign.currentSpent.toFixed(2)}
+                                                            </span>
+                                                            <span className="text-[10px] text-slate-400 font-bold ml-1">/ ${campaign.usableBudget.toFixed(2)}</span>
+                                                        </div>
+                                                        <span className={`text-[9px] font-black uppercase tracking-widest mt-1 ${campaign.usableBudget - campaign.currentSpent < 0 ? 'text-red-500' : 'text-emerald-600'}`}>
+                                                            Restante: ${(campaign.usableBudget - campaign.currentSpent).toFixed(2)}
                                                         </span>
-                                                        <span className="text-[10px] text-slate-400 font-bold ml-1">/ ${campaign.usableBudget.toFixed(2)}</span>
                                                     </div>
                                                 </div>
                                                 <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
@@ -501,6 +506,12 @@ export default function MarketingDashboard() {
                                                 <div className="flex justify-between items-center mt-1">
                                                     <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Límite Total Asignado</span>
                                                     <span className="font-bold text-xs text-slate-600">${campaign.assignedBudget.toFixed(2)}</span>
+                                                </div>
+                                                <div className="flex justify-between items-center mt-2 pt-2 border-t border-red-100">
+                                                    <span className="text-[9px] font-black text-indigo-600 uppercase tracking-widest">Presupuesto Restante (Bruto)</span>
+                                                    <span className={`font-black text-sm ${campaign.assignedBudget - (campaign.currentSpent * 1.15) < 0 ? 'text-red-600' : 'text-indigo-600'}`}>
+                                                        ${(campaign.assignedBudget - (campaign.currentSpent * 1.15)).toFixed(2)}
+                                                    </span>
                                                 </div>
                                             </div>
 
