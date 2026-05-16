@@ -661,6 +661,12 @@ export default function CRMHistoricosPage() {
                                                 </div>
                                             </div>
                                         )}
+
+                                        <div className="flex justify-end pt-6 border-t border-slate-200 mt-8">
+                                            <button onClick={handleSaveClient} className="px-8 py-4 bg-[#0F172A] text-white hover:bg-[#1E293B] font-black text-sm uppercase tracking-widest rounded-xl transition-all shadow-lg flex items-center gap-3">
+                                                <Save size={18} /> GUARDAR CLIENTE
+                                            </button>
+                                        </div>
                                     </div>
                                 )}
 
