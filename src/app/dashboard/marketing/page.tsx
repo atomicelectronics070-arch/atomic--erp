@@ -443,58 +443,68 @@ export default function MarketingDashboard() {
 
                                 <div className="space-y-6 flex-1">
                                     {/* Budget Breakdown & Real-time Spend */}
-                                    <div className="bg-slate-50 rounded-xl p-5 border border-slate-100">
-                                        <div className="flex justify-between items-center mb-4 pb-4 border-b border-slate-200">
-                                            <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
-                                                Presupuesto Asignado
-                                                {campaign.status === 'ACTIVE' && (
-                                                    <button onClick={() => { setSelectedCampaignId(campaign.id); setEditBudgetAmount(campaign.assignedBudget); setIsEditBudgetModalOpen(true); }} className="p-1 bg-slate-200 hover:bg-blue-100 text-slate-500 hover:text-blue-600 rounded transition-colors" title="Editar Presupuesto">
-                                                        <Edit size={12} />
+                                    {(() => {
+                                        const isClosed = campaign.status === 'CLOSED';
+                                        const grossSpent = isClosed ? (campaign.realBudgetDebited || 0) : (campaign.currentSpent * 1.15);
+                                        const netSpent = isClosed ? (grossSpent / 1.15) : campaign.currentSpent;
+                                        const ivaSpent = grossSpent - netSpent;
+                                        const remaining = campaign.assignedBudget - grossSpent;
+
+                                        return (
+                                            <div className="bg-slate-50 rounded-xl p-5 border border-slate-100">
+                                                <div className="flex justify-between items-center mb-4 pb-4 border-b border-slate-200">
+                                                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                                                        Presupuesto Asignado
+                                                        {!isClosed && (
+                                                            <button onClick={() => { setSelectedCampaignId(campaign.id); setEditBudgetAmount(campaign.assignedBudget); setIsEditBudgetModalOpen(true); }} className="p-1 bg-slate-200 hover:bg-blue-100 text-slate-500 hover:text-blue-600 rounded transition-colors" title="Editar Presupuesto">
+                                                                <Edit size={12} />
+                                                            </button>
+                                                        )}
+                                                    </span>
+                                                    <span className="font-black text-slate-800">${campaign.assignedBudget.toFixed(2)}</span>
+                                                </div>
+                                                <div className="space-y-2 mb-4">
+                                                    <div className="flex justify-between items-center">
+                                                        <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Gasto Neto (Plataforma)</span>
+                                                        <span className="font-bold text-slate-600 text-sm">${netSpent.toFixed(2)}</span>
+                                                    </div>
+                                                    <div className="flex justify-between items-center">
+                                                        <span className="text-[9px] font-bold text-red-500/70 uppercase tracking-widest">+ IVA (15%) Generado</span>
+                                                        <span className="font-bold text-red-500 text-sm">${ivaSpent.toFixed(2)}</span>
+                                                    </div>
+                                                    <div className="flex justify-between items-center pt-2 border-t border-slate-200">
+                                                        <span className="text-[9px] font-black text-blue-600 uppercase tracking-widest">Gasto Total Acumulado</span>
+                                                        <span className="font-black text-blue-600 text-lg">${grossSpent.toFixed(2)}</span>
+                                                    </div>
+                                                </div>
+                                                
+                                                {/* Progress Bar */}
+                                                <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden mb-3">
+                                                    <div 
+                                                        className={`h-full ${isClosed ? 'bg-slate-400' : (grossSpent > campaign.assignedBudget ? 'bg-red-500' : 'bg-blue-500')}`} 
+                                                        style={{ width: `${Math.min((grossSpent / campaign.assignedBudget) * 100, 100)}%` }}
+                                                    />
+                                                </div>
+                                                
+                                                {/* Restante */}
+                                                <div className="flex justify-between items-center mb-4">
+                                                    <span className="text-[10px] font-black text-indigo-600 uppercase tracking-widest">Restante Total</span>
+                                                    <span className={`font-black text-sm ${remaining < 0 ? 'text-red-600' : 'text-indigo-600'}`}>
+                                                        ${remaining.toFixed(2)}
+                                                    </span>
+                                                </div>
+
+                                                {!isClosed && (
+                                                    <button 
+                                                        onClick={() => { setSelectedCampaignId(campaign.id); setUpdateSpent(campaign.currentSpent); setIsUpdateModalOpen(true); }}
+                                                        className="text-[10px] font-black text-blue-600 hover:text-blue-800 uppercase tracking-widest underline decoration-blue-600/30 underline-offset-4 w-full text-left"
+                                                    >
+                                                        Actualizar gasto en tiempo real
                                                     </button>
                                                 )}
-                                            </span>
-                                            <span className="font-black text-slate-800">${campaign.assignedBudget.toFixed(2)}</span>
-                                        </div>
-                                        <div className="space-y-2 mb-4">
-                                            <div className="flex justify-between items-center">
-                                                <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Gasto Neto (Plataforma)</span>
-                                                <span className="font-bold text-slate-600 text-sm">${campaign.currentSpent.toFixed(2)}</span>
                                             </div>
-                                            <div className="flex justify-between items-center">
-                                                <span className="text-[9px] font-bold text-red-500/70 uppercase tracking-widest">+ IVA (15%) Generado</span>
-                                                <span className="font-bold text-red-500 text-sm">${(campaign.currentSpent * 0.15).toFixed(2)}</span>
-                                            </div>
-                                            <div className="flex justify-between items-center pt-2 border-t border-slate-200">
-                                                <span className="text-[9px] font-black text-blue-600 uppercase tracking-widest">Gasto Total Acumulado</span>
-                                                <span className="font-black text-blue-600 text-lg">${(campaign.currentSpent * 1.15).toFixed(2)}</span>
-                                            </div>
-                                        </div>
-                                        
-                                        {/* Progress Bar */}
-                                        <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden mb-3">
-                                            <div 
-                                                className={`h-full ${campaign.status === 'CLOSED' ? 'bg-slate-400' : (campaign.currentSpent * 1.15 > campaign.assignedBudget ? 'bg-red-500' : 'bg-blue-500')}`} 
-                                                style={{ width: `${Math.min(((campaign.currentSpent * 1.15) / campaign.assignedBudget) * 100, 100)}%` }}
-                                            />
-                                        </div>
-                                        
-                                        {/* Restante */}
-                                        <div className="flex justify-between items-center mb-4">
-                                            <span className="text-[10px] font-black text-indigo-600 uppercase tracking-widest">Restante Total</span>
-                                            <span className={`font-black text-sm ${campaign.assignedBudget - (campaign.currentSpent * 1.15) < 0 ? 'text-red-600' : 'text-indigo-600'}`}>
-                                                ${(campaign.assignedBudget - (campaign.currentSpent * 1.15)).toFixed(2)}
-                                            </span>
-                                        </div>
-
-                                        {campaign.status === 'ACTIVE' && (
-                                            <button 
-                                                onClick={() => { setSelectedCampaignId(campaign.id); setUpdateSpent(campaign.currentSpent); setIsUpdateModalOpen(true); }}
-                                                className="text-[10px] font-black text-blue-600 hover:text-blue-800 uppercase tracking-widest underline decoration-blue-600/30 underline-offset-4 w-full text-left"
-                                            >
-                                                Actualizar gasto en tiempo real
-                                            </button>
-                                        )}
-                                    </div>
+                                        );
+                                    })()}
 
                                     {/* Dates & Hours */}
                                     <div className="grid grid-cols-2 gap-4 mt-6">
