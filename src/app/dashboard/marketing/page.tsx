@@ -15,6 +15,12 @@ import {
 
 type Platform = 'Facebook' | 'WhatsApp' | 'Instagram' | 'TikTok';
 
+export interface SpendEntry {
+    id: string;
+    date: string;
+    amount: number;
+}
+
 interface Campaign {
     id: string;
     publishedAd: string;
@@ -26,6 +32,7 @@ interface Campaign {
     endDate: string;
     targetHours: number;
     currentSpent: number;
+    spendLog?: SpendEntry[];
     status: 'ACTIVE' | 'CLOSED';
     
     // Closed Stats
@@ -61,6 +68,7 @@ export default function MarketingDashboard() {
     });
 
     const [updateSpent, setUpdateSpent] = useState<number>(0);
+    const [newSpendEntry, setNewSpendEntry] = useState<{date: string, amount: number}>({ date: '', amount: 0 });
     
     const [closeStats, setCloseStats] = useState({
         realEndDate: '',
@@ -106,14 +114,34 @@ export default function MarketingDashboard() {
         setNewCampaign({ publishedAd: '', platform: 'Facebook', assignedBudget: 0, startDate: '', endDate: '', targetHours: 0, currentSpent: 0 });
     };
 
-    const handleUpdateSpent = () => {
+    const handleAddSpendEntry = () => {
+        if (!selectedCampaignId || !newSpendEntry.date || newSpendEntry.amount <= 0) return;
+        const entry: SpendEntry = {
+            id: Math.random().toString(36).substr(2, 9),
+            date: newSpendEntry.date,
+            amount: newSpendEntry.amount
+        };
         setCampaigns(prev => prev.map(c => {
             if (c.id === selectedCampaignId) {
-                return { ...c, currentSpent: updateSpent };
+                const newLog = [...(c.spendLog || []), entry];
+                const newTotal = newLog.reduce((acc, curr) => acc + curr.amount, 0);
+                return { ...c, spendLog: newLog, currentSpent: newTotal };
             }
             return c;
         }));
-        setIsUpdateModalOpen(false);
+        setNewSpendEntry({ date: '', amount: 0 });
+    };
+
+    const handleDeleteSpendEntry = (entryId: string) => {
+        if(!confirm("¿Estás seguro de eliminar este registro de gasto?")) return;
+        setCampaigns(prev => prev.map(c => {
+            if (c.id === selectedCampaignId) {
+                const newLog = (c.spendLog || []).filter(e => e.id !== entryId);
+                const newTotal = newLog.reduce((acc, curr) => acc + curr.amount, 0);
+                return { ...c, spendLog: newLog, currentSpent: newTotal };
+            }
+            return c;
+        }));
     };
 
     const handleCloseCampaign = () => {
@@ -264,24 +292,40 @@ export default function MarketingDashboard() {
 
                                     {/* Real-time Spend Progress */}
                                     {campaign.status === 'ACTIVE' && (
-                                        <div className="space-y-3">
-                                            <div className="flex justify-between items-end">
-                                                <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest flex items-center gap-2">
-                                                    <TrendingUp size={12} /> Gasto Actual
-                                                </span>
-                                                <div className="text-right">
-                                                    <span className={`font-black text-xl ${campaign.currentSpent > campaign.usableBudget ? 'text-red-500' : 'text-slate-800'}`}>
-                                                        ${campaign.currentSpent.toFixed(2)}
+                                        <div className="space-y-4">
+                                            <div className="space-y-2">
+                                                <div className="flex justify-between items-end">
+                                                    <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest flex items-center gap-2">
+                                                        <TrendingUp size={12} /> Gasto Neto (Plataforma)
                                                     </span>
-                                                    <span className="text-[10px] text-slate-400 font-bold ml-1">/ ${campaign.usableBudget.toFixed(2)}</span>
+                                                    <div className="text-right">
+                                                        <span className={`font-black text-xl ${campaign.currentSpent > campaign.usableBudget ? 'text-red-500' : 'text-slate-800'}`}>
+                                                            ${campaign.currentSpent.toFixed(2)}
+                                                        </span>
+                                                        <span className="text-[10px] text-slate-400 font-bold ml-1">/ ${campaign.usableBudget.toFixed(2)}</span>
+                                                    </div>
+                                                </div>
+                                                <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                                                    <div 
+                                                        className={`h-full ${campaign.currentSpent > campaign.usableBudget ? 'bg-red-500' : 'bg-blue-500'}`} 
+                                                        style={{ width: `${Math.min((campaign.currentSpent / campaign.usableBudget) * 100, 100)}%` }}
+                                                    />
                                                 </div>
                                             </div>
-                                            <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-                                                <div 
-                                                    className={`h-full ${campaign.currentSpent > campaign.usableBudget ? 'bg-red-500' : 'bg-blue-500'}`} 
-                                                    style={{ width: `${Math.min((campaign.currentSpent / campaign.usableBudget) * 100, 100)}%` }}
-                                                />
+
+                                            <div className="bg-red-50/50 border border-red-100 rounded-lg p-3">
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-[9px] font-black text-red-600/70 uppercase tracking-widest">Gasto Total (+15% IVA)</span>
+                                                    <span className={`font-black text-sm ${campaign.currentSpent * 1.15 > campaign.assignedBudget ? 'text-red-600' : 'text-red-500'}`}>
+                                                        ${(campaign.currentSpent * 1.15).toFixed(2)}
+                                                    </span>
+                                                </div>
+                                                <div className="flex justify-between items-center mt-1">
+                                                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Límite Total Asignado</span>
+                                                    <span className="font-bold text-xs text-slate-600">${campaign.assignedBudget.toFixed(2)}</span>
+                                                </div>
                                             </div>
+
                                             <button 
                                                 onClick={() => { setSelectedCampaignId(campaign.id); setUpdateSpent(campaign.currentSpent); setIsUpdateModalOpen(true); }}
                                                 className="text-[10px] font-black text-blue-600 hover:text-blue-800 uppercase tracking-widest underline decoration-blue-600/30 underline-offset-4 w-full text-left mt-2"
@@ -454,25 +498,64 @@ export default function MarketingDashboard() {
                         >
                             <div className="bg-slate-100 p-8 text-center border-b border-slate-200">
                                 <TrendingUp size={32} className="text-blue-600 mx-auto mb-4" />
-                                <h3 className="text-lg font-black uppercase tracking-widest text-slate-800 italic">Gasto en Tiempo Real</h3>
+                                <h3 className="text-lg font-black uppercase tracking-widest text-slate-800 italic">Bitácora de Gastos</h3>
                                 <p className="text-xs text-slate-500 font-bold mt-2 uppercase tracking-widest">{selectedCampaign.publishedAd}</p>
                             </div>
-                            <div className="p-8">
-                                <CyberInput 
-                                    label="Gasto hasta el momento ($)" 
-                                    type="number"
-                                    value={updateSpent || ''} 
-                                    onChange={(v) => setUpdateSpent(Number(v))} 
-                                />
-                                {updateSpent > selectedCampaign.usableBudget && (
-                                    <p className="text-[10px] text-red-500 font-black uppercase mt-4 flex items-center gap-2">
-                                        <AlertCircle size={14} /> ¡Alerta! El gasto supera el neto disponible.
-                                    </p>
+                            <div className="p-8 max-h-[50vh] overflow-y-auto custom-scrollbar bg-slate-50 border-b border-slate-200">
+                                {(!selectedCampaign.spendLog || selectedCampaign.spendLog.length === 0) ? (
+                                    <p className="text-center text-slate-400 text-xs font-bold uppercase tracking-widest py-8">No hay registros aún.</p>
+                                ) : (
+                                    <div className="space-y-3">
+                                        {selectedCampaign.spendLog.map(entry => (
+                                            <div key={entry.id} className="bg-white p-4 rounded-xl border border-slate-200 flex justify-between items-center shadow-sm group">
+                                                <div>
+                                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{new Date(entry.date).toLocaleString()}</p>
+                                                    <p className="font-black text-slate-800">${entry.amount.toFixed(2)} <span className="text-[9px] text-slate-400 ml-1">(NETO)</span></p>
+                                                </div>
+                                                <div className="flex items-center gap-4">
+                                                    <div className="text-right">
+                                                        <p className="text-[9px] font-black text-red-400 uppercase tracking-widest mb-1">+ IVA</p>
+                                                        <p className="font-bold text-red-600 text-sm">${(entry.amount * 1.15).toFixed(2)}</p>
+                                                    </div>
+                                                    <button onClick={() => handleDeleteSpendEntry(entry.id)} className="p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100">
+                                                        <Trash2 size={16} />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
                                 )}
                             </div>
-                            <div className="p-6 border-t border-slate-200 flex gap-4">
-                                <button onClick={() => setIsUpdateModalOpen(false)} className="flex-1 py-4 text-xs font-black uppercase tracking-widest text-slate-500 hover:bg-slate-100 transition-colors">Cancelar</button>
-                                <button onClick={handleUpdateSpent} className="flex-1 py-4 bg-blue-600 text-white text-xs font-black uppercase tracking-widest hover:bg-blue-700 shadow-lg shadow-blue-600/30 transition-all">Actualizar</button>
+                            <div className="p-8 bg-white space-y-4">
+                                <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Registrar Nuevo Gasto</h4>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <CyberInput 
+                                        label="Fecha y Hora" 
+                                        type="datetime-local"
+                                        value={newSpendEntry.date} 
+                                        onChange={(v) => setNewSpendEntry({...newSpendEntry, date: v})} 
+                                    />
+                                    <CyberInput 
+                                        label="Gasto Neta ($)" 
+                                        type="number"
+                                        value={newSpendEntry.amount || ''} 
+                                        onChange={(v) => setNewSpendEntry({...newSpendEntry, amount: Number(v)})} 
+                                    />
+                                </div>
+                                <button 
+                                    onClick={handleAddSpendEntry} 
+                                    disabled={!newSpendEntry.date || newSpendEntry.amount <= 0}
+                                    className="w-full py-3 bg-blue-50 text-blue-600 border border-blue-200 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all disabled:opacity-50 disabled:pointer-events-none mt-2 flex items-center justify-center gap-2"
+                                >
+                                    <Plus size={14} /> Añadir a Bitácora
+                                </button>
+                            </div>
+                            <div className="p-6 border-t border-slate-200 bg-slate-50 flex justify-between items-center">
+                                <div>
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">Total Gastado Neto</p>
+                                    <p className="text-xl font-black text-slate-800">${selectedCampaign.currentSpent.toFixed(2)}</p>
+                                </div>
+                                <button onClick={() => setIsUpdateModalOpen(false)} className="px-8 py-3 bg-slate-900 text-white text-xs font-black uppercase tracking-widest hover:bg-blue-600 rounded-xl shadow-lg transition-all">Cerrar</button>
                             </div>
                         </motion.div>
                     </div>
