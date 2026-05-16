@@ -3,8 +3,7 @@
 
 /* ── Global Scale Reduction ── */
 html {
-  font-size: 60%;  /* Matches user's 60% browser zoom preference */
-  zoom: 0.6;
+  font-size: 75%; /* 12px base — scales all rem/tailwind values to ~75% */
 }
 
 @theme {
