@@ -4,6 +4,22 @@
 /* ── Global Scale Reduction ── */
 html {
   zoom: 0.75;
+  height: 100%;
+  width: 100%;
+}
+
+/* Compensate viewport-relative utility classes for the 0.75 zoom */
+.h-screen {
+  height: 133.333vh !important;
+}
+.min-h-screen {
+  min-height: 133.333vh !important;
+}
+.w-screen {
+  width: 133.333vw !important;
+}
+.min-w-screen {
+  min-width: 133.333vw !important;
 }
 
 @theme {
