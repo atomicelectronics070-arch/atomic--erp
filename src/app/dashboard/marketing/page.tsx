@@ -111,14 +111,22 @@ export default function MarketingDashboard() {
 
     // Master Calculations
     const masterTax = masterBudget * 0.15;
-    const masterUsable = masterBudget - masterTax;
+    
     const allocatedBudget = campaigns.reduce((acc, c) => {
         if (c.status === 'CLOSED') {
             return acc + (c.realBudgetDebited || 0);
         }
         return acc + c.assignedBudget;
     }, 0);
-    const availableBudget = masterUsable - allocatedBudget;
+    const availableBudget = masterBudget - allocatedBudget;
+
+    const realSpentGross = campaigns.reduce((acc, c) => {
+        if (c.status === 'CLOSED') {
+            return acc + (c.realBudgetDebited || 0);
+        }
+        return acc + (c.currentSpent * 1.15);
+    }, 0);
+    const availableReal = masterBudget - realSpentGross;
 
     const selectedCampaign = campaigns.find(c => c.id === selectedCampaignId);
 
@@ -369,21 +377,27 @@ export default function MarketingDashboard() {
                             </div>
                         </div>
 
-                        <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div className="bg-slate-100/50 p-6 rounded-2xl border border-slate-200">
-                                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Total Declarado</p>
-                                <p className="text-3xl font-black italic text-slate-800">${masterBudget.toFixed(2)}</p>
+                        <div className="flex-1 grid grid-cols-2 xl:grid-cols-4 gap-4">
+                            <div className="bg-slate-100/50 p-5 rounded-2xl border border-slate-200">
+                                <p className="text-[9px] font-black uppercase tracking-widest text-slate-500 mb-1">Total Declarado</p>
+                                <p className="text-2xl font-black italic text-slate-800">${masterBudget.toFixed(2)}</p>
+                                <p className="text-[9px] uppercase tracking-widest mt-1 text-slate-400">Neto: ${(masterBudget / 1.15).toFixed(2)}</p>
                             </div>
-                            <div className="bg-red-50/50 p-6 rounded-2xl border border-red-100 relative overflow-hidden">
-                                <Percent className="absolute -right-4 -bottom-4 w-24 h-24 text-red-500/5" />
-                                <p className="text-[10px] font-black uppercase tracking-widest text-red-600/70 mb-2">Impuestos (15% IVA)</p>
-                                <p className="text-3xl font-black italic text-red-600">-${masterTax.toFixed(2)}</p>
+                            <div className="bg-red-50/50 p-5 rounded-2xl border border-red-100 relative overflow-hidden">
+                                <Percent className="absolute -right-4 -bottom-4 w-16 h-16 text-red-500/5" />
+                                <p className="text-[9px] font-black uppercase tracking-widest text-red-600/70 mb-1">Reserva IVA (15%)</p>
+                                <p className="text-2xl font-black italic text-red-600">-${masterTax.toFixed(2)}</p>
                             </div>
-                            <div className="bg-blue-600 p-6 rounded-2xl border border-blue-500 shadow-xl shadow-blue-600/20 text-white relative overflow-hidden">
-                                <Zap className="absolute -right-4 -bottom-4 w-24 h-24 text-white/10" />
-                                <p className="text-[10px] font-black uppercase tracking-widest text-blue-200 mb-2">Disponible Real</p>
-                                <p className="text-4xl font-black italic">${availableBudget.toFixed(2)}</p>
-                                <p className="text-[9px] uppercase tracking-widest mt-2 text-blue-200">De ${masterUsable.toFixed(2)} Utilizables</p>
+                            <div className="bg-indigo-50 p-5 rounded-2xl border border-indigo-100 text-indigo-900 relative overflow-hidden">
+                                <p className="text-[9px] font-black uppercase tracking-widest text-indigo-500 mb-1">Disponible Estimado</p>
+                                <p className="text-3xl font-black italic text-indigo-700">${availableBudget.toFixed(2)}</p>
+                                <p className="text-[8px] font-bold uppercase tracking-widest mt-1 text-indigo-400 leading-tight">Según asignaciones<br/>Neto: ${(availableBudget / 1.15).toFixed(2)}</p>
+                            </div>
+                            <div className="bg-blue-600 p-5 rounded-2xl border border-blue-500 shadow-xl shadow-blue-600/20 text-white relative overflow-hidden">
+                                <Zap className="absolute -right-2 -bottom-2 w-16 h-16 text-white/10" />
+                                <p className="text-[9px] font-black uppercase tracking-widest text-blue-200 mb-1">Disponible Real</p>
+                                <p className="text-3xl font-black italic">${availableReal.toFixed(2)}</p>
+                                <p className="text-[8px] font-bold uppercase tracking-widest mt-1 text-blue-200 leading-tight">Fondos actuales en banco<br/>Neto: ${(availableReal / 1.15).toFixed(2)}</p>
                             </div>
                         </div>
                     </div>
