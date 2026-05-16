@@ -136,6 +136,21 @@ export default function MarketingDashboard() {
         }
     };
 
+    const handleArchiveMasterBudget = async () => {
+        if (!confirm("¿Deseas archivar la meta actual y reiniciar el presupuesto maestro a $0?")) return;
+        try {
+            await fetch('/api/marketing/budget', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ totalAmount: 0 })
+            });
+            setMasterBudget(0);
+            alert("Presupuesto archivado y reiniciado a $0");
+        } catch (error) {
+            alert("Error al reiniciar presupuesto");
+        }
+    };
+
     const handleAddCampaign = async () => {
         if (masterBudget <= 0) {
             alert("¡Alto ahí! Primero debes ingresar y 'Guardar' el Presupuesto Maestro antes de crear campañas.");
@@ -172,6 +187,23 @@ export default function MarketingDashboard() {
             }
         } catch (error) {
             alert("Error creando campaña");
+        }
+    };
+
+    const handleDeleteCampaign = async (campaignId: string) => {
+        if (!confirm("¿Estás seguro de eliminar completamente esta campaña? Esta acción no se puede deshacer.")) return;
+        
+        try {
+            const response = await fetch(`/api/marketing/campaigns/${campaignId}`, {
+                method: 'DELETE'
+            });
+            if (response.ok) {
+                await fetchCampaigns();
+            } else {
+                alert("Error eliminando campaña");
+            }
+        } catch (error) {
+            alert("Error eliminando campaña");
         }
     };
 
@@ -327,9 +359,14 @@ export default function MarketingDashboard() {
                                 icon={Target}
                                 placeholder="Ej: 5000"
                             />
-                            <button onClick={handleUpdateMasterBudget} className="mt-4 w-full py-3 bg-blue-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 shadow-lg shadow-blue-600/30 transition-all flex items-center justify-center gap-2">
-                                <CheckCircle2 size={14} /> Guardar Maestro
-                            </button>
+                            <div className="flex gap-2 mt-4">
+                                <button onClick={handleUpdateMasterBudget} className="flex-1 py-3 bg-blue-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 shadow-lg shadow-blue-600/30 transition-all flex items-center justify-center gap-2">
+                                    <CheckCircle2 size={14} /> Guardar Maestro
+                                </button>
+                                <button onClick={handleArchiveMasterBudget} className="px-4 py-3 bg-slate-100 text-slate-500 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-200 hover:text-red-500 transition-all flex items-center justify-center" title="Archivar/Reiniciar Meta a 0">
+                                    <Trash2 size={14} />
+                                </button>
+                            </div>
                         </div>
 
                         <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -383,8 +420,13 @@ export default function MarketingDashboard() {
                                             <p className="text-[10px] text-slate-500 font-bold tracking-widest uppercase mt-2">{campaign.platform}</p>
                                         </div>
                                     </div>
-                                    <div className={`px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${campaign.status === 'ACTIVE' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-600'}`}>
-                                        {campaign.status}
+                                    <div className="flex items-center gap-3">
+                                        <div className={`px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${campaign.status === 'ACTIVE' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-600'}`}>
+                                            {campaign.status}
+                                        </div>
+                                        <button onClick={() => handleDeleteCampaign(campaign.id)} className="text-slate-300 hover:text-red-500 transition-colors" title="Eliminar Campaña">
+                                            <Trash2 size={16} />
+                                        </button>
                                     </div>
                                 </div>
 
