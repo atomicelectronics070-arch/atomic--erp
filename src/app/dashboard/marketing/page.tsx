@@ -112,7 +112,12 @@ export default function MarketingDashboard() {
     // Master Calculations
     const masterTax = masterBudget * 0.15;
     const masterUsable = masterBudget - masterTax;
-    const allocatedBudget = campaigns.reduce((acc, c) => acc + c.assignedBudget, 0);
+    const allocatedBudget = campaigns.reduce((acc, c) => {
+        if (c.status === 'CLOSED') {
+            return acc + (c.realBudgetDebited || 0);
+        }
+        return acc + c.assignedBudget;
+    }, 0);
     const availableBudget = masterUsable - allocatedBudget;
 
     const selectedCampaign = campaigns.find(c => c.id === selectedCampaignId);
@@ -132,8 +137,13 @@ export default function MarketingDashboard() {
     };
 
     const handleAddCampaign = async () => {
+        if (masterBudget <= 0) {
+            alert("¡Alto ahí! Primero debes ingresar y 'Guardar' el Presupuesto Maestro antes de crear campañas.");
+            return;
+        }
+
         if (newCampaign.assignedBudget! > availableBudget) {
-            alert("No puedes exceder el presupuesto maestro disponible.");
+            alert(`No puedes exceder el presupuesto maestro disponible. Tienes $${availableBudget.toFixed(2)} disponibles.`);
             return;
         }
 
