@@ -82,7 +82,7 @@ export default function DashboardLayout({
     }
 
     return (
-        <div className="flex h-screen bg-[#F8FAFC] text-[#0F172A] overflow-hidden font-sans relative selection:bg-[#1E3A8A]/10 selection:text-[#1E3A8A]">
+        <div className="flex h-screen bg-[#F8FAFC] text-[#0F172A] overflow-x-hidden font-sans relative selection:bg-[#1E3A8A]/10 selection:text-[#1E3A8A]">
             
             {/* Sidebar Overlay for Mobile */}
             <AnimatePresence>
@@ -231,7 +231,7 @@ export default function DashboardLayout({
             </aside>
 
             {/* Main Content */}
-            <main className={`flex-1 flex flex-col h-full overflow-hidden relative z-10 transition-all duration-500 lg:ml-64`}>
+            <main className={`flex-1 flex flex-col h-full overflow-y-auto overflow-x-hidden relative z-10 transition-all duration-500 lg:ml-64`}>
                 {/* Header */}
                 <header className="h-16 lg:h-20 bg-white border-b border-slate-200 flex items-center justify-between px-6 lg:px-10 shrink-0 z-50 shadow-sm">
                     <div className="flex items-center space-x-6">
