@@ -114,17 +114,15 @@ export default function MarketingDashboard() {
     
     const allocatedBudget = campaigns.reduce((acc, c) => {
         if (c.status === 'CLOSED') {
-            return acc + (c.realBudgetDebited || 0);
+            return acc + ((c.realBudgetDebited || 0) * 1.15); // Treated as NET, converted to GROSS
         }
         return acc + c.assignedBudget;
     }, 0);
     const availableBudget = masterBudget - allocatedBudget;
 
     const realSpentGross = campaigns.reduce((acc, c) => {
-        if (c.status === 'CLOSED') {
-            return acc + (c.realBudgetDebited || 0);
-        }
-        return acc + (c.currentSpent * 1.15);
+        const netSpent = c.status === 'CLOSED' ? (c.realBudgetDebited || 0) : c.currentSpent;
+        return acc + (netSpent * 1.15);
     }, 0);
     const availableReal = masterBudget - realSpentGross;
 
@@ -445,9 +443,10 @@ export default function MarketingDashboard() {
                                     {/* Budget Breakdown & Real-time Spend */}
                                     {(() => {
                                         const isClosed = campaign.status === 'CLOSED';
-                                        const grossSpent = isClosed ? (campaign.realBudgetDebited || 0) : (campaign.currentSpent * 1.15);
-                                        const netSpent = isClosed ? (grossSpent / 1.15) : campaign.currentSpent;
-                                        const ivaSpent = grossSpent - netSpent;
+                                        // realBudgetDebited is what user typed at close = NET spend
+                                        const netSpent = isClosed ? (campaign.realBudgetDebited || 0) : campaign.currentSpent;
+                                        const grossSpent = netSpent * 1.15;
+                                        const ivaSpent = netSpent * 0.15;
                                         const remaining = campaign.assignedBudget - grossSpent;
 
                                         return (
