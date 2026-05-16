@@ -469,60 +469,64 @@ export default function MarketingDashboard() {
                                     </div>
 
                                     {/* Real-time Spend Progress */}
-                                    {campaign.status === 'ACTIVE' && (
-                                        <div className="space-y-4">
-                                            <div className="space-y-2">
-                                                <div className="flex justify-between items-end">
-                                                    <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest flex items-center gap-2">
-                                                        <TrendingUp size={12} /> Gasto Neto (Plataforma)
-                                                    </span>
-                                                    <div className="text-right flex flex-col items-end">
-                                                        <div>
-                                                            <span className={`font-black text-xl ${campaign.currentSpent > campaign.usableBudget ? 'text-red-500' : 'text-slate-800'}`}>
-                                                                ${campaign.currentSpent.toFixed(2)}
-                                                            </span>
-                                                            <span className="text-[10px] text-slate-400 font-bold ml-1">/ ${campaign.usableBudget.toFixed(2)}</span>
-                                                        </div>
+                                    <div className="space-y-4">
+                                        <div className="space-y-2">
+                                            <div className="flex justify-between items-end">
+                                                <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest flex items-center gap-2">
+                                                    <TrendingUp size={12} /> {campaign.status === 'ACTIVE' ? 'Gasto Neto (Plataforma)' : 'Gasto Neto Final'}
+                                                </span>
+                                                <div className="text-right flex flex-col items-end">
+                                                    <div>
+                                                        <span className={`font-black text-xl ${campaign.currentSpent > campaign.usableBudget ? 'text-red-500' : 'text-slate-800'}`}>
+                                                            ${campaign.currentSpent.toFixed(2)}
+                                                        </span>
+                                                        <span className="text-[10px] text-slate-400 font-bold ml-1">/ ${campaign.usableBudget.toFixed(2)}</span>
+                                                    </div>
+                                                    {campaign.status === 'ACTIVE' && (
                                                         <span className={`text-[9px] font-black uppercase tracking-widest mt-1 ${campaign.usableBudget - campaign.currentSpent < 0 ? 'text-red-500' : 'text-emerald-600'}`}>
                                                             Restante: ${(campaign.usableBudget - campaign.currentSpent).toFixed(2)}
                                                         </span>
-                                                    </div>
-                                                </div>
-                                                <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-                                                    <div 
-                                                        className={`h-full ${campaign.currentSpent > campaign.usableBudget ? 'bg-red-500' : 'bg-blue-500'}`} 
-                                                        style={{ width: `${Math.min((campaign.currentSpent / campaign.usableBudget) * 100, 100)}%` }}
-                                                    />
+                                                    )}
                                                 </div>
                                             </div>
+                                            <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                                                <div 
+                                                    className={`h-full ${campaign.status === 'CLOSED' ? 'bg-slate-400' : (campaign.currentSpent > campaign.usableBudget ? 'bg-red-500' : 'bg-blue-500')}`} 
+                                                    style={{ width: `${Math.min((campaign.currentSpent / campaign.usableBudget) * 100, 100)}%` }}
+                                                />
+                                            </div>
+                                        </div>
 
-                                            <div className="bg-red-50/50 border border-red-100 rounded-lg p-3">
-                                                <div className="flex justify-between items-center">
-                                                    <span className="text-[9px] font-black text-red-600/70 uppercase tracking-widest">Gasto Total (+15% IVA)</span>
-                                                    <span className={`font-black text-sm ${campaign.currentSpent * 1.15 > campaign.assignedBudget ? 'text-red-600' : 'text-red-500'}`}>
-                                                        ${(campaign.currentSpent * 1.15).toFixed(2)}
-                                                    </span>
-                                                </div>
-                                                <div className="flex justify-between items-center mt-1">
-                                                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Límite Total Asignado</span>
-                                                    <span className="font-bold text-xs text-slate-600">${campaign.assignedBudget.toFixed(2)}</span>
-                                                </div>
+                                        <div className="bg-red-50/50 border border-red-100 rounded-lg p-3">
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-[9px] font-black text-red-600/70 uppercase tracking-widest">Gasto Total (+15% IVA)</span>
+                                                <span className={`font-black text-sm ${campaign.currentSpent * 1.15 > campaign.assignedBudget ? 'text-red-600' : 'text-red-500'}`}>
+                                                    ${(campaign.currentSpent * 1.15).toFixed(2)}
+                                                </span>
+                                            </div>
+                                            <div className="flex justify-between items-center mt-1">
+                                                <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Límite Total Asignado</span>
+                                                <span className="font-bold text-xs text-slate-600">${campaign.assignedBudget.toFixed(2)}</span>
+                                            </div>
+                                            {campaign.status === 'ACTIVE' && (
                                                 <div className="flex justify-between items-center mt-2 pt-2 border-t border-red-100">
                                                     <span className="text-[9px] font-black text-indigo-600 uppercase tracking-widest">Presupuesto Restante (Bruto)</span>
                                                     <span className={`font-black text-sm ${campaign.assignedBudget - (campaign.currentSpent * 1.15) < 0 ? 'text-red-600' : 'text-indigo-600'}`}>
                                                         ${(campaign.assignedBudget - (campaign.currentSpent * 1.15)).toFixed(2)}
                                                     </span>
                                                 </div>
-                                            </div>
+                                            )}
+                                        </div>
 
+                                        {campaign.status === 'ACTIVE' && (
                                             <button 
                                                 onClick={() => { setSelectedCampaignId(campaign.id); setUpdateSpent(campaign.currentSpent); setIsUpdateModalOpen(true); }}
                                                 className="text-[10px] font-black text-blue-600 hover:text-blue-800 uppercase tracking-widest underline decoration-blue-600/30 underline-offset-4 w-full text-left mt-2"
                                             >
                                                 Actualizar gasto en tiempo real
                                             </button>
-                                        </div>
-                                    )}
+                                        )}
+                                    </div>
 
                                     {/* Dates & Hours */}
                                     <div className="grid grid-cols-2 gap-4 mt-6">
