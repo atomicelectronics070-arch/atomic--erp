@@ -159,26 +159,12 @@ function drawBanner(
     ctx.font = "18px sans-serif";
     ctx.fillText("Consulta con tu asesor autorizado de confianza", 140, 1010);
 
-    // 8. Image Load
+    // 8. Dual-Loading Image strategy & High-Fidelity Blueprint Radar Fallback
     const img = new Image();
     img.crossOrigin = "anonymous";
     img.src = proxyImg(imgUrl);
 
-    img.onload = () => {
-      const padding = 50;
-      const fitW = cardW - padding * 2;
-      const fitH = cardH - padding * 2;
-      const imgW = img.width;
-      const imgH = img.height;
-      
-      const ratio = Math.min(fitW / imgW, fitH / imgH);
-      const drawW = imgW * ratio;
-      const drawH = imgH * ratio;
-      const drawX = cardX + (cardW - drawW) / 2;
-      const drawY = cardY + (cardH - drawH) / 2;
-
-      ctx.drawImage(img, drawX, drawY, drawW, drawH);
-
+    const finishDrawing = () => {
       // Price Tag Footer Panel
       const priceTagX = 140;
       const priceTagY = 770;
@@ -224,41 +210,111 @@ function drawBanner(
       }
     };
 
-    img.onerror = () => {
-      // Draw placeholder inside card
-      ctx.fillStyle = "#1E293B";
-      ctx.fillRect(cardX + 10, cardY + 10, cardW - 20, cardH - 20);
-      
-      ctx.fillStyle = "#94A3B8";
-      ctx.font = "bold 28px sans-serif";
-      ctx.textAlign = "center";
-      ctx.fillText("IMAGEN EN PROCESO", cardX + cardW/2, cardY + cardH/2);
-      ctx.textAlign = "left";
-
-      const priceTagX = 140;
-      const priceTagY = 770;
-      const priceTagW = 800;
-      const priceTagH = 120;
+    const drawPlaceholder = () => {
+      // Draw placeholder card background (Dark Slate Blue)
       ctx.fillStyle = "#1E293B";
       ctx.beginPath();
-      ctx.roundRect(priceTagX, priceTagY, priceTagW, priceTagH, 16);
+      ctx.roundRect(cardX, cardY, cardW, cardH, 24);
       ctx.fill();
 
-      ctx.fillStyle = "#FFFFFF";
-      ctx.font = "bold 26px sans-serif";
-      ctx.fillText(productName.toUpperCase(), 170, 825);
+      ctx.strokeStyle = "rgba(59, 130, 246, 0.4)";
+      ctx.lineWidth = 4;
+      ctx.stroke();
+
+      const cx = cardX + cardW / 2;
+      const cy = cardY + cardH / 2;
+
+      ctx.strokeStyle = "rgba(96, 165, 250, 0.35)";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(cx, cy, 110, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.strokeStyle = "rgba(96, 165, 250, 0.12)";
+      ctx.beginPath();
+      ctx.arc(cx, cy, 160, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, 60, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.strokeStyle = "rgba(96, 165, 250, 0.2)";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(cx - 180, cy);
+      ctx.lineTo(cx + 180, cy);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(cx, cy - 180);
+      ctx.lineTo(cx, cy + 180);
+      ctx.stroke();
+
+      ctx.fillStyle = "#60A5FA";
+      ctx.beginPath();
+      ctx.arc(cx, cy, 8, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = "#60A5FA";
+      ctx.font = "bold 24px sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("DISPOSITIVO DE ALTO RENDIMIENTO", cx, cy + 190);
       
-      ctx.fillStyle = "#10B981";
-      ctx.font = "bold 44px sans-serif";
-      ctx.textAlign = "right";
-      ctx.fillText(price ? `$${price.toFixed(2)}` : "CONSULTAR", 910, 835);
+      ctx.fillStyle = "#94A3B8";
+      ctx.font = "bold 15px sans-serif";
+      ctx.fillText("PRODUCTO EN DISPONIBILIDAD INMEDIATA", cx, cy + 220);
       ctx.textAlign = "left";
 
-      try {
-        resolve(canvas.toDataURL("image/jpeg", 0.9));
-      } catch (e) {
-        resolve(imgUrl);
+      finishDrawing();
+    };
+
+    const drawWithImage = (loadedImg: HTMLImageElement) => {
+      const padding = 50;
+      const fitW = cardW - padding * 2;
+      const fitH = cardH - padding * 2;
+      const imgW = loadedImg.width;
+      const imgH = loadedImg.height;
+      
+      const ratio = Math.min(fitW / imgW, fitH / imgH);
+      const drawW = imgW * ratio;
+      const drawH = imgH * ratio;
+      const drawX = cardX + (cardW - drawW) / 2;
+      const drawY = cardY + (cardH - drawH) / 2;
+
+      ctx.drawImage(loadedImg, drawX, drawY, drawW, drawH);
+      finishDrawing();
+    };
+
+    const handleImageError = () => {
+      // Primary proxy load failed or returned transparent 1x1. Load DIRECTLY in client browser as fallback!
+      const fallbackImg = new Image();
+      fallbackImg.crossOrigin = "anonymous";
+      fallbackImg.src = imgUrl;
+
+      fallbackImg.onload = () => {
+        if (fallbackImg.width > 1) {
+          drawWithImage(fallbackImg);
+        } else {
+          drawPlaceholder();
+        }
+      };
+
+      fallbackImg.onerror = () => {
+        drawPlaceholder();
+      };
+    };
+
+    img.onload = () => {
+      if (img.width <= 1 || img.height <= 1) {
+        handleImageError();
+        return;
       }
+      drawWithImage(img);
+    };
+
+    img.onerror = () => {
+      handleImageError();
     };
   });
 }
