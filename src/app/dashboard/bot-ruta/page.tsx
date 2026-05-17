@@ -27,8 +27,15 @@ const safeParseArray = (str: any, fallback: any = []) => {
 
 const proxyImg = (url: string): string => {
     if (!url) return ''
-    if (url.startsWith('/api/img-proxy') || url.startsWith('/') || url.startsWith('data:')) return url
-    return `/api/img-proxy?url=${encodeURIComponent(url)}`
+    if (url.startsWith('data:')) return url
+    if (url.startsWith('/')) {
+        if (typeof window !== 'undefined') {
+            const absoluteUrl = `${window.location.origin}${url}`
+            return `https://images.weserv.nl/?url=${encodeURIComponent(absoluteUrl)}`
+        }
+        return url
+    }
+    return `https://images.weserv.nl/?url=${encodeURIComponent(url)}`
 }
 
 function drawBanner(
@@ -204,8 +211,10 @@ function drawBanner(
       ctx.textAlign = "left";
 
       try {
-        resolve(canvas.toDataURL("image/jpeg", 0.9));
+        const dataUrl = canvas.toDataURL("image/jpeg", 0.9);
+        resolve(dataUrl);
       } catch (err) {
+        console.warn("Canvas export tainted. Falling back to original raw product image:", imgUrl);
         resolve(imgUrl);
       }
     };
@@ -288,8 +297,8 @@ function drawBanner(
 
     const handleImageError = () => {
       // Primary proxy load failed or returned transparent 1x1. Load DIRECTLY in client browser as fallback!
+      // DO NOT set crossOrigin = 'anonymous' so it loads successfully even on domains without CORS headers!
       const fallbackImg = new Image();
-      fallbackImg.crossOrigin = "anonymous";
       fallbackImg.src = imgUrl;
 
       fallbackImg.onload = () => {
