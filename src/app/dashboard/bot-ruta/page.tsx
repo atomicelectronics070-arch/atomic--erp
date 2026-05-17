@@ -38,12 +38,92 @@ const proxyImg = (url: string): string => {
     return `https://images.weserv.nl/?url=${encodeURIComponent(url)}`
 }
 
+interface AdCopy {
+  cleanTitle: string;
+  adSubtitle: string;
+  adDescription: string;
+  callToAction: string;
+}
+
+const parseProductToAd = (name: string): AdCopy => {
+  const lower = name.toLowerCase();
+  
+  let cleanTitle = "";
+  let adSubtitle = "";
+  let adDescription = "";
+  let callToAction = "";
+
+  if (lower.includes("cerradura") || lower.includes("chapa") || lower.includes("digital") || lower.includes("huella")) {
+    cleanTitle = "Cerradura Digital Inteligente";
+    adSubtitle = "SEGURIDAD BIOM\u00c9TRICA DE \u00daLTIMA GENERACI\u00d3N";
+    adDescription = "Protege tu hogar o negocio con tecnolog\u00eda t\u00e1ctil y biom\u00e9trica \u00e9lite. Acceso seguro con huella digital, clave personalizada y control total desde tu celular. Olv\u00eddate de las llaves y disfruta de la tranquilidad de saber qui\u00e9n entra.";
+    callToAction = "¡M\u00c1XIMA SEGURIDAD Y CONTROL SIN LLAVES!";
+  } else if (lower.includes("portero") || lower.includes("intercom") || lower.includes("citofono") || lower.includes("timbre")) {
+    cleanTitle = "Video Portero Inteligente HD";
+    adSubtitle = "MONITOREA Y HABLA DESDE CUALQUIER LUGAR";
+    adDescription = "Observa, escucha y atiende a tus visitas directamente desde tu tel\u00e9fono en tiempo real. Equipado con visi\u00f3n nocturna inteligente, audio bidireccional de alta fidelidad y alertas inmediatas ante cualquier movimiento.";
+    callToAction = "¡ASEGURA TU ENTRADA PRINCIPAL AHORA!";
+  } else if (lower.includes("camara") || lower.includes("domo") || lower.includes("tiandy") || lower.includes("espia") || lower.includes("ip") || lower.includes("bullet")) {
+    cleanTitle = "C\u00e1mara de Seguridad Inteligente";
+    adSubtitle = "VIGILANCIA \u00c9LITE HD 24/7 EN TIEMPO REAL";
+    adDescription = "Supervisa tus espacios preferidos con claridad Full HD excepcional. Grabaci\u00f3n continua automatizada, visi\u00f3n nocturna infrarroja de largo alcance y alertas inmediatas directas a tu celular ante actividades sospechosas.";
+    callToAction = "¡TUS ESPACIOS PROTEGIDOS DESDE TU M\u00d3VIL!";
+  } else if (lower.includes("motor") || lower.includes("barrera") || lower.includes("porton") || lower.includes("automatiza")) {
+    cleanTitle = "Motor de Port\u00f3n Autom\u00e1tico";
+    adSubtitle = "AUTOMATIZACI\u00d3N RESIDENCIAL DE ALTA VELOCIDAD";
+    adDescription = "Abre tus accesos al instante de forma r\u00e1pida, silenciosa y extremadamente segura sin bajarte de tu veh\u00edculo. Sistema de alto rendimiento dise\u00f1ado para soportar uso continuo y cualquier condici\u00f3n clim\u00e1tica.";
+    callToAction = "¡AUTOMATIZA Y AGILIZA TUS ACCESOS!";
+  } else if (lower.includes("parlante") || lower.includes("altavoz") || lower.includes("sonido") || lower.includes("audio")) {
+    cleanTitle = "Parlante Pro Sound \u00c9lite";
+    adSubtitle = "POTENCIA SONORA SUPREMA Y FIDELIDAD CRISTALINA";
+    adDescription = "Lleva tus eventos y reuniones al siguiente nivel. Bajos potentes, sonido de definici\u00f3n profesional, conectividad Bluetooth estable de largo alcance, bater\u00eda recargable de alta duraci\u00f3n y luces r\u00edtmicas din\u00e1micas.";
+    callToAction = "¡VIVE EL MEJOR AUDIO DE ALTA GAMA!";
+  } else if (lower.includes("teclado") || lower.includes("mouse") || lower.includes("audifono") || lower.includes("diadema") || lower.includes("monitor")) {
+    cleanTitle = "Perif\u00e9rico Premium Ergonom\u00eda";
+    adSubtitle = "M\u00c1XIMO RENDIMIENTO Y CONFORT EN CADA CLIC";
+    adDescription = "Mejora tu productividad diaria con un dise\u00f1o de respuesta t\u00e1ctil fluida y ergonom\u00eda avanzada. Ideal para largas jornadas de trabajo, estudio o juego, fabricado con materiales de alta resistencia y durabilidad.";
+    callToAction = "¡POTENCIA TU PRODUCTIVIDAD DIARIA!";
+  } else if (lower.includes("bateria") || lower.includes("pila") || lower.includes("cargador") || lower.includes("fuente") || lower.includes("energia")) {
+    cleanTitle = "Sistema de Energ\u00eda Continua";
+    adSubtitle = "M\u00c1XIMA DURACI\u00d3N Y ESTABILIDAD ENERG\u00c9TICA";
+    adDescription = "Asegura el funcionamiento ininterrumpido de todos tus equipos cr\u00edticos de seguridad, c\u00e1maras y redes. Tecnolog\u00eda avanzada con protecci\u00f3n integrada contra picos de voltaje, cortocircuitos y sobrecalentamientos.";
+    callToAction = "¡ENERG\u00cdA GARANTIZADA SIN INTERRUPCIONES!";
+  } else if (lower.includes("antena") || lower.includes("router") || lower.includes("wifi") || lower.includes("repetidor") || lower.includes("red")) {
+    cleanTitle = "Antena / Router de Cobertura \u00c9lite";
+    adSubtitle = "SE\u00d1AL WI-FI ESTABLE DE ALTO ALCANCE";
+    adDescription = "Elimina por completo la lentitud y las zonas muertas de internet. Amplifica y estabiliza tu red Wi-Fi garantizando una transmisi\u00f3n fluida en alta definici\u00f3n, teletrabajo continuo y juegos sin interrupciones.";
+    callToAction = "¡NAVEGACI\u00d3N ULTRA VELOZ Y ESTABLE EN TODO LUGAR!";
+  } else {
+    // Elegant name cleaning fallback
+    let parsedTitle = name.toUpperCase();
+    parsedTitle = parsedTitle.replace(/^(VC|AU|SK|CAMARA|PARLANTE|BATERIA|TECLADO|CERRADURA|MOTOR|PORTERO|ANTENA)\s*-\s*/gi, "");
+    parsedTitle = parsedTitle.replace(/\(.*?\)/g, "").trim();
+    
+    // Capitalize beautifully
+    let cleaned = parsedTitle.split(' ')
+      .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+      .join(' ');
+
+    if (cleaned.length > 28) {
+      cleaned = cleaned.substring(0, 25) + "...";
+    }
+
+    cleanTitle = cleaned || "Dispositivo Tecnol\u00f3gico Atomic";
+    adSubtitle = "TECNOLOG\u00cdA DE ALTO RENDIMIENTO Y RENDIMIENTO \u00c9LITE";
+    adDescription = "Experimenta el balance perfecto entre innovaci\u00f3n de \u00faltima generaci\u00f3n, durabilidad superior y \u00f3ptima funcionalidad. Respaldado por la garant\u00eda oficial de f\u00e1brica y el soporte de Atomic Industries.";
+    callToAction = "¡CALIDAD EXCEPCIONAL ATOMIC INDUSTRIES!";
+  }
+
+  return { cleanTitle, adSubtitle, adDescription, callToAction };
+};
+
 function drawBanner(
   productName: string, 
   price: number, 
   imgUrl: string
 ): Promise<string> {
   return new Promise((resolve) => {
+    const adInfo = parseProductToAd(productName);
     const canvas = document.createElement("canvas");
     canvas.width = 1080;
     canvas.height = 1080;
@@ -162,9 +242,12 @@ function drawBanner(
     ctx.textAlign = "left";
 
     // Call to Action
+    ctx.fillStyle = "#60A5FA";
+    ctx.font = "bold 16px sans-serif";
+    ctx.fillText(adInfo.callToAction, 140, 1003);
     ctx.fillStyle = "#94A3B8";
-    ctx.font = "18px sans-serif";
-    ctx.fillText("Consulta con tu asesor autorizado de confianza", 140, 1010);
+    ctx.font = "14px sans-serif";
+    ctx.fillText("CONSULTA CON TU ASESOR AUTORIZADO DE ATOMIC INDUSTRIES", 140, 1025);
 
     // 8. Dual-Loading Image strategy & High-Fidelity Blueprint Radar Fallback
     const img = new Image();
@@ -187,16 +270,16 @@ function drawBanner(
 
       // Product Name
       ctx.fillStyle = "#FFFFFF";
-      ctx.font = "bold 26px sans-serif";
-      let displayName = productName.toUpperCase();
+      ctx.font = "bold 28px sans-serif";
+      let displayName = adInfo.cleanTitle.toUpperCase();
       if (displayName.length > 35) {
         displayName = displayName.substring(0, 32) + "...";
       }
-      ctx.fillText(displayName, 170, 825);
+      ctx.fillText(displayName, 170, 822);
       
       ctx.fillStyle = "#60A5FA";
-      ctx.font = "bold 14px sans-serif";
-      ctx.fillText("EQUIPO ESTRAT\u00c9GICO SELECCIONADO", 170, 855);
+      ctx.font = "bold 13px sans-serif";
+      ctx.fillText(adInfo.adSubtitle.toUpperCase(), 170, 855);
 
       // Price text aligned to the right
       ctx.fillStyle = "#10B981";
@@ -495,10 +578,12 @@ export default function BotRutaPage() {
       // Draw canvas-based premium advertising banner
       const generatedBannerDataUrl = await drawBanner(p.name, p.price || 0, rawImgUrl)
       
+      const adCopy = parseProductToAd(p.name);
+      
       return {
         id: p.id,
         img: generatedBannerDataUrl,
-        text: `**T\u00edtulo:** \ud83c\udf1f \u00a1S\u00faper Oferta! ${p.name} \ud83d\ude80\n**Precio:** ${priceStr}\n**Descripci\u00f3n:** Mejora la seguridad y comodidad de tu hogar o negocio con este equipo de alto rendimiento. Calidad certificada, garant\u00eda autorizada de Atomic Industries y soporte de por vida. \u00a1Aprovecha hoy!\n**Ubicaci\u00f3n:** ${randomLocation}\n**SKU:**\n**Palabras claves:** #tecnologia #seguridad #ecuador #atomicindustries #hogar #innovacion`
+        text: `**Título:** 🌟 ¡Súper Oferta! ${adCopy.cleanTitle} 🚀\n**Precio:** ${priceStr}\n**Descripción:** ${adCopy.adDescription}\n**Llamado a la Acción:** 📲 ${adCopy.callToAction}\n**Ubicación:** ${randomLocation}\n**SKU:** ${p.sku || "Disponible"}\n**Palabras claves:** #tecnologia #seguridad #ecuador #atomicindustries #hogar #innovacion`
       }
     }))
     
