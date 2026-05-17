@@ -420,7 +420,7 @@ export default function BotRutaPage() {
     const locations = ["Cumbay\u00e1, Quito", "Samborond\u00f3n, Guayaquil", "La Carolina, Quito", "Valle de los Tumbaco", "Urdesa, Guayaquil"]
     
     // Asynchronously draw gorgeous custom banners for each product
-    const ads = await Promise.all(poolProducts.map(async p => {
+    const ads = await Promise.all(poolProducts.map(async (p: any) => {
       const randomLocation = locations[Math.floor(Math.random() * locations.length)]
       const priceStr = p.price ? `$${p.price.toFixed(2)}` : "Consultar precio"
       
