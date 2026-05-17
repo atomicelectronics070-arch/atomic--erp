@@ -55,7 +55,8 @@ export async function POST(req: Request) {
                 cedula: body.cedula || null,
                 lastPromotion: body.lastPromotion ? new Date(body.lastPromotion) : null,
                 tags: body.tags || null,
-                pendientes: body.pendientes || null
+                pendientes: body.pendientes || null,
+                category: body.category || "GENERAL"
             }
         })
         return NextResponse.json(client)

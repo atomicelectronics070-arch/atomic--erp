@@ -25,10 +25,10 @@ export default function CRMHistoricosPage() {
     // UI State
     const [searchTerm, setSearchTerm] = useState("")
     const [viewMode, setViewMode] = useState<"TABLE" | "KANBAN">("TABLE")
-    const [activePlaylist, setActivePlaylist] = useState<string>("TODOS")
-    const [customPlaylists, setCustomPlaylists] = useState<string[]>(["CLIENTES VIP", "SEGUIMIENTO URGENTE", "ZONA NORTE"])
-    const [isCreatingPlaylist, setIsCreatingPlaylist] = useState(false)
-    const [newPlaylistName, setNewPlaylistName] = useState("")
+    const [activeGroup, setActiveGroup] = useState<string>("TODOS")
+    const [customGroups, setCustomGroups] = useState<string[]>([])
+    const [isCreatingGroup, setIsCreatingGroup] = useState(false)
+    const [newGroupName, setNewGroupName] = useState("")
     
     // Drawer State
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
@@ -44,6 +44,7 @@ export default function CRMHistoricosPage() {
 
     useEffect(() => {
         fetchClients()
+        fetchGroups()
         if (isAdmin) fetchUsers()
     }, [isAdmin])
 
@@ -60,6 +61,18 @@ export default function CRMHistoricosPage() {
         }
     }
 
+    const fetchGroups = async () => {
+        try {
+            const res = await fetch("/api/crm/groups")
+            const data = await res.json()
+            if (data && data.groups) {
+                setCustomGroups(data.groups)
+            }
+        } catch (e) {
+            console.error("Error fetching contact groups:", e)
+        }
+    }
+
     const fetchUsers = async () => {
         try {
             const res = await fetch("/api/users")
@@ -72,14 +85,14 @@ export default function CRMHistoricosPage() {
 
     const handleOpenClient = (client: any) => {
         setSelectedClient(client)
-        setEditForm({ ...client })
+        setEditForm({ ...client, category: client.category || "GENERAL" })
         setActiveTab("RESUMEN")
         setIsDrawerOpen(true)
     }
 
     const handleCreateNew = () => {
         setSelectedClient(null)
-        setEditForm({ status: "PROSPECTO", source: "MANUAL", purchaseCount: 0 })
+        setEditForm({ status: "PROSPECTO", source: "MANUAL", purchaseCount: 0, category: "GENERAL" })
         setActiveTab("RESUMEN")
         setIsDrawerOpen(true)
     }
@@ -254,15 +267,56 @@ export default function CRMHistoricosPage() {
         }
     }
 
-    const createPlaylist = () => {
-        if (newPlaylistName.trim() && !customPlaylists.includes(newPlaylistName.toUpperCase())) {
-            setCustomPlaylists([...customPlaylists, newPlaylistName.toUpperCase()])
+    const createGroup = async () => {
+        const name = newGroupName.trim().toUpperCase()
+        if (!name) return
+        try {
+            const res = await fetch("/api/crm/groups", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ groupName: name })
+            })
+            if (res.ok) {
+                const data = await res.json()
+                setCustomGroups(data.groups)
+                fetchClients()
+            } else {
+                const err = await res.json()
+                alert(err.error || "Error al crear grupo")
+            }
+        } catch (e) {
+            console.error(e)
+        } finally {
+            setNewGroupName("")
+            setIsCreatingGroup(false)
         }
-        setNewPlaylistName("")
-        setIsCreatingPlaylist(false)
     }
 
-    // Filters & Playlists logic
+    const deleteGroup = async (groupName: string) => {
+        if (!confirm(`¿Estás seguro de eliminar el grupo "${groupName}"? Todos los contactos pertenecientes a este grupo serán reasignados al grupo "GENERAL".`)) return
+        try {
+            const res = await fetch("/api/crm/groups", {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ groupName })
+            })
+            if (res.ok) {
+                const data = await res.json()
+                setCustomGroups(data.groups)
+                if (activeGroup === groupName) {
+                    setActiveGroup("TODOS")
+                }
+                fetchClients()
+            } else {
+                const err = await res.json()
+                alert(err.error || "Error al eliminar grupo")
+            }
+        } catch (e) {
+            console.error(e)
+        }
+    }
+
+    // Filters & Groups logic
     const filteredClients = useMemo(() => {
         let result = clients.filter(c => {
             const matchesSearch = `${c.firstName || ""} ${c.lastName || ""} ${c.name || ""} ${c.email || ""} ${c.phone || ""} ${c.cedula || ""}`
@@ -272,21 +326,21 @@ export default function CRMHistoricosPage() {
             return matchesSearch
         })
 
-        if (activePlaylist !== "TODOS") {
-            if (activePlaylist === "MIS CLIENTES") {
+        if (activeGroup !== "TODOS") {
+            if (activeGroup === "MIS CLIENTES") {
                 result = result.filter(c => c.salesperson?.id === currentUserId)
-            } else if (activePlaylist === "NUEVOS LEADS") {
+            } else if (activeGroup === "NUEVOS LEADS") {
                 result = result.filter(c => c.status === "PROSPECTO")
-            } else if (activePlaylist === "CIERRES GANADOS") {
+            } else if (activeGroup === "CIERRES GANADOS") {
                 result = result.filter(c => c.status === "ACTIVO")
             } else {
-                // Custom playlist -> Match tags
-                result = result.filter(c => c.tags?.toUpperCase().includes(activePlaylist))
+                // Custom contact group -> Match exact category
+                result = result.filter(c => (c.category || "GENERAL").toUpperCase() === activeGroup.toUpperCase())
             }
         }
 
         return result
-    }, [clients, searchTerm, activePlaylist, isAdmin, currentUserId])
+    }, [clients, searchTerm, activeGroup, isAdmin, currentUserId])
 
     // Standard Industrial Colors
     const statusColors: any = {
@@ -300,56 +354,57 @@ export default function CRMHistoricosPage() {
     return (
         <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] font-sans flex overflow-hidden selection:bg-indigo-500/20 selection:text-indigo-900">
             
-            {/* SUB-SIDEBAR: PLAYLISTS & FOLDERS */}
+            {/* SUB-SIDEBAR: CONTACT GROUPS & FOLDERS */}
             <div className="w-64 bg-white border-r border-slate-200 flex flex-col h-[calc(100vh-80px)] shrink-0 z-10">
                 <div className="p-6 border-b border-slate-100">
                     <h2 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 mb-6 flex items-center gap-2">
                         <Database size={14} /> CRM Vistas
                     </h2>
                     <div className="space-y-1">
-                        <PlaylistButton active={activePlaylist === "TODOS"} onClick={() => setActivePlaylist("TODOS")} icon={<LayoutGrid size={16}/>} label="Directorio Global" count={clients.length} />
-                        <PlaylistButton active={activePlaylist === "MIS CLIENTES"} onClick={() => setActivePlaylist("MIS CLIENTES")} icon={<User size={16}/>} label="Mis Asignados" />
-                        <PlaylistButton active={activePlaylist === "NUEVOS LEADS"} onClick={() => setActivePlaylist("NUEVOS LEADS")} icon={<Zap size={16}/>} label="Nuevos Leads" />
-                        <PlaylistButton active={activePlaylist === "CIERRES GANADOS"} onClick={() => setActivePlaylist("CIERRES GANADOS")} icon={<CheckCircle2 size={16}/>} label="Cierres Ganados" />
+                        <PlaylistButton active={activeGroup === "TODOS"} onClick={() => setActiveGroup("TODOS")} icon={<LayoutGrid size={16}/>} label="Directorio Global" count={clients.length} />
+                        <PlaylistButton active={activeGroup === "MIS CLIENTES"} onClick={() => setActiveGroup("MIS CLIENTES")} icon={<User size={16}/>} label="Mis Asignados" />
+                        <PlaylistButton active={activeGroup === "NUEVOS LEADS"} onClick={() => setActiveGroup("NUEVOS LEADS")} icon={<Zap size={16}/>} label="Nuevos Leads" />
+                        <PlaylistButton active={activeGroup === "CIERRES GANADOS"} onClick={() => setActiveGroup("CIERRES GANADOS")} icon={<CheckCircle2 size={16}/>} label="Cierres Ganados" />
                     </div>
                 </div>
 
                 <div className="p-6 flex-1 overflow-y-auto custom-scrollbar">
                     <div className="flex items-center justify-between mb-4">
                         <h2 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 flex items-center gap-2">
-                            <PlayCircle size={14} /> Listas de Rep.
+                            <Folders size={14} /> Grupos de Contactos
                         </h2>
-                        <button onClick={() => setIsCreatingPlaylist(true)} className="text-indigo-600 hover:text-indigo-800 transition-colors">
+                        <button onClick={() => setIsCreatingGroup(true)} className="text-indigo-600 hover:text-indigo-800 transition-colors">
                             <Plus size={16} />
                         </button>
                     </div>
 
-                    {isCreatingPlaylist && (
+                    {isCreatingGroup && (
                         <div className="mb-4 animate-in fade-in zoom-in duration-200">
                             <input 
                                 autoFocus
                                 type="text"
-                                placeholder="NOMBRE DE LISTA..."
-                                value={newPlaylistName}
-                                onChange={(e) => setNewPlaylistName(e.target.value)}
-                                onKeyDown={(e) => e.key === 'Enter' && createPlaylist()}
+                                placeholder="NOMBRE DE GRUPO..."
+                                value={newGroupName}
+                                onChange={(e) => setNewGroupName(e.target.value)}
+                                onKeyDown={(e) => e.key === 'Enter' && createGroup()}
                                 className="w-full bg-slate-50 border border-slate-200 p-2 text-xs font-bold text-slate-700 outline-none focus:border-indigo-500 uppercase rounded"
                             />
                             <div className="flex gap-2 mt-2">
-                                <button onClick={createPlaylist} className="flex-1 bg-indigo-600 text-white text-[10px] font-bold py-1.5 rounded hover:bg-indigo-700">CREAR</button>
-                                <button onClick={() => setIsCreatingPlaylist(false)} className="flex-1 bg-slate-200 text-slate-600 text-[10px] font-bold py-1.5 rounded hover:bg-slate-300">CANCELAR</button>
+                                <button onClick={createGroup} className="flex-1 bg-indigo-600 text-white text-[10px] font-bold py-1.5 rounded hover:bg-indigo-700">CREAR</button>
+                                <button onClick={() => setIsCreatingGroup(false)} className="flex-1 bg-slate-200 text-slate-600 text-[10px] font-bold py-1.5 rounded hover:bg-slate-300">CANCELAR</button>
                             </div>
                         </div>
                     )}
 
                     <div className="space-y-1">
-                        {customPlaylists.map(pl => (
+                        {customGroups.map(pl => (
                             <PlaylistButton 
                                 key={pl} 
-                                active={activePlaylist === pl} 
-                                onClick={() => setActivePlaylist(pl)} 
+                                active={activeGroup === pl} 
+                                onClick={() => setActiveGroup(pl)} 
                                 icon={<List size={16}/>} 
                                 label={pl} 
+                                onDelete={() => deleteGroup(pl)}
                             />
                         ))}
                     </div>
@@ -361,7 +416,7 @@ export default function CRMHistoricosPage() {
                 {/* Header Actions */}
                 <div className="px-8 py-6 flex justify-between items-end border-b border-slate-200 bg-white">
                     <div>
-                        <h1 className="text-2xl font-black text-[#0F172A] tracking-tight">{activePlaylist}</h1>
+                        <h1 className="text-2xl font-black text-[#0F172A] tracking-tight">{activeGroup}</h1>
                         <p className="text-sm text-slate-500 font-medium mt-1">{filteredClients.length} registros en esta vista</p>
                     </div>
                     <div className="flex items-center gap-4">
@@ -404,7 +459,8 @@ export default function CRMHistoricosPage() {
                                         <th className="py-4 px-6 text-[11px] font-black text-slate-500 uppercase tracking-wider">Cliente</th>
                                         <th className="py-4 px-6 text-[11px] font-black text-slate-500 uppercase tracking-wider">Contacto</th>
                                         <th className="py-4 px-6 text-[11px] font-black text-slate-500 uppercase tracking-wider">Estado</th>
-                                        <th className="py-4 px-6 text-[11px] font-black text-slate-500 uppercase tracking-wider">Etiquetas / Playlists</th>
+                                        <th className="py-4 px-6 text-[11px] font-black text-slate-500 uppercase tracking-wider">Grupo de Contactos</th>
+                                        <th className="py-4 px-6 text-[11px] font-black text-slate-500 uppercase tracking-wider">Etiquetas</th>
                                         <th className="py-4 px-6 text-[11px] font-black text-slate-500 uppercase tracking-wider text-right">Acción</th>
                                     </tr>
                                 </thead>
@@ -452,6 +508,12 @@ export default function CRMHistoricosPage() {
                                             <td className="py-4 px-6">
                                                 <span className={`px-3 py-1 rounded-full text-[10px] font-bold tracking-wide uppercase border ${statusColors[client.status] || statusColors['PROSPECTO']}`}>
                                                     {client.status}
+                                                </span>
+                                            </td>
+                                            <td className="py-4 px-6">
+                                                <span className="px-3 py-1 bg-indigo-50 border border-indigo-100 text-indigo-700 text-[10px] font-black tracking-wide rounded-lg flex items-center gap-1.5 w-max">
+                                                    <Folders size={12} className="text-indigo-500" />
+                                                    {client.category || "GENERAL"}
                                                 </span>
                                             </td>
                                             <td className="py-4 px-6">
@@ -532,8 +594,8 @@ export default function CRMHistoricosPage() {
                                 {activeTab === "RESUMEN" && (
                                     <div className="space-y-8 animate-in fade-in duration-300">
                                         {/* Status & Category Strip */}
-                                        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex gap-8">
-                                            <div className="flex-1 space-y-2">
+                                        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm grid grid-cols-1 md:grid-cols-3 gap-6">
+                                            <div className="space-y-2">
                                                 <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Estado Actual</label>
                                                 <select 
                                                     value={editForm.status || "PROSPECTO"}
@@ -547,7 +609,20 @@ export default function CRMHistoricosPage() {
                                                     <option value="INACTIVO">PERDIDO / INACTIVO</option>
                                                 </select>
                                             </div>
-                                            <div className="flex-1 space-y-2">
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Grupo de Contactos</label>
+                                                <select 
+                                                    value={editForm.category || "GENERAL"}
+                                                    onChange={(e) => setEditForm({...editForm, category: e.target.value})}
+                                                    className="w-full bg-slate-50 border border-slate-200 p-3 text-sm font-bold text-[#0F172A] rounded-lg outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all uppercase"
+                                                >
+                                                    <option value="GENERAL">GENERAL</option>
+                                                    {customGroups.map(g => (
+                                                        <option key={g} value={g}>{g}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                            <div className="space-y-2">
                                                 <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Etiquetas Dinámicas</label>
                                                 <div className="flex flex-wrap gap-2 mb-2 min-h-[32px] bg-slate-50 border border-slate-200 p-2 rounded-lg">
                                                     {editForm.tags ? editForm.tags.split(',').filter(Boolean).map((tag: string, i: number) => (
@@ -840,26 +915,37 @@ export default function CRMHistoricosPage() {
     )
 }
 
-function PlaylistButton({ active, onClick, icon, label, count }: any) {
+function PlaylistButton({ active, onClick, icon, label, count, onDelete }: any) {
     return (
-        <button 
-            onClick={onClick}
-            className={`w-full flex items-center justify-between px-4 py-2.5 rounded-lg transition-all text-sm font-bold ${
-                active 
-                ? 'bg-indigo-50 text-indigo-700' 
-                : 'text-slate-600 hover:bg-slate-100'
-            }`}
-        >
-            <div className="flex items-center gap-3">
-                <span className={active ? 'text-indigo-600' : 'text-slate-400'}>{icon}</span>
-                <span className="truncate max-w-[140px] text-left">{label}</span>
-            </div>
-            {count !== undefined && (
-                <span className={`text-[10px] px-2 py-0.5 rounded-full ${active ? 'bg-indigo-100 text-indigo-700' : 'bg-slate-200 text-slate-500'}`}>
-                    {count}
-                </span>
+        <div className="group/btn relative">
+            <button 
+                onClick={onClick}
+                className={`w-full flex items-center justify-between pl-4 pr-10 py-2.5 rounded-lg transition-all text-sm font-bold ${
+                    active 
+                    ? 'bg-indigo-50 text-indigo-700' 
+                    : 'text-slate-600 hover:bg-slate-100'
+                }`}
+            >
+                <div className="flex items-center gap-3">
+                    <span className={active ? 'text-indigo-600' : 'text-slate-400'}>{icon}</span>
+                    <span className="truncate max-w-[140px] text-left">{label}</span>
+                </div>
+                {count !== undefined && (
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full ${active ? 'bg-indigo-100 text-indigo-700' : 'bg-slate-200 text-slate-500'}`}>
+                        {count}
+                    </span>
+                )}
+            </button>
+            {onDelete && (
+                <button 
+                    onClick={(e) => { e.stopPropagation(); onDelete() }} 
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-md hover:bg-red-100 hover:text-red-600 text-slate-400 opacity-0 group-hover/btn:opacity-100 transition-all z-20"
+                    title="Eliminar grupo"
+                >
+                    <Trash2 size={13} />
+                </button>
             )}
-        </button>
+        </div>
     )
 }
 
