@@ -133,236 +133,175 @@ function drawBanner(
       return;
     }
 
-    // 1. Gradient Background
+    // 1. Premium Dark Background
     const grad = ctx.createLinearGradient(0, 0, 1080, 1080);
-    grad.addColorStop(0, "#0B1329");
-    grad.addColorStop(0.5, "#1C2541");
-    grad.addColorStop(1, "#020617");
+    grad.addColorStop(0, "#050B14");
+    grad.addColorStop(0.5, "#0A1128");
+    grad.addColorStop(1, "#010308");
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, 1080, 1080);
 
-    // 2. Technological circle lines
-    ctx.strokeStyle = "rgba(59, 130, 246, 0.15)";
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.arc(540, 540, 480, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.arc(540, 540, 400, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.arc(540, 540, 320, 0, Math.PI * 2);
-    ctx.stroke();
+    // 2. Futuristic Neon Glow / Orbs
+    const orb = ctx.createRadialGradient(750, 450, 0, 750, 450, 600);
+    orb.addColorStop(0, "rgba(59, 130, 246, 0.2)");
+    orb.addColorStop(1, "rgba(0, 0, 0, 0)");
+    ctx.fillStyle = orb;
+    ctx.fillRect(0, 0, 1080, 1080);
 
-    // 3. Grid lines
-    ctx.strokeStyle = "rgba(59, 130, 246, 0.04)";
-    ctx.lineWidth = 2;
-    const gridSize = 60;
+    const orb2 = ctx.createRadialGradient(100, 900, 0, 100, 900, 500);
+    orb2.addColorStop(0, "rgba(14, 165, 233, 0.1)");
+    orb2.addColorStop(1, "rgba(0, 0, 0, 0)");
+    ctx.fillStyle = orb2;
+    ctx.fillRect(0, 0, 1080, 1080);
+
+    // 3. Grid Lines
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.03)";
+    ctx.lineWidth = 1;
+    const gridSize = 40;
     for (let x = 0; x < 1080; x += gridSize) {
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, 1080);
-      ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 1080); ctx.stroke();
     }
     for (let y = 0; y < 1080; y += gridSize) {
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(1080, y);
-      ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(1080, y); ctx.stroke();
     }
 
-    // 4. Logo / Top Header
+    // 4. Branding & Badges
     ctx.fillStyle = "#3B82F6";
     ctx.beginPath();
-    ctx.arc(100, 90, 8, 0, Math.PI * 2);
+    ctx.arc(80, 80, 8, 0, Math.PI * 2);
     ctx.fill();
 
     ctx.fillStyle = "#FFFFFF";
-    ctx.font = "bold 32px sans-serif";
-    ctx.fillText("ATOMIC INDUSTRIES", 125, 100);
+    ctx.font = "bold 26px sans-serif";
+    ctx.fillText("ATOMIC INDUSTRIES", 100, 88);
 
-    ctx.fillStyle = "#60A5FA";
-    ctx.font = "bold 20px sans-serif";
-    ctx.fillText("TECNOLOG\u00cdA Y SEGURIDAD \u00c9LITE", 125, 135);
+    ctx.fillStyle = "#38BDF8";
+    ctx.font = "bold 16px sans-serif";
+    ctx.fillText("TECNOLOGÍA Y SEGURIDAD ÉLITE", 80, 120);
 
-    // 5. Ecuador Flag
-    const fx = 860;
-    const fy = 70;
-    const fw = 120;
-    const fh = 80;
-    ctx.fillStyle = "#FFDD00"; // Yellow
-    ctx.fillRect(fx, fy, fw, fh / 2);
-    ctx.fillStyle = "#001489"; // Blue
-    ctx.fillRect(fx, fy + fh / 2, fw, fh / 4);
-    ctx.fillStyle = "#DA291C"; // Red
-    ctx.fillRect(fx, fy + fh * 3 / 4, fw, fh / 4);
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.3)";
-    ctx.lineWidth = 2;
+    // Ecuador Flag
+    const fx = 880; const fy = 60; const fw = 120; const fh = 40;
+    ctx.fillStyle = "#FFDD00"; ctx.fillRect(fx, fy, fw, fh * 0.5);
+    ctx.fillStyle = "#001489"; ctx.fillRect(fx, fy + fh * 0.5, fw, fh * 0.25);
+    ctx.fillStyle = "#DA291C"; ctx.fillRect(fx, fy + fh * 0.75, fw, fh * 0.25);
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
+    ctx.lineWidth = 1;
     ctx.strokeRect(fx, fy, fw, fh);
-
-    // 6. Product image panel
-    const cardX = 140;
-    const cardY = 220;
-    const cardW = 800;
-    const cardH = 520;
-    
     ctx.fillStyle = "#FFFFFF";
-    ctx.beginPath();
-    ctx.roundRect(cardX, cardY, cardW, cardH, 24);
-    ctx.fill();
+    ctx.font = "bold 14px sans-serif";
+    ctx.fillText("ECUADOR", 880, 120);
 
-    ctx.strokeStyle = "rgba(59, 130, 246, 0.3)";
-    ctx.lineWidth = 4;
-    ctx.stroke();
-
-    // 7. Core bottom labels
-    ctx.fillStyle = "rgba(59, 130, 246, 0.1)";
-    ctx.beginPath();
-    ctx.roundRect(140, 930, 240, 50, 10);
-    ctx.fill();
-    ctx.fillStyle = "#60A5FA";
-    ctx.font = "bold 16px sans-serif";
-    ctx.textAlign = "center";
-    ctx.fillText("\ud8d8\udf2d GARANT\u00cdA OFICIAL", 260, 962);
-
-    ctx.fillStyle = "rgba(16, 185, 129, 0.1)";
-    ctx.beginPath();
-    ctx.roundRect(420, 930, 240, 50, 10);
-    ctx.fill();
-    ctx.fillStyle = "#34D399";
-    ctx.fillText("\ud83d\ude9a ENV\u00cdO A TODO EL PA\u00cdS", 540, 962);
-
-    ctx.fillStyle = "rgba(245, 158, 11, 0.1)";
-    ctx.beginPath();
-    ctx.roundRect(700, 930, 240, 50, 10);
-    ctx.fill();
-    ctx.fillStyle = "#FBBF24";
-    ctx.fillText("\u26a1 SOPORTE CONTINUO", 820, 962);
-
-    ctx.textAlign = "left";
-
-    // Call to Action
-    ctx.fillStyle = "#60A5FA";
-    ctx.font = "bold 16px sans-serif";
-    ctx.fillText(adInfo.callToAction, 140, 1003);
-    ctx.fillStyle = "#94A3B8";
-    ctx.font = "14px sans-serif";
-    ctx.fillText("CONSULTA CON TU ASESOR AUTORIZADO DE ATOMIC INDUSTRIES", 140, 1025);
-
-    // 8. Dual-Loading Image strategy & High-Fidelity Blueprint Radar Fallback
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.src = proxyImg(imgUrl);
+    // 5. Wrap Text helper
+    const wrapText = (text: string, x: number, y: number, maxWidth: number, lineHeight: number) => {
+      const words = text.split(' ');
+      let line = '';
+      let currentY = y;
+      for(let n = 0; n < words.length; n++) {
+        let testLine = line + words[n] + ' ';
+        let metrics = ctx.measureText(testLine);
+        if (metrics.width > maxWidth && n > 0) {
+          ctx.fillText(line, x, currentY);
+          line = words[n] + ' ';
+          currentY += lineHeight;
+        } else {
+          line = testLine;
+        }
+      }
+      ctx.fillText(line, x, currentY);
+      return currentY;
+    };
 
     const finishDrawing = () => {
-      // Price Tag Footer Panel
-      const priceTagX = 140;
-      const priceTagY = 770;
-      const priceTagW = 800;
-      const priceTagH = 120;
-      
-      ctx.fillStyle = "#1E293B";
-      ctx.beginPath();
-      ctx.roundRect(priceTagX, priceTagY, priceTagW, priceTagH, 16);
-      ctx.fill();
-      ctx.strokeStyle = "rgba(255, 255, 255, 0.05)";
-      ctx.stroke();
-
-      // Product Name
+      // 6. Draw Left Column Text
       ctx.fillStyle = "#FFFFFF";
-      ctx.font = "bold 28px sans-serif";
+      ctx.font = "bold 64px sans-serif";
       let displayName = adInfo.cleanTitle.toUpperCase();
-      if (displayName.length > 35) {
-        displayName = displayName.substring(0, 32) + "...";
-      }
-      ctx.fillText(displayName, 170, 822);
-      
-      ctx.fillStyle = "#60A5FA";
-      ctx.font = "bold 13px sans-serif";
-      ctx.fillText(adInfo.adSubtitle.toUpperCase(), 170, 855);
+      let textEndY = wrapText(displayName, 80, 260, 480, 75);
 
-      // Price text aligned to the right
-      ctx.fillStyle = "#10B981";
-      ctx.font = "bold 44px sans-serif";
-      ctx.textAlign = "right";
-      const formattedPrice = price ? `$${price.toFixed(2)}` : "CONSULTAR";
-      ctx.fillText(formattedPrice, 910, 835);
+      // Gradient text effect for subtitle
+      const textGrad = ctx.createLinearGradient(80, textEndY + 40, 500, textEndY + 40);
+      textGrad.addColorStop(0, "#38BDF8");
+      textGrad.addColorStop(1, "#818CF8");
+      ctx.fillStyle = textGrad;
+      ctx.font = "italic bold 32px sans-serif";
+      ctx.fillText("LA MEJOR EXPERIENCIA", 80, textEndY + 60);
 
       ctx.fillStyle = "#94A3B8";
-      ctx.font = "bold 14px sans-serif";
-      ctx.fillText("PRECIO DE LISTA", 910, 860);
-      ctx.textAlign = "left";
+      ctx.font = "20px sans-serif";
+      wrapText(adInfo.adDescription, 80, textEndY + 120, 450, 30);
+
+      // Price Tag Glassmorphism
+      ctx.fillStyle = "rgba(255, 255, 255, 0.05)";
+      ctx.strokeStyle = "rgba(56, 189, 248, 0.4)";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(80, 720, 380, 140, 24);
+      ctx.fill();
+      ctx.stroke();
+
+      // Glowing Price
+      ctx.shadowColor = "#38BDF8";
+      ctx.shadowBlur = 20;
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = "bold 64px sans-serif";
+      const formattedPrice = price ? `$${price.toFixed(2)}` : "CONSULTAR";
+      ctx.fillText(formattedPrice, 110, 790);
+      ctx.shadowBlur = 0; // reset shadow
+
+      ctx.fillStyle = "#38BDF8";
+      ctx.font = "bold 18px sans-serif";
+      ctx.fillText("PRECIO DE LISTA OFICIAL", 110, 830);
+
+      // 7. Bottom Bar Badges
+      ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+      ctx.fillRect(0, 940, 1080, 140);
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.1)";
+      ctx.beginPath(); ctx.moveTo(0, 940); ctx.lineTo(1080, 940); ctx.stroke();
+
+      const drawBadge = (icon: string, title: string, sub: string, x: number) => {
+        ctx.fillStyle = "rgba(56, 189, 248, 0.1)";
+        ctx.beginPath(); ctx.roundRect(x, 965, 60, 60, 16); ctx.fill();
+        ctx.fillStyle = "#38BDF8";
+        ctx.font = "30px sans-serif";
+        ctx.fillText(icon, x + 15, 1005);
+        
+        ctx.fillStyle = "#FFFFFF";
+        ctx.font = "bold 16px sans-serif";
+        ctx.fillText(title, x + 80, 990);
+        ctx.fillStyle = "#94A3B8";
+        ctx.font = "14px sans-serif";
+        ctx.fillText(sub, x + 80, 1013);
+      };
+
+      drawBadge("🚀", "Envío Rápido", "A todo el país", 80);
+      drawBadge("🔒", "Pagos Seguros", "100% Protegidos", 400);
+      drawBadge("⚡", "Soporte 24/7", "Gestión rápida", 720);
 
       try {
-        const dataUrl = canvas.toDataURL("image/jpeg", 0.9);
+        const dataUrl = canvas.toDataURL("image/jpeg", 0.95);
         resolve(dataUrl);
       } catch (err) {
-        console.warn("Canvas export tainted. Falling back to original raw product image:", imgUrl);
+        console.warn("Canvas export tainted. Falling back.", imgUrl);
         resolve(imgUrl);
       }
     };
 
-    const drawPlaceholder = () => {
-      // Draw placeholder card background (Dark Slate Blue)
-      ctx.fillStyle = "#1E293B";
-      ctx.beginPath();
-      ctx.roundRect(cardX, cardY, cardW, cardH, 24);
-      ctx.fill();
-
-      ctx.strokeStyle = "rgba(59, 130, 246, 0.4)";
-      ctx.lineWidth = 4;
-      ctx.stroke();
-
-      const cx = cardX + cardW / 2;
-      const cy = cardY + cardH / 2;
-
-      ctx.strokeStyle = "rgba(96, 165, 250, 0.35)";
-      ctx.lineWidth = 3;
-      ctx.beginPath();
-      ctx.arc(cx, cy, 110, 0, Math.PI * 2);
-      ctx.stroke();
-
-      ctx.strokeStyle = "rgba(96, 165, 250, 0.12)";
-      ctx.beginPath();
-      ctx.arc(cx, cy, 160, 0, Math.PI * 2);
-      ctx.stroke();
-
-      ctx.beginPath();
-      ctx.arc(cx, cy, 60, 0, Math.PI * 2);
-      ctx.stroke();
-
-      ctx.strokeStyle = "rgba(96, 165, 250, 0.2)";
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(cx - 180, cy);
-      ctx.lineTo(cx + 180, cy);
-      ctx.stroke();
-
-      ctx.beginPath();
-      ctx.moveTo(cx, cy - 180);
-      ctx.lineTo(cx, cy + 180);
-      ctx.stroke();
-
-      ctx.fillStyle = "#60A5FA";
-      ctx.beginPath();
-      ctx.arc(cx, cy, 8, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.fillStyle = "#60A5FA";
-      ctx.font = "bold 24px sans-serif";
-      ctx.textAlign = "center";
-      ctx.fillText("DISPOSITIVO DE ALTO RENDIMIENTO", cx, cy + 190);
-      
-      ctx.fillStyle = "#94A3B8";
-      ctx.font = "bold 15px sans-serif";
-      ctx.fillText("PRODUCTO EN DISPONIBILIDAD INMEDIATA", cx, cy + 220);
-      ctx.textAlign = "left";
-
-      finishDrawing();
-    };
-
     const drawWithImage = (loadedImg: HTMLImageElement) => {
-      const padding = 50;
+      const cardX = 550;
+      const cardY = 180;
+      const cardW = 480;
+      const cardH = 680;
+      
+      // Draw a subtle dark floating panel for the product
+      ctx.fillStyle = "rgba(255, 255, 255, 0.02)";
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.05)";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.roundRect(cardX, cardY, cardW, cardH, 32);
+      ctx.fill();
+      ctx.stroke();
+
+      const padding = 40;
       const fitW = cardW - padding * 2;
       const fitH = cardH - padding * 2;
       const imgW = loadedImg.width;
@@ -374,40 +313,44 @@ function drawBanner(
       const drawX = cardX + (cardW - drawW) / 2;
       const drawY = cardY + (cardH - drawH) / 2;
 
+      // Glow behind product
+      ctx.shadowColor = "rgba(0, 0, 0, 0.9)";
+      ctx.shadowBlur = 50;
+      ctx.shadowOffsetX = 10;
+      ctx.shadowOffsetY = 25;
+
       ctx.drawImage(loadedImg, drawX, drawY, drawW, drawH);
+      
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
+
       finishDrawing();
     };
 
+    const drawPlaceholder = () => {
+      finishDrawing();
+    };
+
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.src = proxyImg(imgUrl);
+
     const handleImageError = () => {
-      // Primary proxy load failed or returned transparent 1x1. Load DIRECTLY in client browser as fallback!
-      // DO NOT set crossOrigin = 'anonymous' so it loads successfully even on domains without CORS headers!
       const fallbackImg = new Image();
       fallbackImg.src = imgUrl;
-
       fallbackImg.onload = () => {
-        if (fallbackImg.width > 1) {
-          drawWithImage(fallbackImg);
-        } else {
-          drawPlaceholder();
-        }
+        if (fallbackImg.width > 1) drawWithImage(fallbackImg);
+        else drawPlaceholder();
       };
-
-      fallbackImg.onerror = () => {
-        drawPlaceholder();
-      };
+      fallbackImg.onerror = () => drawPlaceholder();
     };
 
     img.onload = () => {
-      if (img.width <= 1 || img.height <= 1) {
-        handleImageError();
-        return;
-      }
+      if (img.width <= 1 || img.height <= 1) { handleImageError(); return; }
       drawWithImage(img);
     };
-
-    img.onerror = () => {
-      handleImageError();
-    };
+    img.onerror = () => handleImageError();
   });
 }
 
