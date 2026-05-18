@@ -8,7 +8,7 @@ import {
     MessageSquare, Clock, MapPin, Phone, Mail, Edit2, 
     Save, X, Filter, BarChart3, ChevronRight, Zap, Target,
     List, MoreHorizontal, LayoutGrid, CheckCircle2, AlertCircle,
-    PlayCircle, Folders, PhoneCall, Tag, Trash2, ArrowRight, ShoppingBag, Copy, ExternalLink,
+    PlayCircle, Folders, PhoneCall, Tag, Trash2, ArrowRight, ShoppingBag, Copy, ExternalLink, Check,
     TrendingUp, MessageCircle, Share, RefreshCw
 } from "lucide-react"
 
@@ -177,7 +177,8 @@ export default function CRMHistoricosPage() {
             id: Math.random().toString(36).substr(2, 9),
             type: pendienteForm.type,
             description: pendienteForm.description,
-            date: new Date().toISOString()
+            date: new Date().toISOString(),
+            done: false
         }
         
         let currentPendientes = []
@@ -201,16 +202,20 @@ export default function CRMHistoricosPage() {
         setPendienteForm({ type: "Nota de venta", description: "" })
     }
 
-    const handleRemovePendiente = async (idToRemove: string, e: any) => {
+    const handleCompletePendiente = async (idToComplete: string, e: any) => {
         e.stopPropagation();
-        if (!confirm("¿Estás seguro de eliminar este pendiente? Ya ha sido resuelto?")) return;
         let currentPendientes = []
         if (editForm.pendientes) {
             try { currentPendientes = JSON.parse(editForm.pendientes) } catch(e) {}
         }
         
-        const filtered = currentPendientes.filter((p: any) => p.id !== idToRemove)
-        const updatedPendientes = JSON.stringify(filtered)
+        const updated = currentPendientes.map((p: any) => {
+            if (p.id === idToComplete) {
+                return { ...p, done: true, completedAt: new Date().toISOString() }
+            }
+            return p
+        })
+        const updatedPendientes = JSON.stringify(updated)
         const updatedClient = { ...editForm, pendientes: updatedPendientes }
         setEditForm(updatedClient)
         
@@ -669,9 +674,9 @@ export default function CRMHistoricosPage() {
                                                     }
 
                                                     return parsedPendientes.map((p: any) => (
-                                                        <div key={p.id} className="relative group bg-slate-50 border border-slate-200 rounded-lg p-3 w-full sm:w-[calc(50%-6px)] shadow-sm">
+                                                        <div key={p.id} className={`relative group border rounded-lg p-3 w-full sm:w-[calc(50%-6px)] shadow-sm transition-all ${p.done ? 'bg-slate-50/70 border-slate-200 opacity-60' : 'bg-white border-slate-200 hover:border-indigo-200 hover:shadow-md'}`}>
                                                             <div className="flex justify-between items-start">
-                                                                <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 bg-white border border-slate-200 rounded text-amber-600 mb-2 inline-block shadow-sm">
+                                                                <span className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 border rounded shadow-xs mb-2 inline-block ${p.done ? 'bg-slate-100 text-slate-500 border-slate-200' : 'bg-amber-50 text-amber-700 border-amber-200'}`}>
                                                                     {p.type}
                                                                 </span>
                                                                 <div className="flex items-center gap-1">
@@ -682,19 +687,30 @@ export default function CRMHistoricosPage() {
                                                                     >
                                                                         <MoreHorizontal size={14} />
                                                                     </button>
-                                                                    <button 
-                                                                        onClick={(e) => handleRemovePendiente(p.id, e)}
-                                                                        className="p-1 text-slate-400 hover:bg-red-100 hover:text-red-500 rounded transition-colors"
-                                                                        title="Eliminar pendiente"
-                                                                    >
-                                                                        <Trash2 size={14} />
-                                                                    </button>
+                                                                    {!p.done && (
+                                                                        <button 
+                                                                            onClick={(e) => handleCompletePendiente(p.id, e)}
+                                                                            className="px-2.5 py-1 text-[10px] font-black uppercase bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-all shadow-xs flex items-center gap-1"
+                                                                            title="Marcar como realizado"
+                                                                        >
+                                                                            <Check size={11} /> Realizado
+                                                                        </button>
+                                                                    )}
                                                                 </div>
                                                             </div>
-                                                            <p className={`text-sm text-[#0F172A] font-medium transition-all overflow-hidden ${expandedPendientes[p.id] ? '' : 'line-clamp-2'}`}>
+                                                            <p className={`text-xs text-slate-700 font-bold transition-all overflow-hidden ${p.done ? 'line-through decoration-slate-300 text-slate-400' : ''} ${expandedPendientes[p.id] ? '' : 'line-clamp-2'}`}>
                                                                 {p.description}
                                                             </p>
-                                                            <p className="text-[9px] font-bold text-slate-400 mt-2 uppercase">{new Date(p.date).toLocaleDateString()}</p>
+                                                            <div className="flex justify-between items-center mt-2.5 pt-2 border-t border-slate-100">
+                                                                <span className="text-[9px] font-black text-slate-400 uppercase">
+                                                                    Creado: {new Date(p.date).toLocaleDateString()}
+                                                                </span>
+                                                                {p.done && p.completedAt && (
+                                                                    <span className="text-[9px] font-black text-slate-400 uppercase">
+                                                                        Resuelto: {new Date(p.completedAt).toLocaleDateString()}
+                                                                    </span>
+                                                                )}
+                                                            </div>
                                                         </div>
                                                     ));
                                                 })()}
