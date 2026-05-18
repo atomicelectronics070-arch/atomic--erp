@@ -123,9 +123,10 @@ export default function FinanceManager() {
         })
     }, [data, searchTerm, periodFilter])
 
-    const totalSales = filteredData.reduce((acc, curr) => acc + curr.amount, 0)
-    const totalProfit = filteredData.reduce((acc, curr) => acc + curr.profit, 0)
-    const totalCommission = filteredData.reduce((acc, curr) => acc + curr.commission, 0)
+    const activeData = filteredData.filter(i => i.status !== "CANCELADO")
+    const totalSales = activeData.reduce((acc, curr) => acc + curr.amount, 0)
+    const totalProfit = activeData.reduce((acc, curr) => acc + curr.profit, 0)
+    const totalCommission = activeData.reduce((acc, curr) => acc + curr.commission, 0)
 
     const handleOpenModal = (item?: Transaction) => {
         if (item) {
@@ -201,7 +202,7 @@ export default function FinanceManager() {
 
     const handleDelete = async (id: string) => {
         if (!isAdmin) return
-        if (confirm("⚠️ Confirmación Crítica: ¿Eliminar este registro permanentemente del ecosistema?")) {
+        if (confirm("⚠️ Confirmación Crítica: ¿Desactivar este registro? La transacción pasará a estado CANCELADO pero quedará como evidencia.")) {
             try {
                 const res = await fetch(`/api/finance/${id}`, { method: "DELETE" })
                 if (res.ok) fetchTransactions()
@@ -274,7 +275,7 @@ export default function FinanceManager() {
                         </thead>
                         <tbody className="divide-y divide-slate-100">
                             {filteredData.map((item) => (
-                                <tr key={item.id} className="hover:bg-slate-50 transition-all group text-sm font-medium text-[#0F172A]">
+                                <tr key={item.id} className={`hover:bg-slate-50 transition-all group text-sm font-medium ${item.status === 'CANCELADO' ? 'text-slate-400 opacity-60 bg-slate-50 line-through' : 'text-[#0F172A]'}`}>
                                     <td className="px-6 py-4 text-slate-500">
                                         {new Date(item.date).toLocaleDateString()}
                                     </td>

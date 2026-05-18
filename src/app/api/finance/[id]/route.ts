@@ -71,10 +71,11 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
         if (!isAdmin) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
 
         const resolvedParams = await params
-        await prisma.transaction.delete({
-            where: { id: resolvedParams.id }
+        await prisma.transaction.update({
+            where: { id: resolvedParams.id },
+            data: { status: "CANCELADO" }
         })
-        return NextResponse.json({ message: "Transaction permanently deleted" })
+        return NextResponse.json({ message: "Transaction deactivated successfully" })
     } catch (error) {
         return NextResponse.json({ error: "Failed to delete transaction" }, { status: 500 })
     }

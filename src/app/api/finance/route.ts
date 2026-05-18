@@ -17,7 +17,7 @@ export async function GET() {
             include: {
                 salesperson: { select: { name: true, email: true } }
             },
-            orderBy: { createdAt: 'desc' }
+            orderBy: { date: 'desc' }
         })
         return NextResponse.json(transactions)
     } catch (error) {
