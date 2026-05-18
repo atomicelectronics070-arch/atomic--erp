@@ -107,6 +107,27 @@ export default function PaymentTickets() {
                 })
             })
             if (res.ok) {
+                const ticket = await res.json()
+                // Auto-create egreso entry in the financial bitácora
+                await fetch("/api/finance", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        client: advisors.find(a => a.id === formData.advisorId)?.name || "ASESOR",
+                        quoteNumber: `TICKET-${ticket.id?.slice(0,8).toUpperCase()} | ${formData.concept}`,
+                        amount: parseFloat(formData.amount as string),
+                        pvp: 0,
+                        cost: parseFloat(formData.amount as string),
+                        profit: 0,
+                        commission: 0,
+                        bonus: 0,
+                        status: "PAGADO",
+                        commissionStatus: "PAGADO",
+                        type: "Egreso Comision",
+                        date: formData.issueDate,
+                        salespersonId: formData.advisorId
+                    })
+                })
                 setIsModalOpen(false)
                 setFormData({
                     advisorId: "", amount: "", dueDate: "", issueDate: new Date().toISOString().split('T')[0], concept: ""

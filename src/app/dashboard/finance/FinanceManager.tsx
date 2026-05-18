@@ -49,6 +49,7 @@ export default function FinanceManager() {
     const [editingItem, setEditingItem] = useState<Transaction | null>(null)
     const [hasCommission, setHasCommission] = useState(false)
     const [commissionDueDate, setCommissionDueDate] = useState("")
+    const [entryMode, setEntryMode] = useState<"INGRESO" | "EGRESO">("INGRESO")
 
     const [formData, setFormData] = useState<Partial<Transaction>>({
         client: "",
@@ -128,8 +129,9 @@ export default function FinanceManager() {
     }, [data, searchTerm, periodFilter])
 
     const activeData = filteredData.filter(i => i.status !== "CANCELADO")
-    const ventas = activeData.filter(i => i.type !== "Egreso Operativo")
-    const egresos = activeData.filter(i => i.type === "Egreso Operativo")
+    const EGRESO_TYPES = ["Egreso Operativo", "Egreso Comision"]
+    const ventas = activeData.filter(i => !EGRESO_TYPES.includes(i.type))
+    const egresos = activeData.filter(i => EGRESO_TYPES.includes(i.type))
 
     // Ingresos cobrados vs pendientes
     const ingresosCobrados = ventas.filter(i => i.status === "PAGADO").reduce((a,c) => a + c.amount, 0)
@@ -146,15 +148,19 @@ export default function FinanceManager() {
     
     const netProfit = totalProfit - totalCommission - totalEgresos
 
-    const handleOpenModal = (item?: Transaction) => {
+    const handleOpenModal = (item?: Transaction, mode: "INGRESO" | "EGRESO" = "INGRESO") => {
         if (item) {
             setEditingItem(item)
             setFormData(item)
             setHasCommission(item.commission > 0)
+            const isEgresoType = ["Egreso Operativo", "Egreso Comision"].includes(item.type || "")
+            setEntryMode(isEgresoType ? "EGRESO" : "INGRESO")
         } else {
             setEditingItem(null)
+            setEntryMode(mode)
+            const defaultType = mode === "EGRESO" ? "Egreso Operativo" : "Ingreso Simple"
             setFormData({
-                client: "",
+                client: mode === "EGRESO" ? "GASTO OPERATIVO" : "",
                 date: new Date().toISOString().split('T')[0],
                 amount: 0,
                 cost: 0,
@@ -162,9 +168,9 @@ export default function FinanceManager() {
                 commission: 0,
                 bonus: 0,
                 quoteNumber: "",
-                status: "PENDIENTE",
+                status: mode === "EGRESO" ? "PAGADO" : "PENDIENTE",
                 commissionStatus: "PENDIENTE",
-                type: "Venta Directa",
+                type: defaultType,
                 proofUrl: "",
                 salespersonId: isAdmin ? "" : session?.user?.id || ""
             })
@@ -272,8 +278,8 @@ export default function FinanceManager() {
                     ))}
                 </div>
 
-                <div className="flex flex-col md:flex-row items-center gap-4 w-full lg:w-auto">
-                    <div className="relative w-full md:w-80 group">
+                <div className="flex flex-col md:flex-row items-center gap-3 w-full lg:w-auto">
+                    <div className="relative w-full md:w-72 group">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors" size={18} />
                         <input
                             type="text"
@@ -283,13 +289,33 @@ export default function FinanceManager() {
                             className="w-full bg-white border border-slate-200 rounded-lg py-2.5 pl-10 pr-4 text-sm font-medium text-[#0F172A] outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all placeholder:text-slate-400"
                         />
                     </div>
-                    <button
-                        onClick={() => handleOpenModal()}
-                        className="w-full md:w-auto bg-indigo-600 text-white px-6 py-2.5 rounded-lg font-bold text-sm flex items-center justify-center gap-2 hover:bg-indigo-700 transition-all shadow-sm"
-                    >
-                        <Plus size={18} />
-                        <span>{isAdmin ? "Forzar Entrada" : "Registrar Venta"}</span>
-                    </button>
+                    {isAdmin && (
+                        <>
+                            <button
+                                onClick={() => handleOpenModal(undefined, "INGRESO")}
+                                className="w-full md:w-auto bg-emerald-600 text-white px-5 py-2.5 rounded-lg font-bold text-sm flex items-center justify-center gap-2 hover:bg-emerald-700 transition-all shadow-sm"
+                            >
+                                <ArrowUpRight size={18} />
+                                <span>Registrar Ingreso</span>
+                            </button>
+                            <button
+                                onClick={() => handleOpenModal(undefined, "EGRESO")}
+                                className="w-full md:w-auto bg-rose-600 text-white px-5 py-2.5 rounded-lg font-bold text-sm flex items-center justify-center gap-2 hover:bg-rose-700 transition-all shadow-sm"
+                            >
+                                <ArrowDownRight size={18} />
+                                <span>Registrar Egreso</span>
+                            </button>
+                        </>
+                    )}
+                    {!isAdmin && (
+                        <button
+                            onClick={() => handleOpenModal(undefined, "INGRESO")}
+                            className="w-full md:w-auto bg-indigo-600 text-white px-5 py-2.5 rounded-lg font-bold text-sm flex items-center justify-center gap-2 hover:bg-indigo-700 transition-all shadow-sm"
+                        >
+                            <Plus size={18} />
+                            <span>Registrar Venta</span>
+                        </button>
+                    )}
                 </div>
             </div>
 
@@ -312,6 +338,7 @@ export default function FinanceManager() {
                                 <th className="px-4 py-4">Fecha</th>
                                 <th className="px-4 py-4">TRX</th>
                                 <th className="px-4 py-4">Cliente</th>
+                                <th className="px-4 py-4">Concepto / Descripción</th>
                                 <th className="px-4 py-4">Tipo</th>
                                 <th className="px-4 py-4">Asesor</th>
                                 <th className="px-4 py-4 text-center">Cliente ✓</th>
@@ -333,10 +360,13 @@ export default function FinanceManager() {
                                         {new Date(item.date).toLocaleDateString()}
                                     </td>
                                     <td className="px-4 py-3 font-bold text-indigo-600 text-xs">
-                                        {item.quoteNumber || item.trxId}
+                                        {item.trxId}
                                     </td>
                                     <td className="px-4 py-3">
-                                        <div className="truncate max-w-[140px] text-xs font-bold">{item.client}</div>
+                                        <div className="truncate max-w-[120px] text-xs font-bold">{item.client}</div>
+                                    </td>
+                                    <td className="px-4 py-3">
+                                        <div className="truncate max-w-[160px] text-xs text-slate-500">{item.quoteNumber || '—'}</div>
                                     </td>
                                     <td className="px-4 py-3">
                                         <span className={`px-2 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider ${
@@ -426,16 +456,24 @@ export default function FinanceManager() {
                             exit={{ opacity: 0, scale: 0.95, y: 10 }}
                             className="bg-white w-full max-w-4xl shadow-2xl border border-slate-200 overflow-hidden rounded-2xl relative z-10 flex flex-col max-h-[90vh]"
                         >
-                            <div className="p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                            <div className="p-6 border-b border-slate-100 flex justify-between items-center" style={{
+                                background: entryMode === 'EGRESO' ? 'linear-gradient(135deg, #fff5f5 0%, #fff 100%)' : 'linear-gradient(135deg, #f0fdf4 0%, #fff 100%)'
+                            }}>
                                 <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center shadow-sm">
-                                        {isAdmin ? <ShieldCheck size={24} /> : <Plus size={24} />}
+                                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-sm ${
+                                        entryMode === 'EGRESO' ? 'bg-rose-100 text-rose-600' : 'bg-emerald-100 text-emerald-600'
+                                    }`}>
+                                        {entryMode === 'EGRESO' ? <ArrowDownRight size={24} /> : <ArrowUpRight size={24} />}
                                     </div>
                                     <div>
                                         <h3 className="text-xl font-black text-[#0F172A] tracking-tight">
-                                            {isAdmin ? (editingItem ? 'Procesar Orden' : 'Forzar Entrada') : 'Registrar Venta'}
+                                            {editingItem ? 'Editar Registro' : entryMode === 'EGRESO' ? 'Registrar Egreso / Salida' : 'Registrar Ingreso / Entrada'}
                                         </h3>
-                                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mt-1">Consolidación Financiera</p>
+                                        <p className={`text-xs font-bold uppercase tracking-wider mt-1 ${
+                                            entryMode === 'EGRESO' ? 'text-rose-400' : 'text-emerald-500'
+                                        }`}>
+                                            {entryMode === 'EGRESO' ? 'Salida de Dinero — Pago o Gasto' : 'Entrada de Dinero — Venta, Cobro o Ingreso'}
+                                        </p>
                                     </div>
                                 </div>
                                 <button
@@ -446,68 +484,156 @@ export default function FinanceManager() {
                                 </button>
                             </div>
 
-                            <form onSubmit={handleSave} className="p-8 space-y-8 overflow-y-auto custom-scrollbar">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                    <div className={`${isAdmin ? 'col-span-1' : 'md:col-span-2'} space-y-2`}>
-                                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Cliente Final / Proyecto</label>
+                            <form onSubmit={handleSave} className="p-6 space-y-6 overflow-y-auto custom-scrollbar">
+                                {/* ===== EGRESO FORM ===== */}
+                                {entryMode === 'EGRESO' ? (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="md:col-span-2 space-y-2">
+                                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Concepto / Descripción del Egreso</label>
+                                            <div className="relative group">
+                                                <FileText className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                                                <input
+                                                    required
+                                                    value={formData.quoteNumber || ""}
+                                                    onChange={(e) => setFormData({ ...formData, quoteNumber: e.target.value })}
+                                                    className="w-full bg-slate-50 border border-slate-200 rounded-lg py-3 pl-12 pr-4 text-sm font-bold text-[#0F172A] focus:border-rose-400 focus:ring-2 focus:ring-rose-400/20 outline-none transition-all"
+                                                    placeholder="Ej: Pago proveedor, alquiler, viático..."
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Categoría</label>
+                                            <select
+                                                value={formData.type}
+                                                onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                                                className="w-full bg-slate-50 border border-slate-200 rounded-lg py-3 px-4 text-sm font-bold text-[#0F172A] outline-none h-[46px]"
+                                            >
+                                                <option value="Egreso Operativo">Gasto Operativo</option>
+                                                <option value="Egreso Comision">Pago Comisión Asesor</option>
+                                                <option value="Egreso Proveedor">Pago a Proveedor</option>
+                                                <option value="Egreso Marketing">Marketing / Publicidad</option>
+                                                <option value="Egreso Logistica">Logística / Envíos</option>
+                                                <option value="Egreso Nomina">Nómina / Sueldos</option>
+                                            </select>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Fecha</label>
+                                            <input
+                                                type="date" required
+                                                value={formData.date}
+                                                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                                                className="w-full bg-slate-50 border border-slate-200 rounded-lg py-3 px-4 text-sm font-bold text-[#0F172A] outline-none transition-all"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-bold text-rose-600 uppercase tracking-wider ml-1">Monto ($)</label>
+                                            <div className="relative">
+                                                <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 text-rose-400" size={20} />
+                                                <input
+                                                    type="number" required min="0" step="0.01"
+                                                    value={formData.amount}
+                                                    onChange={(e) => setFormData({ ...formData, amount: parseFloat(e.target.value) || 0 })}
+                                                    className="w-full bg-rose-50 border border-rose-200 rounded-lg py-3 pl-12 pr-4 text-xl font-black text-rose-700 focus:border-rose-400 outline-none"
+                                                    placeholder="0.00"
+                                                />
+                                            </div>
+                                        </div>
+                                        {isAdmin && (
+                                            <div className="space-y-2">
+                                                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Responsable / Asesor (opcional)</label>
+                                                <select
+                                                    value={formData.salespersonId}
+                                                    onChange={(e) => setFormData({ ...formData, salespersonId: e.target.value })}
+                                                    className="w-full bg-slate-50 border border-slate-200 rounded-lg py-3 px-4 text-sm font-bold text-[#0F172A] outline-none h-[46px]"
+                                                >
+                                                    <option value="">Sin asesor asignado</option>
+                                                    {users.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
+                                                </select>
+                                            </div>
+                                        )}
+                                        <div className="md:col-span-2 pt-4">
+                                            <button
+                                                type="submit"
+                                                className="w-full bg-rose-600 text-white font-bold py-4 rounded-lg text-sm shadow-md hover:bg-rose-700 transition-all flex items-center justify-center gap-3"
+                                            >
+                                                <ArrowDownRight size={20} />
+                                                <span>REGISTRAR EGRESO</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Cliente Final</label>
                                         <div className="relative group">
-                                            <Users className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors" size={18} />
+                                            <Users className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-500 transition-colors" size={18} />
                                             <input
                                                 required
                                                 disabled={!!(editingItem && !isAdmin)}
                                                 value={formData.client}
                                                 onChange={(e) => setFormData({ ...formData, client: e.target.value.toUpperCase() })}
-                                                className="w-full bg-slate-50 border border-slate-200 rounded-lg py-3 pl-12 pr-4 text-sm font-bold text-[#0F172A] focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all placeholder:text-slate-300 disabled:opacity-50 disabled:bg-slate-100"
+                                                className="w-full bg-slate-50 border border-slate-200 rounded-lg py-3 pl-12 pr-4 text-sm font-bold text-[#0F172A] focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all placeholder:text-slate-300 disabled:opacity-50 disabled:bg-slate-100"
                                                 placeholder="Nombre del cliente..."
                                             />
                                         </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Concepto / Referencia</label>
+                                        <div className="relative group">
+                                            <FileText className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                                            <input
+                                                value={formData.quoteNumber || ""}
+                                                onChange={(e) => setFormData({ ...formData, quoteNumber: e.target.value })}
+                                                className="w-full bg-slate-50 border border-slate-200 rounded-lg py-3 pl-12 pr-4 text-sm font-bold text-[#0F172A] focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all placeholder:text-slate-300"
+                                                placeholder="Descripción, Nº cotización..."
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Tipo de Ingreso</label>
+                                        <select
+                                            disabled={!!(editingItem && !isAdmin)}
+                                            value={formData.type}
+                                            onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                                            className="w-full bg-slate-50 border border-slate-200 rounded-lg py-3 px-4 text-sm font-bold text-[#0F172A] outline-none h-[46px] disabled:opacity-50"
+                                        >
+                                            <option value="Ingreso Simple">Ingreso Simple</option>
+                                            <option value="Ingreso con Comision">Ingreso con Comisión</option>
+                                            <option value="Ingreso por Cobranza">Ingreso por Cobranza</option>
+                                            <option value="Venta Directa">Venta Directa</option>
+                                            <option value="Servicio">Servicio Profesional</option>
+                                            <option value="Proyectos">Proyecto Integral</option>
+                                        </select>
                                     </div>
 
                                     {isAdmin && (
                                         <div className="space-y-2">
                                             <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Asignar Asesor</label>
                                             <select
-                                                required
                                                 value={formData.salespersonId}
                                                 onChange={(e) => setFormData({ ...formData, salespersonId: e.target.value })}
-                                                className="w-full bg-slate-50 border border-slate-200 rounded-lg py-3 px-4 text-sm font-bold text-[#0F172A] focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none h-[46px]"
+                                                className="w-full bg-slate-50 border border-slate-200 rounded-lg py-3 px-4 text-sm font-bold text-[#0F172A] outline-none h-[46px]"
                                             >
-                                                <option value="">Seleccionar Asesor...</option>
+                                                <option value="">Sin asesor</option>
                                                 {users.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
                                             </select>
                                         </div>
                                     )}
 
                                     <div className="space-y-2">
-                                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Fecha de Venta</label>
+                                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Fecha</label>
                                         <input
-                                            type="date"
-                                            required
+                                            type="date" required
                                             disabled={!!(editingItem && !isAdmin)}
                                             value={formData.date}
                                             onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                                            className="w-full bg-slate-50 border border-slate-200 rounded-lg py-3 px-4 text-sm font-bold text-[#0F172A] focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all disabled:opacity-50 disabled:bg-slate-100"
+                                            className="w-full bg-slate-50 border border-slate-200 rounded-lg py-3 px-4 text-sm font-bold text-[#0F172A] outline-none transition-all disabled:opacity-50"
                                         />
                                     </div>
 
                                     <div className="space-y-2">
-                                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Tipo de Operación</label>
-                                        <select
-                                            disabled={!!(editingItem && !isAdmin)}
-                                            value={formData.type}
-                                            onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                                            className="w-full bg-slate-50 border border-slate-200 rounded-lg py-3 px-4 text-sm font-bold text-[#0F172A] focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none h-[46px] disabled:opacity-50 disabled:bg-slate-100"
-                                        >
-                                            <option value="Venta Directa">Venta Directa</option>
-                                            <option value="Servicio">Servicio Profesional</option>
-                                            <option value="Proyectos">Proyecto Integral</option>
-                                            <option value="Ingreso Simple">Ingreso Simple</option>
-                                            <option value="Egreso Operativo">Egreso Operativo</option>
-                                        </select>
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <label className="text-xs font-bold text-indigo-600 uppercase tracking-wider ml-1">Valor Venta (PVP) ($)</label>
+                                        <label className="text-xs font-bold text-emerald-600 uppercase tracking-wider ml-1">Valor / PVP ($)</label>
                                         <div className="relative group">
                                             <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
                                             <input
@@ -516,7 +642,7 @@ export default function FinanceManager() {
                                                 disabled={!!(editingItem && !isAdmin)}
                                                 value={formData.amount}
                                                 onChange={(e) => setFormData({ ...formData, amount: parseFloat(e.target.value) })}
-                                                className="w-full bg-slate-50 border border-slate-200 rounded-lg py-3 pl-12 pr-4 text-lg font-black text-[#0F172A] focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all disabled:opacity-50 disabled:bg-slate-100"
+                                                className="w-full bg-emerald-50 border border-emerald-200 rounded-lg py-3 pl-12 pr-4 text-lg font-black text-emerald-700 focus:border-emerald-500 outline-none transition-all disabled:opacity-50"
                                             />
                                         </div>
                                     </div>
@@ -688,17 +814,17 @@ export default function FinanceManager() {
                                             </motion.div>
                                         </AnimatePresence>
                                     )}
+                                    <div className="md:col-span-2 pt-4">
+                                        <button
+                                            type="submit"
+                                            className="w-full bg-emerald-600 text-white font-bold py-4 rounded-lg text-sm shadow-md hover:bg-emerald-700 hover:shadow-lg transition-all flex items-center justify-center gap-3"
+                                        >
+                                            <ArrowUpRight size={20} />
+                                            <span>{isAdmin ? (editingItem ? 'ACTUALIZAR REGISTRO' : 'GUARDAR INGRESO') : 'ENVIAR PARA APROBACIÓN'}</span>
+                                        </button>
+                                    </div>
                                 </div>
-
-                                <div className="pt-8 flex">
-                                    <button
-                                        type="submit"
-                                        className="w-full bg-indigo-600 text-white font-bold py-4 rounded-lg text-sm shadow-md hover:bg-indigo-700 hover:shadow-lg transition-all flex items-center justify-center gap-3"
-                                    >
-                                        {isAdmin ? <ShieldCheck size={20} /> : <Save size={20} />}
-                                        <span>{isAdmin ? (editingItem ? 'PROCESAR Y NOTIFICAR' : 'SUBIR REGISTRO') : 'ENVIAR PARA APROBACIÓN'}</span>
-                                    </button>
-                                </div>
+                                )}
                             </form>
                         </motion.div>
                     </div>
