@@ -10,7 +10,7 @@ import {
     ArrowUpRight, ArrowDownRight, Info, Clock,
     Target, Briefcase, FileText, PieChart,
     ExternalLink, Upload, ShieldCheck, AlertCircle,
-    TrendingUp
+    TrendingUp, Ban
 } from "lucide-react"
 
 interface Transaction {
@@ -124,9 +124,15 @@ export default function FinanceManager() {
     }, [data, searchTerm, periodFilter])
 
     const activeData = filteredData.filter(i => i.status !== "CANCELADO")
-    const totalSales = activeData.reduce((acc, curr) => acc + curr.amount, 0)
-    const totalProfit = activeData.reduce((acc, curr) => acc + curr.profit, 0)
-    const totalCommission = activeData.reduce((acc, curr) => acc + curr.commission, 0)
+    const ventas = activeData.filter(i => i.type !== "Egreso Operativo")
+    const egresos = activeData.filter(i => i.type === "Egreso Operativo")
+
+    const totalSales = ventas.reduce((acc, curr) => acc + curr.amount, 0)
+    const totalProfit = ventas.reduce((acc, curr) => acc + curr.profit, 0)
+    const totalCommission = ventas.reduce((acc, curr) => acc + curr.commission, 0)
+    const totalEgresos = egresos.reduce((acc, curr) => acc + curr.amount, 0)
+    
+    const netProfit = totalProfit - totalCommission - totalEgresos
 
     const handleOpenModal = (item?: Transaction) => {
         if (item) {
@@ -250,10 +256,11 @@ export default function FinanceManager() {
             </div>
 
             {/* Summary Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <StatSummary label={`Ingreso Bruto PVP (${periodFilter})`} value={totalSales} icon={<DollarSign size={24} />} trend="Flujo Entrante" color="indigo" />
-                <StatSummary label="Utilidad Bruta" value={totalProfit} icon={<Target size={24} />} trend="Margen de Retención" color="emerald" />
-                <StatSummary label="Comisiones Pagadas" value={totalCommission} icon={<TrendingUp size={24} />} trend="Incentivos Comerciales" color="rose" />
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <StatSummary label={`Ingreso Bruto PVP`} value={totalSales} icon={<DollarSign size={24} />} trend="Flujo Entrante" color="indigo" />
+                <StatSummary label="Egresos Operativos" value={totalEgresos} icon={<ArrowDownRight size={24} />} trend="Gastos y Pagos" color="rose" />
+                <StatSummary label="Comisiones Pagadas" value={totalCommission} icon={<TrendingUp size={24} />} trend="Incentivos Asesores" color="rose" />
+                <StatSummary label="Beneficio Neto Real" value={netProfit} icon={<Target size={24} />} trend="Caja Fuerte" color="emerald" />
             </div>
 
             {/* Data Table */}
@@ -291,13 +298,13 @@ export default function FinanceManager() {
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 text-right font-bold">
-                                        ${(item.pvp || item.amount).toLocaleString()}
+                                        {item.type === 'Egreso Operativo' ? '-' : `$${(item.pvp || item.amount).toLocaleString()}`}
                                     </td>
                                     <td className="px-6 py-4 text-right text-rose-500">
-                                        -${item.cost.toLocaleString()}
+                                        ${item.type === 'Egreso Operativo' ? item.amount.toLocaleString() : item.cost.toLocaleString()}
                                     </td>
-                                    <td className="px-6 py-4 text-right text-emerald-600 font-black">
-                                        ${item.profit.toLocaleString()}
+                                    <td className={`px-6 py-4 text-right font-black ${item.type === 'Egreso Operativo' ? 'text-rose-600' : 'text-emerald-600'}`}>
+                                        {item.type === 'Egreso Operativo' ? `-$${item.amount.toLocaleString()}` : `$${item.profit.toLocaleString()}`}
                                     </td>
                                     <td className="px-6 py-4 text-right text-indigo-500">
                                         ${item.commission.toLocaleString()}
@@ -309,8 +316,8 @@ export default function FinanceManager() {
                                                     <button onClick={() => handleOpenModal(item)} className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors">
                                                         <Edit3 size={16} />
                                                     </button>
-                                                    <button onClick={() => handleDelete(item.id)} className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors">
-                                                        <Trash2 size={16} />
+                                                    <button onClick={() => handleDelete(item.id)} title="Desactivar Registro" className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors">
+                                                        <Ban size={16} />
                                                     </button>
                                                 </>
                                             )}
@@ -420,6 +427,8 @@ export default function FinanceManager() {
                                             <option value="Venta Directa">Venta Directa</option>
                                             <option value="Servicio">Servicio Profesional</option>
                                             <option value="Proyectos">Proyecto Integral</option>
+                                            <option value="Ingreso Simple">Ingreso Simple</option>
+                                            <option value="Egreso Operativo">Egreso Operativo</option>
                                         </select>
                                     </div>
 
