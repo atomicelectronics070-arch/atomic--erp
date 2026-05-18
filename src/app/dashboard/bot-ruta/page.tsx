@@ -1100,7 +1100,7 @@ export default function BotRutaPage() {
                   {msg.text?.split("**").map((part, i) => i%2===1 ? <strong key={i}>{part}</strong> : <span key={i}>{part}</span>)}
                   {phase==="onboarding" && msg.id==="1" && (
                     <div className="flex gap-2 mt-4">
-                      <button onClick={startAdGeneration} className="bg-indigo-600 text-white px-5 py-2 rounded-lg text-xs font-bold hover:bg-indigo-700 transition-colors w-full shadow-sm">\ud83d\ude80 Comenzar mi d\u00eda de trabajo</button>
+                      <button onClick={goToProductSelection} className="bg-indigo-600 text-white px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider hover:bg-indigo-700 transition-colors w-full shadow-sm">\ud83d\ude80 Comenzar mi d\u00eda de trabajo</button>
                     </div>
                   )}
                 </div>
