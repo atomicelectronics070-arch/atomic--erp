@@ -591,11 +591,11 @@ export default function CRMHistoricosPage() {
                                                 </div>
                                             </td>
                                             <td className="py-4 px-6 text-right flex items-center justify-end gap-2">
-                                                 {client.tags?.split(',').map((t) => t.trim().toUpperCase()).includes("NUEVO_LEAD") && (
+                                                 {client.tags?.split(',').map((t: string) => t.trim().toUpperCase()).includes("NUEVO_LEAD") && (
                                                      <button 
                                                          onClick={async (e) => {
                                                              e.stopPropagation();
-                                                             const tArr = client.tags.split(',').map((t) => t.trim()).filter((t) => t.toUpperCase() !== "NUEVO_LEAD");
+                                                             const tArr = client.tags.split(',').map((t: string) => t.trim()).filter((t: string) => t.toUpperCase() !== "NUEVO_LEAD");
                                                              const updated = { ...client, tags: tArr.join(', ') };
                                                              try {
                                                                  const res = await fetch(`/api/crm/${client.id}`, {
