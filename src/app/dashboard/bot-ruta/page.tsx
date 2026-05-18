@@ -602,6 +602,71 @@ export default function BotRutaPage() {
     setPhase("ads_ready")
   }
 
+  const regenerateAds = async () => {
+    setMessages(prev => [...prev, { id: Date.now().toString(), from: "user", text: "🔄 Generar otras opciones de productos" }])
+    setPhase("loading_ads")
+    await new Promise(r => setTimeout(r, 500))
+    addBotMsg("Buscando otras opciones estratégicas en el catálogo de Atomic y volviendo a generar diseños inteligentes con la IA... 🔄⚡")
+    
+    try {
+      const res = await fetch("/api/web/products?pageSize=100")
+      const d = await res.json()
+      const all = d.products || []
+      
+      const withImages = all.filter((p: any) => {
+        const imgs = safeParseArray(p.images)
+        return imgs && imgs.length > 0 && imgs[0] !== ''
+      })
+      
+      // Shuffle to get different options
+      const shuffledAll = withImages.sort(() => Math.random() - 0.5)
+      
+      // Exclude currently generated product IDs if possible to prevent duplicates
+      const currentIds = generatedAds.map(ad => ad.id)
+      let available = shuffledAll.filter((p: any) => !currentIds.includes(p.id))
+      if (available.length < 3) {
+        available = shuffledAll
+      }
+      
+      const newSelected = available.slice(0, 3)
+      setProducts(newSelected)
+      
+      const locations = ["Cumbayá, Quito", "Samborondón, Guayaquil", "La Carolina, Quito", "Valle de los Tumbaco", "Urdesa, Guayaquil", "Manta, Manabí", "Cuenca, Azuay"]
+      
+      const ads = await Promise.all(newSelected.map(async (p: any) => {
+        const randomLocation = locations[Math.floor(Math.random() * locations.length)]
+        const priceStr = p.price ? `$${p.price.toFixed(2)}` : "Consultar precio"
+        
+        const parsedImgs = safeParseArray(p.images)
+        const rawImgUrl = parsedImgs[0] || "https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?w=500"
+        
+        const generatedBannerDataUrl = await drawBanner(p.name, p.price || 0, rawImgUrl)
+        const adCopy = parseProductToAd(p.name)
+        
+        return {
+          id: p.id,
+          img: generatedBannerDataUrl,
+          text: `**Título:** 🌟 ¡Súper Oferta! ${adCopy.cleanTitle} 🚀\n**Precio:** ${priceStr}\n**Descripción:** ${adCopy.adDescription}\n**Llamado a la Acción:** 📲 ${adCopy.callToAction}\n**Ubicación:** ${randomLocation}\n**SKU:** ${p.sku || "Disponible"}\n**Palabras claves:** #tecnologia #seguridad #ecuador #atomicindustries #hogar #innovacion`
+        }
+      }))
+      
+      setGeneratedAds(ads)
+      addBotMsg("¡Nuevas Opciones de Publicidad Generadas! 🎨✨ Hemos seleccionado una combinación alternativa de productos reales listos para descargar y publicar.")
+      
+      await new Promise(r => setTimeout(r, 1000))
+      addBotMsg("", "ad_texts")
+      
+      await new Promise(r => setTimeout(r, 1000))
+      addBotMsg("Aquí tienes los diseños alternativos de alta resolución generados para ti:", "ad_images")
+      setPhase("ads_ready")
+      
+    } catch (err) {
+      console.error("Failed to regenerate alternative options:", err)
+      addBotMsg("⚠️ Hubo un problema al conectar con tu catálogo de productos. Volvamos a intentarlo.")
+      setPhase("ads_ready")
+    }
+  }
+
   const handleUserReply = (text: string) => {
     // Custom logic if user types something
     setMessages(prev => [...prev, { id: Date.now().toString(), from:"user", text }])
@@ -798,9 +863,12 @@ export default function BotRutaPage() {
                           ))}
                       </div>
                       {phase==="ads_ready" && (
-                        <div className="flex gap-2 mt-4">
-                          <button onClick={() => { setPhase("upload_mode"); addBotMsg("\u00a1Excelente! Ahora procede a publicar. Cuando termines, sube tus evidencias.", "upload") }} className="bg-emerald-500 text-white px-5 py-3 rounded-lg text-sm font-bold hover:bg-emerald-600 transition-colors w-full shadow-sm">
-                              \ud83d\udcf8 Ya publiqu\u00e9, subir evidencias
+                        <div className="flex flex-col md:flex-row gap-3 mt-4 w-full">
+                          <button onClick={() => { setPhase("upload_mode"); addBotMsg("\u00a1Excelente! Ahora procede a publicar. Cuando termines, sube tus evidencias.", "upload") }} className="bg-emerald-500 text-white px-5 py-3 rounded-xl text-xs font-black uppercase tracking-wider hover:bg-emerald-600 transition-all flex-1 shadow-sm flex items-center justify-center gap-2">
+                              📸 Ya publiqué, subir evidencias
+                          </button>
+                          <button onClick={regenerateAds} className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all flex-1 shadow-sm flex items-center justify-center gap-2">
+                              🔄 Ver otras opciones
                           </button>
                         </div>
                       )}
