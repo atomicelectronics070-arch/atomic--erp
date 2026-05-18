@@ -29,6 +29,7 @@ export default function CRMHistoricosPage() {
     const [customGroups, setCustomGroups] = useState<string[]>([])
     const [isCreatingGroup, setIsCreatingGroup] = useState(false)
     const [newGroupName, setNewGroupName] = useState("")
+    const [selectedSalespersonFilter, setSelectedSalespersonFilter] = useState<string>("TODOS")
     
     // Drawer State
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
@@ -45,8 +46,8 @@ export default function CRMHistoricosPage() {
     useEffect(() => {
         fetchClients()
         fetchGroups()
-        if (isAdmin) fetchUsers()
-    }, [isAdmin])
+        fetchUsers()
+    }, [])
 
     const fetchClients = async () => {
         setLoading(true)
@@ -331,6 +332,15 @@ export default function CRMHistoricosPage() {
             return matchesSearch
         })
 
+        // Apply Advisor/Salesperson filter (For Admin Matrix view)
+        if (isAdmin && selectedSalespersonFilter !== "TODOS") {
+            if (selectedSalespersonFilter === "UNASSIGNED") {
+                result = result.filter(c => !c.salesperson)
+            } else {
+                result = result.filter(c => c.salesperson?.id === selectedSalespersonFilter)
+            }
+        }
+
         if (activeGroup !== "TODOS") {
             if (activeGroup === "MIS CLIENTES") {
                 result = result.filter(c => c.salesperson?.id === currentUserId)
@@ -345,7 +355,7 @@ export default function CRMHistoricosPage() {
         }
 
         return result
-    }, [clients, searchTerm, activeGroup, isAdmin, currentUserId])
+    }, [clients, searchTerm, activeGroup, isAdmin, currentUserId, selectedSalespersonFilter])
 
     // Standard Industrial Colors
     const statusColors: any = {
@@ -425,6 +435,22 @@ export default function CRMHistoricosPage() {
                         <p className="text-sm text-slate-500 font-medium mt-1">{filteredClients.length} registros en esta vista</p>
                     </div>
                     <div className="flex items-center gap-4">
+                        {isAdmin && (
+                            <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3.5 py-2 rounded-lg shadow-sm">
+                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Asesor:</span>
+                                <select
+                                    value={selectedSalespersonFilter}
+                                    onChange={(e) => setSelectedSalespersonFilter(e.target.value)}
+                                    className="bg-transparent border-none text-xs font-black text-indigo-600 outline-none cursor-pointer uppercase"
+                                >
+                                    <option value="TODOS">TODOS LOS ASESORES</option>
+                                    <option value="UNASSIGNED">SIN ASIGNAR</option>
+                                    {users.map(u => (
+                                        <option key={u.id} value={u.id}>{u.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
                         <div className="relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
                             <input 
@@ -465,6 +491,7 @@ export default function CRMHistoricosPage() {
                                         <th className="py-4 px-6 text-[11px] font-black text-slate-500 uppercase tracking-wider">Contacto</th>
                                         <th className="py-4 px-6 text-[11px] font-black text-slate-500 uppercase tracking-wider">Estado</th>
                                         <th className="py-4 px-6 text-[11px] font-black text-slate-500 uppercase tracking-wider">Grupo de Contactos</th>
+                                        <th className="py-4 px-6 text-[11px] font-black text-slate-500 uppercase tracking-wider">Asesor Asignado</th>
                                         <th className="py-4 px-6 text-[11px] font-black text-slate-500 uppercase tracking-wider">Etiquetas</th>
                                         <th className="py-4 px-6 text-[11px] font-black text-slate-500 uppercase tracking-wider text-right">Acción</th>
                                     </tr>
@@ -519,6 +546,16 @@ export default function CRMHistoricosPage() {
                                                 <span className="px-3 py-1 bg-indigo-50 border border-indigo-100 text-indigo-700 text-[10px] font-black tracking-wide rounded-lg flex items-center gap-1.5 w-max">
                                                     <Folders size={12} className="text-indigo-500" />
                                                     {client.category || "GENERAL"}
+                                                </span>
+                                            </td>
+                                            <td className="py-4 px-6">
+                                                <span className={`px-2.5 py-1 text-[10px] font-black uppercase tracking-wider border rounded-lg flex items-center gap-1.5 w-max ${
+                                                    client.salesperson
+                                                    ? 'bg-slate-100 text-slate-700 border-slate-200'
+                                                    : 'bg-rose-50 text-rose-700 border-rose-100'
+                                                }`}>
+                                                    <User size={12} className={client.salesperson ? 'text-slate-500' : 'text-rose-400'} />
+                                                    {client.salesperson?.name || 'GENERAL (SIN ASIGNAR)'}
                                                 </span>
                                             </td>
                                             <td className="py-4 px-6">
@@ -599,7 +636,7 @@ export default function CRMHistoricosPage() {
                                 {activeTab === "RESUMEN" && (
                                     <div className="space-y-8 animate-in fade-in duration-300">
                                         {/* Status & Category Strip */}
-                                        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm grid grid-cols-1 md:grid-cols-3 gap-6">
+                                        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm grid grid-cols-1 md:grid-cols-4 gap-6">
                                             <div className="space-y-2">
                                                 <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Estado Actual</label>
                                                 <select 
@@ -624,6 +661,19 @@ export default function CRMHistoricosPage() {
                                                     <option value="GENERAL">GENERAL</option>
                                                     {customGroups.map(g => (
                                                         <option key={g} value={g}>{g}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Asesor Asignado</label>
+                                                <select 
+                                                    value={editForm.salespersonId || editForm.salesperson?.id || ""}
+                                                    onChange={(e) => setEditForm({...editForm, salespersonId: e.target.value})}
+                                                    className="w-full bg-slate-50 border border-slate-200 p-3 text-sm font-bold text-[#0F172A] rounded-lg outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all uppercase"
+                                                >
+                                                    <option value="">SIN ASIGNAR (GENERAL)</option>
+                                                    {users.map(u => (
+                                                        <option key={u.id} value={u.id}>{u.name} ({u.role})</option>
                                                     ))}
                                                 </select>
                                             </div>

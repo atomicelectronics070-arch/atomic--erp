@@ -8,10 +8,7 @@ export async function GET() {
         const session = await getServerSession(authOptions)
         if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
-        // Only allow admins to fetch full user list
-        if (session.user.role !== "ADMIN" && session.user.role !== "MANAGEMENT") {
-            return NextResponse.json({ error: "Forbidden" }, { status: 403 })
-        }
+        // Allow all authenticated team members to query the list of salespeople
 
         const users = await prisma.user.findMany({
             select: { id: true, name: true, email: true, role: true },
