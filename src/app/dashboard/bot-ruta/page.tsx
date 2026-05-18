@@ -120,10 +120,11 @@ const parseProductToAd = (name: string): AdCopy => {
 function drawBanner(
   productName: string, 
   price: number, 
-  imgUrl: string
+  imgUrl: string,
+  adInfo: AdCopy
 ): Promise<string> {
   return new Promise((resolve) => {
-    const adInfo = parseProductToAd(productName);
+
     const canvas = document.createElement("canvas");
     canvas.width = 1080;
     canvas.height = 1080;
@@ -519,10 +520,21 @@ export default function BotRutaPage() {
       const parsedImgs = safeParseArray(p.images)
       const rawImgUrl = parsedImgs[0] || "https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?w=500"
       
-      // Draw canvas-based premium advertising banner
-      const generatedBannerDataUrl = await drawBanner(p.name, p.price || 0, rawImgUrl)
+      let adCopy = parseProductToAd(p.name);
+      try {
+        const res = await fetch("/api/bot-ruta/generate-ad", {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ productName: p.name })
+        });
+        if (res.ok) {
+          adCopy = await res.json();
+        }
+      } catch (err) {
+        console.error("Failed to generate ad copy:", err);
+      }
       
-      const adCopy = parseProductToAd(p.name);
+      const generatedBannerDataUrl = await drawBanner(p.name, p.price || 0, rawImgUrl, adCopy);
       
       return {
         id: p.id,
@@ -584,8 +596,21 @@ export default function BotRutaPage() {
         const parsedImgs = safeParseArray(p.images)
         const rawImgUrl = parsedImgs[0] || "https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?w=500"
         
-        const generatedBannerDataUrl = await drawBanner(p.name, p.price || 0, rawImgUrl)
-        const adCopy = parseProductToAd(p.name)
+        let adCopy = parseProductToAd(p.name);
+        try {
+          const res = await fetch("/api/bot-ruta/generate-ad", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ productName: p.name })
+          });
+          if (res.ok) {
+            adCopy = await res.json();
+          }
+        } catch (err) {
+          console.error("Failed to generate ad copy:", err);
+        }
+        
+        const generatedBannerDataUrl = await drawBanner(p.name, p.price || 0, rawImgUrl, adCopy);
         
         return {
           id: p.id,
@@ -678,8 +703,21 @@ export default function BotRutaPage() {
       const parsedImgs = safeParseArray(p.images)
       const rawImgUrl = parsedImgs[0] || "https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?w=500"
       
-      const generatedBannerDataUrl = await drawBanner(p.name, p.price || 0, rawImgUrl)
-      const adCopy = parseProductToAd(p.name)
+      let adCopy = parseProductToAd(p.name);
+      try {
+        const res = await fetch("/api/bot-ruta/generate-ad", {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ productName: p.name })
+        });
+        if (res.ok) {
+          adCopy = await res.json();
+        }
+      } catch (err) {
+        console.error("Failed to generate ad copy:", err);
+      }
+      
+      const generatedBannerDataUrl = await drawBanner(p.name, p.price || 0, rawImgUrl, adCopy);
       
       return {
         id: p.id,

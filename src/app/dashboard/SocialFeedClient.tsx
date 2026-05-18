@@ -234,11 +234,30 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
                                             )}
                                         </div>
                                         
-                                        <p className="text-sm text-slate-700 font-medium leading-relaxed mb-4 whitespace-pre-wrap">{post.content}</p>
+                                        <p className="text-sm text-slate-700 font-medium leading-relaxed mb-4 whitespace-pre-wrap">
+                                            {post.content.split(/(https?:\/\/[^\s]+)/g).map((part: string, index: number) => {
+                                                if (part.match(/https?:\/\/[^\s]+/)) {
+                                                    return <a key={index} href={part} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline">{part}</a>;
+                                                }
+                                                return part;
+                                            })}
+                                        </p>
                                         
-                                        {post.mediaUrl && (
+                                        {/* Video detection for Tutorial Folder */}
+                                        {post.content.includes("1ELD6LkVha7eM7DN8NdtIKzNqMSuUQcEK") && (
+                                            <div className="mb-4 relative w-full aspect-video rounded-lg overflow-hidden border border-slate-200">
+                                                <iframe 
+                                                    src="https://drive.google.com/file/d/16chfPwcoGopBzF1K8LhwYOwhrHiZrNQe/preview" 
+                                                    className="w-full h-full" 
+                                                    allow="autoplay"
+                                                    title="Video Tutorial"
+                                                ></iframe>
+                                            </div>
+                                        )}
+                                        
+                                        {post.mediaUrls && (
                                             <div className="mb-4 border border-slate-200 overflow-hidden rounded-lg">
-                                                <img src={post.mediaUrl} className="w-full max-h-[500px] object-cover" />
+                                                <img src={post.mediaUrls} className="w-full max-h-[500px] object-cover" />
                                             </div>
                                         )}
                                         
@@ -462,8 +481,30 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
                         </div>
                     )}
 
+                    {/* 📹 VIDEO DE GOOGLE DRIVE */}
+                    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
+                                <Video size={16} />
+                            </div>
+                            <div>
+                                <h3 className="text-sm font-black text-[#0F172A] tracking-tight">Video de Demostración</h3>
+                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Recurso Compartido</p>
+                            </div>
+                        </div>
+                        <div className="relative w-full aspect-video rounded-lg overflow-hidden border border-slate-200">
+                            <iframe 
+                                src="https://drive.google.com/file/d/16chfPwcoGopBzF1K8LhwYOwhrHiZrNQe/preview" 
+                                className="w-full h-full" 
+                                allow="autoplay"
+                                title="Video de Demostración"
+                            ></iframe>
+                        </div>
+                    </div>
+
                     {/* Academy Panel */}
                     <div className="bg-gradient-to-br from-slate-900 to-[#0F172A] rounded-xl shadow-lg border border-slate-800 p-8 text-white relative overflow-hidden">
+
                         <div className="absolute top-0 right-0 p-4 opacity-10">
                             <School size={80} />
                         </div>
