@@ -4,7 +4,7 @@ import { useSession } from "next-auth/react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Bot, Send, Upload, Phone, CheckCircle2, Settings, Users, Image as ImageIcon, X, Plus, Camera } from "lucide-react"
 
-type Phase = "onboarding"|"product_selection"|"loading_ads"|"ads_ready"|"upload_mode"|"phone_mode"|"completed"
+type Phase = "onboarding"|"product_selection"|"awaiting_preferences"|"loading_ads"|"ads_ready"|"upload_mode"|"phone_mode"|"completed"
 
 interface BotMsg { id: string; from: "bot"|"user"; text?: string; type?: "buttons"|"products"|"upload"|"phone_form"|"ad_texts"|"ad_images"|"product_selection_cards" }
 
@@ -667,9 +667,150 @@ export default function BotRutaPage() {
     }
   }
 
+  const goToProductSelection = () => {
+    setMessages(prev => [...prev, { id: Date.now().toString(), from: "user", text: "🚀 Comenzar mi día de trabajo" }])
+    setPhase("product_selection")
+    setTimeout(() => {
+      addBotMsg("¡Excelente! Primero vamos a seleccionar tus 3 productos estratégicos del día de hoy.")
+      setTimeout(() => {
+        addBotMsg("Elige de la ruleta de productos propuestos de tu catálogo de Atomic. Si no te convencen, puedes cambiar las opciones. Una vez que los aceptes, la IA (Flux / Google Imagen 3) los procesará y no habrá marcha atrás:", "product_selection_cards")
+      }, 500)
+    }, 500)
+  }
+
+  const shuffleProposedProducts = async () => {
+    try {
+      const res = await fetch("/api/web/products?pageSize=100")
+      const d = await res.json()
+      const all = d.products || []
+      
+      const withImages = all.filter((p: any) => {
+        const imgs = safeParseArray(p.images)
+        return imgs && imgs.length > 0 && imgs[0] !== ''
+      })
+      
+      const shuffled = withImages.sort(() => Math.random() - 0.5)
+      const selected = shuffled.slice(0, 3)
+      setProducts(selected)
+      
+      addBotMsg("🔄 Hemos barajado el catálogo. Aquí tienes una nueva propuesta de 3 productos estratégicos:", "product_selection_cards")
+    } catch (err) {
+      console.error("Failed shuffling proposed products:", err)
+    }
+  }
+
+  const acceptProductsAndGenerate = async () => {
+    setPhase("loading_ads")
+    setMessages(prev => [...prev, { id: Date.now().toString(), from: "user", text: "✅ Confirmo y Acepto mis 3 productos estratégicos" }])
+    
+    await new Promise(r => setTimeout(r, 600))
+    addBotMsg("¡Productos Confirmados! 🚀 A partir de este momento no hay marcha atrás y quedas comprometido a publicar este material en tus redes sociales.")
+    
+    await new Promise(r => setTimeout(r, 600))
+    addBotMsg("La Inteligencia Artificial de Alto Rendimiento (Google/Flux) está procesando y estructurando tus diseños a medida. \n\n⚠️ NOTA: El procesamiento neuronal de imágenes en alta resolución puede tomar de 3 a 4 minutos. Por favor espera en este chat... ⏳")
+    
+    // Simulate premium rendering progress steps
+    await new Promise(r => setTimeout(r, 2000))
+    addBotMsg("⚡ [Fase 1/4] Extrayendo variables del inventario y estructurando prompts de difusión de alta conversión...")
+    
+    await new Promise(r => setTimeout(r, 2500))
+    addBotMsg("🎨 [Fase 2/4] Ejecutando modelos de difusión de red neuronal (Google Imagen 3 / Flux Pro)... Generando trazados geométricos...")
+    
+    await new Promise(r => setTimeout(r, 2500))
+    addBotMsg("🇺🇲 [Fase 3/4] Agregando bandera oficial de Ecuador, sellos de garantía oficial y precios del catálogo...")
+    
+    await new Promise(r => setTimeout(r, 2500))
+    addBotMsg("🚀 [Fase 4/4] Renderizando banners en alta definición y optimizando compresión de imagen para redes...")
+
+    await new Promise(r => setTimeout(r, 2000))
+    
+    let poolProducts = products
+    const locations = ["Cumbayá, Quito", "Samborondón, Guayaquil", "La Carolina, Quito", "Valle de los Tumbaco", "Urdesa, Guayaquil", "Manta, Manabí", "Cuenca, Azuay"]
+    
+    const ads = await Promise.all(poolProducts.map(async (p: any) => {
+      const randomLocation = locations[Math.floor(Math.random() * locations.length)]
+      const priceStr = p.price ? `${p.price.toFixed(2)}` : "Consultar precio"
+      
+      const parsedImgs = safeParseArray(p.images)
+      const rawImgUrl = parsedImgs[0] || "https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?w=500"
+      
+      const generatedBannerDataUrl = await drawBanner(p.name, p.price || 0, rawImgUrl)
+      const adCopy = parseProductToAd(p.name)
+      
+      return {
+        id: p.id,
+        img: generatedBannerDataUrl,
+        text: `**Título:** 🌟 ¡Súper Oferta! ${adCopy.cleanTitle} 🚀\n**Precio:** ${priceStr}\n**Descripción:** ${adCopy.adDescription}\n**Llamado a la Acción:** 📲 ${adCopy.callToAction}\n**Ubicación:** ${randomLocation}\n**SKU:** ${p.sku || "Disponible"}\n**Palabras claves:** #tecnologia #seguridad #ecuador #atomicindustries #hogar #innovacion`
+      }
+    }))
+    
+    setGeneratedAds(ads)
+    
+    addBotMsg("¡Publicidad Generada con Éxito! 🎉 Tus 3 diseños y copys están listos.")
+    
+    await new Promise(r => setTimeout(r, 1000))
+    addBotMsg("", "ad_texts")
+    
+    await new Promise(r => setTimeout(r, 1000))
+    addBotMsg("Aquí tienes los diseños de alta resolución para descargar e iniciar tus publicaciones del día:", "ad_images")
+    setPhase("ads_ready")
+  }
+
   const handleUserReply = (text: string) => {
     // Custom logic if user types something
     setMessages(prev => [...prev, { id: Date.now().toString(), from:"user", text }])
+    
+    if (phase === "awaiting_preferences") {
+      setPhase("product_selection")
+      const keywords = text.toLowerCase().split(/[\s,]+/).map(w => w.trim()).filter(w => w.length > 2)
+      
+      addBotMsg("Buscando en tu catálogo de productos coincidencias inspiradas en: \"" + keywords.join(", ") + "\"... 🔍")
+      
+      fetch("/api/web/products?pageSize=100")
+        .then(r => r.json())
+        .then(d => {
+          const all = d.products || []
+          const withImages = all.filter((p: any) => {
+            const imgs = safeParseArray(p.images)
+            return imgs && imgs.length > 0 && imgs[0] !== ''
+          })
+          
+          // Filter matching products
+          let matched = withImages.filter((p: any) => 
+            keywords.some(kw => 
+              p.name.toLowerCase().includes(kw) || 
+              (p.category && p.category.toLowerCase().includes(kw)) ||
+              (p.description && p.description.toLowerCase().includes(kw))
+            )
+          )
+          
+          // Shuffle matches
+          matched = matched.sort(() => Math.random() - 0.5)
+          
+          let selected: any[] = []
+          if (matched.length >= 3) {
+            selected = matched.slice(0, 3)
+          } else {
+            const others = withImages.filter((p: any) => !matched.some((m: any) => m.id === p.id))
+            const shuffledOthers = others.sort(() => Math.random() - 0.5)
+            selected = [...matched, ...shuffledOthers.slice(0, 3 - matched.length)]
+          }
+          
+          setProducts(selected)
+          setTimeout(() => {
+            addBotMsg("¡Hecho! Inspirado en tus preferencias de hoy, he seleccionado estas 3 opciones personalizadas de tu inventario:")
+            setTimeout(() => {
+              addBotMsg("¿Deseas aceptar estos productos para iniciar el diseño publicitario irreversible?", "product_selection_cards")
+            }, 500)
+          }, 500)
+        })
+        .catch(err => {
+          console.error(err)
+          addBotMsg("⚠️ Hubo un problema al buscar en tu inventario. Volvamos a la propuesta estándar.")
+        })
+      return
+    }
+
     if (phase === "onboarding") {
         startAdGeneration()
     } else if (phase === "ads_ready") {
@@ -707,7 +848,12 @@ export default function BotRutaPage() {
       reader.onloadend = () => {
         setScreenshots(prev => {
           const next = [...prev, reader.result as string]
-          setTimeout(() => addBotMsg(`\ud83d\udcf8 \u00a1Genial! Vamos en **${next.length} captura(s)**. Recuerda que cada captura debe mostrar una publicaci\u00f3n independiente. \u00a1Sigue as\u00ed!`), 300)
+          if (next.length === 3) {
+            setPhase("completed")
+            setTimeout(() => addBotMsg("🎉 ¡Felicidades! Has subido con éxito tus 3 evidencias de publicación del día de hoy. Tu ruta diaria ha quedado completada, bloqueada y archivada. ¡Excelente trabajo y a seguir vendiendo! 🏆"), 300)
+          } else {
+            setTimeout(() => addBotMsg(`📸 Evidencia recibida. Vamos en **${next.length} de 3 capturas**. Recuerda subir exactamente 3 capturas de ley para archivar tu ruta diaria.`), 300)
+          }
           return next
         })
       }
@@ -875,6 +1021,18 @@ export default function BotRutaPage() {
                         className="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-black uppercase tracking-wider py-3.5 px-4 rounded-xl shadow-sm transition-all flex items-center justify-center gap-2"
                       >
                         🔄 Cambiar Opciones de Ruleta
+                      </button>
+                      <button 
+                        onClick={() => {
+                          setPhase("awaiting_preferences");
+                          setMessages(prev => [...prev, { id: Date.now().toString(), from: "user", text: "✨ Decir mis preferencias" }]);
+                          setTimeout(() => {
+                            addBotMsg("¡Excelente elección! Escribe las 3 categorías o palabras clave de productos (ej: cerraduras, parlantes, cámaras, routers) que crees que se venderán mejor hoy en tus redes. \n\nLas usaré como inspiración para buscar coincidencias perfectas en tu catálogo...");
+                          }, 300);
+                        }} 
+                        className="bg-amber-500 hover:bg-amber-600 text-white text-xs font-black uppercase tracking-wider py-3.5 px-4 rounded-xl shadow-sm transition-all flex items-center justify-center gap-2"
+                      >
+                        ✨ Decir mis preferencias de hoy
                       </button>
                     </div>
                   ) : (
