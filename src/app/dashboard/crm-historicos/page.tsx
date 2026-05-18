@@ -37,6 +37,7 @@ export default function CRMHistoricosPage() {
     const [editForm, setEditForm] = useState<any>({})
     const [activeTab, setActiveTab] = useState<"RESUMEN" | "BITACORA" | "COTIZACIONES">("RESUMEN")
     const [newObservation, setNewObservation] = useState("")
+    const [evidenceImageUrl, setEvidenceImageUrl] = useState("")
 
     // Pendientes State
     const [isAddingPendiente, setIsAddingPendiente] = useState(false)
@@ -232,12 +233,20 @@ export default function CRMHistoricosPage() {
     const handleSaveClient = async () => {
         try {
             const isAdding = !selectedClient?.id
+            let payload = { ...editForm }
+            if (isAdding) {
+                const tagsList = payload.tags ? payload.tags.split(',').map((t: string) => t.trim()) : []
+                if (!tagsList.includes("NUEVO_LEAD")) {
+                    tagsList.push("NUEVO_LEAD")
+                }
+                payload.tags = tagsList.filter(Boolean).join(", ")
+            }
             const method = isAdding ? "POST" : "PUT"
             const url = isAdding ? "/api/crm" : `/api/crm/${selectedClient.id}`
             const res = await fetch(url, {
                 method,
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(editForm)
+                body: JSON.stringify(payload)
             })
             if (res.ok) {
                 fetchClients()
@@ -252,7 +261,11 @@ export default function CRMHistoricosPage() {
         if (!newObservation.trim() || !selectedClient) return
         const timestamp = new Date().toLocaleString()
         const author = session?.user?.name || "Asesor"
-        const formattedObs = `\n[${timestamp}] ${author}: ${newObservation}`
+        let obsContent = newObservation.trim()
+        if (evidenceImageUrl.trim()) {
+            obsContent += ` ![Evidencia](${evidenceImageUrl.trim()})`
+        }
+        const formattedObs = `\n[${timestamp}] ${author}: ${obsContent}`
         const updatedRequirement = (selectedClient.requirement || "") + formattedObs
         
         try {
@@ -266,6 +279,7 @@ export default function CRMHistoricosPage() {
                 setSelectedClient(updated)
                 setEditForm({ ...editForm, requirement: updatedRequirement })
                 setNewObservation("")
+                setEvidenceImageUrl("")
                 fetchClients()
             }
         } catch (e) {
@@ -461,12 +475,14 @@ export default function CRMHistoricosPage() {
                                 className="w-80 bg-white border border-slate-200 rounded-lg pl-10 pr-4 py-2.5 text-sm font-medium outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all shadow-sm"
                             />
                         </div>
-                        <button 
-                            onClick={handleCreateNew}
-                            className="bg-[#0F172A] text-white px-6 py-2.5 rounded-lg text-sm font-bold shadow-[0_4px_14px_0_rgb(0,0,0,0.1)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.15)] hover:bg-[#1E293B] transition-all flex items-center gap-2"
-                        >
-                            <UserPlus size={16} /> NUEVO CLIENTE
-                        </button>
+                        {!(activeGroup === "NUEVOS LEADS" && !isAdmin) && (
+                            <button 
+                                onClick={handleCreateNew}
+                                className="bg-[#0F172A] text-white px-6 py-2.5 rounded-lg text-sm font-bold shadow-[0_4px_14px_0_rgb(0,0,0,0.1)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.15)] hover:bg-[#1E293B] transition-all flex items-center gap-2"
+                            >
+                                <UserPlus size={16} /> NUEVO CLIENTE
+                            </button>
+                        )}
                     </div>
                 </div>
 
@@ -505,7 +521,14 @@ export default function CRMHistoricosPage() {
                                                         {client.name?.[0]?.toUpperCase()}
                                                     </div>
                                                     <div>
-                                                        <p className="font-bold text-[#0F172A]">{client.name}</p>
+                                                        <div className="flex items-center gap-1.5">
+                                                            <p className="font-bold text-[#0F172A]">{client.name}</p>
+                                                            {client.tags?.split(',').map((t: string) => t.trim().toUpperCase()).includes("NUEVO_LEAD") && (
+                                                                <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-amber-100 text-amber-800 border border-amber-200 text-[8px] font-black uppercase tracking-wider rounded-md animate-pulse">
+                                                                    ★ NUEVO
+                                                                </span>
+                                                            )}
+                                                        </div>
                                                         <p className="text-xs text-slate-500 mt-0.5">{client.cedula ? `C.I. ${client.cedula}` : 'Sin identificación'}</p>
                                                     </div>
                                                 </div>
@@ -567,11 +590,35 @@ export default function CRMHistoricosPage() {
                                                     )) : <span className="text-xs text-slate-400 italic">—</span>}
                                                 </div>
                                             </td>
-                                            <td className="py-4 px-6 text-right">
-                                                <button className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100">
-                                                    <ArrowRight size={18} />
-                                                </button>
-                                            </td>
+                                            <td className="py-4 px-6 text-right flex items-center justify-end gap-2">
+                                                 {client.tags?.split(',').map((t) => t.trim().toUpperCase()).includes("NUEVO_LEAD") && (
+                                                     <button 
+                                                         onClick={async (e) => {
+                                                             e.stopPropagation();
+                                                             const tArr = client.tags.split(',').map((t) => t.trim()).filter((t) => t.toUpperCase() !== "NUEVO_LEAD");
+                                                             const updated = { ...client, tags: tArr.join(', ') };
+                                                             try {
+                                                                 const res = await fetch(`/api/crm/${client.id}`, {
+                                                                     method: "PUT",
+                                                                     headers: { "Content-Type": "application/json" },
+                                                                     body: JSON.stringify(updated)
+                                                                 });
+                                                                 if (res.ok) {
+                                                                     fetchClients();
+                                                                 }
+                                                             } catch (err) {
+                                                                 console.error(err);
+                                                             }
+                                                         }}
+                                                         className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-[9px] uppercase tracking-wider px-2.5 py-1.5 rounded-lg shadow-md flex items-center gap-1 transition-all shrink-0"
+                                                     >
+                                                         ★ Aceptar
+                                                     </button>
+                                                 )}
+                                                 <button className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100 shrink-0">
+                                                     <ArrowRight size={18} />
+                                                 </button>
+                                             </td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -817,19 +864,30 @@ export default function CRMHistoricosPage() {
                                             <div className="w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0">
                                                 <Edit2 size={16} />
                                             </div>
-                                            <div className="flex-1 flex gap-3">
+                                            <div className="flex-1 flex flex-col gap-3">
                                                 <textarea 
                                                     value={newObservation}
                                                     onChange={(e) => setNewObservation(e.target.value)}
                                                     placeholder="Registra una nueva llamada, reunión, o nota de seguimiento para este cliente..."
-                                                    className="flex-1 bg-white border border-slate-200 rounded-lg p-3 text-sm text-slate-700 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 min-h-[80px] resize-none shadow-sm"
+                                                    className="w-full bg-white border border-slate-200 rounded-lg p-3 text-sm text-slate-700 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 min-h-[80px] resize-none shadow-sm"
                                                 />
-                                                <button 
-                                                    onClick={handleAddObservation}
-                                                    className="bg-indigo-600 text-white px-6 font-bold text-sm rounded-lg hover:bg-indigo-700 transition-colors shadow-sm self-end h-[42px]"
-                                                >
-                                                    Publicar
-                                                </button>
+                                                <div className="flex items-center gap-3">
+                                                    <div className="flex-1 relative">
+                                                        <input 
+                                                            type="text"
+                                                            placeholder="URL de imagen de evidencia (opcional, ej. https://ejemplo.com/evidencia.jpg)..."
+                                                            value={evidenceImageUrl}
+                                                            onChange={(e) => setEvidenceImageUrl(e.target.value)}
+                                                            className="w-full bg-white border border-slate-200 rounded-lg pl-3 pr-4 py-2 text-xs font-semibold text-slate-600 outline-none focus:border-indigo-500 transition-all shadow-sm"
+                                                        />
+                                                    </div>
+                                                    <button 
+                                                        onClick={handleAddObservation}
+                                                        className="bg-indigo-600 text-white px-6 py-2 font-bold text-xs uppercase tracking-wider rounded-lg hover:bg-indigo-700 transition-colors shadow-sm h-[32px] flex items-center gap-1 shrink-0"
+                                                    >
+                                                        Publicar Nota
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                         <div className="flex-1 p-8 overflow-y-auto custom-scrollbar relative">
@@ -853,7 +911,26 @@ export default function CRMHistoricosPage() {
                                                                             <span className="text-sm font-bold text-[#0F172A]">{match[2]}</span>
                                                                             <span className="text-xs font-semibold text-slate-400 bg-slate-100 px-2 py-1 rounded-md">{match[1]}</span>
                                                                         </div>
-                                                                        <p className="text-slate-600 text-sm leading-relaxed">{match[3]}</p>
+                                                                        {(() => {
+                                                                            const rawContent = match[3];
+                                                                            const imgMatch = rawContent.match(/!\[.*?\]\((.*?)\)/) || rawContent.match(/(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp))/i);
+                                                                            const cleanText = rawContent.replace(/!\[.*?\]\((.*?)\)/g, '').trim();
+                                                                            return (
+                                                                                <>
+                                                                                    <p className="text-slate-600 text-sm leading-relaxed">{cleanText}</p>
+                                                                                    {imgMatch && (
+                                                                                        <div className="mt-3 relative group/img max-w-sm rounded-lg overflow-hidden border border-slate-200 shadow-sm bg-slate-50">
+                                                                                            <img 
+                                                                                                src={imgMatch[1]} 
+                                                                                                alt="Evidencia" 
+                                                                                                className="object-contain w-full max-h-48 cursor-zoom-in hover:scale-[1.02] transition-transform"
+                                                                                                onClick={() => window.open(imgMatch[1], '_blank')}
+                                                                                            />
+                                                                                        </div>
+                                                                                    )}
+                                                                                </>
+                                                                            );
+                                                                        })()}
                                                                     </div>
                                                                 </div>
                                                             )
