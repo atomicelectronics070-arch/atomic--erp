@@ -4,9 +4,9 @@ import { useSession } from "next-auth/react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Bot, Send, Upload, Phone, CheckCircle2, Settings, Users, Image as ImageIcon, X, Plus, Camera } from "lucide-react"
 
-type Phase = "onboarding"|"loading_ads"|"ads_ready"|"upload_mode"|"phone_mode"
+type Phase = "onboarding"|"product_selection"|"loading_ads"|"ads_ready"|"upload_mode"|"phone_mode"|"completed"
 
-interface BotMsg { id: string; from: "bot"|"user"; text?: string; type?: "buttons"|"products"|"upload"|"phone_form"|"ad_texts"|"ad_images" }
+interface BotMsg { id: string; from: "bot"|"user"; text?: string; type?: "buttons"|"products"|"upload"|"phone_form"|"ad_texts"|"ad_images"|"product_selection_cards" }
 
 const INITIAL_MSGS: BotMsg[] = [
   { id:"1", from:"bot", text:"\u00a1Hola! \ud83d\udc4b Bienvenido a Atomic Industries. Soy tu asistente de ruta. Estoy aqu\u00ed para asignarte tus productos estrat\u00e9gicos del d\u00eda, generar tus dise\u00f1os y darte los copys para que publiques." },
@@ -844,6 +844,48 @@ export default function BotRutaPage() {
                   </div>
               )
             }
+            if (msg.type === "product_selection_cards") {
+              return (
+                <div key={msg.id} className="max-w-md mt-2 space-y-4">
+                  <div className="grid grid-cols-3 gap-3">
+                    {products.map((p, i) => {
+                      const imgs = safeParseArray(p.images);
+                      const imgUrl = imgs[0] || "https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?w=500";
+                      return (
+                        <div key={i} className="border border-slate-200 bg-white rounded-xl p-3 flex flex-col items-center text-center shadow-sm">
+                          <div className="w-12 h-12 rounded-lg bg-slate-50 flex items-center justify-center overflow-hidden border border-slate-100">
+                            <img src={imgUrl} className="w-full h-full object-contain" alt="" />
+                          </div>
+                          <p className="text-[9px] font-black text-slate-700 truncate w-full mt-2" title={p.name}>{p.name}</p>
+                          <p className="text-[10px] font-black text-indigo-600 mt-1">${p.price ? p.price.toFixed(2) : "0.00"}</p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  {phase === "product_selection" ? (
+                    <div className="flex flex-col gap-2 mt-3">
+                      <button 
+                        onClick={acceptProductsAndGenerate} 
+                        className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-black uppercase tracking-wider py-3.5 px-4 rounded-xl shadow-sm transition-all flex items-center justify-center gap-2"
+                      >
+                        ✅ Aceptar Productos y Generar (Sin marcha atrás)
+                      </button>
+                      <button 
+                        onClick={shuffleProposedProducts} 
+                        className="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-black uppercase tracking-wider py-3.5 px-4 rounded-xl shadow-sm transition-all flex items-center justify-center gap-2"
+                      >
+                        🔄 Cambiar Opciones de Ruleta
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="bg-slate-100 border border-slate-200 text-slate-500 text-center py-2.5 px-4 rounded-xl text-xs font-black uppercase tracking-widest">
+                      🔒 Selección confirmada y en proceso por IA
+                    </div>
+                  )}
+                </div>
+              )
+            }
+
             if (msg.type === "ad_images") {
                 return (
                   <div key={msg.id} className="max-w-2xl mt-2">
@@ -863,12 +905,9 @@ export default function BotRutaPage() {
                           ))}
                       </div>
                       {phase==="ads_ready" && (
-                        <div className="flex flex-col md:flex-row gap-3 mt-4 w-full">
-                          <button onClick={() => { setPhase("upload_mode"); addBotMsg("\u00a1Excelente! Ahora procede a publicar. Cuando termines, sube tus evidencias.", "upload") }} className="bg-emerald-500 text-white px-5 py-3 rounded-xl text-xs font-black uppercase tracking-wider hover:bg-emerald-600 transition-all flex-1 shadow-sm flex items-center justify-center gap-2">
-                              📸 Ya publiqué, subir evidencias
-                          </button>
-                          <button onClick={regenerateAds} className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all flex-1 shadow-sm flex items-center justify-center gap-2">
-                              🔄 Ver otras opciones
+                        <div className="flex gap-2 mt-4 w-full">
+                          <button onClick={() => { setPhase("upload_mode"); addBotMsg("¡Excelente! Ahora procede a publicar tus anuncios en tus redes. Cuando termines, sube tus evidencias de ley (máximo 3 evidencias).", "upload") }} className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-3.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all w-full shadow-sm flex items-center justify-center gap-2">
+                              📸 Ya publiqué, subir las 3 evidencias
                           </button>
                         </div>
                       )}
@@ -915,7 +954,11 @@ export default function BotRutaPage() {
 
         {/* Input */}
         <div className="p-4 border-t border-slate-200 bg-white">
-          {phase==="phone_mode" ? (
+          {phase==="completed" ? (
+            <div className="bg-emerald-50 border border-emerald-200 rounded-xl py-3.5 px-4 text-center text-emerald-800 font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2">
+              🎉 Ruta del día completada y archivada con éxito
+            </div>
+          ) : phase==="phone_mode" ? (
             <div className="flex gap-3">
               <div className="flex-1 relative">
                 <Phone size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"/>
