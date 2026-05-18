@@ -31,11 +31,11 @@ const proxyImg = (url: string): string => {
     if (url.startsWith('/')) {
         if (typeof window !== 'undefined') {
             const absoluteUrl = `${window.location.origin}${url}`
-            return `https://images.weserv.nl/?url=${encodeURIComponent(absoluteUrl)}`
+            return `https://corsproxy.io/?${encodeURIComponent(absoluteUrl)}`
         }
         return url
     }
-    return `https://images.weserv.nl/?url=${encodeURIComponent(url)}`
+    return `https://corsproxy.io/?${encodeURIComponent(url)}`
 }
 
 interface AdCopy {
@@ -396,10 +396,11 @@ export default function BotRutaPage() {
       .then(d => {
         const all = d.products || []
         
-        // Filter products with real images
+        // Filter products with real images and minimum price of $15
         const withImages = all.filter((p: any) => {
           const imgs = safeParseArray(p.images)
-          return imgs && imgs.length > 0 && imgs[0] !== ''
+          const pPrice = parseFloat(p.price) || 0
+          return imgs && imgs.length > 0 && imgs[0] !== '' && pPrice >= 15
         })
         
         // Select strategic cutoff price
@@ -715,7 +716,8 @@ export default function BotRutaPage() {
           const all = d.products || []
           const withImages = all.filter((p: any) => {
             const imgs = safeParseArray(p.images)
-            return imgs && imgs.length > 0 && imgs[0] !== ''
+            const pPrice = parseFloat(p.price) || 0
+            return imgs && imgs.length > 0 && imgs[0] !== '' && pPrice >= 15
           })
           
           // Filter matching products
