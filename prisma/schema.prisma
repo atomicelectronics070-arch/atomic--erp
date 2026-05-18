@@ -211,7 +211,8 @@ model Transaction {
   cost          Float    @default(0)
   profit        Float    @default(0)
   commission    Float    @default(0)
-  status        String   @default("PENDIENTE")
+  status        String   @default("PENDIENTE") // "PENDIENTE", "ABONADO", "PAGADO", "CANCELADO"
+  commissionStatus String @default("PENDIENTE") // "PENDIENTE", "PAGADO"
   type          String   @default("Venta Directa")
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt

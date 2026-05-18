@@ -34,6 +34,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
             data.bonus = parseFloat(body.bonus || 0)
             data.quoteNumber = body.quoteNumber || oldTrx.quoteNumber
             data.status = body.status
+            data.commissionStatus = body.commissionStatus || oldTrx.commissionStatus
             data.salespersonId = body.salespersonId || oldTrx.salespersonId
         }
 

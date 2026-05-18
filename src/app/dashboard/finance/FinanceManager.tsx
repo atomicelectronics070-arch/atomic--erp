@@ -25,7 +25,8 @@ interface Transaction {
     commission: number
     bonus: number
     quoteNumber?: string
-    status: "PAGADO" | "PENDIENTE" | "CANCELADO"
+    status: "PAGADO" | "PENDIENTE" | "ABONADO" | "CANCELADO"
+    commissionStatus: "PENDIENTE" | "PAGADO"
     type: string
     proofUrl?: string
     salespersonId: string
@@ -46,6 +47,8 @@ export default function FinanceManager() {
     const [periodFilter, setPeriodFilter] = useState("TODOS")
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [editingItem, setEditingItem] = useState<Transaction | null>(null)
+    const [hasCommission, setHasCommission] = useState(false)
+    const [commissionDueDate, setCommissionDueDate] = useState("")
 
     const [formData, setFormData] = useState<Partial<Transaction>>({
         client: "",
@@ -57,9 +60,10 @@ export default function FinanceManager() {
         bonus: 0,
         quoteNumber: "",
         status: "PENDIENTE",
+        commissionStatus: "PENDIENTE",
         type: "Venta Directa",
         proofUrl: "",
-        salespersonId: session?.user?.id || ""
+        salespersonId: isAdmin ? "" : session?.user?.id || ""
     })
     const [commissionPercent, setCommissionPercent] = useState(10)
 
@@ -127,10 +131,18 @@ export default function FinanceManager() {
     const ventas = activeData.filter(i => i.type !== "Egreso Operativo")
     const egresos = activeData.filter(i => i.type === "Egreso Operativo")
 
+    // Ingresos cobrados vs pendientes
+    const ingresosCobrados = ventas.filter(i => i.status === "PAGADO").reduce((a,c) => a + c.amount, 0)
+    const ingresosPendientes = ventas.filter(i => i.status === "PENDIENTE" || i.status === "ABONADO").reduce((a,c) => a + c.amount, 0)
+
     const totalSales = ventas.reduce((acc, curr) => acc + curr.amount, 0)
     const totalProfit = ventas.reduce((acc, curr) => acc + curr.profit, 0)
-    const totalCommission = ventas.reduce((acc, curr) => acc + curr.commission, 0)
     const totalEgresos = egresos.reduce((acc, curr) => acc + curr.amount, 0)
+
+    // Comisiones: separar pagadas vs pendientes
+    const comisionesPagadas = ventas.filter(i => i.commissionStatus === "PAGADO").reduce((a,c) => a + c.commission, 0)
+    const comisionesPendientes = ventas.filter(i => i.commissionStatus === "PENDIENTE" && i.commission > 0).reduce((a,c) => a + c.commission, 0)
+    const totalCommission = comisionesPagadas + comisionesPendientes
     
     const netProfit = totalProfit - totalCommission - totalEgresos
 
@@ -138,7 +150,9 @@ export default function FinanceManager() {
         if (item) {
             setEditingItem(item)
             setFormData(item)
+            setHasCommission(item.commission > 0)
         } else {
+            setEditingItem(null)
             setFormData({
                 client: "",
                 date: new Date().toISOString().split('T')[0],
@@ -149,11 +163,14 @@ export default function FinanceManager() {
                 bonus: 0,
                 quoteNumber: "",
                 status: "PENDIENTE",
+                commissionStatus: "PENDIENTE",
                 type: "Venta Directa",
                 proofUrl: "",
                 salespersonId: isAdmin ? "" : session?.user?.id || ""
             })
             setCommissionPercent(10)
+            setHasCommission(false)
+            setCommissionDueDate("")
         }
         setIsModalOpen(true)
     }
@@ -179,7 +196,12 @@ export default function FinanceManager() {
 
         const payload = { ...formData }
         if (isAdmin) {
-            payload.profit = (formData.amount || 0) - (formData.cost || 0)
+            payload.profit = (formData.pvp || formData.amount || 0) - (formData.cost || 0)
+        }
+        // If no commission, zero it out
+        if (!hasCommission) {
+            payload.commission = 0
+            payload.commissionStatus = "PENDIENTE"
         }
 
         try {
@@ -193,6 +215,22 @@ export default function FinanceManager() {
             })
 
             if (res.ok) {
+                const savedTrx = await res.json()
+                // Auto-create payment ticket if hasCommission and asesor selected
+                if (hasCommission && payload.commission && (payload.commission > 0) && payload.salespersonId && !editingItem) {
+                    const dueDate = commissionDueDate || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+                    await fetch("/api/finance/tickets", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            advisorId: payload.salespersonId,
+                            amount: payload.commission,
+                            dueDate,
+                            issueDate: payload.date || new Date().toISOString().split('T')[0],
+                            concept: `Comisión por venta - ${payload.client} | TRX: ${savedTrx.trxId}`
+                        })
+                    })
+                }
                 fetchTransactions()
                 setIsModalOpen(false)
             }
@@ -255,12 +293,14 @@ export default function FinanceManager() {
                 </div>
             </div>
 
-            {/* Summary Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <StatSummary label={`Ingreso Bruto PVP`} value={totalSales} icon={<DollarSign size={24} />} trend="Flujo Entrante" color="indigo" />
-                <StatSummary label="Egresos Operativos" value={totalEgresos} icon={<ArrowDownRight size={24} />} trend="Gastos y Pagos" color="rose" />
-                <StatSummary label="Comisiones Pagadas" value={totalCommission} icon={<TrendingUp size={24} />} trend="Incentivos Asesores" color="rose" />
-                <StatSummary label="Beneficio Neto Real" value={netProfit} icon={<Target size={24} />} trend="Caja Fuerte" color="emerald" />
+            {/* Summary Stats - 6 cards */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                <StatSummary label="Ingreso Total" value={totalSales} icon={<DollarSign size={20} />} trend="Bruto PVP" color="indigo" />
+                <StatSummary label="Cobrado" value={ingresosCobrados} icon={<ArrowUpRight size={20} />} trend="Clientes PAGADOS" color="emerald" />
+                <StatSummary label="Por Cobrar" value={ingresosPendientes} icon={<Clock size={20} />} trend="Pendiente/Abonado" color="rose" />
+                <StatSummary label="Egresos" value={totalEgresos} icon={<ArrowDownRight size={20} />} trend="Gastos Operativos" color="rose" />
+                <StatSummary label="Comis. Pend." value={comisionesPendientes} icon={<AlertCircle size={20} />} trend="Por pagar asesores" color="rose" />
+                <StatSummary label="Beneficio Neto" value={netProfit} icon={<Target size={20} />} trend="Caja Fuerte" color="emerald" />
             </div>
 
             {/* Data Table */}
@@ -269,62 +309,96 @@ export default function FinanceManager() {
                     <table className="w-full text-left border-collapse whitespace-nowrap">
                         <thead>
                             <tr className="border-b border-slate-200 bg-slate-50 text-xs font-bold text-slate-500 uppercase">
-                                <th className="px-6 py-4">Fecha</th>
-                                <th className="px-6 py-4">Transacción</th>
-                                <th className="px-6 py-4">Cliente</th>
-                                <th className="px-6 py-4">Tipo</th>
-                                <th className="px-6 py-4 text-right">Monto PVP</th>
-                                <th className="px-6 py-4 text-right">Costo</th>
-                                <th className="px-6 py-4 text-right">Margen</th>
-                                <th className="px-6 py-4 text-right">Comisión</th>
-                                <th className="px-6 py-4 text-right">Acciones</th>
+                                <th className="px-4 py-4">Fecha</th>
+                                <th className="px-4 py-4">TRX</th>
+                                <th className="px-4 py-4">Cliente</th>
+                                <th className="px-4 py-4">Tipo</th>
+                                <th className="px-4 py-4">Asesor</th>
+                                <th className="px-4 py-4 text-center">Cliente ✓</th>
+                                <th className="px-4 py-4 text-right">Monto PVP</th>
+                                <th className="px-4 py-4 text-right">Costo</th>
+                                <th className="px-4 py-4 text-right">Margen</th>
+                                <th className="px-4 py-4 text-right">Comisión</th>
+                                <th className="px-4 py-4 text-center">Comis. ✓</th>
+                                <th className="px-4 py-4 text-right">Acciones</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100">
-                            {filteredData.map((item) => (
-                                <tr key={item.id} className={`hover:bg-slate-50 transition-all group text-sm font-medium ${item.status === 'CANCELADO' ? 'text-slate-400 opacity-60 bg-slate-50 line-through' : 'text-[#0F172A]'}`}>
-                                    <td className="px-6 py-4 text-slate-500">
+                            {filteredData.map((item) => {
+                                const isEgreso = item.type === 'Egreso Operativo'
+                                const isCancelled = item.status === 'CANCELADO'
+                                return (
+                                <tr key={item.id} className={`hover:bg-slate-50 transition-all group text-sm font-medium ${isCancelled ? 'text-slate-400 opacity-60 bg-slate-50 line-through' : 'text-[#0F172A]'}`}>
+                                    <td className="px-4 py-3 text-slate-500 text-xs">
                                         {new Date(item.date).toLocaleDateString()}
                                     </td>
-                                    <td className="px-6 py-4 font-bold text-indigo-600">
+                                    <td className="px-4 py-3 font-bold text-indigo-600 text-xs">
                                         {item.quoteNumber || item.trxId}
                                     </td>
-                                    <td className="px-6 py-4">
-                                        <div className="truncate max-w-[200px]">{item.client}</div>
+                                    <td className="px-4 py-3">
+                                        <div className="truncate max-w-[140px] text-xs font-bold">{item.client}</div>
                                     </td>
-                                    <td className="px-6 py-4">
-                                        <span className="px-2.5 py-1 bg-slate-100 text-slate-600 rounded-full text-[10px] font-bold uppercase tracking-wider">
+                                    <td className="px-4 py-3">
+                                        <span className={`px-2 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider ${
+                                            isEgreso ? 'bg-rose-100 text-rose-700' : 'bg-slate-100 text-slate-600'
+                                        }`}>
                                             {item.type}
                                         </span>
                                     </td>
-                                    <td className="px-6 py-4 text-right font-bold">
-                                        {item.type === 'Egreso Operativo' ? '-' : `$${(item.pvp || item.amount).toLocaleString()}`}
+                                    <td className="px-4 py-3">
+                                        <div className="text-xs text-slate-500 truncate max-w-[100px]">
+                                            {item.salesperson?.name || '—'}
+                                        </div>
                                     </td>
-                                    <td className="px-6 py-4 text-right text-rose-500">
-                                        ${item.type === 'Egreso Operativo' ? item.amount.toLocaleString() : item.cost.toLocaleString()}
+                                    <td className="px-4 py-3 text-center">
+                                        {!isEgreso && (
+                                            <span className={`inline-block px-2 py-0.5 rounded-full text-[9px] font-bold uppercase ${
+                                                item.status === 'PAGADO' ? 'bg-emerald-100 text-emerald-700' :
+                                                item.status === 'ABONADO' ? 'bg-amber-100 text-amber-700' :
+                                                'bg-rose-100 text-rose-600'
+                                            }`}>
+                                                {item.status === 'PAGADO' ? 'Cerrado' : item.status === 'ABONADO' ? 'Abonado' : 'Abierto'}
+                                            </span>
+                                        )}
                                     </td>
-                                    <td className={`px-6 py-4 text-right font-black ${item.type === 'Egreso Operativo' ? 'text-rose-600' : 'text-emerald-600'}`}>
-                                        {item.type === 'Egreso Operativo' ? `-$${item.amount.toLocaleString()}` : `$${item.profit.toLocaleString()}`}
+                                    <td className="px-4 py-3 text-right font-bold text-sm">
+                                        {isEgreso ? <span className="text-rose-600">-${item.amount.toLocaleString()}</span> : `$${(item.pvp || item.amount).toLocaleString()}`}
                                     </td>
-                                    <td className="px-6 py-4 text-right text-indigo-500">
-                                        ${item.commission.toLocaleString()}
+                                    <td className="px-4 py-3 text-right text-rose-500 text-xs">
+                                        {isEgreso ? '—' : `$${item.cost.toLocaleString()}`}
                                     </td>
-                                    <td className="px-6 py-4 text-right">
-                                        <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                                    <td className={`px-4 py-3 text-right font-black text-sm ${isEgreso ? 'text-rose-600' : 'text-emerald-600'}`}>
+                                        {isEgreso ? '' : `$${item.profit.toLocaleString()}`}
+                                    </td>
+                                    <td className="px-4 py-3 text-right text-indigo-600 font-bold text-sm">
+                                        {item.commission > 0 ? `$${item.commission.toLocaleString()}` : '—'}
+                                    </td>
+                                    <td className="px-4 py-3 text-center">
+                                        {item.commission > 0 && (
+                                            <span className={`inline-block px-2 py-0.5 rounded-full text-[9px] font-bold uppercase ${
+                                                item.commissionStatus === 'PAGADO' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
+                                            }`}>
+                                                {item.commissionStatus === 'PAGADO' ? 'Pagada' : 'Pendiente'}
+                                            </span>
+                                        )}
+                                    </td>
+                                    <td className="px-4 py-3 text-right">
+                                        <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-all">
                                             {isAdmin && (
                                                 <>
-                                                    <button onClick={() => handleOpenModal(item)} className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors">
-                                                        <Edit3 size={16} />
+                                                    <button onClick={() => handleOpenModal(item)} className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors">
+                                                        <Edit3 size={14} />
                                                     </button>
-                                                    <button onClick={() => handleDelete(item.id)} title="Desactivar Registro" className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors">
-                                                        <Ban size={16} />
+                                                    <button onClick={() => handleDelete(item.id)} title="Desactivar Registro" className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors">
+                                                        <Ban size={14} />
                                                     </button>
                                                 </>
                                             )}
                                         </div>
                                     </td>
                                 </tr>
-                            ))}
+                                )
+                            })}
                         </tbody>
                     </table>
                     {filteredData.length === 0 && (
@@ -469,10 +543,30 @@ export default function FinanceManager() {
                                             <motion.div 
                                                 initial={{ opacity: 0, height: 0 }}
                                                 animate={{ opacity: 1, height: 'auto' }}
-                                                className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-8 pt-8 border-t border-slate-100 mt-4"
+                                                className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-slate-100 mt-2"
                                             >
+                                                {/* Commission checkbox toggle */}
+                                                <div className="md:col-span-2">
+                                                    <label className="flex items-center gap-3 cursor-pointer group">
+                                                        <div
+                                                            onClick={() => setHasCommission(v => !v)}
+                                                            className={`w-12 h-6 rounded-full transition-all relative flex-shrink-0 ${
+                                                                hasCommission ? 'bg-indigo-600' : 'bg-slate-200'
+                                                            }`}
+                                                        >
+                                                            <div className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-transform ${
+                                                                hasCommission ? 'translate-x-6' : 'translate-x-0'
+                                                            }`} />
+                                                        </div>
+                                                        <div>
+                                                            <span className="text-sm font-black text-[#0F172A]">Esta venta lleva comisión de asesor</span>
+                                                            <p className="text-xs text-slate-400 font-medium">Activa para configurar comisión y generar ticket automático</p>
+                                                        </div>
+                                                    </label>
+                                                </div>
+
                                                 <div className="space-y-2">
-                                                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Gastos de Operación (Inversión)</label>
+                                                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Gastos de Operación ($)</label>
                                                     <div className="relative">
                                                         <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 text-rose-400" size={18} />
                                                         <input
@@ -483,7 +577,7 @@ export default function FinanceManager() {
                                                                 const newCost = parseFloat(e.target.value) || 0
                                                                 const pvp = formData.pvp || formData.amount || 0
                                                                 const profit = pvp - newCost
-                                                                const comm = (profit * (commissionPercent / 100)) + (formData.bonus || 0)
+                                                                const comm = hasCommission ? (profit * (commissionPercent / 100)) + (formData.bonus || 0) : 0
                                                                 setFormData({ ...formData, cost: newCost, profit, commission: comm })
                                                             }}
                                                             className="w-full bg-rose-50/50 border border-rose-200 rounded-lg py-3 pl-12 pr-4 text-base font-black text-rose-600 focus:border-rose-400 outline-none"
@@ -497,49 +591,75 @@ export default function FinanceManager() {
                                                     </div>
                                                 </div>
 
-                                                <div className="space-y-2">
-                                                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">% Comisión Asesor</label>
-                                                    <select
-                                                        value={commissionPercent}
-                                                        onChange={(e) => {
-                                                            const pct = parseInt(e.target.value)
-                                                            setCommissionPercent(pct)
-                                                            const profit = formData.profit || 0
-                                                            const comm = (profit * (pct / 100)) + (formData.bonus || 0)
-                                                            setFormData({ ...formData, commission: comm })
-                                                        }}
-                                                        className="w-full bg-slate-50 border border-slate-200 rounded-lg py-3 px-4 text-sm font-bold text-[#0F172A] outline-none h-[46px]"
-                                                    >
-                                                        {Array.from({length: 100}, (_, i) => i + 1).map(n => (
-                                                            <option key={n} value={n}>{n}% del Margen</option>
-                                                        ))}
-                                                    </select>
-                                                </div>
+                                                {hasCommission && (
+                                                    <>
+                                                        <div className="space-y-2">
+                                                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">% Comisión Asesor</label>
+                                                            <select
+                                                                value={commissionPercent}
+                                                                onChange={(e) => {
+                                                                    const pct = parseInt(e.target.value)
+                                                                    setCommissionPercent(pct)
+                                                                    const profit = formData.profit || 0
+                                                                    const comm = (profit * (pct / 100)) + (formData.bonus || 0)
+                                                                    setFormData({ ...formData, commission: comm })
+                                                                }}
+                                                                className="w-full bg-slate-50 border border-slate-200 rounded-lg py-3 px-4 text-sm font-bold text-[#0F172A] outline-none h-[46px]"
+                                                            >
+                                                                {Array.from({length: 100}, (_, i) => i + 1).map(n => (
+                                                                    <option key={n} value={n}>{n}% del Margen</option>
+                                                                ))}
+                                                            </select>
+                                                        </div>
 
-                                                <div className="space-y-2">
-                                                    <label className="text-xs font-bold text-indigo-600 uppercase tracking-wider ml-1">Bonificación Adicional ($)</label>
-                                                    <div className="relative">
-                                                        <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 text-indigo-400" size={18} />
-                                                        <input
-                                                            type="number"
-                                                            value={formData.bonus}
-                                                            onChange={(e) => {
-                                                                const bonus = parseFloat(e.target.value) || 0
-                                                                const profit = formData.profit || 0
-                                                                const comm = (profit * (commissionPercent / 100)) + bonus
-                                                                setFormData({ ...formData, bonus, commission: comm })
-                                                            }}
-                                                            className="w-full bg-indigo-50/50 border border-indigo-200 rounded-lg py-3 pl-12 pr-4 text-base font-black text-indigo-600 focus:border-indigo-400 outline-none"
-                                                        />
-                                                    </div>
-                                                </div>
+                                                        <div className="space-y-2">
+                                                            <label className="text-xs font-bold text-indigo-600 uppercase tracking-wider ml-1">Bonificación Adicional ($)</label>
+                                                            <div className="relative">
+                                                                <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 text-indigo-400" size={18} />
+                                                                <input
+                                                                    type="number"
+                                                                    value={formData.bonus}
+                                                                    onChange={(e) => {
+                                                                        const bonus = parseFloat(e.target.value) || 0
+                                                                        const profit = formData.profit || 0
+                                                                        const comm = (profit * (commissionPercent / 100)) + bonus
+                                                                        setFormData({ ...formData, bonus, commission: comm })
+                                                                    }}
+                                                                    className="w-full bg-indigo-50/50 border border-indigo-200 rounded-lg py-3 pl-12 pr-4 text-base font-black text-indigo-600 focus:border-indigo-400 outline-none"
+                                                                />
+                                                            </div>
+                                                        </div>
 
-                                                <div className="space-y-2">
-                                                    <label className="text-xs font-bold text-indigo-600 uppercase tracking-wider ml-1">Comisión Final Asesor</label>
-                                                    <div className="w-full bg-indigo-50 border border-indigo-200 rounded-lg py-3 px-4 text-xl font-black text-indigo-700">
-                                                        ${(formData.commission || 0).toLocaleString()}
-                                                    </div>
-                                                </div>
+                                                        <div className="space-y-2">
+                                                            <label className="text-xs font-bold text-indigo-600 uppercase tracking-wider ml-1">Comisión Final Asesor</label>
+                                                            <div className="w-full bg-indigo-50 border border-indigo-200 rounded-lg py-3 px-4 text-xl font-black text-indigo-700">
+                                                                ${(formData.commission || 0).toLocaleString()}
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="space-y-2">
+                                                            <label className="text-xs font-bold text-amber-600 uppercase tracking-wider ml-1">Vence Pago Comisión</label>
+                                                            <input
+                                                                type="date"
+                                                                value={commissionDueDate}
+                                                                onChange={e => setCommissionDueDate(e.target.value)}
+                                                                className="w-full bg-amber-50 border border-amber-200 rounded-lg py-3 px-4 text-sm font-bold text-amber-700 focus:border-amber-400 outline-none transition-all"
+                                                            />
+                                                        </div>
+
+                                                        <div className="space-y-2">
+                                                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Estado de Comisión</label>
+                                                            <select
+                                                                value={formData.commissionStatus}
+                                                                onChange={(e) => setFormData({ ...formData, commissionStatus: e.target.value as any })}
+                                                                className="w-full bg-slate-50 border border-slate-200 rounded-lg py-3 px-4 text-sm font-bold text-[#0F172A] outline-none h-[46px]"
+                                                            >
+                                                                <option value="PENDIENTE">🟡 Comisión Pendiente</option>
+                                                                <option value="PAGADO">🟢 Comisión Pagada</option>
+                                                            </select>
+                                                        </div>
+                                                    </>
+                                                )}
 
                                                 <div className="space-y-2">
                                                     <label className="text-xs font-bold text-[#0F172A] uppercase tracking-wider ml-1">Beneficio Empresa (Neto)</label>
@@ -549,17 +669,20 @@ export default function FinanceManager() {
                                                 </div>
 
                                                 <div className="md:col-span-2 space-y-2 pt-4">
-                                                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Estado de la Operación</label>
+                                                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Estado del Cliente (Pago)</label>
                                                     <select
                                                         value={formData.status}
                                                         onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
                                                         className={`w-full border rounded-lg py-4 px-4 text-sm font-bold uppercase tracking-wider transition-all cursor-pointer outline-none ${
-                                                            formData.status === 'PAGADO' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-slate-50 text-slate-600 border-slate-200'
-                                                            }`}
+                                                            formData.status === 'PAGADO' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                                                            formData.status === 'ABONADO' ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                                                            'bg-slate-50 text-slate-600 border-slate-200'
+                                                        }`}
                                                     >
-                                                        <option value="PENDIENTE">Pendiente de Revisión</option>
-                                                        <option value="PAGADO">Consolidar y Aprobar</option>
-                                                        <option value="CANCELADO">Rechazar Operación</option>
+                                                        <option value="PENDIENTE">🔴 Abierto — Cliente no ha pagado</option>
+                                                        <option value="ABONADO">🟡 Abonado — Pago parcial recibido</option>
+                                                        <option value="PAGADO">🟢 Cerrado — Pago completo recibido</option>
+                                                        <option value="CANCELADO">⚫ Cancelado — Operación rechazada</option>
                                                     </select>
                                                 </div>
                                             </motion.div>
