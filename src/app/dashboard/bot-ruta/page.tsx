@@ -397,18 +397,19 @@ export default function BotRutaPage() {
       .then(d => {
         const all = d.products || []
         
-        // Filter products with real images and minimum price of $15
+        // Filter products with real images, minimum price of $20, and exclude flex cables
         const withImages = all.filter((p: any) => {
           const imgs = safeParseArray(p.images)
           const pPrice = parseFloat(p.price) || 0
-          return imgs && imgs.length > 0 && imgs[0] !== '' && pPrice >= 15
+          const isFlex = p.name.toLowerCase().includes("flex")
+          return imgs && imgs.length > 0 && imgs[0] !== '' && pPrice >= 20 && !isFlex
         })
         
         // Select strategic cutoff price
         let cutoff = 30
         let pool = withImages.filter((p: any) => p.price >= cutoff)
         if (pool.length < 3) {
-          cutoff = 10
+          cutoff = 20
           pool = withImages.filter((p: any) => p.price >= cutoff)
         }
         if (pool.length < 3) {
@@ -477,10 +478,12 @@ export default function BotRutaPage() {
         const all = d.products || []
         const withImages = all.filter((p: any) => {
           const imgs = safeParseArray(p.images)
-          return imgs && imgs.length > 0 && imgs[0] !== ''
+          const pPrice = parseFloat(p.price) || 0
+          const isFlex = p.name.toLowerCase().includes("flex")
+          return imgs && imgs.length > 0 && imgs[0] !== '' && pPrice >= 20 && !isFlex
         })
         let pool = withImages.filter((p: any) => p.price >= 30)
-        if (pool.length < 3) pool = withImages.filter((p: any) => p.price >= 10)
+        if (pool.length < 3) pool = withImages
         if (pool.length < 3) pool = withImages
 
         const priorities = ["portero", "campana", "barrera", "antena", "cerradura", "motor", "espia"]
@@ -655,7 +658,9 @@ export default function BotRutaPage() {
       
       const withImages = all.filter((p: any) => {
         const imgs = safeParseArray(p.images)
-        return imgs && imgs.length > 0 && imgs[0] !== ''
+        const pPrice = parseFloat(p.price) || 0
+        const isFlex = p.name.toLowerCase().includes("flex")
+        return imgs && imgs.length > 0 && imgs[0] !== '' && pPrice >= 20 && !isFlex
       })
       
       const shuffled = withImages.sort(() => Math.random() - 0.5)
