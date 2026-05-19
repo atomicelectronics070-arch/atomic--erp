@@ -296,39 +296,60 @@ export default function JobProfilesPage() {
                                                 </div>
                                             </td>
                                             <td className="px-6 py-5">
-                                                <div className="flex items-center gap-2">
+                                                {!u.isActive ? (
                                                     <button 
                                                         onClick={() => toggleUserStatus(u.id, u.isActive)}
-                                                        className={`p-2 rounded-lg border transition-all ${u.isActive ? 'border-slate-200 text-slate-400 hover:text-rose-600 hover:bg-rose-50' : 'border-emerald-200 text-emerald-600 bg-emerald-50 hover:bg-emerald-100'}`}
-                                                        title={u.isActive ? "Desactivar Acceso" : "Activar Acceso"}
+                                                        className="flex items-center gap-1 bg-emerald-50 text-emerald-600 border border-emerald-200 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-emerald-100 transition-all"
                                                     >
-                                                        {u.isActive ? <ShieldOff size={18} /> : <ShieldCheck size={18} />}
+                                                        <CheckCircle2 size={14} /> Aceptar
                                                     </button>
-                                                    <button 
-                                                        onClick={() => approveReset(u.id)}
-                                                        className={`p-2 rounded-lg border transition-all ${u.resetRequested ? 'bg-rose-500 border-rose-600 text-white' : 'border-slate-200 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50'}`}
-                                                        title="Autorizar Reseteo"
-                                                    >
-                                                        <Key size={18} />
-                                                    </button>
-                                                </div>
+                                                ) : (
+                                                    <div className="flex items-center gap-2">
+                                                        <button 
+                                                            onClick={() => toggleUserStatus(u.id, u.isActive)}
+                                                            className="p-2 rounded-lg border border-slate-200 text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-all"
+                                                            title="Desactivar Acceso"
+                                                        >
+                                                            <ShieldOff size={18} />
+                                                        </button>
+                                                        <button 
+                                                            onClick={() => approveReset(u.id)}
+                                                            className={`p-2 rounded-lg border transition-all ${u.resetRequested ? 'bg-rose-500 border-rose-600 text-white' : 'border-slate-200 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50'}`}
+                                                            title="Autorizar Reseteo"
+                                                        >
+                                                            <Key size={18} />
+                                                        </button>
+                                                    </div>
+                                                )}
                                             </td>
                                             <td className="px-6 py-5 text-right">
                                                 <div className="flex justify-end items-center gap-2">
-                                                    <button
-                                                        onClick={() => handleSelectUser(u)}
-                                                        className="p-2 border border-slate-200 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-all shadow-sm bg-white"
-                                                        title="Editar Perfil Laboral"
-                                                    >
-                                                        <FileText size={18} />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => deleteUser(u.id)}
-                                                        className="p-2 border border-slate-200 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-all shadow-sm bg-white"
-                                                        title="Eliminar Asesor"
-                                                    >
-                                                        <Trash2 size={18} />
-                                                    </button>
+                                                    {!u.isActive ? (
+                                                        <button
+                                                            onClick={() => deleteUser(u.id)}
+                                                            className="flex items-center gap-1 bg-rose-50 text-rose-600 border border-rose-200 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-rose-100 transition-all"
+                                                            title="Rechazar y Eliminar"
+                                                        >
+                                                            <X size={14} /> Rechazar
+                                                        </button>
+                                                    ) : (
+                                                        <>
+                                                            <button
+                                                                onClick={() => handleSelectUser(u)}
+                                                                className="p-2 border border-slate-200 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-all shadow-sm bg-white"
+                                                                title="Editar Perfil Laboral"
+                                                            >
+                                                                <FileText size={18} />
+                                                            </button>
+                                                            <button
+                                                                onClick={() => deleteUser(u.id)}
+                                                                className="p-2 border border-slate-200 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-all shadow-sm bg-white"
+                                                                title="Eliminar Asesor"
+                                                            >
+                                                                <Trash2 size={18} />
+                                                            </button>
+                                                        </>
+                                                    )}
                                                 </div>
                                             </td>
                                         </tr>
