@@ -38,6 +38,12 @@ export default function DashboardLayout({
 
     useEffect(() => {
         if (session?.user?.id && isDashboard) {
+            fetch("/api/track", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ type: "dashboard" }) }).catch(() => {})
+        }
+    }, [session?.user?.id, isDashboard])
+
+    useEffect(() => {
+        if (session?.user?.id && isDashboard) {
             const fetchUnread = async () => {
                 try {
                     const res = await fetch("/api/messages?type=unread")

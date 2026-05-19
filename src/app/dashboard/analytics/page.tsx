@@ -3,15 +3,9 @@
 import { useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
 import { 
-    TrendingUp, 
-    FileText, 
-    RefreshCw, 
-    Target,
-    BarChart3,
-    Activity,
-    Users,
-    Calendar,
-    ArrowUpRight
+    TrendingUp, FileText, RefreshCw, Target, BarChart3, Activity,
+    Users, Calendar, ArrowUpRight, Eye, Globe, Monitor, ShoppingCart,
+    MessageSquare, GraduationCap, Package, CreditCard, UserCheck, Wifi
 } from "lucide-react"
 import { 
     AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -26,13 +20,18 @@ export default function DashboardOverview() {
     const { data: session } = useSession()
     const [data, setData] = useState<any>(null)
     const [loading, setLoading] = useState(true)
+    const [systemStats, setSystemStats] = useState<any>(null)
 
     const loadStats = async () => {
         if (!session?.user?.id || !session?.user?.role) return
         setLoading(true)
         try {
-            const stats = await getDashboardData(session.user.id, session.user.role)
+            const [stats, sysRes] = await Promise.all([
+                getDashboardData(session.user.id, session.user.role),
+                fetch("/api/admin/system-stats").then(r => r.ok ? r.json() : null).catch(() => null)
+            ])
             setData(stats)
+            if (sysRes) setSystemStats(sysRes)
         } catch (error) {
             console.error("Dashboard load error:", error)
         } finally {
@@ -58,6 +57,88 @@ export default function DashboardOverview() {
 
     return (
         <div className="space-y-8 pb-32 animate-in fade-in duration-500 font-sans">
+            {/* System Activity Panel — Visits & Activity */}
+            {systemStats && (
+                <div className="bg-gradient-to-br from-[#0F172A] to-[#1E3A8A] rounded-2xl overflow-hidden shadow-xl">
+                    {/* Top row: Total Visits Hero */}
+                    <div className="p-8 pb-0 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                        <div className="flex items-center gap-5">
+                            <div className="w-16 h-16 bg-white/10 backdrop-blur rounded-2xl flex items-center justify-center border border-white/20">
+                                <Eye size={28} className="text-white" />
+                            </div>
+                            <div>
+                                <p className="text-white/50 text-xs font-black uppercase tracking-[0.3em] mb-1">Actividad Total del Sistema</p>
+                                <p className="text-5xl font-black text-white tracking-tight">
+                                    {(systemStats.visits?.visits_total || 0).toLocaleString()}
+                                    <span className="text-white/30 text-2xl ml-3 font-bold tracking-normal">sesiones</span>
+                                </p>
+                            </div>
+                        </div>
+                        <div className="flex gap-4">
+                            <div className="bg-white/10 border border-white/10 rounded-xl px-6 py-4 text-center min-w-[120px]">
+                                <Monitor size={18} className="text-blue-300 mx-auto mb-2" />
+                                <p className="text-2xl font-black text-white">{(systemStats.visits?.visits_dashboard || 0).toLocaleString()}</p>
+                                <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mt-1">Dashboard</p>
+                            </div>
+                            <div className="bg-white/10 border border-white/10 rounded-xl px-6 py-4 text-center min-w-[120px]">
+                                <Globe size={18} className="text-emerald-300 mx-auto mb-2" />
+                                <p className="text-2xl font-black text-white">{(systemStats.visits?.visits_web || 0).toLocaleString()}</p>
+                                <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mt-1">Web Pública</p>
+                            </div>
+                            <div className="bg-white/10 border border-white/10 rounded-xl px-6 py-4 text-center min-w-[120px]">
+                                <Users size={18} className="text-purple-300 mx-auto mb-2" />
+                                <p className="text-2xl font-black text-white">{systemStats.users?.total || 0}</p>
+                                <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mt-1">Usuarios</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* User breakdown by role */}
+                    <div className="px-8 pt-6 pb-4">
+                        <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.3em] mb-3">Distribución por Rol</p>
+                        <div className="flex flex-wrap gap-2">
+                            {Object.entries(systemStats.users?.byRole || {}).map(([role, count]: [string, any]) => {
+                                const colors: Record<string, string> = {
+                                    ADMIN: "bg-red-500/20 border-red-400/30 text-red-300",
+                                    MANAGEMENT: "bg-orange-500/20 border-orange-400/30 text-orange-300",
+                                    COORDINATOR: "bg-yellow-500/20 border-yellow-400/30 text-yellow-300",
+                                    SALESPERSON: "bg-blue-500/20 border-blue-400/30 text-blue-300",
+                                    AFILIADO: "bg-purple-500/20 border-purple-400/30 text-purple-300",
+                                    COORD_ASSISTANT: "bg-teal-500/20 border-teal-400/30 text-teal-300",
+                                }
+                                return (
+                                    <span key={role} className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-xs font-bold ${colors[role] || "bg-white/10 border-white/20 text-white/60"}`}>
+                                        <UserCheck size={12} /> {role} <span className="font-black text-sm">{count}</span>
+                                    </span>
+                                )
+                            })}
+                        </div>
+                    </div>
+
+                    {/* Activity metrics grid */}
+                    <div className="px-8 pb-8 pt-2">
+                        <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.3em] mb-3">Actividad de la Plataforma</p>
+                        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
+                            {[
+                                { label: "Cotizaciones", value: systemStats.activity?.quotes, icon: FileText, color: "text-blue-300" },
+                                { label: "Pedidos Web", value: systemStats.activity?.webOrders, icon: ShoppingCart, color: "text-emerald-300" },
+                                { label: "Conversaciones WA", value: systemStats.activity?.waConversations, icon: MessageSquare, color: "text-green-300" },
+                                { label: "Mensajes WA", value: systemStats.activity?.waMessages, icon: Wifi, color: "text-teal-300" },
+                                { label: "Matrículas", value: systemStats.activity?.enrollments, icon: GraduationCap, color: "text-indigo-300" },
+                                { label: "Productos", value: systemStats.activity?.products, icon: Package, color: "text-purple-300" },
+                                { label: "Transacciones", value: systemStats.activity?.transactions, icon: CreditCard, color: "text-yellow-300" },
+                            ].map((item, i) => (
+                                <div key={i} className="bg-white/5 border border-white/10 rounded-xl p-4 hover:bg-white/10 transition-all">
+                                    <item.icon size={16} className={`${item.color} mb-2`} />
+                                    <p className="text-xl font-black text-white">{(item.value || 0).toLocaleString()}</p>
+                                    <p className="text-[9px] font-bold text-white/30 uppercase tracking-wider mt-1">{item.label}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Header */}
             <div className="flex justify-between items-end border-b border-slate-200 pb-6">
                 <div>
