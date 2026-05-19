@@ -1,5 +1,7 @@
 "use client"
 import { useState, useEffect, useRef } from "react"
+import { useSession } from "next-auth/react"
+import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { 
     Save, X, Edit, Trash2, Search, Plus, Filter, LayoutGrid, List,
@@ -34,6 +36,9 @@ import {
 } from "@/lib/actions/shop"
 
 export default function ShopConfigPage() {
+    const { data: session, status } = useSession()
+    const router = useRouter()
+    
     const [view, setView] = useState<'list' | 'add' | 'edit'>('list')
     const [activeTab, setActiveTab] = useState<'products' | 'catalogs' | 'settings'>('products')
     const [products, setProducts] = useState<any[]>([])
@@ -49,6 +54,7 @@ export default function ShopConfigPage() {
     const [selectedCollections, setSelectedCollections] = useState<string[]>([])
     const [showBulkEdit, setShowBulkEdit] = useState(false)
     const [isTrashView, setIsTrashView] = useState(false)
+    const [selectedProvider, setSelectedProvider] = useState<string>('')
     const [providerStats, setProviderStats] = useState<any[]>([])
     const [isCleaning, setIsCleaning] = useState(false)
     const [storeSettings, setStoreSettings] = useState<any>({
@@ -64,7 +70,7 @@ export default function ShopConfigPage() {
         setLoading(true)
         try {
             const [pRes, mRes, sRes] = await Promise.all([
-                fetch(`/api/public/shop/products?page=${currentPage}&limit=${pageSize}&search=${dashboardSearch}&isTrash=${isTrashView}`),
+                fetch(`/api/admin/products?page=${currentPage}&limit=${pageSize}&search=${dashboardSearch}&isTrash=${isTrashView}&provider=${selectedProvider}`),
                 fetch('/api/web/metadata'),
                 fetch('/api/shop/settings')
             ])
@@ -96,8 +102,17 @@ export default function ShopConfigPage() {
     }
 
     useEffect(() => {
+        if (status === "loading") return
+        if (!session || session.user?.role !== "ADMIN") {
+            router.push("/dashboard")
+            return
+        }
         refreshData()
-    }, [currentPage, pageSize, dashboardSearch, isTrashView])
+    }, [currentPage, pageSize, dashboardSearch, isTrashView, selectedProvider, session, status, router])
+
+    if (status === "loading" || session?.user?.role !== "ADMIN") {
+        return <div className="p-10 text-center text-white text-[10px] font-black uppercase tracking-[0.5em] mt-20 italic">AUTENTICANDO CREDENCIALES DE ADMINISTRADOR...</div>
+    }
 
     const saveSettings = async () => {
         setLoading(true)
@@ -372,6 +387,17 @@ export default function ShopConfigPage() {
                                                 className="w-full bg-slate-950 border border-white/5 pl-20 pr-10 py-6 text-[11px] font-black uppercase tracking-[0.2em] text-white outline-none focus:border-secondary focus:ring-8 focus:ring-secondary/5 transition-all rounded-none-[2rem] placeholder:text-slate-800 italic"
                                             />
                                         </div>
+                                        <div className="flex-shrink-0">
+                                            <select 
+                                                value={selectedProvider} 
+                                                onChange={(e) => { setSelectedProvider(e.target.value); setCurrentPage(1); }}
+                                                className="bg-slate-950 border border-white/5 px-6 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-white outline-none focus:border-secondary transition-all rounded-none-[2rem] appearance-none italic cursor-pointer pr-10"
+                                                style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 24 24\' stroke=\'%2364748b\'%3E%3Cpath stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M19 9l-7 7-7-7\'%3E%3C/path%3E%3C/svg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '1em' }}
+                                            >
+                                                <option value="">TODOS LOS OR\u00cdGENES</option>
+                                                {providerStats.map(s => <option key={s.name} value={s.name}>{s.name} ({s.count})</option>)}
+                                            </select>
+                                        </div>
                                         <div className="flex bg-slate-950 border border-white/5 p-2 rounded-none-[2rem] w-full md:w-fit whitespace-nowrap shadow-inner skew-x-[-12deg]">
                                             <button 
                                                 onClick={() => { setIsTrashView(false); setCurrentPage(1); }}
@@ -399,9 +425,9 @@ export default function ShopConfigPage() {
                                                             </button>
                                                         </th>
                                                         <th className="px-10 py-10">Entidad / Identificador</th>
-                                                        <th className="px-10 py-10">Segmentaci\u00f3n_Vect</th>
+                                                        <th className="px-10 py-10">Origen</th>
                                                         <th className="px-10 py-10">Stock Disponible</th>
-                                                        <th className="px-10 py-10">Valor de Mercado</th>
+                                                        <th className="px-10 py-10">Finanzas (Costo/Margen/PVP)</th>
                                                         <th className="px-10 py-10 text-right pr-16">Acciones_CMD</th>
                                                     </tr>
                                                 </thead>
@@ -449,7 +475,7 @@ export default function ShopConfigPage() {
                                                                 </td>
                                                                 <td className="px-10 py-8">
                                                                     <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white bg-slate-950 px-5 py-2.5 rounded-none-[1.2rem] border border-white/10 shadow-3xl italic group-hover:border-primary/30 transition-all">
-                                                                        {p.category?.name || 'GEN\u00c9RICO_Vect'}
+                                                                        {p.provider || 'N/A'}
                                                                     </span>
                                                                 </td>
                                                                 <td className="px-10 py-8">
@@ -462,11 +488,25 @@ export default function ShopConfigPage() {
                                                                     </div>
                                                                 </td>
                                                                 <td className="px-10 py-8">
-                                                                    <div className="flex flex-col">
-                                                                        <span className="text-lg font-black text-secondary italic tracking-tighter">${parseFloat(p.price).toLocaleString()}</span>
-                                                                        {p.compareAtPrice && parseFloat(p.compareAtPrice) > 0 && (
-                                                                            <span className="text-[10px] text-slate-600 line-through font-bold opacity-50 tracking-widest">${parseFloat(p.compareAtPrice).toLocaleString()}</span>
-                                                                        )}
+                                                                    <div className="flex flex-col gap-1 w-48">
+                                                                        {(() => {
+                                                                            const price = parseFloat(p.price) || 0;
+                                                                            const cost = price / 1.15;
+                                                                            const margin = price - cost;
+                                                                            return (
+                                                                                <>
+                                                                                    <div className="flex items-center justify-between gap-4 text-[9px] font-black uppercase tracking-widest text-slate-500">
+                                                                                        <span>Costo:</span> <span className="text-slate-300 italic">${cost.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</span>
+                                                                                    </div>
+                                                                                    <div className="flex items-center justify-between gap-4 text-[9px] font-black uppercase tracking-widest text-emerald-500">
+                                                                                        <span>Margen (+15%):</span> <span className="italic">+${margin.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</span>
+                                                                                    </div>
+                                                                                    <div className="flex items-center justify-between gap-4 text-[11px] font-black uppercase tracking-widest text-secondary mt-1 pt-1 border-t border-white/5">
+                                                                                        <span>PVP:</span> <span className="italic">${price.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</span>
+                                                                                    </div>
+                                                                                </>
+                                                                            )
+                                                                        })()}
                                                                     </div>
                                                                 </td>
                                                                 <td className="px-10 py-8 text-right pr-16">
@@ -1230,6 +1270,7 @@ function ProductForm({ initialData, metadata, onCancel, onSaved }: { initialData
         keywords: initialData?.keywords || '',
         images: initialData?.images || '[]',
         specs: initialData?.specs || '[]',
+        provider: initialData?.provider || '',
     })
 
     const [techSpecs, setTechSpecs] = useState<{ label: string, value: string }[]>(
@@ -1305,7 +1346,7 @@ function ProductForm({ initialData, metadata, onCancel, onSaved }: { initialData
                             />
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                             <div className="space-y-4">
                                 <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">ID Operativo (SKU)</label>
                                 <input
@@ -1313,6 +1354,16 @@ function ProductForm({ initialData, metadata, onCancel, onSaved }: { initialData
                                     value={formData.sku}
                                     onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
                                     placeholder="SERIAL-CODE..."
+                                    className="w-full bg-slate-900 border border-white/5 px-8 py-6 text-sm font-black text-white outline-none focus:border-secondary transition-all rounded-none placeholder:text-slate-800"
+                                />
+                            </div>
+                            <div className="space-y-4">
+                                <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Proveedor / Origen</label>
+                                <input
+                                    type="text"
+                                    value={formData.provider}
+                                    onChange={(e) => setFormData({ ...formData, provider: e.target.value })}
+                                    placeholder="EJ: STEREN..."
                                     className="w-full bg-slate-900 border border-white/5 px-8 py-6 text-sm font-black text-white outline-none focus:border-secondary transition-all rounded-none placeholder:text-slate-800"
                                 />
                             </div>

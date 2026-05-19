@@ -129,7 +129,9 @@ export default function DashboardLayout({
                                 >
                                     <NavLink href="/dashboard/quotes" icon={<FileText size={14} />} label="Cotizaciones" isSubItem />
                                     <NavLink href="/dashboard/prices" icon={<Tag size={14} />} label="Lista Precios" isSubItem />
-                                    <NavLink href="/dashboard/shop" icon={<ShoppingBag size={14} />} label="Inventario" isSubItem />
+                                    {role === "ADMIN" && (
+                                        <NavLink href="/dashboard/shop" icon={<ShoppingBag size={14} />} label="Inventario" isSubItem />
+                                    )}
                                 </CollapsibleSection>
 
                                 <CollapsibleSection
