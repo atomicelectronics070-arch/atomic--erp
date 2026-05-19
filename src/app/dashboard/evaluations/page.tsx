@@ -40,12 +40,15 @@ export default function JobProfilesPage() {
     const [loading, setLoading] = useState(true)
     const [searchTerm, setSearchTerm] = useState("")
 
-    const toggleUserStatus = async (userId: string, current: boolean) => {
-        if (!confirm(`¿Desea ${current ? 'desactivar' : 'activar'} el acceso de este asesor?`)) return
+    const toggleUserStatus = async (userId: string, currentIsActive: boolean, currentStatus: string = "APPROVED") => {
+        const isPending = currentStatus === "PENDING";
+        const newIsActive = isPending ? true : !currentIsActive;
+        const action = isPending ? 'aprobar' : (currentIsActive ? 'desactivar' : 'activar');
+        if (!confirm(`¿Desea ${action} el acceso de este asesor?`)) return
         try {
             const res = await fetch(`/api/admin/users/${userId}`, {
                 method: "PATCH",
-                body: JSON.stringify({ isActive: !current })
+                body: JSON.stringify({ isActive: newIsActive, status: "APPROVED" })
             })
             if (res.ok) loadUsers()
         } catch (e) { console.error(e) }
@@ -99,7 +102,7 @@ export default function JobProfilesPage() {
     const loadUsers = async () => {
         setLoading(true)
         try {
-            const res = await fetch("/api/admin/users")
+            const res = await fetch("/api/admin/users?status=ALL")
             const data = await res.json()
             setUsers(data.users || [])
         } catch (err) {
@@ -282,9 +285,15 @@ export default function JobProfilesPage() {
                                             <td className="px-6 py-5">
                                                 <div className="flex flex-col gap-2">
                                                     <div className="flex items-center gap-2">
-                                                        <span className={`text-xs font-bold px-2.5 py-1 rounded-md ${u.isActive ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' : 'bg-rose-50 text-rose-600 border border-rose-200'}`}>
-                                                            {u.isActive ? 'Activo' : 'Desactivado'}
-                                                        </span>
+                                                        {u.status === "PENDING" ? (
+                                                            <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-amber-50 text-amber-600 border border-amber-200">
+                                                                Pendiente
+                                                            </span>
+                                                        ) : (
+                                                            <span className={`text-xs font-bold px-2.5 py-1 rounded-md ${u.isActive ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' : 'bg-rose-50 text-rose-600 border border-rose-200'}`}>
+                                                                {u.isActive ? 'Activo' : 'Desactivado'}
+                                                            </span>
+                                                        )}
                                                         <span className="text-xs font-bold text-slate-600 bg-slate-100 px-2.5 py-1 rounded-md">{u.role}</span>
                                                     </div>
                                                     {u.tempResetCode && (
@@ -296,9 +305,9 @@ export default function JobProfilesPage() {
                                                 </div>
                                             </td>
                                             <td className="px-6 py-5">
-                                                {!u.isActive ? (
+                                                {u.status === "PENDING" || !u.isActive ? (
                                                     <button 
-                                                        onClick={() => toggleUserStatus(u.id, u.isActive)}
+                                                        onClick={() => toggleUserStatus(u.id, u.isActive, u.status)}
                                                         className="flex items-center gap-1 bg-emerald-50 text-emerald-600 border border-emerald-200 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-emerald-100 transition-all"
                                                     >
                                                         <CheckCircle2 size={14} /> Aceptar
@@ -306,7 +315,7 @@ export default function JobProfilesPage() {
                                                 ) : (
                                                     <div className="flex items-center gap-2">
                                                         <button 
-                                                            onClick={() => toggleUserStatus(u.id, u.isActive)}
+                                                            onClick={() => toggleUserStatus(u.id, u.isActive, u.status)}
                                                             className="p-2 rounded-lg border border-slate-200 text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-all"
                                                             title="Desactivar Acceso"
                                                         >
@@ -324,7 +333,7 @@ export default function JobProfilesPage() {
                                             </td>
                                             <td className="px-6 py-5 text-right">
                                                 <div className="flex justify-end items-center gap-2">
-                                                    {!u.isActive ? (
+                                                    {u.status === "PENDING" || !u.isActive ? (
                                                         <button
                                                             onClick={() => deleteUser(u.id)}
                                                             className="flex items-center gap-1 bg-rose-50 text-rose-600 border border-rose-200 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-rose-100 transition-all"

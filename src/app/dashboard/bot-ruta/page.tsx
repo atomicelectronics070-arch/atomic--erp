@@ -401,7 +401,7 @@ export default function BotRutaPage() {
         const withImages = all.filter((p: any) => {
           const imgs = safeParseArray(p.images)
           const pPrice = parseFloat(p.price) || 0
-          const isFlex = p.name.toLowerCase().includes("flex")
+          const isFlex = p.name ? p.name.toLowerCase().includes("flex") : false
           return imgs && imgs.length > 0 && imgs[0] !== '' && pPrice >= 20 && !isFlex
         })
         
@@ -479,7 +479,7 @@ export default function BotRutaPage() {
         const withImages = all.filter((p: any) => {
           const imgs = safeParseArray(p.images)
           const pPrice = parseFloat(p.price) || 0
-          const isFlex = p.name.toLowerCase().includes("flex")
+          const isFlex = p.name ? p.name.toLowerCase().includes("flex") : false
           return imgs && imgs.length > 0 && imgs[0] !== '' && pPrice >= 20 && !isFlex
         })
         let pool = withImages.filter((p: any) => p.price >= 30)
@@ -659,7 +659,7 @@ export default function BotRutaPage() {
       const withImages = all.filter((p: any) => {
         const imgs = safeParseArray(p.images)
         const pPrice = parseFloat(p.price) || 0
-        const isFlex = p.name.toLowerCase().includes("flex")
+        const isFlex = p.name ? p.name.toLowerCase().includes("flex") : false
         return imgs && imgs.length > 0 && imgs[0] !== '' && pPrice >= 20 && !isFlex
       })
       
