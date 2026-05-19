@@ -392,7 +392,7 @@ export default function BotRutaPage() {
   const [generatedAds, setGeneratedAds] = useState<any[]>([])
 
   useEffect(() => {
-    fetch("/api/web/products?pageSize=100")
+    fetch("/api/web/products?pageSize=5000")
       .then(r => r.json())
       .then(d => {
         const all = d.products || []
@@ -473,7 +473,7 @@ export default function BotRutaPage() {
     let poolProducts = products
     if (!poolProducts || poolProducts.length === 0) {
       try {
-        const res = await fetch("/api/web/products?pageSize=100")
+        const res = await fetch("/api/web/products?pageSize=5000")
         const d = await res.json()
         const all = d.products || []
         const withImages = all.filter((p: any) => {
@@ -568,7 +568,7 @@ export default function BotRutaPage() {
     addBotMsg("Buscando otras opciones estratégicas en el catálogo de Atomic y volviendo a generar diseños inteligentes con la IA... 🔄⚡")
     
     try {
-      const res = await fetch("/api/web/products?pageSize=100")
+      const res = await fetch("/api/web/products?pageSize=5000")
       const d = await res.json()
       const all = d.products || []
       
@@ -652,7 +652,7 @@ export default function BotRutaPage() {
 
   const shuffleProposedProducts = async () => {
     try {
-      const res = await fetch("/api/web/products?pageSize=100")
+      const res = await fetch("/api/web/products?pageSize=5000")
       const d = await res.json()
       const all = d.products || []
       
@@ -753,7 +753,7 @@ export default function BotRutaPage() {
       
       addBotMsg("Buscando en tu catálogo de productos coincidencias inspiradas en: \"" + keywords.join(", ") + "\"... 🔍")
       
-      fetch("/api/web/products?pageSize=100")
+      fetch("/api/web/products?pageSize=5000")
         .then(r => r.json())
         .then(d => {
           const all = d.products || []
