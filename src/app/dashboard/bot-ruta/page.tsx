@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from "react"
 import { useSession } from "next-auth/react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Bot, Send, Upload, Phone, CheckCircle2, Settings, Users, Image as ImageIcon, X, Plus, Camera } from "lucide-react"
+import { Bot, Send, Upload, Phone, CheckCircle2, Settings, Users, Image as ImageIcon, X, Plus, Camera, RefreshCw } from "lucide-react"
 
 type Phase = "onboarding"|"product_selection"|"awaiting_preferences"|"loading_ads"|"ads_ready"|"upload_mode"|"phone_mode"|"completed"
 
@@ -103,10 +103,6 @@ const parseProductToAd = (name: string): AdCopy => {
     let cleaned = parsedTitle.split(' ')
       .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
       .join(' ');
-
-    if (cleaned.length > 28) {
-      cleaned = cleaned.substring(0, 25) + "...";
-    }
 
     cleanTitle = cleaned || "Dispositivo Tecnol\u00f3gico Atomic";
     adSubtitle = "TECNOLOG\u00cdA DE ALTO RENDIMIENTO Y RENDIMIENTO \u00c9LITE";
@@ -673,6 +669,33 @@ export default function BotRutaPage() {
     }
   }
 
+  const shuffleSingleProduct = async (index: number) => {
+    try {
+      const res = await fetch("/api/web/products?pageSize=5000")
+      const d = await res.json()
+      const all = d.products || []
+      
+      const currentIds = products.map(cp => cp.id)
+      const withImages = all.filter((p: any) => {
+        const imgs = safeParseArray(p.images)
+        const pPrice = parseFloat(p.price) || 0
+        const isFlex = p.name ? p.name.toLowerCase().includes("flex") : false
+        return imgs && imgs.length > 0 && imgs[0] !== '' && pPrice >= 20 && !isFlex && !currentIds.includes(p.id)
+      })
+      
+      if (withImages.length > 0) {
+        const randomItem = withImages[Math.floor(Math.random() * withImages.length)]
+        setProducts(prev => {
+          const next = [...prev]
+          next[index] = randomItem
+          return next
+        })
+      }
+    } catch (err) {
+      console.error("Failed single shuffle:", err)
+    }
+  }
+
   const acceptProductsAndGenerate = async () => {
     setPhase("loading_ads")
     setMessages(prev => [...prev, { id: Date.now().toString(), from: "user", text: "✅ Confirmo y Acepto mis 3 productos estratégicos" }])
@@ -986,12 +1009,21 @@ export default function BotRutaPage() {
                       const imgs = safeParseArray(p.images);
                       const imgUrl = imgs[0] || "https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?w=500";
                       return (
-                        <div key={i} className="border border-slate-200 bg-white rounded-xl p-3 flex flex-col items-center text-center shadow-sm">
+                        <div key={i} className="relative border border-slate-200 bg-white rounded-xl p-3 flex flex-col items-center text-center shadow-sm">
+                          {phase === "product_selection" && (
+                            <button 
+                              onClick={() => shuffleSingleProduct(i)}
+                              className="absolute -top-2 -right-2 bg-indigo-100 text-indigo-600 rounded-full p-1.5 hover:bg-indigo-200 shadow-sm transition-transform hover:rotate-180"
+                              title="Cambiar solo este producto"
+                            >
+                              <RefreshCw size={12} />
+                            </button>
+                          )}
                           <div className="w-12 h-12 rounded-lg bg-slate-50 flex items-center justify-center overflow-hidden border border-slate-100">
                             <img src={imgUrl} className="w-full h-full object-contain" alt="" />
                           </div>
-                          <p className="text-[9px] font-black text-slate-700 truncate w-full mt-2" title={p.name}>{p.name}</p>
-                          <p className="text-[10px] font-black text-indigo-600 mt-1">${p.price ? p.price.toFixed(2) : "0.00"}</p>
+                          <p className="text-[10px] font-black text-slate-700 line-clamp-3 leading-tight w-full mt-2" title={p.name}>{p.name}</p>
+                          <p className="text-[11px] font-black text-indigo-600 mt-1">${p.price ? p.price.toFixed(2) : "0.00"}</p>
                         </div>
                       );
                     })}
