@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { useEffect } from "react"
 import { Search, ShoppingCart, User, Shield, Zap, CheckCircle2 } from "lucide-react"
 import { useCart } from "@/context/CartContext"
 import { motion, AnimatePresence } from "framer-motion"
@@ -12,6 +13,14 @@ import { CartBotOverlay } from "@/components/ui/CartBotOverlay"
 export default function WebLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname()
     const { totalItems } = useCart()
+
+    useEffect(() => {
+        fetch("/api/track", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ type: "web" })
+        }).catch(() => {})
+    }, [pathname])
 
     return (
         <div className="min-h-screen font-sans text-slate-900 bg-[#F8FAFC] relative">
