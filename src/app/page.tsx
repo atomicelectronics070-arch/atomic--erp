@@ -1,6 +1,7 @@
 "use client"
 // Atomic Solutions Unified Core - v7.1.0 (Navy Theme + Banners)
 
+import { useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { motion } from "framer-motion"
@@ -34,6 +35,14 @@ const BANNERS = [
 ]
 
 export default function Home() {
+  useEffect(() => {
+    fetch("/api/track", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: "web" })
+    }).catch(() => {})
+  }, [])
+
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] font-sans overflow-x-hidden selection:bg-[#1E3A8A]/10 relative">
 
