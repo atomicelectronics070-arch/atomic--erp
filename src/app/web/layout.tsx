@@ -2,8 +2,8 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { useEffect } from "react"
-import { Search, ShoppingCart, User, Shield, Zap, CheckCircle2 } from "lucide-react"
+import { useEffect, useState } from "react"
+import { Search, ShoppingCart, User, Shield, Zap, CheckCircle2, Menu, X } from "lucide-react"
 import { useCart } from "@/context/CartContext"
 import { motion, AnimatePresence } from "framer-motion"
 
@@ -13,6 +13,7 @@ import { CartBotOverlay } from "@/components/ui/CartBotOverlay"
 export default function WebLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname()
     const { totalItems } = useCart()
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
     useEffect(() => {
         fetch("/api/track", {
@@ -21,6 +22,23 @@ export default function WebLayout({ children }: { children: React.ReactNode }) {
             body: JSON.stringify({ type: "web" })
         }).catch(() => {})
     }, [pathname])
+
+    const navLinks = [
+        { href: "/", label: "Inicio" },
+        { href: "/web/products", label: "Productos" },
+        { href: "/web/categories", label: "Categorías" },
+        { href: "/web/demos", label: "Desarrollo" },
+        { href: "/web/gestores", label: "Gestores" },
+        { href: "/web/conjuntos-smart", label: "Conjuntos Smart" },
+        { href: "/web/chat-bots", label: "Chat Bots" },
+        { href: "/web/consolas", label: "Consolas" },
+        { href: "/web/academy", label: "Academia" },
+        { href: "/web/benefits", label: "Beneficios" },
+        { href: "/web/bajo-pedido", label: "Bajo Pedido" },
+        { href: "/web/trabajos", label: "Trabajos" },
+        { href: "/web/repuestos", label: "Repuestos" },
+        { href: "/web/contact", label: "Contacto" },
+    ]
 
     return (
         <div className="min-h-screen font-sans text-slate-900 bg-[#F8FAFC] relative">
@@ -33,68 +51,21 @@ export default function WebLayout({ children }: { children: React.ReactNode }) {
                         <Link href="/web" className="text-2xl font-black tracking-tighter uppercase italic text-[#1E3A8A] group">
                             ATOMIC<span className="text-[#1E3A8A] group-hover:text-blue-600 transition-colors">!</span>
                         </Link>
-                        <div className="hidden md:flex space-x-8 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">
-                            <Link
-                                href="/"
-                                className={pathname === '/' ? 'text-[#1E3A8A] border-b-2 border-[#1E3A8A] pb-1' : 'hover:text-[#1E3A8A] transition-colors'}
-                            >Inicio</Link>
-                            <Link
-                                href="/web/products"
-                                className={pathname.includes('/product') ? 'text-[#1E3A8A] border-b-2 border-[#1E3A8A] pb-1' : 'hover:text-[#1E3A8A] transition-colors'}
-                            >Productos</Link>
-                            <Link
-                                href="/web/categories"
-                                className={pathname === '/web/categories' ? 'text-[#1E3A8A] border-b-2 border-[#1E3A8A] pb-1' : 'hover:text-[#1E3A8A] transition-colors'}
-                            >Categorías</Link>
-                            <Link
-                                href="/web/demos"
-                                className={pathname === '/web/demos' ? 'text-[#1E3A8A] border-b-2 border-[#1E3A8A] pb-1' : 'hover:text-[#1E3A8A] transition-colors'}
-                            >Desarrollo</Link>
-                            <Link
-                                href="/web/gestores"
-                                className={pathname === '/web/gestores' ? 'text-[#1E3A8A] border-b-2 border-[#1E3A8A] pb-1' : 'hover:text-[#1E3A8A] transition-colors'}
-                            >Gestores</Link>
-                            <Link
-                                href="/web/conjuntos-smart"
-                                className={pathname === '/web/conjuntos-smart' ? 'text-emerald-700 border-b-2 border-emerald-600 pb-1' : 'hover:text-emerald-700 transition-colors'}
-                            >Conjuntos Smart</Link>
-                            <Link
-                                href="/web/chat-bots"
-                                className={pathname === '/web/chat-bots' ? 'text-orange-600 border-b-2 border-orange-500 pb-1' : 'hover:text-orange-600 transition-colors'}
-                            >Chat Bots</Link>
-                            <Link
-                                href="/web/consolas"
-                                className={pathname === '/web/consolas' ? 'text-blue-700 border-b-2 border-blue-600 pb-1' : 'hover:text-blue-700 transition-colors'}
-                            >Consolas</Link>
-                            <Link
-                                href="/web/academy"
-                                className={pathname.startsWith('/web/academy') ? 'text-blue-600 border-b-2 border-blue-600 pb-1' : 'hover:text-blue-600 transition-colors'}
-                            >Academia</Link>
-                            <Link
-                                href="/web/benefits"
-                                className={pathname === '/web/benefits' ? 'text-[#1E3A8A] border-b-2 border-[#1E3A8A] pb-1' : 'hover:text-[#1E3A8A] transition-colors'}
-                            >Beneficios</Link>
-                            <Link
-                                href="/web/bajo-pedido"
-                                className={pathname === '/web/bajo-pedido' ? 'text-[#1E3A8A] border-b-2 border-[#1E3A8A] pb-1' : 'hover:text-[#1E3A8A] transition-colors'}
-                            >Bajo Pedido</Link>
-                            <Link
-                                href="/web/trabajos"
-                                className={pathname === '/web/trabajos' ? 'text-[#1E3A8A] border-b-2 border-[#1E3A8A] pb-1' : 'hover:text-[#1E3A8A] transition-colors'}
-                            >Trabajos</Link>
-                            <Link
-                                href="/web/repuestos"
-                                className={pathname === '/web/repuestos' ? 'text-[#1E3A8A] border-b-2 border-[#1E3A8A] pb-1' : 'hover:text-[#1E3A8A] transition-colors'}
-                            >Repuestos</Link>
-                            <Link
-                                href="/web/contact"
-                                className={pathname === '/web/contact' ? 'text-[#1E3A8A] border-b-2 border-[#1E3A8A] pb-1' : 'hover:text-[#1E3A8A] transition-colors'}
-                            >Contacto</Link>
+                        <div className="hidden md:flex flex-wrap gap-x-8 gap-y-2 max-w-3xl text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">
+                            {navLinks.map(link => (
+                                <Link
+                                    key={link.href}
+                                    href={link.href}
+                                    className={pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href)) ? 'text-[#1E3A8A] border-b-2 border-[#1E3A8A] pb-1' : 'hover:text-[#1E3A8A] transition-colors'}
+                                >
+                                    {link.label}
+                                </Link>
+                            ))}
                         </div>
                     </div>
 
                     {/* Actions */}
-                    <div className="flex items-center space-x-6 text-slate-400">
+                    <div className="flex items-center space-x-4 md:space-x-6 text-slate-400">
                         <motion.button 
                             whileHover={{ scale: 1.2, color: '#1E3A8A' }}
                             whileTap={{ scale: 0.9 }}
@@ -115,13 +86,48 @@ export default function WebLayout({ children }: { children: React.ReactNode }) {
                                 </span>
                             )}
                         </motion.div>
+                        {/* Hamburger Button */}
+                        <button 
+                            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                            className="md:hidden ml-2 text-slate-800 p-1"
+                        >
+                            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                        </button>
                     </div>
                 </div>
 
                 {/* Navy accent line at the very bottom of navbar */}
                 <div className="h-[1px] w-full bg-slate-200" />
-            </nav>
 
+                {/* Mobile Menu Dropdown */}
+                <AnimatePresence>
+                    {isMobileMenuOpen && (
+                        <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="md:hidden bg-white border-b border-slate-200 overflow-hidden"
+                        >
+                            <div className="px-6 py-4 flex flex-col space-y-4 max-h-[70vh] overflow-y-auto">
+                                {navLinks.map(link => (
+                                    <Link
+                                        key={link.href}
+                                        href={link.href}
+                                        onClick={() => setIsMobileMenuOpen(false)}
+                                        className={`text-xs font-black uppercase tracking-[0.2em] py-2 border-b border-slate-100 ${
+                                            pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href)) 
+                                                ? 'text-[#1E3A8A]' 
+                                                : 'text-slate-500 hover:text-[#1E3A8A]'
+                                        }`}
+                                    >
+                                        {link.label}
+                                    </Link>
+                                ))}
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </nav>
             {/* Page Content with Smooth Transition */}
             <AnimatePresence mode="wait">
                 <motion.main
