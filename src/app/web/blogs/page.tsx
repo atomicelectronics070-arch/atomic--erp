@@ -2,8 +2,8 @@ import Link from "next/link"
 import { prisma } from "@/lib/prisma"
 import { ArrowLeft, Clock, User, ChevronRight } from "lucide-react"
 
-// Force dynamic to always fetch the latest published blogs
-export const dynamic = 'force-dynamic'
+// Use ISR to cache the blog page and refresh it every hour
+export const revalidate = 3600
 
 export default async function BlogsGallery() {
   const blogs = await prisma.blog.findMany({

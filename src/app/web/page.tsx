@@ -4,8 +4,7 @@ import { authOptions } from "@/lib/auth"
 import PublicWebClient from "./PublicWebClient"
 import { getStoreSettings } from "@/lib/actions/shop"
 
-export const dynamic = "force-dynamic"
-export const revalidate = 0
+export const revalidate = 3600 // Cache for 1 hour (ISR)
 
 export default async function PublicWebPage() {
     const session = await getServerSession(authOptions)
@@ -62,7 +61,7 @@ export default async function PublicWebPage() {
                     { name: { contains: 'laptop', mode: 'insensitive' } },
                 ]
             },
-            take: 1000,
+            take: 60, // Reduced from 1000 for performance
             orderBy: { createdAt: 'desc' },
             select: { id: true, name: true, description: true, price: true, images: true, featured: true, provider: true, collectionId: true, createdAt: true, category: { select: { name: true, slug: true, id: true } } }
         }),
@@ -70,7 +69,7 @@ export default async function PublicWebPage() {
         prisma.product.findMany({
             where: { isDeleted: false, isActive: true },
             orderBy: { createdAt: 'desc' },
-            take: 200,
+            take: 60, // Reduced from 200 for performance
             select: { id: true, name: true, description: true, price: true, images: true, featured: true, provider: true, collectionId: true, createdAt: true, category: { select: { name: true, slug: true } } }
         }),
         getStoreSettings()
