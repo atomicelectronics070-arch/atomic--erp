@@ -398,17 +398,17 @@ export default function BotRutaPage() {
           const imgs = safeParseArray(p.images)
           const pPrice = parseFloat(p.price) || 0
           const isFlex = p.name ? p.name.toLowerCase().includes("flex") : false
-          return imgs && imgs.length > 0 && imgs[0] !== '' && pPrice >= 20 && !isFlex
+          return imgs && imgs.length > 0 && imgs[0] !== '' && pPrice >= 100 && !isFlex
         })
         
         // Select strategic cutoff price
-        let cutoff = 30
+        let cutoff = 100
         let pool = withImages.filter((p: any) => p.price >= cutoff)
-        if (pool.length < 3) {
-          cutoff = 20
+        if (pool.length < 5) {
+          cutoff = 100
           pool = withImages.filter((p: any) => p.price >= cutoff)
         }
-        if (pool.length < 3) {
+        if (pool.length < 5) {
           pool = withImages
         }
 
@@ -420,18 +420,18 @@ export default function BotRutaPage() {
         const sortedOthersByPrice = others.sort(() => Math.random() - 0.5)
         
         let selected: any[] = []
-        if (shuffledMatched.length >= 2) {
-          selected = [...shuffledMatched.slice(0, 2)]
-          if (sortedOthersByPrice.length >= 1) {
-            selected.push(sortedOthersByPrice[0])
-          } else if (shuffledMatched.length >= 3) {
-            selected.push(shuffledMatched[2])
+        if (shuffledMatched.length >= 3) {
+          selected = [...shuffledMatched.slice(0, 3)]
+          if (sortedOthersByPrice.length >= 2) {
+            selected.push(...sortedOthersByPrice.slice(0, 2))
+          } else if (shuffledMatched.length >= 5) {
+            selected.push(...shuffledMatched.slice(3, 5))
           }
         } else {
-          selected = [...shuffledMatched, ...sortedOthersByPrice.slice(0, 3 - shuffledMatched.length)]
+          selected = [...shuffledMatched, ...sortedOthersByPrice.slice(0, 5 - shuffledMatched.length)]
         }
         
-        setProducts(selected.slice(0, 3))
+        setProducts(selected.slice(0, 5))
       })
       .catch((err) => {
         console.error("Failed to fetch products on mount:", err)
@@ -476,11 +476,11 @@ export default function BotRutaPage() {
           const imgs = safeParseArray(p.images)
           const pPrice = parseFloat(p.price) || 0
           const isFlex = p.name ? p.name.toLowerCase().includes("flex") : false
-          return imgs && imgs.length > 0 && imgs[0] !== '' && pPrice >= 20 && !isFlex
+          return imgs && imgs.length > 0 && imgs[0] !== '' && pPrice >= 100 && !isFlex
         })
-        let pool = withImages.filter((p: any) => p.price >= 30)
-        if (pool.length < 3) pool = withImages
-        if (pool.length < 3) pool = withImages
+        let pool = withImages.filter((p: any) => p.price >= 100)
+        if (pool.length < 5) pool = withImages
+        if (pool.length < 5) pool = withImages
 
         const priorities = ["portero", "campana", "barrera", "antena", "cerradura", "motor", "espia"]
         const matched = pool.filter((p: any) => priorities.some(pr => p.name.toLowerCase().includes(pr)))
@@ -489,14 +489,14 @@ export default function BotRutaPage() {
         const sortedOthersByPrice = others.sort(() => Math.random() - 0.5)
         
         let selected: any[] = []
-        if (shuffledMatched.length >= 2) {
-          selected = [...shuffledMatched.slice(0, 2)]
-          if (sortedOthersByPrice.length >= 1) selected.push(sortedOthersByPrice[0])
-          else if (shuffledMatched.length >= 3) selected.push(shuffledMatched[2])
+        if (shuffledMatched.length >= 3) {
+          selected = [...shuffledMatched.slice(0, 3)]
+          if (sortedOthersByPrice.length >= 1) selected.push(...sortedOthersByPrice.slice(0, 2))
+          else if (shuffledMatched.length >= 3) selected.push(...shuffledMatched.slice(3, 5))
         } else {
-          selected = [...shuffledMatched, ...sortedOthersByPrice.slice(0, 3 - shuffledMatched.length)]
+          selected = [...shuffledMatched, ...sortedOthersByPrice.slice(0, 5 - shuffledMatched.length)]
         }
-        poolProducts = selected.slice(0, 3)
+        poolProducts = selected.slice(0, 5)
         setProducts(poolProducts)
       } catch (err) {
         console.error("Failed loading fallback products:", err)
@@ -544,7 +544,7 @@ export default function BotRutaPage() {
     
     setGeneratedAds(ads)
     
-    addBotMsg("\u00a1Publicidad Estrat\u00e9gica Generada! \u2728 Hemos seleccionado 3 de los mejores productos reales de tu inventario (descartando cables y mouses de bajo valor) y generado dise\u00f1os premium con branding oficial, bandera de Ecuador y precios reales de tu cat\u00e1logo.")
+    addBotMsg("\u00a1Publicidad Estrat\u00e9gica Generada! \u2728 Hemos seleccionado 5 de los mejores productos reales de tu inventario (descartando cables y mouses de bajo valor) y generado dise\u00f1os premium con branding oficial, bandera de Ecuador y precios reales de tu cat\u00e1logo.")
     
     await new Promise(r => setTimeout(r, 1000))
     addBotMsg("Querido asesor a continuaci\u00f3n se sit\u00faan los textos que podr\u00e1s usar para desarrollar tus publicaciones. Es importante que no te saltes estas indicaciones:\n\n1. En **T\u00edtulo** usa uno llamativo con emojis.\n2. En **Precio** usa el indicado.\n3. En **Descripci\u00f3n** puedes copiarla o mejorarla para personalizarla.\n4. En **Ubicaci\u00f3n** usa nuestras sugerencias estrat\u00e9gicas.\n5. En **Palabras claves** p\u00e9galas tal cual.\n6. En **SKU** no pongas nada.")
@@ -579,11 +579,11 @@ export default function BotRutaPage() {
       // Exclude currently generated product IDs if possible to prevent duplicates
       const currentIds = generatedAds.map(ad => ad.id)
       let available = shuffledAll.filter((p: any) => !currentIds.includes(p.id))
-      if (available.length < 3) {
+      if (available.length < 5) {
         available = shuffledAll
       }
       
-      const newSelected = available.slice(0, 3)
+      const newSelected = available.slice(0, 5)
       setProducts(newSelected)
       
       const locations = ["Cumbayá, Quito", "Samborondón, Guayaquil", "La Carolina, Quito", "Valle de los Tumbaco", "Urdesa, Guayaquil", "Manta, Manabí", "Cuenca, Azuay"]
@@ -639,7 +639,7 @@ export default function BotRutaPage() {
     setMessages(prev => [...prev, { id: Date.now().toString(), from: "user", text: "🚀 Comenzar mi día de trabajo" }])
     setPhase("product_selection")
     setTimeout(() => {
-      addBotMsg("¡Excelente! Primero vamos a seleccionar tus 3 productos estratégicos del día de hoy.")
+      addBotMsg("¡Excelente! Primero vamos a seleccionar tus 5 productos estratégicos del día de hoy.")
       setTimeout(() => {
         addBotMsg("Elige de la ruleta de productos propuestos de tu catálogo de Atomic. Si no te convencen, puedes cambiar las opciones. Una vez que los aceptes, la IA (Flux / Google Imagen 3) los procesará y no habrá marcha atrás:", "product_selection_cards")
       }, 500)
@@ -656,14 +656,14 @@ export default function BotRutaPage() {
         const imgs = safeParseArray(p.images)
         const pPrice = parseFloat(p.price) || 0
         const isFlex = p.name ? p.name.toLowerCase().includes("flex") : false
-        return imgs && imgs.length > 0 && imgs[0] !== '' && pPrice >= 20 && !isFlex
+        return imgs && imgs.length > 0 && imgs[0] !== '' && pPrice >= 100 && !isFlex
       })
       
       const shuffled = withImages.sort(() => Math.random() - 0.5)
-      const selected = shuffled.slice(0, 3)
+      const selected = shuffled.slice(0, 5)
       setProducts(selected)
       
-      addBotMsg("🔄 Hemos barajado el catálogo. Aquí tienes una nueva propuesta de 3 productos estratégicos:", "product_selection_cards")
+      addBotMsg("🔄 Hemos barajado el catálogo. Aquí tienes una nueva propuesta de 5 productos estratégicos:", "product_selection_cards")
     } catch (err) {
       console.error("Failed shuffling proposed products:", err)
     }
@@ -680,7 +680,7 @@ export default function BotRutaPage() {
         const imgs = safeParseArray(p.images)
         const pPrice = parseFloat(p.price) || 0
         const isFlex = p.name ? p.name.toLowerCase().includes("flex") : false
-        return imgs && imgs.length > 0 && imgs[0] !== '' && pPrice >= 20 && !isFlex && !currentIds.includes(p.id)
+        return imgs && imgs.length > 0 && imgs[0] !== '' && pPrice >= 100 && !isFlex && !currentIds.includes(p.id)
       })
       
       if (withImages.length > 0) {
@@ -698,7 +698,7 @@ export default function BotRutaPage() {
 
   const acceptProductsAndGenerate = async () => {
     setPhase("loading_ads")
-    setMessages(prev => [...prev, { id: Date.now().toString(), from: "user", text: "✅ Confirmo y Acepto mis 3 productos estratégicos" }])
+    setMessages(prev => [...prev, { id: Date.now().toString(), from: "user", text: "✅ Confirmo y Acepto mis 5 productos estratégicos" }])
     
     await new Promise(r => setTimeout(r, 600))
     addBotMsg("¡Productos Confirmados! 🚀 A partir de este momento no hay marcha atrás y quedas comprometido a publicar este material en tus redes sociales.")
@@ -756,7 +756,7 @@ export default function BotRutaPage() {
     
     setGeneratedAds(ads)
     
-    addBotMsg("¡Publicidad Generada con Éxito! 🎉 Tus 3 diseños y copys están listos.")
+    addBotMsg("¡Publicidad Generada con Éxito! 🎉 Tus 5 diseños y copys están listos.")
     
     await new Promise(r => setTimeout(r, 1000))
     addBotMsg("", "ad_texts")
@@ -783,7 +783,7 @@ export default function BotRutaPage() {
           const withImages = all.filter((p: any) => {
             const imgs = safeParseArray(p.images)
             const pPrice = parseFloat(p.price) || 0
-            return imgs && imgs.length > 0 && imgs[0] !== '' && pPrice >= 15
+            return imgs && imgs.length > 0 && imgs[0] !== '' && pPrice >= 100
           })
           
           // Filter matching products
@@ -800,7 +800,7 @@ export default function BotRutaPage() {
           
           let selected: any[] = []
           if (matched.length >= 3) {
-            selected = matched.slice(0, 3)
+            selected = matched.slice(0, 5)
           } else {
             const others = withImages.filter((p: any) => !matched.some((m: any) => m.id === p.id))
             const shuffledOthers = others.sort(() => Math.random() - 0.5)
