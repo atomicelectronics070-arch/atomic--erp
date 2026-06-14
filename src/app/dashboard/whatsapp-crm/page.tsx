@@ -384,6 +384,17 @@ export default function WhatsAppCRMDashboard() {
                                     </button>
                                 </motion.div>
                             )}
+                            
+                            {status === 'connected' && (
+                                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
+                                    <MessageSquare size={80} className="text-white/5 mb-8 mx-auto" />
+                                    <p className="text-2xl font-black uppercase tracking-[0.5em] italic text-white/10">ESPERANDO_FRECUENCIA</p>
+                                    <button className="bg-[#25D366] text-white px-12 py-5 font-black uppercase tracking-widest italic hover:bg-[#128C7E] transition-all flex items-center gap-3 mx-auto shadow-[0_0_20px_rgba(37,211,102,0.3)]">
+                                        <MessageSquare size={20} />
+                                        NUEVA TRANSMISIÓN WA
+                                    </button>
+                                </motion.div>
+                            )}
                         </AnimatePresence>
                     </div>
                 )

@@ -97,6 +97,9 @@ model Client {
   updatedAt        DateTime   @updatedAt
   category         String     @default("GENERAL")
   waContactId      String?    @unique
+  cedula           String?
+  lastPromotion    DateTime?
+  tags             String?
   salesperson      User       @relation(fields: [salespersonId], references: [id])
   waContact        WAContact? @relation(fields: [waContactId], references: [id])
   quotes           Quote[]
