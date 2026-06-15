@@ -102,6 +102,9 @@ OUTPUT STRICTLY JSON WITHOUT MARKDOWN. Format:
         const GOOGLE_API_KEY = process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY
         const NVIDIA_API_KEY = process.env.NVIDIA_API_KEY
 
+        let geminiError = ""
+        let nvidiaError = ""
+
         let parsedPlan: any = null
         let responseText = ""
 
@@ -130,13 +133,15 @@ OUTPUT STRICTLY JSON WITHOUT MARKDOWN. Format:
                 }, 3500)
 
                 if (res.ok) {
-                    const data = await res.json()
-                    modelResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || ""
+                    const data = await res.ok ? await res.json() : null
+                    modelResponse = data?.candidates?.[0]?.content?.parts?.[0]?.text || ""
                 } else {
-                    const errText = await res.text()
+                    const errText = await res.text().catch(() => "")
+                    geminiError = `HTTP ${res.status}: ${errText}`
                     console.warn(`Gemini API returned error: ${res.status}. Falling back to Nvidia...`, errText)
                 }
-            } catch (err) {
+            } catch (err: any) {
+                geminiError = err.message
                 console.error("Gemini failed. Falling back to Nvidia...", err)
             }
         }
@@ -165,9 +170,12 @@ OUTPUT STRICTLY JSON WITHOUT MARKDOWN. Format:
                     const json = await res.json()
                     modelResponse = json.choices[0].message.content || ""
                 } else {
-                    console.error("Nvidia API failed as well:", res.status)
+                    const errText = await res.text().catch(() => "")
+                    nvidiaError = `HTTP ${res.status}: ${errText}`
+                    console.error("Nvidia API failed as well:", res.status, errText)
                 }
-            } catch (err) {
+            } catch (err: any) {
+                nvidiaError = err.message
                 console.error("Nvidia API failed:", err)
             }
         }
@@ -196,10 +204,12 @@ OUTPUT STRICTLY JSON WITHOUT MARKDOWN. Format:
         if (!parsedPlan) {
             const hasGemini = !!GOOGLE_API_KEY;
             const hasNvidia = !!NVIDIA_API_KEY;
+            const geminiPrefix = GOOGLE_API_KEY ? GOOGLE_API_KEY.substring(0, 6) : "None";
+            const nvidiaPrefix = NVIDIA_API_KEY ? NVIDIA_API_KEY.substring(0, 8) : "None";
             parsedPlan = {
                 shouldCreateNode: false,
                 saveReport: false,
-                instructionsForExecutor: `Lo siento, experimenté un problema de conexión con el enlace de inteligencia artificial. Por favor, intenta de nuevo. (Debug: G:${hasGemini ? "OK" : "NO"} N:${hasNvidia ? "OK" : "NO"})`
+                instructionsForExecutor: `Lo siento, experimenté un problema de conexión con el enlace de inteligencia artificial. Por favor, intenta de nuevo. (Debug: G:${hasGemini ? "OK" : "NO"} N:${hasNvidia ? "OK" : "NO"} GPfx:${geminiPrefix} NPfx:${nvidiaPrefix} errG:${geminiError} errN:${nvidiaError})`
             }
         }
 
