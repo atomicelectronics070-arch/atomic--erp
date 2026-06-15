@@ -1392,12 +1392,6 @@
                         renderMessage(reply, 'bot');
                     }, 400);
                     return;
-                } else if (localResult && localResult.products.length === 0) {
-                    // If they explicitly did a product query but no results matched
-                    setTimeout(() => {
-                        renderMessage(`No encontré ningún producto que coincida con tu búsqueda ni filtros de precio en la base de datos local. ¿Deseas intentar con otros términos?`, 'bot');
-                    }, 400);
-                    return;
                 }
             }
 
