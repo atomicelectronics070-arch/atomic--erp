@@ -1,6 +1,22 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 
+async function fetchWithTimeout(url: string, options: any, timeoutMs = 3500) {
+    const controller = new AbortController()
+    const id = setTimeout(() => controller.abort(), timeoutMs)
+    try {
+        const response = await fetch(url, {
+            ...options,
+            signal: controller.signal
+        })
+        clearTimeout(id)
+        return response
+    } catch (error) {
+        clearTimeout(id)
+        throw error
+    }
+}
+
 // Contexto reciente de Softres y Guías de ventas
 const SOFTRES_CONTEXT = `
 [Contexto de Softres y guía de ventas integrado]
@@ -105,13 +121,13 @@ OUTPUT STRICTLY JSON WITHOUT MARKDOWN. Format:
                     })
                 }
 
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GOOGLE_API_KEY}`, {
+                const res = await fetchWithTimeout(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GOOGLE_API_KEY}`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         contents: [{ parts }]
                     })
-                })
+                }, 3500)
 
                 if (res.ok) {
                     const data = await res.json()
@@ -129,7 +145,7 @@ OUTPUT STRICTLY JSON WITHOUT MARKDOWN. Format:
         if (!modelResponse && NVIDIA_API_KEY) {
             try {
                 usedNvidia = true
-                const res = await fetch("https://integrate.api.nvidia.com/v1/chat/completions", {
+                const res = await fetchWithTimeout("https://integrate.api.nvidia.com/v1/chat/completions", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -143,7 +159,7 @@ OUTPUT STRICTLY JSON WITHOUT MARKDOWN. Format:
                         ],
                         max_tokens: 1024
                     })
-                })
+                }, 5000)
 
                 if (res.ok) {
                     const json = await res.json()
@@ -240,13 +256,13 @@ OUTPUT ONLY the text of the final response to be shown in the chat window.`;
 
             if (GOOGLE_API_KEY && GOOGLE_API_KEY !== "your_gemini_api_key_here") {
                 try {
-                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GOOGLE_API_KEY}`, {
+                    const res = await fetchWithTimeout(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GOOGLE_API_KEY}`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
                             contents: [{ parts: [{ text: execPrompt }] }]
                         })
-                    })
+                    }, 3500)
 
                     if (res.ok) {
                         const data = await res.json()
@@ -263,7 +279,7 @@ OUTPUT ONLY the text of the final response to be shown in the chat window.`;
 
             if (!synthesized && NVIDIA_API_KEY) {
                 try {
-                    const res = await fetch("https://integrate.api.nvidia.com/v1/chat/completions", {
+                    const res = await fetchWithTimeout("https://integrate.api.nvidia.com/v1/chat/completions", {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",
@@ -277,7 +293,7 @@ OUTPUT ONLY the text of the final response to be shown in the chat window.`;
                             ],
                             max_tokens: 1024
                         })
-                    })
+                    }, 5000)
 
                     if (res.ok) {
                         const json = await res.json()
