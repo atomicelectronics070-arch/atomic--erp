@@ -1188,7 +1188,8 @@
 
         // Dynamic search helper functions
         function searchProductsLocal(messageText) {
-            const text = messageText.toLowerCase().trim();
+            // Clean common punctuation first to prevent symbols sticking to keywords
+            const cleanText = messageText.toLowerCase().replace(/[¿?¡!.,;:\(\)\-_]/g, ' ').trim();
             
             // 1. Check for Price Range patterns
             let minPrice = 0;
@@ -1200,7 +1201,7 @@
             const rangeRegex3 = /(?:mas de|mayor a|desde|sobre)\s+(\d+(?:\.\d+)?)/i;
 
             let match;
-            if ((match = text.match(rangeRegex1))) {
+            if ((match = cleanText.match(rangeRegex1))) {
                 minPrice = parseFloat(match[1]);
                 maxPrice = parseFloat(match[2]);
                 hasPriceFilter = true;
@@ -1209,24 +1210,24 @@
                     minPrice = maxPrice;
                     maxPrice = temp;
                 }
-            } else if ((match = text.match(rangeRegex2))) {
+            } else if ((match = cleanText.match(rangeRegex2))) {
                 maxPrice = parseFloat(match[1]);
                 hasPriceFilter = true;
-            } else if ((match = text.match(rangeRegex3))) {
+            } else if ((match = cleanText.match(rangeRegex3))) {
                 minPrice = parseFloat(match[1]);
                 hasPriceFilter = true;
             }
 
-            // 2. Extract keywords for product matching (filtering out common filler words and typos)
-            let queryText = text
+            // 2. Extract keywords for product matching (filtering out generic stop words with word boundaries)
+            let queryText = cleanText
                 .replace(/(?:entre|de)\s+\d+(?:\.\d+)?\s+(?:y|a)\s+\d+(?:\.\d+)?/gi, '') 
                 .replace(/(?:menos de|menor a|bajo|hasta|mas de|mayor a|desde|sobre)\s+\d+(?:\.\d+)?/gi, '')
-                .replace(/precio|de|cuanto|cuesta|stock|valor|los|las|el|la|dame|tiene|me|das|hola|buenas|tardes|tienes|tines|teneis|tinees|hay|busca|buscame|ver|buscar|tine/g, ' ')
+                .replace(/\b(precio|precios|de|cuanto|cuesta|cuestan|stock|valor|los|las|el|la|un|una|unos|unas|dame|tiene|tienes|tines|tinees|teneis|hay|busca|buscame|ver|buscar|tine|para|por|con|sin|me|te|se|nos|mi|su|sus|como|que|cual|cuales|hoy|mas|vender|tip|tips|ayuda|capacitacion|guia|manual|conversar|hablar|charlar|hola|buenas|tardes|dias|noches|gracias|favor|hago|hacer|hace|hizo|hiciste|venta|ventas|registro|registrar|reporte|reportar|recordar|recuerdame)\b/gi, ' ')
                 .trim();
 
             const keywords = queryText.split(/\s+/).map(w => w.trim()).filter(w => w.length >= 2);
 
-            // If no keywords and no price range, this isn't a product inquiry
+            // If no keywords and no price range, this isn't a product inquiry (forward to AI)
             if (keywords.length === 0 && !hasPriceFilter) {
                 return null;
             }
@@ -1237,11 +1238,12 @@
                 const normalizedTarget = targetField.toLowerCase();
                 if (normalizedTarget.includes(keyword)) return true;
 
-                // Split words in product name
-                const words = normalizedTarget.split(/[\s\-,\/()]+/);
+                // Split words in product name and filter out empty/short items
+                const words = normalizedTarget.split(/[\s\-,\/()]+/).filter(w => w.length >= 2);
                 return words.some(w => {
-                    if (w.includes(keyword) || keyword.includes(w)) return true;
-                    if (Math.abs(w.length - keyword.length) > 3) return false;
+                    if (w.includes(keyword)) return true;
+                    if (keyword.includes(w) && w.length >= 3) return true;
+                    if (Math.abs(w.length - keyword.length) > 2) return false;
 
                     // Simple character intersection order ratio
                     let commonChars = 0;
