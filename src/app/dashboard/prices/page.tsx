@@ -1,9 +1,14 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { RefreshCw } from "lucide-react"
 
 export default function PricesPage() {
-    const iframeUrl = "/prices/index.html"
+    const [iframeUrl, setIframeUrl] = useState("/prices/index.html")
+
+    useEffect(() => {
+        setIframeUrl(`/prices/index.html?t=${Date.now()}`)
+    }, [])
 
     return (
         <div className="w-full h-[calc(100vh-10rem)] bg-[#0c0c14] rounded-2xl overflow-hidden border border-slate-200/50 shadow-2xl relative">
