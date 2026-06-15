@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma"
 
 export const maxDuration = 30;
 
-async function fetchWithTimeout(url: string, options: any, timeoutMs = 3500) {
+async function fetchWithTimeout(url: string, options: any, timeoutMs = 10000) {
     const controller = new AbortController()
     const id = setTimeout(() => controller.abort(), timeoutMs)
     try {
@@ -132,7 +132,7 @@ OUTPUT STRICTLY JSON WITHOUT MARKDOWN. Format:
                     body: JSON.stringify({
                         contents: [{ parts }]
                     })
-                }, 3500)
+                }, 10000)
 
                 if (res.ok) {
                     const data = await res.ok ? await res.json() : null
@@ -166,7 +166,7 @@ OUTPUT STRICTLY JSON WITHOUT MARKDOWN. Format:
                         ],
                         max_tokens: 1024
                     })
-                }, 12000)
+                }, 15000)
 
                 if (res.ok) {
                     const json = await res.json()
@@ -274,7 +274,7 @@ OUTPUT ONLY the text of the final response to be shown in the chat window.`;
                         body: JSON.stringify({
                             contents: [{ parts: [{ text: execPrompt }] }]
                         })
-                    }, 3500)
+                    }, 10000)
 
                     if (res.ok) {
                         const data = await res.json()
@@ -305,7 +305,7 @@ OUTPUT ONLY the text of the final response to be shown in the chat window.`;
                             ],
                             max_tokens: 1024
                         })
-                    }, 12000)
+                    }, 15000)
 
                     if (res.ok) {
                         const json = await res.json()
