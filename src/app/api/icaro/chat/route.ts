@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 
+export const maxDuration = 30;
+
 async function fetchWithTimeout(url: string, options: any, timeoutMs = 3500) {
     const controller = new AbortController()
     const id = setTimeout(() => controller.abort(), timeoutMs)
@@ -164,7 +166,7 @@ OUTPUT STRICTLY JSON WITHOUT MARKDOWN. Format:
                         ],
                         max_tokens: 1024
                     })
-                }, 5000)
+                }, 12000)
 
                 if (res.ok) {
                     const json = await res.json()
@@ -303,7 +305,7 @@ OUTPUT ONLY the text of the final response to be shown in the chat window.`;
                             ],
                             max_tokens: 1024
                         })
-                    }, 5000)
+                    }, 12000)
 
                     if (res.ok) {
                         const json = await res.json()
