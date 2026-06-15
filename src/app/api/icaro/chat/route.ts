@@ -178,10 +178,12 @@ OUTPUT STRICTLY JSON WITHOUT MARKDOWN. Format:
         }
 
         if (!parsedPlan) {
+            const hasGemini = !!GOOGLE_API_KEY;
+            const hasNvidia = !!NVIDIA_API_KEY;
             parsedPlan = {
                 shouldCreateNode: false,
                 saveReport: false,
-                instructionsForExecutor: "Lo siento, experimenté un problema de conexión con el enlace de inteligencia artificial. Por favor, intenta de nuevo."
+                instructionsForExecutor: `Lo siento, experimenté un problema de conexión con el enlace de inteligencia artificial. Por favor, intenta de nuevo. (Debug: G:${hasGemini ? "OK" : "NO"} N:${hasNvidia ? "OK" : "NO"})`
             }
         }
 
