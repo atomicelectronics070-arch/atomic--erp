@@ -228,31 +228,65 @@ OUTPUT STRICTLY JSON WITHOUT MARKDOWN. Format:
         // Phase 2: Call Executor to synthesize final response
         let finalResponseText = parsedPlan.instructionsForExecutor
 
-        // If it's a JSON orchestrator plan, generate elegant Spanish response
-        if (parsedPlan.instructionsForExecutor && !usedNvidia) {
-            try {
-                const execPrompt = `You are ÍCARO, the Virtual Corporate Brain of Atomic.
+        if (parsedPlan.instructionsForExecutor) {
+            const execPrompt = `You are ÍCARO, the Virtual Corporate Brain of Atomic.
 Synthesize a direct, helpful, and professional response in Spanish to the user "${vendedor_id}".
 User Input: "${message}"
 Instructions/Directive: ${parsedPlan.instructionsForExecutor}
 
 OUTPUT ONLY the text of the final response to be shown in the chat window.`;
 
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GOOGLE_API_KEY}`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: execPrompt }] }]
-                    })
-                })
+            let synthesized = false;
 
-                if (res.ok) {
-                    const data = await res.json()
-                    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || ""
-                    if (text) finalResponseText = text
+            if (GOOGLE_API_KEY && GOOGLE_API_KEY !== "your_gemini_api_key_here") {
+                try {
+                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GOOGLE_API_KEY}`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            contents: [{ parts: [{ text: execPrompt }] }]
+                        })
+                    })
+
+                    if (res.ok) {
+                        const data = await res.json()
+                        const text = data.candidates?.[0]?.content?.parts?.[0]?.text || ""
+                        if (text) {
+                            finalResponseText = text
+                            synthesized = true
+                        }
+                    }
+                } catch (err) {
+                    console.error("Gemini Executor synthesis failed:", err)
                 }
-            } catch (err) {
-                console.error("Executor synthesis failed:", err)
+            }
+
+            if (!synthesized && NVIDIA_API_KEY) {
+                try {
+                    const res = await fetch("https://integrate.api.nvidia.com/v1/chat/completions", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${NVIDIA_API_KEY}`
+                        },
+                        body: JSON.stringify({
+                            model: "nvidia/llama-3.3-nemotron-super-49b-v1.5",
+                            messages: [
+                                { role: "system", content: "You are a helpful assistant." },
+                                { role: "user", content: execPrompt }
+                            ],
+                            max_tokens: 1024
+                        })
+                    })
+
+                    if (res.ok) {
+                        const json = await res.json()
+                        const text = json.choices[0].message.content || ""
+                        if (text) finalResponseText = text
+                    }
+                } catch (err) {
+                    console.error("Nvidia Executor synthesis failed:", err)
+                }
             }
         }
 
