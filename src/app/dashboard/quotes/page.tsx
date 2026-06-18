@@ -10,10 +10,10 @@ export default async function QuotationPage() {
     if (!session) return null
 
     // Fetch initial data on server
-    const [products, history, lastQuote] = await Promise.all([
+    const [products, history, lastQuote, clients] = await Promise.all([
         prisma.product.findMany({ 
             where: { isDeleted: false }, 
-            select: { id: true, name: true, price: true, sku: true, description: true } 
+            select: { id: true, name: true, price: true, sku: true, description: true, stock: true, images: true } 
         }),
         prisma.quote.findMany({ 
             orderBy: { createdAt: 'desc' },
@@ -22,6 +22,10 @@ export default async function QuotationPage() {
         prisma.quote.findFirst({
             orderBy: { createdAt: 'desc' },
             select: { quoteNumber: true }
+        }),
+        prisma.client.findMany({
+            orderBy: { name: 'asc' },
+            select: { id: true, name: true, city: true, phone: true, email: true, cedula: true }
         })
     ])
 
@@ -39,6 +43,7 @@ export default async function QuotationPage() {
         <QuotationClient 
             initialProducts={JSON.parse(JSON.stringify(products))}
             initialHistory={JSON.parse(JSON.stringify(history))}
+            initialClients={JSON.parse(JSON.stringify(clients))}
             nextNumber={nextNum}
             session={session}
         />

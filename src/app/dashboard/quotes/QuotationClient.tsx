@@ -30,6 +30,7 @@ type QuoteItem = {
     description: string
     quantity: number
     unitPrice: number
+    discountPercent?: number
     customImage?: string
 }
 
@@ -40,21 +41,25 @@ interface Product {
     price: number
     sku: string | null
     images?: string | null
+    stock?: number
 }
 
 interface QuotationClientProps {
     initialProducts: Product[]
     initialHistory: any[]
+    initialClients: any[]
     nextNumber: string
     session: any
 }
 
-export default function QuotationClient({ initialProducts, initialHistory, nextNumber, session }: QuotationClientProps) {
+export default function QuotationClient({ initialProducts, initialHistory, initialClients, nextNumber, session }: QuotationClientProps) {
     const [clientName, setClientName] = useState("")
     const [clientEmail, setClientEmail] = useState("")
     const [emailNotSpecified, setEmailNotSpecified] = useState(false)
     const [clientPhone, setClientPhone] = useState("")
     const [clientCity, setClientCity] = useState("")
+    const [showClientList, setShowClientList] = useState(false)
+    const [isSavingClient, setIsSavingClient] = useState(false)
     const [quoteSubject, setQuoteSubject] = useState("")
     const [deliveryAddress, setDeliveryAddress] = useState("")
     const [quoteNumber, setQuoteNumber] = useState(nextNumber)
@@ -95,8 +100,10 @@ export default function QuotationClient({ initialProducts, initialHistory, nextN
 
     const taxRate = 0.15 
     const subtotal = items.reduce((acc, item) => acc + (item.quantity * item.unitPrice), 0)
-    const discountAmount = subtotal * (discountPercent / 100)
-    const taxableAmount = subtotal - discountAmount
+    const itemDiscountAmount = items.reduce((acc, item) => acc + (item.quantity * item.unitPrice * ((item.discountPercent || 0) / 100)), 0)
+    const globalDiscountAmount = (subtotal - itemDiscountAmount) * (discountPercent / 100)
+    const totalDiscountAmount = itemDiscountAmount + globalDiscountAmount
+    const taxableAmount = subtotal - totalDiscountAmount
     const taxAmount = taxableAmount * taxRate
     const total = taxableAmount + taxAmount
 
@@ -142,12 +149,43 @@ export default function QuotationClient({ initialProducts, initialHistory, nextN
         setClientPhone("0991234567")
         setEmailNotSpecified(true)
         setQuoteSubject("Suministro de Equipos de Prueba para Proyecto Alpha")
-        setDiscountPercent(5)
+        setDiscountPercent(0)
         setItems([
-            { id: "1", productId: "SKU-001", description: "Cámara Domo IP 4MP Avanzada", quantity: 5, unitPrice: 120.50 },
-            { id: "2", productId: "SKU-002", description: "Grabador NVR 16 Canales 4K", quantity: 1, unitPrice: 350.00 },
-            { id: "3", productId: "SRV-001", description: "Instalación y Configuración del Sistema", quantity: 1, unitPrice: 150.00 }
+            { id: "1", productId: "SKU-001", description: "Cámara Domo IP 4MP Avanzada", quantity: 5, unitPrice: 120.50, discountPercent: 5 },
+            { id: "2", productId: "SKU-002", description: "Grabador NVR 16 Canales 4K", quantity: 1, unitPrice: 350.00, discountPercent: 0 },
+            { id: "3", productId: "SRV-001", description: "Instalación y Configuración del Sistema", quantity: 1, unitPrice: 150.00, discountPercent: 10 }
         ])
+    }
+
+    const handleSaveClient = async () => {
+        if (!clientName.trim() || !clientPhone.trim() || !clientCity.trim()) {
+            alert("⚠️ Por favor completa Nombre, Ciudad y Teléfono para guardar al cliente.");
+            return;
+        }
+        setIsSavingClient(true);
+        try {
+            const res = await fetch("/api/crm", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    name: clientName,
+                    city: clientCity,
+                    phone: clientPhone,
+                    email: emailNotSpecified ? "no@especifica.com" : clientEmail,
+                    status: "PROSPECTO",
+                    source: "MANUAL"
+                })
+            });
+            if (res.ok) {
+                alert("✅ Cliente guardado correctamente en la base de datos.");
+            } else {
+                alert("❌ Error al guardar el cliente.");
+            }
+        } catch (e) {
+            alert("❌ Error de red al intentar guardar el cliente.");
+        } finally {
+            setIsSavingClient(false);
+        }
     }
 
     const handleQuickImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -284,25 +322,34 @@ export default function QuotationClient({ initialProducts, initialHistory, nextN
         // Table
         autoTable(doc, {
             startY: 85,
-            head: [["IMG", "CÓDIGO", "DESCRIPCIÓN", "CANT", "UNITARIO", "TOTAL"]],
-            body: items.map(i => [
-                '', // Placeholder for image
-                i.productId, 
-                i.description, 
-                i.quantity, 
-                `$${i.unitPrice.toFixed(2)}`, 
-                `$${(i.quantity * i.unitPrice).toFixed(2)}`
-            ]),
+            head: [["IMG", "CÓDIGO", "DESCRIPCIÓN", "CANT", "PRECIO", "SUBTOT", "DESC", "TOTAL"]],
+            body: items.map(i => {
+                const sub = i.quantity * i.unitPrice;
+                const desc = sub * ((i.discountPercent || 0) / 100);
+                const tot = sub - desc;
+                return [
+                    '', // Placeholder for image
+                    i.productId, 
+                    i.description, 
+                    i.quantity, 
+                    `$${i.unitPrice.toFixed(2)}`, 
+                    `$${sub.toFixed(2)}`,
+                    `-$${desc.toFixed(2)}`,
+                    `$${tot.toFixed(2)}`
+                ]
+            }),
             theme: 'plain',
-            headStyles: { fillColor: [248, 250, 252], textColor: [15, 23, 42], fontStyle: 'bold', fontSize: 9, lineWidth: 0.1, lineColor: [226, 232, 240] },
-            bodyStyles: { fontSize: 9, textColor: 50, minCellHeight: 14, lineWidth: 0.1, lineColor: [226, 232, 240] },
+            headStyles: { fillColor: [248, 250, 252], textColor: [15, 23, 42], fontStyle: 'bold', fontSize: 8, lineWidth: 0.1, lineColor: [226, 232, 240] },
+            bodyStyles: { fontSize: 8, textColor: 50, minCellHeight: 14, lineWidth: 0.1, lineColor: [226, 232, 240] },
             columnStyles: {
-                0: { cellWidth: 15, halign: 'center' },
-                1: { cellWidth: 25 },
-                2: { cellWidth: 70 },
-                3: { cellWidth: 15, halign: 'center' },
-                4: { cellWidth: 25, halign: 'right' },
-                5: { cellWidth: 25, halign: 'right' }
+                0: { cellWidth: 12, halign: 'center' },
+                1: { cellWidth: 20 },
+                2: { cellWidth: 60 },
+                3: { cellWidth: 10, halign: 'center' },
+                4: { cellWidth: 20, halign: 'right' },
+                5: { cellWidth: 20, halign: 'right' },
+                6: { cellWidth: 18, halign: 'right', textColor: [220, 38, 38] },
+                7: { cellWidth: 22, halign: 'right', fontStyle: 'bold' }
             },
             didDrawCell: function(data) {
                 if (data.column.index === 0 && data.cell.section === 'body') {
@@ -319,7 +366,7 @@ export default function QuotationClient({ initialProducts, initialHistory, nextN
 
                     if (imgToDraw) {
                         try {
-                            doc.addImage(imgToDraw, data.cell.x + 2, data.cell.y + 2, 10, 10);
+                            doc.addImage(imgToDraw, data.cell.x + 1, data.cell.y + 2, 10, 10);
                         } catch(e) {}
                     }
                 }
@@ -346,12 +393,12 @@ export default function QuotationClient({ initialProducts, initialHistory, nextN
         doc.setFont("helvetica", "normal")
         doc.text(`$${taxAmount.toFixed(2)}`, 190, finalY + 16, { align: "right" })
         
-        if (discountPercent > 0) {
+        if (totalDiscountAmount > 0) {
             doc.setFont("helvetica", "bold")
             doc.setTextColor(220, 38, 38)
-            doc.text(`Desc. (${discountPercent}%):`, 135, finalY + 24)
+            doc.text(`Descuento:`, 135, finalY + 24)
             doc.setFont("helvetica", "normal")
-            doc.text(`-$${discountAmount.toFixed(2)}`, 190, finalY + 24, { align: "right" })
+            doc.text(`-$${totalDiscountAmount.toFixed(2)}`, 190, finalY + 24, { align: "right" })
             
             doc.setFontSize(12)
             doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2])
@@ -399,6 +446,128 @@ export default function QuotationClient({ initialProducts, initialHistory, nextN
         alert("Cotización generada y guardada en el CRM con éxito.");
     }
 
+    const handleGenerateTicket = async () => {
+        if (!clientName.trim() || !quoteSubject.trim()) {
+            alert("⚠️ CAMPOS OBLIGATORIOS: Nombre y Tema de la Cotización.");
+            return
+        }
+
+        const doc = new jsPDF({
+            orientation: "portrait",
+            unit: "mm",
+            format: [80, 297]
+        });
+
+        const primaryColor = [15, 23, 42]; // Slate-900
+
+        // Header
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(16);
+        doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+        doc.text("ATOMIC INDUSTRIES", 40, 10, { align: "center" });
+
+        doc.setFontSize(8);
+        doc.setFont("helvetica", "normal");
+        doc.text("Soluciones Tecnológicas e Industriales", 40, 14, { align: "center" });
+        doc.text("Quito, Ecuador", 40, 18, { align: "center" });
+        
+        doc.setFont("helvetica", "bold");
+        doc.text("------------------------------------------------------------------", 40, 22, { align: "center" });
+        
+        doc.text(`TICKET DE ENTREGA`, 40, 26, { align: "center" });
+        doc.setFont("helvetica", "normal");
+        doc.text(`Doc No.: ${quoteNumber}`, 40, 30, { align: "center" });
+        doc.text(`Fecha: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`, 40, 34, { align: "center" });
+        
+        doc.setFont("helvetica", "bold");
+        doc.text("------------------------------------------------------------------", 40, 38, { align: "center" });
+        
+        // Client Info
+        doc.text("CLIENTE:", 5, 43);
+        doc.setFont("helvetica", "normal");
+        const clientNameLines = doc.splitTextToSize(clientName.toUpperCase(), 70);
+        doc.text(clientNameLines, 5, 47);
+        let currY = 47 + (clientNameLines.length * 4);
+        doc.text(`Telf: ${clientPhone || 'N/A'}`, 5, currY);
+        
+        currY += 4;
+        doc.setFont("helvetica", "bold");
+        doc.text("------------------------------------------------------------------", 40, currY, { align: "center" });
+        currY += 5;
+        
+        // Items Header
+        doc.setFontSize(7);
+        doc.text("CANT DESCRIPCION           P.UNIT   TOTAL", 5, currY);
+        currY += 4;
+        doc.text("---------------------------------------------------------------------------", 40, currY, { align: "center" });
+        currY += 4;
+        
+        // Items
+        doc.setFont("helvetica", "normal");
+        items.forEach(item => {
+            const itemSub = item.quantity * item.unitPrice;
+            const itemDesc = itemSub * ((item.discountPercent || 0) / 100);
+            const itemTotal = itemSub - itemDesc;
+
+            doc.text(item.quantity.toString(), 5, currY);
+            
+            const descLines = doc.splitTextToSize(item.description, 35);
+            doc.text(descLines, 15, currY);
+            
+            doc.text(`$${item.unitPrice.toFixed(2)}`, 55, currY);
+            doc.text(`$${itemTotal.toFixed(2)}`, 75, currY, { align: "right" });
+            
+            currY += (descLines.length * 3) + 1;
+            
+            if (itemDesc > 0) {
+                doc.text(`  Desc: -$${itemDesc.toFixed(2)}`, 15, currY);
+                currY += 3;
+            }
+        });
+        
+        doc.setFont("helvetica", "bold");
+        currY += 1;
+        doc.text("------------------------------------------------------------------", 40, currY, { align: "center" });
+        currY += 5;
+        
+        // Totals
+        doc.setFontSize(8);
+        doc.text("SUBTOTAL:", 35, currY);
+        doc.setFont("helvetica", "normal");
+        doc.text(`$${subtotal.toFixed(2)}`, 75, currY, { align: "right" });
+        currY += 4;
+
+        doc.setFont("helvetica", "bold");
+        doc.text("IVA (15%):", 35, currY);
+        doc.setFont("helvetica", "normal");
+        doc.text(`$${taxAmount.toFixed(2)}`, 75, currY, { align: "right" });
+        currY += 4;
+        
+        if (totalDiscountAmount > 0) {
+            doc.setFont("helvetica", "bold");
+            doc.text("DESCUENTO:", 35, currY);
+            doc.setFont("helvetica", "normal");
+            doc.text(`-$${totalDiscountAmount.toFixed(2)}`, 75, currY, { align: "right" });
+            currY += 4;
+        }
+
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "bold");
+        doc.text("TOTAL USD:", 35, currY);
+        doc.text(`$${total.toFixed(2)}`, 75, currY, { align: "right" });
+        currY += 8;
+        
+        doc.setFontSize(7);
+        doc.setFont("helvetica", "normal");
+        doc.text("Gracias por su confianza.", 40, currY, { align: "center" });
+        currY += 4;
+        doc.text("Este documento es una representacion", 40, currY, { align: "center" });
+        currY += 3;
+        doc.text("impresa de un comprobante de entrega.", 40, currY, { align: "center" });
+
+        doc.save(`TICKET_${quoteNumber}_${clientName.replace(/\s+/g, "_")}.pdf`)
+    }
+
     return (
         <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] font-sans pb-32">
             
@@ -433,7 +602,13 @@ export default function QuotationClient({ initialProducts, initialHistory, nextN
                         onClick={handleGeneratePDF}
                         className="px-6 py-2.5 bg-[#0F172A] text-white hover:bg-[#1E293B] font-bold text-sm rounded-lg transition-all flex items-center gap-2 shadow-[0_4px_14px_0_rgb(0,0,0,0.1)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.15)]"
                     >
-                        <FileOutput size={16} /> GENERAR PDF
+                        <FileOutput size={16} /> PDF A4
+                    </button>
+                    <button 
+                        onClick={handleGenerateTicket}
+                        className="px-6 py-2.5 bg-indigo-600 text-white hover:bg-indigo-700 font-bold text-sm rounded-lg transition-all flex items-center gap-2 shadow-[0_4px_14px_0_rgb(79,70,229,0.3)] hover:shadow-[0_6px_20px_rgba(79,70,229,0.4)]"
+                    >
+                        <FileOutput size={16} /> TICKET
                     </button>
                 </div>
             </div>
@@ -457,14 +632,66 @@ export default function QuotationClient({ initialProducts, initialHistory, nextN
                     </div>
 
                     {/* Client Info */}
-                    <div className="bg-white p-8 rounded-xl border border-slate-200 shadow-sm">
-                        <h2 className="text-sm font-black text-[#0F172A] uppercase tracking-wider mb-6 flex items-center gap-2 border-b border-slate-100 pb-4">
-                            <Building2 className="text-indigo-600" size={16} /> Datos del Cliente
-                        </h2>
+                    <div className="bg-white p-8 rounded-xl border border-slate-200 shadow-sm relative">
+                        <div className="flex justify-between items-center mb-6 border-b border-slate-100 pb-4">
+                            <h2 className="text-sm font-black text-[#0F172A] uppercase tracking-wider flex items-center gap-2">
+                                <Building2 className="text-indigo-600" size={16} /> Datos del Cliente
+                            </h2>
+                            <button 
+                                onClick={handleSaveClient} 
+                                disabled={isSavingClient}
+                                className="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 transition-colors disabled:opacity-50"
+                                title="Guardar como nuevo cliente en la base de datos"
+                            >
+                                {isSavingClient ? <span className="animate-pulse">Guardando...</span> : <><Plus size={14} /> Guardar Cliente</>}
+                            </button>
+                        </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="space-y-2">
+                            <div className="space-y-2 relative">
                                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Razón Social / Nombre</label>
-                                <input value={clientName} onChange={e => setClientName(e.target.value)} className="w-full bg-slate-50 border border-slate-200 p-3 text-sm font-bold text-[#0F172A] uppercase rounded-lg outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all" />
+                                <input 
+                                    value={clientName} 
+                                    onChange={e => {
+                                        setClientName(e.target.value)
+                                        setShowClientList(true)
+                                    }} 
+                                    onFocus={() => setShowClientList(true)}
+                                    className="w-full bg-slate-50 border border-slate-200 p-3 text-sm font-bold text-[#0F172A] uppercase rounded-lg outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all" 
+                                    placeholder="Buscar cliente existente..."
+                                />
+                                {showClientList && clientName && (
+                                    <div className="absolute top-full left-0 w-full bg-white border border-slate-200 shadow-xl rounded-lg z-50 max-h-48 overflow-y-auto mt-1">
+                                        <div className="flex justify-between items-center p-2 border-b border-slate-100">
+                                            <span className="text-[10px] font-bold text-slate-400 uppercase">Resultados ({initialClients.filter((c: any) => c.name.toLowerCase().includes(clientName.toLowerCase())).length})</span>
+                                            <button onClick={() => setShowClientList(false)} className="text-slate-400 hover:text-slate-600"><X size={14}/></button>
+                                        </div>
+                                        {initialClients.filter((c: any) => c.name.toLowerCase().includes(clientName.toLowerCase())).map((c: any) => (
+                                            <button 
+                                                key={c.id} 
+                                                onClick={() => {
+                                                    setClientName(c.name)
+                                                    setClientCity(c.city || "")
+                                                    setClientPhone(c.phone || "")
+                                                    if (c.email) {
+                                                        setClientEmail(c.email)
+                                                        setEmailNotSpecified(false)
+                                                    } else {
+                                                        setClientEmail("")
+                                                        setEmailNotSpecified(true)
+                                                    }
+                                                    setShowClientList(false)
+                                                }} 
+                                                className="w-full text-left p-3 hover:bg-slate-50 border-b border-slate-100 flex items-center justify-between group"
+                                            >
+                                                <div>
+                                                    <p className="text-xs font-black text-[#0F172A] uppercase">{c.name}</p>
+                                                    <p className="text-[10px] text-slate-500 font-bold mt-0.5">{c.city || "Sin ciudad"} • {c.phone || "Sin tel"}</p>
+                                                </div>
+                                                <ChevronRight size={14} className="text-slate-300 group-hover:text-indigo-500" />
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                             <div className="space-y-2">
                                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Ciudad / Ubicación</label>
@@ -505,12 +732,15 @@ export default function QuotationClient({ initialProducts, initialHistory, nextN
                         </div>
                         
                         {/* Table Header */}
-                        <div className="grid grid-cols-12 gap-4 px-4 py-2 bg-slate-50 border border-slate-200 rounded-t-lg text-[10px] font-black text-slate-500 uppercase tracking-wider">
+                        <div className="grid grid-cols-12 gap-2 px-4 py-2 bg-slate-50 border border-slate-200 rounded-t-lg text-[9px] font-black text-slate-500 uppercase tracking-wider">
                             <div className="col-span-1 text-center">Img</div>
                             <div className="col-span-1">Código</div>
-                            <div className="col-span-5">Descripción del Producto</div>
+                            <div className="col-span-3">Descripción del Producto</div>
+                            <div className="col-span-1 text-center">Stock</div>
                             <div className="col-span-1 text-center">Cant.</div>
-                            <div className="col-span-2 text-right">Unitario</div>
+                            <div className="col-span-1 text-right">Precio</div>
+                            <div className="col-span-1 text-right">Subtotal</div>
+                            <div className="col-span-1 text-center">Desc %</div>
                             <div className="col-span-1 text-right">Total</div>
                             <div className="col-span-1"></div>
                         </div>
@@ -523,7 +753,7 @@ export default function QuotationClient({ initialProducts, initialHistory, nextN
                                         initial={{ opacity: 0, y: 10 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         exit={{ opacity: 0, x: -20 }}
-                                        className="grid grid-cols-12 gap-4 items-center bg-white p-2 border border-slate-200 rounded-lg group hover:border-indigo-300 transition-all relative"
+                                        className="grid grid-cols-12 gap-2 items-center bg-white p-2 border border-slate-200 rounded-lg group hover:border-indigo-300 transition-all relative"
                                     >
                                         <div className="col-span-1">
                                             <div className="w-10 h-10 bg-slate-50 border border-slate-100 rounded-md flex items-center justify-center relative overflow-hidden group-hover:border-indigo-200 transition-all mx-auto cursor-pointer">
@@ -553,16 +783,16 @@ export default function QuotationClient({ initialProducts, initialHistory, nextN
                                         <div className="col-span-1">
                                             <input value={item.productId} readOnly className="w-full bg-transparent border-none text-slate-500 text-[9px] font-bold uppercase text-center" placeholder="SKU" />
                                         </div>
-                                        <div className="col-span-5 relative">
+                                        <div className="col-span-3 relative">
                                             <input 
                                                 value={item.description} 
                                                 onFocus={() => setShowProductList(item.id)}
                                                 onChange={e => handleItemChange(item.id, "description", e.target.value)} 
-                                                className="w-full bg-slate-50 border border-slate-200 p-2 text-[#0F172A] text-xs font-bold rounded-md outline-none focus:border-indigo-500 transition-all" 
+                                                className="w-full bg-slate-50 border border-slate-200 p-2 text-[#0F172A] text-[10px] font-bold rounded-md outline-none focus:border-indigo-500 transition-all" 
                                                 placeholder="Buscar producto..."
                                             />
                                             {showProductList === item.id && (
-                                                <div className="absolute top-full left-0 w-full bg-white border border-slate-200 shadow-xl rounded-lg z-50 max-h-48 overflow-y-auto">
+                                                <div className="absolute top-full left-0 w-full bg-white border border-slate-200 shadow-xl rounded-lg z-50 max-h-48 overflow-y-auto min-w-[250px]">
                                                     {initialProducts.filter((p: Product) => p.name.toLowerCase().includes(item.description.toLowerCase())).map((p: Product) => (
                                                         <button key={p.id} onClick={() => selectProduct(item.id, p)} className="w-full text-left p-3 hover:bg-slate-50 border-b border-slate-100 flex items-center gap-3">
                                                             <div className="w-8 h-8 bg-slate-100 rounded flex-shrink-0 overflow-hidden">
@@ -570,24 +800,33 @@ export default function QuotationClient({ initialProducts, initialHistory, nextN
                                                             </div>
                                                             <div>
                                                                 <p className="text-[10px] font-black text-[#0F172A] uppercase">{p.name}</p>
-                                                                <p className="text-[10px] text-indigo-600 font-bold mt-0.5">${p.price}</p>
+                                                                <p className="text-[10px] text-indigo-600 font-bold mt-0.5">${p.price} • Stock: {p.stock || 0}</p>
                                                             </div>
                                                         </button>
                                                     ))}
                                                 </div>
                                             )}
                                         </div>
-                                        <div className="col-span-1">
-                                            <input type="number" value={item.quantity} onChange={e => handleItemChange(item.id, "quantity", parseInt(e.target.value) || 0)} className="w-full bg-slate-50 border border-slate-200 p-2 text-center text-[#0F172A] rounded-md font-bold text-xs outline-none focus:border-indigo-500" />
+                                        <div className="col-span-1 text-center">
+                                            <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded-md">
+                                                {findProduct(item.productId, item.description)?.stock || 0}
+                                            </span>
                                         </div>
-                                        <div className="col-span-2">
-                                            <div className="relative">
-                                                <span className="absolute left-2 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-bold">$</span>
-                                                <input type="number" value={item.unitPrice} onChange={e => handleItemChange(item.id, "unitPrice", parseFloat(e.target.value) || 0)} className="w-full bg-slate-50 border border-slate-200 p-2 pl-6 text-right text-[#0F172A] rounded-md font-bold text-xs outline-none focus:border-indigo-500" />
-                                            </div>
+                                        <div className="col-span-1">
+                                            <input type="number" value={item.quantity} onChange={e => handleItemChange(item.id, "quantity", parseInt(e.target.value) || 0)} className="w-full bg-slate-50 border border-slate-200 p-2 text-center text-[#0F172A] rounded-md font-bold text-[10px] outline-none focus:border-indigo-500" />
+                                        </div>
+                                        <div className="col-span-1 relative">
+                                            <span className="absolute left-1 top-1/2 -translate-y-1/2 text-slate-400 text-[10px] font-bold">$</span>
+                                            <input type="number" value={item.unitPrice} onChange={e => handleItemChange(item.id, "unitPrice", parseFloat(e.target.value) || 0)} className="w-full bg-slate-50 border border-slate-200 p-2 pl-4 text-right text-[#0F172A] rounded-md font-bold text-[10px] outline-none focus:border-indigo-500" />
+                                        </div>
+                                        <div className="col-span-1 text-right pr-1">
+                                            <span className="text-[10px] font-black text-slate-500">${(item.quantity * item.unitPrice).toFixed(2)}</span>
+                                        </div>
+                                        <div className="col-span-1">
+                                            <input type="number" value={item.discountPercent || 0} onChange={e => handleItemChange(item.id, "discountPercent", parseFloat(e.target.value) || 0)} className="w-full bg-slate-50 border border-slate-200 p-2 text-center text-[#0F172A] rounded-md font-bold text-[10px] outline-none focus:border-indigo-500" title="Descuento (%)" />
                                         </div>
                                         <div className="col-span-1 text-right pr-2">
-                                            <span className="text-xs font-black text-slate-500">${(item.quantity * item.unitPrice).toFixed(2)}</span>
+                                            <span className="text-[10px] font-black text-indigo-600">${((item.quantity * item.unitPrice) * (1 - ((item.discountPercent || 0)/100))).toFixed(2)}</span>
                                         </div>
                                         <div className="col-span-1 flex justify-center">
                                             <button onClick={() => handleRemoveItem(item.id)} className="p-1.5 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-md transition-all"><Trash2 size={14} /></button>
@@ -679,10 +918,10 @@ export default function QuotationClient({ initialProducts, initialHistory, nextN
                                     /> %
                                 </div>
                             </div>
-                            {discountPercent > 0 && (
+                            {totalDiscountAmount > 0 && (
                                 <div className="flex justify-between items-center text-sm font-bold text-red-500">
                                     <span>Valor Descontado</span>
-                                    <span>-${discountAmount.toFixed(2)}</span>
+                                    <span>-${totalDiscountAmount.toFixed(2)}</span>
                                 </div>
                             )}
 
