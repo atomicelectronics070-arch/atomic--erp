@@ -4,7 +4,7 @@ import { useState } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { Mail, Lock, ArrowRight, Loader2, Sparkles, ShieldCheck, Users, ShoppingBag, GraduationCap } from "lucide-react"
+import { Mail, Lock, ArrowRight, Loader2, Users, ShoppingBag, GraduationCap } from "lucide-react"
 
 export default function LoginPage() {
     const router = useRouter()
@@ -60,11 +60,11 @@ export default function LoginPage() {
             if (result?.error) {
                 const errMap: Record<string, string> = {
                     "Credenciales inválidas": "Email o contraseña incorrectos.",
-                    "Su cuenta está pendiente de aprobación.": "Su cuenta está pendiente de aprobación por el administrador.",
-                    "Su cuenta ha sido desactivada por administración.": "Su cuenta ha sido desactivada. Contacte al administrador.",
-                    "Credenciales incompletas": "Complete todos los campos requeridos.",
+                    "Su cuenta está pendiente de aprobación.": "Cuenta pendiente de aprobación.",
+                    "Su cuenta ha sido desactivada por administración.": "Cuenta desactivada.",
+                    "Credenciales incompletas": "Campos incompletos.",
                 }
-                setError(errMap[result.error] || result.error || "Credenciales inválidas. Verifique su acceso.")
+                setError(errMap[result.error] || result.error || "Credenciales inválidas.")
             } else if (result?.ok) {
                 let targetPath = "/dashboard"
                 if (section === "CONSUMIDOR") targetPath = "/web"
@@ -73,10 +73,10 @@ export default function LoginPage() {
                 router.push(targetPath)
                 router.refresh()
             } else {
-                setError("Error inesperado. Intente nuevamente.")
+                setError("Error inesperado.")
             }
         } catch {
-            setError("Error de conexión con el servidor central.")
+            setError("Error de conexión.")
         } finally {
             setLoading(false)
         }
@@ -89,58 +89,59 @@ export default function LoginPage() {
     ]
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC] text-[#0F172A] overflow-hidden relative font-sans">
+        <div className="min-h-screen flex items-center justify-center bg-white text-black overflow-hidden relative font-sans selection:bg-black/10">
 
-            {/* Background */}
-            <div className="fixed inset-0 pointer-events-none">
-                <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#1E3A8A]/3 rounded-full blur-3xl" />
-                <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-[#3B82F6]/3 rounded-full blur-3xl" />
-                <div className="absolute inset-0 opacity-[0.02]"
-                    style={{ backgroundImage: 'radial-gradient(circle, #1E3A8A 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
+            {/* Subtle background texture */}
+            <div className="fixed inset-0 z-0 pointer-events-none">
+                <div className="absolute inset-0 opacity-[0.025]"
+                    style={{
+                        backgroundImage: `linear-gradient(to right, #000 1px, transparent 1px),
+                                         linear-gradient(to bottom, #000 1px, transparent 1px)`,
+                        backgroundSize: `80px 80px`
+                    }}
+                />
             </div>
 
-            <div className="relative z-10 w-full max-w-md px-6 py-10">
+            <div className="relative z-10 w-full max-w-md px-6 py-10 flex flex-col items-center">
 
                 {/* Logo */}
-                <div className="flex flex-col items-center mb-10">
-                    <div className="flex items-center gap-3 mb-3">
-                        <div className="w-10 h-10 border-2 border-[#1E3A8A] flex items-center justify-center">
-                            <div className="w-3 h-3 bg-[#1E3A8A]" />
-                        </div>
-                        <span className="text-sm font-black text-[#0F172A] tracking-[0.3em] uppercase">ATOMIC ERP</span>
+                <div className="flex flex-col items-center mb-8">
+                    <div className="mb-4">
+                        <AtomLogo />
                     </div>
-                    <div className="flex items-center gap-2">
-                        <ShieldCheck size={12} className="text-emerald-500" />
-                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Acceso Corporativo Seguro</span>
-                    </div>
+                    <span className="text-2xl font-black text-black tracking-[0.15em] uppercase leading-none">
+                        ATOMIC
+                    </span>
+                    <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest mt-2">
+                        Acceso Seguro
+                    </span>
                 </div>
 
                 {/* Card */}
-                <div className="bg-white border border-slate-200 shadow-2xl shadow-slate-200/80 p-8">
-
-                    <div className="mb-8">
-                        <h1 className="text-xl font-black text-[#0F172A] uppercase tracking-tight mb-1">
+                <div className="bg-white border border-zinc-200 rounded-2xl w-full p-8 shadow-2xl shadow-black/5">
+                    
+                    <div className="mb-8 text-center">
+                        <h1 className="text-xl font-black text-black uppercase tracking-[0.1em] mb-1">
                             Iniciar Sesión
                         </h1>
-                        <p className="text-[11px] font-medium text-slate-400">Seleccione su perfil de acceso</p>
+                        <p className="text-[10px] font-medium text-zinc-400 uppercase tracking-widest">Seleccione perfil</p>
                     </div>
 
                     {/* Alerts */}
                     {error && (
-                        <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-[11px] font-bold uppercase tracking-wide flex items-center gap-2">
+                        <div className="mb-5 p-3 bg-red-50/50 border border-red-100 text-red-600 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 rounded-xl">
                             <span className="w-1.5 h-1.5 bg-red-500 rounded-full flex-shrink-0" />
                             {error}
                         </div>
                     )}
                     {success && (
-                        <div className="mb-4 p-3 bg-emerald-50 border border-emerald-200 text-emerald-700 text-[11px] font-bold uppercase tracking-wide flex items-center gap-2">
+                        <div className="mb-5 p-3 bg-emerald-50/50 border border-emerald-100 text-emerald-600 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 rounded-xl">
                             <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full flex-shrink-0" />
                             {success}
                         </div>
                     )}
 
                     <form onSubmit={handleSubmit} noValidate className="space-y-5">
-
                         {/* Role selector */}
                         <div className="grid grid-cols-3 gap-2">
                             {roles.map((role) => (
@@ -148,7 +149,10 @@ export default function LoginPage() {
                                     key={role.id}
                                     type="button"
                                     onClick={() => setSection(role.id)}
-                                    className={`flex items-center justify-center gap-2 py-3 border transition-all text-[9px] font-black uppercase tracking-widest ${section === role.id ? 'bg-[#1E3A8A] border-[#1E3A8A] text-white shadow-lg shadow-[#1E3A8A]/20' : 'bg-slate-50 border-slate-200 text-slate-400 hover:bg-slate-100'}`}
+                                    className={`flex flex-col items-center justify-center gap-2 py-3 rounded-xl border transition-all text-[9px] font-black uppercase tracking-widest
+                                        ${section === role.id 
+                                            ? 'bg-black border-black text-white' 
+                                            : 'bg-zinc-50 border-zinc-200 text-zinc-400 hover:bg-zinc-100 hover:text-black'}`}
                                 >
                                     {role.icon} {role.label}
                                 </button>
@@ -157,12 +161,12 @@ export default function LoginPage() {
 
                         {/* Email */}
                         <div className="space-y-2">
-                            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                                Correo Corporativo
+                            <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-widest ml-1">
+                                Correo
                             </label>
                             <div className="relative group">
-                                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-[#1E3A8A] transition-colors">
-                                    <Mail size={18} />
+                                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-300 group-focus-within:text-black transition-colors">
+                                    <Mail size={16} />
                                 </div>
                                 <input
                                     id="login-email"
@@ -171,7 +175,7 @@ export default function LoginPage() {
                                     onChange={(e) => setEmail(e.target.value)}
                                     required
                                     autoComplete="email"
-                                    className="w-full pl-12 pr-4 py-4 border border-slate-200 bg-slate-50 text-[#0F172A] text-sm font-bold focus:border-[#1E3A8A] focus:bg-white transition-all outline-none placeholder:text-slate-300"
+                                    className="w-full pl-12 pr-4 py-4 rounded-xl border border-zinc-200 bg-zinc-50 text-black text-sm font-bold focus:border-black focus:bg-white transition-all outline-none placeholder:text-zinc-300"
                                     placeholder="usuario@atomic.com"
                                 />
                             </div>
@@ -179,12 +183,12 @@ export default function LoginPage() {
 
                         {/* Password */}
                         <div className="space-y-2">
-                            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                            <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-widest ml-1">
                                 Contraseña
                             </label>
                             <div className="relative group">
-                                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-[#1E3A8A] transition-colors">
-                                    <Lock size={18} />
+                                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-300 group-focus-within:text-black transition-colors">
+                                    <Lock size={16} />
                                 </div>
                                 <input
                                     id="login-password"
@@ -193,7 +197,7 @@ export default function LoginPage() {
                                     onChange={(e) => setPassword(e.target.value)}
                                     required
                                     autoComplete="current-password"
-                                    className="w-full pl-12 pr-4 py-4 border border-slate-200 bg-slate-50 text-[#0F172A] text-sm font-bold focus:border-[#1E3A8A] focus:bg-white transition-all outline-none placeholder:text-slate-300"
+                                    className="w-full pl-12 pr-4 py-4 rounded-xl border border-zinc-200 bg-zinc-50 text-black text-sm font-bold focus:border-black focus:bg-white transition-all outline-none placeholder:text-zinc-300"
                                     placeholder="••••••••••••"
                                 />
                             </div>
@@ -204,16 +208,16 @@ export default function LoginPage() {
                             id="login-submit"
                             type="submit"
                             disabled={loading}
-                            className="w-full py-5 px-6 bg-[#1E3A8A] hover:bg-[#0F172A] text-white font-black text-[11px] uppercase tracking-[0.25em] transition-all shadow-xl shadow-[#1E3A8A]/10 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 active:scale-[0.98]"
+                            className="w-full py-4 px-6 rounded-xl bg-black hover:bg-zinc-800 text-white font-black text-[11px] uppercase tracking-[0.25em] transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-60 disabled:hover:scale-100 flex items-center justify-center gap-3"
                         >
                             {loading ? (
                                 <>
-                                    <Loader2 className="animate-spin" size={18} />
-                                    <span>Verificando...</span>
+                                    <Loader2 className="animate-spin" size={16} />
+                                    <span>Verificando</span>
                                 </>
                             ) : (
                                 <>
-                                    <span>Iniciar Sesión</span>
+                                    <span>Acceder</span>
                                     <ArrowRight size={16} />
                                 </>
                             )}
@@ -221,45 +225,45 @@ export default function LoginPage() {
                     </form>
 
                     {/* Footer links */}
-                    <div className="mt-8 pt-6 border-t border-slate-100 space-y-4">
+                    <div className="mt-8 pt-6 border-t border-zinc-100 space-y-4">
                         {!showReset ? (
                             <button
                                 onClick={() => { setShowReset(true); setError(""); setSuccess("") }}
-                                className="w-full text-[10px] font-black text-slate-300 uppercase tracking-widest hover:text-[#1E3A8A] transition-colors text-center"
+                                className="w-full text-[10px] font-black text-zinc-300 uppercase tracking-widest hover:text-black transition-colors text-center"
                             >
                                 ¿Olvidó su contraseña?
                             </button>
                         ) : (
-                            <div className="space-y-3">
-                                <p className="text-[9px] font-black text-[#1E3A8A] uppercase tracking-widest">Solicitud de Reseteo</p>
+                            <div className="space-y-3 bg-zinc-50 p-4 rounded-xl border border-zinc-100">
+                                <p className="text-[9px] font-black text-black uppercase tracking-widest">Reseteo de Clave</p>
                                 <div className="flex gap-2">
                                     <input
                                         type="email"
                                         placeholder="Confirme su correo..."
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
-                                        className="flex-1 bg-slate-50 border border-slate-200 px-4 py-3 text-[10px] font-bold text-[#0F172A] outline-none focus:border-[#1E3A8A]"
+                                        className="flex-1 bg-white border border-zinc-200 rounded-lg px-3 py-2 text-[10px] font-bold text-black outline-none focus:border-black"
                                     />
                                     <button
                                         onClick={handleResetRequest}
                                         disabled={loading}
-                                        className="bg-[#1E3A8A] px-4 py-3 text-[10px] font-black text-white uppercase disabled:opacity-50"
+                                        className="bg-black rounded-lg px-4 py-2 text-[10px] font-black text-white uppercase disabled:opacity-50"
                                     >
                                         Enviar
                                     </button>
                                 </div>
                                 <button
                                     onClick={() => setShowReset(false)}
-                                    className="text-[8px] font-black text-slate-300 uppercase tracking-widest hover:text-[#0F172A] transition-colors"
+                                    className="text-[8px] font-black text-zinc-400 uppercase tracking-widest hover:text-black transition-colors"
                                 >
                                     Cancelar
                                 </button>
                             </div>
                         )}
 
-                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center">
+                        <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest text-center">
                             ¿Sin acceso?{" "}
-                            <Link href="/register" className="text-[#1E3A8A] hover:underline font-black ml-1">
+                            <Link href="/register" className="text-black hover:underline font-black ml-1">
                                 Solicitar Registro
                             </Link>
                         </p>
@@ -268,15 +272,25 @@ export default function LoginPage() {
 
                 {/* Footer */}
                 <div className="mt-8 text-center flex flex-col items-center gap-2">
-                    <div className="flex items-center gap-2 text-[10px] font-black text-slate-300 uppercase tracking-[0.4em]">
-                        <Sparkles size={12} className="text-[#1E3A8A]/40" />
-                        Atomic Core System v7.0.0 Stable
-                    </div>
-                    <div className="text-[9px] font-bold text-slate-200 uppercase tracking-[0.3em]">
-                        &copy; 2026 ATOMIC Solutions - All Systems Online
+                    <div className="text-[9px] font-bold text-zinc-300 uppercase tracking-[0.3em]">
+                        &copy; 2026 ATOMIC INDUSTRIAS
                     </div>
                 </div>
             </div>
         </div>
+    )
+}
+
+function AtomLogo() {
+    return (
+        <svg width="48" height="48" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="36" cy="36" r="5" fill="#000" />
+            <ellipse cx="36" cy="36" rx="30" ry="10" stroke="#000" strokeWidth="1.5" fill="none" />
+            <ellipse cx="36" cy="36" rx="30" ry="10" stroke="#000" strokeWidth="1.5" fill="none" transform="rotate(60 36 36)" />
+            <ellipse cx="36" cy="36" rx="30" ry="10" stroke="#000" strokeWidth="1.5" fill="none" transform="rotate(120 36 36)" />
+            <circle cx="66" cy="36" r="2.5" fill="#000" />
+            <circle cx="21" cy="10.5" r="2.5" fill="#000" />
+            <circle cx="21" cy="61.5" r="2.5" fill="#000" />
+        </svg>
     )
 }

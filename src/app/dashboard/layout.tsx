@@ -67,15 +67,15 @@ export default function DashboardLayout({
 
     if (status === "loading" || !session) {
         return (
-            <div className="h-screen w-screen flex flex-col items-center justify-center bg-[#F8FAFC] gap-8 relative overflow-hidden">
+            <div className="h-screen w-screen flex flex-col items-center justify-center bg-[white] gap-8 relative overflow-hidden">
                 <div className="relative">
-                    <div className="w-32 h-32 border border-[#1E3A8A]/20 animate-[spin_3s_linear_infinite]"></div>
+                    <div className="w-32 h-32 border border-[black]/20 animate-[spin_3s_linear_infinite]"></div>
                     <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-16 h-16 border-2 border-[#1E3A8A] animate-[spin_1.5s_linear_infinite_reverse]"></div>
+                        <div className="w-16 h-16 border-2 border-[black] animate-[spin_1.5s_linear_infinite_reverse]"></div>
                     </div>
                 </div>
                 <div className="flex flex-col items-center gap-2">
-                    <div className="font-black text-[#1E3A8A] uppercase tracking-[1em] animate-pulse text-[10px] italic">Sincronización Operativa</div>
+                    <div className="font-black text-[black] uppercase tracking-[1em] animate-pulse text-[10px] italic">Sincronización Operativa</div>
                 </div>
             </div>
         )
@@ -88,7 +88,7 @@ export default function DashboardLayout({
     }
 
     return (
-        <div className="flex h-screen bg-[#F8FAFC] text-[#0F172A] overflow-x-hidden font-sans relative selection:bg-[#1E3A8A]/10 selection:text-[#1E3A8A]">
+        <div className="flex h-screen bg-[white] text-[black] overflow-x-hidden font-sans relative selection:bg-[black]/10 selection:text-[black]">
             
             {/* Sidebar Overlay for Mobile */}
             <AnimatePresence>
@@ -97,7 +97,7 @@ export default function DashboardLayout({
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="fixed inset-0 bg-[#0F172A]/40 backdrop-blur-sm z-30 lg:hidden"
+                        className="fixed inset-0 bg-[black]/40 backdrop-blur-sm z-30 lg:hidden"
                         onClick={() => setSidebarOpen(false)}
                     />
                 )}
@@ -112,8 +112,8 @@ export default function DashboardLayout({
                 <div className="h-24 flex flex-col items-center justify-center px-6 border-b border-slate-100 relative group">
                     <Link href="/web" target="_blank" className="flex flex-col items-center relative z-10 transition-transform duration-700 group-hover:scale-105 cursor-pointer">
                         <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 bg-[#1E3A8A]"></div>
-                            <span className="text-base font-black text-[#0F172A] uppercase tracking-[0.3em] italic">ATOMIC</span>
+                            <div className="w-2 h-2 bg-[black]"></div>
+                            <span className="text-base font-black text-[black] uppercase tracking-[0.3em] italic">ATOMIC</span>
                         </div>
                         <span className="text-[7px] font-black text-slate-400 uppercase tracking-[0.5em] italic mt-1">SOLUTIONS</span>
                     </Link>
@@ -217,7 +217,7 @@ export default function DashboardLayout({
 
                 <div className="p-6 shrink-0 border-t border-slate-100 bg-slate-50/30">
                     <div className="flex items-center space-x-4 mb-6 px-2">
-                        <div className="w-10 h-10 border border-slate-200 flex items-center justify-center font-black text-sm text-[#0F172A] italic overflow-hidden bg-white">
+                        <div className="w-10 h-10 border border-slate-200 flex items-center justify-center font-black text-sm text-[black] italic overflow-hidden bg-white">
                             {(session?.user as any)?.profilePicture ? (
                                 <img src={(session?.user as any).profilePicture} alt="U" className="w-full h-full object-cover" />
                             ) : (
@@ -225,8 +225,8 @@ export default function DashboardLayout({
                             )}
                         </div>
                         <div className="flex-1 overflow-hidden">
-                            <p className="text-[10px] font-black text-[#0F172A] truncate uppercase italic">{session.user?.name}</p>
-                            <p className="text-[8px] font-black text-[#1E3A8A] uppercase tracking-widest truncate italic">
+                            <p className="text-[10px] font-black text-[black] truncate uppercase italic">{session.user?.name}</p>
+                            <p className="text-[8px] font-black text-[black] uppercase tracking-widest truncate italic">
                                 {role}
                             </p>
                         </div>
@@ -245,20 +245,20 @@ export default function DashboardLayout({
                     <div className="flex items-center space-x-6">
                         <button
                             onClick={() => setSidebarOpen(!sidebarOpen)}
-                            className="p-3 bg-slate-50 text-slate-400 hover:text-[#1E3A8A] transition-all lg:hidden"
+                            className="p-3 bg-slate-50 text-slate-400 hover:text-[black] transition-all lg:hidden"
                         >
                             <Menu size={20} />
                         </button>
                         <div className="hidden sm:flex flex-col">
                             <div className="flex items-center gap-2">
-                                <div className="w-1.5 h-1.5 bg-[#1E3A8A]"></div>
-                                <span className="text-[10px] font-black text-[#0F172A] uppercase tracking-[0.3em] italic">ATOMIC INDUSTRIAS</span>
+                                <div className="w-1.5 h-1.5 bg-[black]"></div>
+                                <span className="text-[10px] font-black text-[black] uppercase tracking-[0.3em] italic">ATOMIC INDUSTRIAS</span>
                             </div>
                         </div>
                         <Link 
                             href="/web" 
                             target="_blank"
-                            className="hidden md:flex items-center space-x-2 px-4 py-2 border border-slate-200 hover:border-[#1E3A8A] text-slate-500 hover:text-[#1E3A8A] transition-all"
+                            className="hidden md:flex items-center space-x-2 px-4 py-2 border border-slate-200 hover:border-[black] text-slate-500 hover:text-[black] transition-all"
                         >
                             <ExternalLink size={12} />
                             <span className="text-[8px] font-black uppercase tracking-widest italic">Visitar Web</span>
@@ -270,8 +270,8 @@ export default function DashboardLayout({
                             <NotificationBell />
                         </div>
                         
-                        <Link href="/dashboard/profile" className="flex items-center gap-3 p-1 bg-slate-50 border border-slate-200 hover:border-[#1E3A8A] transition-all group pr-4">
-                            <div className="w-8 h-8 bg-white flex items-center justify-center text-[#1E3A8A] overflow-hidden border-r border-slate-100">
+                        <Link href="/dashboard/profile" className="flex items-center gap-3 p-1 bg-slate-50 border border-slate-200 hover:border-[black] transition-all group pr-4">
+                            <div className="w-8 h-8 bg-white flex items-center justify-center text-[black] overflow-hidden border-r border-slate-100">
                                 {(session?.user as any)?.profilePicture ? (
                                     <img src={(session?.user as any).profilePicture} alt="P" className="w-full h-full object-cover" />
                                 ) : (
@@ -305,12 +305,12 @@ function NavLink({ href, icon, label, isActive, isSubItem }: { href: string; ico
             className={`
                 flex items-center space-x-4 px-5 py-3 rounded-none transition-all duration-300 group relative
                 ${isActive 
-                    ? 'bg-[#1E3A8A]/5 text-[#1E3A8A] border-r-2 border-[#1E3A8A]' 
-                    : 'text-slate-400 hover:text-[#0F172A] hover:bg-slate-50'}
+                    ? 'bg-[black]/5 text-[black] border-r-2 border-[black]' 
+                    : 'text-slate-400 hover:text-[black] hover:bg-slate-50'}
                 ${isSubItem ? 'ml-4 border-l border-slate-100 pl-6' : ''}
             `}
         >
-            <span className={`transition-all duration-300 ${isActive ? 'text-[#1E3A8A] scale-110' : 'group-hover:text-[#1E3A8A] group-hover:scale-110'}`}>
+            <span className={`transition-all duration-300 ${isActive ? 'text-[black] scale-110' : 'group-hover:text-[black] group-hover:scale-110'}`}>
                 {icon}
             </span>
             <span className={`text-[10px] font-black uppercase tracking-[0.2em] italic transition-all duration-300 ${isActive ? 'translate-x-1' : 'group-hover:translate-x-1'}`}>
@@ -328,12 +328,12 @@ function CollapsibleSection({ label, children, isOpen, onToggle }: { label: stri
                 className="w-full flex items-center justify-between px-5 py-3 group cursor-pointer transition-all duration-300 hover:bg-slate-50"
             >
                 <div className="flex items-center gap-3">
-                    <div className={`w-1 h-3 bg-slate-200 transition-all duration-500 ${isOpen ? 'bg-[#1E3A8A] h-4' : 'group-hover:bg-slate-400'}`}></div>
-                    <span className={`text-[9px] font-black text-slate-400 uppercase tracking-[0.4em] italic transition-all duration-300 group-hover:text-[#0F172A] ${isOpen ? 'text-[#0F172A]' : ''}`}>
+                    <div className={`w-1 h-3 bg-slate-200 transition-all duration-500 ${isOpen ? 'bg-[black] h-4' : 'group-hover:bg-slate-400'}`}></div>
+                    <span className={`text-[9px] font-black text-slate-400 uppercase tracking-[0.4em] italic transition-all duration-300 group-hover:text-[black] ${isOpen ? 'text-[black]' : ''}`}>
                         {label}
                     </span>
                 </div>
-                <div className={`transition-transform duration-500 ${isOpen ? 'rotate-180 text-[#1E3A8A]' : 'text-slate-300 group-hover:text-slate-500'}`}>
+                <div className={`transition-transform duration-500 ${isOpen ? 'rotate-180 text-[black]' : 'text-slate-300 group-hover:text-slate-500'}`}>
                     <ChevronDown size={12} />
                 </div>
             </button>
