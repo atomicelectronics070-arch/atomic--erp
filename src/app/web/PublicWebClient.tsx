@@ -558,3 +558,360 @@ function AtomLogo() {
         </svg>
     )
 }
+
+
+function MiniProductCard({ product: p, userRole, delay }: { product: any, userRole?: string, delay: number }) {
+    const imgs = safeParseArray(p.images)
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay }}
+        >
+            <Link
+                href={`/web/product/${p.id}`}
+                className="group flex flex-col bg-white border border-slate-200 hover:border-[black]/60 hover:shadow-xl transition-all duration-300 rounded-lg overflow-hidden"
+            >
+                <div className="aspect-square relative bg-slate-50 flex items-center justify-center overflow-hidden">
+                    <SafeImage src={imgs[0]} alt={p.name} fill className="p-2 group-hover:scale-110 transition-transform duration-300" />
+                </div>
+                <div className="p-2">
+                    <p className="text-[9px] font-medium text-slate-500 tracking-wide line-clamp-2 leading-tight group-hover:text-[black] transition-colors mb-1">{p.name}</p>
+                    <p className="text-[10px] font-bold text-[black]">
+                        ${calculateDiscountedPrice(p.price, userRole).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                    </p>
+                </div>
+            </Link>
+        </motion.div>
+    );
+}
+
+/* ─── Infinite horizontal scroll for Nuestros Productos ─── */
+function InfiniteProductScroll({ products, userRole }: { products: any[], userRole?: string }) {
+    const trackRef = useRef<HTMLDivElement>(null)
+    const isDragging = useRef(false)
+    const startX = useRef(0)
+    const scrollLeft = useRef(0)
+
+    const onMouseDown = (e: React.MouseEvent) => {
+        isDragging.current = true
+        startX.current = e.pageX - (trackRef.current?.offsetLeft ?? 0)
+        scrollLeft.current = trackRef.current?.scrollLeft ?? 0
+    }
+    const onMouseMove = (e: React.MouseEvent) => {
+        if (!isDragging.current || !trackRef.current) return
+        e.preventDefault()
+        const x = e.pageX - trackRef.current.offsetLeft
+        trackRef.current.scrollLeft = scrollLeft.current - (x - startX.current)
+    }
+    const onMouseUp = () => { isDragging.current = false }
+
+    const scroll = (dir: 'left' | 'right') => {
+        trackRef.current?.scrollBy({ left: dir === 'right' ? 320 : -320, behavior: 'smooth' })
+    }
+
+    return (
+        <div className="relative">
+            <div className="absolute left-0 top-0 bottom-4 w-16 bg-gradient-to-r from-[#F8FAFC] to-transparent z-10 pointer-events-none" />
+            <div className="absolute right-0 top-0 bottom-4 w-16 bg-gradient-to-l from-[#F8FAFC] to-transparent z-10 pointer-events-none" />
+
+            <button onClick={() => scroll('left')} className="absolute left-2 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center hover:bg-white text-slate-500 shadow-md">
+                <ChevronLeft size={16} />
+            </button>
+            <button onClick={() => scroll('right')} className="absolute right-2 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center hover:bg-white text-slate-500 shadow-md">
+                <ChevronRight size={16} />
+            </button>
+
+            <div
+                ref={trackRef}
+                className="flex gap-3 overflow-x-auto pb-4 px-12 cursor-grab active:cursor-grabbing select-none custom-scrollbar"
+                onMouseDown={onMouseDown}
+                onMouseMove={onMouseMove}
+                onMouseUp={onMouseUp}
+                onMouseLeave={onMouseUp}
+            >
+                {products.map((p: any) => (
+                    <Link
+                        key={p.id}
+                        href={`/web/product/${p.id}`}
+                        className="shrink-0 w-44 group bg-white border border-slate-200 hover:border-[black]/50 hover:shadow-lg transition-all duration-300 rounded-xl overflow-hidden"
+                        draggable={false}
+                    >
+                        <div className="h-32 relative bg-slate-50 flex items-center justify-center overflow-hidden border-b border-slate-100">
+                             <SafeImage src={safeParseArray(p.images)[0]} alt={p.name} fill className="p-3 group-hover:scale-105 transition-transform duration-300" />
+                        </div>
+                        <div className="p-3">
+                            <p className="text-[10px] font-medium text-slate-500 line-clamp-2 leading-snug mb-2 group-hover:text-[black] transition-colors">{p.name}</p>
+                            <p className="text-xs font-bold text-[black]">${calculateDiscountedPrice(p.price, userRole).toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
+                        </div>
+                    </Link>
+                ))}
+                <div className="shrink-0 w-8" />
+            </div>
+        </div>
+    )
+}
+
+/* ─── Collection Banner ─── */
+function CollectionBanner({ collection, products, reverse, userRole }: { collection: any, products: any[], reverse: boolean, userRole?: string }) {
+    const galleryRef = useRef<HTMLDivElement>(null)
+    const scrollGallery = (dir: 'left' | 'right') => {
+        galleryRef.current?.scrollBy({ left: dir === 'right' ? 300 : -300, behavior: 'smooth' })
+    }
+
+    const textAccent = "text-[black]"
+    const bgAccent = "from-zinc-200/10"
+    const btnHover = "hover:bg-[black] hover:border-[black]"
+    const badgeColor = "bg-zinc-50 text-[black] border-zinc-200"
+
+    return (
+        <motion.section 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.7 }}
+            className="group relative bg-white border border-slate-200 hover:border-zinc-300 rounded-3xl overflow-hidden shadow-xl transition-all duration-500"
+        >
+            <div className={`absolute top-0 ${reverse ? 'right-0' : 'left-0'} w-[500px] h-[500px] bg-gradient-to-br ${bgAccent} to-transparent opacity-20 blur-[100px] pointer-events-none`} />
+            
+            <div className={`flex flex-col lg:flex-row ${reverse ? 'lg:flex-row-reverse' : ''} items-stretch relative z-10`}>
+                
+                <div className={`w-full lg:w-[45%] p-10 md:p-14 flex flex-col justify-center relative border-b lg:border-b-0 ${reverse ? 'lg:border-l border-slate-200' : 'lg:border-r border-slate-200'} overflow-hidden`}>
+                    <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.03] pointer-events-none mix-blend-overlay"></div>
+                    
+                    <div className="relative z-10">
+                        <div className="flex items-center gap-3 mb-6">
+                            <span className={`px-3 py-1 text-[9px] font-black uppercase tracking-[0.4em] rounded-full border ${badgeColor} backdrop-blur-sm flex items-center gap-2`}>
+                                <Sparkles size={10} />
+                                Colección Premium
+                            </span>
+                        </div>
+
+                        <h2 className="text-4xl md:text-5xl font-black text-[black] tracking-tighter leading-none mb-6 uppercase">
+                            {collection.name}
+                        </h2>
+                        
+                        <p className="text-slate-500 text-[13px] leading-relaxed mb-10 font-medium max-w-md">
+                            {collection.description || `Equipamiento especializado y soluciones avanzadas para ${collection.name}. Eleva tu infraestructura tecnológica al siguiente nivel con calidad certificada.`}
+                        </p>
+
+                        <div className="flex flex-wrap gap-4 items-center">
+                            <Link
+                                href={`/web/collection/${collection.slug}`}
+                                className={`inline-flex items-center gap-3 text-white text-[11px] font-black uppercase tracking-widest px-8 py-4 rounded-xl transition-all duration-300 bg-[black] border border-[black] ${btnHover} shadow-xl`}
+                            >
+                                Explororar Catálogo <ArrowRight size={16} />
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="w-full lg:w-[55%] p-6 md:p-10 relative bg-slate-50">
+                    {products.length > 0 ? (
+                        <div className="h-full flex flex-col">
+                            <div className="flex justify-between items-center mb-6 px-2">
+                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Productos Destacados</span>
+                                <div className="flex gap-2">
+                                    <button onClick={() => scrollGallery('left')} className="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center hover:bg-[black] hover:text-white transition-all text-slate-400 shadow-md"><ChevronLeft size={16} /></button>
+                                    <button onClick={() => scrollGallery('right')} className="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center hover:bg-[black] hover:text-white transition-all text-slate-400 shadow-md"><ChevronRight size={16} /></button>
+                                </div>
+                            </div>
+
+                            <div ref={galleryRef} className="flex gap-4 overflow-x-auto pb-6 pt-2 px-2 hide-scrollbar snap-x flex-1 items-center">
+                                {products.map((p: any, idx: number) => (
+                                    <div 
+                                        key={p.id}
+                                        className="snap-center shrink-0"
+                                    >
+                                        <Link 
+                                            href={`/web/product/${p.id}`} 
+                                            className="block w-48 lg:w-56 group bg-white border border-slate-200 rounded-2xl hover:border-zinc-400 transition-all duration-300 p-3 shadow-lg hover:shadow-xl relative overflow-hidden"
+                                        >
+                                            <div className="h-36 lg:h-44 bg-slate-50 flex items-center justify-center relative mb-4 rounded-xl overflow-hidden border border-slate-100">
+                                                <SafeImage src={safeParseArray(p.images)[0]} alt={p.name} fill className="p-4 group-hover:scale-110 transition-transform duration-500" />
+                                            </div>
+                                            
+                                            <div className="px-1">
+                                                <p className="text-slate-500 text-[11px] font-semibold line-clamp-2 mb-2 group-hover:text-[black] transition-colors leading-relaxed h-8">{p.name}</p>
+                                                <p className="text-sm font-black text-[black] bg-zinc-50 inline-block px-3 py-1.5 rounded-lg border border-zinc-200">${calculateDiscountedPrice(p.price, userRole).toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
+                                            </div>
+                                        </Link>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="h-full min-h-[300px] flex items-center justify-center">
+                            <div className="text-center bg-white p-10 rounded-3xl border border-slate-100 shadow-sm">
+                                <Hexagon className="w-12 h-12 text-slate-200 mx-auto mb-4 animate-[spin_10s_linear_infinite]" strokeWidth={1} />
+                                <p className="text-slate-300 text-[11px] uppercase tracking-[0.4em] font-black">Catálogo en Sincronización</p>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </motion.section>
+    )
+}
+
+/* ─── Categories Banner ─── */
+function CategoriesBanner({ categories }: { categories: any[] }) {
+    const scrollRef = useRef<HTMLDivElement>(null)
+    const scroll = (dir: 'left' | 'right') => {
+        scrollRef.current?.scrollBy({ left: dir === 'right' ? 240 : -240, behavior: 'smooth' })
+    }
+
+    return (
+        <section id="categorias" className="w-full py-10">
+            <div className="max-w-7xl mx-auto px-6">
+                <div className="flex items-end justify-between mb-6">
+                    <div>
+                        <h2 className="text-xl font-semibold text-[black] uppercase tracking-widest">
+                            NUESTRAS <span className="font-bold text-black">CATEGORÍAS</span>
+                        </h2>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <button onClick={() => scroll('left')} className="w-8 h-8 rounded-full border border-slate-200 bg-white text-slate-400 flex items-center justify-center hover:bg-[black] hover:text-white transition-all shadow-sm"><ChevronLeft size={15} /></button>
+                        <button onClick={() => scroll('right')} className="w-8 h-8 rounded-full border border-slate-200 bg-white text-slate-400 flex items-center justify-center hover:bg-[black] hover:text-white transition-all shadow-sm"><ChevronRight size={15} /></button>
+                    </div>
+                </div>
+
+                <div ref={scrollRef} className="flex gap-3 overflow-x-auto hide-scrollbar pb-4 snap-x">
+                    {categories.filter(c => c.isVisible).map((cat: any, i: number) => (
+                        <motion.div
+                            key={cat.id}
+                            initial={{ opacity: 0, y: 12 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: i * 0.04 }}
+                            className="snap-start shrink-0"
+                        >
+                            <Link
+                                href={cat.slug === 'desarrollo' || cat.slug === 'software-desarrollo' || cat.slug.includes('diseno') || cat.name.toLowerCase().includes('diseño') ? '/web/demos' : `/web/category/${cat.slug}`}
+                                className="group block relative overflow-hidden w-48 h-60 rounded-xl border border-slate-200 bg-white hover:border-zinc-400 hover:shadow-lg transition-all duration-300"
+                            >
+                                <div className="absolute inset-0 flex items-center justify-center p-6">
+                                    <SafeImage src={cat.image} alt={cat.name} fill className="p-8 opacity-10 group-hover:opacity-30 transition-all duration-500 saturate-0" />
+                                </div>
+                                <div className="absolute inset-0 bg-gradient-to-t from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-white via-white/95 to-transparent">
+                                    <h3 className="text-[black] text-[11px] font-semibold uppercase tracking-tight mb-0.5 group-hover:text-black transition-colors line-clamp-2">{cat.name}</h3>
+                                    <p className="text-slate-400 text-[9px] font-medium uppercase tracking-widest flex items-center gap-1 group-hover:text-black transition-colors">
+                                        Ver <ArrowRight size={10} className="group-hover:translate-x-0.5 transition-transform" />
+                                    </p>
+                                </div>
+                            </Link>
+                        </motion.div>
+                    ))}
+                </div>
+            </div>
+        </section>
+    )
+}
+
+/* ─── Web Demo Showcase ─── */
+const PORTFOLIO_ITEMS = [
+    { id: 1, title: "Instituto Sucre", category: "Plataforma EduTech", description: "Gestión académica integral.", accent: "#6366f1", previewUrl: "/instituto_sucre.html" },
+    { id: 2, title: "Bodegas Logistics", category: "Logística Corporativo", description: "Control de inventario QR.", accent: "#10b981", previewUrl: "/bodegas.html" },
+    { id: 3, title: "Scraper Pro", category: "Inteligencia Competitiva", description: "Motor automatizado de datos.", accent: "#a855f7", previewUrl: "/scraper/index.html" },
+    { id: 4, title: "Couple Games", category: "Entretenimiento B2C", description: "App interactiva engagement.", accent: "#ec4899", previewUrl: "/couples-game/index.html" },
+    { id: 5, title: "SOFT3 Logistics", category: "ERP de Logística", description: "Sistema de gestión Laravel.", accent: "#3b82f6", previewUrl: "/soft3.html" }
+]
+
+function WebShowcase() {
+    const [activePreview, setActivePreview] = useState<{url: string, title: string, accent: string} | null>(null)
+    const scrollRef = useRef<HTMLDivElement>(null)
+    const scroll = (dir: 'left' | 'right') => { scrollRef.current?.scrollBy({ left: dir === 'right' ? 350 : -350, behavior: 'smooth' }) }
+
+    return (
+        <div className="bg-white border border-slate-200 rounded-2xl p-8 relative overflow-hidden shadow-xl">
+            <div className="relative z-10 flex flex-col md:flex-row justify-between items-end mb-10 gap-4">
+                <div>
+                    <div className="flex items-center gap-2 text-black mb-2">
+                        <Sparkles size={14} />
+                        <span className="text-[10px] font-bold uppercase tracking-[0.3em]">Software & Web Demos</span>
+                    </div>
+                    <h3 className="text-2xl font-black text-[black] uppercase tracking-tight">Showcase de <span className="text-black">Desarrollo</span></h3>
+                </div>
+                <div className="flex gap-2">
+                    <button onClick={() => scroll('left')} className="w-10 h-10 rounded-full border border-slate-200 bg-white text-slate-400 hover:text-black flex items-center justify-center transition-colors shadow-sm"><ChevronLeft size={20} /></button>
+                    <button onClick={() => scroll('right')} className="w-10 h-10 rounded-full border border-slate-200 bg-white text-slate-400 hover:text-black flex items-center justify-center transition-colors shadow-sm"><ChevronRight size={20} /></button>
+                </div>
+            </div>
+
+            <div ref={scrollRef} className="flex gap-6 overflow-x-auto hide-scrollbar pb-4 snap-x">
+                {PORTFOLIO_ITEMS.map((item) => (
+                    <motion.div 
+                        key={item.id}
+                        whileHover={{ y: -5 }}
+                        className="snap-start shrink-0 w-72 bg-slate-50 border border-slate-200 rounded-xl overflow-hidden group cursor-pointer shadow-md hover:shadow-xl transition-all"
+                        onClick={() => setActivePreview({ url: item.previewUrl, title: item.title, accent: item.accent })}
+                    >
+                        <div className="h-40 relative bg-white flex items-center justify-center overflow-hidden">
+                             <iframe src={item.previewUrl} title={item.title} className="w-[400%] h-[400%] origin-top-left scale-[0.25] pointer-events-none opacity-40 group-hover:opacity-80 transition-opacity" />
+                             <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/10 opacity-100 group-hover:opacity-0 transition-opacity"><span className="text-[10px] font-bold text-black/40 uppercase tracking-widest">Ver Demo</span></div>
+                        </div>
+                        <div className="p-4 border-t border-slate-100 bg-white">
+                            <span className="text-[9px] font-bold uppercase tracking-widest mb-1 block" style={{ color: item.accent }}>{item.category}</span>
+                            <h4 className="text-sm font-bold text-slate-800 mb-2">{item.title}</h4>
+                            <p className="text-[10px] text-slate-500 leading-relaxed line-clamp-2">{item.description}</p>
+                        </div>
+                    </motion.div>
+                ))}
+            </div>
+
+            <AnimatePresence>
+                {activePreview && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 md:p-10" onClick={() => setActivePreview(null)}>
+                        <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="relative w-full h-full max-w-6xl bg-white border border-slate-200 shadow-2xl rounded-xl overflow-hidden flex flex-col" onClick={(e) => e.stopPropagation()}>
+                            <div className="h-14 bg-slate-50 border-b border-slate-200 flex items-center justify-between px-6">
+                                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Demo: <span className="text-slate-900">{activePreview.title}</span></span>
+                                <button onClick={() => setActivePreview(null)} className="text-slate-400 hover:text-slate-900 transition-colors"><X size={20} /></button>
+                            </div>
+                            <div className="flex-1 bg-white"><iframe src={activePreview.url} title="Active Demo" className="w-full h-full border-0" /></div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </div>
+    )
+}
+
+function HeroBanner({ settings }: { settings: any }) {
+    const banners = [
+        { 
+            url: "/banners/espia.jpeg", 
+            pdf: "/pdfs/catalogo_espia.pdf",
+        },
+        { 
+            url: "/banners/smart.jpeg", 
+            pdf: "/pdfs/catalogo_smart.pdf",
+        }
+    ]
+
+    return (
+        <section className="w-full bg-white">
+            <div className="flex flex-col">
+                {banners.map((b, i) => (
+                    <div 
+                        key={i}
+                        className="relative w-full overflow-hidden"
+                    >
+                        <img src={b.url} alt="Banner" className="w-full h-auto block" />
+                        <a 
+                            href={b.pdf} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="absolute inset-0 z-10"
+                            aria-label="Ver más"
+                        />
+                    </div>
+                ))}
+            </div>
+        </section>
+    )
+}
+
+
+/* ─── Minimal Store Hero ─── */
