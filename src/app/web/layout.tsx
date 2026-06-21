@@ -171,73 +171,22 @@ export default function WebLayout({ children }: { children: React.ReactNode }) {
                 </svg>
             </motion.a>
 
-            {/* ── Footer ── */}
-            <footer className="bg-[#0F172A] pt-28 pb-12 text-white">
-
-                {/* Top section */}
-                <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-16 border-b border-white/5 pb-16">
-
-                    {/* Brand */}
-                    <div className="space-y-8">
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-blue-600 flex items-center justify-center rounded-none shadow-lg">
-                                <div className="w-2 h-2 bg-white rounded-none" />
-                            </div>
-                            <span className="text-xl font-black tracking-tighter uppercase italic text-white">
-                                ATOMIC<span className="text-blue-500">.</span>
-                            </span>
-                        </div>
-                        <p className="text-[10px] text-slate-400 leading-relaxed font-bold max-w-xs uppercase tracking-widest">
-                            Líder en infraestructura tecnológica, seguridad avanzada y soluciones de automatización industrial y residencial.
-                        </p>
-                        {/* Blue accent tag */}
-                        <div className="inline-flex items-center gap-2 bg-blue-500/10 border border-blue-500/20 rounded-none px-3 py-1.5">
-                            <div className="w-1.5 h-1.5 rounded-none bg-blue-500 animate-pulse" />
-                            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-blue-500">Todos los sistemas online</span>
-                        </div>
+            {/* ── Footer Minimalista ── */}
+            <footer className="bg-black py-8 text-white border-t border-zinc-900">
+                <div className="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <div className="flex items-center gap-3">
+                        <svg width="24" height="24" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="36" cy="36" r="5" fill="#fff" />
+                            <ellipse cx="36" cy="36" rx="30" ry="10" stroke="#fff" strokeWidth="2" fill="none" />
+                            <ellipse cx="36" cy="36" rx="30" ry="10" stroke="#fff" strokeWidth="2" fill="none" transform="rotate(60 36 36)" />
+                            <ellipse cx="36" cy="36" rx="30" ry="10" stroke="#fff" strokeWidth="2" fill="none" transform="rotate(120 36 36)" />
+                            <circle cx="66" cy="36" r="2.5" fill="#fff" />
+                            <circle cx="21" cy="10.5" r="2.5" fill="#fff" />
+                            <circle cx="21" cy="61.5" r="2.5" fill="#fff" />
+                        </svg>
+                        <span className="text-sm font-black tracking-[0.2em] uppercase italic text-white">ATOMIC</span>
                     </div>
-
-                    {/* Links */}
-                    <div className="col-span-3 grid grid-cols-1 md:grid-cols-3 gap-10">
-                        <div className="space-y-8">
-                            <h5 className="text-[10px] font-black uppercase tracking-[0.4em] text-blue-500">Corporativo</h5>
-                            <ul className="space-y-5 text-[10px] text-slate-500 font-black uppercase tracking-widest">
-                                <li className="hover:text-white transition-colors"><Link href="/web">Visión Técnica</Link></li>
-                                <li className="hover:text-white transition-colors"><Link href="/web/software">Laboratorio de Software</Link></li>
-                                <li className="hover:text-white transition-colors"><Link href="/web/benefits">Beneficios</Link></li>
-                                <li className="hover:text-white transition-colors"><Link href="/web/blogs">Blog de Noticias</Link></li>
-                            </ul>
-                        </div>
-                        <div className="space-y-8">
-                            <h5 className="text-[10px] font-black uppercase tracking-[0.4em] text-blue-400">Soporte</h5>
-                            <ul className="space-y-5 text-[10px] text-slate-500 font-black uppercase tracking-widest">
-                                <li className="hover:text-white transition-colors cursor-pointer">Centro de Ayuda</li>
-                                <li className="hover:text-white transition-colors cursor-pointer">API Docs</li>
-                                <li className="hover:text-white transition-colors cursor-pointer">Garantía ATOMIC</li>
-                            </ul>
-                        </div>
-                        <div className="space-y-8">
-                            <h5 className="text-[10px] font-black uppercase tracking-[0.4em] text-blue-300">Plataformas</h5>
-                            <ul className="space-y-5 text-[10px] text-slate-500 font-black uppercase tracking-widest">
-                                <li className="hover:text-white transition-colors"><Link href="/web/products">Catálogo</Link></li>
-                                <li className="hover:text-white transition-colors"><Link href="/web/categories">Categorías</Link></li>
-                                <li className="hover:text-white transition-colors"><Link href="/web/bajo-pedido">Bajo Pedido</Link></li>
-                                <li className="hover:text-white transition-colors"><Link href="/web/trabajos">Portafolio Trabajos</Link></li>
-                                <li className="hover:text-white transition-colors"><Link href="/web/contact">Reseñas y Contacto</Link></li>
-                                <li className="hover:text-white transition-colors"><Link href="/login">Acceso</Link></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Bottom bar */}
-                <div className="max-w-7xl mx-auto px-6 pt-10 flex flex-col md:flex-row justify-between items-center gap-8">
-                    <p className="text-[9px] font-black uppercase text-slate-600 tracking-[0.4em]">© 2026 ATOMIC ELECTRONICS GMBH. Ingeniería y Precisión.</p>
-                    <div className="flex items-center space-x-6 opacity-20">
-                        <Shield size={16} />
-                        <Zap size={16} />
-                        <CheckCircle2 size={16} />
-                    </div>
+                    <p className="text-[9px] font-black uppercase text-zinc-600 tracking-[0.4em]">© 2026 ATOMIC INDUSTRIAS.</p>
                 </div>
             </footer>
             <AISearchBot />
