@@ -47,20 +47,35 @@ export default function WebLayout({ children }: { children: React.ReactNode }) {
                 <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
 
                     {/* Logo + Links */}
-                    <div className="flex items-center space-x-12">
-                        <Link href="/web" className="text-2xl font-black tracking-tighter uppercase italic text-[#1E3A8A] group">
-                            ATOMIC<span className="text-[#1E3A8A] group-hover:text-blue-600 transition-colors">!</span>
+                    <div className="flex items-center space-x-8 overflow-hidden w-full">
+                        <Link href="/web" className="shrink-0 flex items-center group">
+                            <svg width="40" height="40" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg" className="group-hover:scale-110 transition-transform duration-300">
+                                <circle cx="36" cy="36" r="5" fill="#000" />
+                                <ellipse cx="36" cy="36" rx="30" ry="10" stroke="#000" strokeWidth="1.5" fill="none" />
+                                <ellipse cx="36" cy="36" rx="30" ry="10" stroke="#000" strokeWidth="1.5" fill="none" transform="rotate(60 36 36)" />
+                                <ellipse cx="36" cy="36" rx="30" ry="10" stroke="#000" strokeWidth="1.5" fill="none" transform="rotate(120 36 36)" />
+                                <circle cx="66" cy="36" r="2.5" fill="#000" />
+                                <circle cx="21" cy="10.5" r="2.5" fill="#000" />
+                                <circle cx="21" cy="61.5" r="2.5" fill="#000" />
+                            </svg>
                         </Link>
-                        <div className="hidden md:flex flex-wrap gap-x-8 gap-y-2 max-w-3xl text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">
-                            {navLinks.map(link => (
-                                <Link
-                                    key={link.href}
-                                    href={link.href}
-                                    className={pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href)) ? 'text-[#1E3A8A] border-b-2 border-[#1E3A8A] pb-1' : 'hover:text-[#1E3A8A] transition-colors'}
-                                >
-                                    {link.label}
-                                </Link>
-                            ))}
+                        <div className="hidden md:flex overflow-x-auto items-center gap-3 pb-2 pt-2 flex-1 scrollbar-hide mask-edges">
+                            {navLinks.map(link => {
+                                const isActive = pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href));
+                                return (
+                                    <Link
+                                        key={link.href}
+                                        href={link.href}
+                                        className={`whitespace-nowrap px-5 py-2 rounded-full border text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-300
+                                            ${isActive 
+                                                ? 'bg-black text-white border-black shadow-md' 
+                                                : 'bg-white text-zinc-500 border-zinc-200 hover:border-black hover:text-black hover:bg-zinc-50 hover:shadow-sm hover:-translate-y-0.5'
+                                            }`}
+                                    >
+                                        {link.label}
+                                    </Link>
+                                );
+                            })}
                         </div>
                     </div>
 
