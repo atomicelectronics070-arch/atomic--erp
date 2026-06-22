@@ -12,6 +12,7 @@ import {
     Upload, PlusCircle, FileText, ChevronDown, Store, Gamepad2
 } from "lucide-react"
 import { CyberCard, NeonButton, CyberInput, GlassPanel } from "@/components/ui/CyberUI"
+import { SupplierManager } from "@/components/shop/SupplierManager"
 import { 
     createCategory, 
     createCollection, 
@@ -40,13 +41,13 @@ export default function ShopConfigPage() {
     const router = useRouter()
     
     const [view, setView] = useState<'list' | 'add' | 'edit'>('list')
-    const [activeTab, setActiveTab] = useState<'products' | 'catalogs' | 'settings'>('products')
+    const [activeTab, setActiveTab] = useState<'products' | 'catalogs' | 'settings' | 'suppliers' | 'prices_list'>('products')
     const [products, setProducts] = useState<any[]>([])
     const [totalProducts, setTotalProducts] = useState(0)
     const [currentPage, setCurrentPage] = useState(1)
     const [pageSize, setPageSize] = useState(50)
     const [dashboardSearch, setDashboardSearch] = useState("")
-    const [metadata, setMetadata] = useState<{ categories: any[], collections: any[] }>({ categories: [], collections: [] })
+    const [metadata, setMetadata] = useState<{ categories: any[], collections: any[], providersList: string[] }>({ categories: [], collections: [], providersList: [] })
     const [editingProduct, setEditingProduct] = useState<any>(null)
     const [editingTaxonomy, setEditingTaxonomy] = useState<{ type: 'category' | 'collection', data: any } | null>(null)
     const [loading, setLoading] = useState(true)
@@ -82,7 +83,8 @@ export default function ShopConfigPage() {
             setTotalProducts(pData.total || 0)
             setMetadata({
                 categories: mData.categories || [],
-                collections: mData.collections || []
+                collections: mData.collections || [],
+                providersList: mData.providersList || []
             })
             if (sData) setStoreSettings(sData)
             
@@ -262,7 +264,7 @@ export default function ShopConfigPage() {
             {view === 'list' ? (
                 <div className="space-y-12 animate-in fade-in duration-700">
                     <div className="flex gap-4 p-2 bg-white/5 border border-white/10 w-fit backdrop-blur-3xl">
-                        {['products', 'catalogs', 'settings'].map((tab) => (
+                        {['products', 'suppliers', 'prices_list', 'catalogs', 'settings'].map((tab) => (
                             <button
                                 key={tab}
                                 onClick={() => setActiveTab(tab as any)}
@@ -273,7 +275,30 @@ export default function ShopConfigPage() {
                         ))}
                     </div>
 
-                    {activeTab === 'products' && (
+                    
+                {activeTab === 'suppliers' && (
+                    <SupplierManager 
+                        providers={metadata.providersList || []}
+                        settings={storeSettings}
+                        onUpdateSettings={setStoreSettings}
+                        onFilterProvider={(provider) => {
+                            setDashboardSearch(provider)
+                            setActiveTab('products')
+                        }}
+                    />
+                )}
+                
+                {activeTab === 'prices_list' && (
+                    <div className="w-full h-[calc(100vh-10rem)] bg-[#0c0c14] rounded-2xl overflow-hidden border border-slate-200/50 shadow-2xl relative">
+                        <iframe 
+                            src="/prices/index.html" 
+                            className="w-full h-full border-none"
+                            title="Lista de Precios"
+                        />
+                    </div>
+                )}
+
+                {activeTab === 'products' && (
                         <div className="space-y-12 animate-in fade-in duration-700">
                             {/* Modern Stats Summary */}
                             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-8 relative z-10">

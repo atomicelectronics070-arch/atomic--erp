@@ -5,13 +5,17 @@ import { revalidatePath, unstable_noStore as noStore } from "next/cache"
 
 // CATEGORIES & COLLECTIONS
 export async function getShopMetadata() {
-    const [categories, collections, products, providerStats] = await Promise.all([
+    const [categories, collections, products, providerStats, allProductsForProviders] = await Promise.all([
         prisma.category.findMany({ orderBy: { name: 'asc' } }),
         prisma.collection.findMany({ orderBy: { name: 'asc' } }),
         prisma.product.findMany({ where: { isDeleted: false }, take: 100, orderBy: { createdAt: 'desc' } }),
-        getProviderStats()
+        getProviderStats(),
+        prisma.product.findMany({ select: { provider: true }, where: { provider: { not: null } } })
     ])
-    return { categories, collections, products, providerStats }
+    
+    const providersList = Array.from(new Set(allProductsForProviders.map(p => p.provider).filter(Boolean)))
+    
+    return { categories, collections, products, providerStats, providersList }
 }
 
 export async function saveCategory(id: string | null, data: any, productIds: string[] = []) {
@@ -416,10 +420,7 @@ export async function getStoreSettings() {
         const setting = await prisma.systemSetting.findUnique({
             where: { key: 'store_settings' }
         })
-        if (setting) {
-            return JSON.parse(setting.value)
-        }
-        return {
+        const defaultSettings = {
             currency: 'USD',
             shippingCost: 0,
             freeShippingThreshold: 0,
@@ -429,8 +430,13 @@ export async function getStoreSettings() {
                 software: {},
                 automation: {},
                 gaming: {}
-            }
+            },
+            providerMargins: {}
         }
+        if (setting) {
+            return { ...defaultSettings, ...JSON.parse(setting.value) }
+        }
+        return defaultSettings
     } catch (e) {
         return null
     }
