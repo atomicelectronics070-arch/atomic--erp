@@ -134,10 +134,7 @@ export default function DashboardLayout({
                                     onToggle={() => toggleSection('operaciones')}
                                 >
                                     <NavLink href="/dashboard/quotes" icon={<FileText size={14} />} label="Cotizaciones" isSubItem />
-                                    <NavLink href="/dashboard/prices" icon={<Tag size={14} />} label="Lista Precios" isSubItem />
-                                    {role === "ADMIN" && (
-                                        <NavLink href="/dashboard/shop" icon={<ShoppingBag size={14} />} label="Inventario" isSubItem />
-                                    )}
+                                    <NavLink href="/dashboard/shop" icon={<ShoppingBag size={14} />} label={role === "ADMIN" ? "Inventario y Precios" : "Lista Precios"} isSubItem />
                                 </CollapsibleSection>
 
                                 <CollapsibleSection

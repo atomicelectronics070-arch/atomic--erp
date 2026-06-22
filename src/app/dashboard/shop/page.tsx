@@ -105,15 +105,18 @@ export default function ShopConfigPage() {
 
     useEffect(() => {
         if (status === "loading") return
-        if (!session || session.user?.role !== "ADMIN") {
+        if (!session || !["ADMIN", "MANAGEMENT", "SALESPERSON", "AFILIADO", "COORDINATOR", "COORD_ASSISTANT"].includes(session.user?.role as string)) {
             router.push("/dashboard")
             return
+        }
+        if (session.user?.role !== "ADMIN") {
+            setActiveTab('prices_list')
         }
         refreshData()
     }, [currentPage, pageSize, dashboardSearch, isTrashView, selectedProvider, session, status, router])
 
-    if (status === "loading" || session?.user?.role !== "ADMIN") {
-        return <div className="p-10 text-center text-white text-[10px] font-black uppercase tracking-[0.5em] mt-20 italic">AUTENTICANDO CREDENCIALES DE ADMINISTRADOR...</div>
+    if (status === "loading" || !["ADMIN", "MANAGEMENT", "SALESPERSON", "AFILIADO", "COORDINATOR", "COORD_ASSISTANT"].includes(session?.user?.role as string)) {
+        return <div className="p-10 text-center text-white text-[10px] font-black uppercase tracking-[0.5em] mt-20 italic">AUTENTICANDO CREDENCIALES...</div>
     }
 
     const saveSettings = async () => {
@@ -255,22 +258,29 @@ export default function ShopConfigPage() {
                     </h1>
                 </motion.div>
                 <div className="flex gap-4">
-                    <NeonButton variant="primary" onClick={() => { setEditingProduct(null); setView(view === 'list' ? 'add' : 'list') }}>
-                        {view === 'list' ? "SUBIR PRODUCTO_CMD" : "RETORNO LISTADO"}
-                    </NeonButton>
+                    {session?.user?.role === "ADMIN" && (
+                        <NeonButton variant="primary" onClick={() => { setEditingProduct(null); setView(view === 'list' ? 'add' : 'list') }}>
+                            {view === 'list' ? "SUBIR PRODUCTO_CMD" : "RETORNO LISTADO"}
+                        </NeonButton>
+                    )}
                 </div>
             </header>
 
             {view === 'list' ? (
                 <div className="space-y-12 animate-in fade-in duration-700">
-                    <div className="flex gap-4 p-2 bg-white/5 border border-white/10 w-fit backdrop-blur-3xl">
-                        {['products', 'suppliers', 'prices_list', 'catalogs', 'settings'].map((tab) => (
+                    <div className="flex gap-4 p-2 bg-white/5 border border-white/10 w-fit backdrop-blur-3xl overflow-x-auto custom-scrollbar">
+                        {['products', 'suppliers', 'prices_list', 'catalogs', 'settings']
+                            .filter(tab => session?.user?.role === "ADMIN" || tab === 'prices_list')
+                            .map((tab) => (
                             <button
                                 key={tab}
                                 onClick={() => setActiveTab(tab as any)}
-                                className={`px-10 py-4 text-[10px] font-black uppercase tracking-widest transition-all italic ${activeTab === tab ? 'bg-secondary text-white shadow-[0_0_20px_rgba(255,99,71,0.3)]' : 'text-white/20 hover:text-white hover:bg-white/5'}`}
+                                className={`px-6 sm:px-10 py-4 text-[10px] font-black uppercase tracking-widest transition-all italic whitespace-nowrap ${activeTab === tab ? 'bg-secondary text-white shadow-[0_0_20px_rgba(255,99,71,0.3)]' : 'text-white/20 hover:text-white hover:bg-white/5'}`}
                             >
-                                {tab === 'products' ? 'Inventario Maestro' : tab === 'catalogs' ? 'Arquitecturas' : 'Frontend_CMD'}
+                                {tab === 'products' ? 'Inventario Maestro' : 
+                                 tab === 'suppliers' ? 'Proveedores' : 
+                                 tab === 'prices_list' ? 'Lista Precios' : 
+                                 tab === 'catalogs' ? 'Arquitecturas' : 'Ajustes'}
                             </button>
                         ))}
                     </div>
