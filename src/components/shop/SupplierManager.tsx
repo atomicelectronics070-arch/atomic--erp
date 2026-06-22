@@ -59,9 +59,11 @@ export function SupplierManager({ providers, settings, onUpdateSettings, onFilte
                     onClick={saveMargins} 
                     disabled={isSaving}
                     variant="primary"
-                    icon={<Save className="w-4 h-4" />}
                 >
-                    {isSaving ? "Guardando..." : "Guardar Márgenes"}
+                    <div className="flex items-center gap-2">
+                        <Save className="w-4 h-4" />
+                        {isSaving ? "Guardando..." : "Guardar Márgenes"}
+                    </div>
                 </NeonButton>
             </div>
 
