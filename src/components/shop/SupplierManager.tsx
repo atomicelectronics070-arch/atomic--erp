@@ -69,7 +69,7 @@ export function SupplierManager({ providers, settings, onUpdateSettings, onFilte
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {providers.map((provider) => (
-                    <CyberCard key={provider} variant="secondary" className="p-4 flex flex-col gap-3 group relative overflow-hidden">
+                    <CyberCard key={provider} className="p-4 flex flex-col gap-3 group relative overflow-hidden">
                         <div className="absolute -right-4 -top-4 w-16 h-16 bg-purple-500/10 rounded-full blur-xl group-hover:bg-purple-500/20 transition-all"></div>
                         <div className="flex justify-between items-start">
                             <h3 className="text-white font-semibold flex items-center gap-2">
