@@ -13,6 +13,7 @@ import {
 } from "lucide-react"
 import { CyberCard, NeonButton, CyberInput, GlassPanel } from "@/components/ui/CyberUI"
 import { SupplierManager } from "@/components/shop/SupplierManager"
+import { PriceListManager } from "@/components/shop/PriceListManager"
 import { 
     createCategory, 
     createCollection, 
@@ -299,12 +300,8 @@ export default function ShopConfigPage() {
                 )}
                 
                 {activeTab === 'prices_list' && (
-                    <div className="w-full h-[calc(100vh-10rem)] bg-[#0c0c14] rounded-2xl overflow-hidden border border-slate-200/50 shadow-2xl relative">
-                        <iframe 
-                            src="/prices/index.html" 
-                            className="w-full h-full border-none"
-                            title="Lista de Precios"
-                        />
+                    <div className="w-full animate-in fade-in duration-500">
+                        <PriceListManager isAdmin={session?.user?.role === 'ADMIN'} />
                     </div>
                 )}
 
