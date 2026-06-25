@@ -5,7 +5,8 @@ import {
     Search, Store, Package, TrendingUp, DollarSign, Edit3,
     Check, X, ChevronRight, ChevronDown, RefreshCw, Percent,
     Filter, BarChart2, Tag, Save, AlertCircle, Eye, EyeOff,
-    ArrowUpDown, Grid, List as ListIcon, Plus, Download
+    ArrowUpDown, Grid, List as ListIcon, Plus, Download, ChevronUp,
+    ShieldAlert, Info
 } from "lucide-react"
 
 interface Product {
@@ -34,18 +35,63 @@ interface PriceListManagerProps {
     isAdmin?: boolean
 }
 
-const SUPPLIER_COLORS: Record<string, string> = {
-    "Banco del Perno": "#3b82f6",
-    "MultiTecnologia V&V": "#10b981",
-    "Cronte Technology": "#8b5cf6",
-    "GEMA": "#f59e0b",
-    "Logicenter": "#ef4444",
-    "Unknown": "#64748b",
-    "Sin Proveedor": "#64748b",
+const SUPPLIER_COLORS: Record<string, { primary: string; glow: string; text: string; bg: string }> = {
+    "Banco del Perno": {
+        primary: "#3b82f6",
+        glow: "rgba(59, 130, 246, 0.35)",
+        text: "text-blue-400",
+        bg: "bg-blue-500/10"
+    },
+    "MultiTecnologia V&V": {
+        primary: "#10b981",
+        glow: "rgba(16, 185, 129, 0.35)",
+        text: "text-emerald-400",
+        bg: "bg-emerald-500/10"
+    },
+    "Cronte Technology": {
+        primary: "#8b5cf6",
+        glow: "rgba(139, 92, 246, 0.35)",
+        text: "text-purple-400",
+        bg: "bg-purple-500/10"
+    },
+    "GEMA": {
+        primary: "#f59e0b",
+        glow: "rgba(245, 158, 11, 0.35)",
+        text: "text-amber-400",
+        bg: "bg-amber-500/10"
+    },
+    "Logicenter": {
+        primary: "#ef4444",
+        glow: "rgba(239, 68, 68, 0.35)",
+        text: "text-rose-400",
+        bg: "bg-rose-500/10"
+    },
+    "Unknown": {
+        primary: "#64748b",
+        glow: "rgba(100, 116, 139, 0.2)",
+        text: "text-slate-400",
+        bg: "bg-slate-500/10"
+    },
+    "Sin Proveedor": {
+        primary: "#64748b",
+        glow: "rgba(100, 116, 139, 0.2)",
+        text: "text-slate-400",
+        bg: "bg-slate-500/10"
+    },
 }
 
-function getSupplierColor(name: string): string {
-    return SUPPLIER_COLORS[name] || `hsl(${name.split('').reduce((a, c) => a + c.charCodeAt(0), 0) % 360}, 65%, 55%)`
+function getSupplierStyles(name: string) {
+    if (SUPPLIER_COLORS[name]) return SUPPLIER_COLORS[name];
+    
+    // Generate deterministic colors for dynamic suppliers
+    const hash = name.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
+    const hue = hash % 360;
+    return {
+        primary: `hsl(${hue}, 75%, 55%)`,
+        glow: `hsla(${hue}, 75%, 55%, 0.35)`,
+        text: `text-[hsl(${hue},75%,65%)]`,
+        bg: `bg-[hsla(${hue},75%,55%,0.08)]`
+    };
 }
 
 function safeParseImages(images: string | null): string | null {
@@ -60,7 +106,7 @@ function safeParseImages(images: string | null): string | null {
 }
 
 function calcMargin(cost: number | null, price: number): number | null {
-    if (!cost || cost <= 0) return null
+    if (cost === null || cost <= 0) return null
     return ((price - cost) / cost) * 100
 }
 
@@ -91,17 +137,17 @@ function InlineEdit({ value, onSave, prefix = "$", min = 0 }: {
     if (!editing) return (
         <button
             onClick={() => { setDraft(value.toFixed(2)); setEditing(true) }}
-            className="flex items-center gap-1.5 text-white font-bold hover:text-blue-400 transition-colors group"
+            className="flex items-center gap-2 px-3 py-1.5 bg-slate-950/40 border border-white/5 hover:border-blue-500/30 hover:bg-blue-500/5 text-white font-black transition-all duration-300 group rounded"
         >
-            <span className="text-slate-500 text-xs">{prefix}</span>
-            <span>{value.toFixed(2)}</span>
-            <Edit3 size={11} className="opacity-0 group-hover:opacity-60 transition-opacity" />
+            <span className="text-slate-500 font-bold text-xs">{prefix}</span>
+            <span className="tracking-widest text-xs md:text-sm">{value.toFixed(2)}</span>
+            <Edit3 size={11} className="text-blue-400 opacity-0 group-hover:opacity-100 transition-all duration-300 transform group-hover:scale-110" />
         </button>
     )
 
     return (
-        <div className="flex items-center gap-1">
-            <span className="text-slate-500 text-xs">{prefix}</span>
+        <div className="flex items-center gap-1 bg-slate-900 border border-blue-500/60 rounded p-1 shadow-[0_0_15px_rgba(59,130,246,0.25)] animate-in zoom-in-95 duration-150">
+            <span className="text-blue-400 font-black text-xs px-1">{prefix}</span>
             <input
                 ref={inputRef}
                 type="number"
@@ -114,23 +160,38 @@ function InlineEdit({ value, onSave, prefix = "$", min = 0 }: {
                     if (e.key === "Escape") { setDraft(value.toFixed(2)); setEditing(false) }
                 }}
                 onBlur={commit}
-                className="w-24 bg-slate-800 border border-blue-500/60 rounded px-2 py-0.5 text-white text-sm outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-500/20"
+                className="w-20 bg-slate-950 border-none text-white text-xs font-black tracking-widest outline-none focus:ring-0 px-1 py-0.5"
                 autoFocus
             />
-            <button onClick={commit} className="text-emerald-400 hover:text-emerald-300"><Check size={14} /></button>
-            <button onClick={() => { setDraft(value.toFixed(2)); setEditing(false) }} className="text-red-400 hover:text-red-300"><X size={14} /></button>
+            <button onClick={commit} className="p-1 text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 rounded transition-colors"><Check size={12} /></button>
+            <button onClick={() => { setDraft(value.toFixed(2)); setEditing(false) }} className="p-1 text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded transition-colors"><X size={12} /></button>
         </div>
     )
 }
 
 function MarginBadge({ margin }: { margin: number | null }) {
-    if (margin === null) return <span className="text-slate-600 text-xs italic">Sin costo</span>
-    const color = margin >= 20 ? "text-emerald-400" : margin >= 10 ? "text-yellow-400" : margin >= 0 ? "text-orange-400" : "text-red-400"
-    const bg = margin >= 20 ? "bg-emerald-500/10" : margin >= 10 ? "bg-yellow-500/10" : margin >= 0 ? "bg-orange-500/10" : "bg-red-500/10"
+    if (margin === null) return <span className="text-slate-600 text-[10px] font-black uppercase tracking-wider italic">Sin costo</span>
+    
+    let color = "text-emerald-400 border-emerald-500/20 bg-emerald-500/5 shadow-[0_0_12px_rgba(16,185,129,0.15)]";
+    let text = "EXCELENTE";
+    if (margin < 0) {
+        color = "text-rose-400 border-rose-500/20 bg-rose-500/5 shadow-[0_0_12px_rgba(239,68,68,0.15)]";
+        text = "PÉRDIDA";
+    } else if (margin < 10) {
+        color = "text-orange-400 border-orange-500/20 bg-orange-500/5 shadow-[0_0_12px_rgba(249,115,22,0.15)]";
+        text = "CRÍTICO";
+    } else if (margin < 20) {
+        color = "text-yellow-400 border-yellow-500/20 bg-yellow-500/5 shadow-[0_0_12px_rgba(234,179,8,0.15)]";
+        text = "REGULAR";
+    }
+
     return (
-        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-bold ${color} ${bg}`}>
-            <TrendingUp size={10} />
-            {margin.toFixed(1)}%
+        <span className={`inline-flex flex-col items-start gap-0.5 px-3 py-1.5 border rounded-none skew-x-[-8deg] ${color}`}>
+            <span className="skew-x-[8deg] text-[9px] font-black tracking-[0.2em] opacity-60 leading-none">{text}</span>
+            <span className="skew-x-[8deg] flex items-center gap-1 text-[11px] font-black tracking-widest mt-0.5 leading-none">
+                <TrendingUp size={10} className="stroke-[3px]" />
+                {margin.toFixed(1)}%
+            </span>
         </span>
     )
 }
@@ -175,9 +236,10 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
             setSuppliers(data.providerStats || [])
             setCategories(data.categories || [])
             setTotal(data.total || 0)
-            // Auto-expand all suppliers on initial load
+            
+            // Expand first supplier by default if none expanded
             if (expandedSuppliers.size === 0 && data.providerStats?.length > 0) {
-                setExpandedSuppliers(new Set(data.providerStats.slice(0, 3).map((s: SupplierStat) => s.name)))
+                setExpandedSuppliers(new Set([data.providerStats[0].name]))
             }
         } catch (e) {
             console.error("PriceListManager load error:", e)
@@ -221,7 +283,7 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
             })
             if (!res.ok) throw new Error("Margin apply failed")
             const data = await res.json()
-            alert(`✅ Margen aplicado a ${data.updated} productos de ${supplier}`)
+            alert(`✅ Margen de ${margin}% aplicado a ${data.updated} productos de ${supplier}`)
             setMarginEditSupplier(null)
             setMarginValue("")
             loadData()
@@ -231,14 +293,6 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
             setApplyingMargin(false)
         }
     }
-
-    // Group products by supplier
-    const grouped = products.reduce<Record<string, Product[]>>((acc, p) => {
-        const key = p.provider || "Sin Proveedor"
-        if (!acc[key]) acc[key] = []
-        acc[key].push(p)
-        return acc
-    }, {})
 
     const toggleSupplier = (name: string) => {
         setExpandedSuppliers(prev => {
@@ -251,127 +305,213 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
 
     const totalPages = Math.ceil(total / limit)
 
+    // Group products by supplier
+    const grouped = products.reduce<Record<string, Product[]>>((acc, p) => {
+        const key = p.provider || "Sin Proveedor"
+        if (!acc[key]) acc[key] = []
+        acc[key].push(p)
+        return acc
+    }, {})
+
     return (
-        <div className="space-y-8 animate-in fade-in duration-500">
-            {/* Header */}
-            <div className="flex flex-col lg:flex-row lg:items-center gap-6 justify-between">
+        <div className="space-y-12 relative z-10 text-white">
+            {/* Ambient glows behind dashboard */}
+            <div className="absolute top-[-10%] left-[10%] w-[30rem] h-[30rem] bg-blue-500/5 blur-[120px] pointer-events-none rounded-full"></div>
+            <div className="absolute bottom-[-10%] right-[10%] w-[30rem] h-[30rem] bg-purple-500/5 blur-[120px] pointer-events-none rounded-full"></div>
+
+            {/* Tactical Header */}
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 border-b border-white/5 pb-10">
                 <div>
-                    <h2 className="text-2xl font-black text-white uppercase tracking-tight italic flex items-center gap-3">
-                        <DollarSign className="text-blue-400" size={28} />
-                        GESTIÓN DE LISTA DE PRECIOS
-                    </h2>
-                    <p className="text-slate-500 text-xs uppercase tracking-widest mt-1 italic">
-                        {total} artículos · {suppliers.length} proveedores activos
+                    <div className="flex items-center gap-3 text-blue-400 mb-3 drop-shadow-[0_0_8px_rgba(59,130,246,0.3)]">
+                        <BarChart2 size={16} className="animate-pulse stroke-[2.5px]" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.5em] italic">CONTROL PANEL PROTOCOL v6.5 // FINANCE</span>
+                    </div>
+                    <h1 className="text-5xl font-black uppercase tracking-tighter italic text-white leading-none">
+                        GESTIÓN DE <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400 drop-shadow-[0_0_15px_rgba(59,130,246,0.15)]">PRECIOS Y MÁRGENES</span>
+                    </h1>
+                    <p className="text-slate-500 text-[10px] uppercase tracking-[0.3em] mt-3 italic font-bold flex items-center gap-2">
+                        <Package size={12} />
+                        {total} Artículos en cuadrícula · <Store size={12} className="ml-2" /> {suppliers.length} Proveedores Sincronizados
                     </p>
                 </div>
-                <div className="flex gap-3 items-center">
-                    <button
-                        onClick={() => setViewMode(v => v === "grouped" ? "table" : "grouped")}
-                        className="flex items-center gap-2 px-4 py-2.5 bg-slate-900 border border-white/10 text-slate-400 hover:text-white hover:border-blue-500/40 transition-all text-xs font-bold uppercase tracking-wider"
-                    >
-                        {viewMode === "grouped" ? <ListIcon size={14} /> : <Grid size={14} />}
-                        {viewMode === "grouped" ? "Vista Tabla" : "Vista Proveedores"}
-                    </button>
+
+                {/* View Toggles & Update */}
+                <div className="flex flex-wrap items-center gap-4">
+                    <div className="flex bg-slate-950/80 border border-white/10 p-1.5 rounded-none skew-x-[-12deg] shadow-inner backdrop-blur-xl">
+                        <button
+                            onClick={() => setViewMode("grouped")}
+                            className={`skew-x-[12deg] px-6 py-3 text-[10px] font-black uppercase tracking-widest transition-all ${
+                                viewMode === "grouped"
+                                    ? "bg-blue-600 text-white shadow-[0_0_15px_rgba(59,130,246,0.4)]"
+                                    : "text-slate-500 hover:text-slate-300"
+                            }`}
+                        >
+                            <span className="flex items-center gap-2">
+                                <Grid size={13} className="stroke-[2.5px]" />
+                                Proveedores
+                            </span>
+                        </button>
+                        <button
+                            onClick={() => setViewMode("table")}
+                            className={`skew-x-[12deg] px-6 py-3 text-[10px] font-black uppercase tracking-widest transition-all ${
+                                viewMode === "table"
+                                    ? "bg-blue-600 text-white shadow-[0_0_15px_rgba(59,130,246,0.4)]"
+                                    : "text-slate-500 hover:text-slate-300"
+                            }`}
+                        >
+                            <span className="flex items-center gap-2">
+                                <ListIcon size={13} className="stroke-[2.5px]" />
+                                Listado Plano
+                            </span>
+                        </button>
+                    </div>
+
                     <button
                         onClick={loadData}
                         disabled={loading}
-                        className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white transition-all text-xs font-bold uppercase tracking-wider disabled:opacity-50"
+                        className="px-6 py-4 bg-slate-950 border border-white/10 text-white font-black text-[10px] uppercase tracking-[0.2em] hover:bg-blue-600 hover:border-blue-500 transition-all duration-300 shadow-xl disabled:opacity-50 flex items-center gap-3 skew-x-[-12deg] group"
                     >
-                        <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
-                        Actualizar
+                        <RefreshCw size={13} className={`skew-x-[12deg] stroke-[2.5px] ${loading ? "animate-spin" : "group-hover:rotate-180 transition-transform duration-700"}`} />
+                        <span className="skew-x-[12deg]">Actualizar Matrix</span>
                     </button>
                 </div>
             </div>
 
-            {/* Supplier Stats Bar */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-                {suppliers.slice(0, 5).map((s, i) => {
-                    const color = getSupplierColor(s.name)
+            {/* Supplier Glow Cards (Tactical Widgets) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {suppliers.slice(0, 4).map((s, i) => {
+                    const styles = getSupplierStyles(s.name)
+                    const isSelected = selectedSupplier === s.name
                     return (
-                        <motion.button
+                        <motion.div
                             key={s.name}
-                            initial={{ opacity: 0, y: 10 }}
+                            initial={{ opacity: 0, y: 15 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: i * 0.05 }}
+                            transition={{ delay: i * 0.08 }}
                             onClick={() => {
-                                setSelectedSupplier(selectedSupplier === s.name ? "" : s.name)
+                                setSelectedSupplier(isSelected ? "" : s.name)
                                 setPage(1)
                             }}
-                            className={`relative overflow-hidden p-4 border transition-all text-left group ${
-                                selectedSupplier === s.name
-                                    ? "border-blue-500/60 bg-blue-500/10"
-                                    : "border-white/5 bg-slate-900/60 hover:border-white/20"
+                            className={`cursor-pointer relative overflow-hidden bg-slate-950/60 border p-6 backdrop-blur-md group transition-all duration-300 ${
+                                isSelected
+                                    ? "border-blue-500 shadow-[0_0_25px_rgba(59,130,246,0.15)] bg-slate-950/90"
+                                    : "border-white/[0.06] hover:border-white/20 hover:bg-slate-950/80"
                             }`}
                         >
-                            <div className="absolute top-0 left-0 w-1 h-full" style={{ background: color }} />
-                            <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 italic truncate pl-2">{s.name}</p>
-                            <p className="text-2xl font-black text-white mt-1 pl-2">{s.count}</p>
-                            <p className="text-[10px] text-slate-600 pl-2">artículos</p>
-                            {s.avgPrice && (
-                                <p className="text-[10px] text-slate-500 pl-2 mt-1">
-                                    Avg: <span className="text-slate-300">${s.avgPrice.toFixed(2)}</span>
-                                </p>
-                            )}
-                        </motion.button>
+                            {/* Accent indicator line */}
+                            <div className="absolute top-0 left-0 w-full h-[3px] transition-all group-hover:h-[5px]" style={{ backgroundColor: styles.primary }} />
+                            
+                            {/* Radial Glow on Hover */}
+                            <div 
+                                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" 
+                                style={{ background: `radial-gradient(400px circle at 50% 50%, ${styles.glow}, transparent 60%)` }}
+                            />
+
+                            <div className="relative z-10">
+                                <div className="flex justify-between items-start mb-4">
+                                    <span className="text-[9px] font-black uppercase tracking-[0.2em] px-2.5 py-1 bg-slate-900 border border-white/5 text-slate-400 italic">
+                                        WIDGET_SEC_0{i+1}
+                                    </span>
+                                    <span className={`text-[10px] font-black uppercase tracking-wider ${styles.text} flex items-center gap-1.5`}>
+                                        <div className="w-1.5 h-1.5 rounded-full animate-ping" style={{ backgroundColor: styles.primary }} />
+                                        LIVE
+                                    </span>
+                                </div>
+                                
+                                <h3 className="text-base font-black uppercase tracking-wide truncate pr-4 text-white italic group-hover:text-blue-300 transition-colors">
+                                    {s.name}
+                                </h3>
+                                
+                                <div className="mt-4 flex items-end justify-between">
+                                    <div>
+                                        <span className="text-3xl font-black tracking-tighter italic text-white">
+                                            {s.count}
+                                        </span>
+                                        <span className="text-[9px] text-slate-500 uppercase tracking-widest font-black italic ml-2">UDS</span>
+                                    </div>
+                                    {s.avgPrice && (
+                                        <div className="text-right border-l border-white/5 pl-4">
+                                            <span className="text-[9px] font-black uppercase tracking-wider text-slate-600 block leading-none mb-1">PVP PROM</span>
+                                            <span className="text-xs font-black tracking-widest text-slate-200 block leading-none">
+                                                ${s.avgPrice.toFixed(2)}
+                                            </span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </motion.div>
                     )
                 })}
             </div>
 
-            {/* Filters */}
-            <div className="flex flex-col sm:flex-row gap-4 items-center bg-slate-950/60 border border-white/5 p-4">
+            {/* Integrated Tactical Filter Bar */}
+            <div className="bg-slate-950/40 border border-white/[0.06] backdrop-blur-xl p-6 flex flex-col md:flex-row gap-5 items-center relative overflow-hidden">
+                {/* Thin side light */}
+                <div className="absolute top-0 left-0 w-[2px] h-full bg-gradient-to-b from-blue-500 to-transparent"></div>
+                
                 {/* Search */}
-                <div className="relative flex-1 w-full">
-                    <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600" />
+                <div className="relative w-full flex-1 group">
+                    <Search size={18} className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-blue-400 transition-colors" />
                     <input
                         type="text"
-                        placeholder="Buscar artículo por nombre o SKU..."
+                        placeholder="BUSCAR ARTÍCULO POR NOMBRE O SKU TÁCTICO..."
                         value={searchQuery}
                         onChange={e => { setSearchQuery(e.target.value); setPage(1) }}
-                        className="w-full bg-slate-900 border border-white/5 pl-12 pr-4 py-3 text-sm text-white outline-none focus:border-blue-500/60 placeholder:text-slate-700 transition-all"
+                        className="w-full bg-slate-950 border border-white/10 pl-14 pr-5 py-4 text-xs font-black uppercase tracking-widest text-white outline-none focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/5 transition-all italic placeholder:text-slate-800"
                     />
                 </div>
-                {/* Supplier filter */}
-                <select
-                    value={selectedSupplier}
-                    onChange={e => { setSelectedSupplier(e.target.value); setPage(1) }}
-                    className="bg-slate-900 border border-white/5 px-4 py-3 text-sm text-white outline-none focus:border-blue-500/60 transition-all cursor-pointer min-w-[200px]"
-                >
-                    <option value="">Todos los proveedores</option>
-                    {suppliers.map(s => (
-                        <option key={s.name} value={s.name}>{s.name} ({s.count})</option>
-                    ))}
-                </select>
-                {/* Category filter */}
-                <select
-                    value={selectedCategory}
-                    onChange={e => { setSelectedCategory(e.target.value); setPage(1) }}
-                    className="bg-slate-900 border border-white/5 px-4 py-3 text-sm text-white outline-none focus:border-blue-500/60 transition-all cursor-pointer min-w-[180px]"
-                >
-                    <option value="">Todas las categorías</option>
-                    {categories.map(c => (
-                        <option key={c.id} value={c.id}>{c.name}</option>
-                    ))}
-                </select>
+
+                {/* Dropdowns */}
+                <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+                    <div className="relative">
+                        <select
+                            value={selectedSupplier}
+                            onChange={e => { setSelectedSupplier(e.target.value); setPage(1) }}
+                            className="w-full sm:w-56 bg-slate-950 border border-white/10 px-5 py-4 text-[10px] font-black uppercase tracking-[0.15em] text-white outline-none focus:border-blue-500/50 transition-all cursor-pointer italic appearance-none pr-10"
+                            style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 24 24\' stroke=\'%2364748b\' stroke-width=\'3\'%3E%3Cpath stroke-linecap=\'round\' stroke-linejoin=\'round\' d=\'M19 9l-7 7-7-7\'%3E%3C/path%3E%3C/svg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1.2rem center', backgroundSize: '0.8em' }}
+                        >
+                            <option value="">TODOS LOS PROVEEDORES</option>
+                            {suppliers.map(s => (
+                                <option key={s.name} value={s.name}>{s.name.toUpperCase()} ({s.count})</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className="relative">
+                        <select
+                            value={selectedCategory}
+                            onChange={e => { setSelectedCategory(e.target.value); setPage(1) }}
+                            className="w-full sm:w-56 bg-slate-950 border border-white/10 px-5 py-4 text-[10px] font-black uppercase tracking-[0.15em] text-white outline-none focus:border-blue-500/50 transition-all cursor-pointer italic appearance-none pr-10"
+                            style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 24 24\' stroke=\'%2364748b\' stroke-width=\'3\'%3E%3Cpath stroke-linecap=\'round\' stroke-linejoin=\'round\' d=\'M19 9l-7 7-7-7\'%3E%3C/path%3E%3C/svg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1.2rem center', backgroundSize: '0.8em' }}
+                        >
+                            <option value="">TODAS LAS CATEGORÍAS</option>
+                            {categories.map(c => (
+                                <option key={c.id} value={c.id}>{c.name.toUpperCase()}</option>
+                            ))}
+                        </select>
+                    </div>
+                </div>
             </div>
 
-            {/* Content */}
+            {/* Grid Content / Table */}
             {loading ? (
-                <div className="flex flex-col items-center justify-center py-32 gap-4 text-slate-600">
-                    <RefreshCw size={40} className="animate-spin opacity-40" />
-                    <p className="text-xs uppercase tracking-widest font-black italic">Cargando lista de precios...</p>
+                <div className="flex flex-col items-center justify-center py-40 border border-white/5 bg-slate-950/20 backdrop-blur-md rounded-none gap-6">
+                    <RefreshCw size={48} className="animate-spin text-blue-500 stroke-[2.5px] drop-shadow-[0_0_10px_rgba(59,130,246,0.4)]" />
+                    <p className="text-xs uppercase tracking-[0.4em] font-black text-slate-500 italic animate-pulse">Sincronizando registros con base de datos...</p>
                 </div>
             ) : viewMode === "grouped" ? (
-                /* GROUPED VIEW */
-                <div className="space-y-6">
+                /* GROUPED ACCORDION VIEW */
+                <div className="space-y-8">
                     {Object.entries(grouped).length === 0 ? (
-                        <div className="text-center py-32 text-slate-600">
-                            <Package size={48} className="mx-auto mb-4 opacity-20" />
-                            <p className="text-xs uppercase tracking-widest font-black italic">No se encontraron artículos</p>
+                        <div className="text-center py-40 border border-white/5 bg-slate-950/20 rounded-none">
+                            <Package size={64} className="mx-auto mb-6 opacity-10 stroke-[1.5px]" />
+                            <p className="text-xs uppercase tracking-[0.4em] font-black text-slate-600 italic">No se detectaron registros compatibles</p>
                         </div>
-                    ) : Object.entries(grouped).map(([supplierName, prods]) => {
-                        const color = getSupplierColor(supplierName)
+                    ) : Object.entries(grouped).map(([supplierName, prods], idx) => {
+                        const styles = getSupplierStyles(supplierName)
                         const isExpanded = expandedSuppliers.has(supplierName)
                         const stat = suppliers.find(s => s.name === supplierName)
+                        
                         const avgMargin = prods
                             .map(p => calcMargin(p.compareAtPrice, p.price))
                             .filter((m): m is number => m !== null)
@@ -382,36 +522,41 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                         return (
                             <motion.div
                                 key={supplierName}
-                                initial={{ opacity: 0, y: 10 }}
+                                initial={{ opacity: 0, y: 15 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className="border border-white/5 bg-slate-950/40 overflow-hidden"
+                                transition={{ duration: 0.4 }}
+                                className="border border-white/[0.06] bg-slate-950/30 backdrop-blur-md overflow-hidden relative group/accordion hover:border-white/10 transition-all duration-300"
                             >
-                                {/* Supplier Header */}
+                                {/* Signature supplier color indicator bar */}
+                                <div className="absolute top-0 left-0 w-full h-[2px]" style={{ backgroundColor: styles.primary }} />
+
+                                {/* Supplier Header Panel */}
                                 <div
-                                    className="flex items-center justify-between p-5 cursor-pointer hover:bg-white/[0.02] transition-all group"
+                                    className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-6 cursor-pointer hover:bg-white/[0.02] transition-all relative z-10 gap-5"
                                     onClick={() => toggleSupplier(supplierName)}
                                 >
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-1 h-10 rounded-full flex-shrink-0" style={{ background: color }} />
+                                    <div className="flex items-center gap-5">
+                                        <div className="w-2.5 h-12 rounded-none flex-shrink-0" style={{ backgroundColor: styles.primary }} />
                                         <div>
-                                            <h3 className="text-base font-black text-white uppercase tracking-wide">{supplierName}</h3>
-                                            <div className="flex items-center gap-4 mt-0.5">
-                                                <span className="text-xs text-slate-500 italic">{prods.length} artículos</span>
+                                            <h3 className="text-lg font-black text-white uppercase tracking-wider italic leading-none">{supplierName}</h3>
+                                            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-2">
+                                                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest italic">{prods.length} artículos catalogados</span>
                                                 {avgM !== null && (
-                                                    <span className="text-xs font-bold" style={{ color }}>
+                                                    <span className="text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5" style={{ color: styles.primary }}>
+                                                        <TrendingUp size={11} className="stroke-[2.5px]" />
                                                         Margen prom: {avgM.toFixed(1)}%
                                                     </span>
                                                 )}
                                                 {stat?.avgPrice && (
-                                                    <span className="text-xs text-slate-500">
-                                                        PVP prom: ${stat.avgPrice.toFixed(2)}
+                                                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest italic">
+                                                        PVP PROM: ${stat.avgPrice.toFixed(2)}
                                                     </span>
                                                 )}
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="flex items-center gap-3">
-                                        {/* Margin apply button (admin only) */}
+                                    
+                                    <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end border-t border-white/5 sm:border-none pt-4 sm:pt-0">
                                         {isAdmin && (
                                             <button
                                                 onClick={e => {
@@ -419,57 +564,73 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                                                     setMarginEditSupplier(marginEditSupplier === supplierName ? null : supplierName)
                                                     setMarginValue("")
                                                 }}
-                                                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-slate-400 hover:text-white bg-slate-900 border border-white/10 hover:border-blue-500/40 transition-all uppercase tracking-wider"
+                                                className="flex items-center gap-2 px-4 py-2 text-[9px] font-black uppercase tracking-[0.2em] text-white hover:text-white bg-slate-950 border border-white/10 hover:border-blue-500 hover:bg-blue-500/10 transition-all duration-300 italic rounded shadow-lg skew-x-[-8deg] group/btn"
                                             >
-                                                <Percent size={12} />
-                                                Aplicar Margen
+                                                <Percent size={12} className="stroke-[2.5px] text-blue-400 group-hover/btn:scale-110" />
+                                                <span className="skew-x-[8deg]">Definir Margen</span>
                                             </button>
                                         )}
-                                        <ChevronDown
-                                            size={18}
-                                            className={`text-slate-600 transition-transform duration-300 ${isExpanded ? "rotate-180" : ""}`}
-                                        />
+                                        <div className="p-2 bg-slate-900/80 border border-white/5 rounded">
+                                            <ChevronDown
+                                                size={16}
+                                                className={`text-slate-500 transition-transform duration-500 stroke-[3px] ${isExpanded ? "rotate-180 text-white" : ""}`}
+                                            />
+                                        </div>
                                     </div>
                                 </div>
 
-                                {/* Margin Apply Panel */}
+                                {/* Margin Apply Panel (Admin console styled) */}
                                 <AnimatePresence>
                                     {isAdmin && marginEditSupplier === supplierName && (
                                         <motion.div
                                             initial={{ height: 0, opacity: 0 }}
                                             animate={{ height: "auto", opacity: 1 }}
                                             exit={{ height: 0, opacity: 0 }}
-                                            className="overflow-hidden border-t border-white/5"
+                                            className="overflow-hidden border-t border-white/5 bg-blue-950/5 relative"
                                         >
-                                            <div className="flex items-center gap-4 px-6 py-4 bg-blue-500/5">
-                                                <AlertCircle size={16} className="text-blue-400 flex-shrink-0" />
-                                                <p className="text-xs text-slate-400">
-                                                    Aplica un margen de ganancia sobre el <strong className="text-white">precio de costo</strong> a todos los artículos de este proveedor que tengan costo registrado.
-                                                </p>
-                                                <div className="flex items-center gap-2 ml-auto flex-shrink-0">
-                                                    <div className="relative">
+                                            {/* Glow overlay */}
+                                            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-transparent pointer-events-none"></div>
+                                            
+                                            <div className="flex flex-col lg:flex-row items-start lg:items-center gap-6 px-8 py-5 relative z-10">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="p-2 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded">
+                                                        <Info size={16} className="stroke-[2.5px]" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-[10px] font-black text-white uppercase tracking-widest italic">Consola de Margen Inteligente</p>
+                                                        <p className="text-[9px] text-slate-500 uppercase tracking-wider mt-0.5">Recalcula dinámicamente PVP de todos los productos partiendo del costo.</p>
+                                                    </div>
+                                                </div>
+
+                                                <div className="flex flex-wrap items-center gap-4 w-full lg:w-auto lg:ml-auto">
+                                                    <div className="relative group/input">
                                                         <input
                                                             type="number"
                                                             step="0.1"
                                                             value={marginValue}
                                                             onChange={e => setMarginValue(e.target.value)}
-                                                            placeholder="% Margen"
-                                                            className="w-28 bg-slate-900 border border-white/10 px-3 py-2 text-sm text-white outline-none focus:border-blue-500 rounded-none"
+                                                            placeholder="EJ: 25"
+                                                            className="w-32 bg-slate-950 border border-white/10 px-4 py-3 text-xs font-black tracking-widest text-white outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/5 transition-all italic rounded"
                                                         />
-                                                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs">%</span>
+                                                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 text-xs font-black">%</span>
                                                     </div>
+
                                                     <button
                                                         onClick={() => handleApplyMargin(supplierName)}
                                                         disabled={applyingMargin || !marginValue}
-                                                        className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold uppercase tracking-wider transition-all disabled:opacity-50"
+                                                        className="px-6 py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-black text-[9px] uppercase tracking-[0.22em] transition-all duration-300 disabled:opacity-40 shadow-lg skew-x-[-12deg] group/apply"
                                                     >
-                                                        {applyingMargin ? "Aplicando..." : "Aplicar"}
+                                                        <span className="skew-x-[12deg] flex items-center gap-2">
+                                                            <Check size={12} className="stroke-[3px]" />
+                                                            {applyingMargin ? "COMPROMETIENDO..." : "APLICAR FACTOR"}
+                                                        </span>
                                                     </button>
+                                                    
                                                     <button
                                                         onClick={() => setMarginEditSupplier(null)}
-                                                        className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-400 text-xs transition-all"
+                                                        className="p-3 bg-slate-900 border border-white/10 hover:bg-slate-800 text-slate-500 hover:text-white transition-all rounded"
                                                     >
-                                                        <X size={14} />
+                                                        <X size={14} className="stroke-[2.5px]" />
                                                     </button>
                                                 </div>
                                             </div>
@@ -477,7 +638,7 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                                     )}
                                 </AnimatePresence>
 
-                                {/* Products Table */}
+                                {/* Products Table Container */}
                                 <AnimatePresence>
                                     {isExpanded && (
                                         <motion.div
@@ -486,21 +647,21 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                                             exit={{ height: 0, opacity: 0 }}
                                             className="overflow-hidden border-t border-white/5"
                                         >
-                                            <div className="overflow-x-auto">
-                                                <table className="w-full text-sm">
+                                            <div className="overflow-x-auto custom-scrollbar">
+                                                <table className="w-full text-left border-collapse">
                                                     <thead>
-                                                        <tr className="text-[10px] font-black uppercase tracking-widest text-slate-600 border-b border-white/5 bg-slate-950/60 italic">
-                                                            <th className="px-5 py-3 text-left">Artículo</th>
-                                                            <th className="px-5 py-3 text-left w-28">SKU</th>
-                                                            <th className="px-5 py-3 text-left w-28">Categoría</th>
-                                                            <th className="px-5 py-3 text-left w-36">Stock</th>
-                                                            {isAdmin && <th className="px-5 py-3 text-left w-40">Costo (Prov.)</th>}
-                                                            <th className="px-5 py-3 text-left w-40">PVP (Venta)</th>
-                                                            <th className="px-5 py-3 text-left w-28">Margen</th>
-                                                            <th className="px-5 py-3 text-left w-20">Estado</th>
+                                                        <tr className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-500 border-b border-white/5 bg-slate-950/80 italic">
+                                                            <th className="px-6 py-5">Identificador de Artículo</th>
+                                                            <th className="px-6 py-5 w-32">SKU</th>
+                                                            <th className="px-6 py-5 w-36">Segmento</th>
+                                                            <th className="px-6 py-5 w-28">Inventario</th>
+                                                            {isAdmin && <th className="px-6 py-5 w-44">Costo Suministro</th>}
+                                                            <th className="px-6 py-5 w-44">Precio PVP (Venta)</th>
+                                                            <th className="px-6 py-5 w-36">Margen (ROI)</th>
+                                                            <th className="px-6 py-5 w-24 text-center">Estado</th>
                                                         </tr>
                                                     </thead>
-                                                    <tbody className="divide-y divide-white/[0.03]">
+                                                    <tbody className="divide-y divide-white/[0.03] bg-slate-950/20">
                                                         {prods.map((p) => {
                                                             const margin = calcMargin(p.compareAtPrice, p.price)
                                                             const isSaving = savingIds.has(p.id)
@@ -510,66 +671,70 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                                                             return (
                                                                 <tr
                                                                     key={p.id}
-                                                                    className={`hover:bg-white/[0.02] transition-colors group ${
-                                                                        isSaving ? "opacity-60" : ""
+                                                                    className={`hover:bg-white/[0.02] transition-colors duration-300 group/row ${
+                                                                        isSaving ? "opacity-45" : ""
                                                                     } ${isSaved ? "bg-emerald-500/5" : ""}`}
                                                                 >
-                                                                    <td className="px-5 py-3">
-                                                                        <div className="flex items-center gap-3">
-                                                                            <div className="w-8 h-8 bg-slate-900 border border-white/5 flex-shrink-0 overflow-hidden">
+                                                                    <td className="px-6 py-4.5">
+                                                                        <div className="flex items-center gap-4">
+                                                                            {/* Futuristic small image box */}
+                                                                            <div className="w-10 h-10 bg-slate-950 border border-white/5 rounded overflow-hidden flex-shrink-0 flex items-center justify-center relative group-hover/row:border-blue-500/40 transition-all shadow-md">
+                                                                                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 to-transparent opacity-40"></div>
                                                                                 {img ? (
-                                                                                    <img src={img} alt="" className="w-full h-full object-cover" />
+                                                                                    <img src={img} alt="" className="w-full h-full object-cover group-hover/row:scale-110 transition-transform duration-700" />
                                                                                 ) : (
-                                                                                    <Package size={16} className="m-1 text-slate-700" />
+                                                                                    <Package size={16} className="text-slate-800" />
                                                                                 )}
                                                                             </div>
-                                                                            <span className="text-slate-200 font-medium text-xs line-clamp-2 max-w-[300px]">{p.name}</span>
+                                                                            <span className="text-slate-200 font-bold text-xs line-clamp-2 max-w-[280px] group-hover/row:text-white transition-colors uppercase tracking-tight">{p.name}</span>
                                                                         </div>
                                                                     </td>
-                                                                    <td className="px-5 py-3">
-                                                                        <span className="text-slate-500 text-xs font-mono">{p.sku || "—"}</span>
+                                                                    <td className="px-6 py-4.5">
+                                                                        <span className="text-slate-400 font-mono text-[10px] font-black uppercase tracking-wider bg-slate-950 px-2 py-1 border border-white/5 rounded shadow-sm">{p.sku || "N/A"}</span>
                                                                     </td>
-                                                                    <td className="px-5 py-3">
-                                                                        <span className="text-slate-500 text-xs">{p.category?.name || "—"}</span>
+                                                                    <td className="px-6 py-4.5">
+                                                                        <span className="text-slate-500 text-[10px] font-black uppercase tracking-widest italic">{p.category?.name || "SIN CAT"}</span>
                                                                     </td>
-                                                                    <td className="px-5 py-3">
-                                                                        <span className={`text-xs font-bold ${
-                                                                            p.stock > 10 ? "text-emerald-400" :
-                                                                            p.stock > 0 ? "text-yellow-400" :
-                                                                            "text-red-400"
-                                                                        }`}>
-                                                                            {p.stock > 0 ? `${p.stock} uds` : "Sin stock"}
-                                                                        </span>
+                                                                    <td className="px-6 py-4.5">
+                                                                        <div className="flex flex-col gap-0.5">
+                                                                            <span className={`text-xs font-black tracking-widest ${
+                                                                                p.stock > 10 ? "text-emerald-400" :
+                                                                                p.stock > 0 ? "text-amber-400" :
+                                                                                "text-rose-500"
+                                                                            }`}>
+                                                                                {p.stock > 0 ? `${p.stock} UDS` : "AGOTADO"}
+                                                                            </span>
+                                                                            <span className="text-[8px] font-bold text-slate-600 uppercase tracking-wider">STOCK_LIVE</span>
+                                                                        </div>
                                                                     </td>
                                                                     {isAdmin && (
-                                                                        <td className="px-5 py-3">
-                                                                            {isAdmin ? (
-                                                                                <InlineEdit
-                                                                                    value={p.compareAtPrice || 0}
-                                                                                    onSave={val => handlePriceUpdate(p.id, "compareAtPrice", val)}
-                                                                                />
-                                                                            ) : (
-                                                                                <span className="text-slate-500 text-xs">
-                                                                                    {p.compareAtPrice ? `$${p.compareAtPrice.toFixed(2)}` : "—"}
-                                                                                </span>
-                                                                            )}
+                                                                        <td className="px-6 py-4.5">
+                                                                            <InlineEdit
+                                                                                value={p.compareAtPrice || 0}
+                                                                                onSave={val => handlePriceUpdate(p.id, "compareAtPrice", val)}
+                                                                            />
                                                                         </td>
                                                                     )}
-                                                                    <td className="px-5 py-3">
-                                                                        {isAdmin ? (
-                                                                            <InlineEdit
-                                                                                value={p.price}
-                                                                                onSave={val => handlePriceUpdate(p.id, "price", val)}
-                                                                            />
-                                                                        ) : (
-                                                                            <span className="text-white font-bold">${p.price.toFixed(2)}</span>
-                                                                        )}
+                                                                    <td className="px-6 py-4.5">
+                                                                        <InlineEdit
+                                                                            value={p.price}
+                                                                            onSave={val => handlePriceUpdate(p.id, "price", val)}
+                                                                        />
                                                                     </td>
-                                                                    <td className="px-5 py-3">
+                                                                    <td className="px-6 py-4.5">
                                                                         <MarginBadge margin={margin} />
                                                                     </td>
-                                                                    <td className="px-5 py-3">
-                                                                        <div className={`w-2 h-2 rounded-full ${p.isActive ? "bg-emerald-500" : "bg-slate-600"}`} title={p.isActive ? "Activo" : "Inactivo"} />
+                                                                    <td className="px-6 py-4.5 text-center">
+                                                                        <div className="flex items-center justify-center">
+                                                                            <div 
+                                                                                className={`w-2 h-2 rounded-none skew-x-[-12deg] ${
+                                                                                    p.isActive 
+                                                                                        ? "bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.8)]" 
+                                                                                        : "bg-slate-700"
+                                                                                }`} 
+                                                                                title={p.isActive ? "Visible en tienda" : "Oculto"} 
+                                                                            />
+                                                                        </div>
                                                                     </td>
                                                                 </tr>
                                                             )
@@ -585,74 +750,85 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                     })}
                 </div>
             ) : (
-                /* TABLE VIEW - flat list */
-                <div className="border border-white/5 bg-slate-950/40 overflow-hidden">
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
+                /* HIGH FIDELITY TABLE VIEW - FLAT LIST */
+                <div className="border border-white/[0.06] bg-slate-950/40 backdrop-blur-md overflow-hidden relative">
+                    {/* Top cyan gradient light */}
+                    <div className="absolute top-0 left-0 w-full h-[1.5px] bg-gradient-to-r from-transparent via-blue-500 to-transparent"></div>
+                    
+                    <div className="overflow-x-auto custom-scrollbar">
+                        <table className="w-full text-left border-collapse">
                             <thead>
-                                <tr className="text-[10px] font-black uppercase tracking-widest text-slate-600 border-b border-white/5 bg-slate-950/60 italic">
-                                    <th className="px-5 py-4 text-left">Artículo</th>
-                                    <th className="px-5 py-4 text-left w-40">Proveedor</th>
-                                    <th className="px-5 py-4 text-left w-32">SKU</th>
-                                    <th className="px-5 py-4 text-left w-32">Categoría</th>
-                                    <th className="px-5 py-4 text-left w-24">Stock</th>
-                                    {isAdmin && <th className="px-5 py-4 text-left w-36">Costo</th>}
-                                    <th className="px-5 py-4 text-left w-36">PVP</th>
-                                    <th className="px-5 py-4 text-left w-28">Margen</th>
+                                <tr className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-500 border-b border-white/5 bg-slate-950/80 italic">
+                                    <th className="px-6 py-6">Identificador de Artículo</th>
+                                    <th className="px-6 py-6 w-44">Origen</th>
+                                    <th className="px-6 py-6 w-32">SKU</th>
+                                    <th className="px-6 py-6 w-36">Segmento</th>
+                                    <th className="px-6 py-6 w-24">Inventario</th>
+                                    {isAdmin && <th className="px-6 py-6 w-40">Costo</th>}
+                                    <th className="px-6 py-6 w-40">PVP (P. Venta)</th>
+                                    <th className="px-6 py-6 w-32">Margen (ROI)</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-white/[0.03]">
-                                {products.map(p => {
+                            <tbody className="divide-y divide-white/[0.03] bg-slate-950/20">
+                                {products.map((p) => {
                                     const margin = calcMargin(p.compareAtPrice, p.price)
                                     const isSaving = savingIds.has(p.id)
                                     const isSaved = savedIds.has(p.id)
                                     const img = safeParseImages(p.images)
-                                    const color = getSupplierColor(p.provider || "Sin Proveedor")
+                                    const styles = getSupplierStyles(p.provider || "Sin Proveedor")
 
                                     return (
                                         <tr
                                             key={p.id}
-                                            className={`hover:bg-white/[0.02] transition-colors ${isSaving ? "opacity-60" : ""} ${isSaved ? "bg-emerald-500/5" : ""}`}
+                                            className={`hover:bg-white/[0.02] transition-colors duration-300 group/flatrow ${isSaving ? "opacity-45" : ""} ${isSaved ? "bg-emerald-500/5" : ""}`}
                                         >
-                                            <td className="px-5 py-3">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="w-8 h-8 bg-slate-900 border border-white/5 flex-shrink-0 overflow-hidden">
-                                                        {img ? <img src={img} alt="" className="w-full h-full object-cover" /> : <Package size={14} className="m-1 text-slate-700" />}
+                                            <td className="px-6 py-4.5">
+                                                <div className="flex items-center gap-4">
+                                                    <div className="w-10 h-10 bg-slate-950 border border-white/5 rounded overflow-hidden flex-shrink-0 flex items-center justify-center relative group-hover/flatrow:border-blue-500/40 transition-all shadow-md">
+                                                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 to-transparent opacity-40"></div>
+                                                        {img ? <img src={img} alt="" className="w-full h-full object-cover group-hover/flatrow:scale-110 transition-transform duration-700" /> : <Package size={16} className="text-slate-800" />}
                                                     </div>
-                                                    <span className="text-slate-200 text-xs line-clamp-1 max-w-[280px]">{p.name}</span>
+                                                    <span className="text-slate-200 text-xs font-bold line-clamp-1 max-w-[280px] group-hover/flatrow:text-white transition-colors uppercase tracking-tight">{p.name}</span>
                                                 </div>
                                             </td>
-                                            <td className="px-5 py-3">
-                                                <span className="text-xs font-bold px-2 py-0.5 rounded" style={{ color, background: `${color}18` }}>
-                                                    {p.provider || "Sin Proveedor"}
+                                            <td className="px-6 py-4.5">
+                                                <span 
+                                                    className="text-[9px] font-black uppercase tracking-[0.2em] px-3 py-1.5 border rounded-none italic skew-x-[-12deg]"
+                                                    style={{ 
+                                                        color: styles.primary, 
+                                                        borderColor: `${styles.primary}20`, 
+                                                        backgroundColor: `${styles.primary}08` 
+                                                    }}
+                                                >
+                                                    <span className="skew-x-[12deg] inline-block">{p.provider || "Sin Proveedor"}</span>
                                                 </span>
                                             </td>
-                                            <td className="px-5 py-3">
-                                                <span className="text-slate-500 text-xs font-mono">{p.sku || "—"}</span>
+                                            <td className="px-6 py-4.5">
+                                                <span className="text-slate-400 font-mono text-[10px] font-black uppercase tracking-wider bg-slate-950 px-2 py-1 border border-white/5 rounded shadow-sm">{p.sku || "N/A"}</span>
                                             </td>
-                                            <td className="px-5 py-3">
-                                                <span className="text-slate-500 text-xs">{p.category?.name || "—"}</span>
+                                            <td className="px-6 py-4.5">
+                                                <span className="text-slate-500 text-[10px] font-black uppercase tracking-widest italic">{p.category?.name || "SIN CAT"}</span>
                                             </td>
-                                            <td className="px-5 py-3">
-                                                <span className={`text-xs font-bold ${p.stock > 10 ? "text-emerald-400" : p.stock > 0 ? "text-yellow-400" : "text-red-400"}`}>
-                                                    {p.stock > 0 ? `${p.stock}` : "0"}
+                                            <td className="px-6 py-4.5">
+                                                <span className={`text-xs font-black tracking-widest ${p.stock > 10 ? "text-emerald-400" : p.stock > 0 ? "text-amber-400" : "text-rose-500"}`}>
+                                                    {p.stock > 0 ? `${p.stock} UDS` : "0 UDS"}
                                                 </span>
                                             </td>
                                             {isAdmin && (
-                                                <td className="px-5 py-3">
+                                                <td className="px-6 py-4.5">
                                                     <InlineEdit
                                                         value={p.compareAtPrice || 0}
                                                         onSave={val => handlePriceUpdate(p.id, "compareAtPrice", val)}
                                                     />
                                                 </td>
                                             )}
-                                            <td className="px-5 py-3">
+                                            <td className="px-6 py-4.5">
                                                 <InlineEdit
                                                     value={p.price}
                                                     onSave={val => handlePriceUpdate(p.id, "price", val)}
                                                 />
                                             </td>
-                                            <td className="px-5 py-3">
+                                            <td className="px-6 py-4.5">
                                                 <MarginBadge margin={margin} />
                                             </td>
                                         </tr>
@@ -664,26 +840,26 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                 </div>
             )}
 
-            {/* Pagination */}
+            {/* Tactical Pagination Panel */}
             {totalPages > 1 && (
-                <div className="flex items-center justify-between pt-4 border-t border-white/5">
-                    <span className="text-xs text-slate-500 italic">
-                        Página {page} de {totalPages} · {total} artículos totales
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pt-8 border-t border-white/5 bg-slate-950/20 p-6 backdrop-blur-md">
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 italic">
+                        PÁGINA {page} DE {totalPages} · {total} ARTÍCULOS TOTALES EN PROTOCOLO
                     </span>
-                    <div className="flex gap-2">
+                    <div className="flex gap-4">
                         <button
                             onClick={() => setPage(p => Math.max(1, p - 1))}
                             disabled={page === 1}
-                            className="px-4 py-2 bg-slate-900 border border-white/10 text-slate-400 text-xs font-bold uppercase disabled:opacity-40 hover:text-white hover:border-white/20 transition-all"
+                            className="px-6 py-3 bg-slate-950 border border-white/10 hover:border-blue-500 text-slate-400 hover:text-white text-[10px] font-black uppercase tracking-[0.2em] disabled:opacity-25 disabled:pointer-events-none transition-all duration-300 skew-x-[-12deg]"
                         >
-                            Anterior
+                            <span className="skew-x-[12deg] block">ANTERIOR</span>
                         </button>
                         <button
                             onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                             disabled={page === totalPages}
-                            className="px-4 py-2 bg-slate-900 border border-white/10 text-slate-400 text-xs font-bold uppercase disabled:opacity-40 hover:text-white hover:border-white/20 transition-all"
+                            className="px-6 py-3 bg-slate-950 border border-white/10 hover:border-blue-500 text-slate-400 hover:text-white text-[10px] font-black uppercase tracking-[0.2em] disabled:opacity-25 disabled:pointer-events-none transition-all duration-300 skew-x-[-12deg]"
                         >
-                            Siguiente
+                            <span className="skew-x-[12deg] block">SIGUIENTE</span>
                         </button>
                     </div>
                 </div>
