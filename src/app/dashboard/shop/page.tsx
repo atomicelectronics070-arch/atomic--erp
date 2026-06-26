@@ -382,201 +382,201 @@ export default function ShopConfigPage() {
                                             <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-white italic">Saneamiento Maestro</h3>
                                         </div>
                                         <p className="text-[10px] font-bold uppercase italic text-slate-500 leading-relaxed mb-10">
-                                            Ejecuci+\ufffdn intensiva de eliminación de colisiones de datos y duplicidad de Elementos para optimizar el rendimiento.
+                                            Ejecución intensiva de eliminación de colisiones de datos y duplicidad de Elementos para optimizar el rendimiento.
                                         </p>
                                         <button 
-                                            onClick={async () => {
-                                                if(confirm("\u00bfEjecutar limpieza de duplicados exactos ahora?")) {
-                                                    setIsCleaning(true);
-                                                    try {
-                                                        await cleanupDuplicateProducts();
-                                                        await refreshData();
-                                                        alert("Cat\u00e1logo saneado correctamente.");
-                                                    } finally {
-                                                        setIsCleaning(false);
-                                                    }
-                                                }
-                                            }}
-                                            disabled={isCleaning}
-                                            className="w-full bg-secondary/10 text-secondary border border-secondary/30 py-5 text-[10px] font-black uppercase tracking-[0.3em] hover:bg-secondary hover:text-white transition-all shadow-2xl rounded-none disabled:opacity-50"
-                                        >
-                                            {isCleaning ? 'Saneando Arquitectura...' : 'Saneamiento de Cat\u00e1logo'}
-                                        </button>
+                                             onClick={async () => {
+                                                 if(confirm("¿Ejecutar limpieza de duplicados exactos ahora?")) {
+                                                     setIsCleaning(true);
+                                                     try {
+                                                         await cleanupDuplicateProducts();
+                                                         await refreshData();
+                                                         alert("Catálogo saneado correctamente.");
+                                                     } finally {
+                                                         setIsCleaning(false);
+                                                     }
+                                                 }
+                                             }}
+                                             disabled={isCleaning}
+                                             className="w-full bg-slate-50 border border-slate-200 py-5 text-[10px] font-black uppercase tracking-[0.3em] text-slate-800 hover:bg-slate-100 transition-all shadow-sm rounded-none disabled:opacity-50"
+                                         >
+                                             {isCleaning ? 'Saneando Arquitectura...' : 'Saneamiento de Catálogo'}
+                                         </button>
                                     </div>
                                 </div>
 
                                 {/* Main Content: Search & Table */}
                                 <div className="lg:col-span-3 space-y-12 relative z-10">
-                                    <div className="flex flex-col md:flex-row gap-8 items-center glass-panel !bg-slate-950/40 p-6 rounded-none-[3rem] border border-white/5 shadow-3xl backdrop-blur-3xl relative overflow-hidden group">
-                                        <div className="absolute top-0 left-0 w-1.5 h-full bg-secondary shadow-[0_0_15px_rgba(255,99,71,0.4)] transition-all group-focus-within:h-full"></div>
+                                    <div className="flex flex-col md:flex-row gap-6 items-center bg-white border border-slate-200 p-6 rounded-none-[2rem] shadow-sm relative overflow-hidden group">
+                                        <div className="absolute top-0 left-0 w-[3px] h-full bg-blue-600 transition-all"></div>
                                         <div className="flex-1 relative group w-full">
-                                            <Search className="absolute left-8 top-1/2 -translate-y-1/2 text-slate-700 group-focus-within:text-secondary transition-colors" size={20} />
+                                            <Search className="absolute left-8 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-600 transition-colors" size={20} />
                                             <input 
                                                 type="text"
-                                                placeholder="B\u00daSQUEDA T\u00c1CTICA POR SKU, NOMBRE O SEGMENTO_VECT..."
+                                                placeholder="BÚSQUEDA TÁCTICA POR SKU, NOMBRE O PROVEEDOR..."
                                                 value={dashboardSearch}
                                                 onChange={(e) => { setDashboardSearch(e.target.value); setCurrentPage(1); }}
-                                                className="w-full bg-slate-950 border border-white/5 pl-20 pr-10 py-6 text-[11px] font-black uppercase tracking-[0.2em] text-white outline-none focus:border-secondary focus:ring-8 focus:ring-secondary/5 transition-all rounded-none-[2rem] placeholder:text-slate-800 italic"
+                                                className="w-full bg-slate-50 border border-slate-200 pl-20 pr-10 py-5 text-[11px] font-black uppercase tracking-[0.2em] text-slate-800 outline-none focus:border-blue-600 focus:bg-white focus:ring-8 focus:ring-blue-500/5 transition-all rounded-none-[1.5rem] placeholder:text-slate-400 italic"
                                             />
                                         </div>
                                         <div className="flex-shrink-0">
                                             <select 
                                                 value={selectedProvider} 
                                                 onChange={(e) => { setSelectedProvider(e.target.value); setCurrentPage(1); }}
-                                                className="bg-slate-950 border border-white/5 px-6 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-white outline-none focus:border-secondary transition-all rounded-none-[2rem] appearance-none italic cursor-pointer pr-10"
-                                                style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 24 24\' stroke=\'%2364748b\'%3E%3Cpath stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M19 9l-7 7-7-7\'%3E%3C/path%3E%3C/svg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '1em' }}
+                                                className="bg-slate-50 border border-slate-200 px-6 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-800 outline-none focus:border-blue-600 focus:bg-white transition-all rounded-none-[1.5rem] appearance-none italic cursor-pointer pr-10"
+                                                style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 24 24\' stroke=\'%2364748b\' stroke-width=\'2.5\'%3E%3Cpath stroke-linecap=\'round\' stroke-linejoin=\'round\' d=\'M19 9l-7 7-7-7\'%3E%3C/path%3E%3C/svg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1.2rem center', backgroundSize: '0.8em' }}
                                             >
-                                                <option value="">TODOS LOS OR\u00cdGENES</option>
-                                                {providerStats.map(s => <option key={s.name} value={s.name}>{s.name} ({s.count})</option>)}
+                                                <option value="">TODOS LOS PROVEEDORES</option>
+                                                {providerStats.map(s => <option key={s.name} value={s.name}>{s.name.toUpperCase()} ({s.count})</option>)}
                                             </select>
                                         </div>
-                                        <div className="flex bg-slate-950 border border-white/5 p-2 rounded-none-[2rem] w-full md:w-fit whitespace-nowrap shadow-inner skew-x-[-12deg]">
+                                        <div className="flex bg-slate-100 border border-slate-200 p-1.5 rounded-none-[1.5rem] w-full md:w-fit whitespace-nowrap shadow-inner skew-x-[-12deg]">
                                             <button 
                                                 onClick={() => { setIsTrashView(false); setCurrentPage(1); }}
-                                                className={`skew-x-[12deg] px-10 py-4 text-[10px] font-black uppercase tracking-widest transition-all rounded-none-[1.5rem] ${!isTrashView ? 'bg-secondary text-white shadow-xl shadow-secondary/20' : 'text-slate-600 hover:text-slate-300'}`}
+                                                className={`skew-x-[12deg] px-8 py-3.5 text-[10px] font-black uppercase tracking-widest transition-all rounded-none-[1.2rem] ${!isTrashView ? 'bg-slate-900 text-white shadow-md' : 'text-slate-500 hover:text-slate-800'}`}
                                             >
                                                 Activo_OPS
                                             </button>
                                             <button 
                                                 onClick={() => { setIsTrashView(true); setCurrentPage(1); }}
-                                                className={`skew-x-[12deg] px-10 py-4 text-[10px] font-black uppercase tracking-widest transition-all rounded-none-[1.5rem] flex items-center gap-3 ${isTrashView ? 'bg-red-500 text-white shadow-xl shadow-red-500/20' : 'text-slate-600 hover:text-red-400'}`}
+                                                className={`skew-x-[12deg] px-8 py-3.5 text-[10px] font-black uppercase tracking-widest transition-all rounded-none-[1.2rem] flex items-center gap-2.5 ${isTrashView ? 'bg-red-600 text-white shadow-md' : 'text-slate-500 hover:text-red-600'}`}
                                             >
-                                                <Trash2 size={16} /> Papelera
+                                                <Trash2 size={13} /> Papelera
                                             </button>
                                         </div>
                                     </div>
 
-                                    <div className="glass-panel rounded-none-[3.5rem] border-white/5 shadow-3xl overflow-hidden backdrop-blur-3xl relative">
-                                        <div className="overflow-x-auto">
-                                            <table className="w-full text-left">
+                                    <div className="bg-white border border-slate-200 rounded-none-[2rem] shadow-sm overflow-hidden relative">
+                                        <div className="overflow-x-auto custom-scrollbar">
+                                            <table className="w-full text-left border-collapse">
                                                 <thead>
-                                                    <tr className="bg-white/[0.02] text-[10px] font-black uppercase tracking-[0.4em] text-slate-600 border-b border-white/5 italic">
-                                                        <th className="px-10 py-10 w-20">
-                                                            <button onClick={toggleAllProducts} className="text-slate-800 hover:text-secondary transition-colors">
-                                                                {selectedProducts.length === products.length && products.length > 0 ? <CheckSquare size={22} className="text-secondary shadow-[0_0_10px_rgba(255,99,71,0.5)]" /> : <Square size={22} />}
+                                                    <tr className="bg-slate-50/80 text-[9px] font-black uppercase tracking-[0.3em] text-slate-500 border-b border-slate-200/80 italic">
+                                                        <th className="px-10 py-8 w-20">
+                                                            <button onClick={toggleAllProducts} className="text-slate-400 hover:text-blue-600 transition-colors">
+                                                                {selectedProducts.length === products.length && products.length > 0 ? <CheckSquare size={22} className="text-blue-600 shadow-[0_0_10px_rgba(59,130,246,0.2)]" /> : <Square size={22} />}
                                                             </button>
                                                         </th>
-                                                        <th className="px-10 py-10">Entidad / Identificador</th>
-                                                        <th className="px-10 py-10">Origen</th>
-                                                        <th className="px-10 py-10">Stock Disponible</th>
-                                                        <th className="px-10 py-10">Finanzas (Costo/Margen/PVP)</th>
-                                                        <th className="px-10 py-10 text-right pr-16">Acciones_CMD</th>
+                                                        <th className="px-10 py-8">Entidad / Identificador</th>
+                                                        <th className="px-10 py-8">Origen</th>
+                                                        <th className="px-10 py-8">Stock Disponible</th>
+                                                        <th className="px-10 py-8">Finanzas (Costo/Margen/PVP)</th>
+                                                        <th className="px-10 py-8 text-right pr-16">Acciones_CMD</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody className="divide-y divide-white/5">
+                                                <tbody className="divide-y divide-slate-100 bg-white">
                                                     {products.length === 0 ? (
                                                         <tr>
                                                             <td colSpan={6} className="py-48 text-center">
-                                                                <div className="flex flex-col items-center space-y-8 opacity-20 group">
-                                                                    <div className="p-8 bg-white/5 rounded-none group-hover:scale-110 transition-transform duration-700">
-                                                                        <ShoppingBag size={80} className="text-slate-500" />
+                                                                <div className="flex flex-col items-center space-y-6 opacity-20 group">
+                                                                    <div className="p-6 bg-slate-100 rounded-none group-hover:scale-110 transition-transform duration-700">
+                                                                        <ShoppingBag size={64} className="text-slate-400" />
                                                                     </div>
-                                                                    <p className="uppercase text-xs font-black tracking-[0.6em] text-slate-500 italic">C\u00e1mara de Inventario Vac\u00eda</p>
+                                                                    <p className="uppercase text-xs font-black tracking-[0.4em] text-slate-400 italic">Cámara de Inventario Vacía</p>
                                                                 </div>
                                                             </td>
                                                         </tr>
                                                     ) : (
                                                         products.map((p) => (
-                                                            <tr key={p.id} className={`hover:bg-white/[0.04] transition-all group ${selectedProducts.includes(p.id) ? 'bg-secondary/5' : ''}`}>
-                                                                <td className="px-10 py-8">
+                                                            <tr key={p.id} className={`hover:bg-slate-50/50 border-b border-slate-100 transition-colors group ${selectedProducts.includes(p.id) ? 'bg-blue-50/5' : ''}`}>
+                                                                <td className="px-10 py-6">
                                                                     <button 
                                                                         onClick={() => toggleProductSelection(p.id)} 
-                                                                        className={`transition-all duration-300 ${selectedProducts.includes(p.id) ? 'text-secondary scale-110 drop-shadow-[0_0_8px_rgba(255,99,71,0.4)]' : 'text-slate-800 hover:text-slate-600'}`}
+                                                                        className={`transition-all duration-300 ${selectedProducts.includes(p.id) ? 'text-blue-600 scale-110 drop-shadow-[0_0_8px_rgba(59,130,246,0.3)]' : 'text-slate-300 hover:text-slate-500'}`}
                                                                     >
                                                                         {selectedProducts.includes(p.id) ? <CheckSquare size={22} /> : <Square size={22} />}
                                                                     </button>
                                                                 </td>
-                                                                <td className="px-10 py-8">
+                                                                <td className="px-10 py-6">
                                                                     <div className="flex items-center space-x-6">
-                                                                        <div className="w-20 h-20 bg-slate-950 border border-white/5 rounded-none overflow-hidden flex items-center justify-center relative group-hover:border-secondary/30 transition-all shadow-2xl">
-                                                                            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 to-transparent opacity-40"></div>
+                                                                        <div className="w-14 h-14 bg-slate-100 border border-slate-200/60 rounded-lg overflow-hidden flex items-center justify-center relative group-hover:border-blue-500/40 transition-all shadow-sm">
                                                                             {p.images && p.images !== 'null' && safeParseArray(p.images).length > 0 ? (
                                                                                 <img src={safeParseArray(p.images)[0]} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
                                                                             ) : (
-                                                                                <ImageIcon size={28} className="text-slate-800" />
+                                                                                <ImageIcon size={20} className="text-slate-400" />
                                                                             )}
                                                                         </div>
                                                                         <div className="max-w-md">
-                                                                            <p className="text-[14px] font-black text-white line-clamp-1 group-hover:text-secondary transition-colors italic uppercase tracking-tighter mb-1">{p.name}</p>
+                                                                            <p className="text-[13px] font-black text-slate-800 line-clamp-1 group-hover:text-blue-600 transition-colors italic uppercase tracking-tight mb-1">{p.name}</p>
                                                                             <div className="flex items-center gap-4">
-                                                                                <span className="text-[9px] text-slate-500 font-black uppercase tracking-[0.3em]">{p.sku || 'N/A \u2014 PROTOCOL_ID'}</span>
-                                                                                {p.featured && <span className="bg-yellow-500/10 text-yellow-500 text-[8px] font-black uppercase tracking-[0.4em] px-3 py-1 rounded-none border border-yellow-500/20 shadow-[0_0_10px_rgba(234,179,8,0.2)]">DESTACADO</span>}
+                                                                                <span className="text-[9px] text-slate-400 font-mono font-black uppercase tracking-wider">{p.sku || 'N/A'}</span>
+                                                                                {p.featured && <span className="bg-yellow-500/10 text-yellow-600 text-[8px] font-black uppercase tracking-[0.4em] px-2 py-0.5 border border-yellow-500/20 shadow-[0_0_8px_rgba(234,179,8,0.1)]">DESTACADO</span>}
                                                                             </div>
                                                                         </div>
                                                                     </div>
                                                                 </td>
-                                                                <td className="px-10 py-8">
-                                                                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white bg-slate-950 px-5 py-2.5 rounded-none-[1.2rem] border border-white/10 shadow-3xl italic group-hover:border-primary/30 transition-all">
-                                                                        {p.provider || 'N/A'}
+                                                                <td className="px-10 py-6">
+                                                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-700 bg-slate-100 px-4 py-2 border border-slate-200/60 rounded-none italic skew-x-[-12deg] group-hover:border-blue-500/30 transition-all">
+                                                                        <span className="skew-x-[12deg] inline-block">{p.provider || 'SIN PROVEEDOR'}</span>
                                                                     </span>
                                                                 </td>
-                                                                <td className="px-10 py-8">
+                                                                <td className="px-10 py-6">
                                                                     <div className="flex items-center gap-4">
-                                                                        <div className={`w-2.5 h-2.5 rounded-none ${p.stock < 10 ? 'bg-red-500 animate-pulse shadow-[0_0_12px_rgba(239,68,68,0.8)]' : (p.stock < 50 ? 'bg-yellow-500 shadow-[0_0_10px_rgba(234,179,8,0.6)]' : 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.6)]')}`}></div>
+                                                                        <div className={`w-2 h-2 rounded-none ${p.stock < 10 ? 'bg-red-500 animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.6)]' : (p.stock < 50 ? 'bg-yellow-500 shadow-[0_0_10px_rgba(234,179,8,0.4)]' : 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.4)]')}`}></div>
                                                                         <div>
-                                                                            <p className="text-sm font-black text-white italic tracking-tighter">{p.stock} <span className="text-[9px] text-slate-600 ml-1 uppercase">Uds</span></p>
-                                                                            <p className="text-[8px] font-bold text-slate-500 uppercase tracking-widest mt-1">Disp. Inmediata</p>
+                                                                            <p className="text-sm font-black text-slate-800 italic tracking-tighter">{p.stock} <span className="text-[9px] text-slate-400 ml-1 uppercase">Uds</span></p>
+                                                                            <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-1">Disp. Inmediata</p>
                                                                         </div>
                                                                     </div>
                                                                 </td>
-                                                                <td className="px-10 py-8">
-                                                                    <div className="flex flex-col gap-1 w-48">
+                                                                <td className="px-10 py-6">
+                                                                    <div className="flex flex-col gap-1 w-48 font-mono">
                                                                         {(() => {
                                                                             const price = parseFloat(p.price) || 0;
-                                                                            const cost = price / 1.15;
+                                                                            const cost = p.compareAtPrice || (price / 1.20);
                                                                             const margin = price - cost;
+                                                                            const marginPercent = cost > 0 ? (margin / cost) * 100 : 0;
                                                                             return (
                                                                                 <>
                                                                                     <div className="flex items-center justify-between gap-4 text-[9px] font-black uppercase tracking-widest text-slate-500">
-                                                                                        <span>Costo:</span> <span className="text-slate-300 italic">${cost.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</span>
+                                                                                        <span>Costo:</span> <span className="text-slate-600 font-bold">${cost.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</span>
                                                                                     </div>
-                                                                                    <div className="flex items-center justify-between gap-4 text-[9px] font-black uppercase tracking-widest text-emerald-500">
-                                                                                        <span>Margen (+15%):</span> <span className="italic">+${margin.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</span>
+                                                                                    <div className="flex items-center justify-between gap-4 text-[9px] font-black uppercase tracking-widest text-emerald-600">
+                                                                                        <span>Margen ({marginPercent.toFixed(0)}%):</span> <span className="font-bold">+${margin.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</span>
                                                                                     </div>
-                                                                                    <div className="flex items-center justify-between gap-4 text-[11px] font-black uppercase tracking-widest text-secondary mt-1 pt-1 border-t border-white/5">
-                                                                                        <span>PVP:</span> <span className="italic">${price.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</span>
+                                                                                    <div className="flex items-center justify-between gap-4 text-[11px] font-black uppercase tracking-widest text-blue-600 mt-1 pt-1 border-t border-slate-200">
+                                                                                        <span>PVP:</span> <span className="font-bold">${price.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</span>
                                                                                     </div>
                                                                                 </>
                                                                             )
                                                                         })()}
                                                                     </div>
                                                                 </td>
-                                                                <td className="px-10 py-8 text-right pr-16">
-                                                                    <div className="flex items-center justify-end gap-5">
+                                                                <td className="px-10 py-6 text-right pr-16">
+                                                                    <div className="flex items-center justify-end gap-3">
                                                                         {isTrashView ? (
                                                                             <button 
                                                                                 onClick={() => handleRestore(p.id)}
-                                                                                className="px-8 py-4 bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 hover:bg-emerald-500 hover:text-white transition-all text-[10px] font-black uppercase tracking-[0.3em] rounded-none shadow-2xl active:scale-95 italic skew-x-[-12deg]"
+                                                                                className="px-6 py-3 bg-emerald-50 hover:bg-emerald-600 text-white border border-emerald-600 hover:border-emerald-500 transition-all text-[9px] font-black uppercase tracking-[0.25em] rounded shadow-sm active:scale-95 italic skew-x-[-12deg]"
                                                                             >
-                                                                                <span className="skew-x-[12deg] block">Restaurar_Vect</span>
+                                                                                <span className="skew-x-[12deg] block">Restaurar</span>
                                                                             </button>
                                                                         ) : (
                                                                             <>
-                                                                <button 
+                                                                                <button 
                                                                                     onClick={() => { setEditingProduct(p); setView('edit'); }}
-                                                                                    className="p-4 bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all rounded-none border border-white/5 shadow-2xl active:scale-90 group/btn"
+                                                                                    className="p-3 bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-slate-800 transition-all rounded border border-slate-200/60 shadow-sm active:scale-90 group/btn"
                                                                                 >
-                                                                                    <Edit size={18} className="group-hover/btn:rotate-12 transition-transform" />
+                                                                                    <Edit size={16} className="group-hover/btn:rotate-12 transition-transform" />
                                                                                 </button>
                                                                                 <button
                                                                                     onClick={async () => {
                                                                                         await toggleProductFeatured(p.id, !p.featured)
                                                                                         refreshData()
                                                                                     }}
-                                                                                    className={`p-4 transition-all rounded-none border shadow-2xl active:scale-90 ${
+                                                                                    className={`p-3 transition-all rounded border shadow-sm active:scale-90 ${
                                                                                         p.featured 
-                                                                                            ? 'bg-yellow-500/20 border-yellow-500/30 text-yellow-400 hover:bg-yellow-500 hover:text-white'
-                                                                                            : 'bg-white/5 border-white/5 text-slate-700 hover:bg-yellow-500/10 hover:text-yellow-500'
+                                                                                            ? 'bg-yellow-50 border-yellow-200 text-yellow-600 hover:bg-yellow-100'
+                                                                                            : 'bg-slate-50 border-slate-200/60 text-slate-400 hover:bg-yellow-50 hover:text-yellow-500'
                                                                                     }`}
                                                                                     title={p.featured ? 'Quitar de destacados' : 'Marcar como destacado'}
                                                                                 >
-                                                                                    <Star size={18} />
+                                                                                    <Star size={16} />
                                                                                 </button>
                                                                                 <button 
                                                                                     onClick={() => handleDelete(p.id)}
-                                                                                    className="p-4 bg-red-500/5 hover:bg-red-500 text-red-500 hover:text-white transition-all rounded-none border border-red-500/20 shadow-2xl active:scale-90 group/del"
+                                                                                    className="p-3 bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white transition-all rounded border border-rose-200/60 shadow-sm active:scale-90 group/del"
                                                                                 >
-                                                                                    <Trash2 size={18} className="group-hover/del:scale-110 transition-transform" />
+                                                                                    <Trash2 size={16} className="group-hover/del:scale-110 transition-transform" />
                                                                                 </button>
                                                                             </>
                                                                         )}
@@ -590,22 +590,22 @@ export default function ShopConfigPage() {
                                         </div>
 
                                         {/* Futuristic Pagination */}
-                                        <div className="px-12 py-10 border-t border-white/5 flex flex-col md:flex-row items-center justify-between bg-black/20 gap-8 backdrop-blur-2xl">
-                                            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-600 italic">SEGMENTO {currentPage} <span className="text-slate-800 mx-2">/</span> {Math.ceil(totalProducts / pageSize) || 1} <span className="text-secondary mx-4">|</span> TOTAL {totalProducts} DESPLIEGUES</p>
-                                            <div className="flex items-center space-x-6">
+                                        <div className="px-12 py-8 border-t border-slate-200 flex flex-col md:flex-row items-center justify-between bg-slate-50/50 gap-6">
+                                            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 italic">PÁGINA {currentPage} <span className="text-slate-300 mx-2">/</span> {Math.ceil(totalProducts / pageSize) || 1} <span className="text-blue-500 mx-4">|</span> TOTAL {totalProducts} DESPLIEGUES</p>
+                                            <div className="flex items-center space-x-4">
                                                 <button 
                                                     disabled={currentPage <= 1}
                                                     onClick={() => setCurrentPage(prev => prev - 1)}
-                                                    className="px-12 py-5 glass-panel border-white/5 text-slate-500 hover:text-white hover:bg-white/5 disabled:opacity-5 transition-all font-black uppercase tracking-[0.4em] text-[10px] rounded-none active:scale-95 shadow-2xl skew-x-[-12deg]"
+                                                    className="px-8 py-3 bg-white border border-slate-200 text-slate-500 hover:text-slate-800 disabled:opacity-30 transition-all font-black uppercase tracking-[0.3em] text-[9px] rounded active:scale-95 shadow-sm skew-x-[-12deg]"
                                                 >
-                                                    <span className="skew-x-[12deg] block">Retorno_Vect</span>
+                                                    <span className="skew-x-[12deg] block">Retorno</span>
                                                 </button>
                                                 <button 
                                                     disabled={currentPage >= Math.ceil(totalProducts / pageSize)}
                                                     onClick={() => setCurrentPage(prev => prev + 1)}
-                                                    className="px-12 py-5 bg-white/5 border border-white/10 text-slate-300 hover:text-secondary hover:border-secondary/30 disabled:opacity-5 transition-all font-black uppercase tracking-[0.4em] text-[10px] rounded-none active:scale-95 shadow-2xl skew-x-[-12deg]"
+                                                    className="px-8 py-3 bg-white border border-slate-200 text-slate-500 hover:text-slate-800 disabled:opacity-30 transition-all font-black uppercase tracking-[0.3em] text-[9px] rounded active:scale-95 shadow-sm skew-x-[-12deg]"
                                                 >
-                                                    <span className="skew-x-[12deg] block">Avance_Vect</span>
+                                                    <span className="skew-x-[12deg] block">Avance</span>
                                                 </button>
                                             </div>
                                         </div>
@@ -625,7 +625,7 @@ export default function ShopConfigPage() {
                                                             onClick={() => setShowBulkEdit(true)}
                                                             className="flex items-center space-x-4 bg-white/5 text-white hover:bg-white/10 px-10 py-5 text-[10px] font-black uppercase tracking-[0.3em] transition-all rounded-none border border-white/5 skew-x-[-12deg]"
                                                         >
-                                                            <div className="skew-x-[12deg] flex items-center gap-4"><Edit size={16} className="text-secondary" /> <span>Edici\u00f3n T\u00e1ctica</span></div>
+                                                            <div className="skew-x-[12deg] flex items-center gap-4"><Edit size={16} className="text-secondary" /> <span>Edición Táctica</span></div>
                                                         </button>
                                                         <button 
                                                             onClick={handleBulkDeleteProducts}
@@ -646,7 +646,7 @@ export default function ShopConfigPage() {
                                                             onClick={handleBulkPermanentDelete}
                                                             className="flex items-center space-x-4 bg-red-600/10 text-red-500 hover:bg-red-600 hover:text-white px-10 py-5 text-[10px] font-black uppercase tracking-[0.3em] transition-all rounded-none border border-red-500/20 skew-x-[-12deg]"
                                                         >
-                                                            <div className="skew-x-[12deg] flex items-center gap-4"><Trash2 size={16} /> <span>Eliminaci\u00f3n Terminal</span></div>
+                                                            <div className="skew-x-[12deg] flex items-center gap-4"><Trash2 size={16} /> <span>Eliminación Terminal</span></div>
                                                         </button>
                                                     </>
                                                 )}
@@ -798,14 +798,14 @@ export default function ShopConfigPage() {
                                     </div>
                                     <div>
                                         <h3 className="text-lg font-black uppercase tracking-[0.3em] text-white italic">Arquitectura Hero Visual</h3>
-                                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.4em] mt-1">Configuración técnica de narrativa visual en el frontend p+\ufffdblico</p>
+                                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.4em] mt-1">Configuración técnica de narrativa visual en el frontend público</p>
                                     </div>
                                 </div>
 
                                 <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
                                     <BannerConfigPanel
                                         bannerKey="software"
-                                        label="Divisi+\ufffdn Software"
+                                        label="División Software"
                                         icon={<Monitor size={20} className="text-secondary" />}
                                         accentColor="secondary"
                                         data={storeSettings.banners?.software || {}}
@@ -814,7 +814,7 @@ export default function ShopConfigPage() {
                                     />
                                     <BannerConfigPanel
                                         bannerKey="automation"
-                                        label="Divisi+\ufffdn Industria"
+                                        label="División Industria"
                                         icon={<Cpu size={20} className="text-primary" />}
                                         accentColor="primary"
                                         data={storeSettings.banners?.automation || {}}
@@ -823,7 +823,7 @@ export default function ShopConfigPage() {
                                     />
                                     <BannerConfigPanel
                                         bannerKey="gaming"
-                                        label="Divisi+\ufffdn Consumo"
+                                        label="División Consumo"
                                         icon={<Gamepad2 size={20} className="text-purple-500" />}
                                         accentColor="purple"
                                         data={storeSettings.banners?.gaming || {}}
@@ -833,15 +833,15 @@ export default function ShopConfigPage() {
                                 </div>
                             </div>
 
-                            {/* \ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd
-                                SECCIÓN: LOG+\ufffdSTICA Y NOTIFICACI+\ufffdN
-                            \ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd */}
+                            {/* ==============================================
+                                SECCIÓN: LOGÍSTICA Y NOTIFICACIÓN
+                                ============================================== */}
                             <div className="grid grid-cols-1 xl:grid-cols-2 gap-10">
                                 <div className="glass-panel p-10 rounded-none-[3rem] border-white/5 space-y-10 relative overflow-hidden">
                                     <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/5 blur-3xl -mr-16 -mt-16 rounded-none"></div>
                                     <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-white italic flex items-center gap-4">
                                         <Box size={20} className="text-secondary" /> 
-                                        Par+\ufffdmetros de Transacci+\ufffdn
+                                        Parámetros de Transacción
                                     </h3>
                                     
                                     <div className="space-y-4">
@@ -851,7 +851,7 @@ export default function ShopConfigPage() {
                                             onChange={(e) => setStoreSettings({ ...storeSettings, currency: e.target.value })}
                                             className="w-full bg-slate-900 border border-white/5 px-8 py-5 text-xs font-black uppercase tracking-widest text-white outline-none rounded-none focus:border-secondary transition-all appearance-none"
                                         >
-                                            <option value="USD">D+\ufffdlares Americanos (USD)</option>
+                                            <option value="USD">Dólares Americanos (USD)</option>
                                             <option value="COP">Pesos Colombianos (COP)</option>
                                             <option value="MXN">Pesos Mexicanos (MXN)</option>
                                             <option value="EUR">Euros (EUR)</option>
@@ -860,14 +860,14 @@ export default function ShopConfigPage() {
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                         <div className="space-y-4">
-                                            <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.3em] ml-2 text-wrap">Costo de Env+\ufffdo Base</label>
+                                            <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.3em] ml-2 text-wrap">Costo de Envío Base</label>
                                             <div className="relative">
                                                 <div className="absolute left-6 top-1/2 -translate-y-1/2 text-secondary font-black">$</div>
                                                 <input type="number" value={storeSettings.shippingCost} onChange={(e) => setStoreSettings({ ...storeSettings, shippingCost: Number(e.target.value) })} className="w-full bg-slate-900 border border-white/5 pl-12 pr-8 py-5 text-sm font-black text-white outline-none rounded-none focus:border-secondary transition-all" />
                                             </div>
                                         </div>
                                         <div className="space-y-4">
-                                            <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.3em] ml-2 text-wrap">Umbral Popular (Env+\ufffdo Gratis)</label>
+                                            <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.3em] ml-2 text-wrap">Umbral Popular (Envío Gratis)</label>
                                             <div className="relative">
                                                 <div className="absolute left-6 top-1/2 -translate-y-1/2 text-primary font-black">$</div>
                                                 <input type="number" value={storeSettings.freeShippingThreshold} onChange={(e) => setStoreSettings({ ...storeSettings, freeShippingThreshold: Number(e.target.value) })} className="w-full bg-slate-900 border border-white/5 pl-12 pr-8 py-5 text-sm font-black text-white outline-none rounded-none focus:border-primary transition-all" />
@@ -881,32 +881,32 @@ export default function ShopConfigPage() {
                                     <div className="flex justify-between items-center border-b border-white/5 pb-8">
                                         <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-white italic flex items-center gap-4">
                                             <Star size={20} className="text-yellow-500 shadow-[0_0_10px_rgba(234,179,8,0.4)]" /> 
-                                            Difusi+\ufffdn de Alertas Hero
+                                            Difusión de Alertas Hero
                                         </h3>
                                         <Toggle label="Activo" icon="" checked={storeSettings.bannerActive} onChange={(v) => setStoreSettings({ ...storeSettings, bannerActive: v })} />
                                     </div>
                                     <div className="space-y-4">
-                                        <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.3em] ml-2">Gestión de Mensajer+\ufffda Superior</label>
+                                        <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.3em] ml-2">Gestión de Mensajería Superior</label>
                                         <textarea 
                                             rows={4} 
                                             disabled={!storeSettings.bannerActive} 
                                             value={storeSettings.bannerText} 
                                             onChange={(e) => setStoreSettings({ ...storeSettings, bannerText: e.target.value })} 
                                             className="w-full bg-slate-900 border border-white/5 px-8 py-6 text-xs font-bold text-white outline-none resize-none rounded-none-[2rem] focus:border-yellow-500 transition-all disabled:opacity-20 placeholder:text-slate-800 italic" 
-                                            placeholder="Ej: DISPONIBILIDAD T+\ufffdCTICA PARA ENV+\ufffdOS NACIONALES \ufffd\ufffd\ufffd ATOMIC DELIVERY PROTOCOL" 
+                                            placeholder="Ej: DISPONIBILIDAD TÁCTICA PARA ENVÍOS NACIONALES /// ATOMIC DELIVERY PROTOCOL" 
                                         />
                                     </div>
                                 </div>
                             </div>
 
-                            {/* \ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd
+                            {/* ==============================================
                                 SECCIÓN: MANTENIMIENTO TÉCNICO
-                            \ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd */}
+                                ============================================== */}
                             <div className="glass-panel p-10 rounded-none-[4rem] border-white/5 relative overflow-hidden">
                                 <div className="absolute top-0 left-0 w-64 h-64 bg-red-500/5 blur-[100px] -ml-32 -mt-32 rounded-none"></div>
                                 <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-white italic flex items-center gap-4 border-b border-white/5 pb-8 mb-12">
                                     <ShieldAlert size={20} className="text-red-500" /> 
-                                    Zona de Mantenimiento Cr+\ufffdtico
+                                    Zona de Mantenimiento Crítico
                                 </h3>
                                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-16">
                                     <div className="space-y-8">
@@ -918,7 +918,7 @@ export default function ShopConfigPage() {
                                             </div>
                                         </div>
                                         <button 
-                                            onClick={async () => { if(confirm("-+Seguro que quieres ejecutar la poda de duplicados?")) { setIsCleaning(true); try { await cleanupDuplicateProducts(); await refreshData(); alert("Catálogo saneado."); } finally { setIsCleaning(false); } } }} 
+                                            onClick={async () => { if(confirm("¿Seguro que quieres ejecutar la poda de duplicados?")) { setIsCleaning(true); try { await cleanupDuplicateProducts(); await refreshData(); alert("Catálogo saneado."); } finally { setIsCleaning(false); } } }} 
                                             disabled={isCleaning} 
                                             className="w-full bg-red-600/10 text-red-500 border border-red-500/30 px-10 py-6 text-[10px] font-black uppercase tracking-[0.3em] hover:bg-red-600 hover:text-white transition-all shadow-2xl shadow-red-600/10 rounded-none active:scale-95 disabled:opacity-20"
                                         >
@@ -929,8 +929,8 @@ export default function ShopConfigPage() {
                                         <div className="flex items-center space-x-4 text-primary">
                                             <ShoppingBag size={24} />
                                             <div>
-                                                <span className="text-[11px] uppercase font-black tracking-[0.2em] block">Anal+\ufffdtica de Origen</span>
-                                                <span className="text-[9px] text-slate-500 font-bold uppercase tracking-widest italic leading-relaxed mt-1 block">Distribuci+\ufffdn cuantitativa por Etiqueta de suministro.</span>
+                                                <span className="text-[11px] uppercase font-black tracking-[0.2em] block">Analítica de Origen</span>
+                                                <span className="text-[9px] text-slate-500 font-bold uppercase tracking-widest italic leading-relaxed mt-1 block">Distribución cuantitativa por Etiqueta de suministro.</span>
                                             </div>
                                         </div>
                                         <div className="bg-slate-950/60 rounded-none-[2rem] border border-white/5 overflow-hidden divide-y divide-white/5 max-h-56 overflow-y-auto custom-scrollbar">
@@ -943,7 +943,7 @@ export default function ShopConfigPage() {
                                                 </div>
                                             )) : (
                                                 <div className="py-12 text-center opacity-20">
-                                                    <p className="text-[9px] font-black uppercase tracking-[0.4em]">Escaneando Or+\ufffdgenes...</p>
+                                                    <p className="text-[9px] font-black uppercase tracking-[0.4em]">Escaneando Orígenes...</p>
                                                 </div>
                                             )}
                                         </div>
@@ -1012,7 +1012,9 @@ function QuickCreate({ label, icon, onSave }: { label: string, icon: any, onSave
     )
 }
 
-// \ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd BannerConfigPanel \ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd
+// ==============================================
+// BannerConfigPanel Component
+// ==============================================
 function BannerConfigPanel({ bannerKey, label, icon, accentColor, data, allProducts, onChange }: { 
     bannerKey: string, 
     label: string, 
@@ -1267,7 +1269,9 @@ function BannerConfigPanel({ bannerKey, label, icon, accentColor, data, allProdu
         </div>
     )
 }
-// \ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd End BannerConfigPanel \ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd
+// ==============================================
+// End BannerConfigPanel Component
+// ==============================================
 
 function StatCard({ label, value, icon }: { label: string, value: any, icon: any }) {
     return (
@@ -1439,9 +1443,9 @@ function ProductForm({ initialData, metadata, onCancel, onSaved }: { initialData
                     <section className="glass-panel p-10 rounded-none-[3rem] border-white/5 space-y-10 relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-3xl -mr-16 -mt-16 rounded-none"></div>
                         <div className="flex items-center space-x-4 border-b border-white/5 pb-8">
-                            <FileText size={20} className="text-primary" />
-                            <h2 className="text-[11px] font-black uppercase tracking-[0.4em] text-white italic">Gestión de Ficha T+\ufffdcnica</h2>
-                        </div>
+                                    <FileText size={20} className="text-primary" />
+                                    <h2 className="text-[11px] font-black uppercase tracking-[0.4em] text-white italic">Gestión de Ficha Técnica</h2>
+                                </div>
 
                         <div className="space-y-6">
                             {techSpecs.map((spec, index) => (
@@ -1506,7 +1510,7 @@ function ProductForm({ initialData, metadata, onCancel, onSaved }: { initialData
 
                         <div className="space-y-6 pt-6">
                             <div className="space-y-4">
-                                <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Ficha T+\ufffdcnica PDF</label>
+                                <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2">Ficha Técnica PDF</label>
                                 <button className="w-full flex items-center justify-between bg-slate-900 border border-white/5 text-white px-8 py-6 rounded-none text-[10px] font-black uppercase tracking-[0.3em] hover:bg-secondary hover:border-secondary transition-all shadow-2xl active:scale-95 group">
                                     <span className="group-hover:text-white">Anclaje de Documentación</span>
                                     <FileText size={18} className="text-secondary group-hover:text-white" />
