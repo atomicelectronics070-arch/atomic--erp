@@ -4,7 +4,7 @@ import { authOptions } from "@/lib/auth"
 import PublicWebClient from "./PublicWebClient"
 import { getStoreSettings } from "@/lib/actions/shop"
 
-export const revalidate = 3600 // Cache for 1 hour (ISR)
+export const revalidate = 0 // Cache disabled to show new subcategories
 
 export default async function PublicWebPage() {
     const session = await getServerSession(authOptions)

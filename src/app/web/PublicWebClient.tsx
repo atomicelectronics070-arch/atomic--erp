@@ -446,7 +446,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole, s
 
                 {/* PRODUCTOS */}
                 <section className="w-full max-w-7xl mx-auto px-6 py-8" id="productos">
-                    {(searchQuery || activeMainCategoryId || activeSubcategoryId) ? (
+                    {searchQuery ? (
                         filteredProducts.length === 0 ? (
                             <div className="py-20 text-center border border-dashed border-slate-200 rounded-none">
                                 <p className="text-slate-400 text-[10px] uppercase tracking-[0.3em] font-black">No se encontraron productos</p>
@@ -460,7 +460,14 @@ export default function PublicWebClient({ initialProducts, metadata, userRole, s
                                 </div>
                         )
                     ) : (
-                        <InfiniteProductScroll products={filteredProducts} userRole={userRole} />
+                        filteredProducts.length === 0 ? (
+                            <div className="py-20 text-center border border-dashed border-slate-200 rounded-none">
+                                <p className="text-slate-400 text-[10px] uppercase tracking-[0.3em] font-black">No hay productos en esta categoría</p>
+                                <button onClick={() => { setActiveMainCategoryId(null); setActiveSubcategoryId(null); }} className="mt-4 text-[black] text-[10px] font-black uppercase tracking-widest hover:underline">Quitar Filtro</button>
+                            </div>
+                        ) : (
+                            <InfiniteProductScroll products={filteredProducts} userRole={userRole} />
+                        )
                     )}
                 </section>
             </motion.div>
