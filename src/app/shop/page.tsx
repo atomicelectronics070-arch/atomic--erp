@@ -236,8 +236,14 @@ function ShopCard({ product, isFav, onToggleFav }: { product: any, isFav: boolea
                 <h3 className="text-[11px] font-black uppercase tracking-widest line-clamp-2 leading-tight group-hover:text-[#E8341A] transition-colors">{product.name}</h3>
                 <div className="mt-auto pt-4 border-t border-slate-50 flex justify-between items-end">
                     <div>
-                        <p className="text-[9px] font-bold text-slate-300 uppercase tracking-widest mb-1">Precio Final</p>
-                        <p className="text-[#E8341A] font-black text-2xl tracking-tighter">${product.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
+                        {product.isConsultOnly ? (
+                            <p className="text-[#E8341A] font-black text-xl tracking-tighter uppercase mt-2">Cotizar</p>
+                        ) : (
+                            <>
+                                <p className="text-[9px] font-bold text-slate-300 uppercase tracking-widest mb-1">Precio Final</p>
+                                <p className="text-[#E8341A] font-black text-2xl tracking-tighter">${product.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
+                            </>
+                        )}
                     </div>
                     <Link href={`/web/product/${product.id}`} className="bg-black text-white p-3 hover:bg-[#E8341A] transition-all">
                         <ArrowRight size={16} />

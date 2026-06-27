@@ -202,15 +202,23 @@ export default function ProductDetailPage() {
                         </h1>
                         
                         <div className="flex flex-col mb-12">
-                            <div className="flex items-center space-x-6">
-                                <p className="text-5xl font-black text-[#1E3A8A] font-mono tracking-tighter italic">
-                                    ${calculateDiscountedPrice(product.price, userRole).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            {product.isConsultOnly ? (
+                                <p className="text-5xl font-black text-[#1E3A8A] font-mono tracking-tighter uppercase italic">
+                                    Cotizar
                                 </p>
-                            </div>
-                            {userRole && (userRole === 'AFILIADO' || userRole === 'DISTRIBUIDOR') && (
-                                <p className="text-[10px] font-black text-blue-500 uppercase tracking-widest mt-2 italic">
-                                    Precio especial para {userRole} aplicado
-                                </p>
+                            ) : (
+                                <>
+                                    <div className="flex items-center space-x-6">
+                                        <p className="text-5xl font-black text-[#1E3A8A] font-mono tracking-tighter italic">
+                                            ${calculateDiscountedPrice(product.price, userRole).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                        </p>
+                                    </div>
+                                    {userRole && (userRole === 'AFILIADO' || userRole === 'DISTRIBUIDOR') && (
+                                        <p className="text-[10px] font-black text-blue-500 uppercase tracking-widest mt-2 italic">
+                                            Precio especial para {userRole} aplicado
+                                        </p>
+                                    )}
+                                </>
                             )}
                         </div>
 
@@ -226,16 +234,25 @@ export default function ProductDetailPage() {
                             </div>
 
                             <div className="space-y-4">
-                                <button 
-                                    onClick={handleAddToCart}
-                                    className={`w-full py-6 text-[10px] font-black uppercase tracking-[0.4em] transition-all shadow-xl flex items-center justify-center space-x-4 group rounded-2xl ${added ? 'bg-emerald-600 text-white' : 'bg-[#1E3A8A] text-white hover:bg-blue-800 shadow-blue-100'}`}
-                                >
-                                    {added ? (
-                                        <><CheckCircle2 size={18} /><span>¡Añadido!</span></>
-                                    ) : (
-                                        <><ShoppingCart size={18} /><span>Añadir al Carrito</span><ArrowRight size={16} className="translate-x-0 group-hover:translate-x-3 transition-transform" /></>
-                                    )}
-                                </button>
+                                {product.isConsultOnly ? (
+                                    <button 
+                                        onClick={() => alert("Por favor contáctenos para cotizar este producto.")}
+                                        className={`w-full py-6 text-[10px] font-black uppercase tracking-[0.4em] transition-all shadow-xl flex items-center justify-center space-x-4 group rounded-2xl bg-[#1E3A8A] text-white hover:bg-blue-800 shadow-blue-100`}
+                                    >
+                                        <Info size={18} /><span>Consultar Precio</span><ArrowRight size={16} className="translate-x-0 group-hover:translate-x-3 transition-transform" />
+                                    </button>
+                                ) : (
+                                    <button 
+                                        onClick={handleAddToCart}
+                                        className={`w-full py-6 text-[10px] font-black uppercase tracking-[0.4em] transition-all shadow-xl flex items-center justify-center space-x-4 group rounded-2xl ${added ? 'bg-emerald-600 text-white' : 'bg-[#1E3A8A] text-white hover:bg-blue-800 shadow-blue-100'}`}
+                                    >
+                                        {added ? (
+                                            <><CheckCircle2 size={18} /><span>¡Añadido!</span></>
+                                        ) : (
+                                            <><ShoppingCart size={18} /><span>Añadir al Carrito</span><ArrowRight size={16} className="translate-x-0 group-hover:translate-x-3 transition-transform" /></>
+                                        )}
+                                    </button>
+                                )}
                                 
                                 {product.specSheetUrl && (
                                     <a 
@@ -307,7 +324,11 @@ export default function ProductDetailPage() {
                                     <div className="space-y-4 flex-1 flex flex-col">
                                         <h4 className="text-[10px] font-black uppercase tracking-[0.15em] text-slate-500 group-hover:text-[#1E3A8A] transition-colors leading-tight line-clamp-2 h-8 italic">{p.name}</h4>
                                         <div className="pt-4 border-t border-slate-100 flex items-center justify-between mt-auto">
-                                            <p className="font-mono font-black text-lg text-[#1E3A8A] italic">${calculateDiscountedPrice(p.price, userRole).toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
+                                            {p.isConsultOnly ? (
+                                                <p className="font-mono font-black text-lg text-[#1E3A8A] uppercase italic">Cotizar</p>
+                                            ) : (
+                                                <p className="font-mono font-black text-lg text-[#1E3A8A] italic">${calculateDiscountedPrice(p.price, userRole).toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
+                                            )}
                                             <div className="w-8 h-8 bg-slate-50 rounded-lg flex items-center justify-center group-hover:bg-[#1E3A8A] group-hover:text-white transition-all"><ChevronRight size={14} /></div>
                                         </div>
                                     </div>

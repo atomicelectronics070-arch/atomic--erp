@@ -522,7 +522,12 @@ export default function ShopConfigPage() {
                                                                 </td>
                                                                 <td className="px-6 py-4">
                                                                     <div className="flex flex-col gap-0.5 w-44 font-medium text-[11px]">
-                                                                        {(() => {
+                                                                        {p.isConsultOnly ? (
+                                                                            <div className="flex flex-col items-center justify-center p-3 mt-1 bg-slate-100 rounded-xl text-slate-500 font-bold border border-slate-200 w-full shadow-inner">
+                                                                                <span className="text-[10px] uppercase tracking-wider mb-0.5">Precio</span>
+                                                                                <span className="text-sm text-slate-700">Consultar</span>
+                                                                            </div>
+                                                                        ) : (() => {
                                                                             const price = parseFloat(p.price) || 0;
                                                                             const cost = p.compareAtPrice || (price / 1.20);
                                                                             const margin = price - cost;
@@ -1297,6 +1302,7 @@ function ProductForm({ initialData, metadata, onCancel, onSaved }: { initialData
         collectionId: initialData?.collectionId || '',
         stock: initialData?.stock || '0',
         isActive: initialData?.isActive ?? true,
+        isConsultOnly: initialData?.isConsultOnly ?? false,
         featured: initialData?.featured ?? false,
         specSheetUrl: initialData?.specSheetUrl || '',
         keywords: initialData?.keywords || '',
@@ -1421,6 +1427,20 @@ function ProductForm({ initialData, metadata, onCancel, onSaved }: { initialData
                                     placeholder="0.00"
                                     className="w-full bg-slate-900 border border-white/5 px-8 py-6 text-sm font-black text-slate-600 outline-none focus:border-white/20 transition-all line-through rounded-none"
                                 />
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-4 bg-slate-900 border border-white/5 p-6 mt-4 mb-4">
+                            <button
+                                type="button"
+                                onClick={() => setFormData({ ...formData, isConsultOnly: !formData.isConsultOnly })}
+                                className={`w-12 h-6 rounded-full p-1 transition-colors ${formData.isConsultOnly ? 'bg-secondary' : 'bg-slate-700'}`}
+                            >
+                                <div className={`w-4 h-4 bg-white rounded-full transition-transform ${formData.isConsultOnly ? 'translate-x-6' : 'translate-x-0'}`} />
+                            </button>
+                            <div>
+                                <h4 className="text-sm font-black text-white">Modo Consultar Precio</h4>
+                                <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Oculta el PVP y muestra "Consultar" en la tienda.</p>
                             </div>
                         </div>
 

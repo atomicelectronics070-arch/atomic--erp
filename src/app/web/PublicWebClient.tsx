@@ -204,20 +204,38 @@ interface PublicWebClientProps {
 
 export default function PublicWebClient({ initialProducts, metadata, userRole, storeSettings }: PublicWebClientProps) {
     const [searchQuery, setSearchQuery] = useState("")
+    const [activeMainCategoryId, setActiveMainCategoryId] = useState<string | null>(null)
+    const [activeSubcategoryId, setActiveSubcategoryId] = useState<string | null>(null)
 
     useEffect(() => {
         const handleSearchUpdate = (e: any) => {
             setSearchQuery(e.detail)
+            setActiveMainCategoryId(null)
+            setActiveSubcategoryId(null)
             document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' })
         }
         window.addEventListener('atomic-search-update', handleSearchUpdate)
         return () => window.removeEventListener('atomic-search-update', handleSearchUpdate)
     }, [])
 
-    const filteredProducts = initialProducts.filter(p =>
-        p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.description?.toLowerCase().includes(searchQuery.toLowerCase())
-    )
+    const filteredProducts = initialProducts.filter(p => {
+        let matchesSearch = true;
+        let matchesCategory = true;
+        
+        if (searchQuery) {
+            matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                            p.description?.toLowerCase().includes(searchQuery.toLowerCase());
+        }
+
+        if (activeSubcategoryId) {
+            matchesCategory = p.category?.id === activeSubcategoryId;
+        } else if (activeMainCategoryId) {
+            const subCatIds = metadata.categories.filter(c => c.parentId === activeMainCategoryId).map(c => c.id);
+            matchesCategory = p.category?.id === activeMainCategoryId || subCatIds.includes(p.category?.id);
+        }
+
+        return matchesSearch && matchesCategory;
+    });
 
     // ─── ATOMIC REORGANIZATION LOGIC ───
     const curatedCategories = useMemo(() => {
@@ -416,15 +434,23 @@ export default function PublicWebClient({ initialProducts, metadata, userRole, s
             />
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6 }} className="relative z-10">
 
-                <MinimalStoreHero searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+                <MinimalStoreHero 
+                    searchQuery={searchQuery} 
+                    setSearchQuery={setSearchQuery}
+                    activeMainCategoryId={activeMainCategoryId}
+                    setActiveMainCategoryId={setActiveMainCategoryId}
+                    activeSubcategoryId={activeSubcategoryId}
+                    setActiveSubcategoryId={setActiveSubcategoryId}
+                    categories={metadata.categories}
+                />
 
                 {/* PRODUCTOS */}
                 <section className="w-full max-w-7xl mx-auto px-6 py-8" id="productos">
-                    {searchQuery ? (
+                    {(searchQuery || activeMainCategoryId || activeSubcategoryId) ? (
                         filteredProducts.length === 0 ? (
                             <div className="py-20 text-center border border-dashed border-slate-200 rounded-none">
-                                <p className="text-slate-400 text-[10px] uppercase tracking-[0.3em] font-black">No se encontraron productos para "{searchQuery}"</p>
-                                <button onClick={() => setSearchQuery("")} className="mt-4 text-[black] text-[10px] font-black uppercase tracking-widest hover:underline">Limpiar Búsqueda</button>
+                                <p className="text-slate-400 text-[10px] uppercase tracking-[0.3em] font-black">No se encontraron productos</p>
+                                <button onClick={() => { setSearchQuery(""); setActiveMainCategoryId(null); setActiveSubcategoryId(null); }} className="mt-4 text-[black] text-[10px] font-black uppercase tracking-widest hover:underline">Limpiar Búsqueda</button>
                             </div>
                         ) : (
                                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
@@ -442,14 +468,26 @@ export default function PublicWebClient({ initialProducts, metadata, userRole, s
     )
 }
 
-function MinimalStoreHero({ searchQuery, setSearchQuery }: { searchQuery: string, setSearchQuery: (val: string) => void }) {
+function MinimalStoreHero({ 
+    searchQuery, setSearchQuery,
+    activeMainCategoryId, setActiveMainCategoryId,
+    activeSubcategoryId, setActiveSubcategoryId,
+    categories 
+}: { 
+    searchQuery: string, setSearchQuery: (val: string) => void,
+    activeMainCategoryId: string | null, setActiveMainCategoryId: (val: string | null) => void,
+    activeSubcategoryId: string | null, setActiveSubcategoryId: (val: string | null) => void,
+    categories: any[]
+}) {
     const cards = [
-        { id: 'electronica', label: 'Electrónica', icon: <Cpu size={24} /> },
-        { id: 'hogar', label: 'Hogar', icon: <Home size={24} /> },
-        { id: 'residencial', label: 'Residencial', icon: <Building size={24} /> },
-        { id: 'industrial', label: 'Industrial', icon: <Factory size={24} /> },
-        { id: 'software', label: 'Software', icon: <Code size={24} /> }
+        { id: categories.find(c => c.slug === 'electronica')?.id || 'electronica', label: 'Electrónica', icon: <Cpu size={24} /> },
+        { id: categories.find(c => c.slug === 'hogar')?.id || 'hogar', label: 'Hogar', icon: <Home size={24} /> },
+        { id: categories.find(c => c.slug === 'residencial')?.id || 'residencial', label: 'Residencial', icon: <Building size={24} /> },
+        { id: categories.find(c => c.slug === 'industrial')?.id || 'industrial', label: 'Industrial', icon: <Factory size={24} /> },
+        { id: categories.find(c => c.slug === 'software')?.id || 'software', label: 'Software', icon: <Code size={24} /> }
     ];
+
+    const subcategories = activeMainCategoryId ? categories.filter(c => c.parentId === activeMainCategoryId) : [];
 
     const scrollDown = () => {
         document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' });
@@ -498,8 +536,13 @@ function MinimalStoreHero({ searchQuery, setSearchQuery }: { searchQuery: string
                 <input 
                     type="text" 
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={(e) => {
+                        setSearchQuery(e.target.value);
+                        setActiveMainCategoryId(null);
+                        setActiveSubcategoryId(null);
+                    }}
                     placeholder="Buscar por nombre, marca o categoría..."
+
                     className="w-full bg-zinc-50 border border-zinc-200 rounded-2xl p-4 pl-12 pr-12 text-sm uppercase tracking-widest placeholder:text-slate-400 focus:border-black focus:bg-white transition-all outline-none shadow-sm hover:shadow-md"
                 />
                 {searchQuery && (
@@ -524,14 +567,21 @@ function MinimalStoreHero({ searchQuery, setSearchQuery }: { searchQuery: string
                         <button
                             key={card.id}
                             onClick={() => {
-                                setSearchQuery(card.label);
+                                setSearchQuery("");
+                                if (activeMainCategoryId === card.id) {
+                                    setActiveMainCategoryId(null);
+                                    setActiveSubcategoryId(null);
+                                } else {
+                                    setActiveMainCategoryId(card.id);
+                                    setActiveSubcategoryId(null);
+                                }
                                 scrollDown();
                             }}
-                            className="group flex flex-col items-center justify-center gap-4 bg-white text-black rounded-2xl w-36 h-36 border border-zinc-200
+                            className={`group flex flex-col items-center justify-center gap-4 bg-white text-black rounded-2xl w-36 h-36 border ${activeMainCategoryId === card.id ? 'border-black bg-zinc-50 scale-[1.05] shadow-2xl shadow-black/10' : 'border-zinc-200'}
                                        hover:scale-[1.05] hover:shadow-2xl hover:shadow-black/10 hover:border-black hover:bg-zinc-50
-                                       active:scale-[0.98] transition-all duration-300 ease-out"
+                                       active:scale-[0.98] transition-all duration-300 ease-out`}
                         >
-                            <div className="w-12 h-12 rounded-xl bg-zinc-100 border border-zinc-200 flex items-center justify-center group-hover:bg-black group-hover:text-white group-hover:border-black transition-all duration-300">
+                            <div className={`w-12 h-12 rounded-xl border flex items-center justify-center transition-all duration-300 ${activeMainCategoryId === card.id ? 'bg-black text-white border-black' : 'bg-zinc-100 border-zinc-200 group-hover:bg-black group-hover:text-white group-hover:border-black'}`}>
                                 {card.icon}
                             </div>
                             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-black">
@@ -541,6 +591,36 @@ function MinimalStoreHero({ searchQuery, setSearchQuery }: { searchQuery: string
                     ))}
                 </div>
             </motion.div>
+
+            {/* SUBCATEGORIES STRIP */}
+            <AnimatePresence>
+                {activeMainCategoryId && subcategories.length > 0 && (
+                    <motion.div
+                        initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                        animate={{ opacity: 1, height: 'auto', marginTop: 24 }}
+                        exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="w-full max-w-4xl overflow-x-auto scrollbar-hide flex items-center justify-center gap-3 px-4"
+                    >
+                        {subcategories.map((sub: any) => (
+                            <button
+                                key={sub.id}
+                                onClick={() => {
+                                    setActiveSubcategoryId(sub.id === activeSubcategoryId ? null : sub.id);
+                                    scrollDown();
+                                }}
+                                className={`group flex flex-col items-center justify-center gap-2 bg-white text-black rounded-2xl w-32 h-32 border ${activeSubcategoryId === sub.id ? 'border-black bg-zinc-50 scale-[1.05] shadow-2xl shadow-black/10' : 'border-zinc-200'}
+                                           hover:scale-[1.05] hover:shadow-2xl hover:shadow-black/10 hover:border-black hover:bg-zinc-50
+                                           active:scale-[0.98] transition-all duration-300 ease-out flex-shrink-0`}
+                            >
+                                <span className="text-[10px] font-black uppercase tracking-[0.15em] text-center px-4 leading-relaxed">
+                                    {sub.name}
+                                </span>
+                            </button>
+                        ))}
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </section>
     );
 }

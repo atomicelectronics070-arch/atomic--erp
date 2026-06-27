@@ -32,7 +32,7 @@ export default async function PublicWebPage() {
                 ]
             },
             orderBy: { createdAt: 'desc' },
-            select: { id: true, name: true, description: true, price: true, images: true, featured: true, provider: true, collectionId: true, createdAt: true, category: { select: { name: true, slug: true } } }
+            select: { id: true, name: true, description: true, price: true, images: true, featured: true, provider: true, collectionId: true, createdAt: true, category: { select: { id: true, name: true, slug: true } } }
         }),
         // Priority 2: Curated items for storefront strips (Phones, Tablets, Motors, Security, etc.)
         prisma.product.findMany({
@@ -70,7 +70,7 @@ export default async function PublicWebPage() {
             where: { isDeleted: false, isActive: true },
             orderBy: { createdAt: 'desc' },
             take: 60, // Reduced from 200 for performance
-            select: { id: true, name: true, description: true, price: true, images: true, featured: true, provider: true, collectionId: true, createdAt: true, category: { select: { name: true, slug: true } } }
+            select: { id: true, name: true, description: true, price: true, images: true, featured: true, provider: true, collectionId: true, createdAt: true, category: { select: { id: true, name: true, slug: true } } }
         }),
         getStoreSettings()
     ])
