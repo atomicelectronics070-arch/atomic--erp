@@ -114,7 +114,7 @@ export async function PATCH(req: Request) {
         }
 
         const body = await req.json()
-        const { id, price, compareAtPrice, isActive } = body
+        const { id, price, compareAtPrice, isActive, stock } = body
 
         if (!id) {
             return NextResponse.json({ error: "Product ID required" }, { status: 400 })
@@ -124,6 +124,7 @@ export async function PATCH(req: Request) {
         if (price !== undefined) updateData.price = parseFloat(price)
         if (compareAtPrice !== undefined) updateData.compareAtPrice = parseFloat(compareAtPrice)
         if (isActive !== undefined) updateData.isActive = isActive
+        if (stock !== undefined) updateData.stock = parseInt(stock)
 
         const updated = await prisma.product.update({
             where: { id },
@@ -168,11 +169,31 @@ export async function POST(req: Request) {
             return NextResponse.json({ success: true, updated: updates.length })
         }
 
+        if (action === "bulk_apply_margin" && ids && Array.isArray(ids) && marginPercent !== undefined) {
+            // Apply margin to selected products by ID
+            const products = await prisma.product.findMany({
+                where: { id: { in: ids }, isDeleted: false },
+                select: { id: true, compareAtPrice: true }
+            })
+
+            const updates = products
+                .filter(p => p.compareAtPrice && p.compareAtPrice > 0)
+                .map(p => prisma.product.update({
+                    where: { id: p.id },
+                    data: { price: parseFloat((p.compareAtPrice! * (1 + marginPercent / 100)).toFixed(2)) }
+                }))
+
+            await Promise.all(updates)
+            return NextResponse.json({ success: true, updated: updates.length })
+        }
+
         if (action === "bulk_price_update" && ids && Array.isArray(ids)) {
-            const { price, compareAtPrice } = body
+            const { price, compareAtPrice, stock, isActive } = body
             const updateData: any = {}
             if (price !== undefined) updateData.price = parseFloat(price)
             if (compareAtPrice !== undefined) updateData.compareAtPrice = parseFloat(compareAtPrice)
+            if (stock !== undefined) updateData.stock = parseInt(stock)
+            if (isActive !== undefined) updateData.isActive = isActive
 
             await prisma.product.updateMany({
                 where: { id: { in: ids } },

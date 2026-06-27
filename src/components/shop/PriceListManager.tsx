@@ -6,7 +6,7 @@ import {
     Check, X, ChevronRight, ChevronDown, RefreshCw, Percent,
     Filter, BarChart2, Tag, Save, AlertCircle, Eye, EyeOff,
     ArrowUpDown, Grid, List as ListIcon, Plus, Download, ChevronUp,
-    ShieldAlert, Info
+    ShieldAlert, Info, Square, CheckSquare
 } from "lucide-react"
 
 interface Product {
@@ -110,14 +110,16 @@ function calcMargin(cost: number | null, price: number): number | null {
     return ((price - cost) / cost) * 100
 }
 
-function InlineEdit({ value, onSave, prefix = "$", min = 0 }: {
+function InlineEdit({ value, onSave, prefix = "$", min = 0, decimals = 2, step = "0.01" }: {
     value: number
     onSave: (val: number) => void
-    prefix?: string
+    prefix?: string | null
     min?: number
+    decimals?: number
+    step?: string
 }) {
     const [editing, setEditing] = useState(false)
-    const [draft, setDraft] = useState(value.toFixed(2))
+    const [draft, setDraft] = useState(decimals === 0 ? value.toString() : value.toFixed(decimals))
     const inputRef = useRef<HTMLInputElement>(null)
 
     useEffect(() => {
@@ -125,46 +127,49 @@ function InlineEdit({ value, onSave, prefix = "$", min = 0 }: {
     }, [editing])
 
     const commit = () => {
-        const num = parseFloat(draft)
+        const num = decimals === 0 ? parseInt(draft) : parseFloat(draft)
         if (!isNaN(num) && num >= min) {
             onSave(num)
         } else {
-            setDraft(value.toFixed(2))
+            setDraft(decimals === 0 ? value.toString() : value.toFixed(decimals))
         }
         setEditing(false)
     }
 
     if (!editing) return (
         <button
-            onClick={() => { setDraft(value.toFixed(2)); setEditing(true) }}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 bg-slate-50 border border-slate-200 hover:border-blue-500/30 hover:bg-blue-50/50 text-slate-800 font-semibold transition-all duration-300 group rounded-lg"
+            onClick={() => { setDraft(decimals === 0 ? value.toString() : value.toFixed(decimals)); setEditing(true) }}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 bg-slate-50 border border-slate-200 hover:border-slate-400 hover:bg-slate-100 text-slate-800 font-semibold transition-all duration-300 group rounded-lg"
         >
-            <span className="text-slate-400 font-medium text-xs">{prefix}</span>
-            <span className="text-xs md:text-sm font-semibold tracking-tight">{value.toFixed(2)}</span>
-            <Edit3 size={11} className="text-blue-500 opacity-0 group-hover:opacity-100 transition-all duration-300 transform group-hover:scale-110" />
+            {prefix && <span className="text-slate-400 font-medium text-xs">{prefix}</span>}
+            <span className="text-xs md:text-sm font-semibold tracking-tight">
+                {decimals === 0 ? value.toString() : value.toFixed(decimals)}
+                {decimals === 0 && <span className="text-[10px] text-slate-400 font-normal ml-0.5"> uds</span>}
+            </span>
+            <Edit3 size={11} className="text-slate-600 opacity-0 group-hover:opacity-100 transition-all duration-300 transform group-hover:scale-110" />
         </button>
     )
 
     return (
-        <div className="flex items-center gap-1 bg-white border border-blue-500 p-1 shadow-sm rounded-lg animate-in zoom-in-95 duration-150">
-            <span className="text-blue-600 font-semibold text-xs px-1">{prefix}</span>
+        <div className="flex items-center gap-1 bg-white border border-slate-900 p-1 shadow-sm rounded-lg animate-in zoom-in-95 duration-150">
+            {prefix && <span className="text-slate-800 font-semibold text-xs px-1">{prefix}</span>}
             <input
                 ref={inputRef}
                 type="number"
-                step="0.01"
+                step={step}
                 min={min}
                 value={draft}
                 onChange={e => setDraft(e.target.value)}
                 onKeyDown={e => {
                     if (e.key === "Enter") commit()
-                    if (e.key === "Escape") { setDraft(value.toFixed(2)); setEditing(false) }
+                    if (e.key === "Escape") { setDraft(decimals === 0 ? value.toString() : value.toFixed(decimals)); setEditing(false) }
                 }}
                 onBlur={commit}
                 className="w-20 bg-slate-50 border-none text-slate-800 text-xs font-semibold tracking-tight outline-none focus:ring-0 px-1 py-0.5 rounded"
                 autoFocus
             />
-            <button onClick={commit} className="p-1 text-emerald-600 hover:text-emerald-500 hover:bg-emerald-50 rounded transition-colors"><Check size={12} /></button>
-            <button onClick={() => { setDraft(value.toFixed(2)); setEditing(false) }} className="p-1 text-rose-600 hover:text-rose-500 hover:bg-rose-50 rounded transition-colors"><X size={12} /></button>
+            <button onClick={commit} className="p-1 text-slate-800 hover:text-slate-600 hover:bg-slate-100 rounded transition-colors"><Check size={12} /></button>
+            <button onClick={() => { setDraft(decimals === 0 ? value.toString() : value.toFixed(decimals)); setEditing(false) }} className="p-1 text-red-500 hover:text-red-650 hover:bg-red-50 rounded transition-colors"><X size={12} /></button>
         </div>
     )
 }
@@ -217,6 +222,12 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
     const [marginValue, setMarginValue] = useState<string>("")
     const [applyingMargin, setApplyingMargin] = useState(false)
 
+    // Selection & Bulk Updates
+    const [selectedProducts, setSelectedProducts] = useState<string[]>([])
+    const [bulkMarginValue, setBulkMarginValue] = useState<string>("")
+    const [bulkStockValue, setBulkStockValue] = useState<string>("")
+    const [updatingBulk, setUpdatingBulk] = useState(false)
+
     const loadData = useCallback(async () => {
         setLoading(true)
         try {
@@ -247,7 +258,7 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
 
     useEffect(() => { loadData() }, [loadData])
 
-    const handlePriceUpdate = async (productId: string, field: "price" | "compareAtPrice", value: number) => {
+    const handlePriceUpdate = async (productId: string, field: "price" | "compareAtPrice" | "stock", value: number) => {
         setSavingIds(prev => new Set(prev).add(productId))
         try {
             const res = await fetch("/api/admin/price-list", {
@@ -265,6 +276,74 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
             console.error("Price update error:", e)
         } finally {
             setSavingIds(prev => { const n = new Set(prev); n.delete(productId); return n })
+        }
+    }
+
+    const handleBulkPriceUpdate = async (updateFields: { price?: number; compareAtPrice?: number; stock?: number; isActive?: boolean }) => {
+        if (selectedProducts.length === 0) return
+        setUpdatingBulk(true)
+        try {
+            const res = await fetch("/api/admin/price-list", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    action: "bulk_price_update",
+                    ids: selectedProducts,
+                    ...updateFields
+                })
+            })
+            if (!res.ok) throw new Error("Bulk update failed")
+            alert(`✅ ${selectedProducts.length} productos actualizados correctamente`)
+            setSelectedProducts([])
+            setBulkStockValue("")
+            loadData()
+        } catch (e) {
+            alert("Error al actualizar productos en lote")
+        } finally {
+            setUpdatingBulk(false)
+        }
+    }
+
+    const handleBulkMarginApply = async () => {
+        const margin = parseFloat(bulkMarginValue)
+        if (isNaN(margin) || selectedProducts.length === 0) return
+        setUpdatingBulk(true)
+        try {
+            const res = await fetch("/api/admin/price-list", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    action: "bulk_apply_margin",
+                    ids: selectedProducts,
+                    marginPercent: margin
+                })
+            })
+            if (!res.ok) throw new Error("Bulk margin failed")
+            const data = await res.json()
+            alert(`✅ Margen de ${margin}% aplicado a ${data.updated} productos seleccionados`)
+            setSelectedProducts([])
+            setBulkMarginValue("")
+            loadData()
+        } catch (e) {
+            alert("Error al aplicar margen en lote")
+        } finally {
+            setUpdatingBulk(false)
+        }
+    }
+
+    const toggleProductSelection = (id: string) => {
+        setSelectedProducts(prev => 
+            prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
+        )
+    }
+
+    const toggleAllProducts = (productList: Product[]) => {
+        const ids = productList.map(p => p.id)
+        const allSelected = ids.every(id => selectedProducts.includes(id))
+        if (allSelected) {
+            setSelectedProducts(prev => prev.filter(id => !ids.includes(id)))
+        } else {
+            setSelectedProducts(prev => Array.from(new Set([...prev, ...ids])))
         }
     }
 
@@ -640,6 +719,18 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                                                 <table className="w-full text-left border-collapse border border-slate-200/60 rounded-xl overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.01)] bg-white">
                                                     <thead>
                                                         <tr className="text-[11px] font-bold text-slate-500 border-b border-slate-200/60 bg-slate-50/50">
+                                                            <th className="px-4 py-3 w-12 text-center">
+                                                                <button
+                                                                    onClick={(e) => { e.stopPropagation(); toggleAllProducts(prods) }}
+                                                                    className="text-slate-400 hover:text-slate-900 transition-colors"
+                                                                >
+                                                                    {prods.every(p => selectedProducts.includes(p.id)) ? (
+                                                                        <CheckSquare size={16} className="text-slate-900" />
+                                                                    ) : (
+                                                                        <Square size={16} />
+                                                                    )}
+                                                                </button>
+                                                            </th>
                                                             <th className="px-4 py-3">Artículo</th>
                                                             <th className="px-4 py-3 w-32">SKU</th>
                                                             <th className="px-4 py-3 w-36">Categoría</th>
@@ -656,14 +747,27 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                                                             const isSaving = savingIds.has(p.id)
                                                             const isSaved = savedIds.has(p.id)
                                                             const img = safeParseImages(p.images)
-
+                                                            const isSelected = selectedProducts.includes(p.id)
+ 
                                                             return (
                                                                 <tr
                                                                     key={p.id}
                                                                     className={`hover:bg-slate-50/30 transition-colors duration-300 group/row ${
                                                                         isSaving ? "opacity-50" : ""
-                                                                    } ${isSaved ? "bg-emerald-500/5" : ""}`}
+                                                                    } ${isSaved ? "bg-emerald-500/5" : ""} ${isSelected ? "bg-slate-50/80" : ""}`}
                                                                 >
+                                                                    <td className="px-4 py-3.5 text-center w-12">
+                                                                        <button
+                                                                            onClick={() => toggleProductSelection(p.id)}
+                                                                            className="text-slate-350 hover:text-slate-900 transition-colors"
+                                                                        >
+                                                                            {isSelected ? (
+                                                                                <CheckSquare size={16} className="text-slate-900" />
+                                                                            ) : (
+                                                                                <Square size={16} />
+                                                                            )}
+                                                                        </button>
+                                                                    </td>
                                                                     <td className="px-4 py-3.5">
                                                                         <div className="flex items-center gap-3">
                                                                             <div className="w-10 h-10 bg-slate-50 border border-slate-200/60 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center relative group-hover/row:border-blue-500/30 transition-all shadow-sm">
@@ -683,15 +787,13 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                                                                         <span className="text-slate-400 text-xs font-medium">{p.category?.name || "Sin Categoría"}</span>
                                                                     </td>
                                                                     <td className="px-4 py-3.5">
-                                                                        <div className="flex flex-col gap-0.5">
-                                                                            <span className={`text-xs font-bold ${
-                                                                                p.stock > 10 ? "text-emerald-600" :
-                                                                                p.stock > 0 ? "text-amber-600" :
-                                                                                "text-rose-500 font-semibold"
-                                                                            }`}>
-                                                                                {p.stock > 0 ? `${p.stock} uds` : "Agotado"}
-                                                                            </span>
-                                                                        </div>
+                                                                        <InlineEdit
+                                                                            value={p.stock}
+                                                                            decimals={0}
+                                                                            step="1"
+                                                                            prefix={null}
+                                                                            onSave={val => handlePriceUpdate(p.id, "stock", val)}
+                                                                        />
                                                                     </td>
                                                                     {isAdmin && (
                                                                         <td className="px-4 py-3.5">
@@ -742,11 +844,23 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                         <table className="w-full text-left border-collapse border border-slate-200/60 rounded-xl overflow-hidden bg-white shadow-[0_2px_12px_rgba(0,0,0,0.01)]">
                             <thead>
                                 <tr className="text-[11px] font-bold text-slate-500 border-b border-slate-200/60 bg-slate-50/50">
+                                    <th className="px-4 py-3 w-12 text-center">
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); toggleAllProducts(products) }}
+                                            className="text-slate-400 hover:text-slate-900 transition-colors"
+                                        >
+                                            {products.every(p => selectedProducts.includes(p.id)) ? (
+                                                <CheckSquare size={16} className="text-slate-900" />
+                                            ) : (
+                                                <Square size={16} />
+                                            )}
+                                        </button>
+                                    </th>
                                     <th className="px-4 py-3">Artículo</th>
                                     <th className="px-4 py-3 w-40">Proveedor</th>
                                     <th className="px-4 py-3 w-32">SKU</th>
                                     <th className="px-4 py-3 w-36">Categoría</th>
-                                    <th className="px-4 py-3 w-24">Stock</th>
+                                    <th className="px-4 py-3 w-28">Stock</th>
                                     {isAdmin && <th className="px-4 py-3 w-36">Costo</th>}
                                     <th className="px-4 py-3 w-36">PVP (P. Venta)</th>
                                     <th className="px-4 py-3 w-32">Margen (ROI)</th>
@@ -759,12 +873,25 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                                     const isSaved = savedIds.has(p.id)
                                     const img = safeParseImages(p.images)
                                     const styles = getSupplierStyles(p.provider || "Sin Proveedor")
-
+                                    const isSelected = selectedProducts.includes(p.id)
+ 
                                     return (
                                         <tr
                                             key={p.id}
-                                            className={`hover:bg-slate-50/30 transition-colors duration-300 group/flatrow ${isSaving ? "opacity-50" : ""} ${isSaved ? "bg-emerald-500/5" : ""}`}
+                                            className={`hover:bg-slate-50/30 transition-colors duration-300 group/flatrow ${isSaving ? "opacity-50" : ""} ${isSaved ? "bg-emerald-500/5" : ""} ${isSelected ? "bg-slate-50/80" : ""}`}
                                         >
+                                            <td className="px-4 py-3.5 text-center w-12">
+                                                <button
+                                                    onClick={() => toggleProductSelection(p.id)}
+                                                    className="text-slate-355 hover:text-slate-900 transition-colors"
+                                                >
+                                                    {isSelected ? (
+                                                        <CheckSquare size={16} className="text-slate-900" />
+                                                    ) : (
+                                                        <Square size={16} />
+                                                    )}
+                                                </button>
+                                            </td>
                                             <td className="px-4 py-3.5">
                                                 <div className="flex items-center gap-3">
                                                     <div className="w-10 h-10 bg-slate-50 border border-slate-200/60 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center relative group-hover/flatrow:border-blue-500/30 transition-all shadow-sm">
@@ -792,9 +919,13 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                                                 <span className="text-slate-400 text-xs font-medium">{p.category?.name || "Sin Categoría"}</span>
                                             </td>
                                             <td className="px-4 py-3.5">
-                                                <span className={`text-xs font-bold ${p.stock > 10 ? "text-emerald-600" : p.stock > 0 ? "text-amber-600" : "text-rose-500 font-semibold"}`}>
-                                                    {p.stock > 0 ? `${p.stock} uds` : "Agotado"}
-                                                </span>
+                                                <InlineEdit
+                                                    value={p.stock}
+                                                    decimals={0}
+                                                    step="1"
+                                                    prefix={null}
+                                                    onSave={val => handlePriceUpdate(p.id, "stock", val)}
+                                                />
                                             </td>
                                             {isAdmin && (
                                                 <td className="px-4 py-3.5">
@@ -821,7 +952,7 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                     </div>
                 </div>
             )}
-
+ 
             {/* Pagination */}
             {totalPages > 1 && (
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-200 bg-slate-50/30 p-5 rounded-2xl shadow-sm">
@@ -842,6 +973,90 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                             className="px-4 py-2 bg-white border border-slate-200 hover:border-slate-300 text-slate-600 hover:text-slate-800 text-xs font-semibold rounded-xl disabled:opacity-30 disabled:pointer-events-none transition-all duration-300 shadow-sm"
                         >
                             <span>Siguiente</span>
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* Elevated Bulk Actions Bar */}
+            {selectedProducts.length > 0 && (
+                <div className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-white/95 border border-slate-200/80 text-slate-800 px-6 py-4 flex flex-wrap items-center justify-center gap-6 shadow-[0_20px_50px_rgba(0,0,0,0.1)] z-[500] animate-in slide-in-from-bottom-6 duration-500 rounded-2xl backdrop-blur-md">
+                    <div className="flex items-center space-x-4 border-r border-slate-100 pr-5">
+                        <div className="w-8 h-8 bg-slate-900 text-white rounded-xl flex items-center justify-center font-bold text-sm shadow-sm">{selectedProducts.length}</div>
+                        <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Elegidos</span>
+                    </div>
+                    
+                    <div className="flex flex-wrap items-center gap-4">
+                        {/* Bulk Stock Input */}
+                        <div className="flex items-center gap-2 border-r border-slate-100 pr-4">
+                            <span className="text-xs font-bold text-slate-500">Stock:</span>
+                            <input
+                                type="number"
+                                step="1"
+                                min="0"
+                                value={bulkStockValue}
+                                onChange={e => setBulkStockValue(e.target.value)}
+                                placeholder="Ej: 50"
+                                className="w-16 bg-slate-50 border border-slate-200 px-2 py-1 text-xs font-semibold text-slate-850 outline-none focus:border-slate-400 focus:bg-white transition-all rounded-lg"
+                            />
+                            <button
+                                onClick={() => handleBulkPriceUpdate({ stock: parseInt(bulkStockValue) })}
+                                disabled={updatingBulk || !bulkStockValue}
+                                className="px-2.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-lg transition-all disabled:opacity-40"
+                            >
+                                Aplicar
+                            </button>
+                        </div>
+
+                        {/* Bulk Margin Input */}
+                        <div className="flex items-center gap-2 border-r border-slate-100 pr-4">
+                            <span className="text-xs font-bold text-slate-500">Margen:</span>
+                            <div className="relative">
+                                <input
+                                    type="number"
+                                    step="0.1"
+                                    value={bulkMarginValue}
+                                    onChange={e => setBulkMarginValue(e.target.value)}
+                                    placeholder="Ej: 20"
+                                    className="w-16 bg-slate-50 border border-slate-200 pl-2 pr-5 py-1 text-xs font-semibold text-slate-855 outline-none focus:border-slate-400 focus:bg-white transition-all rounded-lg"
+                                />
+                                <span className="absolute right-1.5 top-1/2 -translate-y-1/2 text-slate-450 text-[10px] font-bold">%</span>
+                            </div>
+                            <button
+                                onClick={handleBulkMarginApply}
+                                disabled={updatingBulk || !bulkMarginValue}
+                                className="px-2.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-lg transition-all disabled:opacity-40"
+                            >
+                                Marginar
+                            </button>
+                        </div>
+
+                        {/* Visibility Buttons */}
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={() => handleBulkPriceUpdate({ isActive: true })}
+                                disabled={updatingBulk}
+                                className="flex items-center gap-1 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 px-3 py-1.5 text-xs font-bold transition-all rounded-lg border border-emerald-100/50 shadow-sm"
+                            >
+                                <Eye size={12} />
+                                <span>Mostrar</span>
+                            </button>
+                            <button
+                                onClick={() => handleBulkPriceUpdate({ isActive: false })}
+                                disabled={updatingBulk}
+                                className="flex items-center gap-1 bg-slate-100 text-slate-700 hover:bg-slate-200 px-3 py-1.5 text-xs font-bold transition-all rounded-lg border border-slate-200 shadow-sm"
+                            >
+                                <EyeOff size={12} />
+                                <span>Ocultar</span>
+                            </button>
+                        </div>
+
+                        <button 
+                            onClick={() => setSelectedProducts([])}
+                            className="p-1.5 hover:bg-slate-150 text-slate-450 hover:text-slate-800 rounded-lg transition-colors active:scale-95 ml-2"
+                            title="Limpiar Selección"
+                        >
+                            <X size={16} />
                         </button>
                     </div>
                 </div>
