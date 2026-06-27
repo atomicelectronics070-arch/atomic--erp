@@ -114,7 +114,7 @@ export default function ShopConfigPage() {
             setActiveTab('prices_list')
         }
         refreshData()
-    }, [currentPage, pageSize, dashboardSearch, isTrashView, selectedProvider, session, status, router])
+    }, [currentPage, pageSize, dashboardSearch, isTrashView, selectedProvider, session, status, router, activeTab])
 
     if (status === "loading" || !["ADMIN", "MANAGEMENT", "SALESPERSON", "AFILIADO", "COORDINATOR", "COORD_ASSISTANT"].includes(session?.user?.role as string)) {
         return <div className="p-10 text-center text-white text-[10px] font-black uppercase tracking-[0.5em] mt-20 italic">AUTENTICANDO CREDENCIALES...</div>
@@ -237,46 +237,50 @@ export default function ShopConfigPage() {
     }
 
     const handlePermanentDelete = async (id: string) => {
-        if (!confirm("¿ELIMINAR PERMANENTEMENTE? Esta acción no se puede deshacer.")) return
+        if (!confirm("¿ELIMINAR PERMANENTEMENTE?")) return
         await permanentDeleteProduct(id)
         refreshData()
     }
 
     return (
-        <div className="space-y-16 pb-32 relative z-10">
-            <div className="fixed inset-0 pointer-events-none z-0">
-                <div className="absolute top-[10%] right-[-10%] w-[40%] h-[40%] bg-secondary/5 blur-[120px] animate-pulse" />
-            </div>
-
-            <header className="flex flex-col lg:flex-row lg:items-end justify-between mb-16 gap-10 border-b border-white/5 pb-16 relative z-10">
+        <div className="space-y-12 pb-32 relative z-10">
+            <header className="flex flex-col lg:flex-row lg:items-center justify-between mb-8 gap-6 border-b border-slate-200/85 pb-8 relative z-10">
                 <motion.div initial={{ opacity: 0, x: -50 }} animate={{ opacity: 1, x: 0 }}>
-                    <div className="flex items-center space-x-4 mb-4 text-secondary neon-text">
-                        <ShoppingBag size={20} />
-                        <span className="text-[10px] uppercase font-black tracking-[0.6em] italic">E-COMMERCE PROTOCOL V6.2 // MASTER</span>
+                    <div className="flex items-center space-x-2 mb-2 text-blue-600 font-semibold">
+                        <ShoppingBag size={18} />
+                        <span className="text-[10px] uppercase font-bold tracking-wider">MÓDULO DE CATÁLOGO Y OPERACIONES</span>
                     </div>
-                    <h1 className="text-7xl font-black text-white uppercase tracking-tighter leading-none italic">
-                        CENTRO DE <span className="text-secondary neon-text">CATÁLOGO</span>
+                    <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight leading-none">
+                        Centro de Catálogo
                     </h1>
                 </motion.div>
                 <div className="flex gap-4">
                     {session?.user?.role === "ADMIN" && (
-                        <NeonButton variant="primary" onClick={() => { setEditingProduct(null); setView(view === 'list' ? 'add' : 'list') }}>
-                            {view === 'list' ? "SUBIR PRODUCTO_CMD" : "RETORNO LISTADO"}
-                        </NeonButton>
+                        <button 
+                            onClick={() => { setEditingProduct(null); setView(view === 'list' ? 'add' : 'list') }}
+                            className="px-5 py-3 rounded-xl bg-blue-600 text-white font-semibold text-sm hover:bg-blue-500 transition-all duration-300 shadow-sm hover:shadow-[0_4px_12px_rgba(59,130,246,0.25)] flex items-center gap-2"
+                        >
+                            <Plus size={16} />
+                            <span>{view === 'list' ? "Subir Producto" : "Volver al Listado"}</span>
+                        </button>
                     )}
                 </div>
             </header>
 
             {view === 'list' ? (
-                <div className="space-y-12 animate-in fade-in duration-700">
-                    <div className="flex gap-4 p-2 bg-slate-50 border border-slate-200 w-fit backdrop-blur-3xl overflow-x-auto custom-scrollbar">
+                <div className="space-y-10 animate-in fade-in duration-700">
+                    <div className="flex gap-2 p-1.5 bg-slate-100/80 border border-slate-200/60 rounded-2xl w-fit backdrop-blur-md overflow-x-auto custom-scrollbar shadow-inner">
                         {['products', 'suppliers', 'prices_list', 'catalogs', 'settings']
                             .filter(tab => session?.user?.role === "ADMIN" || tab === 'prices_list')
                             .map((tab) => (
                             <button
                                 key={tab}
                                 onClick={() => setActiveTab(tab as any)}
-                                className={`px-6 sm:px-10 py-4 text-[10px] font-black uppercase tracking-widest transition-all italic whitespace-nowrap ${activeTab === tab ? 'bg-[black] text-white shadow-xl shadow-[black]/20' : 'text-[black]/40 hover:text-[black] hover:bg-[black]/5'}`}
+                                className={`px-5 py-2.5 text-xs font-semibold rounded-xl transition-all whitespace-nowrap ${
+                                    activeTab === tab 
+                                        ? 'bg-white text-slate-900 shadow-sm border border-slate-200/50' 
+                                        : 'text-slate-500 hover:text-slate-800 hover:bg-white/40'
+                                }`}
                             >
                                 {tab === 'products' ? 'Inventario Maestro' : 
                                  tab === 'suppliers' ? 'Proveedores' : 
@@ -306,83 +310,81 @@ export default function ShopConfigPage() {
                 )}
 
                 {activeTab === 'products' && (
-                        <div className="space-y-12 animate-in fade-in duration-700">
+                        <div className="space-y-8 animate-in fade-in duration-700">
                             {/* Modern Stats Summary */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-8 relative z-10">
-                                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="glass-panel p-10 flex items-center gap-8 rounded-none-[3rem] border-white/5 relative overflow-hidden group backdrop-blur-3xl shadow-2xl">
-                                    <div className="absolute top-0 left-0 w-2 h-full bg-secondary shadow-[0_0_20px_rgba(255,99,71,0.5)]"></div>
-                                    <div className="p-5 bg-secondary/10 text-secondary rounded-none group-hover:scale-110 group-hover:rotate-6 transition-all duration-500"><ShoppingBag size={28} /></div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 relative z-10">
+                                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white border border-slate-200/80 p-6 flex items-center gap-5 rounded-2xl relative overflow-hidden group shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.05)] hover:-translate-y-0.5 transition-all duration-300">
+                                    <div className="absolute top-0 left-0 w-[4px] h-full bg-blue-500"></div>
+                                    <div className="p-3 bg-blue-50 text-blue-600 rounded-xl group-hover:scale-105 transition-all duration-500"><ShoppingBag size={24} /></div>
                                     <div>
-                                        <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.3em] mb-2 italic">Items Catalogados</p>
-                                        <h4 className="text-4xl font-black text-white italic tracking-tighter">{totalProducts}</h4>
+                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Items Catalogados</p>
+                                        <h4 className="text-2xl font-extrabold text-slate-900 tracking-tight">{totalProducts}</h4>
                                     </div>
                                 </motion.div>
-                                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="glass-panel p-10 flex items-center gap-8 rounded-none-[3rem] border-white/5 relative overflow-hidden group backdrop-blur-3xl shadow-2xl">
-                                    <div className="absolute top-0 left-0 w-2 h-full bg-azure-500 shadow-[0_0_20px_rgba(45,212,191,0.5)]"></div>
-                                    <div className="p-5 bg-azure-500/10 text-azure-500 rounded-none group-hover:scale-110 group-hover:rotate-6 transition-all duration-500"><TagIcon size={28} /></div>
+                                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-white border border-slate-200/80 p-6 flex items-center gap-5 rounded-2xl relative overflow-hidden group shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.05)] hover:-translate-y-0.5 transition-all duration-300">
+                                    <div className="absolute top-0 left-0 w-[4px] h-full bg-indigo-500"></div>
+                                    <div className="p-3 bg-indigo-50 text-indigo-600 rounded-xl group-hover:scale-105 transition-all duration-500"><TagIcon size={24} /></div>
                                     <div>
-                                        <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.3em] mb-2 italic">Elementos de Categoría</p>
-                                        <h4 className="text-4xl font-black text-white italic tracking-tighter">{metadata.categories.length}</h4>
+                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Elementos de Categoría</p>
+                                        <h4 className="text-2xl font-extrabold text-slate-900 tracking-tight">{metadata.categories.length}</h4>
                                     </div>
                                 </motion.div>
-                                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="glass-panel p-10 flex items-center gap-8 rounded-none-[3rem] border-white/5 relative overflow-hidden group backdrop-blur-3xl shadow-2xl">
-                                    <div className="absolute top-0 left-0 w-2 h-full bg-primary shadow-[0_0_20px_rgba(255,255,255,0.2)]"></div>
-                                    <div className="p-5 bg-primary/10 text-primary rounded-none group-hover:scale-110 group-hover:rotate-6 transition-all duration-500"><Globe size={28} /></div>
+                                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="bg-white border border-slate-200/80 p-6 flex items-center gap-5 rounded-2xl relative overflow-hidden group shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.05)] hover:-translate-y-0.5 transition-all duration-300">
+                                    <div className="absolute top-0 left-0 w-[4px] h-full bg-violet-500"></div>
+                                    <div className="p-3 bg-violet-50 text-violet-600 rounded-xl group-hover:scale-105 transition-all duration-500"><Globe size={24} /></div>
                                     <div>
-                                        <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.3em] mb-2 italic">Fuentes de Suministro</p>
-                                        <h4 className="text-4xl font-black text-white italic tracking-tighter">{providerStats.length}</h4>
+                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Fuentes de Suministro</p>
+                                        <h4 className="text-2xl font-extrabold text-slate-900 tracking-tight">{providerStats.length}</h4>
                                     </div>
                                 </motion.div>
-                                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="glass-panel p-10 flex items-center gap-8 rounded-none-[3rem] border-white/5 relative overflow-hidden group backdrop-blur-3xl shadow-2xl">
-                                    <div className="absolute top-0 left-0 w-2 h-full bg-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.5)]"></div>
-                                    <div className="p-5 bg-emerald-500/10 text-emerald-500 rounded-none group-hover:scale-110 group-hover:rotate-6 transition-all duration-500"><CheckCircle size={28} /></div>
+                                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="bg-white border border-slate-200/80 p-6 flex items-center gap-5 rounded-2xl relative overflow-hidden group shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.05)] hover:-translate-y-0.5 transition-all duration-300">
+                                    <div className="absolute top-0 left-0 w-[4px] h-full bg-emerald-500"></div>
+                                    <div className="p-3 bg-emerald-50 text-emerald-600 rounded-xl group-hover:scale-105 transition-all duration-500"><CheckCircle size={24} /></div>
                                     <div>
-                                        <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.3em] mb-2 italic">En Stock_Live</p>
-                                        <h4 className="text-4xl font-black text-emerald-400 italic tracking-tighter">{products.filter(p => p.stock > 0).length}</h4>
+                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">En Stock Live</p>
+                                        <h4 className="text-2xl font-extrabold text-emerald-600 tracking-tight">{products.filter(p => p.stock > 0).length}</h4>
                                     </div>
                                 </motion.div>
                             </div>
 
-                            <div className="grid grid-cols-1 lg:grid-cols-4 gap-12 items-start">
+                            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
                                 {/* Sidebar: Insights & Maintenance */}
-                                <div className="lg:col-span-1 space-y-8 sticky top-32">
-                                    <div className="glass-panel p-10 rounded-none-[3rem] border-white/5 relative overflow-hidden backdrop-blur-3xl">
-                                        <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/5 blur-3xl -mr-16 -mt-16 rounded-none"></div>
-                                        <div className="flex items-center space-x-3 text-secondary border-b border-white/5 pb-8 mb-8">
-                                            <Store size={22} className="drop-shadow-[0_0_8px_rgba(255,99,71,0.3)]" />
-                                            <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-white italic">Estructura de Origen</h3>
+                                <div className="lg:col-span-1 space-y-6 sticky top-32">
+                                    <div className="bg-white border border-slate-200/80 p-6 rounded-2xl shadow-sm relative overflow-hidden">
+                                        <div className="flex items-center space-x-3 text-slate-800 border-b border-slate-100 pb-5 mb-5">
+                                            <Store size={18} className="text-blue-500" />
+                                            <h3 className="text-xs font-bold text-slate-800">Estructura de Origen</h3>
                                         </div>
-                                        <div className="space-y-4 max-h-[400px] overflow-y-auto pr-4 custom-scrollbar">
+                                        <div className="space-y-2 max-h-[350px] overflow-y-auto pr-2 custom-scrollbar">
                                             {providerStats.length > 0 ? providerStats.map((s, i) => (
-                                                <div key={i} className="flex justify-between items-center group cursor-default p-4 hover:bg-white/5 transition-all rounded-none border border-transparent hover:border-white/5">
-                                                    <span className="text-[10px] font-black text-slate-400 uppercase truncate pr-4 group-hover:text-secondary transition-colors italic">{s.name}</span>
-                                                    <span className="text-[10px] font-black text-white bg-slate-900 px-3 py-1 rounded-none border border-white/5 shadow-xl">{s.count} <span className="opacity-40 ml-1">UDS</span></span>
+                                                <div key={i} className="flex justify-between items-center group cursor-default p-2.5 hover:bg-slate-50 transition-all rounded-xl border border-transparent hover:border-slate-100">
+                                                    <span className="text-xs font-semibold text-slate-600 truncate pr-3 group-hover:text-blue-600 transition-colors">{s.name}</span>
+                                                    <span className="text-[10px] font-bold text-slate-800 bg-slate-100 border border-slate-200/60 px-2 py-0.5 rounded-full shadow-sm">{s.count} <span className="opacity-55 ml-0.5 font-normal text-[9px]">uds</span></span>
                                                 </div>
                                             )) : (
-                                                <div className="text-[10px] text-slate-700 italic font-black uppercase text-center py-20 flex flex-col items-center gap-4">
-                                                    <RefreshCw size={32} className="animate-spin opacity-20" />
+                                                <div className="text-xs text-slate-400 font-semibold text-center py-16 flex flex-col items-center gap-3">
+                                                    <RefreshCw size={24} className="animate-spin opacity-45" />
                                                     Sincronizando proveedores...
                                                 </div>
                                             )}
                                         </div>
-                                        <div className="pt-8 border-t border-white/5 mt-8">
+                                        <div className="pt-5 border-t border-slate-100 mt-5">
                                             <button 
                                                 onClick={() => setActiveTab('settings')}
-                                                className="w-full text-center text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 hover:text-secondary transition-all flex items-center justify-center gap-3 italic"
+                                                className="w-full text-center text-xs font-semibold text-slate-500 hover:text-blue-600 transition-all flex items-center justify-center gap-1.5"
                                             >
-                                                Gestión de Mantenimiento <ChevronRight size={14} />
+                                                <span>Configuración general</span> <ChevronRight size={13} />
                                             </button>
                                         </div>
                                     </div>
 
-                                    <div className="glass-panel p-10 rounded-none-[3rem] border-white/5 relative overflow-hidden group backdrop-blur-3xl">
-                                        <div className="absolute inset-0 bg-gradient-to-br from-secondary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                        <div className="flex items-center space-x-4 mb-8">
-                                            <div className="p-3 bg-secondary/10 text-secondary rounded-none"><Trash2 size={24} /></div>
-                                            <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-white italic">Saneamiento Maestro</h3>
+                                    <div className="bg-white border border-slate-200/80 p-6 rounded-2xl shadow-sm relative overflow-hidden group">
+                                        <div className="flex items-center space-x-3 mb-5 pb-5 border-b border-slate-100">
+                                            <div className="p-2 bg-rose-50 text-rose-500 rounded-lg"><Trash2 size={18} /></div>
+                                            <h3 className="text-xs font-bold text-slate-800">Saneamiento Maestro</h3>
                                         </div>
-                                        <p className="text-[10px] font-bold uppercase italic text-slate-500 leading-relaxed mb-10">
-                                            Ejecución intensiva de eliminación de colisiones de datos y duplicidad de Elementos para optimizar el rendimiento.
+                                        <p className="text-xs font-medium text-slate-400 leading-relaxed mb-6">
+                                            Ejecución intensiva de eliminación de colisiones de datos y duplicidad de elementos para optimizar el rendimiento.
                                         </p>
                                         <button 
                                              onClick={async () => {
@@ -398,128 +400,128 @@ export default function ShopConfigPage() {
                                                  }
                                              }}
                                              disabled={isCleaning}
-                                             className="w-full bg-slate-50 border border-slate-200 py-5 text-[10px] font-black uppercase tracking-[0.3em] text-slate-800 hover:bg-slate-100 transition-all shadow-sm rounded-none disabled:opacity-50"
+                                             className="w-full bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-100 py-3 text-xs font-bold transition-all shadow-sm rounded-xl disabled:opacity-50"
                                          >
-                                             {isCleaning ? 'Saneando Arquitectura...' : 'Saneamiento de Catálogo'}
+                                             {isCleaning ? 'Saneando... ' : 'Saneamiento de Catálogo'}
                                          </button>
                                     </div>
                                 </div>
 
                                 {/* Main Content: Search & Table */}
-                                <div className="lg:col-span-3 space-y-12 relative z-10">
-                                    <div className="flex flex-col md:flex-row gap-6 items-center bg-white border border-slate-200 p-6 rounded-none-[2rem] shadow-sm relative overflow-hidden group">
-                                        <div className="absolute top-0 left-0 w-[3px] h-full bg-blue-600 transition-all"></div>
+                                <div className="lg:col-span-3 space-y-8 relative z-10">
+                                    <div className="flex flex-col md:flex-row gap-4 items-center bg-white border border-slate-200/80 p-5 rounded-2xl shadow-sm relative overflow-hidden group">
+                                        <div className="absolute top-0 left-0 w-[4px] h-full bg-blue-500 transition-all"></div>
                                         <div className="flex-1 relative group w-full">
-                                            <Search className="absolute left-8 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-600 transition-colors" size={20} />
+                                            <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" size={16} />
                                             <input 
                                                 type="text"
-                                                placeholder="BÚSQUEDA TÁCTICA POR SKU, NOMBRE O PROVEEDOR..."
+                                                placeholder="Buscar por SKU, nombre o proveedor..."
                                                 value={dashboardSearch}
                                                 onChange={(e) => { setDashboardSearch(e.target.value); setCurrentPage(1); }}
-                                                className="w-full bg-slate-50 border border-slate-200 pl-20 pr-10 py-5 text-[11px] font-black uppercase tracking-[0.2em] text-slate-800 outline-none focus:border-blue-600 focus:bg-white focus:ring-8 focus:ring-blue-500/5 transition-all rounded-none-[1.5rem] placeholder:text-slate-400 italic"
+                                                className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-12 pr-5 py-3.5 text-xs font-semibold text-slate-800 outline-none focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/5 transition-all placeholder:text-slate-400"
                                             />
                                         </div>
-                                        <div className="flex-shrink-0">
+                                        <div className="flex-shrink-0 w-full md:w-auto">
                                             <select 
                                                 value={selectedProvider} 
                                                 onChange={(e) => { setSelectedProvider(e.target.value); setCurrentPage(1); }}
-                                                className="bg-slate-50 border border-slate-200 px-6 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-800 outline-none focus:border-blue-600 focus:bg-white transition-all rounded-none-[1.5rem] appearance-none italic cursor-pointer pr-10"
-                                                style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 24 24\' stroke=\'%2364748b\' stroke-width=\'2.5\'%3E%3Cpath stroke-linecap=\'round\' stroke-linejoin=\'round\' d=\'M19 9l-7 7-7-7\'%3E%3C/path%3E%3C/svg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1.2rem center', backgroundSize: '0.8em' }}
+                                                className="w-full md:w-auto bg-slate-50 border border-slate-200 px-4 py-3.5 text-xs font-bold text-slate-700 outline-none focus:border-blue-500 focus:bg-white transition-all rounded-xl appearance-none cursor-pointer pr-10"
+                                                style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 24 24\' stroke=\'%2364748b\' stroke-width=\'2.5\'%3E%3Cpath stroke-linecap=\'round\' stroke-linejoin=\'round\' d=\'M19 9l-7 7-7-7\'%3E%3C/path%3E%3C/svg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '0.8em' }}
                                             >
                                                 <option value="">TODOS LOS PROVEEDORES</option>
                                                 {providerStats.map(s => <option key={s.name} value={s.name}>{s.name.toUpperCase()} ({s.count})</option>)}
                                             </select>
                                         </div>
-                                        <div className="flex bg-slate-100 border border-slate-200 p-1.5 rounded-none-[1.5rem] w-full md:w-fit whitespace-nowrap shadow-inner skew-x-[-12deg]">
+                                        <div className="flex bg-slate-100 border border-slate-200 p-1 rounded-xl w-full md:w-fit whitespace-nowrap shadow-inner">
                                             <button 
                                                 onClick={() => { setIsTrashView(false); setCurrentPage(1); }}
-                                                className={`skew-x-[12deg] px-8 py-3.5 text-[10px] font-black uppercase tracking-widest transition-all rounded-none-[1.2rem] ${!isTrashView ? 'bg-slate-900 text-white shadow-md' : 'text-slate-500 hover:text-slate-800'}`}
+                                                className={`px-4 py-2 text-xs font-semibold rounded-lg transition-all ${!isTrashView ? 'bg-white text-slate-900 shadow-sm border border-slate-200/50' : 'text-slate-500 hover:text-slate-800'}`}
                                             >
-                                                Activo_OPS
+                                                Activo
                                             </button>
                                             <button 
                                                 onClick={() => { setIsTrashView(true); setCurrentPage(1); }}
-                                                className={`skew-x-[12deg] px-8 py-3.5 text-[10px] font-black uppercase tracking-widest transition-all rounded-none-[1.2rem] flex items-center gap-2.5 ${isTrashView ? 'bg-red-600 text-white shadow-md' : 'text-slate-500 hover:text-red-600'}`}
+                                                className={`px-4 py-2 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5 ${isTrashView ? 'bg-red-550 text-red-600 shadow-sm border border-red-200/50' : 'text-slate-500 hover:text-red-600'}`}
                                             >
                                                 <Trash2 size={13} /> Papelera
                                             </button>
                                         </div>
                                     </div>
 
-                                    <div className="bg-white border border-slate-200 rounded-none-[2rem] shadow-sm overflow-hidden relative">
+                                    <div className="bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden relative">
                                         <div className="overflow-x-auto custom-scrollbar">
                                             <table className="w-full text-left border-collapse">
                                                 <thead>
-                                                    <tr className="bg-slate-50/80 text-[9px] font-black uppercase tracking-[0.3em] text-slate-500 border-b border-slate-200/80 italic">
-                                                        <th className="px-10 py-8 w-20">
-                                                            <button onClick={toggleAllProducts} className="text-slate-400 hover:text-blue-600 transition-colors">
-                                                                {selectedProducts.length === products.length && products.length > 0 ? <CheckSquare size={22} className="text-blue-600 shadow-[0_0_10px_rgba(59,130,246,0.2)]" /> : <Square size={22} />}
+                                                    <tr className="bg-slate-50/60 text-[11px] font-bold text-slate-500 border-b border-slate-200/60">
+                                                        <th className="px-6 py-4 w-16">
+                                                            <button onClick={toggleAllProducts} className="text-slate-400 hover:text-blue-500 transition-colors">
+                                                                {selectedProducts.length === products.length && products.length > 0 ? <CheckSquare size={18} className="text-blue-600 shadow-sm" /> : <Square size={18} />}
                                                             </button>
                                                         </th>
-                                                        <th className="px-10 py-8">Entidad / Identificador</th>
-                                                        <th className="px-10 py-8">Origen</th>
-                                                        <th className="px-10 py-8">Stock Disponible</th>
-                                                        <th className="px-10 py-8">Finanzas (Costo/Margen/PVP)</th>
-                                                        <th className="px-10 py-8 text-right pr-16">Acciones_CMD</th>
+                                                        <th className="px-6 py-4">Artículo</th>
+                                                        <th className="px-6 py-4 w-32">Proveedor</th>
+                                                        <th className="px-6 py-4 w-28">Stock</th>
+                                                        <th className="px-6 py-4 w-52">Finanzas (Costo/ROI/PVP)</th>
+                                                        <th className="px-6 py-4 text-right pr-8">Acciones</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody className="divide-y divide-slate-100 bg-white">
                                                     {products.length === 0 ? (
                                                         <tr>
-                                                            <td colSpan={6} className="py-48 text-center">
-                                                                <div className="flex flex-col items-center space-y-6 opacity-20 group">
-                                                                    <div className="p-6 bg-slate-100 rounded-none group-hover:scale-110 transition-transform duration-700">
-                                                                        <ShoppingBag size={64} className="text-slate-400" />
+                                                            <td colSpan={6} className="py-24 text-center">
+                                                                <div className="flex flex-col items-center space-y-4 opacity-30 group">
+                                                                    <div className="p-4 bg-slate-50 border border-slate-200/60 rounded-xl group-hover:scale-105 transition-transform duration-500">
+                                                                        <ShoppingBag size={48} className="text-slate-400" />
                                                                     </div>
-                                                                    <p className="uppercase text-xs font-black tracking-[0.4em] text-slate-400 italic">Cámara de Inventario Vacía</p>
+                                                                    <p className="text-xs font-semibold text-slate-400">Cámara de Inventario Vacía</p>
                                                                 </div>
                                                             </td>
                                                         </tr>
                                                     ) : (
                                                         products.map((p) => (
-                                                            <tr key={p.id} className={`hover:bg-slate-50/50 border-b border-slate-100 transition-colors group ${selectedProducts.includes(p.id) ? 'bg-blue-50/5' : ''}`}>
-                                                                <td className="px-10 py-6">
+                                                            <tr key={p.id} className={`hover:bg-slate-50/30 border-b border-slate-100 transition-colors group ${selectedProducts.includes(p.id) ? 'bg-blue-50/5' : ''}`}>
+                                                                <td className="px-6 py-4">
                                                                     <button 
                                                                         onClick={() => toggleProductSelection(p.id)} 
-                                                                        className={`transition-all duration-300 ${selectedProducts.includes(p.id) ? 'text-blue-600 scale-110 drop-shadow-[0_0_8px_rgba(59,130,246,0.3)]' : 'text-slate-300 hover:text-slate-500'}`}
+                                                                        className={`transition-all duration-300 ${selectedProducts.includes(p.id) ? 'text-blue-600 scale-105 drop-shadow-[0_0_8px_rgba(59,130,246,0.2)]' : 'text-slate-350 hover:text-slate-500'}`}
                                                                     >
-                                                                        {selectedProducts.includes(p.id) ? <CheckSquare size={22} /> : <Square size={22} />}
+                                                                        {selectedProducts.includes(p.id) ? <CheckSquare size={18} /> : <Square size={18} />}
                                                                     </button>
                                                                 </td>
-                                                                <td className="px-10 py-6">
-                                                                    <div className="flex items-center space-x-6">
-                                                                        <div className="w-14 h-14 bg-slate-100 border border-slate-200/60 rounded-lg overflow-hidden flex items-center justify-center relative group-hover:border-blue-500/40 transition-all shadow-sm">
+                                                                <td className="px-6 py-4">
+                                                                    <div className="flex items-center space-x-4">
+                                                                        <div className="w-12 h-12 bg-slate-55 border border-slate-200/60 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center relative group-hover:border-blue-500/30 transition-all shadow-sm">
                                                                             {p.images && p.images !== 'null' && safeParseArray(p.images).length > 0 ? (
-                                                                                <img src={safeParseArray(p.images)[0]} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
+                                                                                <img src={safeParseArray(p.images)[0]} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-550" />
                                                                             ) : (
-                                                                                <ImageIcon size={20} className="text-slate-400" />
+                                                                                <ImageIcon size={18} className="text-slate-400" />
                                                                             )}
                                                                         </div>
                                                                         <div className="max-w-md">
-                                                                            <p className="text-[13px] font-black text-slate-800 line-clamp-1 group-hover:text-blue-600 transition-colors italic uppercase tracking-tight mb-1">{p.name}</p>
-                                                                            <div className="flex items-center gap-4">
-                                                                                <span className="text-[9px] text-slate-400 font-mono font-black uppercase tracking-wider">{p.sku || 'N/A'}</span>
-                                                                                {p.featured && <span className="bg-yellow-500/10 text-yellow-600 text-[8px] font-black uppercase tracking-[0.4em] px-2 py-0.5 border border-yellow-500/20 shadow-[0_0_8px_rgba(234,179,8,0.1)]">DESTACADO</span>}
+                                                                            <p className="text-xs font-semibold text-slate-800 line-clamp-1 group-hover:text-blue-600 transition-colors mb-1">{p.name}</p>
+                                                                            <div className="flex items-center gap-2">
+                                                                                <span className="text-[10px] text-slate-450 font-mono font-medium">{p.sku || 'N/A'}</span>
+                                                                                {p.featured && <span className="bg-yellow-50 text-yellow-600 text-[9px] font-bold px-1.5 py-0.5 border border-yellow-200/60 rounded">DESTACADO</span>}
                                                                             </div>
                                                                         </div>
                                                                     </div>
                                                                 </td>
-                                                                <td className="px-10 py-6">
-                                                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-700 bg-slate-100 px-4 py-2 border border-slate-200/60 rounded-none italic skew-x-[-12deg] group-hover:border-blue-500/30 transition-all">
-                                                                        <span className="skew-x-[12deg] inline-block">{p.provider || 'SIN PROVEEDOR'}</span>
+                                                                <td className="px-6 py-4">
+                                                                    <span className="inline-flex items-center justify-center px-2.5 py-1 text-[10px] font-bold rounded-full border border-slate-200/60 bg-slate-50 text-slate-650">
+                                                                        {p.provider || 'Sin Proveedor'}
                                                                     </span>
                                                                 </td>
-                                                                <td className="px-10 py-6">
-                                                                    <div className="flex items-center gap-4">
-                                                                        <div className={`w-2 h-2 rounded-none ${p.stock < 10 ? 'bg-red-500 animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.6)]' : (p.stock < 50 ? 'bg-yellow-500 shadow-[0_0_10px_rgba(234,179,8,0.4)]' : 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.4)]')}`}></div>
+                                                                <td className="px-6 py-4">
+                                                                    <div className="flex items-center gap-2.5">
+                                                                        <div className={`w-2 h-2 rounded-full ${p.stock < 10 ? 'bg-red-500 animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.3)]' : (p.stock < 50 ? 'bg-yellow-500' : 'bg-emerald-500')}`}></div>
                                                                         <div>
-                                                                            <p className="text-sm font-black text-slate-800 italic tracking-tighter">{p.stock} <span className="text-[9px] text-slate-400 ml-1 uppercase">Uds</span></p>
-                                                                            <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-1">Disp. Inmediata</p>
+                                                                            <p className="text-xs font-bold text-slate-800">{p.stock} <span className="text-[10px] text-slate-400 font-normal">uds</span></p>
+                                                                            <p className="text-[9px] text-slate-400">Disp. Inmediata</p>
                                                                         </div>
                                                                     </div>
                                                                 </td>
-                                                                <td className="px-10 py-6">
-                                                                    <div className="flex flex-col gap-1 w-48 font-mono">
+                                                                <td className="px-6 py-4">
+                                                                    <div className="flex flex-col gap-0.5 w-44 font-medium text-[11px]">
                                                                         {(() => {
                                                                             const price = parseFloat(p.price) || 0;
                                                                             const cost = p.compareAtPrice || (price / 1.20);
@@ -527,56 +529,56 @@ export default function ShopConfigPage() {
                                                                             const marginPercent = cost > 0 ? (margin / cost) * 100 : 0;
                                                                             return (
                                                                                 <>
-                                                                                    <div className="flex items-center justify-between gap-4 text-[9px] font-black uppercase tracking-widest text-slate-500">
-                                                                                        <span>Costo:</span> <span className="text-slate-600 font-bold">${cost.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</span>
+                                                                                    <div className="flex items-center justify-between text-slate-400">
+                                                                                        <span>Costo:</span> <span className="text-slate-600 font-semibold">${cost.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</span>
                                                                                     </div>
-                                                                                    <div className="flex items-center justify-between gap-4 text-[9px] font-black uppercase tracking-widest text-emerald-600">
-                                                                                        <span>Margen ({marginPercent.toFixed(0)}%):</span> <span className="font-bold">+${margin.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</span>
+                                                                                    <div className="flex items-center justify-between text-emerald-600">
+                                                                                        <span>ROI ({marginPercent.toFixed(0)}%):</span> <span className="font-semibold">+${margin.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</span>
                                                                                     </div>
-                                                                                    <div className="flex items-center justify-between gap-4 text-[11px] font-black uppercase tracking-widest text-blue-600 mt-1 pt-1 border-t border-slate-200">
-                                                                                        <span>PVP:</span> <span className="font-bold">${price.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</span>
+                                                                                    <div className="flex items-center justify-between font-bold text-blue-600 border-t border-slate-100 pt-0.5 mt-0.5">
+                                                                                        <span>PVP:</span> <span>${price.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</span>
                                                                                     </div>
                                                                                 </>
                                                                             )
                                                                         })()}
                                                                     </div>
                                                                 </td>
-                                                                <td className="px-10 py-6 text-right pr-16">
-                                                                    <div className="flex items-center justify-end gap-3">
+                                                                <td className="px-6 py-4 text-right pr-8">
+                                                                    <div className="flex items-center justify-end gap-2.5">
                                                                         {isTrashView ? (
                                                                             <button 
                                                                                 onClick={() => handleRestore(p.id)}
-                                                                                className="px-6 py-3 bg-emerald-50 hover:bg-emerald-600 text-white border border-emerald-600 hover:border-emerald-500 transition-all text-[9px] font-black uppercase tracking-[0.25em] rounded shadow-sm active:scale-95 italic skew-x-[-12deg]"
+                                                                                className="px-4 py-2 bg-emerald-50 hover:bg-emerald-600 text-emerald-600 hover:text-white border border-emerald-200 hover:border-emerald-500 transition-all text-xs font-semibold rounded-lg shadow-sm"
                                                                             >
-                                                                                <span className="skew-x-[12deg] block">Restaurar</span>
+                                                                                Restaurar
                                                                             </button>
                                                                         ) : (
                                                                             <>
                                                                                 <button 
                                                                                     onClick={() => { setEditingProduct(p); setView('edit'); }}
-                                                                                    className="p-3 bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-slate-800 transition-all rounded border border-slate-200/60 shadow-sm active:scale-90 group/btn"
+                                                                                    className="p-2.5 bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-slate-800 transition-all rounded-lg border border-slate-200/60 shadow-sm active:scale-95 group/btn"
                                                                                 >
-                                                                                    <Edit size={16} className="group-hover/btn:rotate-12 transition-transform" />
+                                                                                    <Edit size={15} className="group-hover/btn:rotate-12 transition-transform" />
                                                                                 </button>
                                                                                 <button
                                                                                     onClick={async () => {
                                                                                         await toggleProductFeatured(p.id, !p.featured)
                                                                                         refreshData()
                                                                                     }}
-                                                                                    className={`p-3 transition-all rounded border shadow-sm active:scale-90 ${
+                                                                                    className={`p-2.5 transition-all rounded-lg border shadow-sm active:scale-95 ${
                                                                                         p.featured 
-                                                                                            ? 'bg-yellow-50 border-yellow-200 text-yellow-600 hover:bg-yellow-100'
+                                                                                            ? 'bg-yellow-50 border-yellow-250 text-yellow-600 hover:bg-yellow-100'
                                                                                             : 'bg-slate-50 border-slate-200/60 text-slate-400 hover:bg-yellow-50 hover:text-yellow-500'
                                                                                     }`}
                                                                                     title={p.featured ? 'Quitar de destacados' : 'Marcar como destacado'}
                                                                                 >
-                                                                                    <Star size={16} />
+                                                                                    <Star size={15} />
                                                                                 </button>
                                                                                 <button 
                                                                                     onClick={() => handleDelete(p.id)}
-                                                                                    className="p-3 bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white transition-all rounded border border-rose-200/60 shadow-sm active:scale-90 group/del"
+                                                                                    className="p-2.5 bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white transition-all rounded-lg border border-rose-200/60 shadow-sm active:scale-95 group/del"
                                                                                 >
-                                                                                    <Trash2 size={16} className="group-hover/del:scale-110 transition-transform" />
+                                                                                    <Trash2 size={15} className="group-hover/del:scale-105 transition-transform" />
                                                                                 </button>
                                                                             </>
                                                                         )}
@@ -588,73 +590,77 @@ export default function ShopConfigPage() {
                                                 </tbody>
                                             </table>
                                         </div>
-
+ 
                                         {/* Futuristic Pagination */}
-                                        <div className="px-12 py-8 border-t border-slate-200 flex flex-col md:flex-row items-center justify-between bg-slate-50/50 gap-6">
-                                            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 italic">PÁGINA {currentPage} <span className="text-slate-300 mx-2">/</span> {Math.ceil(totalProducts / pageSize) || 1} <span className="text-blue-500 mx-4">|</span> TOTAL {totalProducts} DESPLIEGUES</p>
-                                            <div className="flex items-center space-x-4">
+                                        <div className="px-6 py-4 border-t border-slate-200 flex flex-col md:flex-row items-center justify-between bg-slate-50/50 gap-4">
+                                            <p className="text-xs font-semibold text-slate-500">Página {currentPage} / {Math.ceil(totalProducts / pageSize) || 1} <span className="text-slate-350 mx-2">|</span> Total {totalProducts} artículos</p>
+                                            <div className="flex items-center space-x-2">
                                                 <button 
                                                     disabled={currentPage <= 1}
                                                     onClick={() => setCurrentPage(prev => prev - 1)}
-                                                    className="px-8 py-3 bg-white border border-slate-200 text-slate-500 hover:text-slate-800 disabled:opacity-30 transition-all font-black uppercase tracking-[0.3em] text-[9px] rounded active:scale-95 shadow-sm skew-x-[-12deg]"
+                                                    className="px-4 py-2 bg-white border border-slate-200 text-slate-600 hover:text-slate-800 disabled:opacity-30 transition-all font-semibold text-xs rounded-xl active:scale-95 shadow-sm"
                                                 >
-                                                    <span className="skew-x-[12deg] block">Retorno</span>
+                                                    <span>Anterior</span>
                                                 </button>
                                                 <button 
                                                     disabled={currentPage >= Math.ceil(totalProducts / pageSize)}
                                                     onClick={() => setCurrentPage(prev => prev + 1)}
-                                                    className="px-8 py-3 bg-white border border-slate-200 text-slate-500 hover:text-slate-800 disabled:opacity-30 transition-all font-black uppercase tracking-[0.3em] text-[9px] rounded active:scale-95 shadow-sm skew-x-[-12deg]"
+                                                    className="px-4 py-2 bg-white border border-slate-200 text-slate-650 hover:text-slate-800 disabled:opacity-30 transition-all font-semibold text-xs rounded-xl active:scale-95 shadow-sm"
                                                 >
-                                                    <span className="skew-x-[12deg] block">Avance</span>
+                                                    <span>Siguiente</span>
                                                 </button>
                                             </div>
-                                        </div>
+                                        </div>                         </div>
                                     </div>
 
                                     {/* Elevated Bulk Actions Bar */}
                                     {selectedProducts.length > 0 && (
-                                        <div className="fixed bottom-12 left-1/2 -translate-x-1/2 glass-panel !bg-slate-950/90 text-white px-12 py-8 flex flex-wrap items-center justify-center gap-12 shadow-[0_50px_100px_rgba(0,0,0,0.8)] z-[500] animate-in slide-in-from-bottom-10 duration-700 rounded-none-[3.5rem] border border-white/10 backdrop-blur-3xl">
-                                            <div className="flex items-center space-x-6 border-r border-white/10 pr-12">
-                                                <div className="w-14 h-14 bg-secondary text-white rounded-none flex items-center justify-center font-black text-2xl italic shadow-[0_0_25px_rgba(255,99,71,0.5)]">{selectedProducts.length}</div>
-                                                <span className="text-[11px] font-black uppercase tracking-[0.5em] text-slate-500 italic">Seleccionados</span>
+                                        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-white/95 border border-slate-200/80 text-slate-800 px-6 py-4 flex items-center justify-center gap-6 shadow-[0_20px_50px_rgba(0,0,0,0.1)] z-[500] animate-in slide-in-from-bottom-6 duration-500 rounded-2xl backdrop-blur-md">
+                                            <div className="flex items-center space-x-4 border-r border-slate-100 pr-5">
+                                                <div className="w-8 h-8 bg-blue-600 text-white rounded-xl flex items-center justify-center font-bold text-sm shadow-sm">{selectedProducts.length}</div>
+                                                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Seleccionados</span>
                                             </div>
-                                            <div className="flex items-center gap-8">
+                                            <div className="flex items-center gap-3">
                                                 {!isTrashView ? (
                                                     <>
                                                         <button 
                                                             onClick={() => setShowBulkEdit(true)}
-                                                            className="flex items-center space-x-4 bg-white/5 text-white hover:bg-white/10 px-10 py-5 text-[10px] font-black uppercase tracking-[0.3em] transition-all rounded-none border border-white/5 skew-x-[-12deg]"
+                                                            className="flex items-center gap-2 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 px-4 py-2.5 text-xs font-bold transition-all rounded-xl border border-blue-100/50 shadow-sm active:scale-95"
                                                         >
-                                                            <div className="skew-x-[12deg] flex items-center gap-4"><Edit size={16} className="text-secondary" /> <span>Edición Táctica</span></div>
+                                                            <Edit size={14} className="text-blue-500" />
+                                                            <span>Edición Táctica</span>
                                                         </button>
                                                         <button 
                                                             onClick={handleBulkDeleteProducts}
-                                                            className="flex items-center space-x-4 bg-red-600/10 text-red-500 hover:bg-red-600 hover:text-white px-10 py-5 text-[10px] font-black uppercase tracking-[0.3em] transition-all rounded-none border border-red-500/20 skew-x-[-12deg]"
+                                                            className="flex items-center gap-2 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 px-4 py-2.5 text-xs font-bold transition-all rounded-xl border border-red-100/50 shadow-sm active:scale-95"
                                                         >
-                                                            <div className="skew-x-[12deg] flex items-center gap-4"><Trash2 size={16} /> <span>Poda Masiva</span></div>
+                                                            <Trash2 size={14} />
+                                                            <span>Eliminar</span>
                                                         </button>
                                                     </>
                                                 ) : (
                                                     <>
                                                         <button 
                                                             onClick={handleBulkRestore}
-                                                            className="flex items-center space-x-4 bg-emerald-600/10 text-emerald-500 hover:bg-emerald-600 hover:text-white px-10 py-5 text-[10px] font-black uppercase tracking-[0.3em] transition-all rounded-none border border-emerald-500/20 skew-x-[-12deg]"
+                                                            className="flex items-center gap-2 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 hover:text-emerald-700 px-4 py-2.5 text-xs font-bold transition-all rounded-xl border border-emerald-100/50 shadow-sm active:scale-95"
                                                         >
-                                                            <div className="skew-x-[12deg] flex items-center gap-4"><Layers size={16} /> <span>Restaurar Segmento</span></div>
+                                                            <Layers size={14} />
+                                                            <span>Restaurar</span>
                                                         </button>
                                                         <button 
                                                             onClick={handleBulkPermanentDelete}
-                                                            className="flex items-center space-x-4 bg-red-600/10 text-red-500 hover:bg-red-600 hover:text-white px-10 py-5 text-[10px] font-black uppercase tracking-[0.3em] transition-all rounded-none border border-red-500/20 skew-x-[-12deg]"
+                                                            className="flex items-center gap-2 bg-red-550/10 text-red-650 hover:bg-red-650 hover:text-white px-4 py-2.5 text-xs font-bold transition-all rounded-xl border border-red-500/20 shadow-sm active:scale-95"
                                                         >
-                                                            <div className="skew-x-[12deg] flex items-center gap-4"><Trash2 size={16} /> <span>Eliminación Terminal</span></div>
+                                                            <Trash2 size={14} />
+                                                            <span>Eliminar Permanente</span>
                                                         </button>
                                                     </>
                                                 )}
                                                 <button 
                                                     onClick={() => setSelectedProducts([])}
-                                                    className="w-14 h-14 flex items-center justify-center text-slate-600 hover:text-white transition-all hover:bg-white/5 rounded-none"
+                                                    className="p-2 hover:bg-slate-100 hover:text-slate-800 text-slate-400 rounded-xl transition-colors active:scale-95"
                                                 >
-                                                    <X size={28} />
+                                                    <X size={18} />
                                                 </button>
                                             </div>
                                         </div>
@@ -671,107 +677,104 @@ export default function ShopConfigPage() {
                                     )}
                                 </div>
                             </div>
-                        </div>
-                    )}
+                        )}
 
-                    {activeTab === 'catalogs' && (
-                        <div className="space-y-12 animate-in fade-in slide-in-from-bottom-5 duration-700">
+                        {activeTab === 'catalogs' && (
+                        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-5 duration-700">
                             {/* Quick Category/Collection Creation */}
-                            <div className="grid grid-cols-1 xl:grid-cols-2 gap-10 bg-slate-950/40 p-10 rounded-none-[3rem] border border-white/5 backdrop-blur-3xl shadow-2xl">
+                            <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 bg-white p-6 rounded-2xl border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.02)]">
                                 <QuickCreate
                                     label="Arquitectura de Categoría"
-                                    icon={<TagIcon size={20} className="text-secondary" />}
+                                    icon={<TagIcon size={18} className="text-blue-500" />}
                                     onSave={async (name) => { await createCategory(name); refreshData(); }}
                                 />
                                 <QuickCreate
-                                    label="Definici+\ufffdn de Colección"
-                                    icon={<Layers size={20} className="text-primary" />}
+                                    label="Definición de Colección"
+                                    icon={<Layers size={18} className="text-violet-500" />}
                                     onSave={async (name) => { await createCollection(name); refreshData(); }}
                                 />
                             </div>
 
-                            <div className="grid grid-cols-1 xl:grid-cols-2 gap-12">
-                                <div className="glass-panel p-10 rounded-none-[3rem] border-white/5 relative overflow-hidden">
-                                    <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/5 blur-3xl -mr-16 -mt-16 rounded-none"></div>
-                                    <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-white italic mb-10 border-b border-white/5 pb-8 flex items-center gap-3">
-                                        <TagIcon size={18} className="text-secondary" />
-                                        Jerarqu+\ufffda de Categorías
+                            <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+                                <div className="bg-white border border-slate-200/60 p-6 rounded-2xl shadow-sm relative overflow-hidden">
+                                    <h3 className="text-xs font-bold text-slate-800 mb-6 border-b border-slate-100 pb-5 flex items-center gap-2">
+                                        <TagIcon size={16} className="text-blue-500" />
+                                        <span>Jerarquía de Categorías</span>
                                     </h3>
-                                    <ul className="space-y-4">
+                                    <ul className="space-y-3">
                                         {metadata.categories.map(c => (
-                                            <li key={c.id} className="flex justify-between items-center p-5 bg-slate-900/50 hover:bg-white/5 transition-all group rounded-none border border-white/5 hover:border-secondary/20">
-                                                <div>
-                                                    <span className="font-black text-white italic text-sm uppercase tracking-tighter group-hover:text-secondary transition-colors">{c.name}</span>
-                                                    <span className="text-[9px] text-slate-500 font-black uppercase tracking-[0.2em] ml-4 opacity-50">/ {c.slug}</span>
+                                            <li key={c.id} className="flex justify-between items-center p-4 bg-slate-50/50 hover:bg-slate-50 transition-all group rounded-xl border border-slate-200/60 hover:border-blue-500/20">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="font-semibold text-slate-800 text-sm group-hover:text-blue-600 transition-colors">{c.name}</span>
+                                                    <span className="text-xs text-slate-400 font-medium">/ {c.slug}</span>
                                                 </div>
-                                                <div className="opacity-0 group-hover:opacity-100 transition-all scale-90 group-hover:scale-100">
-                                                    <button onClick={() => setEditingTaxonomy({ type: 'category', data: c })} className="p-3 text-slate-400 hover:text-secondary transition-colors bg-white/5 rounded-none">
-                                                        <Edit size={16} />
+                                                <div className="opacity-0 group-hover:opacity-100 transition-all scale-95 group-hover:scale-100">
+                                                    <button onClick={() => setEditingTaxonomy({ type: 'category', data: c })} className="p-2 text-slate-500 hover:text-blue-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors">
+                                                        <Edit size={14} />
                                                     </button>
                                                 </div>
                                             </li>
                                         ))}
                                     </ul>
                                 </div>
-                                <div className="glass-panel p-10 rounded-none-[3rem] border-white/5 relative overflow-hidden">
-                                    <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-3xl -mr-16 -mt-16 rounded-none"></div>
-                                    <div className="flex justify-between items-center mb-10 border-b border-white/5 pb-8">
-                                        <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-white italic flex items-center gap-3">
-                                            <Layers size={18} className="text-primary" />
-                                            Colecciones Estratégicas
+                                <div className="bg-white border border-slate-200/60 p-6 rounded-2xl shadow-sm relative overflow-hidden">
+                                    <div className="flex justify-between items-center mb-6 border-b border-slate-100 pb-5">
+                                        <h3 className="text-xs font-bold text-slate-800 flex items-center gap-2">
+                                            <Layers size={16} className="text-violet-500" />
+                                            <span>Colecciones Estratégicas</span>
                                         </h3>
                                         {selectedCollections.length > 0 && (
                                             <button 
                                                 onClick={handleBulkDeleteCollections}
-                                                className="flex items-center space-x-3 text-red-500 hover:text-white hover:bg-red-500 px-4 py-2 rounded-none text-[10px] font-black uppercase tracking-widest transition-all shadow-2xl shadow-red-500/20"
+                                                className="flex items-center space-x-1.5 text-red-600 hover:bg-red-50 hover:text-red-700 px-3 py-1.5 rounded-lg border border-red-200 text-xs font-semibold transition-all shadow-sm"
                                             >
-                                                <Trash2 size={14} />
-                                                <span>Poda ({selectedCollections.length})</span>
+                                                <Trash2 size={13} />
+                                                <span>Eliminar ({selectedCollections.length})</span>
                                             </button>
                                         )}
                                     </div>
-                                    <ul className="space-y-4">
+                                    <ul className="space-y-3">
                                         {metadata.collections.length === 0 ? (
-                                            <div className="py-20 text-center opacity-20 flex flex-col items-center gap-4">
-                                                <Layers size={48} className="text-slate-500" />
-                                                <p className="text-[10px] font-black uppercase tracking-[0.4em]">Sin Colecciones Definidas</p>
+                                            <div className="py-16 text-center opacity-30 flex flex-col items-center gap-3">
+                                                <Layers size={36} className="text-slate-400" />
+                                                <p className="text-xs font-semibold text-slate-400">Sin Colecciones Definidas</p>
                                             </div>
                                         ) : (
                                             metadata.collections.map(c => {
                                                 const productCount = products.filter(p => p.collectionId === c.id).length;
                                                 const isSelected = selectedCollections.includes(c.id);
                                                 return (
-                                                    <li key={c.id} className={`flex justify-between items-center p-5 transition-all group rounded-none border ${isSelected ? 'bg-secondary/10 border-secondary/30 shadow-2xl shadow-secondary/10' : 'bg-slate-900/50 border-white/5 hover:border-primary/20 hover:bg-white/5'}`}>
-                                                        <div className="flex items-center space-x-5">
+                                                    <li key={c.id} className={`flex justify-between items-center p-4 transition-all group rounded-xl border ${isSelected ? 'bg-blue-50/30 border-blue-200' : 'bg-slate-50/50 border-slate-200/60 hover:border-blue-500/20 hover:bg-slate-50'}`}>
+                                                        <div className="flex items-center space-x-3">
                                                             <button 
                                                                 onClick={() => setSelectedCollections(prev => isSelected ? prev.filter(id => id !== c.id) : [...prev, c.id])}
-                                                                className={`${isSelected ? 'text-secondary' : 'text-slate-800 group-hover:text-slate-600'} transition-all`}
+                                                                className={`${isSelected ? 'text-blue-600 scale-105' : 'text-slate-350 hover:text-slate-500'} transition-all`}
                                                             >
-                                                                {isSelected ? <CheckSquare size={20} /> : <Square size={20} />}
+                                                                {isSelected ? <CheckSquare size={18} /> : <Square size={18} />}
                                                             </button>
                                                             <div>
-                                                                <span className="font-black text-white italic text-sm uppercase tracking-tighter group-hover:text-primary transition-colors">{c.name}</span>
-                                                                <div className="flex items-center space-x-4 mt-2">
-                                                                    <span className="text-[9px] text-slate-500 font-black uppercase tracking-[0.2em] opacity-50">/ {c.slug}</span>
-                                                                    <span className="text-[9px] text-primary font-black uppercase tracking-[0.2em] flex items-center gap-1.5">
-                                                                        <div className="w-1 h-1 bg-primary rounded-none"></div>
-                                                                        {productCount} Despliegues
+                                                                <span className="font-semibold text-slate-800 text-sm group-hover:text-blue-600 transition-colors">{c.name}</span>
+                                                                <div className="flex items-center space-x-2 mt-1">
+                                                                    <span className="text-xs text-slate-400 font-medium">/ {c.slug}</span>
+                                                                    <span className="text-slate-200 text-xs">•</span>
+                                                                    <span className="text-xs text-blue-600 font-semibold flex items-center gap-1">
+                                                                        {productCount} artículos
                                                                     </span>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-all scale-90 group-hover:scale-100">
+                                                        <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-all scale-95 group-hover:scale-100">
                                                             <button 
                                                                 onClick={() => setEditingTaxonomy({ type: 'collection', data: c })}
-                                                                className="p-3 text-slate-400 hover:text-primary transition-colors bg-white/5 rounded-none"
+                                                                className="p-2 text-slate-500 hover:text-blue-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
                                                             >
-                                                                <Edit size={16} />
+                                                                <Edit size={14} />
                                                             </button>
                                                             <button 
                                                                 onClick={() => handleDeleteCollection(c.id)}
-                                                                className="p-3 text-slate-400 hover:text-red-500 transition-colors bg-white/5 rounded-none"
+                                                                className="p-2 text-slate-500 hover:text-red-600 bg-slate-100 hover:bg-red-200 rounded-lg transition-colors"
                                                             >
-                                                                <Trash2 size={16} />
+                                                                <Trash2 size={14} />
                                                             </button>
                                                         </div>
                                                     </li>
@@ -785,20 +788,16 @@ export default function ShopConfigPage() {
                     )}
 
                     {activeTab === 'settings' && (
-                        <div className="space-y-16 animate-in fade-in slide-in-from-bottom-5 duration-1000">
-                            {/* Previous settings content was already added, but I need to make sure the Mantenimiento is inside or handled neatly */}
-                            
-                            {/* \ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd
-                                SECCIÓN: BANNERS DE P+\ufffdGINA PRINCIPAL
-                            \ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd */}
-                            <div className="space-y-10">
-                                <div className="flex items-center gap-6 pb-8 border-b border-white/5">
-                                    <div className="w-14 h-14 bg-secondary flex items-center justify-center rounded-none shadow-2xl shadow-secondary/20">
-                                        <Layout size={28} className="text-white" />
+                        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-5 duration-700">
+                            {/* Header Section */}
+                            <div className="space-y-6">
+                                <div className="flex items-center gap-4 pb-5 border-b border-slate-100 bg-white p-5 rounded-2xl border border-slate-200/60 shadow-sm">
+                                    <div className="p-3.5 bg-blue-50 text-blue-600 rounded-xl">
+                                        <Layout size={24} />
                                     </div>
                                     <div>
-                                        <h3 className="text-lg font-black uppercase tracking-[0.3em] text-white italic">Arquitectura Hero Visual</h3>
-                                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.4em] mt-1">Configuración técnica de narrativa visual en el frontend público</p>
+                                        <h3 className="text-sm font-bold text-slate-800">Estructura Hero Visual</h3>
+                                        <p className="text-xs font-semibold text-slate-400 mt-0.5">Configuración técnica de narrativa visual en el frontend público</p>
                                     </div>
                                 </div>
 
@@ -806,7 +805,7 @@ export default function ShopConfigPage() {
                                     <BannerConfigPanel
                                         bannerKey="software"
                                         label="División Software"
-                                        icon={<Monitor size={20} className="text-secondary" />}
+                                        icon={<Monitor size={20} className="text-blue-500" />}
                                         accentColor="secondary"
                                         data={storeSettings.banners?.software || {}}
                                         allProducts={products}
@@ -815,7 +814,7 @@ export default function ShopConfigPage() {
                                     <BannerConfigPanel
                                         bannerKey="automation"
                                         label="División Industria"
-                                        icon={<Cpu size={20} className="text-primary" />}
+                                        icon={<Cpu size={20} className="text-indigo-500" />}
                                         accentColor="primary"
                                         data={storeSettings.banners?.automation || {}}
                                         allProducts={products}
@@ -836,20 +835,20 @@ export default function ShopConfigPage() {
                             {/* ==============================================
                                 SECCIÓN: LOGÍSTICA Y NOTIFICACIÓN
                                 ============================================== */}
-                            <div className="grid grid-cols-1 xl:grid-cols-2 gap-10">
-                                <div className="glass-panel p-10 rounded-none-[3rem] border-white/5 space-y-10 relative overflow-hidden">
-                                    <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/5 blur-3xl -mr-16 -mt-16 rounded-none"></div>
-                                    <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-white italic flex items-center gap-4">
-                                        <Box size={20} className="text-secondary" /> 
-                                        Parámetros de Transacción
+                            <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+                                <div className="bg-white border border-slate-200/60 p-6 rounded-2xl shadow-sm space-y-6 relative overflow-hidden">
+                                    <h3 className="text-xs font-bold text-slate-800 flex items-center gap-2 border-b border-slate-100 pb-4">
+                                        <Box size={18} className="text-blue-500" /> 
+                                        <span>Parámetros de Transacción</span>
                                     </h3>
                                     
-                                    <div className="space-y-4">
-                                        <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.3em] ml-2">Divisa Operativa Global</label>
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-semibold text-slate-500 ml-1">Divisa Operativa Global</label>
                                         <select
                                             value={storeSettings.currency}
                                             onChange={(e) => setStoreSettings({ ...storeSettings, currency: e.target.value })}
-                                            className="w-full bg-slate-900 border border-white/5 px-8 py-5 text-xs font-black uppercase tracking-widest text-white outline-none rounded-none focus:border-secondary transition-all appearance-none"
+                                            className="w-full bg-slate-50 border border-slate-200 px-4 py-3 text-xs font-bold text-slate-700 outline-none focus:border-blue-500 focus:bg-white transition-all rounded-xl appearance-none cursor-pointer pr-10"
+                                            style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 24 24\' stroke=\'%2364748b\' stroke-width=\'2.5\'%3E%3Cpath stroke-linecap=\'round\' stroke-linejoin=\'round\' d=\'M19 9l-7 7-7-7\'%3E%3C/path%3E%3C/svg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '0.8em' }}
                                         >
                                             <option value="USD">Dólares Americanos (USD)</option>
                                             <option value="COP">Pesos Colombianos (COP)</option>
@@ -858,42 +857,41 @@ export default function ShopConfigPage() {
                                         </select>
                                     </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                        <div className="space-y-4">
-                                            <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.3em] ml-2 text-wrap">Costo de Envío Base</label>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-semibold text-slate-500 ml-1 text-wrap">Costo de Envío Base</label>
                                             <div className="relative">
-                                                <div className="absolute left-6 top-1/2 -translate-y-1/2 text-secondary font-black">$</div>
-                                                <input type="number" value={storeSettings.shippingCost} onChange={(e) => setStoreSettings({ ...storeSettings, shippingCost: Number(e.target.value) })} className="w-full bg-slate-900 border border-white/5 pl-12 pr-8 py-5 text-sm font-black text-white outline-none rounded-none focus:border-secondary transition-all" />
+                                                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-xs">$</div>
+                                                <input type="number" value={storeSettings.shippingCost} onChange={(e) => setStoreSettings({ ...storeSettings, shippingCost: Number(e.target.value) })} className="w-full bg-slate-50 border border-slate-200 pl-8 pr-4 py-3 text-xs font-semibold text-slate-800 outline-none focus:border-blue-500 focus:bg-white transition-all rounded-xl" />
                                             </div>
                                         </div>
-                                        <div className="space-y-4">
-                                            <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.3em] ml-2 text-wrap">Umbral Popular (Envío Gratis)</label>
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-semibold text-slate-500 ml-1 text-wrap">Umbral Envío Gratis</label>
                                             <div className="relative">
-                                                <div className="absolute left-6 top-1/2 -translate-y-1/2 text-primary font-black">$</div>
-                                                <input type="number" value={storeSettings.freeShippingThreshold} onChange={(e) => setStoreSettings({ ...storeSettings, freeShippingThreshold: Number(e.target.value) })} className="w-full bg-slate-900 border border-white/5 pl-12 pr-8 py-5 text-sm font-black text-white outline-none rounded-none focus:border-primary transition-all" />
+                                                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-xs">$</div>
+                                                <input type="number" value={storeSettings.freeShippingThreshold} onChange={(e) => setStoreSettings({ ...storeSettings, freeShippingThreshold: Number(e.target.value) })} className="w-full bg-slate-50 border border-slate-200 pl-8 pr-4 py-3 text-xs font-semibold text-slate-800 outline-none focus:border-blue-500 focus:bg-white transition-all rounded-xl" />
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="glass-panel p-10 rounded-none-[3rem] border-white/5 space-y-10 relative overflow-hidden">
-                                    <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-500/5 blur-3xl -mr-16 -mt-16 rounded-none"></div>
-                                    <div className="flex justify-between items-center border-b border-white/5 pb-8">
-                                        <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-white italic flex items-center gap-4">
-                                            <Star size={20} className="text-yellow-500 shadow-[0_0_10px_rgba(234,179,8,0.4)]" /> 
-                                            Difusión de Alertas Hero
+                                <div className="bg-white border border-slate-200/60 p-6 rounded-2xl shadow-sm space-y-6 relative overflow-hidden">
+                                    <div className="flex justify-between items-center border-b border-slate-100 pb-4">
+                                        <h3 className="text-xs font-bold text-slate-800 flex items-center gap-2">
+                                            <Star size={18} className="text-yellow-500" /> 
+                                            <span>Difusión de Alertas Hero</span>
                                         </h3>
                                         <Toggle label="Activo" icon="" checked={storeSettings.bannerActive} onChange={(v) => setStoreSettings({ ...storeSettings, bannerActive: v })} />
                                     </div>
-                                    <div className="space-y-4">
-                                        <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.3em] ml-2">Gestión de Mensajería Superior</label>
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-semibold text-slate-500 ml-1">Mensaje Superior de Alerta</label>
                                         <textarea 
-                                            rows={4} 
+                                            rows={3} 
                                             disabled={!storeSettings.bannerActive} 
                                             value={storeSettings.bannerText} 
                                             onChange={(e) => setStoreSettings({ ...storeSettings, bannerText: e.target.value })} 
-                                            className="w-full bg-slate-900 border border-white/5 px-8 py-6 text-xs font-bold text-white outline-none resize-none rounded-none-[2rem] focus:border-yellow-500 transition-all disabled:opacity-20 placeholder:text-slate-800 italic" 
-                                            placeholder="Ej: DISPONIBILIDAD TÁCTICA PARA ENVÍOS NACIONALES /// ATOMIC DELIVERY PROTOCOL" 
+                                            className="w-full bg-slate-50 border border-slate-200 px-4 py-3 text-xs font-semibold text-slate-800 outline-none resize-none rounded-xl focus:border-blue-500 focus:bg-white transition-all disabled:opacity-50 placeholder:text-slate-400" 
+                                            placeholder="Ej: DISPONIBILIDAD PARA ENVÍOS NACIONALES" 
                                         />
                                     </div>
                                 </div>
@@ -902,48 +900,47 @@ export default function ShopConfigPage() {
                             {/* ==============================================
                                 SECCIÓN: MANTENIMIENTO TÉCNICO
                                 ============================================== */}
-                            <div className="glass-panel p-10 rounded-none-[4rem] border-white/5 relative overflow-hidden">
-                                <div className="absolute top-0 left-0 w-64 h-64 bg-red-500/5 blur-[100px] -ml-32 -mt-32 rounded-none"></div>
-                                <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-white italic flex items-center gap-4 border-b border-white/5 pb-8 mb-12">
-                                    <ShieldAlert size={20} className="text-red-500" /> 
-                                    Zona de Mantenimiento Crítico
+                            <div className="bg-white border border-slate-200/60 p-6 rounded-2xl shadow-sm space-y-6 relative overflow-hidden">
+                                <h3 className="text-xs font-bold text-slate-800 flex items-center gap-2 border-b border-slate-100 pb-4">
+                                    <ShieldAlert size={18} className="text-red-500" /> 
+                                    <span>Zona de Mantenimiento Crítico</span>
                                 </h3>
-                                <div className="grid grid-cols-1 xl:grid-cols-2 gap-16">
-                                    <div className="space-y-8">
-                                        <div className="flex items-center space-x-4 text-red-500">
-                                            <Trash2 size={24} />
+                                <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+                                    <div className="space-y-4">
+                                        <div className="flex items-center space-x-3 text-slate-800">
+                                            <div className="p-2 bg-red-50 text-red-500 rounded-lg"><Trash2 size={18} /></div>
                                             <div>
-                                                <span className="text-[11px] uppercase font-black tracking-[0.2em] block">Saneamiento de Duplicados</span>
-                                                <span className="text-[9px] text-slate-500 font-bold uppercase tracking-widest italic leading-relaxed mt-1 block">Gestión de eliminación masiva por redundancia de metadatos.</span>
+                                                <span className="text-xs font-bold block text-slate-800">Saneamiento de Duplicados</span>
+                                                <span className="text-[10px] text-slate-400 font-semibold leading-relaxed mt-0.5 block">Eliminación masiva por redundancia de metadatos exactos.</span>
                                             </div>
                                         </div>
                                         <button 
                                             onClick={async () => { if(confirm("¿Seguro que quieres ejecutar la poda de duplicados?")) { setIsCleaning(true); try { await cleanupDuplicateProducts(); await refreshData(); alert("Catálogo saneado."); } finally { setIsCleaning(false); } } }} 
                                             disabled={isCleaning} 
-                                            className="w-full bg-red-600/10 text-red-500 border border-red-500/30 px-10 py-6 text-[10px] font-black uppercase tracking-[0.3em] hover:bg-red-600 hover:text-white transition-all shadow-2xl shadow-red-600/10 rounded-none active:scale-95 disabled:opacity-20"
+                                            className="w-full bg-red-50 hover:bg-red-100 text-red-600 border border-red-100 py-3 text-xs font-bold transition-all shadow-sm rounded-xl disabled:opacity-50"
                                         >
                                             {isCleaning ? 'Ejecutando Poda...' : 'Iniciar Poda de Redundancia'}
                                         </button>
                                     </div>
-                                    <div className="space-y-8">
-                                        <div className="flex items-center space-x-4 text-primary">
-                                            <ShoppingBag size={24} />
+                                    <div className="space-y-4">
+                                        <div className="flex items-center space-x-3 text-slate-800">
+                                            <div className="p-2 bg-blue-50 text-blue-500 rounded-lg"><ShoppingBag size={18} /></div>
                                             <div>
-                                                <span className="text-[11px] uppercase font-black tracking-[0.2em] block">Analítica de Origen</span>
-                                                <span className="text-[9px] text-slate-500 font-bold uppercase tracking-widest italic leading-relaxed mt-1 block">Distribución cuantitativa por Etiqueta de suministro.</span>
+                                                <span className="text-xs font-bold block text-slate-800">Analítica de Origen</span>
+                                                <span className="text-[10px] text-slate-400 font-semibold leading-relaxed mt-0.5 block">Distribución de artículos activos agrupados por proveedor.</span>
                                             </div>
                                         </div>
-                                        <div className="bg-slate-950/60 rounded-none-[2rem] border border-white/5 overflow-hidden divide-y divide-white/5 max-h-56 overflow-y-auto custom-scrollbar">
+                                        <div className="bg-slate-50 rounded-xl border border-slate-200/60 overflow-hidden divide-y divide-slate-100 max-h-40 overflow-y-auto pr-2 custom-scrollbar">
                                             {providerStats.length > 0 ? providerStats.map((s, i) => (
-                                                <div key={i} className="p-5 flex justify-between items-center hover:bg-white/5 transition-colors group">
-                                                    <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest group-hover:text-primary transition-colors">{s.name}</span>
-                                                    <span className="bg-primary/20 text-primary border border-primary/20 px-3 py-1 rounded-none text-[9px] font-black uppercase tracking-tighter italic">
-                                                        {s.count} <span className="text-[7px] ml-1">UNIDADES</span>
+                                                <div key={i} className="px-4 py-2.5 flex justify-between items-center hover:bg-slate-100/50 transition-colors group">
+                                                    <span className="text-xs font-semibold text-slate-600 truncate pr-3 group-hover:text-blue-600 transition-colors">{s.name}</span>
+                                                    <span className="text-[10px] font-bold text-slate-800 bg-white border border-slate-200/60 px-2 py-0.5 rounded-full shadow-sm">
+                                                        {s.count} <span className="opacity-55 ml-0.5 font-normal text-[9px]">uds</span>
                                                     </span>
                                                 </div>
                                             )) : (
-                                                <div className="py-12 text-center opacity-20">
-                                                    <p className="text-[9px] font-black uppercase tracking-[0.4em]">Escaneando Orígenes...</p>
+                                                <div className="py-8 text-center opacity-40">
+                                                    <p className="text-xs font-semibold text-slate-400">Escaneando Orígenes...</p>
                                                 </div>
                                             )}
                                         </div>
@@ -951,14 +948,14 @@ export default function ShopConfigPage() {
                                 </div>
                             </div>
 
-                            <div className="flex justify-end pt-10">
+                            <div className="flex justify-end pt-4">
                                 <button 
                                     onClick={saveSettings} 
                                     disabled={loading} 
-                                    className="bg-slate-900/80 text-white px-20 py-8 font-black uppercase tracking-[0.5em] text-[11px] hover:bg-secondary hover:text-white transition-all shadow-[0_0_100px_rgba(255,255,255,0.05)] hover:shadow-secondary/20 rounded-none-[2rem] active:scale-95 flex items-center gap-4 border border-white/10"
+                                    className="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3.5 text-xs font-bold rounded-xl transition-all shadow-md active:scale-95 flex items-center gap-2"
                                 >
-                                    <Save size={20} />
-                                    <span>Comprometer Protocolo</span>
+                                    <Save size={16} />
+                                    <span>Guardar Configuración</span>
                                 </button>
                             </div>
                         </div>
@@ -989,23 +986,23 @@ export default function ShopConfigPage() {
 function QuickCreate({ label, icon, onSave }: { label: string, icon: any, onSave: (name: string) => void }) {
     const [name, setName] = useState('')
     return (
-        <div className="space-y-6">
-            <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] flex items-center space-x-3 ml-2">
+        <div className="space-y-4">
+            <label className="text-xs font-semibold text-slate-500 flex items-center space-x-2 ml-1">
                 {icon} <span>{label}</span>
             </label>
-            <div className="flex gap-4">
+            <div className="flex gap-3">
                 <input
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="IDENTIFICADOR DE SEGMENTO..."
-                    className="flex-1 bg-slate-900 border border-white/5 px-8 py-5 text-[11px] font-black uppercase tracking-widest text-white outline-none focus:border-secondary transition-all rounded-none placeholder:text-slate-800"
+                    placeholder="Escriba el nombre..."
+                    className="flex-1 bg-slate-50 border border-slate-200 px-4 py-3 text-xs font-semibold text-slate-800 outline-none focus:border-blue-500 focus:bg-white transition-all rounded-xl placeholder:text-slate-400"
                 />
                 <button
                     onClick={() => { if (name) { onSave(name); setName(''); } }}
-                    className="bg-slate-900/80 text-white px-10 py-5 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-secondary hover:text-white transition-all rounded-none shadow-xl active:scale-95 border border-white/10"
+                    className="bg-blue-600 hover:bg-blue-500 text-white px-5 py-3 text-xs font-semibold rounded-xl shadow-sm active:scale-95 transition-all"
                 >
-                    Subir
+                    Agregar
                 </button>
             </div>
         </div>
@@ -1086,19 +1083,18 @@ function BannerConfigPanel({ bannerKey, label, icon, accentColor, data, allProdu
     const displayList = searchTerm.length >= 2 ? searchResults : allProducts.slice(0, 40)
 
     return (
-        <div className={`glass-panel p-8 rounded-none-[3rem] border transition-all duration-700 relative overflow-hidden group ${accentMap[accentColor] || accentMap.secondary} bg-slate-950/20 backdrop-blur-3xl`}>
-            <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 blur-3xl -mr-16 -mt-16 group-hover:bg-white/10 transition-all duration-1000 rounded-none"></div>
+        <div className={`bg-white border border-slate-200/80 p-6 rounded-2xl shadow-sm transition-all duration-300 relative overflow-hidden group ${accentMap[accentColor] || accentMap.secondary}`}>
             
             {/* Header */}
-            <div className="flex items-center justify-between pb-8 border-b border-white/5 mb-8">
-                <div className="flex items-center gap-4">
-                    <div className={`w-3 h-3 rounded-none animate-pulse ${dotMap[accentColor] || dotMap.secondary} shadow-[0_0_10px_currentColor]`}></div>
-                    <div className="p-3 bg-white/5 rounded-none group-hover:scale-110 transition-transform duration-500">
+            <div className="flex items-center justify-between pb-5 border-b border-slate-100 mb-5">
+                <div className="flex items-center gap-3">
+                    <div className={`w-2 h-2 rounded-full animate-pulse ${dotMap[accentColor] || dotMap.secondary} shadow-[0_0_8px_currentColor]`}></div>
+                    <div className="p-2 bg-slate-50 rounded-lg group-hover:scale-105 transition-transform duration-500 text-slate-500">
                         {icon}
                     </div>
                     <div>
-                        <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-white italic">{label}</h4>
-                        <p className="text-[8px] font-bold text-slate-500 uppercase tracking-widest mt-1 italic">Gestión Hero Unit</p>
+                        <h4 className="text-xs font-bold text-slate-800">{label}</h4>
+                        <p className="text-[10px] font-semibold text-slate-400 mt-0.5">Gestión Hero Unit</p>
                     </div>
                 </div>
                 <Toggle
@@ -1109,23 +1105,23 @@ function BannerConfigPanel({ bannerKey, label, icon, accentColor, data, allProdu
                 />
             </div>
 
-            <div className="space-y-8">
+            <div className="space-y-6">
                 {/* Image Upload */}
-                <div className="space-y-4">
-                    <label className="text-[9px] font-black uppercase text-slate-500 tracking-[0.3em] ml-2 italic">Etiqueta de Origen Visual</label>
+                <div className="space-y-2">
+                    <label className="text-xs font-semibold text-slate-500 ml-1">Etiqueta de Origen Visual</label>
                     {data.imageUrl ? (
-                        <div className="relative group/img overflow-hidden rounded-none-[2rem] border border-white/10 aspect-video shadow-2xl">
-                            <img src={data.imageUrl} alt="Banner" className="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-1000" />
-                            <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm opacity-0 group-hover/img:opacity-100 transition-all duration-500 flex flex-col items-center justify-center gap-4">
+                        <div className="relative group/img overflow-hidden rounded-xl border border-slate-200 aspect-video shadow-sm">
+                            <img src={data.imageUrl} alt="Banner" className="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-550" />
+                            <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm opacity-0 group-hover/img:opacity-100 transition-all duration-300 flex flex-col items-center justify-center gap-3">
                                 <button
                                     onClick={() => fileInputRef.current?.click()}
-                                    className="bg-slate-900/80 text-white px-8 py-3 text-[10px] font-black uppercase tracking-widest hover:bg-secondary hover:text-white transition-all rounded-none active:scale-95 border border-white/10"
+                                    className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 text-xs font-semibold rounded-lg shadow-sm transition-all active:scale-95"
                                 >
-                                    {uploading ? 'DESPLEGANDO...' : 'REEMPLAZAR'}
+                                    {uploading ? 'Subiendo...' : 'Reemplazar'}
                                 </button>
                                 <button
                                     onClick={() => onChange({ ...data, imageUrl: '' })}
-                                    className="text-red-500 text-[9px] font-black uppercase tracking-[0.4em] hover:text-white transition-colors italic"
+                                    className="text-red-450 hover:text-red-500 text-[11px] font-semibold transition-colors"
                                 >
                                     Liberar Anclaje
                                 </button>
@@ -1135,113 +1131,113 @@ function BannerConfigPanel({ bannerKey, label, icon, accentColor, data, allProdu
                         <button
                             onClick={() => fileInputRef.current?.click()}
                             disabled={uploading}
-                            className="w-full border-4 border-dashed border-white/5 py-12 flex flex-col items-center gap-4 hover:border-secondary/20 hover:bg-secondary/5 transition-all group/upload rounded-none-[2.5rem]"
+                            className="w-full border-2 border-dashed border-slate-200 py-10 flex flex-col items-center gap-3 hover:border-blue-500/30 hover:bg-blue-50/10 transition-all group/upload rounded-2xl"
                         >
-                            <div className="p-4 bg-white/5 rounded-none group-hover/upload:rotate-12 transition-transform duration-500">
-                                <Upload size={28} className="text-slate-600 group-hover/upload:text-secondary" />
+                            <div className="p-3 bg-slate-50 text-slate-405 group-hover/upload:text-blue-500 rounded-xl group-hover/upload:scale-105 transition-all">
+                                <Upload size={24} />
                             </div>
-                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-600 group-hover/upload:text-white transition-colors">
+                            <span className="text-xs font-semibold text-slate-500 group-hover/upload:text-blue-600 transition-colors">
                                 {uploading ? 'Sincronizando...' : 'Subir Recurso Visual'}
                             </span>
                         </button>
                     )}
                     <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleUpload} />
-                    <div className="space-y-2">
+                    <div className="space-y-1">
                         <input
                             type="text"
                             value={data.imageUrl || ''}
                             onChange={(e) => onChange({ ...data, imageUrl: e.target.value })}
-                            placeholder="VINCULAR DIRECCIÓN REMOTA (URL)..."
-                            className="w-full bg-slate-950 border border-white/5 px-6 py-4 text-[9px] font-mono text-slate-400 outline-none focus:border-secondary transition-all rounded-none italic"
+                            placeholder="Vincular dirección remota (URL)..."
+                            className="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 text-xs font-mono text-slate-650 outline-none focus:border-blue-500 focus:bg-white transition-all rounded-xl placeholder:text-slate-450"
                         />
                     </div>
                 </div>
 
                 {/* Title */}
-                <div className="space-y-4">
-                    <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2 italic">Narrativa de Impacto</label>
+                <div className="space-y-2">
+                    <label className="text-xs font-semibold text-slate-500 ml-1">Narrativa de Impacto</label>
                     <input
                         type="text"
                         value={data.title || ''}
                         onChange={(e) => onChange({ ...data, title: e.target.value })}
-                        placeholder="HEADER COMERCIAL..."
-                        className="w-full bg-slate-950 border border-white/5 px-8 py-5 text-[11px] font-black uppercase tracking-[0.2em] text-white outline-none focus:border-secondary transition-all rounded-none placeholder:text-slate-800"
+                        placeholder="Encabezado comercial..."
+                        className="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 text-xs font-semibold text-slate-800 outline-none focus:border-blue-500 focus:bg-white transition-all rounded-xl placeholder:text-slate-400"
                     />
                 </div>
 
                 {/* Description */}
-                <div className="space-y-4">
-                    <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] ml-2 italic">Argumento de Venta</label>
+                <div className="space-y-2">
+                    <label className="text-xs font-semibold text-slate-500 ml-1">Argumento de Venta</label>
                     <textarea
                         rows={2}
                         value={data.description || ''}
                         onChange={(e) => onChange({ ...data, description: e.target.value })}
-                        placeholder="BREVE DESCRIPCIÓN DE LA SECCIÓN..."
-                        className="w-full bg-slate-950 border border-white/5 px-8 py-5 text-[10px] font-bold text-slate-400 outline-none resize-none focus:border-secondary transition-all rounded-none leading-relaxed placeholder:text-slate-800 italic"
+                        placeholder="Breve descripción..."
+                        className="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 text-xs font-medium text-slate-700 outline-none resize-none focus:border-blue-500 focus:bg-white transition-all rounded-xl leading-relaxed placeholder:text-slate-400"
                     />
                 </div>
 
                 {/* Products for gallery */}
-                <div className="space-y-4">
-                    <div className="flex items-center justify-between px-2">
-                        <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.4em] italic">
+                <div className="space-y-2">
+                    <div className="flex items-center justify-between px-1">
+                        <label className="text-xs font-semibold text-slate-500">
                             Ecosistema de Productos
                         </label>
-                        <span className="text-[9px] font-black bg-secondary/10 text-secondary border border-secondary/20 px-3 py-1 rounded-none italic">
-                            {selectedProductIds.length} NÚCLEOS
+                        <span className="bg-blue-50 text-blue-600 border border-blue-150 px-2 py-0.5 rounded-full text-[10px] font-bold">
+                            {selectedProductIds.length} Núcleos
                         </span>
                     </div>
                     <button
                         onClick={() => setShowProductPicker(v => !v)}
-                        className="w-full border-2 border-dashed border-white/5 py-6 rounded-none text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 hover:text-white hover:bg-white/5 transition-all flex items-center justify-center gap-4 group/picker"
+                        className="w-full border border-slate-200 py-3 rounded-xl text-xs font-semibold text-slate-500 hover:text-blue-600 hover:border-blue-500/30 transition-all flex items-center justify-center gap-2 group/picker bg-slate-50/50 hover:bg-slate-50"
                     >
-                        <Box size={16} className="group-hover/picker:text-secondary transition-colors" /> 
-                        <span>{showProductPicker ? 'ACEPTAR SELECCIÓN' : 'DESPLEGAR SELECTOR'}</span>
+                        <Box size={14} className="group-hover/picker:text-blue-500 transition-colors" /> 
+                        <span>{showProductPicker ? 'Aceptar Selección' : 'Desplegar Selector'}</span>
                     </button>
 
                     {showProductPicker && (
-                        <div className="animate-in slide-in-from-top-4 duration-500 bg-slate-900 shadow-2xl rounded-none-[2rem] border border-white/5 overflow-hidden">
-                            <div className="relative group/search p-4">
-                                <Search size={14} className="absolute left-8 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within/search:text-primary transition-colors" />
+                        <div className="animate-in slide-in-from-top-4 duration-500 bg-white shadow-lg rounded-xl border border-slate-200 overflow-hidden">
+                            <div className="relative group/search p-3 border-b border-slate-100">
+                                <Search size={12} className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within/search:text-blue-500 transition-colors" />
                                 <input
                                     type="text"
-                                    placeholder="ESCANEAR CATÁLOGO..."
+                                    placeholder="Buscar producto..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full bg-slate-950 border border-white/5 pl-12 pr-4 py-4 text-[10px] font-black uppercase tracking-widest text-white outline-none rounded-none focus:border-primary transition-all"
+                                    className="w-full bg-slate-50 border border-slate-200 pl-10 pr-4 py-2 text-xs font-semibold text-slate-800 outline-none focus:border-blue-500 focus:bg-white transition-all rounded-lg placeholder:text-slate-400"
                                 />
-                                {searching && <RefreshCw size={12} className="absolute right-8 top-1/2 -translate-y-1/2 text-primary animate-spin" />}
+                                {searching && <RefreshCw size={12} className="absolute right-6 top-1/2 -translate-y-1/2 text-blue-500 animate-spin" />}
                             </div>
-                            <div className="max-h-56 overflow-y-auto divide-y divide-white/5 custom-scrollbar">
+                            <div className="max-h-48 overflow-y-auto divide-y divide-slate-100 custom-scrollbar">
                                 {displayList.map((p: any) => {
                                     const sel = selectedProductIds.includes(p.id)
                                     return (
                                         <button
                                             key={p.id}
                                             onClick={() => toggleProduct(p)}
-                                            className={`w-full flex items-center justify-between p-4 transition-all hover:bg-white/5 group/item ${sel ? 'bg-secondary/5' : ''}`}
+                                            className={`w-full flex items-center justify-between p-3 transition-all hover:bg-slate-50 group/item ${sel ? 'bg-blue-50/20' : ''}`}
                                         >
-                                            <div className="flex items-center gap-4">
-                                                <div className="w-10 h-10 bg-slate-950 rounded-none overflow-hidden border border-white/5">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 bg-slate-50 rounded-lg overflow-hidden border border-slate-200/60 flex items-center justify-center">
                                                     {safeParseArray(p.images).length > 0 ? (
-                                                        <img src={safeParseArray(p.images)[0]} className="w-full h-full object-cover scale-110 group-hover/item:scale-125 transition-transform duration-700" />
+                                                        <img src={safeParseArray(p.images)[0]} className="w-full h-full object-cover scale-105 group-hover/item:scale-110 transition-transform duration-500" />
                                                     ) : (
-                                                        <ImageIcon size={14} className="m-auto text-slate-700" />
+                                                        <ImageIcon size={14} className="text-slate-450" />
                                                     )}
                                                 </div>
-                                                <div className="text-left">
-                                                    <span className="text-[10px] font-black text-slate-300 uppercase line-clamp-1 block group-hover/item:text-white transition-colors">{p.name}</span>
-                                                    <span className="text-[8px] font-bold text-slate-600 block uppercase tracking-widest">{p.sku || 'N/A'}</span>
+                                                <div className="text-left max-w-[150px]">
+                                                    <span className="text-xs font-semibold text-slate-800 line-clamp-1 block group-hover/item:text-blue-600 transition-colors">{p.name}</span>
+                                                    <span className="text-[10px] font-mono text-slate-450 block">{p.sku || 'N/A'}</span>
                                                 </div>
                                             </div>
-                                            <div className={`transition-all duration-500 ${sel ? 'text-secondary scale-110' : 'text-slate-800'}`}>
-                                                {sel ? <CheckSquare size={18} /> : <Square size={18} />}
+                                            <div className={`transition-all duration-300 ${sel ? 'text-blue-600 scale-105' : 'text-slate-350 hover:text-slate-450'}`}>
+                                                {sel ? <CheckSquare size={16} /> : <Square size={16} />}
                                             </div>
                                         </button>
                                     )
                                 })}
                                 {displayList.length === 0 && (
-                                    <p className="text-center py-12 text-[9px] text-slate-600 font-black uppercase tracking-[0.5em]">Sin Coincidencias</p>
+                                    <p className="text-center py-8 text-xs font-semibold text-slate-400">Sin Coincidencias</p>
                                 )}
                             </div>
                         </div>
@@ -1249,18 +1245,18 @@ function BannerConfigPanel({ bannerKey, label, icon, accentColor, data, allProdu
 
                     {/* Selected pills */}
                     {selectedProductIds.length > 0 && !showProductPicker && (
-                        <div className="flex flex-wrap gap-2 pt-4">
+                        <div className="flex flex-wrap gap-1.5 pt-3">
                             {selectedProductIds.slice(0, 5).map((id: string) => {
                                 const p = allProducts.find((pr: any) => pr.id === id)
                                 return p ? (
-                                    <span key={id} className="bg-slate-900 border border-white/5 text-slate-300 text-[8px] font-black uppercase px-3 py-1 rounded-none flex items-center gap-3 group/pill hover:bg-secondary/10 hover:border-secondary/30 transition-all">
+                                    <span key={id} className="bg-slate-50 border border-slate-200 text-slate-650 text-[11px] font-semibold px-2.5 py-0.5 rounded-full flex items-center gap-2 hover:bg-blue-50 hover:border-blue-150 hover:text-blue-600 transition-all">
                                         <span className="truncate max-w-[80px]">{p.name}</span>
-                                        <button onClick={() => toggleProduct(p)} className="text-slate-600 hover:text-red-500 transition-colors"><X size={10} /></button>
+                                        <button onClick={() => toggleProduct(p)} className="text-slate-450 hover:text-red-500 transition-colors"><X size={10} /></button>
                                     </span>
                                 ) : null
                             })}
                             {selectedProductIds.length > 5 && (
-                                <span className="text-[8px] font-bold text-slate-600 uppercase tracking-widest flex items-center px-2">+{selectedProductIds.length - 5} ADICIONALES</span>
+                                <span className="text-[10px] font-bold text-slate-450 flex items-center px-1">+{selectedProductIds.length - 5} Adicionales</span>
                             )}
                         </div>
                     )}
