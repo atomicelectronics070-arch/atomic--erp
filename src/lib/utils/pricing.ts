@@ -13,20 +13,21 @@ export const DISCOUNTS = {
  * @param role The role of the authenticated user.
  * @returns The final price after applying the corresponding discount.
  */
-export function calculateDiscountedPrice(basePrice: number, role?: string | null): number {
-    if (!role) return basePrice;
+export function calculateDiscountedPrice(basePrice: number | null | undefined, role?: string | null): number {
+    const validPrice = basePrice || 0;
+    if (!role) return validPrice;
     
     const upperRole = role.toUpperCase();
     
     if (upperRole === 'SALESPERSON') {
-        return basePrice * (1 - DISCOUNTS.SALESPERSON);
+        return validPrice * (1 - DISCOUNTS.SALESPERSON);
     }
     
     if (upperRole === 'AFILIADO') {
-        return basePrice * (1 - DISCOUNTS.AFILIADO);
+        return validPrice * (1 - DISCOUNTS.AFILIADO);
     }
     
-    return basePrice;
+    return validPrice;
 }
 
 /**
