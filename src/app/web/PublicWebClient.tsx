@@ -207,6 +207,9 @@ export default function PublicWebClient({ initialProducts, metadata, userRole, s
     const [activeMainCategoryId, setActiveMainCategoryId] = useState<string | null>(null)
     const [activeSubcategoryId, setActiveSubcategoryId] = useState<string | null>(null)
 
+    const [dynamicProducts, setDynamicProducts] = useState<any[]>([])
+    const [isLoadingCategory, setIsLoadingCategory] = useState(false)
+
     useEffect(() => {
         const handleSearchUpdate = (e: any) => {
             setSearchQuery(e.detail)
@@ -218,7 +221,31 @@ export default function PublicWebClient({ initialProducts, metadata, userRole, s
         return () => window.removeEventListener('atomic-search-update', handleSearchUpdate)
     }, [])
 
-    const filteredProducts = initialProducts.filter(p => {
+    useEffect(() => {
+        if (!activeMainCategoryId && !activeSubcategoryId) {
+            setDynamicProducts([])
+            return
+        }
+        
+        const fetchCategoryProducts = async () => {
+            setIsLoadingCategory(true)
+            try {
+                const targetCat = activeSubcategoryId || activeMainCategoryId
+                const res = await fetch(`/api/web/products?categoryId=${targetCat}&pageSize=100`)
+                const data = await res.json()
+                if (data && data.products) {
+                    setDynamicProducts(data.products)
+                }
+            } catch (error) {
+                console.error("Error fetching category products:", error)
+            } finally {
+                setIsLoadingCategory(false)
+            }
+        }
+        fetchCategoryProducts()
+    }, [activeMainCategoryId, activeSubcategoryId])
+
+    const filteredProducts = (dynamicProducts.length > 0 ? dynamicProducts : initialProducts).filter(p => {
         let matchesSearch = true;
         let matchesCategory = true;
         
@@ -460,14 +487,21 @@ export default function PublicWebClient({ initialProducts, metadata, userRole, s
                                 </div>
                         )
                     ) : (
-                        filteredProducts.length === 0 ? (
+                        <div className="mt-6 border-t border-black/10 pt-8" id="productos">
+                        {isLoadingCategory ? (
+                            <div className="py-20 flex flex-col items-center justify-center">
+                                <div className="w-8 h-8 border-2 border-black border-t-transparent rounded-full animate-spin mb-4" />
+                                <p className="text-slate-400 text-[10px] uppercase tracking-[0.3em] font-black">Cargando catálogo...</p>
+                            </div>
+                        ) : filteredProducts.length === 0 ? (
                             <div className="py-20 text-center border border-dashed border-slate-200 rounded-none">
                                 <p className="text-slate-400 text-[10px] uppercase tracking-[0.3em] font-black">No hay productos en esta categoría</p>
                                 <button onClick={() => { setActiveMainCategoryId(null); setActiveSubcategoryId(null); }} className="mt-4 text-[black] text-[10px] font-black uppercase tracking-widest hover:underline">Quitar Filtro</button>
                             </div>
                         ) : (
                             <InfiniteProductScroll products={filteredProducts} userRole={userRole} />
-                        )
+                        )}
+                    </div>
                     )}
                 </section>
             </motion.div>
@@ -582,7 +616,6 @@ function MinimalStoreHero({
                                     setActiveMainCategoryId(card.id);
                                     setActiveSubcategoryId(null);
                                 }
-                                scrollDown();
                             }}
                             className={`group flex flex-col items-center justify-center gap-4 bg-white text-black rounded-2xl w-36 h-36 border ${activeMainCategoryId === card.id ? 'border-black bg-zinc-50 scale-[1.05] shadow-2xl shadow-black/10' : 'border-zinc-200'}
                                        hover:scale-[1.05] hover:shadow-2xl hover:shadow-black/10 hover:border-black hover:bg-zinc-50

@@ -22,7 +22,11 @@ export async function GET(req: Request) {
                 { description: { contains: search, mode: "insensitive" } },
             ]
         }
-        if (categoryId && categoryId !== "all") where.categoryId = categoryId
+        if (categoryId && categoryId !== "all") {
+            const subcats = await prisma.category.findMany({ where: { parentId: categoryId }, select: { id: true } });
+            const catIds = [categoryId, ...subcats.map(s => s.id)];
+            where.categoryId = { in: catIds };
+        }
         if (collectionId && collectionId !== "all") where.collectionId = collectionId
 
         const [products, total] = await Promise.all([
