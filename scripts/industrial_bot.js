@@ -68,7 +68,21 @@ async function scrapeMadeInChina() {
         const descEl = document.querySelector('.sr-pro-detail') || document.querySelector('.product-detail-content');
         const description = descEl ? descEl.innerHTML.substring(0, 800) : null;
         
-        return { title, images: [...new Set(images)], description };
+        // Extraer precio
+        let priceRaw = null;
+        const priceEls = document.querySelectorAll('.only-one-priceNum-td-left, .sr-pro-price, .item-price, .price-val');
+        for (const el of priceEls) {
+            if (el && el.innerText.trim()) {
+                priceRaw = el.innerText.trim();
+                break;
+            }
+        }
+        if (!priceRaw) {
+            const m = document.body.innerText.match(/US\$ ([\d\.,]+)/);
+            if (m) priceRaw = m[0];
+        }
+
+        return { title, images: [...new Set(images)], description, priceRaw };
       });
 
       if (!data.title) {
@@ -77,21 +91,9 @@ async function scrapeMadeInChina() {
         continue;
       }
 
-      // -- FETCH PRICE CON CHEERIO --
       let finalPrice = 0;
-      try {
-        const res = await fetch(url);
-        const html = await res.text();
-        const $ = cheerio.load(html);
-        let priceRaw = $('.only-one-priceNum-td-left').first().text().trim() || 
-                       $('.sr-pro-price').first().text().trim() || 
-                       $('.item-price').first().text().trim();
-        if (!priceRaw) {
-          const m = html.match(/US\$ ([\d\.,]+)/);
-          if (m) priceRaw = m[0];
-        }
-        if (priceRaw) {
-          const match = priceRaw.match(/[\d\.,]+/);
+      if (data.priceRaw) {
+          const match = data.priceRaw.match(/[\d\.,]+/);
           if (match) {
              let str = match[0];
              if (str.includes(',') && str.indexOf(',') > str.lastIndexOf('.')) {
@@ -103,11 +105,7 @@ async function scrapeMadeInChina() {
              }
              finalPrice = Number((parseFloat(str) * 1.4).toFixed(2)); // +40% margin
           }
-        }
-      } catch(e) {
-        console.log("Error al hacer fetch del precio:", e.message);
       }
-      // -----------------------------
 
       // Check if exists
       const existing = await prisma.product.findFirst({
