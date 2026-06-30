@@ -136,16 +136,19 @@ model Product {
 }
 
 model Category {
-  id          String    @id @default(cuid())
-  name        String    @unique
-  slug        String    @unique
-  description String?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  isVisible   Boolean   @default(true)
-  image       String?
-  pdfUrl      String?
-  products    Product[]
+  id            String     @id @default(cuid())
+  name          String     @unique
+  slug          String     @unique
+  description   String?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  isVisible     Boolean    @default(true)
+  image         String?
+  pdfUrl        String?
+  parentId      String?
+  parent        Category?  @relation("Subcategories", fields: [parentId], references: [id])
+  subcategories Category[] @relation("Subcategories")
+  products      Product[]
 }
 
 model Collection {
