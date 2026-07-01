@@ -1,0 +1,36 @@
+name: Monitor Proveedores y Lanzamientos
+
+on:
+  schedule:
+    # Ejecuta a las 03:00 y 15:00 UTC todos los días (Cada 12 horas)
+    - cron: '0 3,15 * * *'
+  workflow_dispatch: # Permite ejecución manual desde GitHub
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v3
+
+      - name: Instalar Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Instalar Dependencias
+        run: npm ci
+
+      - name: Instalar navegadores para Playwright (Scrapers)
+        run: npx playwright install --with-deps chromium
+
+      - name: Generar Prisma Client
+        run: npx prisma generate
+
+      - name: Ejecutar Monitor Automático
+        run: node scripts/monitor_providers.js
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}

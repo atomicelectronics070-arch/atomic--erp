@@ -188,6 +188,9 @@ export default function DashboardLayout({
                                 isOpen={openSections.rrhh}
                                 onToggle={() => toggleSection('rrhh')}
                             >
+                                {role === "ADMIN" && (
+                                    <NavLink href="/dashboard/coordinacion" icon={<Users size={14} />} label="Coordinación" isSubItem />
+                                )}
                                 <NavLink href="/dashboard/evaluations" icon={<Users size={14} />} label="Asesores" isSubItem />
                             </CollapsibleSection>
                         )}

@@ -1,0 +1,6 @@
+﻿Chimera Total: 0
+Chimera Deleted: 0
+Perno Total: 1103
+Perno Deleted (Papelera): 0
+Perno Active (Visible): 1103
+Perno Inactive (Oculto): 0

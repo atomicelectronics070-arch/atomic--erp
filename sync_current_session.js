@@ -50,11 +50,11 @@ const CONFIG = [
     name: 'Fabricables',
     urlFn: (page) => 'https://www.fabricables.com/productos/',
     selectors: {
-      container: '.columns-3 a, .product-item a, a',
-      name: 'h2, h3, .product-title, span',
+      container: '.elementor-widget-image-box, figure, .wp-block-image',
+      name: 'h2, h3, .product-title, span, figcaption',
       price: '.price', // Placeholder, we know it's missing
       image: 'img',
-      link: 'self'
+      link: 'a'
     },
     pricing: (p) => 0, // Catalog only
     provider: 'Fabricables',
@@ -163,7 +163,8 @@ async function scrapeSite(browser, site) {
               images: JSON.stringify([p.image]),
               provider: site.provider,
               isDeleted: false,
-              isActive: true
+              isActive: true,
+              isConsultOnly: site.provider === 'Fabricables'
             },
             create: {
               sku: sku || p.name,
@@ -173,6 +174,7 @@ async function scrapeSite(browser, site) {
               provider: site.provider,
               isActive: true,
               isDeleted: false,
+              isConsultOnly: site.provider === 'Fabricables',
               stock: 10
             }
           });

@@ -603,10 +603,10 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                                     onClick={() => toggleSupplier(supplierName)}
                                 >
                                     <div className="flex items-center gap-4">
-                                        <div className="w-1.5 h-10 rounded-full flex-shrink-0" style={{ backgroundColor: styles.primary }} />
+                                        <div className="w-2 h-12 rounded-full flex-shrink-0" style={{ backgroundColor: styles.primary }} />
                                         <div>
-                                            <h3 className="text-sm sm:text-base font-bold text-slate-800 tracking-tight leading-none">{supplierName}</h3>
-                                            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2">
+                                            <h3 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight uppercase leading-none">{supplierName}</h3>
+                                            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-3">
                                                 <span className="text-xs text-slate-400 font-medium">{prods.length} artículos</span>
                                                 <span className="text-slate-200 text-xs">•</span>
                                                 {avgM !== null && (
@@ -716,29 +716,29 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                                             className="overflow-hidden border-t border-slate-200 bg-slate-50/10"
                                         >
                                             <div className="overflow-x-auto custom-scrollbar p-3">
-                                                <table className="w-full text-left border-collapse border border-slate-200/60 rounded-xl overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.01)] bg-white">
+                                                <table className="w-full text-left border-collapse border border-slate-300 rounded-xl overflow-hidden shadow-sm bg-white">
                                                     <thead>
-                                                        <tr className="text-[11px] font-bold text-slate-500 border-b border-slate-200/60 bg-slate-50/50">
-                                                            <th className="px-4 py-3 w-12 text-center">
+                                                        <tr className="text-sm font-extrabold text-slate-700 border-b border-slate-300 bg-slate-100 uppercase">
+                                                            <th className="px-4 py-4 w-12 text-center">
                                                                 <button
                                                                     onClick={(e) => { e.stopPropagation(); toggleAllProducts(prods) }}
-                                                                    className="text-slate-400 hover:text-slate-900 transition-colors"
+                                                                    className="text-slate-500 hover:text-slate-900 transition-colors"
                                                                 >
                                                                     {prods.every(p => selectedProducts.includes(p.id)) ? (
-                                                                        <CheckSquare size={16} className="text-slate-900" />
+                                                                        <CheckSquare size={20} className="text-slate-900" />
                                                                     ) : (
-                                                                        <Square size={16} />
+                                                                        <Square size={20} />
                                                                     )}
                                                                 </button>
                                                             </th>
-                                                            <th className="px-4 py-3">Artículo</th>
-                                                            <th className="px-4 py-3 w-32">SKU</th>
-                                                            <th className="px-4 py-3 w-36">Categoría</th>
-                                                            <th className="px-4 py-3 w-28">Stock</th>
-                                                            {isAdmin && <th className="px-4 py-3 w-40">Costo</th>}
-                                                            <th className="px-4 py-3 w-40">Precio Venta (PVP)</th>
-                                                            <th className="px-4 py-3 w-32">Margen (ROI)</th>
-                                                            <th className="px-4 py-3 w-20 text-center">Visible</th>
+                                                            <th className="px-4 py-4">Producto</th>
+                                                            <th className="px-4 py-4 w-32">Cód. / SKU</th>
+                                                            <th className="px-4 py-4 w-36">Categoría</th>
+                                                            <th className="px-4 py-4 w-28">Stock</th>
+                                                            {isAdmin && <th className="px-4 py-4 w-40">Costo Base</th>}
+                                                            <th className="px-4 py-4 w-40">P.V.P</th>
+                                                            <th className="px-4 py-4 w-32">Margen (ROI)</th>
+                                                            <th className="px-4 py-4 w-20 text-center">Visible</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody className="divide-y divide-slate-100 bg-white">
@@ -768,25 +768,25 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                                                                             )}
                                                                         </button>
                                                                     </td>
-                                                                    <td className="px-4 py-3.5">
+                                                                    <td className="px-4 py-4">
                                                                         <div className="flex items-center gap-3">
-                                                                            <div className="w-10 h-10 bg-slate-50 border border-slate-200/60 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center relative group-hover/row:border-blue-500/30 transition-all shadow-sm">
+                                                                            <div className="w-12 h-12 bg-slate-50 border border-slate-300 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center relative shadow-sm">
                                                                                 {img ? (
-                                                                                    <img src={img} alt="" className="w-full h-full object-cover group-hover/row:scale-105 transition-transform duration-500" />
+                                                                                    <img src={img} alt="" className="w-full h-full object-cover" />
                                                                                 ) : (
-                                                                                    <Package size={16} className="text-slate-400" />
+                                                                                    <Package size={20} className="text-slate-400" />
                                                                                 )}
                                                                             </div>
-                                                                            <span className="text-slate-700 font-semibold text-xs line-clamp-2 max-w-[280px] group-hover/row:text-blue-600 transition-colors">{p.name}</span>
+                                                                            <span className="text-slate-800 font-bold text-base line-clamp-2">{p.name}</span>
                                                                         </div>
                                                                     </td>
-                                                                    <td className="px-4 py-3.5">
-                                                                        <span className="text-slate-500 font-mono text-[10px] font-bold tracking-wider bg-slate-50 px-2.5 py-1 border border-slate-200/60 rounded-lg shadow-[0_1px_3px_rgba(0,0,0,0.01)]">{p.sku || "N/A"}</span>
+                                                                    <td className="px-4 py-4">
+                                                                        <span className="text-slate-600 font-mono text-sm font-bold bg-slate-100 px-3 py-1.5 border border-slate-300 rounded-lg">{p.sku || "N/A"}</span>
                                                                     </td>
-                                                                    <td className="px-4 py-3.5">
-                                                                        <span className="text-slate-400 text-xs font-medium">{p.category?.name || "Sin Categoría"}</span>
+                                                                    <td className="px-4 py-4">
+                                                                        <span className="text-slate-500 text-sm font-semibold">{p.category?.name || "Sin Categoría"}</span>
                                                                     </td>
-                                                                    <td className="px-4 py-3.5">
+                                                                    <td className="px-4 py-4">
                                                                         <InlineEdit
                                                                             value={p.stock}
                                                                             decimals={0}
@@ -843,27 +843,27 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                     <div className="overflow-x-auto custom-scrollbar p-3">
                         <table className="w-full text-left border-collapse border border-slate-200/60 rounded-xl overflow-hidden bg-white shadow-[0_2px_12px_rgba(0,0,0,0.01)]">
                             <thead>
-                                <tr className="text-[11px] font-bold text-slate-500 border-b border-slate-200/60 bg-slate-50/50">
-                                    <th className="px-4 py-3 w-12 text-center">
+                                <tr className="text-sm font-extrabold text-slate-700 border-b border-slate-300 bg-slate-100 uppercase">
+                                    <th className="px-4 py-4 w-12 text-center">
                                         <button
                                             onClick={(e) => { e.stopPropagation(); toggleAllProducts(products) }}
-                                            className="text-slate-400 hover:text-slate-900 transition-colors"
+                                            className="text-slate-500 hover:text-slate-900 transition-colors"
                                         >
                                             {products.every(p => selectedProducts.includes(p.id)) ? (
-                                                <CheckSquare size={16} className="text-slate-900" />
+                                                <CheckSquare size={20} className="text-slate-900" />
                                             ) : (
-                                                <Square size={16} />
+                                                <Square size={20} />
                                             )}
                                         </button>
                                     </th>
-                                    <th className="px-4 py-3">Artículo</th>
-                                    <th className="px-4 py-3 w-40">Proveedor</th>
-                                    <th className="px-4 py-3 w-32">SKU</th>
-                                    <th className="px-4 py-3 w-36">Categoría</th>
-                                    <th className="px-4 py-3 w-28">Stock</th>
-                                    {isAdmin && <th className="px-4 py-3 w-36">Costo</th>}
-                                    <th className="px-4 py-3 w-36">PVP (P. Venta)</th>
-                                    <th className="px-4 py-3 w-32">Margen (ROI)</th>
+                                    <th className="px-4 py-4">Artículo</th>
+                                    <th className="px-4 py-4 w-40">Proveedor</th>
+                                    <th className="px-4 py-4 w-32">SKU</th>
+                                    <th className="px-4 py-4 w-36">Categoría</th>
+                                    <th className="px-4 py-4 w-28">Stock</th>
+                                    {isAdmin && <th className="px-4 py-4 w-36">Costo Base</th>}
+                                    <th className="px-4 py-4 w-36">PVP (P. Venta)</th>
+                                    <th className="px-4 py-4 w-32">Margen (ROI)</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100 bg-white">
@@ -880,29 +880,29 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                                             key={p.id}
                                             className={`hover:bg-slate-50/30 transition-colors duration-300 group/flatrow ${isSaving ? "opacity-50" : ""} ${isSaved ? "bg-emerald-500/5" : ""} ${isSelected ? "bg-slate-50/80" : ""}`}
                                         >
-                                            <td className="px-4 py-3.5 text-center w-12">
+                                            <td className="px-4 py-4 text-center w-12">
                                                 <button
                                                     onClick={() => toggleProductSelection(p.id)}
-                                                    className="text-slate-355 hover:text-slate-900 transition-colors"
+                                                    className="text-slate-400 hover:text-slate-900 transition-colors"
                                                 >
                                                     {isSelected ? (
-                                                        <CheckSquare size={16} className="text-slate-900" />
+                                                        <CheckSquare size={20} className="text-slate-900" />
                                                     ) : (
-                                                        <Square size={16} />
+                                                        <Square size={20} />
                                                     )}
                                                 </button>
                                             </td>
-                                            <td className="px-4 py-3.5">
+                                            <td className="px-4 py-4">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="w-10 h-10 bg-slate-50 border border-slate-200/60 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center relative group-hover/flatrow:border-blue-500/30 transition-all shadow-sm">
-                                                        {img ? <img src={img} alt="" className="w-full h-full object-cover group-hover/flatrow:scale-105 transition-transform duration-500" /> : <Package size={16} className="text-slate-400" />}
+                                                    <div className="w-12 h-12 bg-slate-50 border border-slate-300 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center relative shadow-sm">
+                                                        {img ? <img src={img} alt="" className="w-full h-full object-cover" /> : <Package size={20} className="text-slate-400" />}
                                                     </div>
-                                                    <span className="text-slate-700 font-semibold text-xs line-clamp-1 max-w-[280px] group-hover/flatrow:text-blue-600 transition-colors">{p.name}</span>
+                                                    <span className="text-slate-800 font-bold text-base line-clamp-1">{p.name}</span>
                                                 </div>
                                             </td>
-                                            <td className="px-4 py-3.5">
+                                            <td className="px-4 py-4">
                                                 <span 
-                                                    className="inline-flex items-center justify-center px-2.5 py-1 text-[10px] font-bold rounded-full border"
+                                                    className="inline-flex items-center justify-center px-3 py-1.5 text-xs font-bold rounded-full border uppercase"
                                                     style={{ 
                                                         color: styles.primary, 
                                                         borderColor: `${styles.primary}20`, 
@@ -912,13 +912,13 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                                                     {p.provider || "Sin Proveedor"}
                                                 </span>
                                             </td>
-                                            <td className="px-4 py-3.5">
-                                                <span className="text-slate-500 font-mono text-[10px] font-bold tracking-wider bg-slate-50 px-2.5 py-1 border border-slate-200/60 rounded-lg shadow-[0_1px_3px_rgba(0,0,0,0.01)]">{p.sku || "N/A"}</span>
+                                            <td className="px-4 py-4">
+                                                <span className="text-slate-600 font-mono text-sm font-bold bg-slate-100 px-3 py-1.5 border border-slate-300 rounded-lg">{p.sku || "N/A"}</span>
                                             </td>
-                                            <td className="px-4 py-3.5">
-                                                <span className="text-slate-400 text-xs font-medium">{p.category?.name || "Sin Categoría"}</span>
+                                            <td className="px-4 py-4">
+                                                <span className="text-slate-500 text-sm font-semibold">{p.category?.name || "Sin Categoría"}</span>
                                             </td>
-                                            <td className="px-4 py-3.5">
+                                            <td className="px-4 py-4">
                                                 <InlineEdit
                                                     value={p.stock}
                                                     decimals={0}

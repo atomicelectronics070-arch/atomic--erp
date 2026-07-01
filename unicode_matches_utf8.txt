@@ -1,0 +1,21 @@
+﻿
+src\app\dashboard\shop\page.tsx:389:                                                if(confirm("\u00bfEjecutar 
+limpieza de duplicados exactos ahora?")) {
+src\app\dashboard\shop\page.tsx:394:                                                        alert("Cat\u00e1logo 
+saneado correctamente.");
+src\app\dashboard\shop\page.tsx:403:                                            {isCleaning ? 'Saneando 
+Arquitectura...' : 'Saneamiento de Cat\u00e1logo'}
+src\app\dashboard\shop\page.tsx:416:                                                placeholder="B\u00daSQUEDA 
+T\u00c1CTICA POR SKU, NOMBRE O SEGMENTO_VECT..."
+src\app\dashboard\shop\page.tsx:429:                                                <option value="">TODOS LOS 
+OR\u00cdGENES</option>
+src\app\dashboard\shop\page.tsx:474:                                                                    <p 
+className="uppercase text-xs font-black tracking-[0.6em] text-slate-500 italic">C\u00e1mara de Inventario 
+Vac\u00eda</p>
+src\app\dashboard\shop\page.tsx:628:                                                            <div 
+className="skew-x-[12deg] flex items-center gap-4"><Edit size={16} className="text-secondary" /> <span>Edici\u00f3n 
+T\u00e1ctica</span></div>
+src\app\dashboard\shop\page.tsx:649:                                                            <div 
+className="skew-x-[12deg] flex items-center gap-4"><Trash2 size={16} /> <span>Eliminaci\u00f3n Terminal</span></div>
+
+

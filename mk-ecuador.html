@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Catálogo | MKECUADOR</title>
+    <meta name="description" content="Catálogo completo de resistencias, capacitores, módulos Arduino, ESP32 y herramientas en Quito. Consulta precios y stock.">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="logo.png" type="image/png">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo">
+            <img src="logo.png" alt="MKECUADOR Logo">
+            <span>MKECUADOR</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html">Inicio</a></li>
+            <li><a href="componentes.html" class="active">Componentes</a></li>
+            <li><a href="proyectos.html" class="active">Proyectos MK </a></li> </ul>
+
+        </ul>
+        <div class="nav-icons">
+            <input type="text" id="input-busqueda-nav" placeholder="Buscar..." onkeyup="buscarDesdeNav(event)">
+            
+            <i class="fa-solid fa-search" onclick="toggleBuscador()" title="Buscar"></i>
+            
+            <div class="cart-container" onclick="verCarrito()" title="Ver mi pedido">
+                <i class="fa-solid fa-cart-shopping"></i>
+                <span id="contador-carrito">0</span>
+            </div>
+
+            <i class="fa-solid fa-trash" onclick="vaciarCarrito()" style="cursor: pointer; margin-left: 15px; color: #e63946;" title="Vaciar Carrito"></i>
+        </div>
+    </nav>
+
+    <header style="background: var(--bg-secondary); padding: 40px 10%; text-align: center;">
+        <h1>Catálogo <span class="accent-yellow">Completo</span></h1>
+        <p>Explora todos nuestros componentes electrónicos</p>
+    </header>
+
+    <div class="filter-container">
+        
+        <div style="margin-bottom: 15px;">
+            <input type="text" id="buscador" placeholder="¿Qué buscas hoy?" onkeyup="buscarProducto()" 
+            style="padding: 12px; border-radius: 30px; border: 1px solid #ccc; width: 100%; max-width: 400px; text-align: center;">
+        </div>
+
+        <div class="category-buttons">
+            <button class="filter-btn active" onclick="filtrarProductos('todos')">Todos</button>
+            <button class="filter-btn" onclick="filtrarProductos('CI y Amplificadores')">CI y Amplificadores</button>
+            <button class="filter-btn" onclick="filtrarProductos('Alimentacion')">Alimentación</button>
+            <button class="filter-btn" onclick="filtrarProductos('Leds')">Leds</button>
+            <button class="filter-btn" onclick="filtrarProductos('Paneles solares')">Paneles Solares</button>
+            <button class="filter-btn" onclick="filtrarProductos('Motores')">Motores</button>
+            <button class="filter-btn" onclick="filtrarProductos('Resistencias para electronica')">Resistencias</button>
+            <button class="filter-btn" onclick="filtrarProductos('Condensadores')">Condensadores</button>
+            <button class="filter-btn" onclick="filtrarProductos('PCB')">PCB</button>
+            <button class="filter-btn" onclick="filtrarProductos('Fusibles')">Fusibles</button>
+            <button class="filter-btn" onclick="filtrarProductos('Herramientas')">Herramientas</button>
+            <button class="filter-btn" onclick="filtrarProductos('Protoboard')">Protoboard</button>
+            <button class="filter-btn" onclick="filtrarProductos('Cables')">Cables</button>
+            <button class="filter-btn" onclick="filtrarProductos('Reles')">Relés</button>
+            <button class="filter-btn" onclick="filtrarProductos('Accionamiento')">Accionamiento</button>
+            <button class="filter-btn" onclick="filtrarProductos('Multimetro')">Multímetro</button>
+            <button class="filter-btn" onclick="filtrarProductos('Comunicacion')">Comunicación</button>
+            <button class="filter-btn" onclick="filtrarProductos('Ventiladores')">Ventiladores</button>
+            <button class="filter-btn" onclick="filtrarProductos('Bombas')">Bombas</button>
+            <button class="filter-btn" onclick="filtrarProductos('Ruedas')">Ruedas</button>
+            <button class="filter-btn" onclick="filtrarProductos('Decodificador')">Decodificador</button>
+            <button class="filter-btn" onclick="filtrarProductos('LCD')">LCD</button>
+            <button class="filter-btn" onclick="filtrarProductos('Semiconductores')">Semiconductores</button>
+            <button class="filter-btn" onclick="filtrarProductos('Modulo de deteccion')">Mód. Detección</button>
+            <button class="filter-btn" onclick="filtrarProductos('Modulo acustico')">Mód. Acústico</button>
+            <button class="filter-btn" onclick="filtrarProductos('sensores')">Sensores</button>
+            <button class="filter-btn" onclick="filtrarProductos('Microcontroladores')">Microcontroladores</button>
+        </div>
+    </div>
+
+    <section class="products">
+        <div class="product-grid" id="grid-todos">
+            </div>
+    </section>
+
+    <footer class="main-footer">
+            <div class="footer-container">
+                
+                <div class="footer-col">
+                    <h3>MKECUADOR</h3>
+                    <p>Especialistas en Electrónica y Robótica para tus mejores proyectos.</p>
+                </div>
+
+                <div class="footer-col">
+                    <h3>Contáctanos</h3>
+                    <p>
+                        <i class="fa-brands fa-whatsapp icon-whatsapp"></i> 
+                        <a href="https://wa.me/593994145131" target="_blank">099 414 5131</a>
+                    </p>
+                    <p>
+                        <i class="fa-brands fa-whatsapp icon-whatsapp"></i> 
+                        <a href="https://wa.me/593986476525" target="_blank">098 647 6525</a>
+                    </p>
+                    <p>
+                        <i class="fa-solid fa-envelope icon-email"></i> 
+                        <a href="/cdn-cgi/l/email-protection#afc2cacccecaccdaceefc8c2cec6c381ccc0c2"><span class="__cf_email__" data-cfemail="caa7afa9abafa9bfab8aada7aba3a6e4a9a5a7">[email&#160;protected]</span></a>
+                    </p>
+                </div>
+
+                <div class="footer-col">
+                    <h3>Visítanos</h3>
+                    <p>
+                        <i class="fa-solid fa-location-dot icon-location"></i>
+                        Av. de los Algarrobos y Belisario Peña Ponce<br>
+                        Quito, Ecuador (CP 170502)
+                    </p>
+                </div>
+
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 MKECUADOR. Todos los derechos reservados.</p>
+            </div>
+    </footer>
+
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="script.js"></script>
+
+</body>
+</html>

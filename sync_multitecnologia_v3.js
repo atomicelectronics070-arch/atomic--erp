@@ -1,5 +1,6 @@
 const { PrismaClient } = require('@prisma/client');
 const { chromium } = require('playwright');
+const { classifyProduct } = require('./scripts/utils/smartClassifier');
 
 const prisma = new PrismaClient();
 
@@ -73,36 +74,50 @@ async function scrapeCategory(page, catUrl, categoryName) {
                 break;
             }
 
-            console.log(`   🔍 Found ${products.length} products on this page.`);
+            const dbCategories = await prisma.category.findMany();
+
+            console.log(`✨ Found ${products.length} active products to sync in Multitecnologia...`);
+
+            let batchUpdates = [];
 
             for (const p of products) {
                 const price = await parsePrice(p.priceRaw);
                 if (price <= 0) continue;
-
+                
                 const sku = p.link.split('/').pop().split('.html')[0] || p.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+                const newCatId = classifyProduct(p.name, dbCategories);
 
-                await prisma.product.upsert({
-                    where: { sku: sku },
-                    update: { 
-                        name: p.name, 
-                        price: price, 
-                        images: JSON.stringify([p.image]), 
-                        provider: 'MultiTecnologia V&V',
-                        isDeleted: false,
-                        isActive: true
-                    },
-                    create: { 
-                        sku: sku, 
-                        name: p.name, 
-                        price: price, 
-                        images: JSON.stringify([p.image]), 
-                        provider: 'MultiTecnologia V&V', 
-                        isActive: true, 
-                        isDeleted: false, 
-                        stock: 10 
-                    }
-                });
+                batchUpdates.push(
+                    prisma.product.upsert({
+                        where: { sku: sku },
+                        update: { 
+                            name: p.name, 
+                            price: price, 
+                            images: JSON.stringify([p.image]), 
+                            provider: 'MultiTecnologia V&V',
+                            isDeleted: false,
+                            isActive: true,
+                            ...(newCatId && { categoryId: newCatId })
+                        },
+                        create: { 
+                            sku: sku, 
+                            name: p.name, 
+                            price: price, 
+                            images: JSON.stringify([p.image]), 
+                            provider: 'MultiTecnologia V&V', 
+                            isActive: true, 
+                            isDeleted: false, 
+                            stock: 10,
+                            ...(newCatId && { categoryId: newCatId })
+                        }
+                    })
+                );
+
                 totalSynced++;
+            }
+
+            if (batchUpdates.length > 0) {
+                await prisma.$transaction(batchUpdates);
             }
             
             // If page has very few products, it's likely the last one

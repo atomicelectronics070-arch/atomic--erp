@@ -1,0 +1,6 @@
+﻿src/app/dashboard/shop/page.tsx(674,25): error TS1005: ')' expected.
+src/app/dashboard/shop/page.tsx(675,22): error TS1005: ':' expected.
+src/app/dashboard/shop/page.tsx(977,15): error TS1005: ';' expected.
+src/app/dashboard/shop/page.tsx(985,9): error TS1128: Declaration or statement expected.
+src/app/dashboard/shop/page.tsx(986,5): error TS1109: Expression expected.
+src/app/dashboard/shop/page.tsx(987,1): error TS1128: Declaration or statement expected.

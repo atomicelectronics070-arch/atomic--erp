@@ -1,6 +1,7 @@
 const { PrismaClient } = require('@prisma/client');
 const { chromium } = require('playwright');
 const fs = require('fs');
+const { classifyProduct } = require('./scripts/utils/smartClassifier');
 
 const prisma = new PrismaClient();
 
@@ -47,10 +48,29 @@ async function scrapePage(page, url) {
             if (price <= 0) continue;
             const sku = p.link.replace(/\/$/, '').split('/').pop();
 
+            const newCatId = classifyProduct(p.name, categories);
+
             await prisma.product.upsert({
                 where: { sku: sku },
-                update: { name: p.name, price: price, images: JSON.stringify([p.image]), provider: 'Banco del Perno', isDeleted: false },
-                create: { sku: sku, name: p.name, price: price, images: JSON.stringify([p.image]), provider: 'Banco del Perno', isActive: true, isDeleted: false, stock: 10 }
+                update: { 
+                    name: p.name, 
+                    price: price, 
+                    images: JSON.stringify([p.image]), 
+                    provider: 'Banco del Perno', 
+                    isDeleted: false,
+                    ...(newCatId && { categoryId: newCatId })
+                },
+                create: { 
+                    sku: sku, 
+                    name: p.name, 
+                    price: price, 
+                    images: JSON.stringify([p.image]), 
+                    provider: 'Banco del Perno', 
+                    isActive: true, 
+                    isDeleted: false, 
+                    stock: 10,
+                    ...(newCatId && { categoryId: newCatId })
+                }
             });
             synced++;
         }
@@ -63,6 +83,7 @@ async function scrapePage(page, url) {
 }
 
 async function main() {
+    const dbCategories = await prisma.category.findMany();
     const categories = JSON.parse(fs.readFileSync('bp_top_categories.json', 'utf8'));
     const browser = await chromium.launch({ headless: true });
     const page = await browser.newPage();
@@ -74,7 +95,7 @@ async function main() {
         console.log(`\n📂 Category: ${catUrl}`);
         for (let i = 1; i <= 5; i++) {
             const url = i === 1 ? catUrl : `${catUrl}page/${i}/`;
-            const hasProducts = await scrapePage(page, url);
+            const hasProducts = await scrapePage(page, url, dbCategories);
             if (!hasProducts) break;
         }
     }
