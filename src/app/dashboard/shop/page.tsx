@@ -9,7 +9,7 @@ import {
     Shield, Globe, Zap, Image as ImageIcon, Box, Layout, ArrowRight, 
     Tag as TagIcon, Settings, ShoppingBag, Layers, RefreshCw, MoreVertical, 
     CheckCircle, CheckCircle2, Star, CheckSquare, Square, Monitor, Cpu, ShieldAlert, 
-    Upload, PlusCircle, FileText, ChevronDown, Store, Gamepad2
+    Upload, PlusCircle, FileText, ChevronDown, Store, Gamepad2, Download, Copy
 } from "lucide-react"
 import { CyberCard, NeonButton, CyberInput, GlassPanel } from "@/components/ui/CyberUI"
 import { SupplierManager } from "@/components/shop/SupplierManager"
@@ -68,6 +68,10 @@ export default function ShopConfigPage() {
         bannerActive: false,
         banners: { software: {}, automation: {}, gaming: {} }
     })
+    
+    // Preview modals state
+    const [previewImages, setPreviewImages] = useState<{ urls: string[]; title: string } | null>(null)
+    const [previewDescription, setPreviewDescription] = useState<{ title: string; description: string; sku: string } | null>(null)
 
     const refreshData = async () => {
         setLoading(true)
@@ -514,7 +518,14 @@ export default function ShopConfigPage() {
                                                                 </td>
                                                                 <td className="px-6 py-4">
                                                                     <div className="flex items-center space-x-4">
-                                                                        <div className="w-12 h-12 bg-slate-55 border border-slate-200/60 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center relative group-hover:border-blue-500/30 transition-all shadow-sm">
+                                                                        <div 
+                                                                            onClick={() => {
+                                                                                if (p.images && p.images !== 'null' && safeParseArray(p.images).length > 0) {
+                                                                                    setPreviewImages({ urls: safeParseArray(p.images), title: p.name });
+                                                                                }
+                                                                            }}
+                                                                            className={`w-12 h-12 bg-slate-55 border border-slate-200/60 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center relative group-hover:border-blue-500/30 transition-all shadow-sm ${p.images && p.images !== 'null' && safeParseArray(p.images).length > 0 ? 'cursor-pointer' : ''}`}
+                                                                        >
                                                                             {p.images && p.images !== 'null' && safeParseArray(p.images).length > 0 ? (
                                                                                 <img src={safeParseArray(p.images)[0]} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-550" />
                                                                             ) : (
@@ -522,7 +533,12 @@ export default function ShopConfigPage() {
                                                                             )}
                                                                         </div>
                                                                         <div className="max-w-md">
-                                                                            <p className="text-xs font-semibold text-slate-800 line-clamp-1 group-hover:text-blue-600 transition-colors mb-1">{p.name}</p>
+                                                                            <p 
+                                                                                onClick={() => setPreviewDescription({ title: p.name, description: p.description || 'Sin descripción detallada.', sku: p.sku || 'N/A' })}
+                                                                                className="text-xs font-semibold text-slate-800 line-clamp-1 group-hover:text-blue-600 transition-colors mb-1 cursor-pointer hover:underline"
+                                                                            >
+                                                                                {p.name}
+                                                                            </p>
                                                                             <div className="flex items-center gap-2">
                                                                                 <span className="text-[10px] text-slate-450 font-mono font-medium">{p.sku || 'N/A'}</span>
                                                                                 {p.featured && <span className="bg-yellow-50 text-yellow-600 text-[9px] font-bold px-1.5 py-0.5 border border-yellow-200/60 rounded">DESTACADO</span>}
@@ -825,6 +841,90 @@ export default function ShopConfigPage() {
                             onSaved={() => { setEditingTaxonomy(null); refreshData(); }}
                         />
                     )}
+
+                    {/* IMAGE GALLERY MODAL */}
+                    <AnimatePresence>
+                        {previewImages && (
+                            <motion.div 
+                                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                                className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm"
+                                onClick={() => setPreviewImages(null)}
+                            >
+                                <motion.div 
+                                    initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
+                                    onClick={e => e.stopPropagation()}
+                                    className="bg-white rounded-2xl shadow-2xl overflow-hidden w-full max-w-4xl max-h-[90vh] flex flex-col relative"
+                                >
+                                    <div className="flex justify-between items-center p-4 border-b border-slate-100">
+                                        <h3 className="text-sm font-bold text-slate-800 line-clamp-1 pr-8">{previewImages.title}</h3>
+                                        <button onClick={() => setPreviewImages(null)} className="p-2 text-slate-400 hover:text-slate-700 bg-slate-50 hover:bg-slate-100 rounded-full transition-all">
+                                            <X size={18} />
+                                        </button>
+                                    </div>
+                                    <div className="p-4 flex-1 overflow-y-auto bg-slate-50/50 flex flex-wrap gap-4 justify-center items-start custom-scrollbar">
+                                        {previewImages.urls.map((url, i) => (
+                                            <div key={i} className="relative group rounded-xl overflow-hidden border border-slate-200/60 shadow-sm bg-white max-w-sm w-full">
+                                                <img src={url} alt={`Imagen ${i+1}`} className="w-full h-auto object-contain max-h-[500px]" />
+                                                <div className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/20 transition-all duration-300 flex items-start justify-end p-3 opacity-0 group-hover:opacity-100">
+                                                    <a 
+                                                        href={url} 
+                                                        download={`imagen-${i+1}.jpg`} 
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="p-2.5 bg-white text-slate-800 hover:text-blue-600 rounded-lg shadow-lg hover:scale-105 transition-all flex items-center gap-2"
+                                                    >
+                                                        <Download size={16} />
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </motion.div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+
+                    {/* DESCRIPTION MODAL */}
+                    <AnimatePresence>
+                        {previewDescription && (
+                            <motion.div 
+                                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                                className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm"
+                                onClick={() => setPreviewDescription(null)}
+                            >
+                                <motion.div 
+                                    initial={{ scale: 0.95, opacity: 0, y: 10 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 10 }}
+                                    onClick={e => e.stopPropagation()}
+                                    className="bg-white rounded-2xl shadow-2xl overflow-hidden w-full max-w-2xl flex flex-col relative"
+                                >
+                                    <div className="flex justify-between items-start p-5 border-b border-slate-100 bg-slate-50/50">
+                                        <div>
+                                            <h3 className="text-base font-bold text-slate-800 pr-8 leading-tight">{previewDescription.title}</h3>
+                                            <p className="text-[10px] text-slate-500 font-mono mt-1">SKU: {previewDescription.sku}</p>
+                                        </div>
+                                        <button onClick={() => setPreviewDescription(null)} className="p-2 text-slate-400 hover:text-slate-700 bg-white hover:bg-slate-100 border border-slate-200/60 rounded-xl transition-all shadow-sm">
+                                            <X size={16} />
+                                        </button>
+                                    </div>
+                                    <div className="p-6 overflow-y-auto max-h-[60vh] custom-scrollbar">
+                                        <div className="prose prose-sm prose-slate max-w-none" dangerouslySetInnerHTML={{ __html: previewDescription.description }} />
+                                    </div>
+                                    <div className="p-4 border-t border-slate-100 bg-slate-50 flex justify-end">
+                                        <button 
+                                            onClick={() => {
+                                                navigator.clipboard.writeText(`${previewDescription.title}\n\n${previewDescription.description.replace(/<[^>]*>?/gm, '')}`);
+                                                alert("¡Descripción copiada!");
+                                            }}
+                                            className="px-5 py-2.5 bg-white border border-slate-200 text-slate-700 hover:text-blue-600 hover:border-blue-300 hover:bg-blue-50 transition-all font-semibold text-xs rounded-xl shadow-sm flex items-center gap-2"
+                                        >
+                                            <Copy size={14} />
+                                            <span>Copiar al portapapeles</span>
+                                        </button>
+                                    </div>
+                                </motion.div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
             ) : (
                 <ProductForm
