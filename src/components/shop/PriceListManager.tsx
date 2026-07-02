@@ -215,7 +215,7 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
 
     // UI state
     const [expandedSuppliers, setExpandedSuppliers] = useState<Set<string>>(new Set())
-    const [viewMode, setViewMode] = useState<"grouped" | "table">("grouped")
+    const [viewMode, setViewMode] = useState<"grouped" | "table">("table")
     const [savingIds, setSavingIds] = useState<Set<string>>(new Set())
     const [savedIds, setSavedIds] = useState<Set<string>>(new Set())
     const [marginEditSupplier, setMarginEditSupplier] = useState<string | null>(null)
@@ -245,10 +245,6 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
             setSuppliers(data.providerStats || [])
             setCategories(data.categories || [])
             setTotal(data.total || 0)
-            
-            if (expandedSuppliers.size === 0 && data.providerStats?.length > 0) {
-                setExpandedSuppliers(new Set([data.providerStats[0].name]))
-            }
         } catch (e) {
             console.error("PriceListManager load error:", e)
         } finally {
