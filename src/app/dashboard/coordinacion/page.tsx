@@ -32,6 +32,13 @@ export default function CoordinacionPage() {
     const [zoomForm, setZoomForm] = useState({ notes: "" })
     const [assignmentForm, setAssignmentForm] = useState({ objective: "", amount: 10, advisorId: "", origin: "" })
 
+    // Test Mode and Date Selector
+    const [isTestMode, setIsTestMode] = useState(false)
+    const [selectedDate, setSelectedDate] = useState(() => {
+        const today = new Date();
+        return today.toISOString().split('T')[0];
+    })
+
     useEffect(() => {
         if (status === "loading") return
         if (!session || session.user.role !== "ADMIN") {
@@ -41,12 +48,19 @@ export default function CoordinacionPage() {
         fetchData()
         fetchAdvisors()
         fetchQuotes()
-    }, [session, status, router])
+    }, [session, status, router, selectedDate])
 
     const fetchData = async () => {
         setLoading(true)
         try {
-            const res = await fetch("/api/admin/coordination")
+            if (isTestMode) {
+                // If in test mode, we just load fake/empty data
+                setDailyData({ daily: { notices: "" }, followUps: [], reports: [], assignments: [] })
+                setNotices("")
+                setLoading(false)
+                return;
+            }
+            const res = await fetch(`/api/admin/coordination?date=${selectedDate}`)
             if(res.ok) {
                 const data = await res.json()
                 setDailyData(data)
@@ -86,6 +100,29 @@ export default function CoordinacionPage() {
 
     const handleAction = async (action: string, payload: any = {}) => {
         try {
+            if (isTestMode) {
+                // In test mode, fake the UI updates locally without calling API
+                let newDailyData = { ...dailyData }
+                if (!newDailyData.daily) newDailyData.daily = {}
+                
+                if (action === "OPEN_GROUP") newDailyData.daily.openTime = new Date()
+                if (action === "CLOSE_GROUP") newDailyData.daily.closeTime = new Date()
+                if (action === "SAVE_NOTICES") newDailyData.daily.notices = payload.notices
+                if (action === "ADD_FOLLOW_UP") {
+                    newDailyData.followUps = [...(newDailyData.followUps || []), { ...payload, id: Date.now() }]
+                }
+                if (action === "SAVE_REPORT") {
+                    newDailyData.reports = [...(newDailyData.reports || []), { ...payload, id: Date.now() }]
+                }
+                if (action === "ADD_ASSIGNMENT") {
+                    newDailyData.assignments = [...(newDailyData.assignments || []), { ...payload, id: Date.now() }]
+                }
+                
+                setDailyData(newDailyData)
+                alert("Guardado (Modo Prueba - los datos se borrarán al salir o recargar)")
+                return
+            }
+
             const res = await fetch("/api/admin/coordination", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -122,11 +159,46 @@ export default function CoordinacionPage() {
 
     return (
         <div className="max-w-6xl mx-auto space-y-8 p-6 text-slate-800">
-            <div className="border-b border-slate-200 pb-4">
-                <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-2">
-                    <Calendar className="text-blue-600" /> Coordinación General
-                </h1>
-                <p className="text-slate-500 mt-2">Panel de control diario para gestión de asesores, reportes y cotizaciones.</p>
+            {isTestMode && (
+                <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded shadow-sm">
+                    <h3 className="font-bold flex items-center gap-2"><AlertCircle className="w-5 h-5"/> Modo Prueba Activo</h3>
+                    <p className="text-sm mt-1">
+                        Estás en un entorno de ensayo. Puedes usar esta interfaz para simular un día laboral como coordinadora. 
+                        <strong> Ningún dato será guardado en el servidor</strong>. El registro se mantendrá de forma local durante máximo un rato y se borrará si cierras o recargas la página.
+                    </p>
+                </div>
+            )}
+            
+            <div className="border-b border-slate-200 pb-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-2">
+                        <Calendar className="text-blue-600" /> Coordinación General
+                    </h1>
+                    <p className="text-slate-500 mt-2">Panel de control diario para gestión de asesores, reportes y cotizaciones.</p>
+                </div>
+                <div className="flex flex-col sm:flex-row items-center gap-3">
+                    <div className="flex flex-col">
+                        <label className="text-xs font-bold text-slate-500 mb-1">Fecha de Bitácora</label>
+                        <input 
+                            type="date" 
+                            value={selectedDate}
+                            onChange={(e) => setSelectedDate(e.target.value)}
+                            className="border border-slate-300 rounded px-3 py-2 text-sm font-medium focus:ring-2 focus:ring-blue-500 outline-none disabled:opacity-50"
+                            disabled={isTestMode}
+                        />
+                    </div>
+                    <button 
+                        onClick={() => setIsTestMode(!isTestMode)}
+                        className={`mt-5 px-4 py-2 rounded font-bold text-sm transition-all flex items-center gap-2 ${
+                            isTestMode 
+                                ? "bg-red-100 text-red-700 hover:bg-red-200 border border-red-300" 
+                                : "bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-300"
+                        }`}
+                    >
+                        {isTestMode ? <X className="w-4 h-4"/> : <CheckSquare className="w-4 h-4"/>}
+                        {isTestMode ? "Salir de Prueba" : "Modo Prueba"}
+                    </button>
+                </div>
             </div>
             
             <div className="flex gap-4 border-b border-slate-200">
