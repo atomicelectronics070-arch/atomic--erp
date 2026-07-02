@@ -35,6 +35,26 @@ export default function CoordinacionPage() {
     const [zoomForm, setZoomForm] = useState({ notes: "" })
     const [assignmentForm, setAssignmentForm] = useState({ objective: "", amount: 10, advisorId: "", origin: "" })
 
+    // New states for PDF Modal and Dynamic Contacts Assignment
+    const [previewPdfUrl, setPreviewPdfUrl] = useState<string | null>(null)
+    const [showContactsDetails, setShowContactsDetails] = useState(false)
+    const [contactsList, setContactsList] = useState<{name: string, objective: string, businessType: string, phone: string}[]>([])
+
+    // Sync contactsList size with assignmentForm.amount
+    useEffect(() => {
+        setContactsList(prev => {
+            const newList = [...prev]
+            if (newList.length < assignmentForm.amount) {
+                while(newList.length < assignmentForm.amount) {
+                    newList.push({ name: "", objective: assignmentForm.objective || "", businessType: "", phone: "" })
+                }
+            } else if (newList.length > assignmentForm.amount) {
+                newList.length = assignmentForm.amount
+            }
+            return newList
+        })
+    }, [assignmentForm.amount, assignmentForm.objective])
+
     // Test Mode and Date Selector
     const [isTestMode, setIsTestMode] = useState(false)
     const [selectedDate, setSelectedDate] = useState(() => {
@@ -349,9 +369,12 @@ export default function CoordinacionPage() {
                                                         </button>
                                                     )}
                                                     {q.pdfUrl && (
-                                                        <a href={q.pdfUrl} target="_blank" rel="noopener noreferrer" className="px-3 py-1.5 bg-blue-100 text-blue-700 rounded-lg text-xs font-bold hover:bg-blue-200 flex items-center gap-1">
+                                                        <button 
+                                                            onClick={() => setPreviewPdfUrl(q.pdfUrl!)} 
+                                                            className="px-3 py-1.5 bg-blue-100 text-blue-700 rounded-lg text-xs font-bold hover:bg-blue-200 flex items-center gap-1"
+                                                        >
                                                             <Download size={14}/> PDF
-                                                        </a>
+                                                        </button>
                                                     )}
                                                 </div>
                                             </td>
@@ -494,15 +517,24 @@ export default function CoordinacionPage() {
 
                     {/* ASIGNACION CONTACTOS */}
                     <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                        <h2 className="text-xl font-semibold mb-4 flex items-center gap-2"><Users /> Asignar Contactos (Inicio de semana)</h2>
-                        <div className="flex flex-wrap gap-4 items-end">
+                        <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
+                            <h2 className="text-xl font-semibold flex items-center gap-2"><Users /> Asignar Contactos (Inicio de semana)</h2>
+                            <button 
+                                onClick={() => setShowContactsDetails(!showContactsDetails)}
+                                className="flex items-center gap-2 text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded text-sm font-bold transition-colors"
+                            >
+                                {showContactsDetails ? <ChevronUp size={16}/> : <ChevronDown size={16}/>}
+                                {showContactsDetails ? "Ocultar Detalle" : "Detallar Contactos"}
+                            </button>
+                        </div>
+                        <div className="flex flex-wrap gap-4 items-end mb-4">
                             <div className="flex-1 min-w-[200px]">
                                 <label className="text-sm font-semibold text-slate-500">Objetivo</label>
                                 <input type="text" value={assignmentForm.objective} onChange={e => setAssignmentForm({...assignmentForm, objective: e.target.value})} className="border p-2 rounded w-full" />
                             </div>
                             <div className="w-24">
                                 <label className="text-sm font-semibold text-slate-500">Cantidad</label>
-                                <input type="number" value={assignmentForm.amount} onChange={e => setAssignmentForm({...assignmentForm, amount: parseInt(e.target.value)})} className="border p-2 rounded w-full" />
+                                <input type="number" min="1" max="100" value={assignmentForm.amount} onChange={e => setAssignmentForm({...assignmentForm, amount: parseInt(e.target.value) || 1})} className="border p-2 rounded w-full" />
                             </div>
                             <div className="flex-1 min-w-[200px]">
                                 <label className="text-sm font-semibold text-slate-500">Asesor a cargo</label>
@@ -515,8 +547,45 @@ export default function CoordinacionPage() {
                                 <label className="text-sm font-semibold text-slate-500">Origen</label>
                                 <input type="text" value={assignmentForm.origin} onChange={e => setAssignmentForm({...assignmentForm, origin: e.target.value})} className="border p-2 rounded w-full" />
                             </div>
-                            <button onClick={() => handleAction("ADD_ASSIGNMENT", assignmentForm)} className="bg-blue-600 text-white px-6 py-2 rounded font-bold h-[42px]">Asignar</button>
+                            <button onClick={() => {
+                                handleAction("ADD_ASSIGNMENT", { ...assignmentForm, contactsData: showContactsDetails ? contactsList : null });
+                                if (showContactsDetails) {
+                                    setContactsList(Array(assignmentForm.amount).fill({ name: "", objective: assignmentForm.objective, businessType: "", phone: "" }));
+                                }
+                                setAssignmentForm({ objective: "", amount: 10, advisorId: "", origin: "" });
+                            }} className="bg-blue-600 text-white px-6 py-2 rounded font-bold h-[42px]">Asignar</button>
                         </div>
+
+                        {showContactsDetails && (
+                            <div className="mt-4 border-t border-slate-100 pt-4 space-y-3 max-h-[400px] overflow-y-auto custom-scrollbar pr-2">
+                                <h3 className="text-sm font-bold text-slate-700 bg-slate-50 p-2 rounded mb-3">Detalle de los {assignmentForm.amount} contactos a asignar</h3>
+                                {contactsList.map((c, i) => (
+                                    <div key={i} className="flex flex-wrap md:flex-nowrap gap-3 p-3 bg-slate-50 border border-slate-200 rounded-lg items-center relative group mt-2">
+                                        <div className="absolute -left-2.5 -top-2.5 bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white shadow-sm">{i + 1}</div>
+                                        <input 
+                                            type="text" placeholder="Nombre del Contacto" value={c.name} 
+                                            onChange={e => { const n = [...contactsList]; n[i].name = e.target.value; setContactsList(n) }} 
+                                            className="border p-2 rounded flex-1 text-sm min-w-[150px]" 
+                                        />
+                                        <input 
+                                            type="text" placeholder="Objetivo (Ej: Vender plan, Afiliar)" value={c.objective} 
+                                            onChange={e => { const n = [...contactsList]; n[i].objective = e.target.value; setContactsList(n) }} 
+                                            className="border p-2 rounded flex-1 text-sm min-w-[150px]" 
+                                        />
+                                        <input 
+                                            type="text" placeholder="Tipo de Negocio" value={c.businessType} 
+                                            onChange={e => { const n = [...contactsList]; n[i].businessType = e.target.value; setContactsList(n) }} 
+                                            className="border p-2 rounded flex-1 text-sm min-w-[150px]" 
+                                        />
+                                        <input 
+                                            type="tel" placeholder="Número Telefónico" value={c.phone} 
+                                            onChange={e => { const n = [...contactsList]; n[i].phone = e.target.value; setContactsList(n) }} 
+                                            className="border p-2 rounded flex-1 text-sm min-w-[150px]" 
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                     {/* RESUMEN DE LA BITACORA */}
                     <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm mt-8">
@@ -599,6 +668,28 @@ export default function CoordinacionPage() {
                                         <div className="text-slate-500 text-sm">
                                             <strong>Cantidad:</strong> {a.amount} <br/>
                                             <strong>Origen:</strong> {a.origin}
+                                            {a.contactsData && (
+                                                <div className="mt-2">
+                                                    <strong className="text-slate-700 block mb-1">Contactos Detallados:</strong>
+                                                    <div className="max-h-40 overflow-y-auto custom-scrollbar pr-1 space-y-1">
+                                                        {(() => {
+                                                            try {
+                                                                const parsed = typeof a.contactsData === 'string' ? JSON.parse(a.contactsData) : a.contactsData;
+                                                                return Array.isArray(parsed) && parsed.map((c: any, idx: number) => (
+                                                                    <div key={idx} className="bg-slate-50 p-2 rounded border border-slate-200 text-xs">
+                                                                        <div className="font-bold text-slate-800">{c.name || "Sin nombre"}</div>
+                                                                        <div className="text-slate-500 flex items-center gap-2 mt-0.5">
+                                                                            <span title="Teléfono">📞 {c.phone || "S/N"}</span>
+                                                                            <span title="Objetivo">🎯 {c.objective || "-"}</span>
+                                                                            <span title="Negocio">🏢 {c.businessType || "-"}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                ))
+                                                            } catch { return null }
+                                                        })()}
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -627,6 +718,40 @@ export default function CoordinacionPage() {
                     </div>
                 </>
             )}
+
+            {/* PDF Preview Modal */}
+            <AnimatePresence>
+                {previewPdfUrl && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm"
+                        onClick={() => setPreviewPdfUrl(null)}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.95, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.95, opacity: 0 }}
+                            className="bg-white rounded-2xl shadow-2xl max-w-5xl w-full h-[90vh] overflow-hidden flex flex-col"
+                            onClick={e => e.stopPropagation()}
+                        >
+                            <div className="p-4 border-b flex justify-between items-center bg-slate-50">
+                                <h3 className="font-bold text-slate-800">Visualización de Cotización</h3>
+                                <button
+                                    onClick={() => setPreviewPdfUrl(null)}
+                                    className="p-2 hover:bg-slate-200 rounded-full transition-colors ml-4"
+                                >
+                                    <X size={20} className="text-slate-500" />
+                                </button>
+                            </div>
+                            <div className="flex-1 w-full bg-slate-100">
+                                <iframe src={previewPdfUrl} className="w-full h-full border-none" />
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     )
 }

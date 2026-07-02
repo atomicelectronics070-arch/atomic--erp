@@ -863,6 +863,7 @@ model CoordinationAssignment {
   amount    Int      @default(0)
   advisorId String?
   origin    String?
+  contactsData String? @db.Text
   createdAt DateTime @default(now())
   
   daily     CoordinationDaily @relation(fields: [dailyId], references: [id])

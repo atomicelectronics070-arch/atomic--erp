@@ -145,7 +145,8 @@ export async function POST(req: NextRequest) {
                         objective: payload.objective,
                         amount: payload.amount,
                         advisorId: payload.advisorId,
-                        origin: payload.origin
+                        origin: payload.origin,
+                        contactsData: payload.contactsData ? JSON.stringify(payload.contactsData) : null
                     }
                 });
                 return NextResponse.json({ success: true, assignment });
