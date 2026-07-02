@@ -133,6 +133,9 @@ export default function DashboardLayout({
                                     isOpen={openSections.operaciones}
                                     onToggle={() => toggleSection('operaciones')}
                                 >
+                                    {role === "ADMIN" && (
+                                        <NavLink href="/dashboard/coordinacion" icon={<Users size={14} />} label="Coordinación" isSubItem />
+                                    )}
                                     <NavLink href="/dashboard/quotes" icon={<FileText size={14} />} label="Cotizaciones" isSubItem />
                                     <NavLink href="/dashboard/shop" icon={<ShoppingBag size={14} />} label={role === "ADMIN" ? "Inventario y Precios" : "Lista Precios"} isSubItem />
                                 </CollapsibleSection>
@@ -188,9 +191,6 @@ export default function DashboardLayout({
                                 isOpen={openSections.rrhh}
                                 onToggle={() => toggleSection('rrhh')}
                             >
-                                {role === "ADMIN" && (
-                                    <NavLink href="/dashboard/coordinacion" icon={<Users size={14} />} label="Coordinación" isSubItem />
-                                )}
                                 <NavLink href="/dashboard/evaluations" icon={<Users size={14} />} label="Asesores" isSubItem />
                             </CollapsibleSection>
                         )}

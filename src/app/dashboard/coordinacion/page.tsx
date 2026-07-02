@@ -45,6 +45,14 @@ export default function CoordinacionPage() {
             router.push("/dashboard")
             return
         }
+        
+        // Auto-clear test mode data if it's older than 20 minutes
+        const testDataTime = localStorage.getItem("testDataTime")
+        if (testDataTime && (Date.now() - parseInt(testDataTime) > 20 * 60 * 1000)) {
+            localStorage.removeItem("testDailyData")
+            localStorage.removeItem("testDataTime")
+        }
+
         fetchData()
         fetchAdvisors()
         fetchQuotes()
@@ -54,8 +62,13 @@ export default function CoordinacionPage() {
         setLoading(true)
         try {
             if (isTestMode) {
-                // If in test mode, we just load fake/empty data
-                setDailyData({ daily: { notices: "" }, followUps: [], reports: [], assignments: [] })
+                // If in test mode, load from localStorage if exists
+                const savedTest = localStorage.getItem("testDailyData")
+                if (savedTest) {
+                    setDailyData(JSON.parse(savedTest))
+                } else {
+                    setDailyData({ daily: { notices: "" }, followUps: [], reports: [], assignments: [] })
+                }
                 setNotices("")
                 setLoading(false)
                 return;
@@ -72,6 +85,11 @@ export default function CoordinacionPage() {
             setLoading(false)
         }
     }
+
+    // React to test mode toggle
+    useEffect(() => {
+        if (!loading) fetchData()
+    }, [isTestMode])
 
     const fetchAdvisors = async () => {
         try {
@@ -119,7 +137,10 @@ export default function CoordinacionPage() {
                 }
                 
                 setDailyData(newDailyData)
-                alert("Guardado (Modo Prueba - los datos se borrarán al salir o recargar)")
+                localStorage.setItem("testDailyData", JSON.stringify(newDailyData))
+                localStorage.setItem("testDataTime", Date.now().toString())
+                
+                alert("Guardado (Modo Prueba - el registro se conservará por máximo 20 minutos)")
                 return
             }
 
@@ -410,6 +431,113 @@ export default function CoordinacionPage() {
                                 <input type="text" value={assignmentForm.origin} onChange={e => setAssignmentForm({...assignmentForm, origin: e.target.value})} className="border p-2 rounded w-full" />
                             </div>
                             <button onClick={() => handleAction("ADD_ASSIGNMENT", assignmentForm)} className="bg-blue-600 text-white px-6 py-2 rounded font-bold h-[42px]">Asignar</button>
+                        </div>
+                    </div>
+                    {/* RESUMEN DE LA BITACORA */}
+                    <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm mt-8">
+                        <h2 className="text-xl font-semibold mb-6 flex items-center gap-2"><FileText /> Resumen de Bitácora (Registros Guardados)</h2>
+                        
+                        <div className="space-y-4 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-300 before:to-transparent">
+                            
+                            {/* Apertura */}
+                            {dailyData?.daily?.openTime && (
+                                <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                                    <div className="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-emerald-500 text-white shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
+                                        <Clock size={18} />
+                                    </div>
+                                    <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-slate-200 bg-white shadow-sm">
+                                        <div className="flex items-center justify-between space-x-2 mb-1">
+                                            <div className="font-bold text-slate-900">Apertura de Grupo</div>
+                                            <time className="text-xs font-medium text-emerald-500">{new Date(dailyData.daily.openTime).toLocaleTimeString()}</time>
+                                        </div>
+                                        <div className="text-slate-500 text-sm">Se registró la apertura del día.</div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Seguimientos */}
+                            {dailyData?.followUps?.map((f: any, i: number) => (
+                                <div key={`f-${f.id || i}`} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                                    <div className="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-blue-500 text-white shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
+                                        <Send size={18} />
+                                    </div>
+                                    <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-slate-200 bg-white shadow-sm">
+                                        <div className="flex items-center justify-between space-x-2 mb-1">
+                                            <div className="font-bold text-slate-900">Seguimiento: {f.clientName}</div>
+                                            <time className="text-xs font-medium text-blue-500">Registrado</time>
+                                        </div>
+                                        <div className="text-slate-500 text-sm">
+                                            <strong>Tel:</strong> {f.phone} <br/>
+                                            <strong>Caso:</strong> {f.case} <br/>
+                                            <strong>Responsable:</strong> {f.responsibleType}
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+
+                            {/* Reportes */}
+                            {dailyData?.reports?.map((r: any, i: number) => (
+                                <div key={`r-${r.id || i}`} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                                    <div className="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-purple-500 text-white shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
+                                        {r.type === 'ZOOM' ? <Video size={18} /> : <MessageSquare size={18} />}
+                                    </div>
+                                    <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-slate-200 bg-white shadow-sm">
+                                        <div className="flex items-center justify-between space-x-2 mb-1">
+                                            <div className="font-bold text-slate-900">Reporte {r.type}</div>
+                                            <time className="text-xs font-medium text-purple-500">Registrado</time>
+                                        </div>
+                                        <div className="text-slate-500 text-sm">
+                                            {r.type === 'ZOOM' ? r.notes : (
+                                                <ul className="list-disc pl-4 space-y-1">
+                                                    {r.q1 && <li>{r.q1}</li>}
+                                                    {r.q2 && <li>{r.q2}</li>}
+                                                    {r.q3 && <li>{r.q3}</li>}
+                                                    {r.q4 && <li>{r.q4}</li>}
+                                                </ul>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+
+                            {/* Asignaciones */}
+                            {dailyData?.assignments?.map((a: any, i: number) => (
+                                <div key={`a-${a.id || i}`} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                                    <div className="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-orange-500 text-white shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
+                                        <Users size={18} />
+                                    </div>
+                                    <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-slate-200 bg-white shadow-sm">
+                                        <div className="flex items-center justify-between space-x-2 mb-1">
+                                            <div className="font-bold text-slate-900">Asignación: {a.objective}</div>
+                                            <time className="text-xs font-medium text-orange-500">Registrado</time>
+                                        </div>
+                                        <div className="text-slate-500 text-sm">
+                                            <strong>Cantidad:</strong> {a.amount} <br/>
+                                            <strong>Origen:</strong> {a.origin}
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+
+                            {/* Cierre */}
+                            {dailyData?.daily?.closeTime && (
+                                <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                                    <div className="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-slate-800 text-white shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
+                                        <CheckSquare size={18} />
+                                    </div>
+                                    <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-slate-200 bg-white shadow-sm">
+                                        <div className="flex items-center justify-between space-x-2 mb-1">
+                                            <div className="font-bold text-slate-900">Cierre de Grupo</div>
+                                            <time className="text-xs font-medium text-slate-500">{new Date(dailyData.daily.closeTime).toLocaleTimeString()}</time>
+                                        </div>
+                                        <div className="text-slate-500 text-sm">Se registró el cierre del día.</div>
+                                    </div>
+                                </div>
+                            )}
+                            
+                            {(!dailyData?.daily?.openTime && !dailyData?.daily?.closeTime && !dailyData?.followUps?.length && !dailyData?.reports?.length && !dailyData?.assignments?.length) && (
+                                <div className="text-center text-slate-500 py-6 italic">Aún no hay registros en la bitácora de este día.</div>
+                            )}
                         </div>
                     </div>
                 </>
