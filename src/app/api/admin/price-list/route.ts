@@ -40,7 +40,6 @@ export async function GET(req: Request) {
                 select: {
                     id: true,
                     name: true,
-                    description: true,
                     sku: true,
                     price: true,
                     compareAtPrice: true,
@@ -48,6 +47,7 @@ export async function GET(req: Request) {
                     isActive: true,
                     provider: true,
                     images: true,
+                    description: true,
                     category: { select: { id: true, name: true } },
                     createdAt: true,
                     updatedAt: true,

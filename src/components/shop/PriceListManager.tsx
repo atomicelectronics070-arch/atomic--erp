@@ -6,13 +6,12 @@ import {
     Check, X, ChevronRight, ChevronDown, RefreshCw, Percent,
     Filter, BarChart2, Tag, Save, AlertCircle, Eye, EyeOff,
     ArrowUpDown, Grid, List as ListIcon, Plus, Download, ChevronUp,
-    ShieldAlert, Info, Square, CheckSquare, Copy
+    ShieldAlert, Info, Square, CheckSquare
 } from "lucide-react"
 
 interface Product {
     id: string
     name: string
-    description: string | null
     sku: string | null
     price: number
     compareAtPrice: number | null
@@ -20,6 +19,7 @@ interface Product {
     isActive: boolean
     provider: string | null
     images: string | null
+    description: string | null
     category: { id: string; name: string } | null
     updatedAt: string
 }
@@ -100,22 +100,21 @@ function safeParseImages(images: string | null): string | null {
     try {
         const parsed = JSON.parse(images)
         if (Array.isArray(parsed) && parsed.length > 0) return parsed[0]
-        return images.split(',')[0].replace(/[\[\]"]/g, '') || null
+        return images.split(',')[0].replace(/[\[\]"]/g, '')
     } catch {
-        if (images.startsWith('http') || images.includes('/')) return images
-        return images.split(',')[0].replace(/[\[\]"]/g, '') || null
+        return images.split(',')[0].replace(/[\[\]"]/g, '')
     }
 }
 
-function safeParseImagesAll(images: string | null): string[] {
+function safeParseImagesArray(images: string | null): string[] {
     if (!images) return []
     try {
         const parsed = JSON.parse(images)
         if (Array.isArray(parsed)) return parsed.filter(Boolean)
-        return []
+        return [images]
     } catch {
         if (images.startsWith('http') || images.includes('/')) return [images]
-        return images.split(',').map(s => s.replace(/[\[\]"]/g, '').trim()).filter(Boolean)
+        return []
     }
 }
 
@@ -242,7 +241,7 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
     const [bulkStockValue, setBulkStockValue] = useState<string>("")
     const [updatingBulk, setUpdatingBulk] = useState(false)
 
-    // Preview modals
+    // Preview modals state
     const [previewImages, setPreviewImages] = useState<{ urls: string[]; title: string } | null>(null)
     const [previewDescription, setPreviewDescription] = useState<{ title: string; description: string; sku: string } | null>(null)
 
@@ -784,14 +783,25 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                                                                     </td>
                                                                     <td className="px-4 py-4">
                                                                         <div className="flex items-center gap-3">
-                                                                            <div className="w-12 h-12 bg-slate-50 border border-slate-300 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center relative shadow-sm">
+                                                                            <div 
+                                                                                onClick={() => {
+                                                                                    if (img) {
+                                                                                        const urls = p.images ? safeParseImagesArray(p.images) : [img];
+                                                                                        setPreviewImages({ urls: urls.length > 0 ? urls : [img], title: p.name });
+                                                                                    }
+                                                                                }}
+                                                                                className={`w-12 h-12 bg-slate-50 border border-slate-300 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center relative shadow-sm ${img ? 'cursor-pointer hover:border-blue-500 hover:ring-2 hover:ring-blue-500/20 transition-all' : ''}`}>
                                                                                 {img ? (
                                                                                     <img src={img} alt="" className="w-full h-full object-cover" />
                                                                                 ) : (
                                                                                     <Package size={20} className="text-slate-400" />
                                                                                 )}
                                                                             </div>
-                                                                            <span className="text-slate-800 font-bold text-base line-clamp-2">{p.name}</span>
+                                                                            <span 
+                                                                                onClick={() => setPreviewDescription({ title: p.name, description: p.description || 'Sin descripción detallada.', sku: p.sku || 'N/A' })}
+                                                                                className="text-slate-800 font-bold text-base line-clamp-2 cursor-pointer hover:text-blue-600 hover:underline decoration-blue-500/30 underline-offset-4 transition-all">
+                                                                                {p.name}
+                                                                            </span>
                                                                         </div>
                                                                     </td>
                                                                     <td className="px-4 py-4">
@@ -908,19 +918,21 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                                             </td>
                                             <td className="px-4 py-4">
                                                 <div className="flex items-center gap-3">
-                                                    <div
+                                                    <div 
                                                         onClick={() => {
-                                                            const imgs = safeParseImagesAll(p.images)
-                                                            if (imgs.length > 0) setPreviewImages({ urls: imgs, title: p.name })
+                                                            if (img) {
+                                                                const urls = p.images ? safeParseImagesArray(p.images) : [img];
+                                                                setPreviewImages({ urls: urls.length > 0 ? urls : [img], title: p.name });
+                                                            }
                                                         }}
-                                                        className={`w-12 h-12 bg-slate-50 border border-slate-300 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center relative shadow-sm ${img ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''}`}
-                                                    >
+                                                        className={`w-12 h-12 bg-slate-50 border border-slate-300 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center relative shadow-sm ${img ? 'cursor-pointer hover:border-blue-500 hover:ring-2 hover:ring-blue-500/20 transition-all' : ''}`}>
                                                         {img ? <img src={img} alt="" className="w-full h-full object-cover" /> : <Package size={20} className="text-slate-400" />}
                                                     </div>
-                                                    <span
+                                                    <span 
                                                         onClick={() => setPreviewDescription({ title: p.name, description: p.description || 'Sin descripción detallada.', sku: p.sku || 'N/A' })}
-                                                        className="text-slate-800 font-bold text-base line-clamp-1 cursor-pointer hover:text-blue-600 hover:underline transition-colors"
-                                                    >{p.name}</span>
+                                                        className="text-slate-800 font-bold text-base line-clamp-1 cursor-pointer hover:text-blue-600 hover:underline decoration-blue-500/30 underline-offset-4 transition-all">
+                                                        {p.name}
+                                                    </span>
                                                 </div>
                                             </td>
                                             <td className="px-4 py-4">
@@ -1085,78 +1097,103 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                 </div>
             )}
 
-            {/* IMAGE GALLERY MODAL */}
+            {/* Image Preview Modal */}
             <AnimatePresence>
                 {previewImages && (
                     <motion.div
-                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm"
                         onClick={() => setPreviewImages(null)}
                     >
                         <motion.div
-                            initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
+                            initial={{ scale: 0.95, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.95, opacity: 0 }}
+                            className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col"
                             onClick={e => e.stopPropagation()}
-                            className="bg-white rounded-2xl shadow-2xl overflow-hidden w-full max-w-4xl max-h-[90vh] flex flex-col"
                         >
-                            <div className="flex justify-between items-center p-4 border-b border-slate-100">
-                                <h3 className="text-sm font-bold text-slate-800 line-clamp-1 pr-8">{previewImages.title}</h3>
-                                <button onClick={() => setPreviewImages(null)} className="p-2 text-slate-400 hover:text-slate-700 bg-slate-50 hover:bg-slate-100 rounded-full transition-all">
-                                    <X size={18} />
+                            <div className="p-4 border-b flex justify-between items-center bg-slate-50">
+                                <h3 className="font-bold text-slate-800 line-clamp-1 flex-1">{previewImages.title}</h3>
+                                <button
+                                    onClick={() => setPreviewImages(null)}
+                                    className="p-2 hover:bg-slate-200 rounded-full transition-colors ml-4"
+                                >
+                                    <X size={20} className="text-slate-500" />
                                 </button>
                             </div>
-                            <div className="p-4 flex-1 overflow-y-auto bg-slate-50/50 flex flex-wrap gap-4 justify-center items-start">
+                            <div className="p-6 overflow-y-auto flex-1 bg-slate-100 flex gap-4 overflow-x-auto snap-x custom-scrollbar">
                                 {previewImages.urls.map((url, i) => (
-                                    <div key={i} className="relative group rounded-xl overflow-hidden border border-slate-200/60 shadow-sm bg-white max-w-sm w-full">
-                                        <img src={url} alt={`Imagen ${i+1}`} className="w-full h-auto object-contain max-h-[500px]" />
-                                        <div className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/20 transition-all duration-300 flex items-start justify-end p-3 opacity-0 group-hover:opacity-100">
-                                            <a href={url} download={`imagen-${i+1}.jpg`} target="_blank" rel="noopener noreferrer"
-                                                className="p-2.5 bg-white text-slate-800 hover:text-blue-600 rounded-lg shadow-lg hover:scale-105 transition-all">
-                                                <Download size={16} />
+                                    <div key={i} className="min-w-full sm:min-w-[80%] flex-shrink-0 snap-center relative flex items-center justify-center bg-white rounded-xl overflow-hidden shadow-sm border border-slate-200 group">
+                                        <img src={url} alt={`${previewImages.title} ${i + 1}`} className="max-h-[60vh] object-contain" />
+                                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                            <a 
+                                                href={url} 
+                                                download 
+                                                target="_blank" 
+                                                rel="noreferrer"
+                                                className="bg-white/90 hover:bg-white text-slate-800 p-3 rounded-full shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 flex items-center gap-2"
+                                            >
+                                                <Download size={20} />
+                                                <span className="font-bold text-sm">Descargar Foto</span>
                                             </a>
                                         </div>
                                     </div>
                                 ))}
+                            </div>
+                            <div className="p-3 bg-slate-50 border-t text-center text-xs font-semibold text-slate-500">
+                                {previewImages.urls.length} foto(s) disponibles
                             </div>
                         </motion.div>
                     </motion.div>
                 )}
             </AnimatePresence>
 
-            {/* DESCRIPTION MODAL */}
+            {/* Description Preview Modal */}
             <AnimatePresence>
                 {previewDescription && (
                     <motion.div
-                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
                         onClick={() => setPreviewDescription(null)}
                     >
                         <motion.div
-                            initial={{ scale: 0.95, opacity: 0, y: 10 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 10 }}
+                            initial={{ scale: 0.95, y: 20, opacity: 0 }}
+                            animate={{ scale: 1, y: 0, opacity: 1 }}
+                            exit={{ scale: 0.95, y: 20, opacity: 0 }}
+                            className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full flex flex-col"
                             onClick={e => e.stopPropagation()}
-                            className="bg-white rounded-2xl shadow-2xl overflow-hidden w-full max-w-2xl flex flex-col"
                         >
-                            <div className="flex justify-between items-start p-5 border-b border-slate-100 bg-slate-50/50">
+                            <div className="p-5 border-b flex justify-between items-start bg-slate-50/50 rounded-t-2xl">
                                 <div>
-                                    <h3 className="text-base font-bold text-slate-800 pr-8 leading-tight">{previewDescription.title}</h3>
-                                    <p className="text-[10px] text-slate-500 font-mono mt-1">SKU: {previewDescription.sku}</p>
+                                    <h3 className="font-bold text-slate-800 text-lg">{previewDescription.title}</h3>
+                                    <p className="text-xs font-mono text-slate-500 mt-1 bg-slate-100 px-2 py-0.5 rounded inline-block border border-slate-200">SKU: {previewDescription.sku}</p>
                                 </div>
-                                <button onClick={() => setPreviewDescription(null)} className="p-2 text-slate-400 hover:text-slate-700 bg-white hover:bg-slate-100 border border-slate-200/60 rounded-xl transition-all shadow-sm">
-                                    <X size={16} />
+                                <button
+                                    onClick={() => setPreviewDescription(null)}
+                                    className="p-2 hover:bg-slate-200 rounded-full transition-colors ml-4 bg-white shadow-sm border border-slate-200"
+                                >
+                                    <X size={18} className="text-slate-500" />
                                 </button>
                             </div>
                             <div className="p-6 overflow-y-auto max-h-[60vh]">
-                                <div className="prose prose-sm prose-slate max-w-none" dangerouslySetInnerHTML={{ __html: previewDescription.description }} />
+                                <div className="prose prose-sm prose-slate max-w-none">
+                                    <p className="whitespace-pre-wrap leading-relaxed text-slate-700">{previewDescription.description}</p>
+                                </div>
                             </div>
-                            <div className="p-4 border-t border-slate-100 bg-slate-50 flex justify-end">
+                            <div className="p-4 bg-slate-50 border-t flex justify-end rounded-b-2xl">
                                 <button
                                     onClick={() => {
-                                        navigator.clipboard.writeText(`${previewDescription.title}\n\n${previewDescription.description.replace(/<[^>]*>?/gm, '')}`)
-                                        alert('¡Descripción copiada!')
+                                        navigator.clipboard.writeText(`${previewDescription.title}\nSKU: ${previewDescription.sku}\n\n${previewDescription.description}`)
+                                        alert("Información copiada al portapapeles")
                                     }}
-                                    className="px-5 py-2.5 bg-white border border-slate-200 text-slate-700 hover:text-blue-600 hover:border-blue-300 hover:bg-blue-50 transition-all font-semibold text-xs rounded-xl shadow-sm flex items-center gap-2"
+                                    className="flex items-center gap-2 bg-blue-50 text-blue-700 hover:bg-blue-100 px-4 py-2 rounded-lg font-bold text-sm transition-colors border border-blue-200"
                                 >
-                                    <Copy size={14} />
-                                    <span>Copiar al portapapeles</span>
+                                    <Edit3 size={16} /> {/* Copiar icono reutilizado para no añadir import */}
+                                    Copiar Descripción
                                 </button>
                             </div>
                         </motion.div>
