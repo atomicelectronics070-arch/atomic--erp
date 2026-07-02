@@ -15,6 +15,9 @@ export default function CoordinacionPage() {
     const [dailyData, setDailyData] = useState<any>(null)
     const [advisors, setAdvisors] = useState<{id: string, name: string}[]>([])
     const [quotes, setQuotes] = useState<any[]>([])
+    const [quotesLoading, setQuotesLoading] = useState(false)
+    const [quotesError, setQuotesError] = useState<string | null>(null)
+    const [quoteFilter, setQuoteFilter] = useState<"ALL" | "DRAFT" | "APPROVED" | "REJECTED">("ALL")
     
     const [activeTab, setActiveTab] = useState<"BITACORA" | "COTIZACIONES">("BITACORA")
     
@@ -55,7 +58,7 @@ export default function CoordinacionPage() {
 
         fetchData()
         fetchAdvisors()
-        fetchQuotes()
+        fetchQuotes(true) // silent initial load to show badge count
     }, [session, status, router, selectedDate])
 
     const fetchData = async () => {
@@ -103,18 +106,33 @@ export default function CoordinacionPage() {
         }
     }
 
-    const fetchQuotes = async () => {
+    const fetchQuotes = async (silent = false) => {
+        if (!silent) setQuotesLoading(true)
+        setQuotesError(null)
         try {
-            // Assume we have an endpoint that returns all quotes
             const res = await fetch("/api/admin/quotes")
             if(res.ok) {
                 const data = await res.json()
                 setQuotes(data.quotes || [])
+            } else {
+                const err = await res.json().catch(() => ({}))
+                setQuotesError(err.error || `Error ${res.status}`)
             }
         } catch(e) {
             console.error(e)
+            setQuotesError("Error de conexión. Verifica tu sesión.")
+        } finally {
+            if (!silent) setQuotesLoading(false)
         }
     }
+
+    // Auto-refresh quotes every 30 seconds when on COTIZACIONES tab
+    useEffect(() => {
+        if (activeTab !== "COTIZACIONES") return
+        fetchQuotes()
+        const interval = setInterval(() => fetchQuotes(true), 30000)
+        return () => clearInterval(interval)
+    }, [activeTab])
 
     const handleAction = async (action: string, payload: any = {}) => {
         try {
@@ -231,44 +249,111 @@ export default function CoordinacionPage() {
                 </button>
                 <button 
                     onClick={() => setActiveTab("COTIZACIONES")} 
-                    className={`pb-3 px-4 font-bold text-sm ${activeTab === "COTIZACIONES" ? "border-b-2 border-blue-600 text-blue-600" : "text-slate-500 hover:text-slate-700"}`}
+                    className={`pb-3 px-4 font-bold text-sm flex items-center gap-2 ${activeTab === "COTIZACIONES" ? "border-b-2 border-blue-600 text-blue-600" : "text-slate-500 hover:text-slate-700"}`}
                 >
-                    COTIZACIONES APROBADAS
+                    COTIZACIONES
+                    {quotes.filter(q => q.status === 'DRAFT').length > 0 && (
+                        <span className="bg-orange-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                            {quotes.filter(q => q.status === 'DRAFT').length} pendiente{quotes.filter(q => q.status === 'DRAFT').length !== 1 ? 's' : ''}
+                        </span>
+                    )}
                 </button>
             </div>
 
             {activeTab === "COTIZACIONES" && (
                 <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                    <h2 className="text-xl font-semibold mb-4 flex items-center gap-2"><DollarSign /> Gestión de Cotizaciones</h2>
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-5">
+                        <div>
+                            <h2 className="text-xl font-semibold flex items-center gap-2"><DollarSign /> Gestión de Cotizaciones</h2>
+                            <p className="text-sm text-slate-500 mt-1">Aquí aparecen todas las cotizaciones del sistema. Se actualiza automáticamente cada 30 segundos.</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <select 
+                                value={quoteFilter} 
+                                onChange={e => setQuoteFilter(e.target.value as any)}
+                                className="text-sm border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+                            >
+                                <option value="ALL">Todas ({quotes.length})</option>
+                                <option value="DRAFT">Pendientes ({quotes.filter(q => q.status === 'DRAFT').length})</option>
+                                <option value="APPROVED">Aprobadas ({quotes.filter(q => q.status === 'APPROVED').length})</option>
+                                <option value="REJECTED">Rechazadas ({quotes.filter(q => q.status === 'REJECTED').length})</option>
+                            </select>
+                            <button 
+                                onClick={() => fetchQuotes()}
+                                disabled={quotesLoading}
+                                className="px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors disabled:opacity-50"
+                            >
+                                <Download size={14} className={quotesLoading ? 'animate-spin' : ''}/>
+                                {quotesLoading ? 'Cargando...' : 'Actualizar'}
+                            </button>
+                        </div>
+                    </div>
+
+                    {quotesError && (
+                        <div className="bg-red-50 border border-red-200 text-red-700 p-3 rounded-lg mb-4 text-sm flex items-center gap-2">
+                            <AlertCircle size={16}/> {quotesError}
+                        </div>
+                    )}
+
                     <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse">
                             <thead>
                                 <tr className="bg-slate-50 border-y border-slate-200">
-                                    <th className="py-3 px-4 text-xs font-bold text-slate-500 uppercase">Cotización</th>
+                                    <th className="py-3 px-4 text-xs font-bold text-slate-500 uppercase"># Cotización</th>
                                     <th className="py-3 px-4 text-xs font-bold text-slate-500 uppercase">Cliente</th>
+                                    <th className="py-3 px-4 text-xs font-bold text-slate-500 uppercase">Asesor</th>
                                     <th className="py-3 px-4 text-xs font-bold text-slate-500 uppercase">Total</th>
+                                    <th className="py-3 px-4 text-xs font-bold text-slate-500 uppercase">Fecha</th>
                                     <th className="py-3 px-4 text-xs font-bold text-slate-500 uppercase">Estado</th>
                                     <th className="py-3 px-4 text-xs font-bold text-slate-500 uppercase text-right">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {quotes.length === 0 ? (
-                                    <tr><td colSpan={5} className="text-center py-8 text-slate-500">No hay cotizaciones para mostrar.</td></tr>
+                                {quotesLoading && quotes.length === 0 ? (
+                                    <tr><td colSpan={7} className="text-center py-10 text-slate-400">Cargando cotizaciones...</td></tr>
+                                ) : quotes.filter(q => quoteFilter === 'ALL' || q.status === quoteFilter).length === 0 ? (
+                                    <tr><td colSpan={7} className="text-center py-10">
+                                        <div className="flex flex-col items-center gap-2 text-slate-400">
+                                            <DollarSign size={32} className="opacity-30"/>
+                                            <span className="font-medium">No hay cotizaciones {quoteFilter !== 'ALL' ? 'con este estado' : 'en el sistema aún'}.</span>
+                                            <span className="text-xs">Cuando alguien genere y exporte una cotización, aparecerá aquí.</span>
+                                        </div>
+                                    </td></tr>
                                 ) : (
-                                    quotes.map(q => (
-                                        <tr key={q.id} className="border-b border-slate-100 hover:bg-slate-50">
-                                            <td className="py-3 px-4 font-medium">{q.quoteNumber}</td>
+                                    quotes.filter(q => quoteFilter === 'ALL' || q.status === quoteFilter).map(q => (
+                                        <tr key={q.id} className={`border-b border-slate-100 hover:bg-slate-50 ${ q.status === 'DRAFT' ? 'bg-orange-50/40' : ''}`}>
+                                            <td className="py-3 px-4 font-bold text-slate-800">{q.quoteNumber}</td>
                                             <td className="py-3 px-4">{q.clientName || 'Sin Nombre'}</td>
-                                            <td className="py-3 px-4 font-bold text-green-600">${q.total?.toFixed(2)}</td>
+                                            <td className="py-3 px-4 text-slate-600 text-sm">{q.salesperson?.name || q.advisorName || '—'}</td>
+                                            <td className="py-3 px-4 font-bold text-emerald-700">${q.total?.toFixed(2)}</td>
+                                            <td className="py-3 px-4 text-slate-500 text-sm">{new Date(q.createdAt).toLocaleDateString('es-EC', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
                                             <td className="py-3 px-4">
-                                                <span className={`px-2 py-1 rounded text-xs font-bold ${q.status === 'APPROVED' ? 'bg-green-100 text-green-700' : q.status === 'REJECTED' ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-700'}`}>
-                                                    {q.status}
+                                                <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${
+                                                    q.status === 'APPROVED' ? 'bg-green-100 text-green-700' 
+                                                    : q.status === 'REJECTED' ? 'bg-red-100 text-red-700' 
+                                                    : 'bg-orange-100 text-orange-700'
+                                                }`}>
+                                                    {q.status === 'APPROVED' ? '✓ Aprobada' : q.status === 'REJECTED' ? '✕ Rechazada' : '⏳ Pendiente'}
                                                 </span>
                                             </td>
-                                            <td className="py-3 px-4 flex justify-end gap-2">
-                                                <button onClick={() => updateQuoteStatus(q.id, 'APPROVED')} className="p-1.5 bg-green-100 text-green-600 rounded hover:bg-green-200" title="Aprobar"><Check size={16}/></button>
-                                                <button onClick={() => updateQuoteStatus(q.id, 'REJECTED')} className="p-1.5 bg-red-100 text-red-600 rounded hover:bg-red-200" title="Rechazar"><X size={16}/></button>
-                                                <button className="p-1.5 bg-blue-100 text-blue-600 rounded hover:bg-blue-200" title="Exportar (Próximamente)"><Download size={16}/></button>
+                                            <td className="py-3 px-4">
+                                                <div className="flex justify-end gap-2">
+                                                    {q.status !== 'APPROVED' && (
+                                                        <button onClick={() => updateQuoteStatus(q.id, 'APPROVED')} className="px-3 py-1.5 bg-green-100 text-green-700 rounded-lg text-xs font-bold hover:bg-green-200 flex items-center gap-1" title="Aprobar">
+                                                            <Check size={14}/> Aprobar
+                                                        </button>
+                                                    )}
+                                                    {q.status !== 'REJECTED' && (
+                                                        <button onClick={() => updateQuoteStatus(q.id, 'REJECTED')} className="px-3 py-1.5 bg-red-100 text-red-700 rounded-lg text-xs font-bold hover:bg-red-200 flex items-center gap-1" title="Rechazar">
+                                                            <X size={14}/> Rechazar
+                                                        </button>
+                                                    )}
+                                                    {q.pdfUrl && (
+                                                        <a href={q.pdfUrl} target="_blank" rel="noopener noreferrer" className="px-3 py-1.5 bg-blue-100 text-blue-700 rounded-lg text-xs font-bold hover:bg-blue-200 flex items-center gap-1">
+                                                            <Download size={14}/> PDF
+                                                        </a>
+                                                    )}
+                                                </div>
                                             </td>
                                         </tr>
                                     ))
