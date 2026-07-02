@@ -58,6 +58,7 @@ export default function ShopConfigPage() {
     const [isTrashView, setIsTrashView] = useState(false)
     const [selectedProvider, setSelectedProvider] = useState<string>('')
     const [providerStats, setProviderStats] = useState<any[]>([])
+    const [totalInStock, setTotalInStock] = useState(0)
     const [isCleaning, setIsCleaning] = useState(false)
     const [storeSettings, setStoreSettings] = useState<any>({
         currency: 'USD',
@@ -89,13 +90,13 @@ export default function ShopConfigPage() {
             })
             if (sData) setStoreSettings(sData)
             
-            // Extract provider stats from products
-            const statsMap: Record<string, number> = {}
-            pData.products?.forEach((p: any) => {
-                const provider = p.provider || 'UNKNOWN'
-                statsMap[provider] = (statsMap[provider] || 0) + 1
-            })
-            setProviderStats(Object.entries(statsMap).map(([name, count]) => ({ name, count })))
+            // Use global stats from API (across ALL products, not just current page)
+            if (pData.providerStats) {
+                setProviderStats(pData.providerStats)
+            }
+            if (typeof pData.totalInStock === 'number') {
+                setTotalInStock(pData.totalInStock)
+            }
             
         } catch (error) {
             console.error("Error refreshing shop data:", error)
@@ -294,6 +295,7 @@ export default function ShopConfigPage() {
                 {activeTab === 'suppliers' && (
                     <SupplierManager 
                         providers={metadata.providersList || []}
+                        providerStats={providerStats}
                         settings={storeSettings}
                         onUpdateSettings={setStoreSettings}
                         onFilterProvider={(provider) => {
@@ -342,7 +344,7 @@ export default function ShopConfigPage() {
                                     <div className="p-3 bg-emerald-50 text-emerald-600 rounded-xl group-hover:scale-105 transition-all duration-500"><CheckCircle size={24} /></div>
                                     <div>
                                         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">En Stock</p>
-                                        <h4 className="text-2xl font-extrabold text-emerald-600 tracking-tight">{products.filter(p => p.stock > 0).length}</h4>
+                                        <h4 className="text-2xl font-extrabold text-emerald-600 tracking-tight">{totalInStock.toLocaleString()}</h4>
                                     </div>
                                 </motion.div>
                             </div>
@@ -379,31 +381,53 @@ export default function ShopConfigPage() {
                                     </div>
 
                                     <div className="bg-white border border-slate-200/80 p-6 rounded-2xl shadow-sm relative overflow-hidden group">
-                                        <div className="flex items-center space-x-3 mb-5 pb-5 border-b border-slate-100">
+                                        <div className="flex items-center space-x-3 mb-4 pb-4 border-b border-slate-100">
                                             <div className="p-2 bg-rose-50 text-rose-500 rounded-lg"><Trash2 size={18} /></div>
-                                            <h3 className="text-xs font-bold text-slate-800">Limpieza de Catálogo</h3>
+                                            <div>
+                                                <h3 className="text-xs font-bold text-slate-800">Limpieza de Catálogo</h3>
+                                                <p className="text-[10px] text-slate-400 mt-0.5">Herramientas de mantenimiento</p>
+                                            </div>
                                         </div>
-                                        <p className="text-xs font-medium text-slate-400 leading-relaxed mb-6">
-                                            Elimina artículos duplicados o con errores de forma automática.
-                                        </p>
-                                        <button 
-                                             onClick={async () => {
-                                                 if(confirm("¿Ejecutar limpieza de duplicados exactos ahora?")) {
-                                                     setIsCleaning(true);
-                                                     try {
-                                                         await cleanupDuplicateProducts();
-                                                         await refreshData();
-                                                         alert("Catálogo saneado correctamente.");
-                                                     } finally {
-                                                         setIsCleaning(false);
-                                                     }
-                                                 }
-                                             }}
-                                             disabled={isCleaning}
-                                             className="w-full bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-100 py-3 text-xs font-bold transition-all shadow-sm rounded-xl disabled:opacity-50"
-                                         >
-                                             {isCleaning ? 'Saneando... ' : 'Limpiar Catálogo'}
-                                         </button>
+                                        <div className="space-y-3">
+                                            <div className="p-3 rounded-xl bg-rose-50 border border-rose-100">
+                                                <p className="text-xs font-semibold text-rose-800 mb-1">Eliminar Duplicados</p>
+                                                <p className="text-[10px] text-rose-600 leading-relaxed mb-2">Detecta y elimina artículos con el mismo SKU o nombre exacto.</p>
+                                                <button
+                                                    onClick={async () => {
+                                                        if(confirm("¿Eliminar todos los artículos duplicados del catálogo? Esta acción no se puede deshacer.")) {
+                                                            setIsCleaning(true);
+                                                            try {
+                                                                await cleanupDuplicateProducts();
+                                                                await refreshData();
+                                                                alert("Catálogo limpiado correctamente.");
+                                                            } finally {
+                                                                setIsCleaning(false);
+                                                            }
+                                                        }
+                                                    }}
+                                                    disabled={isCleaning}
+                                                    className="w-full bg-rose-600 hover:bg-rose-700 text-white py-2 text-xs font-bold transition-all rounded-lg disabled:opacity-50 flex items-center justify-center gap-2"
+                                                >
+                                                    <Trash2 size={12}/>
+                                                    {isCleaning ? 'Limpiando...' : 'Limpiar Ahora'}
+                                                </button>
+                                            </div>
+                                            <div className="p-3 rounded-xl bg-amber-50 border border-amber-100">
+                                                <p className="text-xs font-semibold text-amber-800 mb-1">Papelera</p>
+                                                <p className="text-[10px] text-amber-600 leading-relaxed mb-2">Ver artículos eliminados pendientes de revisión o borrado permanente.</p>
+                                                <button
+                                                    onClick={() => setIsTrashView(!isTrashView)}
+                                                    className={`w-full py-2 text-xs font-bold transition-all rounded-lg flex items-center justify-center gap-2 ${
+                                                        isTrashView 
+                                                            ? 'bg-amber-600 text-white hover:bg-amber-700' 
+                                                            : 'bg-amber-100 text-amber-700 hover:bg-amber-200'
+                                                    }`}
+                                                >
+                                                    <Trash size={12}/>
+                                                    {isTrashView ? 'Ver Catálogo Normal' : 'Ver Papelera'}
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 

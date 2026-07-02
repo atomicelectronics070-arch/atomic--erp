@@ -28,6 +28,7 @@ export async function GET(req: Request) {
                 { name: { contains: search, mode: "insensitive" } },
                 { sku: { contains: search, mode: "insensitive" } },
                 { description: { contains: search, mode: "insensitive" } },
+                { provider: { contains: search, mode: "insensitive" } },
             ]
         }
         
@@ -35,7 +36,10 @@ export async function GET(req: Request) {
             where.provider = provider
         }
 
-        const [products, total] = await Promise.all([
+        // Base where for global stats (always non-deleted, no filters)
+        const globalWhere = { isDeleted: false }
+
+        const [products, total, totalInStock, providerStatsRaw] = await Promise.all([
             prisma.product.findMany({
                 where,
                 select: {
@@ -62,13 +66,26 @@ export async function GET(req: Request) {
                 skip,
             }),
             prisma.product.count({ where }),
+            // Global: count products with stock > 0
+            prisma.product.count({ where: { ...globalWhere, stock: { gt: 0 } } }),
+            // Global: group by provider
+            prisma.product.groupBy({
+                by: ['provider'],
+                where: globalWhere,
+                _count: { id: true },
+                orderBy: { _count: { id: 'desc' } }
+            })
         ])
 
-        return NextResponse.json({ products, total, page, limit })
+        const providerStats = providerStatsRaw
+            .filter((r: any) => r.provider && r.provider.trim() !== '')
+            .map((r: any) => ({ name: r.provider, count: r._count.id }))
+
+        return NextResponse.json({ products, total, page, limit, totalInStock, providerStats })
     } catch (error) {
         console.error("Admin products API error:", error)
         return NextResponse.json(
-            { error: "Failed to fetch products", products: [], total: 0 },
+            { error: "Failed to fetch products", products: [], total: 0, totalInStock: 0, providerStats: [] },
             { status: 500 }
         )
     }
