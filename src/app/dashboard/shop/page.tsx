@@ -60,6 +60,8 @@ export default function ShopConfigPage() {
     const [providerStats, setProviderStats] = useState<any[]>([])
     const [totalInStock, setTotalInStock] = useState(0)
     const [isCleaning, setIsCleaning] = useState(false)
+    const [isFixingImages, setIsFixingImages] = useState(false)
+    const [fixImagesResult, setFixImagesResult] = useState<{ updated: number; notFound: number; total: number } | null>(null)
     const [storeSettings, setStoreSettings] = useState<any>({
         currency: 'USD',
         shippingCost: 0,
@@ -170,6 +172,25 @@ export default function ShopConfigPage() {
         setSelectedProducts(prev => 
             prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
         )
+    }
+
+    const handleFixImages = async () => {
+        setIsFixingImages(true)
+        setFixImagesResult(null)
+        try {
+            const res = await fetch('/api/admin/fix-images', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ batchSize: 20 })
+            })
+            const data = await res.json()
+            setFixImagesResult({ updated: data.updated || 0, notFound: data.notFound || 0, total: data.total || 0 })
+            await refreshData()
+        } catch (e) {
+            alert('Error al buscar imágenes automáticamente.')
+        } finally {
+            setIsFixingImages(false)
+        }
     }
 
     const handleCleanupDuplicates = async () => {
@@ -429,6 +450,21 @@ export default function ShopConfigPage() {
                                                 >
                                                     <Trash size={12}/>
                                                     {isTrashView ? 'Ver Catálogo Normal' : 'Ver Papelera'}
+                                                </button>
+                                            </div>
+                                            <div className="p-3 rounded-xl bg-blue-50 border border-blue-100">
+                                                <p className="text-xs font-semibold text-blue-800 mb-1">Auto-Imágenes</p>
+                                                <p className="text-[10px] text-blue-600 leading-relaxed mb-2">Busca y rellena automáticamente fotos para productos que no tienen imagen (lote de 20).</p>
+                                                {fixImagesResult && (
+                                                    <p className="text-[10px] font-semibold text-blue-700 mb-2">✓ {fixImagesResult.updated}/{fixImagesResult.total} actualizados · {fixImagesResult.notFound} sin resultado</p>
+                                                )}
+                                                <button
+                                                    onClick={handleFixImages}
+                                                    disabled={isFixingImages}
+                                                    className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 text-xs font-bold transition-all rounded-lg disabled:opacity-50 flex items-center justify-center gap-2"
+                                                >
+                                                    <RefreshCw size={12} className={isFixingImages ? 'animate-spin' : ''}/>
+                                                    {isFixingImages ? 'Buscando...' : 'Rellenar Imágenes'}
                                                 </button>
                                             </div>
                                         </div>
