@@ -6,12 +6,13 @@ import {
     Check, X, ChevronRight, ChevronDown, RefreshCw, Percent,
     Filter, BarChart2, Tag, Save, AlertCircle, Eye, EyeOff,
     ArrowUpDown, Grid, List as ListIcon, Plus, Download, ChevronUp,
-    ShieldAlert, Info, Square, CheckSquare
+    ShieldAlert, Info, Square, CheckSquare, Copy
 } from "lucide-react"
 
 interface Product {
     id: string
     name: string
+    description: string | null
     sku: string | null
     price: number
     compareAtPrice: number | null
@@ -99,9 +100,22 @@ function safeParseImages(images: string | null): string | null {
     try {
         const parsed = JSON.parse(images)
         if (Array.isArray(parsed) && parsed.length > 0) return parsed[0]
-        return images.split(',')[0].replace(/[\[\]"]/g, '')
+        return images.split(',')[0].replace(/[\[\]"]/g, '') || null
     } catch {
-        return images.split(',')[0].replace(/[\[\]"]/g, '')
+        if (images.startsWith('http') || images.includes('/')) return images
+        return images.split(',')[0].replace(/[\[\]"]/g, '') || null
+    }
+}
+
+function safeParseImagesAll(images: string | null): string[] {
+    if (!images) return []
+    try {
+        const parsed = JSON.parse(images)
+        if (Array.isArray(parsed)) return parsed.filter(Boolean)
+        return []
+    } catch {
+        if (images.startsWith('http') || images.includes('/')) return [images]
+        return images.split(',').map(s => s.replace(/[\[\]"]/g, '').trim()).filter(Boolean)
     }
 }
 
@@ -227,6 +241,10 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
     const [bulkMarginValue, setBulkMarginValue] = useState<string>("")
     const [bulkStockValue, setBulkStockValue] = useState<string>("")
     const [updatingBulk, setUpdatingBulk] = useState(false)
+
+    // Preview modals
+    const [previewImages, setPreviewImages] = useState<{ urls: string[]; title: string } | null>(null)
+    const [previewDescription, setPreviewDescription] = useState<{ title: string; description: string; sku: string } | null>(null)
 
     const loadData = useCallback(async () => {
         setLoading(true)
@@ -890,10 +908,19 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                                             </td>
                                             <td className="px-4 py-4">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="w-12 h-12 bg-slate-50 border border-slate-300 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center relative shadow-sm">
+                                                    <div
+                                                        onClick={() => {
+                                                            const imgs = safeParseImagesAll(p.images)
+                                                            if (imgs.length > 0) setPreviewImages({ urls: imgs, title: p.name })
+                                                        }}
+                                                        className={`w-12 h-12 bg-slate-50 border border-slate-300 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center relative shadow-sm ${img ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''}`}
+                                                    >
                                                         {img ? <img src={img} alt="" className="w-full h-full object-cover" /> : <Package size={20} className="text-slate-400" />}
                                                     </div>
-                                                    <span className="text-slate-800 font-bold text-base line-clamp-1">{p.name}</span>
+                                                    <span
+                                                        onClick={() => setPreviewDescription({ title: p.name, description: p.description || 'Sin descripción detallada.', sku: p.sku || 'N/A' })}
+                                                        className="text-slate-800 font-bold text-base line-clamp-1 cursor-pointer hover:text-blue-600 hover:underline transition-colors"
+                                                    >{p.name}</span>
                                                 </div>
                                             </td>
                                             <td className="px-4 py-4">
@@ -1057,6 +1084,85 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                     </div>
                 </div>
             )}
+
+            {/* IMAGE GALLERY MODAL */}
+            <AnimatePresence>
+                {previewImages && (
+                    <motion.div
+                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm"
+                        onClick={() => setPreviewImages(null)}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
+                            onClick={e => e.stopPropagation()}
+                            className="bg-white rounded-2xl shadow-2xl overflow-hidden w-full max-w-4xl max-h-[90vh] flex flex-col"
+                        >
+                            <div className="flex justify-between items-center p-4 border-b border-slate-100">
+                                <h3 className="text-sm font-bold text-slate-800 line-clamp-1 pr-8">{previewImages.title}</h3>
+                                <button onClick={() => setPreviewImages(null)} className="p-2 text-slate-400 hover:text-slate-700 bg-slate-50 hover:bg-slate-100 rounded-full transition-all">
+                                    <X size={18} />
+                                </button>
+                            </div>
+                            <div className="p-4 flex-1 overflow-y-auto bg-slate-50/50 flex flex-wrap gap-4 justify-center items-start">
+                                {previewImages.urls.map((url, i) => (
+                                    <div key={i} className="relative group rounded-xl overflow-hidden border border-slate-200/60 shadow-sm bg-white max-w-sm w-full">
+                                        <img src={url} alt={`Imagen ${i+1}`} className="w-full h-auto object-contain max-h-[500px]" />
+                                        <div className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/20 transition-all duration-300 flex items-start justify-end p-3 opacity-0 group-hover:opacity-100">
+                                            <a href={url} download={`imagen-${i+1}.jpg`} target="_blank" rel="noopener noreferrer"
+                                                className="p-2.5 bg-white text-slate-800 hover:text-blue-600 rounded-lg shadow-lg hover:scale-105 transition-all">
+                                                <Download size={16} />
+                                            </a>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* DESCRIPTION MODAL */}
+            <AnimatePresence>
+                {previewDescription && (
+                    <motion.div
+                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm"
+                        onClick={() => setPreviewDescription(null)}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.95, opacity: 0, y: 10 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 10 }}
+                            onClick={e => e.stopPropagation()}
+                            className="bg-white rounded-2xl shadow-2xl overflow-hidden w-full max-w-2xl flex flex-col"
+                        >
+                            <div className="flex justify-between items-start p-5 border-b border-slate-100 bg-slate-50/50">
+                                <div>
+                                    <h3 className="text-base font-bold text-slate-800 pr-8 leading-tight">{previewDescription.title}</h3>
+                                    <p className="text-[10px] text-slate-500 font-mono mt-1">SKU: {previewDescription.sku}</p>
+                                </div>
+                                <button onClick={() => setPreviewDescription(null)} className="p-2 text-slate-400 hover:text-slate-700 bg-white hover:bg-slate-100 border border-slate-200/60 rounded-xl transition-all shadow-sm">
+                                    <X size={16} />
+                                </button>
+                            </div>
+                            <div className="p-6 overflow-y-auto max-h-[60vh]">
+                                <div className="prose prose-sm prose-slate max-w-none" dangerouslySetInnerHTML={{ __html: previewDescription.description }} />
+                            </div>
+                            <div className="p-4 border-t border-slate-100 bg-slate-50 flex justify-end">
+                                <button
+                                    onClick={() => {
+                                        navigator.clipboard.writeText(`${previewDescription.title}\n\n${previewDescription.description.replace(/<[^>]*>?/gm, '')}`)
+                                        alert('¡Descripción copiada!')
+                                    }}
+                                    className="px-5 py-2.5 bg-white border border-slate-200 text-slate-700 hover:text-blue-600 hover:border-blue-300 hover:bg-blue-50 transition-all font-semibold text-xs rounded-xl shadow-sm flex items-center gap-2"
+                                >
+                                    <Copy size={14} />
+                                    <span>Copiar al portapapeles</span>
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     )
 }
