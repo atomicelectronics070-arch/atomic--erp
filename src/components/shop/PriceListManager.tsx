@@ -453,8 +453,8 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
             </div>
 
             {/* Supplier Stats Cards (Light theme widgets) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                {suppliers.slice(0, 4).map((s, i) => {
+            <div className="flex overflow-x-auto gap-5 pb-4 snap-x custom-scrollbar w-full">
+                {suppliers.map((s, i) => {
                     const styles = getSupplierStyles(s.name)
                     const isSelected = selectedSupplier === s.name
                     return (
@@ -467,7 +467,7 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                                 setSelectedSupplier(isSelected ? "" : s.name)
                                 setPage(1)
                             }}
-                            className={`cursor-pointer relative overflow-hidden bg-white border p-5 rounded-2xl group transition-all duration-300 shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.05)] hover:-translate-y-0.5 ${
+                            className={`flex-none w-[280px] sm:w-[320px] snap-center cursor-pointer relative overflow-hidden bg-white border p-5 rounded-2xl group transition-all duration-300 shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.05)] hover:-translate-y-0.5 ${
                                 isSelected
                                     ? "border-blue-500 ring-2 ring-blue-500/10 bg-slate-50/10"
                                     : "border-slate-200/80 hover:border-slate-300 hover:bg-slate-50/30"
