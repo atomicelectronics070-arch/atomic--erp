@@ -248,10 +248,10 @@ export default function ShopConfigPage() {
                 <motion.div initial={{ opacity: 0, x: -50 }} animate={{ opacity: 1, x: 0 }}>
                     <div className="flex items-center space-x-2 mb-2 text-blue-600 font-semibold">
                         <ShoppingBag size={18} />
-                        <span className="text-[10px] uppercase font-bold tracking-wider">MÓDULO DE CATÁLOGO Y OPERACIONES</span>
+                        <span className="text-[10px] uppercase font-bold tracking-wider">MÓDULO DE CATÁLOGO</span>
                     </div>
                     <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight leading-none">
-                        Centro de Catálogo
+                        Catálogo General
                     </h1>
                 </motion.div>
                 <div className="flex gap-4">
@@ -282,10 +282,10 @@ export default function ShopConfigPage() {
                                         : 'text-slate-500 hover:text-slate-800 hover:bg-white/40'
                                 }`}
                             >
-                                {tab === 'products' ? 'Inventario Maestro' : 
+                                {tab === 'products' ? 'Inventario' : 
                                  tab === 'suppliers' ? 'Proveedores' : 
                                  tab === 'prices_list' ? 'Lista Precios' : 
-                                 tab === 'catalogs' ? 'Arquitecturas' : 'Ajustes'}
+                                 tab === 'catalogs' ? 'Categorías' : 'Ajustes'}
                             </button>
                         ))}
                     </div>
@@ -317,7 +317,7 @@ export default function ShopConfigPage() {
                                     <div className="absolute top-0 left-0 w-[4px] h-full bg-blue-500"></div>
                                     <div className="p-3 bg-blue-50 text-blue-600 rounded-xl group-hover:scale-105 transition-all duration-500"><ShoppingBag size={24} /></div>
                                     <div>
-                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Items Catalogados</p>
+                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Total Artículos</p>
                                         <h4 className="text-2xl font-extrabold text-slate-900 tracking-tight">{totalProducts}</h4>
                                     </div>
                                 </motion.div>
@@ -325,7 +325,7 @@ export default function ShopConfigPage() {
                                     <div className="absolute top-0 left-0 w-[4px] h-full bg-indigo-500"></div>
                                     <div className="p-3 bg-indigo-50 text-indigo-600 rounded-xl group-hover:scale-105 transition-all duration-500"><TagIcon size={24} /></div>
                                     <div>
-                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Elementos de Categoría</p>
+                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Total Categorías</p>
                                         <h4 className="text-2xl font-extrabold text-slate-900 tracking-tight">{metadata.categories.length}</h4>
                                     </div>
                                 </motion.div>
@@ -333,7 +333,7 @@ export default function ShopConfigPage() {
                                     <div className="absolute top-0 left-0 w-[4px] h-full bg-violet-500"></div>
                                     <div className="p-3 bg-violet-50 text-violet-600 rounded-xl group-hover:scale-105 transition-all duration-500"><Globe size={24} /></div>
                                     <div>
-                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Fuentes de Suministro</p>
+                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Proveedores</p>
                                         <h4 className="text-2xl font-extrabold text-slate-900 tracking-tight">{providerStats.length}</h4>
                                     </div>
                                 </motion.div>
@@ -341,7 +341,7 @@ export default function ShopConfigPage() {
                                     <div className="absolute top-0 left-0 w-[4px] h-full bg-emerald-500"></div>
                                     <div className="p-3 bg-emerald-50 text-emerald-600 rounded-xl group-hover:scale-105 transition-all duration-500"><CheckCircle size={24} /></div>
                                     <div>
-                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">En Stock Live</p>
+                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">En Stock</p>
                                         <h4 className="text-2xl font-extrabold text-emerald-600 tracking-tight">{products.filter(p => p.stock > 0).length}</h4>
                                     </div>
                                 </motion.div>
@@ -353,7 +353,7 @@ export default function ShopConfigPage() {
                                     <div className="bg-white border border-slate-200/80 p-6 rounded-2xl shadow-sm relative overflow-hidden">
                                         <div className="flex items-center space-x-3 text-slate-800 border-b border-slate-100 pb-5 mb-5">
                                             <Store size={18} className="text-blue-500" />
-                                            <h3 className="text-xs font-bold text-slate-800">Estructura de Origen</h3>
+                                            <h3 className="text-xs font-bold text-slate-800">Distribución por Proveedor</h3>
                                         </div>
                                         <div className="space-y-2 max-h-[350px] overflow-y-auto pr-2 custom-scrollbar">
                                             {providerStats.length > 0 ? providerStats.map((s, i) => (
@@ -381,10 +381,10 @@ export default function ShopConfigPage() {
                                     <div className="bg-white border border-slate-200/80 p-6 rounded-2xl shadow-sm relative overflow-hidden group">
                                         <div className="flex items-center space-x-3 mb-5 pb-5 border-b border-slate-100">
                                             <div className="p-2 bg-rose-50 text-rose-500 rounded-lg"><Trash2 size={18} /></div>
-                                            <h3 className="text-xs font-bold text-slate-800">Saneamiento Maestro</h3>
+                                            <h3 className="text-xs font-bold text-slate-800">Limpieza de Catálogo</h3>
                                         </div>
                                         <p className="text-xs font-medium text-slate-400 leading-relaxed mb-6">
-                                            Ejecución intensiva de eliminación de colisiones de datos y duplicidad de elementos para optimizar el rendimiento.
+                                            Elimina artículos duplicados o con errores de forma automática.
                                         </p>
                                         <button 
                                              onClick={async () => {
@@ -402,7 +402,7 @@ export default function ShopConfigPage() {
                                              disabled={isCleaning}
                                              className="w-full bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-100 py-3 text-xs font-bold transition-all shadow-sm rounded-xl disabled:opacity-50"
                                          >
-                                             {isCleaning ? 'Saneando... ' : 'Saneamiento de Catálogo'}
+                                             {isCleaning ? 'Saneando... ' : 'Limpiar Catálogo'}
                                          </button>
                                     </div>
                                 </div>
@@ -461,7 +461,7 @@ export default function ShopConfigPage() {
                                                         <th className="px-6 py-4">Artículo</th>
                                                         <th className="px-6 py-4 w-32">Proveedor</th>
                                                         <th className="px-6 py-4 w-28">Stock</th>
-                                                        <th className="px-6 py-4 w-52">Finanzas (Costo/ROI/PVP)</th>
+                                                        <th className="px-6 py-4 w-52">Precios (Costo/ROI/PVP)</th>
                                                         <th className="px-6 py-4 text-right pr-8">Acciones</th>
                                                     </tr>
                                                 </thead>
