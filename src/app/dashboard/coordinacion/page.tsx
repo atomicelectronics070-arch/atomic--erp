@@ -467,7 +467,20 @@ export default function CoordinacionPage() {
                                         {/* List saved followups */}
                                         {dailyData?.followUps?.length > 0 && (
                                             <ul className="text-sm bg-slate-50 p-3 rounded mt-2 space-y-1">
-                                                {dailyData.followUps.map((f: any) => <li key={f.id}>• {f.clientName} - {f.responsibleType}</li>)}
+                                                {dailyData.followUps.map((f: any) => {
+                                                    const advisorName = f.advisorId ? advisors.find(a => a.id === f.advisorId)?.name : null;
+                                                    const responsible = advisorName || (f.responsibleType === "ASESOR" ? "Asesor" : "Contacto Directo");
+                                                    return (
+                                                        <li key={f.id} className="flex flex-col border-b border-slate-200 last:border-0 pb-2 mb-2 last:pb-0 last:mb-0">
+                                                            <span className="font-semibold text-slate-800">{f.clientName}</span>
+                                                            <span className="text-slate-600 text-xs mt-0.5">
+                                                                <span className="font-medium text-blue-700">Asignado a: {responsible}</span>
+                                                                {f.phone && <span className="ml-2">| Tel: {f.phone}</span>}
+                                                                {f.case && <span className="ml-2">| Caso: {f.case}</span>}
+                                                            </span>
+                                                        </li>
+                                                    );
+                                                })}
                                             </ul>
                                         )}
                                     </div>
