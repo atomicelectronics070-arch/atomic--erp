@@ -4,7 +4,7 @@ import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { 
     Clock, CheckSquare, Save, Users, Calendar, 
-    Video, MessageSquare, AlertCircle, FileText, Send, DollarSign, Download, Check, X
+    Video, MessageSquare, AlertCircle, FileText, Send, DollarSign, Download, Check, X, ChevronUp, ChevronDown
 } from "lucide-react"
 
 export default function CoordinacionPage() {
