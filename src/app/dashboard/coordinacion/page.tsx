@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
+import { motion, AnimatePresence } from "framer-motion"
 import { 
     Clock, CheckSquare, Save, Users, Calendar, 
     Video, MessageSquare, AlertCircle, FileText, Send, DollarSign, Download, Check, X, ChevronUp, ChevronDown
@@ -733,7 +734,7 @@ export default function CoordinacionPage() {
                             animate={{ scale: 1, opacity: 1 }}
                             exit={{ scale: 0.95, opacity: 0 }}
                             className="bg-white rounded-2xl shadow-2xl max-w-5xl w-full h-[90vh] overflow-hidden flex flex-col"
-                            onClick={e => e.stopPropagation()}
+                            onClick={(e: any) => e.stopPropagation()}
                         >
                             <div className="p-4 border-b flex justify-between items-center bg-slate-50">
                                 <h3 className="font-bold text-slate-800">Vista Previa: {previewQuote.quoteNumber}</h3>
