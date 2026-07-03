@@ -868,3 +868,15 @@ model CoordinationAssignment {
   
   daily     CoordinationDaily @relation(fields: [dailyId], references: [id])
 }
+
+model CoordinationScrapedContact {
+  id          String   @id @default(cuid())
+  name        String
+  phone       String
+  category    String
+  source      String   @default("MAPS")
+  status      String   @default("PENDING") // PENDING, ASSIGNED
+  advisorId   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

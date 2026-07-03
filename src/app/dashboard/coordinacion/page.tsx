@@ -20,7 +20,7 @@ export default function CoordinacionPage() {
     const [quotesError, setQuotesError] = useState<string | null>(null)
     const [quoteFilter, setQuoteFilter] = useState<"ALL" | "DRAFT" | "APPROVED" | "REJECTED">("ALL")
     
-    const [activeTab, setActiveTab] = useState<"BITACORA" | "COTIZACIONES">("BITACORA")
+    const [activeTab, setActiveTab] = useState<"BITACORA" | "COTIZACIONES" | "SCRAPER">("BITACORA")
     
     const [notices, setNotices] = useState("")
     const [publishToSocial, setPublishToSocial] = useState(false)
@@ -55,6 +55,91 @@ export default function CoordinacionPage() {
             return newList
         })
     }, [assignmentForm.amount, assignmentForm.objective])
+
+    // Scraper States
+    const [scrapedContacts, setScrapedContacts] = useState<any[]>([])
+    const [scraperLoading, setScraperLoading] = useState(false)
+    const [scraperCategory, setScraperCategory] = useState("Gimnasios")
+    const [scraperCount, setScraperCount] = useState(5)
+    
+    const SCRAPER_CATEGORIES = [
+        "Abogados", "Academias de Baile", "Agencias de Viajes", "Arquitectos", "Asesoría Contable", 
+        "Autolavados", "Bancos", "Bares", "Bienes Raíces", "Boutiques", "Cafeterías", "Carnicerías", 
+        "Carpinterías", "Catering", "Centros Comerciales", "Centros Médicos", "Clínicas Odontológicas", 
+        "Colegios", "Consultorías", "Constructoras", "Cooperativas", "Cosméticos", "Cuidado de Mascotas", 
+        "Decoración", "Dentistas", "Desarrollo de Software", "Diseño Gráfico", "Distribuidores", 
+        "Educación Superior", "Electricistas", "Electrónica", "Empresas de Seguridad", "Estéticas", 
+        "Estudios de Tatuajes", "Eventos", "Farmacias", "Ferreterías", "Floristerías", "Fotografía", 
+        "Franquicias", "Fundaciones", "Gasolineras", "Gimnasios", "Guarderías", "Heladerías", 
+        "Hospitales", "Hoteles", "Imprentas", "Inmobiliarias", "Ingeniería", "Joyerías", "Jugueterías", 
+        "Laboratorios", "Lavanderías", "Librerías", "Licorerías", "Limpieza", "Logística", 
+        "Mantenimiento", "Maquillaje", "Marketing Digital", "Mascotas", "Mecánicas", "Medicina Alternativa", 
+        "Mueblerías", "Notarías", "Nutricionistas", "Odontólogos", "Ópticas", "Organización de Eventos", 
+        "Panaderías", "Papelerías", "Peluquerías", "Perfumerías", "Pintores", "Pizzerías", "Plomería", 
+        "Productores", "Publicidad", "Restaurantes", "Ropa Deportiva", "Salones de Belleza", 
+        "Seguros", "Servicios de Limpieza", "Servicios Financieros", "Spas", "Supermercados", 
+        "Talleres Automotrices", "Tecnología", "Telecomunicaciones", "Terapias", "Tiendas de Ropa", 
+        "Tiendas Naturistas", "Transporte", "Turismo", "Universidades", "Veterinarias", "Videojuegos", 
+        "Zapaterías", "Conjuntos Residenciales", "Edificios de Oficinas"
+    ].sort();
+
+    const fetchScrapedContacts = async () => {
+        try {
+            const res = await fetch('/api/admin/scraper')
+            const data = await res.json()
+            if (data.contacts) setScrapedContacts(data.contacts)
+        } catch (error) {
+            console.error("Error fetching scraped contacts:", error)
+        }
+    }
+
+    const handleScrape = async () => {
+        if (!scraperCategory || scraperCount < 1) return;
+        setScraperLoading(true)
+        try {
+            const res = await fetch('/api/admin/scraper', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ category: scraperCategory, count: scraperCount, source: "MAPS" })
+            })
+            const data = await res.json()
+            if (data.success) {
+                alert(`¡Éxito! Se extrajeron ${data.contacts.length} contactos de la categoría ${scraperCategory}.`)
+                fetchScrapedContacts()
+            } else {
+                alert("Error: " + data.error)
+            }
+        } catch (error: any) {
+            alert("Error: " + error.message)
+        } finally {
+            setScraperLoading(false)
+        }
+    }
+
+    const handleAssignScrapedContact = async (contactId: string, advisorId: string) => {
+        if (!advisorId) return;
+        try {
+            const res = await fetch('/api/admin/scraper', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contactId, advisorId })
+            })
+            const data = await res.json()
+            if (data.success) {
+                fetchScrapedContacts() // refresh list
+            } else {
+                alert("Error al asignar: " + data.error)
+            }
+        } catch (error: any) {
+            alert("Error: " + error.message)
+        }
+    }
+
+    useEffect(() => {
+        if (activeTab === "SCRAPER") {
+            fetchScrapedContacts()
+        }
+    }, [activeTab])
 
     // Test Mode and Date Selector
     const [isTestMode, setIsTestMode] = useState(false)
@@ -278,6 +363,12 @@ export default function CoordinacionPage() {
                             {quotes.filter(q => q.status === 'DRAFT').length} pendiente{quotes.filter(q => q.status === 'DRAFT').length !== 1 ? 's' : ''}
                         </span>
                     )}
+                </button>
+                <button 
+                    onClick={() => setActiveTab("SCRAPER")} 
+                    className={`pb-3 px-4 font-bold text-sm flex items-center gap-2 ${activeTab === "SCRAPER" ? "border-b-2 border-blue-600 text-blue-600" : "text-slate-500 hover:text-slate-700"}`}
+                >
+                    <Users size={16} /> SCRAPER (LEADS)
                 </button>
             </div>
 
@@ -730,6 +821,118 @@ export default function CoordinacionPage() {
                         </div>
                     </div>
                 </>
+            )}
+
+            {activeTab === "SCRAPER" && (
+                <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6 border-b pb-4">
+                        <div>
+                            <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2"><Users className="text-blue-600" /> Motor Scraper de Leads</h2>
+                            <p className="text-sm text-slate-500 mt-1">Busca y extrae contactos inteligentes para asignarlos a los asesores comerciales.</p>
+                        </div>
+                    </div>
+
+                    {/* Scraper Controls */}
+                    <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 mb-8">
+                        <h3 className="font-semibold text-slate-700 mb-3 text-sm uppercase">Nueva Búsqueda Inteligente</h3>
+                        <div className="flex flex-col md:flex-row gap-4 items-end">
+                            <div className="flex-1 w-full">
+                                <label className="block text-xs font-semibold text-slate-500 mb-1">Categoría / Nicho</label>
+                                <select 
+                                    value={scraperCategory} 
+                                    onChange={(e) => setScraperCategory(e.target.value)}
+                                    className="w-full border p-2 rounded-md bg-white focus:ring-2 focus:ring-blue-500 outline-none"
+                                >
+                                    {SCRAPER_CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                                </select>
+                            </div>
+                            <div className="w-full md:w-48">
+                                <label className="block text-xs font-semibold text-slate-500 mb-1">Cantidad a extraer</label>
+                                <select 
+                                    value={scraperCount} 
+                                    onChange={(e) => setScraperCount(Number(e.target.value))}
+                                    className="w-full border p-2 rounded-md bg-white focus:ring-2 focus:ring-blue-500 outline-none"
+                                >
+                                    {[1,2,3,4,5,6,7,8,9,10].map(n => <option key={n} value={n}>{n} contactos</option>)}
+                                </select>
+                            </div>
+                            <button 
+                                onClick={handleScrape}
+                                disabled={scraperLoading}
+                                className="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-md transition-colors flex items-center justify-center gap-2 disabled:opacity-70 h-[42px]"
+                            >
+                                {scraperLoading ? (
+                                    <><div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div> Buscando...</>
+                                ) : (
+                                    <><Send size={16} /> Extraer Contactos</>
+                                )}
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Extracted Contacts List */}
+                    <div>
+                        <h3 className="font-semibold text-slate-700 mb-4 flex items-center gap-2">Contactos Guardados ({scrapedContacts.length})</h3>
+                        
+                        {scrapedContacts.length === 0 ? (
+                            <div className="text-center py-10 bg-slate-50 rounded-lg border border-dashed border-slate-300">
+                                <Users className="mx-auto h-10 w-10 text-slate-300 mb-2" />
+                                <p className="text-slate-500">No hay contactos extraídos aún. Inicia una búsqueda arriba.</p>
+                            </div>
+                        ) : (
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-left border-collapse">
+                                    <thead>
+                                        <tr className="bg-slate-100 text-slate-600 text-xs uppercase border-y border-slate-200">
+                                            <th className="p-3 font-semibold w-1/4">Nombre / Entidad</th>
+                                            <th className="p-3 font-semibold">Celular</th>
+                                            <th className="p-3 font-semibold">Categoría</th>
+                                            <th className="p-3 font-semibold">Fecha</th>
+                                            <th className="p-3 font-semibold text-right">Asignación</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-slate-100">
+                                        {scrapedContacts.map((contact) => (
+                                            <tr key={contact.id} className="hover:bg-slate-50 transition-colors">
+                                                <td className="p-3 font-medium text-slate-800">{contact.name}</td>
+                                                <td className="p-3 text-slate-600">{contact.phone}</td>
+                                                <td className="p-3">
+                                                    <span className="bg-blue-50 text-blue-700 px-2 py-1 rounded-full text-xs font-semibold">
+                                                        {contact.category}
+                                                    </span>
+                                                </td>
+                                                <td className="p-3 text-slate-500 text-sm">
+                                                    {new Date(contact.createdAt).toLocaleDateString()}
+                                                </td>
+                                                <td className="p-3 text-right">
+                                                    {contact.status === "ASSIGNED" ? (
+                                                        <span className="inline-flex items-center gap-1 text-green-600 font-semibold text-sm bg-green-50 px-3 py-1 rounded-full">
+                                                            <Check size={14} /> 
+                                                            Asignado a: {advisors.find(a => a.id === contact.advisorId)?.name || 'Asesor'}
+                                                        </span>
+                                                    ) : (
+                                                        <div className="flex items-center justify-end gap-2">
+                                                            <select 
+                                                                className="border p-1.5 rounded text-sm bg-white min-w-[150px]"
+                                                                onChange={(e) => {
+                                                                    if(e.target.value) handleAssignScrapedContact(contact.id, e.target.value)
+                                                                }}
+                                                                defaultValue=""
+                                                            >
+                                                                <option value="" disabled>Seleccionar Asesor...</option>
+                                                                {advisors.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
+                                                            </select>
+                                                        </div>
+                                                    )}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
+                    </div>
+                </div>
             )}
 
             {/* Quote Preview Modal */}
