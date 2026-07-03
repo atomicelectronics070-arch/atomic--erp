@@ -36,7 +36,7 @@ export default function CoordinacionPage() {
     const [assignmentForm, setAssignmentForm] = useState({ objective: "", amount: 10, advisorId: "", origin: "" })
 
     // New states for PDF Modal and Dynamic Contacts Assignment
-    const [previewPdfUrl, setPreviewPdfUrl] = useState<string | null>(null)
+    const [previewQuote, setPreviewQuote] = useState<any | null>(null)
     const [showContactsDetails, setShowContactsDetails] = useState(false)
     const [contactsList, setContactsList] = useState<{name: string, objective: string, businessType: string, phone: string}[]>([])
 
@@ -368,14 +368,13 @@ export default function CoordinacionPage() {
                                                             <X size={14}/> Rechazar
                                                         </button>
                                                     )}
-                                                    {q.pdfUrl && (
-                                                        <button 
-                                                            onClick={() => setPreviewPdfUrl(q.pdfUrl!)} 
-                                                            className="px-3 py-1.5 bg-blue-100 text-blue-700 rounded-lg text-xs font-bold hover:bg-blue-200 flex items-center gap-1"
-                                                        >
-                                                            <Download size={14}/> PDF
-                                                        </button>
-                                                    )}
+                                                    <button 
+                                                        onClick={() => setPreviewQuote(q)} 
+                                                        className="px-3 py-1.5 bg-blue-100 text-blue-700 rounded-lg text-xs font-bold hover:bg-blue-200 flex items-center gap-1"
+                                                        title="Ver Cotización"
+                                                    >
+                                                        <FileText size={14}/> Ver
+                                                    </button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -719,15 +718,15 @@ export default function CoordinacionPage() {
                 </>
             )}
 
-            {/* PDF Preview Modal */}
+            {/* Quote Preview Modal */}
             <AnimatePresence>
-                {previewPdfUrl && (
+                {previewQuote && (
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm"
-                        onClick={() => setPreviewPdfUrl(null)}
+                        onClick={() => setPreviewQuote(null)}
                     >
                         <motion.div
                             initial={{ scale: 0.95, opacity: 0 }}
@@ -737,16 +736,79 @@ export default function CoordinacionPage() {
                             onClick={e => e.stopPropagation()}
                         >
                             <div className="p-4 border-b flex justify-between items-center bg-slate-50">
-                                <h3 className="font-bold text-slate-800">Visualización de Cotización</h3>
+                                <h3 className="font-bold text-slate-800">Vista Previa: {previewQuote.quoteNumber}</h3>
                                 <button
-                                    onClick={() => setPreviewPdfUrl(null)}
+                                    onClick={() => setPreviewQuote(null)}
                                     className="p-2 hover:bg-slate-200 rounded-full transition-colors ml-4"
                                 >
                                     <X size={20} className="text-slate-500" />
                                 </button>
                             </div>
-                            <div className="flex-1 w-full bg-slate-100">
-                                <iframe src={previewPdfUrl} className="w-full h-full border-none" />
+                            <div className="flex-1 w-full bg-slate-100 overflow-auto relative">
+                                {previewQuote.pdfUrl ? (
+                                    <iframe src={previewQuote.pdfUrl} className="w-full h-full border-none" />
+                                ) : (
+                                    <div className="max-w-3xl mx-auto my-8 p-10 bg-white shadow-sm border border-slate-200 rounded">
+                                        <div className="flex justify-between items-start mb-8 border-b pb-6">
+                                            <div>
+                                                <h2 className="text-2xl font-bold text-slate-900 tracking-tight">ATOMIC INDUSTRIES</h2>
+                                                <p className="text-slate-500 text-sm mt-1">Doc No.: <span className="font-medium text-slate-700">{previewQuote.quoteNumber}</span></p>
+                                            </div>
+                                            <div className="text-right text-sm text-slate-600 space-y-1">
+                                                <p><strong>Cliente:</strong> {previewQuote.clientName || 'Sin Nombre'}</p>
+                                                <p><strong>Asesor:</strong> {previewQuote.salesperson?.name || previewQuote.advisorName || '—'}</p>
+                                                <p><strong>Fecha:</strong> {new Date(previewQuote.createdAt).toLocaleDateString()}</p>
+                                            </div>
+                                        </div>
+                                        
+                                        <table className="w-full text-sm mb-8 text-left">
+                                            <thead>
+                                                <tr className="border-b-2 border-slate-200 text-slate-600">
+                                                    <th className="py-2">Descripción</th>
+                                                    <th className="py-2 text-center">Cant.</th>
+                                                    <th className="py-2 text-right">P. Unitario</th>
+                                                    <th className="py-2 text-right">Total</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {previewQuote.itemsData && JSON.parse(previewQuote.itemsData).length > 0 ? (
+                                                    JSON.parse(previewQuote.itemsData).map((item: any, idx: number) => {
+                                                        const subtotal = (item.quantity || 0) * (item.unitPrice || 0);
+                                                        const discount = subtotal * ((item.discountPercent || 0) / 100);
+                                                        const total = subtotal - discount;
+                                                        return (
+                                                            <tr key={idx} className="border-b border-slate-100 text-slate-700">
+                                                                <td className="py-3 pr-4">{item.description}</td>
+                                                                <td className="py-3 text-center">{item.quantity}</td>
+                                                                <td className="py-3 text-right">${item.unitPrice?.toFixed(2)}</td>
+                                                                <td className="py-3 text-right">${total.toFixed(2)}</td>
+                                                            </tr>
+                                                        );
+                                                    })
+                                                ) : (
+                                                    <tr><td colSpan={4} className="py-6 text-center text-slate-400">Detalles no disponibles en sistema (Cotización antigua o importada)</td></tr>
+                                                )}
+                                            </tbody>
+                                        </table>
+                                        
+                                        <div className="flex justify-end">
+                                            <div className="w-64">
+                                                <div className="flex justify-between py-2 border-b text-sm">
+                                                    <span className="font-semibold text-slate-600">Subtotal:</span>
+                                                    <span className="text-slate-800">${(previewQuote.subtotal || 0).toFixed(2)}</span>
+                                                </div>
+                                                <div className="flex justify-between py-2 border-b text-sm">
+                                                    <span className="font-semibold text-slate-600">IVA (15%):</span>
+                                                    <span className="text-slate-800">${(previewQuote.tax || 0).toFixed(2)}</span>
+                                                </div>
+                                                <div className="flex justify-between py-3 font-bold text-lg text-emerald-700">
+                                                    <span>TOTAL:</span>
+                                                    <span>${(previewQuote.total || 0).toFixed(2)}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </motion.div>
                     </motion.div>
