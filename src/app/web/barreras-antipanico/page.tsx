@@ -146,10 +146,6 @@ export default async function PanicBarsLandingPage() {
                             
                             // Corrección de imagen rota
                             let mainImage = images[0] || "/img/panic_bar_fallback.png"
-                            // Si es una imagen de Yale que a veces falla en su web, o de amazon que bloquea hotlinking:
-                            if (mainImage.includes("yale.com.ec") || mainImage.includes("amazon.com")) {
-                                mainImage = "/img/panic_bar_fallback.png" // Fallback local seguro
-                            }
                             
                             return (
                                 <div key={product.id} className="group relative bg-white border border-gray-200 rounded-3xl overflow-hidden hover:border-[#FF6347]/50 hover:shadow-xl transition-all duration-500 flex flex-col md:flex-row items-stretch">
@@ -164,6 +160,7 @@ export default async function PanicBarsLandingPage() {
                                         <img 
                                             src={mainImage} 
                                             alt={product.name} 
+                                            referrerPolicy="no-referrer"
                                             className="w-full h-auto max-h-[300px] object-contain group-hover:scale-105 transition-transform duration-700 mix-blend-multiply" 
                                         />
                                     </div>
