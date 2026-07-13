@@ -129,8 +129,56 @@ export default async function PanicBarsLandingPage() {
                         </p>
                     </div>
 
+                    {/* SPECIAL HIGHLIGHT BANNER FOR 60CM PUSH BAR */}
+                    {products.filter(p => p.name.includes("60 CENTIMETROS")).map(product => {
+                        let images = [];
+                        try { images = JSON.parse(product.images || "[]"); } catch (e) {}
+                        let mainImage = images[0] || "/img/panic_bar_fallback.png";
+                        
+                        return (
+                            <div key={product.id} className="mb-20 bg-gradient-to-br from-black to-gray-900 rounded-[3rem] overflow-hidden shadow-2xl relative flex flex-col lg:flex-row items-center border border-gray-800">
+                                <div className="absolute top-0 right-0 w-full h-full bg-[url('/img/noise.png')] opacity-20 mix-blend-overlay pointer-events-none"></div>
+                                <div className="absolute -top-[300px] -right-[300px] w-[600px] h-[600px] bg-[#FF6347]/20 blur-[100px] rounded-full pointer-events-none"></div>
+                                
+                                <div className="lg:w-1/2 p-12 lg:p-20 relative z-10 text-white">
+                                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#FF6347] text-white font-black text-xs uppercase tracking-widest mb-8">
+                                        <Flame size={14} /> Oferta Especial
+                                    </div>
+                                    <h3 className="text-4xl lg:text-6xl font-black mb-6 leading-tight">
+                                        {product.name}
+                                    </h3>
+                                    <div 
+                                        className="prose prose-invert prose-lg text-gray-400 mb-10 font-medium"
+                                        dangerouslySetInnerHTML={{ __html: product.description || "<p>Producto especializado para vías de escape de emergencia.</p>" }}
+                                    />
+                                    <div className="flex flex-col sm:flex-row items-center gap-6">
+                                        <div>
+                                            <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1">Precio Directo</p>
+                                            <div className="flex items-end gap-2">
+                                                <p className="text-5xl font-black text-[#FF6347]">${product.price.toFixed(2)}</p>
+                                                <span className="text-sm text-gray-400 font-bold mb-2">+ IVA</span>
+                                            </div>
+                                        </div>
+                                        <Link href={`/web/product/${product.id}`} className="w-full sm:w-auto px-10 py-5 bg-white text-black font-black hover:bg-gray-100 transition-colors rounded-2xl flex items-center justify-center gap-2 group/btn">
+                                            Adquirir Ahora
+                                            <ArrowRight size={18} className="group-hover/btn:translate-x-1 transition-transform" />
+                                        </Link>
+                                    </div>
+                                </div>
+                                
+                                <div className="lg:w-1/2 p-12 lg:p-20 relative z-10 flex items-center justify-center bg-white/5 backdrop-blur-sm h-full min-h-[400px]">
+                                    <ClientImage 
+                                        src={mainImage} 
+                                        alt={product.name} 
+                                        className="w-full max-w-[500px] h-auto object-contain hover:scale-110 transition-transform duration-700 drop-shadow-2xl" 
+                                    />
+                                </div>
+                            </div>
+                        )
+                    })}
+
                     <div className="space-y-12">
-                        {products.map((product, idx) => {
+                        {products.filter(p => !p.name.includes("60 CENTIMETROS") && !p.name.toLowerCase().includes("manija")).map((product, idx) => {
                             let images = []
                             try {
                                 images = JSON.parse(product.images || "[]")
@@ -138,24 +186,19 @@ export default async function PanicBarsLandingPage() {
                                 images = []
                             }
                             
-                            // Corrección de imagen rota
                             let mainImage = images[0] || "/img/panic_bar_fallback.png"
-                            
-                            const cleanProductName = product.name;
                             
                             return (
                                 <div key={product.id} className="group relative bg-white border border-gray-200 rounded-3xl overflow-hidden hover:border-[#FF6347]/50 hover:shadow-xl transition-all duration-500 flex flex-col md:flex-row items-stretch">
                                     
-                                    {/* Product Image Side */}
                                     <div className="md:w-2/5 bg-gray-50 relative p-12 flex items-center justify-center shrink-0 border-b md:border-b-0 md:border-r border-gray-200">
                                         <ClientImage 
                                             src={mainImage} 
-                                            alt={cleanProductName} 
+                                            alt={product.name} 
                                             className="w-full h-auto max-h-[300px] object-contain group-hover:scale-105 transition-transform duration-700 mix-blend-multiply" 
                                         />
                                     </div>
                                     
-                                    {/* Product Details Side */}
                                     <div className="p-8 md:p-12 flex flex-col justify-between flex-1 relative">
                                         
                                         <div>
@@ -166,7 +209,7 @@ export default async function PanicBarsLandingPage() {
                                             </div>
                                             
                                             <h3 className="text-3xl font-black text-black mb-6 leading-tight">
-                                                {cleanProductName}
+                                                {product.name}
                                             </h3>
                                             
                                             <div 
@@ -202,6 +245,49 @@ export default async function PanicBarsLandingPage() {
                                         </div>
                                     </div>
                                     
+                                </div>
+                            )
+                        })}
+                    </div>
+                </div>
+            </section>
+
+            {/* SECCION MANIJAS */}
+            <section className="py-24 bg-gray-50 border-t border-gray-200">
+                <div className="max-w-6xl mx-auto px-6">
+                    <div className="text-center mb-16">
+                        <h2 className="text-4xl font-black text-black mb-4">Manijas Exteriores</h2>
+                        <p className="text-gray-500 font-medium">Complementa tu sistema de evacuación con manijas de alta seguridad.</p>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        {products.filter(p => p.name.toLowerCase().includes("manija")).map(product => {
+                            let images = [];
+                            try { images = JSON.parse(product.images || "[]"); } catch (e) {}
+                            let mainImage = images[0] || "/img/panic_bar_fallback.png";
+                            
+                            return (
+                                <div key={product.id} className="bg-white border border-gray-200 rounded-3xl overflow-hidden hover:border-[#FF6347]/50 hover:shadow-xl transition-all duration-500 flex flex-col">
+                                    <div className="bg-gray-50 p-10 flex items-center justify-center border-b border-gray-200 relative h-[300px]">
+                                        <ClientImage 
+                                            src={mainImage} 
+                                            alt={product.name} 
+                                            className="w-full h-full object-contain mix-blend-multiply hover:scale-105 transition-transform duration-500" 
+                                        />
+                                    </div>
+                                    <div className="p-8 flex flex-col flex-1">
+                                        <h3 className="text-2xl font-black text-black mb-4">{product.name}</h3>
+                                        <div 
+                                            className="prose prose-sm text-gray-500 mb-8 line-clamp-3 font-medium flex-1"
+                                            dangerouslySetInnerHTML={{ __html: product.description || "" }}
+                                        />
+                                        <div className="flex items-center justify-between pt-6 border-t border-gray-200">
+                                            <p className="text-3xl font-black text-black">${product.price.toFixed(2)}</p>
+                                            <Link href={`/web/product/${product.id}`} className="px-6 py-3 bg-black text-white font-bold rounded-lg hover:bg-[#FF6347] transition-colors">
+                                                Detalles
+                                            </Link>
+                                        </div>
+                                    </div>
                                 </div>
                             )
                         })}
