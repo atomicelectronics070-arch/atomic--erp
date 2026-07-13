@@ -8,6 +8,8 @@ export const metadata = {
     description: "Sistemas de evacuación seguros para puertas de emergencia. Venta y distribución a nivel nacional.",
 }
 
+export const revalidate = 0; // Disable caching to fetch fresh products
+
 export default async function PanicBarsLandingPage() {
     // 1. Fetch panic bars from database
     const rawProducts = await prisma.product.findMany({
