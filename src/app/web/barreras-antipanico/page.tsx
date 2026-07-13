@@ -145,10 +145,10 @@ export default async function PanicBarsLandingPage() {
                             }
                             
                             // Corrección de imagen rota
-                            let mainImage = images[0] || "https://placehold.co/600x600/f8f9fa/333333?text=Sin+Imagen"
-                            // Si es una imagen de Yale que a veces falla en su web:
-                            if (mainImage.includes("yale.com.ec")) {
-                                mainImage = "https://m.media-amazon.com/images/I/41-bHw4f+wL._AC_SL1000_.jpg" // Fallback seguro
+                            let mainImage = images[0] || "/img/panic_bar_fallback.png"
+                            // Si es una imagen de Yale que a veces falla en su web, o de amazon que bloquea hotlinking:
+                            if (mainImage.includes("yale.com.ec") || mainImage.includes("amazon.com")) {
+                                mainImage = "/img/panic_bar_fallback.png" // Fallback local seguro
                             }
                             
                             return (
