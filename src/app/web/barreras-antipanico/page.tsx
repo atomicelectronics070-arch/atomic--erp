@@ -15,7 +15,11 @@ export default async function PanicBarsLandingPage() {
             OR: [
                 { name: { contains: "antipanico", mode: "insensitive" } },
                 { name: { contains: "antipánico", mode: "insensitive" } },
-                { name: { contains: "push bar", mode: "insensitive" } },
+                { name: { contains: "anti panico", mode: "insensitive" } },
+                { name: { contains: "antiupanico", mode: "insensitive" } },
+                { name: { contains: "push", mode: "insensitive" } },
+                { name: { contains: "toallero", mode: "insensitive" } },
+                { name: { contains: "eiffel", mode: "insensitive" } },
                 { sku: { startsWith: "CRONTE-CR" } }
             ],
             isActive: true,
