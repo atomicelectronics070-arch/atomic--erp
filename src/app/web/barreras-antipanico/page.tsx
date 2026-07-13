@@ -141,11 +141,7 @@ export default async function PanicBarsLandingPage() {
                             // Corrección de imagen rota
                             let mainImage = images[0] || "/img/panic_bar_fallback.png"
                             
-                            // Ocultar nombres de proveedores del título del producto
-                            const cleanProductName = product.name
-                                .replace(/Cronte/ig, "")
-                                .replace(/Yale/ig, "")
-                                .trim();
+                            const cleanProductName = product.name;
                             
                             return (
                                 <div key={product.id} className="group relative bg-white border border-gray-200 rounded-3xl overflow-hidden hover:border-[#FF6347]/50 hover:shadow-xl transition-all duration-500 flex flex-col md:flex-row items-stretch">
