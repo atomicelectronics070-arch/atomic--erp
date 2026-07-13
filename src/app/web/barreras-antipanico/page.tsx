@@ -3,8 +3,8 @@ import Link from "next/link"
 import { ShieldAlert, Activity, CheckCircle2, Factory, ShieldCheck, Flame, ArrowRight, ArrowDown } from "lucide-react"
 
 export const metadata = {
-    title: "Barreras Antipánico y de Emergencia | Yale & Cronte",
-    description: "Sistemas de evacuación seguros para puertas de emergencia. Distribuidores de Yale y Cronte.",
+    title: "Barreras Antipánico y de Emergencia",
+    description: "Sistemas de evacuación seguros para puertas de emergencia. Venta y distribución a nivel nacional.",
 }
 
 export default async function PanicBarsLandingPage() {
@@ -69,7 +69,7 @@ export default async function PanicBarsLandingPage() {
                     
                     <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto mb-10 leading-relaxed font-medium">
                         En una situación de pánico, un segundo marca la diferencia. Nuestras 
-                        <strong className="text-black"> Barreras Antipánico Yale y Cronte </strong> 
+                        <strong className="text-black"> Barreras Antipánico de Grado Comercial </strong> 
                         están diseñadas para garantizar una evacuación instintiva, inmediata y sin esfuerzo. 
                         Cumplen con los más estrictos estándares mundiales.
                     </p>
@@ -79,13 +79,6 @@ export default async function PanicBarsLandingPage() {
                             Ver Modelos Disponibles 
                             <ArrowDown size={18} className="group-hover:translate-y-1 transition-transform" />
                         </a>
-                        <div className="flex items-center gap-3 px-6 py-4 bg-gray-50 border border-gray-200 rounded-xl">
-                            <Factory className="text-gray-500" size={20} />
-                            <div className="text-left">
-                                <p className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Distribuidores Autorizados</p>
-                                <p className="text-sm font-black text-black">YALE & CRONTE</p>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </section>
@@ -152,11 +145,6 @@ export default async function PanicBarsLandingPage() {
                                     
                                     {/* Product Image Side */}
                                     <div className="md:w-2/5 bg-gray-50 relative p-12 flex items-center justify-center shrink-0 border-b md:border-b-0 md:border-r border-gray-200">
-                                        <div className="absolute top-4 left-4">
-                                            <span className="px-3 py-1 bg-black text-white text-xs font-black uppercase tracking-wider rounded-md shadow-sm">
-                                                {product.provider || "GENÉRICO"}
-                                            </span>
-                                        </div>
                                         <img 
                                             src={mainImage} 
                                             alt={product.name} 
