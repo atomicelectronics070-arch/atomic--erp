@@ -61,7 +61,7 @@ export default async function PublicWebPage() {
                     { name: { contains: 'laptop', mode: 'insensitive' } },
                 ]
             },
-            take: 60, // Reduced from 1000 for performance
+            take: 400, // Increased to ensure all categories like cerraduras get populated
             orderBy: { createdAt: 'desc' },
             select: { id: true, name: true, description: true, price: true, images: true, featured: true, provider: true, collectionId: true, createdAt: true, category: { select: { name: true, slug: true, id: true } } }
         }),
@@ -69,7 +69,7 @@ export default async function PublicWebPage() {
         prisma.product.findMany({
             where: { isDeleted: false, isActive: true },
             orderBy: { createdAt: 'desc' },
-            take: 60, // Reduced from 200 for performance
+            take: 200, // Increased to fill catalog
             select: { id: true, name: true, description: true, price: true, images: true, featured: true, provider: true, collectionId: true, createdAt: true, category: { select: { id: true, name: true, slug: true } } }
         }),
         getStoreSettings()

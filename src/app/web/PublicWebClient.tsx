@@ -404,7 +404,8 @@ export default function PublicWebClient({ initialProducts, metadata, userRole, s
         else if (colName.includes('cerraduras') || colName.includes('chapa')) {
             products = initialProducts.filter(p => {
                 const n = p.name.toLowerCase();
-                return n.includes('cerradura') || n.includes('acceso smart') || n.includes('chapa') || n.includes('cerradura smart');
+                const hasGenericImage = p.images && (p.images.includes('blank.png') || p.images.includes('image_512'));
+                return !hasGenericImage && (n.includes('cerradura') || n.includes('acceso smart') || n.includes('chapa') || n.includes('cerradura smart'));
             });
         }
         else if (colName.includes('consolas') || colName.includes('video juegos')) {
