@@ -14,16 +14,15 @@ export default async function PanicBarsLandingPage() {
     // 1. Fetch panic bars from database
     const rawProducts = await prisma.product.findMany({
         where: {
-            OR: [
-                { name: { contains: "antipanico", mode: "insensitive" } },
-                { name: { contains: "antipánico", mode: "insensitive" } },
-                { name: { contains: "anti panico", mode: "insensitive" } },
-                { name: { contains: "antiupanico", mode: "insensitive" } },
-                { name: { contains: "push", mode: "insensitive" } },
-                { name: { contains: "toallero", mode: "insensitive" } },
-                { name: { contains: "eiffel", mode: "insensitive" } },
-                { sku: { startsWith: "CRONTE-CR" } }
-            ],
+            id: {
+                in: [
+                    "cmrjinksy0002ualbrl78z8ky", // Rojo 1 metro
+                    "cmrjinkdp0001ualbb36iz08r", // 100cm push
+                    "cmrjinl7t0003ualbqd1mtm5t", // Toallero
+                    "cmrjinmiz0006ualb1cheacfk", // Manija Eiffel
+                    "cmrjinjxb0000ualbbs7lu7df", // 60cm push
+                ]
+            },
             isActive: true,
             isDeleted: false
         },
