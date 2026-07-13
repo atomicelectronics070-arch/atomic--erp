@@ -202,6 +202,21 @@ interface PublicWebClientProps {
     storeSettings?: any
 }
 
+// Normalize text: remove accents and lowercase for fuzzy matching
+const normalizeText = (s: string) =>
+    s.toLowerCase()
+     .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+     .replace(/[^a-z0-9\s]/g, ' ')
+     .replace(/\s+/g, ' ').trim()
+
+// Check if all words in the query appear in the target text (order-independent, partial match)
+const fuzzyMatch = (query: string, target: string): boolean => {
+    const q = normalizeText(query)
+    const t = normalizeText(target)
+    const words = q.split(' ').filter(Boolean)
+    return words.every(w => t.includes(w))
+}
+
 export default function PublicWebClient({ initialProducts, metadata, userRole, storeSettings }: PublicWebClientProps) {
     const [searchQuery, setSearchQuery] = useState("")
     const [activeMainCategoryId, setActiveMainCategoryId] = useState<string | null>(null)
@@ -209,6 +224,11 @@ export default function PublicWebClient({ initialProducts, metadata, userRole, s
 
     const [dynamicProducts, setDynamicProducts] = useState<any[]>([])
     const [isLoadingCategory, setIsLoadingCategory] = useState(false)
+    
+    // Smart search: hits the API for full-DB search with debounce
+    const [searchResults, setSearchResults] = useState<any[] | null>(null)
+    const [isSearching, setIsSearching] = useState(false)
+    const searchDebounce = useRef<ReturnType<typeof setTimeout> | null>(null)
 
     useEffect(() => {
         const handleSearchUpdate = (e: any) => {
@@ -221,21 +241,42 @@ export default function PublicWebClient({ initialProducts, metadata, userRole, s
         return () => window.removeEventListener('atomic-search-update', handleSearchUpdate)
     }, [])
 
+    // API-backed search with 350ms debounce
+    useEffect(() => {
+        if (searchDebounce.current) clearTimeout(searchDebounce.current)
+        if (!searchQuery.trim()) {
+            setSearchResults(null)
+            setIsSearching(false)
+            return
+        }
+        setIsSearching(true)
+        searchDebounce.current = setTimeout(async () => {
+            try {
+                const res = await fetch(`/api/web/products?search=${encodeURIComponent(searchQuery.trim())}&pageSize=120`)
+                const data = await res.json()
+                setSearchResults(data.products || [])
+            } catch {
+                // Fallback to local filter if API fails
+                setSearchResults(null)
+            } finally {
+                setIsSearching(false)
+            }
+        }, 350)
+        return () => { if (searchDebounce.current) clearTimeout(searchDebounce.current) }
+    }, [searchQuery])
+
     useEffect(() => {
         if (!activeMainCategoryId && !activeSubcategoryId) {
             setDynamicProducts([])
             return
         }
-        
         const fetchCategoryProducts = async () => {
             setIsLoadingCategory(true)
             try {
                 const targetCat = activeSubcategoryId || activeMainCategoryId
                 const res = await fetch(`/api/web/products?categoryId=${targetCat}&pageSize=100`)
                 const data = await res.json()
-                if (data && data.products) {
-                    setDynamicProducts(data.products)
-                }
+                if (data && data.products) setDynamicProducts(data.products)
             } catch (error) {
                 console.error("Error fetching category products:", error)
             } finally {
@@ -245,24 +286,27 @@ export default function PublicWebClient({ initialProducts, metadata, userRole, s
         fetchCategoryProducts()
     }, [activeMainCategoryId, activeSubcategoryId])
 
-    const filteredProducts = (dynamicProducts.length > 0 ? dynamicProducts : initialProducts).filter(p => {
-        let matchesSearch = true;
-        let matchesCategory = true;
-        
-        if (searchQuery) {
-            matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                            p.description?.toLowerCase().includes(searchQuery.toLowerCase());
+    // Determine which product list to show
+    const filteredProducts = useMemo(() => {
+        // 1. Active search: use API results, or fallback to local fuzzy match
+        if (searchQuery.trim()) {
+            if (searchResults !== null) return searchResults
+            // Local fallback: fuzzy match across initialProducts
+            return initialProducts.filter(p => {
+                const target = `${p.name} ${p.description || ''} ${p.category?.name || ''} ${p.provider || ''}`
+                return fuzzyMatch(searchQuery, target)
+            })
         }
-
+        // 2. Category filter
+        const base = dynamicProducts.length > 0 ? dynamicProducts : initialProducts
         if (activeSubcategoryId) {
-            matchesCategory = p.category?.id === activeSubcategoryId;
+            return base.filter(p => p.category?.id === activeSubcategoryId)
         } else if (activeMainCategoryId) {
-            const subCatIds = metadata.categories.filter(c => c.parentId === activeMainCategoryId).map(c => c.id);
-            matchesCategory = p.category?.id === activeMainCategoryId || subCatIds.includes(p.category?.id);
+            const subCatIds = metadata.categories.filter(c => c.parentId === activeMainCategoryId).map(c => c.id)
+            return base.filter(p => p.category?.id === activeMainCategoryId || subCatIds.includes(p.category?.id))
         }
-
-        return matchesSearch && matchesCategory;
-    });
+        return base
+    }, [searchQuery, searchResults, dynamicProducts, initialProducts, activeMainCategoryId, activeSubcategoryId, metadata.categories])
 
     // ─── ATOMIC REORGANIZATION LOGIC ───
     const curatedCategories = useMemo(() => {
@@ -469,6 +513,8 @@ export default function PublicWebClient({ initialProducts, metadata, userRole, s
                     activeSubcategoryId={activeSubcategoryId}
                     setActiveSubcategoryId={setActiveSubcategoryId}
                     categories={metadata.categories}
+                    isSearching={isSearching}
+                    searchResults={searchResults}
                 />
 
                 {/* PRODUCTOS */}
@@ -513,12 +559,16 @@ function MinimalStoreHero({
     searchQuery, setSearchQuery,
     activeMainCategoryId, setActiveMainCategoryId,
     activeSubcategoryId, setActiveSubcategoryId,
-    categories 
+    categories,
+    isSearching,
+    searchResults
 }: { 
     searchQuery: string, setSearchQuery: (val: string) => void,
     activeMainCategoryId: string | null, setActiveMainCategoryId: (val: string | null) => void,
     activeSubcategoryId: string | null, setActiveSubcategoryId: (val: string | null) => void,
-    categories: any[]
+    categories: any[],
+    isSearching: boolean,
+    searchResults: any[] | null
 }) {
     const cards = [
         { id: categories.find(c => c.slug === 'electronica')?.id || 'electronica', label: 'Electrónica', icon: <Cpu size={24} /> },
@@ -573,7 +623,13 @@ function MinimalStoreHero({
                 transition={{ delay: 0.4, duration: 0.5 }}
                 className="w-full max-w-2xl mx-auto mb-12 relative group"
             >
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-hover:text-black transition-colors" size={18} />
+                {isSearching ? (
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2">
+                        <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                    </div>
+                ) : (
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-hover:text-black transition-colors" size={18} />
+                )}
                 <input 
                     type="text" 
                     value={searchQuery}
@@ -582,8 +638,7 @@ function MinimalStoreHero({
                         setActiveMainCategoryId(null);
                         setActiveSubcategoryId(null);
                     }}
-                    placeholder="Buscar por nombre, marca o categoría..."
-
+                    placeholder="Buscar producto, marca, categoría, proveedor..."
                     className="w-full bg-zinc-50 border border-zinc-200 rounded-2xl p-4 pl-12 pr-12 text-sm uppercase tracking-widest placeholder:text-slate-400 focus:border-black focus:bg-white transition-all outline-none shadow-sm hover:shadow-md"
                 />
                 {searchQuery && (
@@ -593,6 +648,11 @@ function MinimalStoreHero({
                     >
                         <X size={16} />
                     </button>
+                )}
+                {searchQuery && !isSearching && searchResults !== null && (
+                    <div className="absolute -bottom-7 left-0 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                        {searchResults.length} resultado{searchResults.length !== 1 ? 's' : ''} encontrado{searchResults.length !== 1 ? 's' : ''}
+                    </div>
                 )}
             </motion.div>
 
