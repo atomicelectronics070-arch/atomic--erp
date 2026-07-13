@@ -21,6 +21,8 @@ export default async function PanicBarsLandingPage() {
                     "cmrjinl7t0003ualbqd1mtm5t", // Toallero
                     "cmrjinmiz0006ualb1cheacfk", // Manija Eiffel
                     "cmrjinjxb0000ualbbs7lu7df", // 60cm push
+                    "cmrjinlmh0004ualbem97yzxu", // Vertical 3 Puntos 1000cm
+                    "cmrjinm2i0005ualbjx0msa6x", // Vertical 3 Puntos
                 ]
             },
             isActive: true,
