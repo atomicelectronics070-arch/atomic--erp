@@ -16,13 +16,14 @@ export default async function PanicBarsLandingPage() {
         where: {
             id: {
                 in: [
-                    "cmrjinksy0002ualbrl78z8ky", // Rojo 1 metro
-                    "cmrjinkdp0001ualbb36iz08r", // 100cm push
-                    "cmrjinl7t0003ualbqd1mtm5t", // Toallero
-                    "cmrjinmiz0006ualb1cheacfk", // Manija Eiffel
-                    "cmrjinjxb0000ualbbs7lu7df", // 60cm push
-                    "cmrjinlmh0004ualbem97yzxu", // Vertical 3 Puntos 1000cm
-                    "cmrjinm2i0005ualbjx0msa6x", // Vertical 3 Puntos
+                    "cmrjlpyho0000g9n0bv9ag6ye", // 60cm push
+                    "cmrjlpzp90001g9n0zcz3u2ht", // 100cm push
+                    "cmrjlq23q0002g9n011uzvyf4", // miami
+                    "cmrjlq3zr0003g9n0anpu30q2", // toallero orlando
+                    "cmrjlq66m0004g9n00y8x3hf0", // eiffel
+                    "cmrjlq7lj0005g9n024gvibd6", // inutek manija
+                    "cmrjlq8m30006g9n0y1fblbgt", // 100cm vertical
+                    "cmrjlq9rx0007g9n0ymbclqy3", // 60cm vertical
                 ]
             },
             isActive: true,
