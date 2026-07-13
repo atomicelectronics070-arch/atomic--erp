@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma"
 import Link from "next/link"
+import { ClientImage } from "./ClientImage"
 import { ShieldAlert, Activity, CheckCircle2, Factory, ShieldCheck, Flame, ArrowRight, ArrowDown } from "lucide-react"
 
 export const metadata = {
@@ -140,15 +141,20 @@ export default async function PanicBarsLandingPage() {
                             // Corrección de imagen rota
                             let mainImage = images[0] || "/img/panic_bar_fallback.png"
                             
+                            // Ocultar nombres de proveedores del título del producto
+                            const cleanProductName = product.name
+                                .replace(/Cronte/ig, "")
+                                .replace(/Yale/ig, "")
+                                .trim();
+                            
                             return (
                                 <div key={product.id} className="group relative bg-white border border-gray-200 rounded-3xl overflow-hidden hover:border-[#FF6347]/50 hover:shadow-xl transition-all duration-500 flex flex-col md:flex-row items-stretch">
                                     
                                     {/* Product Image Side */}
                                     <div className="md:w-2/5 bg-gray-50 relative p-12 flex items-center justify-center shrink-0 border-b md:border-b-0 md:border-r border-gray-200">
-                                        <img 
+                                        <ClientImage 
                                             src={mainImage} 
-                                            alt={product.name} 
-                                            referrerPolicy="no-referrer"
+                                            alt={cleanProductName} 
                                             className="w-full h-auto max-h-[300px] object-contain group-hover:scale-105 transition-transform duration-700 mix-blend-multiply" 
                                         />
                                     </div>
@@ -164,7 +170,7 @@ export default async function PanicBarsLandingPage() {
                                             </div>
                                             
                                             <h3 className="text-3xl font-black text-black mb-6 leading-tight">
-                                                {product.name}
+                                                {cleanProductName}
                                             </h3>
                                             
                                             <div 
