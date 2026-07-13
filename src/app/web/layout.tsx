@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from "framer-motion"
 
 import { AISearchBot } from "@/components/ui/AISearchBot"
 import { CartBotOverlay } from "@/components/ui/CartBotOverlay"
+import { BuyerBotOverlay } from "@/components/ui/BuyerBotOverlay"
 
 export default function WebLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname()
@@ -191,6 +192,7 @@ export default function WebLayout({ children }: { children: React.ReactNode }) {
             </footer>
             <AISearchBot />
             <CartBotOverlay />
+            <BuyerBotOverlay />
         </div>
     )
 }

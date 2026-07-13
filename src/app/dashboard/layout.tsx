@@ -9,6 +9,7 @@ import { ChevronDown, ChevronRight } from "lucide-react"
 import NotificationBell from "@/components/NotificationBell"
 import { AISearchBot } from "@/components/ui/AISearchBot"
 import { motion, AnimatePresence } from "framer-motion"
+import { SellerBotOverlay } from "@/components/ui/SellerBotOverlay"
 
 export default function DashboardLayout({
     children,
@@ -154,8 +155,8 @@ export default function DashboardLayout({
                                     isOpen={openSections.crm ?? true}
                                     onToggle={() => toggleSection('crm')}
                                 >
-                                    <NavLink href="/dashboard/whatsapp-crm" icon={<Smartphone size={14} />} label="Centro de Control" isSubItem />
-                                    <NavLink href="/dashboard/crm-historicos" icon={<Database size={14} />} label="CRM Históricos" isSubItem />
+                                    <NavLink href="/dashboard/whatsapp/crm" icon={<Smartphone size={14} />} label="CRM WhatsApp" isSubItem />
+                                    <NavLink href="/dashboard/whatsapp/leads" icon={<Users size={14} />} label="Gestión de Leads" isSubItem />
                                 </CollapsibleSection>
 
                                 <CollapsibleSection
@@ -205,13 +206,7 @@ export default function DashboardLayout({
                             <NavLink href="/dashboard/bot-ruta" icon={<Bot size={14} />} label="Bot Ruta" isSubItem />
                         </CollapsibleSection>
 
-                        <CollapsibleSection
-                            label="Publicidad"
-                            isOpen={openSections.publicidad ?? false}
-                            onToggle={() => toggleSection('publicidad')}
-                        >
-                            <NavLink href="/dashboard/landing-pages" icon={<Map size={14} />} label="Landing Pages" isSubItem />
-                        </CollapsibleSection>
+
                     </div>
                 </nav>
 
@@ -294,6 +289,7 @@ export default function DashboardLayout({
                     </div>
                 </div>
             </main>
+            <SellerBotOverlay />
         </div>
     )
 }

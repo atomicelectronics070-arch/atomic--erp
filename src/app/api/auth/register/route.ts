@@ -30,6 +30,10 @@ export async function POST(req: Request) {
 
         const passwordHash = await bcrypt.hash(password, 10)
 
+        const roleUpper = role.toUpperCase()
+        const isAutoApprove = roleUpper === "CONSUMIDOR" || roleUpper === "SALESPERSON" || roleUpper === "AFILIADO"
+        const initialStatus = isAutoApprove ? "APPROVED" : "PENDING"
+
         const user = await prisma.user.create({
             data: {
                 name,
@@ -37,8 +41,8 @@ export async function POST(req: Request) {
                 cedula,
                 email,
                 passwordHash,
-                status: "PENDING",
-                role: role.toUpperCase(),
+                status: initialStatus,
+                role: roleUpper,
                 profileData: body.profileData || `Celular: ${phone || 'N/A'} | Referido por: ${referredBy || 'N/A'}`,
             },
         })
@@ -47,13 +51,13 @@ export async function POST(req: Request) {
         try {
             await sendWhatsAppMessage(
                 process.env.ADMIN_PHONE || "593984252528",
-                `🔔 *NUEVO REGISTRO ATOMIC*\n\n👤 *Usuario:* ${name} ${lastName}\n📧 *Email:* ${email}\n🎭 *Rol Solicitado:* ${role}\n🆔 *Cédula:* ${cedula}\n\nAcción requerida: Aprobar en el dashboard.`
+                `🔔 *NUEVO REGISTRO ATOMIC*\n\n👤 *Usuario:* ${name} ${lastName}\n📧 *Email:* ${email}\n🎭 *Rol Solicitado:* ${role}\n🆔 *Cédula:* ${cedula}\n\nEstado asignado: ${initialStatus === 'APPROVED' ? '✅ APROBADO AUTOMÁTICAMENTE' : '⏳ PENDIENTE DE APROBACIÓN'}.`
             )
         } catch (e) { console.error("WhatsApp Admin Notify Error", e) }
 
         return NextResponse.json({
-            message: "Solicitud enviada exitosamente. Un administrador revisará su cuenta.",
-            user: { id: user.id, email: user.email, name: user.name },
+            message: isAutoApprove ? "¡Cuenta creada y aprobada exitosamente! Ya puede iniciar sesión." : "Solicitud enviada exitosamente. Un administrador revisará su cuenta.",
+            user: { id: user.id, email: user.email, name: user.name, status: initialStatus },
         }, { status: 201 })
     } catch (error: any) {
         console.error("Registration error:", error)

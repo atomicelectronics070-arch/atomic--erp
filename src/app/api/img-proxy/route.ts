@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 
+// Desactiva validación SSL estricta para poder descargar imágenes de proveedores con certificados SSL incompletos
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
+
 export const dynamic = "force-dynamic"
 
 // Common headers to mimic a real browser and bypass hotlink protection

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { ShoppingBag, Heart, Search, ArrowRight, Package, LogOut, User, Star, Zap } from "lucide-react"
@@ -29,9 +29,18 @@ const proxyImg = (url: string): string => {
 export default function ShopPlatform() {
     const { data: session, status } = useSession()
     const router = useRouter()
-    const [products, setProducts] = useState([])
+    
+    // products: lo que se muestra actualmente en pantalla
+    const [products, setProducts] = useState<any[]>([])
+    // allProducts: caché en segundo plano de todo el catálogo completo
+    const [allProducts, setAllProducts] = useState<any[] | null>(null)
     const [loading, setLoading] = useState(true)
+    const [searching, setSearching] = useState(false)
     const [favorites, setFavorites] = useState<string[]>([])
+    
+    // searchInput: lo que el usuario escribe inmediatamente en la UI
+    const [searchInput, setSearchInput] = useState("")
+    // searchTerm: el término filtrado (después del debounce)
     const [searchTerm, setSearchTerm] = useState("")
 
     useEffect(() => {
@@ -40,19 +49,99 @@ export default function ShopPlatform() {
         }
     }, [status, router])
 
+    // Cargar favoritos del localStorage al montar la app
     useEffect(() => {
-        const fetchProducts = async () => {
-            const res = await fetch("/api/web/products?pageSize=50")
-            const data = await res.json()
-            setProducts(data.products || [])
-            
-            const savedFavs = localStorage.getItem('atomic_favs')
-            if (savedFavs) setFavorites(JSON.parse(savedFavs))
-            
-            setLoading(false)
-        }
-        fetchProducts()
+        const savedFavs = localStorage.getItem('atomic_favs')
+        if (savedFavs) setFavorites(JSON.parse(savedFavs))
     }, [])
+
+    // Paso 1: Carga inicial ultra rápida (solo los primeros 40 productos)
+    useEffect(() => {
+        const fetchInitialProducts = async () => {
+            try {
+                const res = await fetch("/api/web/products?pageSize=40")
+                const data = await res.json()
+                setProducts(data.products || [])
+            } catch (err) {
+                console.error("Error al cargar productos iniciales:", err)
+            } finally {
+                setLoading(false)
+            }
+        }
+        fetchInitialProducts()
+    }, [])
+
+    // Paso 2: Descarga asíncrona de TODO el catálogo en segundo plano (1.5 segundos después del primer render)
+    useEffect(() => {
+        if (loading) return
+
+        const prefetchAllProducts = setTimeout(async () => {
+            try {
+                // Traemos todos los productos (máximo 1500) para tenerlos en memoria local
+                const res = await fetch("/api/web/products?pageSize=1500")
+                const data = await res.json()
+                const items = data.products || []
+                setAllProducts(items)
+                
+                // Si el usuario no está buscando, poblamos la lista principal con los nuevos productos
+                setProducts(prev => {
+                    if (!searchInput.trim()) {
+                        return items
+                    }
+                    return prev
+                })
+                console.log(`[Caché de Fondo] ${items.length} productos guardados en memoria local.`);
+            } catch (err) {
+                console.warn("No se pudo pre-cargar catálogo de fondo:", err)
+            }
+        }, 1500)
+
+        return () => clearTimeout(prefetchAllProducts)
+    }, [loading])
+
+    // Paso 3: Filtrado en tiempo real (instantáneo en memoria local si el catálogo ya está descargado)
+    useEffect(() => {
+        const filterProducts = async () => {
+            const query = searchTerm.trim().toLowerCase()
+
+            if (!query) {
+                // Si no hay búsqueda, mostramos todo el catálogo cargado o el inicial
+                setProducts(allProducts || products)
+                return
+            }
+
+            // A. Si ya tenemos todo el catálogo descargado en memoria local, filtramos de forma instantánea
+            if (allProducts) {
+                const filtered = allProducts.filter((p: any) =>
+                    p.name.toLowerCase().includes(query) ||
+                    (p.sku && p.sku.toLowerCase().includes(query)) ||
+                    (p.description && p.description.toLowerCase().includes(query))
+                )
+                setProducts(filtered)
+            } 
+            // B. Fallback (si el catálogo en segundo plano aún no se ha descargado completamente)
+            else {
+                setSearching(true)
+                try {
+                    const res = await fetch(`/api/web/products?pageSize=100&search=${encodeURIComponent(query)}`)
+                    const data = await res.json()
+                    setProducts(data.products || [])
+                } catch (err) {
+                    console.error("Error en búsqueda fallback:", err)
+                } finally {
+                    setSearching(false)
+                }
+            }
+        }
+        filterProducts()
+    }, [searchTerm, allProducts])
+
+    // Debounce de 300ms: el input se actualiza al instante,
+    // pero el filtrado real espera 300ms tras la última tecla
+    useEffect(() => {
+        const timer = setTimeout(() => setSearchTerm(searchInput), 300)
+        return () => clearTimeout(timer)
+    }, [searchInput])
 
     const toggleFavorite = (id: string) => {
         const newFavs = favorites.includes(id) ? favorites.filter(f => f !== id) : [...favorites, id]
@@ -69,11 +158,12 @@ export default function ShopPlatform() {
         )
     }
 
-    const filteredProducts = products.filter((p: any) => 
-        p.name.toLowerCase().includes(searchTerm.toLowerCase())
-    )
+    // filteredProducts ahora toma directamente los productos traídos de la base de datos
+    const filteredProducts = products
 
-    const favProducts = products.filter((p: any) => favorites.includes(p.id))
+    const favProducts = useMemo(() =>
+        products.filter((p: any) => favorites.includes(p.id)),
+    [products, favorites])
 
     return (
         <div className="min-h-screen bg-marble text-slate-900 font-sans selection:bg-[#E8341A]/10">
@@ -97,8 +187,8 @@ export default function ShopPlatform() {
                         <input 
                             type="text" 
                             placeholder="Buscar productos..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
+                            value={searchInput}
+                            onChange={(e) => setSearchInput(e.target.value)}
                             className="w-full bg-slate-50 border border-slate-100 pl-12 pr-4 py-3 text-[11px] font-bold uppercase tracking-widest outline-none focus:border-[#E8341A] transition-all"
                         />
                     </div>
@@ -127,8 +217,8 @@ export default function ShopPlatform() {
                     <input 
                         type="text" 
                         placeholder="Buscar productos..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
+                        value={searchInput}
+                        onChange={(e) => setSearchInput(e.target.value)}
                         className="w-full bg-white border border-slate-200 pl-12 pr-4 py-4 text-[11px] font-bold uppercase tracking-widest outline-none shadow-xl"
                     />
                 </div>
@@ -159,7 +249,7 @@ export default function ShopPlatform() {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 transition-all duration-300 ${searching ? 'opacity-40 scale-[0.99] pointer-events-none' : 'opacity-100 scale-100'}`}>
                         {filteredProducts.map((p: any) => (
                             <ShopCard key={p.id} product={p} isFav={favorites.includes(p.id)} onToggleFav={() => toggleFavorite(p.id)} />
                         ))}
@@ -214,15 +304,22 @@ export default function ShopPlatform() {
 
 function ShopCard({ product, isFav, onToggleFav }: { product: any, isFav: boolean, onToggleFav: () => void }) {
     const imgs = safeParseArray(product.images)
+    const [imageError, setImageError] = useState(false)
+
     return (
         <div className="group bg-white p-6 border border-slate-100 hover:border-[#E8341A]/30 transition-all hover:shadow-2xl flex flex-col relative overflow-hidden">
             <div className="relative aspect-square mb-6 bg-slate-50 flex items-center justify-center p-6 group-hover:scale-105 transition-transform duration-700 overflow-hidden">
-                {imgs[0] ? (
-                    <img src={proxyImg(imgs[0])} alt={product.name} className="w-full h-full object-contain mix-blend-multiply" />
+                {imgs[0] && !imageError ? (
+                    <img 
+                        src={proxyImg(imgs[0])} 
+                        alt={product.name} 
+                        onError={() => setImageError(true)}
+                        className="w-full h-full object-contain mix-blend-multiply" 
+                    />
                 ) : (
-                    <div className="flex flex-col items-center justify-center opacity-10">
-                        <Package size={48} />
-                        <span className="text-[8px] font-black uppercase tracking-[0.4em] mt-4">Imagen en Proceso</span>
+                    <div className="flex flex-col items-center justify-center opacity-30 text-slate-400">
+                        <Package size={48} className="stroke-[1.5]" />
+                        <span className="text-[8px] font-black uppercase tracking-[0.4em] mt-4 text-center">Imagen en Proceso</span>
                     </div>
                 )}
                 <button 

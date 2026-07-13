@@ -1,0 +1,61 @@
+import { NextResponse } from "next/server"
+import { prisma } from "@/lib/prisma"
+
+export async function POST(req: Request) {
+    try {
+        const body = await req.json()
+        const email: string = body.email || ""
+        const name: string = body.name || ""
+        const source: string = body.source || "LANDING_PROVEEDORES"
+        const requirement: string = body.requirement || "Descargó recurso desde landing page."
+
+        if (!email || !email.includes("@")) {
+            return NextResponse.json({ error: "Email inválido" }, { status: 400 })
+        }
+
+        // Buscar si ya existe el cliente con este correo
+        const existingClient = await prisma.client.findFirst({
+            where: { email: email.toLowerCase().trim() }
+        })
+
+        if (existingClient) {
+            await prisma.client.update({
+                where: { id: existingClient.id },
+                data: {
+                    requirement: (existingClient.requirement || "") + ` | Volvió a registrarse en ${source}`
+                }
+            })
+            return NextResponse.json({ success: true, message: "Lead actualizado" })
+        }
+
+        const defaultSalesperson = await prisma.user.findFirst({
+            where: { isActive: true },
+            select: { id: true }
+        })
+
+        if (!defaultSalesperson) {
+            return NextResponse.json({ error: "No hay vendedores activos para asignar" }, { status: 500 })
+        }
+
+        const clientName = name
+            ? name.toUpperCase()
+            : email.split("@")[0].toUpperCase()
+
+        await prisma.client.create({
+            data: {
+                name: clientName,
+                email: email.toLowerCase().trim(),
+                source: source as any,
+                requirement,
+                status: "PROSPECTO",
+                salespersonId: defaultSalesperson.id
+            }
+        })
+
+        return NextResponse.json({ success: true, message: "Lead registrado exitosamente" })
+    } catch (err) {
+        console.error("[landing-lead] Error registering lead:", err)
+        return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
+    }
+}
+

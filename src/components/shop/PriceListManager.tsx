@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect, useCallback, useRef } from "react"
+import { useState, useEffect, useCallback, useRef, useMemo } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import {
     Search, Store, Package, TrendingUp, DollarSign, Edit3,
@@ -222,6 +222,9 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
     // Filters
     const [selectedSupplier, setSelectedSupplier] = useState<string>("")
     const [selectedCategory, setSelectedCategory] = useState<string>("")
+    // searchInputValue: lo que el usuario ve (actualización inmediata)
+    // searchQuery: lo que se envía a la API (con debounce de 400ms)
+    const [searchInputValue, setSearchInputValue] = useState<string>("")
     const [searchQuery, setSearchQuery] = useState<string>("")
     const [page, setPage] = useState(1)
     const [limit] = useState(100)
@@ -245,17 +248,25 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
     const [previewImages, setPreviewImages] = useState<{ urls: string[]; title: string } | null>(null)
     const [previewDescription, setPreviewDescription] = useState<{ title: string; description: string; sku: string } | null>(null)
 
+    // allProducts: caché en segundo plano de todos los productos
+    const [allProducts, setAllProducts] = useState<Product[] | null>(null)
+    const [isInitialLoad, setIsInitialLoad] = useState(true)
+
+    // Debounce de entrada: actualiza la búsqueda visual al instante pero el filtro lógico espera 250ms
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setSearchQuery(searchInputValue)
+            setPage(1)
+        }, 250)
+        return () => clearTimeout(timer)
+    }, [searchInputValue])
+
     const loadData = useCallback(async () => {
         setLoading(true)
+        setAllProducts(null) // Reseteamos la caché local para forzar nueva descarga en segundo plano
+        setIsInitialLoad(true)
         try {
-            const params = new URLSearchParams({
-                provider: selectedSupplier,
-                category: selectedCategory,
-                search: searchQuery,
-                page: page.toString(),
-                limit: limit.toString(),
-            })
-            const res = await fetch(`/api/admin/price-list?${params}`)
+            const res = await fetch("/api/admin/price-list?page=1&limit=100")
             if (!res.ok) throw new Error("API error")
             const data = await res.json()
             setProducts(data.products || [])
@@ -263,13 +274,78 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
             setCategories(data.categories || [])
             setTotal(data.total || 0)
         } catch (e) {
-            console.error("PriceListManager load error:", e)
+            console.error("Error al recargar catálogo:", e)
         } finally {
             setLoading(false)
+            setIsInitialLoad(false)
         }
-    }, [selectedSupplier, selectedCategory, searchQuery, page, limit])
+    }, [])
 
-    useEffect(() => { loadData() }, [loadData])
+    // Paso 1: Carga inicial ultra rápida (primeros 100 productos)
+    useEffect(() => {
+        loadData()
+    }, [loadData])
+
+    // Paso 2: Descarga en segundo plano de TODO el catálogo completo (1 segundo después de cargar)
+    useEffect(() => {
+        if (isInitialLoad) return
+
+        const prefetchAllData = setTimeout(async () => {
+            try {
+                // Descargamos todo el catálogo completo del administrador
+                const res = await fetch("/api/admin/price-list?page=1&limit=1800")
+                if (!res.ok) return
+                const data = await res.json()
+                const items = data.products || []
+                setAllProducts(items)
+                
+                // Actualizamos las estadísticas de proveedores
+                if (data.providerStats) setSuppliers(data.providerStats)
+                if (data.categories) setCategories(data.categories)
+                
+                console.log(`[Caché Admin] ${items.length} productos cargados de fondo en lista de precios.`);
+            } catch (e) {
+                console.warn("No se pudo pre-cargar el catálogo de precios:", e)
+            }
+        }, 1000)
+
+        return () => clearTimeout(prefetchAllData)
+    }, [isInitialLoad])
+
+    // Paso 3: Filtrado en tiempo real (Instantáneo en memoria local)
+    const filteredProducts = useMemo(() => {
+        const query = searchQuery.trim().toLowerCase()
+        const targetList = allProducts || products
+
+        return targetList.filter((p) => {
+            // Filtro por Proveedor
+            if (selectedSupplier && p.provider !== selectedSupplier) {
+                return false
+            }
+            // Filtro por Categoría
+            if (selectedCategory && p.category?.id !== selectedCategory) {
+                return false
+            }
+            // Filtro por término de búsqueda (Nombre, SKU, Proveedor)
+            if (query) {
+                const matchesName = p.name.toLowerCase().includes(query)
+                const matchesSku = p.sku ? p.sku.toLowerCase().includes(query) : false
+                const matchesProvider = p.provider ? p.provider.toLowerCase().includes(query) : false
+                return matchesName || matchesSku || matchesProvider
+            }
+            return true
+        })
+    }, [allProducts, products, selectedSupplier, selectedCategory, searchQuery])
+
+    // Sincroniza la paginación local si es que no se ha descargado el caché completo aún
+    const paginatedProducts = useMemo(() => {
+        if (allProducts) {
+            // Si ya tenemos todo descargado localmente, mostramos de golpe o paginamos en memoria
+            // Para garantizar máxima fluidez, mostramos de golpe todos los filtrados
+            return filteredProducts
+        }
+        return filteredProducts.slice((page - 1) * limit, page * limit)
+    }, [filteredProducts, allProducts, page, limit])
 
     const handlePriceUpdate = async (productId: string, field: "price" | "compareAtPrice" | "stock", value: number) => {
         setSavingIds(prev => new Set(prev).add(productId))
@@ -394,13 +470,15 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
 
     const totalPages = Math.ceil(total / limit)
 
-    // Group products by supplier
-    const grouped = products.reduce<Record<string, Product[]>>((acc, p) => {
-        const key = p.provider || "Sin Proveedor"
-        if (!acc[key]) acc[key] = []
-        acc[key].push(p)
-        return acc
-    }, {})
+    // Group products by supplier (usa filteredProducts para que se filtre en tiempo real)
+    const grouped = useMemo(() => {
+        return filteredProducts.reduce<Record<string, Product[]>>((acc, p) => {
+            const key = p.provider || "Sin Proveedor"
+            if (!acc[key]) acc[key] = []
+            acc[key].push(p)
+            return acc
+        }, {})
+    }, [filteredProducts])
 
     return (
         <div className="space-y-8 text-slate-800">
@@ -455,7 +533,25 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                     </div>
 
                     <button
-                        onClick={loadData}
+                        onClick={async () => {
+                            setLoading(true)
+                            setAllProducts(null) // Reseteamos la caché local para forzar nueva descarga
+                            setIsInitialLoad(true)
+                            try {
+                                const res = await fetch("/api/admin/price-list?page=1&limit=100")
+                                if (!res.ok) throw new Error("API error")
+                                const data = await res.json()
+                                setProducts(data.products || [])
+                                setSuppliers(data.providerStats || [])
+                                setCategories(data.categories || [])
+                                setTotal(data.total || 0)
+                            } catch (e) {
+                                console.error(e)
+                            } finally {
+                                setLoading(false)
+                                setIsInitialLoad(false)
+                            }
+                        }}
                         disabled={loading}
                         className="px-4 py-2.5 bg-white border border-slate-200 text-slate-700 font-semibold text-xs rounded-xl hover:bg-slate-50 hover:border-slate-300 transition-all duration-300 shadow-sm disabled:opacity-50 flex items-center gap-2 group"
                     >
@@ -536,8 +632,8 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                     <input
                         type="text"
                         placeholder="Buscar artículo por nombre o SKU..."
-                        value={searchQuery}
-                        onChange={e => { setSearchQuery(e.target.value); setPage(1) }}
+                        value={searchInputValue}
+                        onChange={e => setSearchInputValue(e.target.value)}
                         className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-12 pr-5 py-3.5 text-xs font-semibold text-slate-800 outline-none focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/5 transition-all placeholder:text-slate-400"
                     />
                 </div>
@@ -870,10 +966,10 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                                 <tr className="text-sm font-extrabold text-slate-700 border-b border-slate-300 bg-slate-100 uppercase">
                                     <th className="px-4 py-4 w-12 text-center">
                                         <button
-                                            onClick={(e) => { e.stopPropagation(); toggleAllProducts(products) }}
+                                            onClick={(e) => { e.stopPropagation(); toggleAllProducts(paginatedProducts) }}
                                             className="text-slate-500 hover:text-slate-900 transition-colors"
                                         >
-                                            {products.every(p => selectedProducts.includes(p.id)) ? (
+                                            {paginatedProducts.length > 0 && paginatedProducts.every(p => selectedProducts.includes(p.id)) ? (
                                                 <CheckSquare size={20} className="text-slate-900" />
                                             ) : (
                                                 <Square size={20} />
@@ -891,7 +987,7 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100 bg-white">
-                                {products.map((p) => {
+                                {paginatedProducts.map((p) => {
                                     const margin = calcMargin(p.compareAtPrice, p.price)
                                     const isSaving = savingIds.has(p.id)
                                     const isSaved = savedIds.has(p.id)

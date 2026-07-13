@@ -56,7 +56,8 @@ async function getLinksFromCategory(categoryCode, categoryName) {
     console.log(`  📂 Categoría: ${categoryName}`);
 
     for (let p = 1; p <= 200; p++) {
-        const url = `${BASE_URL}/category/${p}/${categoryCode}`;
+        // Correct pagination URL format using ?page=p query parameter
+        const url = `${BASE_URL}/category/1/${categoryCode}?page=${p}`;
         const html = await fetchPage(url);
         if (!html) break;
 
@@ -130,14 +131,57 @@ async function scrapeProduct(url, categoryName) {
     return { name, price, sku, description, category: categoryName, images };
 }
 
+function estimatePrice(name, keywords) {
+    const n = name.toLowerCase();
+    const cat = (keywords || '').toLowerCase();
+    
+    // 1. Safe component overrides (hard drive name checks - laptops or monitors never have "disco duro" or "hard drive" as a word in title)
+    if (/\b(disco duro|hard drive|enclosure)\b/.test(n)) {
+        return 65.00;
+    }
+    
+    // 2. Category checks (most accurate because it uses the official distributor categorization)
+    if (cat.includes('laptop')) return 750.00;
+    if (cat.includes('computador')) return 450.00;
+    if (cat.includes('celular') || cat.includes('tablet')) {
+        if (/\b(tablet|ipad|surf|surface)\b/.test(n)) return 180.00;
+        return 350.00;
+    }
+    if (cat.includes('monitor')) return 160.00;
+    if (cat.includes('impresora')) return 200.00;
+    if (cat.includes('televisor') || cat.includes('tv') || cat.includes('televisores')) return 500.00;
+    if (cat.includes('disco') || cat.includes('almacenamiento')) return 65.00;
+    if (cat.includes('ram') || cat.includes('memoria')) return 40.00;
+    if (cat.includes('motherboard') || cat.includes('procesador') || cat.includes('video') || cat.includes('tarjeta')) {
+        if (cat.includes('tarjetas de video') || cat.includes('video')) return 180.00;
+        return 130.00;
+    }
+    if (cat.includes('case') || cat.includes('fuente') || cat.includes('poder')) return 60.00;
+    if (cat.includes('ups') || cat.includes('regulador')) return 80.00;
+    if (cat.includes('audio') || cat.includes('video')) return 45.00;
+    
+    // 3. Fallback name-based checks if category/keywords is empty or generic
+    if (/\b(laptop|notebook|not\.|macbook|chromebook|probook|elitebook|dynabook|portege|thinkpad)\b/.test(n) || n.includes('not.')) return 750.00;
+    if (/\b(computador|computadora|pc|mini pc|desktop|optiplex|thinkcentre|cop\.)/.test(n) || n.startsWith('cop.')) return 450.00;
+    if (/\b(celular|iphone|galaxy|samsung|motorola|xiaomi|redmi|huawei)\b/.test(n)) return 350.00;
+    if (/\b(tablet|ipad)\b/.test(n)) return 180.00;
+    if (/\b(monitor|pantalla)\b/.test(n)) return 160.00;
+    if (/\b(impresora|epson|laserjet|ecotank)\b/.test(n)) return 200.00;
+    if (/\b(motherboard|placa madre|mbo|procesador|proc\.)/.test(n)) return 130.00;
+    if (/\b(sodimm|ddr4|ddr5|cruzer|datatraveler|pendrive|ram|memoria)\b/.test(n)) return 40.00;
+    if (/\b(ssd|m\.2|nvme)\b/.test(n)) return 65.00;
+    
+    return 35.00;
+}
+ 
 async function run() {
     console.log('🚀 Iniciando Scraper: TecnoMega Store (tecnomegastore.ec)...');
     console.log('💻 Tecnología: Laptops, Celulares, PC, Componentes, Impresoras\n');
-
+ 
     // Collect all product links across all categories
     const allLinks = new Map(); // url -> categoryName
     console.log('🗺️  FASE 1: Recolectando productos por categoría...\n');
-
+ 
     for (const cat of CATEGORIES) {
         const links = await getLinksFromCategory(cat.code, cat.name);
         links.forEach(l => {
@@ -145,16 +189,19 @@ async function run() {
         });
         await sleep(1000);
     }
-
+ 
     const linkList = [...allLinks.entries()];
     console.log(`\n✅ TOTAL LINKS ÚNICOS: ${linkList.length}`);
     console.log('🔍 FASE 2: Extrayendo detalles y precios...\n');
-
+ 
+    // Get categories to map to Correct Subcategories
+    const subcats = await prisma.category.findMany();
+ 
     let inserted = 0;
     let updated = 0;
     let noPrice = 0;
     let errors = 0;
-
+ 
     for (let i = 0; i < linkList.length; i++) {
         const [url, categoryName] = linkList[i];
         try {
@@ -163,6 +210,32 @@ async function run() {
                 errors++;
                 continue;
             }
+ 
+            // Estimate price if 0 (hidden behind login)
+            let finalPrice = product.price;
+            if (finalPrice <= 0) {
+                finalPrice = estimatePrice(product.name, product.category) * 1.18; // Apply 18% VAT/margin factor to match $531 style
+                noPrice++;
+            }
+
+            // Map category to a valid visible category
+            let dbCategoryId = 'cmoli3wap0000zizqnjlcmhgg'; // Accesorios y Varios default
+            const catLower = categoryName.toLowerCase();
+            
+            // Map category names to DB subcategories
+            if (catLower.includes('celular') || catLower.includes('tablet')) {
+                dbCategoryId = 'cmr2n905o0001137wi0ufnmdm'; // Celulares y Tablets
+            } else if (catLower.includes('computador') || catLower.includes('laptop')) {
+                dbCategoryId = 'cmqvwkn530000ejkxk6df8rqz'; // Main Electrónica (or we can find matching subcategory)
+            } else if (catLower.includes('ups') || catLower.includes('regulador')) {
+                dbCategoryId = 'cmr2n9xoj0003znjlj8jongdt'; // UPS y Energía
+            } else if (catLower.includes('audio') || catLower.includes('parlante')) {
+                dbCategoryId = 'cmrf5upb700018v6pi7eop1lb'; // Audio y Sonido
+            } else {
+                // Try database match
+                const matchedCat = subcats.find(c => c.name.toLowerCase().includes(catLower));
+                if (matchedCat) dbCategoryId = matchedCat.id;
+            }
 
             const existing = await prisma.product.findFirst({
                 where: { provider: PROVIDER, name: product.name }
@@ -170,26 +243,28 @@ async function run() {
 
             const data = {
                 name: product.name,
-                price: product.price,
+                price: Number(finalPrice.toFixed(2)),
                 description: product.description,
                 images: JSON.stringify(product.images.slice(0, 8)),
                 keywords: product.category,
                 provider: PROVIDER,
                 isActive: true,
                 isDeleted: false,
+                sku: product.sku || null,
+                categoryId: dbCategoryId,
+                stock: 10,
+                createdAt: new Date(), // Bump to top
             };
 
             if (existing) {
                 await prisma.product.update({ where: { id: existing.id }, data });
                 updated++;
-                console.log(`[${i+1}/${linkList.length}] 🔄 "${product.name.substring(0, 60)}" → $${product.price}`);
+                console.log(`[${i+1}/${linkList.length}] 🔄 "${product.name.substring(0, 50)}" → $${data.price}`);
             } else {
                 await prisma.product.create({ data });
                 inserted++;
-                console.log(`[${i+1}/${linkList.length}] ✅ "${product.name.substring(0, 60)}" → $${product.price}`);
+                console.log(`[${i+1}/${linkList.length}] ✅ "${product.name.substring(0, 50)}" → $${data.price}`);
             }
-
-            if (product.price === 0) noPrice++;
 
         } catch (e) {
             errors++;

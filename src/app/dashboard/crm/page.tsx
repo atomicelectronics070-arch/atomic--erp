@@ -308,7 +308,7 @@ export default function AdvancedCRMPage() {
                         {/* Modal Condicionante de Promoción */}
                         {isPromoModalOpen && (
                             <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
-                                <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => {}} />
+                                <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setIsPromoModalOpen(false)} />
                                 <div className="bg-slate-900 border border-indigo-500/30 p-8 w-full max-w-md relative z-10 shadow-[0_0_50px_rgba(79,70,229,0.2)]">
                                     <h3 className="text-xl font-black uppercase italic tracking-tighter text-white mb-6">Registro de <span className="text-indigo-500">Promoción</span></h3>
                                     

@@ -338,8 +338,8 @@ export default function TiendasOnlineLanding() {
                     </div>
                     
                     <div className="flex gap-6">
-                        <a href="#" className="flex items-center gap-2 text-slate-500 hover:text-indigo-600 font-bold text-sm transition-colors"><Mail size={18} /> hola@atomic-industries.com</a>
-                        <a href="#" className="flex items-center gap-2 text-slate-500 hover:text-indigo-600 font-bold text-sm transition-colors"><Phone size={18} /> +1 (555) 123-4567</a>
+                        <a href="mailto:hola@atomic-industries.com" className="flex items-center gap-2 text-slate-500 hover:text-indigo-600 font-bold text-sm transition-colors"><Mail size={18} /> hola@atomic-industries.com</a>
+                        <a href="tel:+15551234567" className="flex items-center gap-2 text-slate-500 hover:text-indigo-600 font-bold text-sm transition-colors"><Phone size={18} /> +1 (555) 123-4567</a>
                     </div>
                 </div>
             </footer>

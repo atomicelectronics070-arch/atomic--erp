@@ -1,12 +1,14 @@
 "use client"
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useState, useEffect, Suspense } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { User, Mail, Lock, ShieldCheck, ArrowRight, Loader2, CreditCard, Users, Briefcase, Bell, Sparkles } from "lucide-react"
 
-export default function RegisterPage() {
+function RegisterForm() {
     const router = useRouter()
+    const searchParams = useSearchParams()
+    
     const [formData, setFormData] = useState({
         name: "",
         lastName: "",
@@ -19,7 +21,14 @@ export default function RegisterPage() {
     })
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState("")
-    const [success, setSuccess] = useState(false)
+    const [success, setSuccess] = useState<string | boolean>(false)
+
+    useEffect(() => {
+        const roleParam = searchParams.get("role")
+        if (roleParam) {
+            setFormData(prev => ({ ...prev, role: roleParam.toUpperCase() }))
+        }
+    }, [searchParams])
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value, type } = e.target;
@@ -46,10 +55,10 @@ export default function RegisterPage() {
             if (!res.ok) {
                 setError(data.error || "Error al procesar la solicitud.")
             } else {
-                setSuccess(true)
+                setSuccess(data.user?.status || "PENDING")
                 setTimeout(() => {
                     router.push("/login")
-                }, 5000)
+                }, data.user?.status === "APPROVED" ? 3000 : 5000)
             }
         } catch (err) {
             setError("Error de conexion con el servidor.")
@@ -59,12 +68,32 @@ export default function RegisterPage() {
     }
 
     if (success) {
+        if (success === "APPROVED") {
+            return (
+                <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC] text-[#0F172A] p-6 font-sans">
+                    <div className="max-w-md w-full bg-white border border-slate-200 p-12 text-center relative overflow-hidden shadow-xl">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 blur-[80px] rounded-full"></div>
+                        <div className="w-20 h-20 bg-emerald-50 border border-emerald-100 flex items-center justify-center mx-auto mb-8">
+                            <Sparkles size={40} className="text-emerald-600" />
+                        </div>
+                        <h2 className="text-3xl font-black uppercase tracking-tighter italic mb-4">¡CUENTA <span className="text-emerald-600">APROBADA!</span></h2>
+                        <p className="text-slate-500 text-xs font-bold uppercase tracking-widest leading-relaxed mb-8">
+                            Tu solicitud ha sido aprobada de forma automática. Ya puedes ingresar al sistema y empezar a ver nuestro catálogo con descuentos. Redirigiendo al login...
+                        </p>
+                        <Link href="/login" className="inline-flex items-center gap-2 text-emerald-600 font-black text-[10px] uppercase tracking-widest hover:underline">
+                            Ir al Login Ahora <ArrowRight size={14} />
+                        </Link>
+                    </div>
+                </div>
+            )
+        }
+
         return (
             <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC] text-[#0F172A] p-6 font-sans">
                 <div className="max-w-md w-full bg-white border border-slate-200 p-12 text-center relative overflow-hidden shadow-xl">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-[#1E3A8A]/5 blur-[80px] rounded-full"></div>
-                    <div className="w-20 h-20 bg-emerald-50 border border-emerald-100 flex items-center justify-center mx-auto mb-8">
-                        <ShieldCheck size={40} className="text-emerald-600" />
+                    <div className="w-20 h-20 bg-[#1E3A8A]/5 border border-[#1E3A8A]/10 flex items-center justify-center mx-auto mb-8">
+                        <ShieldCheck size={40} className="text-[#1E3A8A]" />
                     </div>
                     <h2 className="text-3xl font-black uppercase tracking-tighter italic mb-4">ESPERANDO <span className="text-[#1E3A8A]">AUTORIZACIÓN</span></h2>
                     <p className="text-slate-400 text-xs font-bold uppercase tracking-widest leading-relaxed mb-8">
@@ -233,5 +262,13 @@ export default function RegisterPage() {
                 </div>
             </div>
         </div>
+    )
+}
+
+export default function RegisterPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center"><Loader2 className="animate-spin text-[#1E3A8A]" size={32} /></div>}>
+            <RegisterForm />
+        </Suspense>
     )
 }

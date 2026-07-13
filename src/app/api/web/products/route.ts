@@ -16,11 +16,29 @@ export async function GET(req: Request) {
         const where: any = { isDeleted: false }
 
         if (search) {
-            where.OR = [
-                { name: { contains: search, mode: "insensitive" } },
-                { sku: { contains: search, mode: "insensitive" } },
-                { description: { contains: search, mode: "insensitive" } },
-            ]
+            // Split into words for multi-keyword search (each word must match at least one field)
+            const words = search.trim().split(/\s+/).filter(Boolean)
+            
+            if (words.length === 1) {
+                // Single word: broad search across all fields
+                where.OR = [
+                    { name: { contains: search, mode: "insensitive" } },
+                    { sku: { contains: search, mode: "insensitive" } },
+                    { description: { contains: search, mode: "insensitive" } },
+                    { keywords: { contains: search, mode: "insensitive" } },
+                    { provider: { contains: search, mode: "insensitive" } },
+                ]
+            } else {
+                // Multi-word: AND logic — each word must appear somewhere in name OR description
+                where.AND = words.map(word => ({
+                    OR: [
+                        { name: { contains: word, mode: "insensitive" } },
+                        { description: { contains: word, mode: "insensitive" } },
+                        { keywords: { contains: word, mode: "insensitive" } },
+                        { sku: { contains: word, mode: "insensitive" } },
+                    ]
+                }))
+            }
         }
         if (categoryId && categoryId !== "all") {
             const subcats = await prisma.category.findMany({ where: { parentId: categoryId }, select: { id: true } });

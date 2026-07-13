@@ -6,7 +6,7 @@ import Link from "next/link"
 import { 
   ShoppingBag, ChevronRight, Star, ArrowRight, Shield, Zap, Truck, 
   Search, ShoppingCart, User, Download, ExternalLink, Power, ArrowLeft, 
-  CheckCircle2, Info, Package, ImageOff
+  CheckCircle2, Info, Package, ImageOff, MessageCircle
 } from "lucide-react"
 import { useSession } from "next-auth/react"
 import { useCart } from "@/context/CartContext"
@@ -100,6 +100,13 @@ export default function ProductDetailPage() {
         });
         setAdded(true);
         setTimeout(() => setAdded(false), 2000);
+    }
+
+    const handleWhatsAppShare = () => {
+        if (!product) return;
+        const url = window.location.href;
+        const text = `¡Mira este producto increíble en ATOMIC ERP!\n\n*${product.name}*\n\nÉchale un vistazo aquí: ${url}`;
+        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
     }
 
     useEffect(() => {
@@ -228,9 +235,16 @@ export default function ProductDetailPage() {
                                 <p className="text-[9px] font-black uppercase tracking-[0.3em] text-[#1E3A8A] mb-6 flex items-center italic">
                                     <Info size={14} className="mr-2" /> Descripción Técnica
                                 </p>
-                                <p className="text-sm leading-relaxed font-medium">
-                                    {product.description || "Este equipo ATOMIC representa la vanguardia en tecnología Corporativo, diseñado para optimizar procesos y garantizar máxima durabilidad en entornos exigentes."}
-                                </p>
+                                {product.description && product.description.trim().startsWith('<') ? (
+                                    <div 
+                                        className="text-sm leading-relaxed font-medium prose prose-sm max-w-none prose-img:rounded-xl prose-img:mx-auto prose-img:shadow-md [&_img]:max-w-full [&_img]:h-auto [&_ul]:list-disc [&_ul]:pl-5 [&_li]:mb-1 [&_strong]:font-black [&_strong]:text-[#1E3A8A]"
+                                        dangerouslySetInnerHTML={{ __html: product.description }}
+                                    />
+                                ) : (
+                                    <p className="text-sm leading-relaxed font-medium">
+                                        {product.description || "Este equipo ATOMIC representa la vanguardia en tecnología Corporativo, diseñado para optimizar procesos y garantizar máxima durabilidad en entornos exigentes."}
+                                    </p>
+                                )}
                             </div>
 
                             <div className="space-y-4">
@@ -254,6 +268,13 @@ export default function ProductDetailPage() {
                                     </button>
                                 )}
                                 
+                                <button 
+                                    onClick={handleWhatsAppShare}
+                                    className="w-full py-6 text-[10px] font-black uppercase tracking-[0.4em] transition-all shadow-xl flex items-center justify-center space-x-4 group rounded-2xl bg-[#25D366] text-white hover:bg-[#128C7E] shadow-green-100/50"
+                                >
+                                    <MessageCircle size={18} /><span>Compartir a WhatsApp</span><ArrowRight size={16} className="translate-x-0 group-hover:translate-x-3 transition-transform" />
+                                </button>
+
                                 {product.specSheetUrl && (
                                     <a 
                                         href={product.specSheetUrl} 
