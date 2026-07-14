@@ -132,6 +132,38 @@ export default async function PanicBarsLandingPage() {
                 </div>
             </section>
 
+            {/* VIDEO DEMO SECTION */}
+            <section className="py-24 bg-black relative border-b border-gray-900 overflow-hidden">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#FF6347]/10 blur-[120px] rounded-full pointer-events-none"></div>
+                
+                <div className="max-w-5xl mx-auto px-6 relative z-10">
+                    <div className="text-center mb-12">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#FF6347]/20 text-[#FF6347] font-bold text-xs uppercase tracking-widest mb-6 border border-[#FF6347]/30">
+                            <Activity size={14} /> Demostración en Vivo
+                        </div>
+                        <h2 className="text-4xl md:text-5xl font-black text-white mb-6">El Sistema en Acción</h2>
+                        <p className="text-gray-400 max-w-2xl mx-auto font-medium">
+                            Mira cómo funciona nuestra barra antipánico instalada en un entorno real. Apertura fluida, diseño robusto y máxima seguridad.
+                        </p>
+                    </div>
+
+                    <div className="bg-gray-900 rounded-[2rem] p-2 md:p-4 border border-gray-800 shadow-[0_0_50px_rgba(255,99,71,0.15)] relative group">
+                        <div className="absolute -inset-1 bg-gradient-to-r from-[#FF6347] to-[#FF4500] rounded-[2.5rem] blur opacity-20 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
+                        <div className="relative rounded-2xl overflow-hidden bg-black aspect-video flex items-center justify-center">
+                            <video 
+                                src="/video/barreras-demo.mp4" 
+                                controls 
+                                autoPlay 
+                                muted 
+                                loop
+                                playsInline
+                                className="w-full h-full object-cover max-h-[600px]"
+                            />
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             {/* CATALOG SECTION */}
             <section id="catalogo" className="py-32 relative bg-white">
                 <div className="max-w-6xl mx-auto px-6">
