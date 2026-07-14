@@ -143,7 +143,7 @@ export default async function PanicBarsLandingPage() {
                     </div>
 
                     {/* SPECIAL HIGHLIGHT BANNER FOR 60CM PUSH BAR */}
-                    {products.filter(p => p.name.includes("60 CENTIMETROS")).map(product => {
+                    {products.filter(p => p.name.includes("PUSH 1 PUNTO 60 CENTIMETROS")).map(product => {
                         let images = [];
                         try { images = JSON.parse(product.images || "[]"); } catch (e) {}
                         let mainImage = images[0] || "/img/panic_bar_fallback.png";
@@ -191,7 +191,7 @@ export default async function PanicBarsLandingPage() {
                     })}
 
                     <div className="space-y-12">
-                        {products.filter(p => !p.name.includes("60 CENTIMETROS") && !p.name.toLowerCase().includes("manija")).map((product, idx) => {
+                        {products.filter(p => !p.name.includes("PUSH 1 PUNTO 60 CENTIMETROS") && !p.name.toLowerCase().includes("manija")).map((product, idx) => {
                             let images = []
                             try {
                                 images = JSON.parse(product.images || "[]")
