@@ -42,7 +42,6 @@ export default async function PanicBarsLandingPage() {
     // Filter out irrelevant items (manijas, and generic electronic push buttons)
     const relevantProducts = rawProducts.filter(p => {
         const n = p.name.toLowerCase()
-        if (n.includes("manija")) return false
         if (n.includes("conector") || n.includes("switch") || n.includes("botón") || n.includes("boton")) return false
         if (p.price < 20) return false // Panic bars are expensive, generic electronics are cheap
         return true
