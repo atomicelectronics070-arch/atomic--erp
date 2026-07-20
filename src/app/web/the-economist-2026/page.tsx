@@ -7,6 +7,8 @@ export const metadata = {
     description: "¿Por qué sus portadas predicen nuestra destrucción con una exactitud enfermiza? Descarga la revista The World Ahead 2026.",
 }
 
+export const revalidate = 0;
+
 export default function EconomistPage() {
     return (
         <div className="min-h-screen !bg-[#050505] !text-gray-300 font-sans selection:bg-red-900 selection:text-white">
