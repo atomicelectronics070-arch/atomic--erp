@@ -1,18 +1,42 @@
+import { Suspense } from "react"
 import { prisma } from "@/lib/prisma"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import PublicWebClient from "./PublicWebClient"
 import { getStoreSettings } from "@/lib/actions/shop"
 
-export const revalidate = 0 // Cache disabled to show new subcategories
+export const revalidate = 60 // Cache for 60s - much faster repeated loads
 
-export default async function PublicWebPage() {
-    const session = await getServerSession(authOptions)
-    const userRole = session?.user?.role
+// Lightweight skeleton shown immediately while products load
+function StoreSkeleton() {
+    return (
+        <div className="min-h-screen bg-white">
+            {/* Hero skeleton */}
+            <div className="h-[420px] bg-gradient-to-r from-slate-100 to-slate-200 animate-pulse" />
+            
+            {/* Product grid skeleton */}
+            <div className="max-w-7xl mx-auto px-6 py-16">
+                <div className="h-8 w-48 bg-slate-200 rounded-lg mb-10 animate-pulse" />
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    {Array.from({ length: 12 }).map((_, i) => (
+                        <div key={i} className="bg-slate-100 rounded-2xl overflow-hidden animate-pulse">
+                            <div className="aspect-square bg-slate-200" />
+                            <div className="p-4 space-y-2">
+                                <div className="h-4 bg-slate-200 rounded w-3/4" />
+                                <div className="h-4 bg-slate-200 rounded w-1/2" />
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    )
+}
 
-    // Fetch essential data in parallel on the server
-    // Three-query strategy: Priority (Spy) + Curated (Phones/Motors/etc) + Recent
-    const [categories, collections, priorityProducts, curatedProducts, recentProducts, settings] = await Promise.all([
+// Async component that loads products — streamed AFTER the skeleton appears
+async function StoreContent({ userRole }: { userRole?: string }) {
+    // Fetch metadata and settings first (lightweight)
+    const [categories, collections, settings] = await Promise.all([
         prisma.category.findMany({ 
             where: { isVisible: true }, 
             orderBy: { name: 'asc' } 
@@ -20,71 +44,40 @@ export default async function PublicWebPage() {
         prisma.collection.findMany({ 
             where: { isVisible: true } 
         }),
-        // Priority 1: ALL featured products + Multitecnología (spy cameras)
-        prisma.product.findMany({
-            where: { 
-                isDeleted: false, 
-                isActive: true,
-                OR: [
-                    { featured: true },
-                    { provider: { contains: 'multitecnologia', mode: 'insensitive' } },
-                    { name: { startsWith: 'CE-' } },
-                ]
-            },
-            orderBy: { createdAt: 'desc' },
-            select: { id: true, name: true, description: true, price: true, images: true, featured: true, provider: true, collectionId: true, createdAt: true, category: { select: { id: true, name: true, slug: true } } }
-        }),
-        // Priority 2: Curated items for storefront strips (Phones, Tablets, Motors, Security, etc.)
-        prisma.product.findMany({
-            where: {
-                isDeleted: false,
-                isActive: true,
-                OR: [
-                    { category: { name: { contains: 'celular', mode: 'insensitive' } } },
-                    { category: { name: { contains: 'tablet', mode: 'insensitive' } } },
-                    { category: { name: { contains: 'telefon', mode: 'insensitive' } } },
-                    { category: { name: { contains: 'barrera', mode: 'insensitive' } } },
-                    { category: { name: { contains: 'motor', mode: 'insensitive' } } },
-                    { category: { name: { contains: 'cerradura', mode: 'insensitive' } } },
-                    { category: { name: { contains: 'portero', mode: 'insensitive' } } },
-                    { name: { contains: 'iphone', mode: 'insensitive' } },
-                    { name: { contains: 'samsung galaxy', mode: 'insensitive' } },
-                    { name: { contains: 'xiaomi redmi', mode: 'insensitive' } },
-                    { name: { contains: 'ipad', mode: 'insensitive' } },
-                    { name: { contains: 'motor de garaje', mode: 'insensitive' } },
-                    { name: { contains: 'motor batiente', mode: 'insensitive' } },
-                    { name: { contains: 'barrera vehicular', mode: 'insensitive' } },
-                    { name: { contains: 'calefactor', mode: 'insensitive' } },
-                    { name: { contains: 'luminaria', mode: 'insensitive' } },
-                    { name: { contains: 'generador', mode: 'insensitive' } },
-                    { name: { contains: 'playstation', mode: 'insensitive' } },
-                    { name: { contains: 'laptop', mode: 'insensitive' } },
-                ]
-            },
-            take: 400, // Increased to ensure all categories like cerraduras get populated
-            orderBy: { createdAt: 'desc' },
-            select: { id: true, name: true, description: true, price: true, images: true, featured: true, provider: true, collectionId: true, createdAt: true, category: { select: { name: true, slug: true, id: true } } }
-        }),
-        // Priority 3: Most recent products to fill the catalog
-        prisma.product.findMany({
-            where: { isDeleted: false, isActive: true },
-            orderBy: { createdAt: 'desc' },
-            take: 200, // Increased to fill catalog
-            select: { id: true, name: true, description: true, price: true, images: true, featured: true, provider: true, collectionId: true, createdAt: true, category: { select: { id: true, name: true, slug: true } } }
-        }),
         getStoreSettings()
     ])
 
-    // Merge: priority products first, then curated, then fill with recent (deduplicated)
-    const priorityIds = new Set([
-        ...priorityProducts.map((p: any) => p.id),
-        ...curatedProducts.map((p: any) => p.id)
-    ])
-    const products = [
-        ...priorityProducts,
-        ...curatedProducts,
-        ...recentProducts.filter((p: any) => !priorityIds.has(p.id))
-    ]
+    // Fetch featured/priority products (limit reduced to essentials)
+    const priorityProducts = await prisma.product.findMany({
+        where: { 
+            isDeleted: false, 
+            isActive: true,
+            OR: [
+                { featured: true },
+                { provider: { contains: 'multitecnologia', mode: 'insensitive' } },
+                { name: { startsWith: 'CE-' } },
+            ]
+        },
+        take: 80,
+        orderBy: { createdAt: 'desc' },
+        select: { id: true, name: true, description: true, price: true, images: true, featured: true, provider: true, collectionId: true, createdAt: true, category: { select: { id: true, name: true, slug: true } } }
+    })
+
+    const priorityIds = new Set(priorityProducts.map((p: any) => p.id))
+
+    // Fetch remaining products but exclude already fetched ones
+    const recentProducts = await prisma.product.findMany({
+        where: { 
+            isDeleted: false, 
+            isActive: true,
+            id: { notIn: Array.from(priorityIds) as string[] }
+        },
+        orderBy: { createdAt: 'desc' },
+        take: 200,
+        select: { id: true, name: true, description: true, price: true, images: true, featured: true, provider: true, collectionId: true, createdAt: true, category: { select: { id: true, name: true, slug: true } } }
+    })
+
+    const products = [...priorityProducts, ...recentProducts]
 
     const metadata = { 
         categories: JSON.parse(JSON.stringify(categories)), 
@@ -99,5 +92,16 @@ export default async function PublicWebPage() {
             userRole={userRole} 
             storeSettings={settings}
         />
+    )
+}
+
+export default async function PublicWebPage() {
+    const session = await getServerSession(authOptions)
+    const userRole = session?.user?.role
+
+    return (
+        <Suspense fallback={<StoreSkeleton />}>
+            <StoreContent userRole={userRole} />
+        </Suspense>
     )
 }
