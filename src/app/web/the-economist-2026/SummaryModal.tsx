@@ -31,16 +31,16 @@ export function SummaryModal() {
                             </button>
                         </div>
                         
-                        <div className="p-6 md:p-8 overflow-y-auto text-gray-300 prose prose-invert max-w-none custom-scrollbar">
-                            <h2 className="text-2xl font-black text-white mt-0">Decodificando The World Ahead 2026</h2>
+                        <div className="p-6 md:p-8 overflow-y-auto !text-gray-300 prose prose-invert max-w-none custom-scrollbar">
+                            <h2 className="text-2xl font-black !text-white mt-0">Decodificando The World Ahead 2026</h2>
                             
-                            <p className="lead text-gray-400 font-medium">
+                            <p className="lead !text-gray-400 font-medium">
                                 El análisis predictivo de The Economist no es casualidad. Es el resultado de la agregación masiva de datos geopolíticos, económicos y sociales. A continuación, el resumen de las 4 advertencias principales para este año.
                             </p>
                             
                             <div className="space-y-6 mt-8">
                                 <div className="p-5 bg-red-950/20 border border-red-900/30 rounded-xl">
-                                    <h4 className="text-red-400 font-bold flex items-center gap-2 mt-0">
+                                    <h4 className="!text-red-400 font-bold flex items-center gap-2 mt-0">
                                         <ChevronRight size={16} /> 1. Sincronía del Desastre y Distracción
                                     </h4>
                                     <p className="text-sm mb-0">
@@ -49,7 +49,7 @@ export function SummaryModal() {
                                 </div>
                                 
                                 <div className="p-5 bg-red-950/20 border border-red-900/30 rounded-xl">
-                                    <h4 className="text-red-400 font-bold flex items-center gap-2 mt-0">
+                                    <h4 className="!text-red-400 font-bold flex items-center gap-2 mt-0">
                                         <ChevronRight size={16} /> 2. La IA como Eje de Poder y Guerra
                                     </h4>
                                     <p className="text-sm mb-0">
@@ -58,7 +58,7 @@ export function SummaryModal() {
                                 </div>
                                 
                                 <div className="p-5 bg-red-950/20 border border-red-900/30 rounded-xl">
-                                    <h4 className="text-red-400 font-bold flex items-center gap-2 mt-0">
+                                    <h4 className="!text-red-400 font-bold flex items-center gap-2 mt-0">
                                         <ChevronRight size={16} /> 3. Fracturas Territoriales Programadas
                                     </h4>
                                     <p className="text-sm mb-0">
@@ -68,7 +68,7 @@ export function SummaryModal() {
                             </div>
                             
                             <div className="mt-8 p-6 bg-[#0a0a0a] rounded-xl border border-gray-800 text-center">
-                                <p className="text-sm text-gray-500 italic mb-0">
+                                <p className="text-sm !text-gray-500 italic mb-0">
                                     "El futuro ya está escrito en sus oficinas antes de que nosotros lo vivamos." Para el análisis completo de datos duros, se recomienda leer la versión íntegra en inglés.
                                 </p>
                             </div>
