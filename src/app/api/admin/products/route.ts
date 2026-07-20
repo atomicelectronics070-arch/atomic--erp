@@ -38,8 +38,10 @@ export async function GET(req: Request) {
 
         // Base where for global stats (always non-deleted, no filters)
         const globalWhere = { isDeleted: false }
+        // Only run expensive stats queries when NOT searching (they're only needed for the dashboard overview)
+        const isSearching = !!search || !!provider
 
-        const [products, total, totalInStock, providerStatsRaw] = await Promise.all([
+        const [products, total, statsResults] = await Promise.all([
             prisma.product.findMany({
                 where,
                 select: {
@@ -67,22 +69,29 @@ export async function GET(req: Request) {
                 skip,
             }),
             prisma.product.count({ where }),
-            // Global: count products with stock > 0
-            prisma.product.count({ where: { ...globalWhere, stock: { gt: 0 } } }),
-            // Global: group by provider
-            prisma.product.groupBy({
-                by: ['provider'],
-                where: globalWhere,
-                _count: { id: true },
-                orderBy: { _count: { id: 'desc' } }
-            })
+            // Skip expensive aggregation queries during search - only run on initial load
+            isSearching ? Promise.resolve(null) : Promise.all([
+                prisma.product.count({ where: { ...globalWhere, stock: { gt: 0 } } }),
+                prisma.product.groupBy({
+                    by: ['provider'],
+                    where: globalWhere,
+                    _count: { id: true },
+                    orderBy: { _count: { id: 'desc' } }
+                })
+            ])
         ])
 
-        const providerStats = providerStatsRaw
-            .filter((r: any) => r.provider && r.provider.trim() !== '')
-            .map((r: any) => ({ name: r.provider, count: r._count.id }))
+        let totalInStock: number | undefined = undefined
+        let providerStats: any[] = []
+        if (statsResults) {
+            const [stockCount, providerStatsRaw] = statsResults as [number, any[]]
+            totalInStock = stockCount
+            providerStats = providerStatsRaw
+                .filter((r: any) => r.provider && r.provider.trim() !== '')
+                .map((r: any) => ({ name: r.provider, count: r._count.id }))
+        }
 
-        return NextResponse.json({ products, total, page, limit, totalInStock, providerStats })
+        return NextResponse.json({ products, total, page, limit, ...(totalInStock !== undefined && { totalInStock }), ...(providerStats.length > 0 && { providerStats }) })
     } catch (error) {
         console.error("Admin products API error:", error)
         return NextResponse.json(

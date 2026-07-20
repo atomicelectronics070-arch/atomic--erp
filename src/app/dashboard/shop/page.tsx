@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
@@ -48,6 +48,7 @@ export default function ShopConfigPage() {
     const [currentPage, setCurrentPage] = useState(1)
     const [pageSize, setPageSize] = useState(50)
     const [dashboardSearch, setDashboardSearch] = useState("")
+    const [localSearch, setLocalSearch] = useState("") // controlled input - does NOT trigger fetch on every keystroke
     const [metadata, setMetadata] = useState<{ categories: any[], collections: any[], providersList: string[] }>({ categories: [], collections: [], providersList: [] })
     const [editingProduct, setEditingProduct] = useState<any>(null)
     const [editingTaxonomy, setEditingTaxonomy] = useState<{ type: 'category' | 'collection', data: any } | null>(null)
@@ -122,6 +123,15 @@ export default function ShopConfigPage() {
         }
         refreshData()
     }, [currentPage, pageSize, dashboardSearch, isTrashView, selectedProvider, session, status, router, activeTab])
+
+    // Debounce the search: only update dashboardSearch (which fires the fetch) 600ms after the user stops typing
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDashboardSearch(localSearch)
+            setCurrentPage(1) // reset pagination on new search
+        }, 600)
+        return () => clearTimeout(timer)
+    }, [localSearch])
 
     if (status === "loading" || !["ADMIN", "MANAGEMENT", "SALESPERSON", "AFILIADO", "COORDINATOR", "COORD_ASSISTANT"].includes(session?.user?.role as string)) {
         return <div className="p-10 text-center text-white text-[10px] font-black uppercase tracking-[0.5em] mt-20 italic">AUTENTICANDO CREDENCIALES...</div>
@@ -324,6 +334,7 @@ export default function ShopConfigPage() {
                         settings={storeSettings}
                         onUpdateSettings={setStoreSettings}
                         onFilterProvider={(provider) => {
+                            setLocalSearch(provider)
                             setDashboardSearch(provider)
                             setActiveTab('products')
                         }}
@@ -480,10 +491,18 @@ export default function ShopConfigPage() {
                                             <input 
                                                 type="text"
                                                 placeholder="Buscar por SKU, nombre o proveedor..."
-                                                value={dashboardSearch}
-                                                onChange={(e) => { setDashboardSearch(e.target.value); setCurrentPage(1); }}
-                                                className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-12 pr-5 py-3.5 text-xs font-semibold text-slate-800 outline-none focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/5 transition-all placeholder:text-slate-400"
+                                                value={localSearch}
+                                                onChange={(e) => setLocalSearch(e.target.value)}
+                                                className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-12 pr-10 py-3.5 text-xs font-semibold text-slate-800 outline-none focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/5 transition-all placeholder:text-slate-400"
                                             />
+                                            {localSearch !== dashboardSearch && (
+                                                <div className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                                            )}
+                                            {localSearch && (
+                                                <button onClick={() => setLocalSearch('')} className="absolute right-8 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 transition-colors">
+                                                    <X size={14} />
+                                                </button>
+                                            )}
                                         </div>
                                         <div className="flex-shrink-0 w-full md:w-auto">
                                             <select 
