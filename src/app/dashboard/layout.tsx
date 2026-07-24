@@ -68,15 +68,16 @@ export default function DashboardLayout({
 
     if (status === "loading" || !session) {
         return (
-            <div className="h-screen w-screen flex flex-col items-center justify-center bg-[white] gap-8 relative overflow-hidden">
-                <div className="relative">
-                    <div className="w-32 h-32 border border-[black]/20 animate-[spin_3s_linear_infinite]"></div>
+            <div className="h-screen w-screen flex flex-col items-center justify-center bg-slate-950 gap-8 relative overflow-hidden">
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-slate-950 z-0"></div>
+                <div className="relative z-10">
+                    <div className="w-32 h-32 border border-cyan-500/30 rounded-full animate-[spin_3s_linear_infinite] shadow-[0_0_15px_rgba(6,182,212,0.3)]"></div>
                     <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-16 h-16 border-2 border-[black] animate-[spin_1.5s_linear_infinite_reverse]"></div>
+                        <div className="w-16 h-16 border-2 border-indigo-500 rounded-full animate-[spin_1.5s_linear_infinite_reverse] shadow-[0_0_20px_rgba(99,102,241,0.5)]"></div>
                     </div>
                 </div>
-                <div className="flex flex-col items-center gap-2">
-                    <div className="font-black text-[black] uppercase tracking-[1em] animate-pulse text-[10px] italic">Sincronización Operativa</div>
+                <div className="flex flex-col items-center gap-2 z-10">
+                    <div className="font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-500 uppercase tracking-[0.5em] animate-pulse text-[10px] italic drop-shadow-[0_0_10px_rgba(6,182,212,0.5)]">Sincronización Operativa</div>
                 </div>
             </div>
         )
@@ -89,7 +90,9 @@ export default function DashboardLayout({
     }
 
     return (
-        <div className="flex h-screen bg-[white] text-[black] overflow-x-hidden font-sans relative selection:bg-[black]/10 selection:text-[black]">
+        <div className="flex h-screen bg-slate-950 text-slate-200 overflow-x-hidden font-sans relative selection:bg-cyan-500/30 selection:text-white">
+            
+            <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-900/20 via-slate-950 to-slate-950 pointer-events-none z-0"></div>
             
             {/* Sidebar Overlay for Mobile */}
             <AnimatePresence>
@@ -106,17 +109,17 @@ export default function DashboardLayout({
 
             {/* Sidebar - Executive White/Navy */}
             <aside className={`
-                fixed inset-y-0 left-0 w-64 flex flex-col bg-white border-r border-slate-200 z-40
-                transition-transform duration-500 ease-out
+                fixed inset-y-0 left-0 w-64 flex flex-col bg-slate-900/80 backdrop-blur-xl border-r border-slate-800 z-40
+                transition-transform duration-500 ease-out shadow-[4px_0_24px_rgba(0,0,0,0.5)]
                 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0
             `}>
-                <div className="h-24 flex flex-col items-center justify-center px-6 border-b border-slate-100 relative group">
+                <div className="h-24 flex flex-col items-center justify-center px-6 border-b border-slate-800/50 relative group">
                     <Link href="/web" target="_blank" className="flex flex-col items-center relative z-10 transition-transform duration-700 group-hover:scale-105 cursor-pointer">
                         <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 bg-[black]"></div>
-                            <span className="text-base font-black text-[black] uppercase tracking-[0.3em] italic">ATOMIC</span>
+                            <div className="w-2 h-2 bg-cyan-400 rounded-full shadow-[0_0_8px_rgba(34,211,238,0.8)]"></div>
+                            <span className="text-base font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-400 uppercase tracking-[0.3em] italic drop-shadow-[0_0_10px_rgba(56,189,248,0.3)]">ATOMIC</span>
                         </div>
-                        <span className="text-[7px] font-black text-slate-400 uppercase tracking-[0.5em] italic mt-1">SOLUTIONS</span>
+                        <span className="text-[7px] font-black text-indigo-400/70 uppercase tracking-[0.5em] italic mt-1">SOLUTIONS</span>
                     </Link>
                 </div>
 
@@ -211,9 +214,9 @@ export default function DashboardLayout({
                     </div>
                 </nav>
 
-                <div className="p-6 shrink-0 border-t border-slate-100 bg-slate-50/30">
+                <div className="p-6 shrink-0 border-t border-slate-800/50 bg-slate-950/50">
                     <div className="flex items-center space-x-4 mb-6 px-2">
-                        <div className="w-10 h-10 border border-slate-200 flex items-center justify-center font-black text-sm text-[black] italic overflow-hidden bg-white">
+                        <div className="w-10 h-10 rounded-full border border-slate-700 flex items-center justify-center font-black text-sm text-slate-300 italic overflow-hidden bg-slate-800 shadow-[0_0_15px_rgba(0,0,0,0.5)]">
                             {(session?.user as any)?.profilePicture ? (
                                 <img src={(session?.user as any).profilePicture} alt="U" className="w-full h-full object-cover" />
                             ) : (
@@ -221,14 +224,14 @@ export default function DashboardLayout({
                             )}
                         </div>
                         <div className="flex-1 overflow-hidden">
-                            <p className="text-[10px] font-black text-[black] truncate uppercase italic">{session.user?.name}</p>
-                            <p className="text-[8px] font-black text-[black] uppercase tracking-widest truncate italic">
+                            <p className="text-[10px] font-black text-slate-200 truncate uppercase italic">{session.user?.name}</p>
+                            <p className="text-[8px] font-black text-indigo-400 uppercase tracking-widest truncate italic drop-shadow-[0_0_5px_rgba(99,102,241,0.5)]">
                                 {role}
                             </p>
                         </div>
                     </div>
-                    <Link href="/api/auth/signout" className="flex items-center space-x-3 px-4 py-3 text-[9px] font-black text-slate-400 hover:text-red-500 rounded-none transition-all hover:bg-red-50/5 group italic border border-transparent">
-                        <LogOut size={14} />
+                    <Link href="/api/auth/signout" className="flex items-center justify-center space-x-3 px-4 py-3 text-[9px] font-black text-slate-400 hover:text-red-400 hover:bg-red-950/30 rounded-xl transition-all group italic border border-slate-800 hover:border-red-500/50 hover:shadow-[0_0_15px_rgba(239,68,68,0.2)]">
+                        <LogOut size={14} className="group-hover:scale-110 transition-transform" />
                         <span className="uppercase tracking-widest">Cerrar Sesión</span>
                     </Link>
                 </div>
@@ -237,24 +240,25 @@ export default function DashboardLayout({
             {/* Main Content */}
             <main className={`flex-1 flex flex-col h-full overflow-y-auto overflow-x-hidden relative z-10 transition-all duration-500 lg:ml-64`}>
                 {/* Header */}
-                <header className="h-16 lg:h-20 bg-white border-b border-slate-200 flex items-center justify-between px-6 lg:px-10 shrink-0 z-50 shadow-sm">
+                <header className="h-16 lg:h-20 bg-slate-900/80 backdrop-blur-md border-b border-slate-800 flex items-center justify-between px-6 lg:px-10 shrink-0 z-50 shadow-[0_4px_30px_rgba(0,0,0,0.5)] relative">
+                    <div className="absolute inset-x-0 bottom-0 h-[1px] bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent"></div>
                     <div className="flex items-center space-x-6">
                         <button
                             onClick={() => setSidebarOpen(!sidebarOpen)}
-                            className="p-3 bg-slate-50 text-slate-400 hover:text-[black] transition-all lg:hidden"
+                            className="p-3 bg-slate-800/50 rounded-xl text-slate-400 hover:text-cyan-400 hover:bg-slate-800 transition-all lg:hidden"
                         >
                             <Menu size={20} />
                         </button>
                         <div className="hidden sm:flex flex-col">
                             <div className="flex items-center gap-2">
-                                <div className="w-1.5 h-1.5 bg-[black]"></div>
-                                <span className="text-[10px] font-black text-[black] uppercase tracking-[0.3em] italic">ATOMIC INDUSTRIAS</span>
+                                <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full shadow-[0_0_8px_rgba(99,102,241,0.8)] animate-pulse"></div>
+                                <span className="text-[10px] font-black text-slate-200 uppercase tracking-[0.3em] italic drop-shadow-[0_0_5px_rgba(255,255,255,0.2)]">ATOMIC INDUSTRIAS</span>
                             </div>
                         </div>
                         <Link 
                             href="/web" 
                             target="_blank"
-                            className="hidden md:flex items-center space-x-2 px-4 py-2 border border-slate-200 hover:border-[black] text-slate-500 hover:text-[black] transition-all"
+                            className="hidden md:flex items-center space-x-2 px-4 py-2 border border-slate-700 rounded-lg hover:border-cyan-500/50 text-slate-400 hover:text-cyan-400 hover:bg-slate-800/50 transition-all hover:shadow-[0_0_15px_rgba(6,182,212,0.2)]"
                         >
                             <ExternalLink size={12} />
                             <span className="text-[8px] font-black uppercase tracking-widest italic">Visitar Web</span>
@@ -262,24 +266,24 @@ export default function DashboardLayout({
                     </div>
                     
                     <div className="flex items-center space-x-6">
-                        <div className="flex items-center gap-4 pr-6 border-r border-slate-100">
+                        <div className="flex items-center gap-4 pr-6 border-r border-slate-800">
                             <NotificationBell />
                         </div>
                         
-                        <Link href="/dashboard/profile" className="flex items-center gap-3 p-1 bg-slate-50 border border-slate-200 hover:border-[black] transition-all group pr-4">
-                            <div className="w-8 h-8 bg-white flex items-center justify-center text-[black] overflow-hidden border-r border-slate-100">
+                        <Link href="/dashboard/profile" className="flex items-center gap-3 p-1.5 bg-slate-900/50 rounded-full border border-slate-700 hover:border-indigo-500/50 transition-all group pr-4 hover:shadow-[0_0_15px_rgba(99,102,241,0.2)]">
+                            <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-slate-300 overflow-hidden border border-slate-700">
                                 {(session?.user as any)?.profilePicture ? (
                                     <img src={(session?.user as any).profilePicture} alt="P" className="w-full h-full object-cover" />
                                 ) : (
                                     <User size={14} />
                                 )}
                             </div>
-                            <Settings size={14} className="text-slate-400 group-hover:rotate-45 transition-transform" />
+                            <Settings size={14} className="text-slate-400 group-hover:text-indigo-400 group-hover:rotate-45 transition-all" />
                         </Link>
 
-                        <div className="hidden lg:flex flex-col items-end border-l border-slate-100 pl-6">
-                             <span className="text-[9px] font-black text-emerald-600 uppercase tracking-tighter italic leading-none">SISTEMA ACTIVO</span>
-                             <span className="text-[7px] text-slate-300 font-black uppercase tracking-widest">v7.0.0</span>
+                        <div className="hidden lg:flex flex-col items-end border-l border-slate-800 pl-6">
+                             <span className="text-[9px] font-black text-cyan-400 uppercase tracking-tighter italic leading-none drop-shadow-[0_0_5px_rgba(34,211,238,0.5)]">SISTEMA ACTIVO</span>
+                             <span className="text-[7px] text-slate-500 font-black uppercase tracking-widest mt-1">v7.0.0 Neon</span>
                         </div>
                     </div>
                 </header>
@@ -300,17 +304,17 @@ function NavLink({ href, icon, label, isActive, isSubItem }: { href: string; ico
         <Link
             href={href}
             className={`
-                flex items-center space-x-4 px-5 py-3 rounded-none transition-all duration-300 group relative
+                flex items-center space-x-4 px-5 py-3 rounded-xl transition-all duration-300 group relative mx-2 mb-1
                 ${isActive 
-                    ? 'bg-[black]/5 text-[black] border-r-2 border-[black]' 
-                    : 'text-slate-400 hover:text-[black] hover:bg-slate-50'}
-                ${isSubItem ? 'ml-4 border-l border-slate-100 pl-6' : ''}
+                    ? 'bg-gradient-to-r from-cyan-500/20 to-transparent text-cyan-300 border-l-2 border-cyan-400 shadow-[inset_0_0_20px_rgba(6,182,212,0.1)]' 
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 hover:shadow-[inset_0_0_15px_rgba(0,0,0,0.5)]'}
+                ${isSubItem ? 'ml-6 text-[9px] border-l border-slate-800 pl-4 py-2' : ''}
             `}
         >
-            <span className={`transition-all duration-300 ${isActive ? 'text-[black] scale-110' : 'group-hover:text-[black] group-hover:scale-110'}`}>
+            <span className={`transition-all duration-300 ${isActive ? 'text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.8)] scale-110' : 'group-hover:text-indigo-400 group-hover:scale-110'}`}>
                 {icon}
             </span>
-            <span className={`text-[10px] font-black uppercase tracking-[0.2em] italic transition-all duration-300 ${isActive ? 'translate-x-1' : 'group-hover:translate-x-1'}`}>
+            <span className={`text-[10px] font-black uppercase tracking-[0.2em] italic transition-all duration-300 ${isActive ? 'translate-x-1 text-cyan-100' : 'group-hover:translate-x-1'}`}>
                 {label}
             </span>
         </Link>
@@ -322,15 +326,15 @@ function CollapsibleSection({ label, children, isOpen, onToggle }: { label: stri
         <div className="space-y-1">
             <button
                 onClick={onToggle}
-                className="w-full flex items-center justify-between px-5 py-3 group cursor-pointer transition-all duration-300 hover:bg-slate-50"
+                className="w-full flex items-center justify-between px-5 py-3 group cursor-pointer transition-all duration-300 hover:bg-slate-800/40 rounded-lg mx-2"
             >
                 <div className="flex items-center gap-3">
-                    <div className={`w-1 h-3 bg-slate-200 transition-all duration-500 ${isOpen ? 'bg-[black] h-4' : 'group-hover:bg-slate-400'}`}></div>
-                    <span className={`text-[9px] font-black text-slate-400 uppercase tracking-[0.4em] italic transition-all duration-300 group-hover:text-[black] ${isOpen ? 'text-[black]' : ''}`}>
+                    <div className={`w-1 h-3 rounded-full transition-all duration-500 ${isOpen ? 'bg-cyan-400 h-4 shadow-[0_0_8px_rgba(34,211,238,0.8)]' : 'bg-slate-700 group-hover:bg-indigo-400'}`}></div>
+                    <span className={`text-[9px] font-black uppercase tracking-[0.4em] italic transition-all duration-300 group-hover:text-indigo-300 ${isOpen ? 'text-cyan-300' : 'text-slate-500'}`}>
                         {label}
                     </span>
                 </div>
-                <div className={`transition-transform duration-500 ${isOpen ? 'rotate-180 text-[black]' : 'text-slate-300 group-hover:text-slate-500'}`}>
+                <div className={`transition-transform duration-500 ${isOpen ? 'rotate-180 text-cyan-400' : 'text-slate-600 group-hover:text-indigo-400'}`}>
                     <ChevronDown size={12} />
                 </div>
             </button>

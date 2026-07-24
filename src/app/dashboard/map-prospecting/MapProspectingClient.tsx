@@ -91,15 +91,48 @@ export default function MapProspectingClient() {
         const east = bounds.getEast()
         
         // Clean keyword to prevent regex errors
-        const safeKeyword = keyword.replace(/[.*+?^$\\"{}()|\\[\\]\\\\]/g, '\\$&');
+        const safeKeyword = keyword.replace(/[.*+?^$\\"{}()|\\[\\]\\\\]/g, '\\\\$&');
+        const kwLower = keyword.toLowerCase();
+
+        // Smart Category Mapping for OSM
+        let smartTags = "";
+        if (kwLower.includes("conjunto") || kwLower.includes("residencial") || kwLower.includes("edificio")) {
+            smartTags += `
+                nwr["landuse"="residential"](${south},${west},${north},${east});
+                nwr["building"="apartments"](${south},${west},${north},${east});
+                nwr["building"="residential"](${south},${west},${north},${east});
+            `;
+        }
+        if (kwLower.includes("dental") || kwLower.includes("odontolog") || kwLower.includes("clinica") || kwLower.includes("salud")) {
+            smartTags += `
+                nwr["healthcare"](${south},${west},${north},${east});
+                nwr["amenity"="dentist"](${south},${west},${north},${east});
+                nwr["amenity"="clinic"](${south},${west},${north},${east});
+                nwr["amenity"="hospital"](${south},${west},${north},${east});
+            `;
+        }
+        if (kwLower.includes("empresa") || kwLower.includes("oficina") || kwLower.includes("negocio")) {
+            smartTags += `
+                nwr["office"](${south},${west},${north},${east});
+                nwr["commercial"](${south},${west},${north},${east});
+            `;
+        }
+        if (kwLower.includes("colegio") || kwLower.includes("escuela") || kwLower.includes("educacion")) {
+            smartTags += `
+                nwr["amenity"="school"](${south},${west},${north},${east});
+                nwr["amenity"="college"](${south},${west},${north},${east});
+                nwr["amenity"="university"](${south},${west},${north},${east});
+            `;
+        }
 
         // Overpass API Query
         const query = `
             [out:json][timeout:25];
             (
-              node["name"~"${safeKeyword}",i](${south},${west},${north},${east});
-              way["name"~"${safeKeyword}",i](${south},${west},${north},${east});
-              relation["name"~"${safeKeyword}",i](${south},${west},${north},${east});
+              nwr["name"~"${safeKeyword}",i](${south},${west},${north},${east});
+              nwr["operator"~"${safeKeyword}",i](${south},${west},${north},${east});
+              nwr["brand"~"${safeKeyword}",i](${south},${west},${north},${east});
+              ${smartTags}
             );
             out center;
         `
@@ -171,32 +204,33 @@ export default function MapProspectingClient() {
     const newPlaces = places.filter(p => !isSaved(p.lat, p.lng))
 
     return (
-        <div className="relative w-full h-full flex flex-col md:flex-row">
+        <div className="relative w-full h-full flex flex-col md:flex-row rounded-2xl overflow-hidden border border-slate-800 shadow-[0_0_30px_rgba(0,0,0,0.5)]">
             {/* Panel Izquierdo / Superior */}
-            <div className="w-full md:w-80 bg-white shadow-xl z-[1000] flex flex-col">
-                <div className="p-6 bg-black text-white">
-                    <h2 className="text-lg font-black uppercase tracking-widest flex items-center gap-2">
-                        <MapPin size={20} /> Radar de Prospectos
+            <div className="w-full md:w-80 bg-slate-900/90 backdrop-blur-xl border-r border-slate-800 z-[1000] flex flex-col">
+                <div className="p-6 bg-slate-950 text-slate-200 border-b border-slate-800 relative">
+                    <div className="absolute inset-x-0 bottom-0 h-[1px] bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent"></div>
+                    <h2 className="text-lg font-black uppercase tracking-widest flex items-center gap-2 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.5)]">
+                        <MapPin size={20} className="text-cyan-400" /> Radar de Prospectos
                     </h2>
-                    <p className="text-xs text-white/60 mt-2 font-medium">Encuentra negocios o conjuntos cerca y guárdalos en el CRM al instante.</p>
+                    <p className="text-[10px] text-slate-400 mt-2 font-black uppercase tracking-widest italic">Encuentra negocios o conjuntos cerca y guárdalos en el CRM al instante.</p>
                 </div>
                 
                 <div className="p-6 flex-1 flex flex-col gap-6">
                     <div>
-                        <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">¿Qué estás buscando?</label>
+                        <label className="text-[9px] font-black text-cyan-400 uppercase tracking-widest mb-2 block drop-shadow-[0_0_5px_rgba(34,211,238,0.3)]">¿Qué estás buscando?</label>
                         <input 
                             type="text"
                             value={keyword}
                             onChange={e => setKeyword(e.target.value)}
                             placeholder="Ej. Conjunto, Empresa, Dental..."
-                            className="w-full p-3 bg-gray-100 rounded-xl outline-none focus:ring-2 focus:ring-black border-none text-sm font-medium"
+                            className="w-full p-3 bg-slate-950/50 rounded-xl outline-none focus:ring-2 focus:ring-cyan-500 border border-slate-800 text-sm font-medium text-slate-200 shadow-[inset_0_0_10px_rgba(0,0,0,0.5)] placeholder:text-slate-600"
                         />
                     </div>
                     
                     <button 
                         onClick={searchArea}
                         disabled={loading}
-                        className="w-full py-4 bg-blue-600 text-white rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-blue-600/30 disabled:opacity-50"
+                        className="w-full py-4 bg-gradient-to-r from-cyan-500 to-indigo-600 text-white rounded-xl font-black uppercase tracking-widest text-xs hover:from-cyan-400 hover:to-indigo-500 transition-all flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:shadow-[0_0_25px_rgba(34,211,238,0.5)] hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
                     >
                         {loading ? (
                             <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
@@ -204,16 +238,16 @@ export default function MapProspectingClient() {
                         {loading ? "Rastreando..." : "Buscar en esta Área"}
                     </button>
 
-                    <div className="mt-8 border-t border-gray-100 pt-6">
-                        <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-4">Métricas de la Sesión</h3>
+                    <div className="mt-8 border-t border-slate-800 pt-6 relative">
+                        <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4">Métricas de la Sesión</h3>
                         <div className="grid grid-cols-2 gap-4">
-                            <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100">
-                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Encontrados</span>
-                                <span className="text-2xl font-black text-black">{newPlaces.length}</span>
+                            <div className="bg-slate-950/50 p-4 rounded-2xl border border-slate-800 shadow-[inset_0_0_10px_rgba(0,0,0,0.5)]">
+                                <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest block mb-1">Encontrados</span>
+                                <span className="text-2xl font-black text-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.5)]">{newPlaces.length}</span>
                             </div>
-                            <div className="bg-green-50 p-4 rounded-2xl border border-green-100">
-                                <span className="text-[10px] font-bold text-green-600 uppercase tracking-wider block mb-1">Guardados</span>
-                                <span className="text-2xl font-black text-green-700">{savedLeads.length}</span>
+                            <div className="bg-indigo-950/20 p-4 rounded-2xl border border-indigo-900/50 shadow-[inset_0_0_10px_rgba(0,0,0,0.5)]">
+                                <span className="text-[9px] font-black text-indigo-400 uppercase tracking-widest block mb-1 drop-shadow-[0_0_5px_rgba(99,102,241,0.5)]">Guardados</span>
+                                <span className="text-2xl font-black text-indigo-300">{savedLeads.length}</span>
                             </div>
                         </div>
                     </div>
@@ -221,7 +255,7 @@ export default function MapProspectingClient() {
             </div>
 
             {/* Mapa */}
-            <div className="flex-1 relative h-[50vh] md:h-full z-0">
+            <div className="flex-1 relative h-[50vh] md:h-full z-0 bg-slate-950">
                 <MapContainer 
                     center={mapCenter} 
                     zoom={15} 
@@ -230,7 +264,7 @@ export default function MapProspectingClient() {
                 >
                     <TileLayer
                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                        url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+                        url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
                     />
                     <MapEvents setBounds={setBounds} setDraftPin={setDraftPin} />
                             
@@ -239,7 +273,7 @@ export default function MapProspectingClient() {
                                 <Marker position={draftPin} icon={newProspectIcon}>
                                     <Popup className="prospect-popup">
                                         <div className="p-1 min-w-[200px]">
-                                            <p className="text-[10px] font-black text-indigo-600 uppercase tracking-widest mb-2 border-b border-indigo-100 pb-1">
+                                            <p className="text-[10px] font-black text-cyan-400 uppercase tracking-widest mb-2 border-b border-cyan-900 pb-1">
                                                 NUEVO PUNTO MANUAL
                                             </p>
                                             <input 
@@ -247,9 +281,9 @@ export default function MapProspectingClient() {
                                                 value={draftName}
                                                 onChange={e => setDraftName(e.target.value)}
                                                 placeholder="Ej: Conjunto Las Palmas"
-                                                className="w-full text-xs font-bold text-[#0F172A] border border-slate-200 rounded p-1 mb-2 outline-none focus:border-indigo-500"
+                                                className="w-full text-xs font-bold text-white bg-slate-800 border border-slate-700 rounded p-1 mb-2 outline-none focus:border-cyan-500"
                                             />
-                                            <p className="text-[9px] text-slate-500 mb-3 uppercase flex items-center gap-1">
+                                            <p className="text-[9px] text-slate-400 mb-3 uppercase flex items-center gap-1">
                                                 <MapPin size={10} /> Ubicación Seleccionada
                                             </p>
                                             <button 
@@ -265,7 +299,7 @@ export default function MapProspectingClient() {
                                                     setDraftPin(null);
                                                     setDraftName("");
                                                 }}
-                                                className="w-full bg-[#0F172A] text-white py-2 rounded text-[10px] font-black tracking-widest hover:bg-[#1E293B] transition-colors flex items-center justify-center gap-2"
+                                                className="w-full bg-slate-800 text-cyan-400 py-2 rounded text-[10px] font-black tracking-widest hover:bg-slate-700 transition-colors flex items-center justify-center gap-2 border border-slate-700 hover:border-cyan-500"
                                             >
                                                 <Save size={12} /> GUARDAR LEAD
                                             </button>
@@ -283,11 +317,11 @@ export default function MapProspectingClient() {
                         >
                             <Popup className="prospect-popup">
                                 <div className="p-1">
-                                    <h4 className="font-bold text-sm mb-1">{place.name}</h4>
-                                    <p className="text-xs text-gray-500 mb-3">{place.address}</p>
+                                    <h4 className="font-bold text-sm mb-1 text-slate-200">{place.name}</h4>
+                                    <p className="text-[10px] text-slate-400 mb-3">{place.address}</p>
                                     <button 
                                         onClick={() => saveProspect(place)}
-                                        className="w-full py-2 bg-black text-white text-xs font-bold rounded-lg flex items-center justify-center gap-1 hover:bg-gray-800 transition-colors"
+                                        className="w-full py-2 bg-gradient-to-r from-cyan-600 to-indigo-600 text-white text-xs font-bold rounded-lg flex items-center justify-center gap-1 hover:from-cyan-500 hover:to-indigo-500 transition-colors shadow-[0_0_10px_rgba(6,182,212,0.3)]"
                                     >
                                         <Save size={14} /> Guardar Lead
                                     </button>
@@ -303,13 +337,13 @@ export default function MapProspectingClient() {
                             position={[lead.lat, lead.lng]}
                             icon={savedProspectIcon}
                         >
-                            <Popup>
+                            <Popup className="prospect-popup">
                                 <div className="p-1">
-                                    <h4 className="font-bold text-sm mb-1">{lead.name}</h4>
-                                    <p className="text-[10px] text-green-600 font-bold uppercase flex items-center gap-1 mb-1">
+                                    <h4 className="font-bold text-sm mb-1 text-slate-200">{lead.name}</h4>
+                                    <p className="text-[10px] text-indigo-400 font-black uppercase tracking-widest flex items-center gap-1 mb-1">
                                         <CheckCircle size={10} /> Registrado en CRM
                                     </p>
-                                    {lead.address && <p className="text-xs text-gray-500">{lead.address}</p>}
+                                    {lead.address && <p className="text-[10px] text-slate-500">{lead.address}</p>}
                                 </div>
                             </Popup>
                         </Marker>
@@ -317,18 +351,24 @@ export default function MapProspectingClient() {
                 </MapContainer>
 
                 {/* Target en el centro (UI decorativa) */}
-                <div className="absolute inset-0 pointer-events-none flex items-center justify-center z-[400] opacity-30">
-                    <Crosshair size={40} className="text-black" strokeWidth={1} />
+                <div className="absolute inset-0 pointer-events-none flex items-center justify-center z-[400] opacity-20">
+                    <Crosshair size={40} className="text-cyan-500" strokeWidth={1} />
                 </div>
             </div>
             
             {/* Styles globales para el popup custom */}
             <style dangerouslySetInnerHTML={{__html: `
                 .leaflet-popup-content-wrapper {
+                    background-color: #0f172a;
+                    border: 1px solid #1e293b;
+                    color: white;
                     border-radius: 1rem;
                     padding: 0;
                     overflow: hidden;
-                    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+                    box-shadow: 0 0 20px rgba(6, 182, 212, 0.2);
+                }
+                .leaflet-popup-tip {
+                    background-color: #0f172a;
                 }
                 .leaflet-popup-content {
                     margin: 12px;
