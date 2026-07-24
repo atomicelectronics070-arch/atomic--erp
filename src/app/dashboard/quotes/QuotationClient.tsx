@@ -990,7 +990,30 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                                         <p className="text-sm font-black text-[#0F172A] uppercase tracking-tight line-clamp-1 mb-2">{q.clientName}</p>
                                         <div className="flex justify-between items-end mt-4">
                                             <span className="text-[10px] font-bold px-2 py-0.5 bg-slate-100 text-slate-600 rounded uppercase">{q.status}</span>
-                                            <p className="text-lg font-black text-emerald-600">${q.total.toFixed(2)}</p>
+                                            <div className="flex flex-col items-end gap-2">
+                                                <p className="text-lg font-black text-emerald-600">${q.total.toFixed(2)}</p>
+                                                <button 
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setClientName(q.clientName || "");
+                                                        setClientCity(q.city || "");
+                                                        setClientPhone(q.clientPhone || "");
+                                                        setClientEmail(q.clientEmail || "");
+                                                        setEmailNotSpecified(!q.clientEmail || q.clientEmail === "no@especifica.com");
+                                                        setQuoteSubject(q.quoteSubject || "");
+                                                        setDeliveryAddress(q.deliveryAddress || "");
+                                                        setDiscountPercent(q.discountPercent || 0);
+                                                        if (q.items) {
+                                                            const parsedItems = safeParseArray(q.items);
+                                                            if (parsedItems.length > 0) setItems(parsedItems);
+                                                        }
+                                                        setIsHistoryOpen(false);
+                                                    }}
+                                                    className="px-3 py-1 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 font-bold text-[10px] rounded uppercase tracking-widest transition-colors flex items-center gap-1"
+                                                >
+                                                    <Briefcase size={10} /> Clonar
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 ))}

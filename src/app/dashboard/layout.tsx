@@ -139,6 +139,7 @@ export default function DashboardLayout({
                                     )}
                                     <NavLink href="/dashboard/quotes" icon={<FileText size={14} />} label="Cotizaciones" isSubItem />
                                     <NavLink href="/dashboard/shop" icon={<ShoppingBag size={14} />} label={role === "ADMIN" ? "Inventario y Precios" : "Lista Precios"} isSubItem />
+                                    <NavLink href="/dashboard/map-prospecting" icon={<Map size={14} />} label="Prospección Mapa" isSubItem />
                                 </CollapsibleSection>
 
                                 <CollapsibleSection

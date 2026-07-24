@@ -40,7 +40,7 @@ export default function MobileBlogPage() {
             setLoading(true)
             try {
                 const [pRes, sRes] = await Promise.all([
-                    fetch("/api/web/products?pageSize=1000").then(r => r.json()),
+                    fetch("/api/web/phones").then(r => r.json()),
                     fetch("/api/auth/session").then(r => r.json()).catch(() => null)
                 ])
                 setProducts(pRes.products || [])
@@ -54,32 +54,7 @@ export default function MobileBlogPage() {
     }, [])
 
     const filtered = useMemo(() => {
-        const PHONE_BRANDS = ['samsung', 'iphone', 'xiaomi', 'oppo', 'motorola', 'redmi', 'realme', 'honor', 'infinix', 'tecno', 'zte', 'nokia', 'huawei', 'poco']
-        const BANNED_KEYWORDS = [
-            'funda', 'estuche', 'case ', 'mica', 'protector', 'cargador', 'cable', 'repuesto', 'bateria', 'batería', 
-            'teclado', 'keyboard', 'mouse', 'raton', 'ratón', 'banco de poder', 'power bank', 'powerbank', 
-            'audifono', 'audífono', 'audífonos', 'audifonos', 'tablet', 'ipad', 'imac', 'macbook', 'laptop', 'computador', 'pc',
-            'tv', 'televisor', 'monitor', 'ssd', 'disco', 'cerradura', 'cerrojo', 'pasta', 'extensor', 'convertidor',
-            'memoria', 'flash', 'trampa', 'caja fuerte', 'holder', 'soporte', 'corsair', 'impresora', 'smartwatch', 'reloj',
-            'correa', 'adaptador', 'adapter', 'smart tv', 'television', 'auricular', 'auriculares', 'headset', 'parlante', 'amazon fire'
-        ]
-        
-        let p = products.filter(x => {
-            const name = x.name.toLowerCase()
-            
-            // Rechazar cualquier cosa que tenga una palabra prohibida
-            if (BANNED_KEYWORDS.some(kw => name.includes(kw) || name === kw)) return false
-            
-            // Verificaciones de dispositivo celular
-            const isSmartphone = name.includes('smartphone') || name.includes('celular') || (name.includes('iphone') && !name.includes('ipad'))
-            const hasBrand = PHONE_BRANDS.some(brand => name.includes(brand))
-            const hasSpecs = (name.includes('gb') && (name.includes('ram') || name.includes('rom') || /\d+gb/.test(name))) || name.includes('dual sim') || name.includes('dual-sim') || name.includes('5g') || name.includes('4g') || name.includes('lte')
-
-            if (isSmartphone) return true;
-            if (hasBrand && hasSpecs) return true;
-            
-            return false
-        })
+        let p = products
 
         if (search) {
             p = p.filter(x => x.name.toLowerCase().includes(search.toLowerCase()) || x.description?.toLowerCase().includes(search.toLowerCase()))

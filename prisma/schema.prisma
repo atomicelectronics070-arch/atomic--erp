@@ -101,6 +101,9 @@ model Client {
   lastPromotion    DateTime?
   tags             String?
   pendientes       String?
+  lat              Float?
+  lng              Float?
+  address          String?
   salesperson      User       @relation(fields: [salespersonId], references: [id])
   waContact        WAContact? @relation(fields: [waContactId], references: [id])
   quotes           Quote[]
