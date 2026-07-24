@@ -90,14 +90,16 @@ export default function MapProspectingClient() {
         const north = bounds.getNorth()
         const east = bounds.getEast()
         
+        // Clean keyword to prevent regex errors
+        const safeKeyword = keyword.replace(/[.*+?^$\\"{}()|\\[\\]\\\\]/g, '\\$&');
+
         // Overpass API Query
-        // Buscar nodos o caminos que coincidan con la palabra clave en el nombre
         const query = `
             [out:json][timeout:25];
             (
-              node["name"~"${keyword}",i](${south},${west},${north},${east});
-              way["name"~"${keyword}",i](${south},${west},${north},${east});
-              relation["name"~"${keyword}",i](${south},${west},${north},${east});
+              node["name"~"${safeKeyword}",i](${south},${west},${north},${east});
+              way["name"~"${safeKeyword}",i](${south},${west},${north},${east});
+              relation["name"~"${safeKeyword}",i](${south},${west},${north},${east});
             );
             out center;
         `
@@ -105,8 +107,13 @@ export default function MapProspectingClient() {
         try {
             const res = await fetch("https://overpass-api.de/api/interpreter", {
                 method: "POST",
-                body: query
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "Accept": "application/json"
+                },
+                body: "data=" + encodeURIComponent(query)
             })
+            if (!res.ok) throw new Error("API devolvió error " + res.status);
             const data = await res.json()
             
             const results = data.elements.map((el: any) => ({
