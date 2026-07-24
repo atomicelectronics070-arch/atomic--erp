@@ -550,6 +550,11 @@ export default function PublicWebClient({ initialProducts, metadata, userRole, s
                     </div>
                     )}
                 </section>
+
+                {/* BANNER DE PRESENTACIÓN (AL FINAL) */}
+                {!searchQuery && !activeMainCategoryId && (
+                    <IntroductionBanner />
+                )}
             </motion.div>
         </div>
     )
@@ -655,11 +660,6 @@ function MinimalStoreHero({
                     </div>
                 )}
             </motion.div>
-
-            {/* INTRODUCCIÓN */}
-            {!searchQuery && !activeMainCategoryId && (
-                <IntroductionBanner />
-            )}
 
             {/* HORIZONTAL CARDS */}
             <motion.div
