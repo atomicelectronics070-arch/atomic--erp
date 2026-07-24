@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { calculateDiscountedPrice } from "@/lib/utils/pricing"
 import SpyCameraBanner from "@/components/web/SpyCameraBanner"
 import SmartIntercomBanner from "@/components/web/SmartIntercomBanner"
+import HomeCategoryBanner from "@/components/web/HomeCategoryBanner"
 
 // Enhanced cleaning for damaged image data
 const safeParseArray = (str: any, fallback: any = []) => {
@@ -515,6 +516,11 @@ export default function PublicWebClient({ initialProducts, metadata, userRole, s
                     categories={metadata.categories}
                     isSearching={isSearching}
                     searchResults={searchResults}
+                />
+
+                <HomeCategoryBanner 
+                    activeMainCategoryId={activeMainCategoryId} 
+                    categories={metadata.categories} 
                 />
 
                 {/* PRODUCTOS */}
