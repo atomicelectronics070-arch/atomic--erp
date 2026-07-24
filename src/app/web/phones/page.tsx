@@ -54,27 +54,30 @@ export default function MobileBlogPage() {
     }, [])
 
     const filtered = useMemo(() => {
-        const PHONE_BRANDS = ['samsung', 'iphone', 'xiaomi', 'oppo', 'motorola', 'redmi', 'realme', 'honor', 'infinix', 'tecno', 'ipad', 'apple']
-        const DEVICE_INDICATORS = ['gb', 'ram', 'inch', 'display', 'pantalla', 'sim', 'dual', 'android', 'ios', '4g', '5g', 'lte', 'snapdragon', 'helio', 'dimensity']
-        const PURE_ACCESSORY_KEYWORDS = ['funda para', 'estuche para', 'case for', 'mica de', 'protector de', 'cargador para', 'cable usb', 'repuesto', 'bateria para', 'batería para', 'teclado', 'keyboard', 'mouse', 'raton', 'ratón', 'banco de poder', 'power bank', 'powerbank', 'audifonos', 'audífono', 'cargador original']
-
+        const PHONE_BRANDS = ['samsung', 'iphone', 'xiaomi', 'oppo', 'motorola', 'redmi', 'realme', 'honor', 'infinix', 'tecno', 'zte', 'nokia', 'huawei', 'poco']
+        const BANNED_KEYWORDS = [
+            'funda', 'estuche', 'case ', 'mica', 'protector', 'cargador', 'cable', 'repuesto', 'bateria', 'batería', 
+            'teclado', 'keyboard', 'mouse', 'raton', 'ratón', 'banco de poder', 'power bank', 'powerbank', 
+            'audifono', 'audífono', 'audífonos', 'audifonos', 'tablet', 'ipad', 'imac', 'macbook', 'laptop', 'computador', 'pc',
+            'tv', 'televisor', 'monitor', 'ssd', 'disco', 'cerradura', 'cerrojo', 'pasta', 'extensor', 'convertidor',
+            'memoria', 'flash', 'trampa', 'caja fuerte', 'holder', 'soporte', 'corsair', 'impresora', 'smartwatch', 'reloj',
+            'correa', 'adaptador', 'adapter', 'smart tv', 'television', 'auricular', 'auriculares', 'headset', 'parlante', 'amazon fire'
+        ]
+        
         let p = products.filter(x => {
             const name = x.name.toLowerCase()
-            const category = (x.category?.name || '').toLowerCase()
             
-            if (PURE_ACCESSORY_KEYWORDS.some(kw => name.includes(kw))) return false
+            // Rechazar cualquier cosa que tenga una palabra prohibida
+            if (BANNED_KEYWORDS.some(kw => name.includes(kw) || name === kw)) return false
             
+            // Verificaciones de dispositivo celular
+            const isSmartphone = name.includes('smartphone') || name.includes('celular') || (name.includes('iphone') && !name.includes('ipad'))
             const hasBrand = PHONE_BRANDS.some(brand => name.includes(brand))
-            const hasSpecs = DEVICE_INDICATORS.some(spec => name.includes(spec))
-            const isPhoneCategory = category.includes('celular') || category.includes('tablet') || category.includes('telef')
+            const hasSpecs = (name.includes('gb') && (name.includes('ram') || name.includes('rom') || /\d+gb/.test(name))) || name.includes('dual sim') || name.includes('dual-sim') || name.includes('5g') || name.includes('4g') || name.includes('lte')
 
-            if (hasBrand && hasSpecs) return true
-            if (isPhoneCategory && hasBrand) return true
-
-            if (name.includes('iphone') || name.includes('ipad')) {
-                if (name.includes('cable') || name.includes('cargador') || name.includes('adapter')) return false
-                return true
-            }
+            if (isSmartphone) return true;
+            if (hasBrand && hasSpecs) return true;
+            
             return false
         })
 
