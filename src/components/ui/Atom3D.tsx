@@ -25,7 +25,7 @@ const Core = () => {
 };
 
 // Electron Ring
-const Ring = ({ radius, speed, rotationX, rotationY, color = "rgba(255, 255, 255, 0.4)" }: { radius: number, speed: number, rotationX: number, rotationY: number, color?: string }) => {
+const Ring = ({ radius, speed, rotationX, rotationY, color = "rgba(255, 255, 255, 0.4)", electronColor = "#ffffff" }: { radius: number, speed: number, rotationX: number, rotationY: number, color?: string, electronColor?: string }) => {
   const ringRef = useRef<THREE.Group>(null);
   
   const points = useMemo(() => {
@@ -49,14 +49,17 @@ const Ring = ({ radius, speed, rotationX, rotationY, color = "rgba(255, 255, 255
       {/* Electron */}
       <mesh position={[radius, 0, 0]}>
         <sphereGeometry args={[0.1, 16, 16]} />
-        <meshBasicMaterial color="#ffffff" toneMapped={false} />
+        <meshBasicMaterial color={electronColor} toneMapped={false} />
       </mesh>
     </group>
   );
 };
 
-const AtomScene = () => {
+const AtomScene = ({ theme }: { theme: 'light' | 'dark' }) => {
   const groupRef = useRef<THREE.Group>(null);
+  
+  const ringColor = theme === 'light' ? "rgba(0, 0, 0, 0.2)" : "rgba(255, 255, 255, 0.4)";
+  const electronColor = theme === 'light' ? "#000000" : "#ffffff";
 
   useFrame((state) => {
     if (groupRef.current) {
@@ -76,18 +79,18 @@ const AtomScene = () => {
   return (
     <group ref={groupRef}>
       <Core />
-      <Ring radius={2.5} speed={0.01} rotationX={0} rotationY={0} />
-      <Ring radius={2.5} speed={0.015} rotationX={Math.PI / 3} rotationY={Math.PI / 3} />
-      <Ring radius={2.5} speed={0.012} rotationX={-Math.PI / 3} rotationY={Math.PI / 3} />
+      <Ring radius={2.5} speed={0.01} rotationX={0} rotationY={0} color={ringColor} electronColor={electronColor} />
+      <Ring radius={2.5} speed={0.015} rotationX={Math.PI / 3} rotationY={Math.PI / 3} color={ringColor} electronColor={electronColor} />
+      <Ring radius={2.5} speed={0.012} rotationX={-Math.PI / 3} rotationY={Math.PI / 3} color={ringColor} electronColor={electronColor} />
     </group>
   );
 };
 
-export default function Atom3D() {
+export default function Atom3D({ theme = 'dark' }: { theme?: 'light' | 'dark' }) {
   return (
     <div className="w-full h-full min-h-[400px] absolute inset-0 z-0 pointer-events-auto">
       <Canvas camera={{ position: [0, 0, 8], fov: 45 }}>
-        <AtomScene />
+        <AtomScene theme={theme} />
         <Preload all />
       </Canvas>
     </div>

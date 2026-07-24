@@ -496,11 +496,10 @@ export default function PublicWebClient({ initialProducts, metadata, userRole, s
     })();
 
     return (
-        <div className="min-h-screen bg-[#080808] text-white selection:bg-[#0055fe]/20 pb-20 font-sans relative">
+        <div className="w-full pb-20">
             <div className="fixed inset-0 z-0 pointer-events-none opacity-[0.05]"
                 style={{
-                    backgroundImage: `linear-gradient(to right, #fff 1px, transparent 1px),
-                                     linear-gradient(to bottom, #fff 1px, transparent 1px)`,
+                    backgroundImage: "none",
                     backgroundSize: `80px 80px`
                 }}
             />
@@ -586,7 +585,7 @@ function MinimalStoreHero({
     };
 
     return (
-        <section className="pt-24 pb-8 flex flex-col items-center justify-center text-center px-6 border-b border-white/5 bg-[#080808]">
+        <section className="pt-12 pb-16 flex flex-col items-center justify-center text-center px-6">
             {/* ATOM LOGO & TITLE */}
             <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
@@ -603,7 +602,7 @@ function MinimalStoreHero({
                 transition={{ delay: 0.2, duration: 0.5 }}
                 className="mb-2"
             >
-                <h1 className="text-4xl md:text-5xl font-black tracking-[0.15em] uppercase text-white leading-none">
+                <h1 className="text-[10vw] md:text-[6vw] font-black tracking-tighter uppercase text-black leading-[0.85] mb-6">
                     ATOMIC <span className="text-[#0055fe]">INDUSTRIAS</span>
                 </h1>
             </motion.div>
@@ -640,12 +639,12 @@ function MinimalStoreHero({
                         setActiveSubcategoryId(null);
                     }}
                     placeholder="Buscar producto, marca, categoría, proveedor..."
-                    className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 pl-12 pr-12 text-sm uppercase tracking-widest placeholder:text-slate-400 text-white focus:border-[#0055fe] focus:bg-white/10 transition-all outline-none shadow-sm hover:shadow-[0_0_15px_rgba(0,85,254,0.3)]"
+                    className="w-full bg-black/5 border border-black/10 rounded-full p-6 pl-14 pr-12 text-sm font-bold uppercase tracking-widest placeholder:text-black/30 text-black focus:border-[#0055fe] focus:bg-white transition-all outline-none shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)]"
                 />
                 {searchQuery && (
                     <button 
                         onClick={() => setSearchQuery("")}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors"
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-black/40 hover:text-black transition-colors"
                     >
                         <X size={16} />
                     </button>
@@ -678,14 +677,14 @@ function MinimalStoreHero({
                                     setActiveSubcategoryId(null);
                                 }
                             }}
-                            className={`group flex flex-col items-center justify-center gap-4 bg-white/5 backdrop-blur-xl text-white rounded-2xl w-36 h-36 border ${activeMainCategoryId === card.id ? 'border-[#0055fe] bg-[#0055fe]/20 scale-[1.05] shadow-2xl shadow-[#0055fe]/20' : 'border-white/10'}
-                                       hover:scale-[1.05] hover:shadow-2xl hover:shadow-[#0055fe]/20 hover:border-[#0055fe] hover:bg-white/10
+                            className={`group flex flex-col items-center justify-center gap-4 bg-white text-black rounded-3xl w-36 h-36 border ${activeMainCategoryId === card.id ? 'border-[#0055fe] shadow-[0_10px_40px_rgba(0,85,254,0.15)] scale-[1.05]' : 'border-black/5 shadow-[0_4px_20px_rgba(0,0,0,0.03)]'}
+                                       hover:scale-[1.05] hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] hover:border-black/20 transition-all duration-500
                                        active:scale-[0.98] transition-all duration-300 ease-out`}
                         >
-                            <div className={`w-12 h-12 rounded-xl border flex items-center justify-center transition-all duration-300 ${activeMainCategoryId === card.id ? 'bg-[#0055fe] text-white border-[#0055fe]' : 'bg-white/10 border-white/20 group-hover:bg-[#0055fe] group-hover:text-white group-hover:border-[#0055fe]'}`}>
+                            <div className={`w-12 h-12 rounded-xl border flex items-center justify-center transition-all duration-300 ${activeMainCategoryId === card.id ? 'bg-[#0055fe] text-white' : 'bg-black/5 group-hover:bg-black group-hover:text-white'}`}>
                                 {card.icon}
                             </div>
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white">
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-black">
                                 {card.label}
                             </span>
                         </button>
@@ -752,13 +751,13 @@ function MiniProductCard({ product: p, userRole, delay }: { product: any, userRo
         >
             <Link
                 href={`/web/product/${p.id}`}
-                className="group flex flex-col bg-white/5 backdrop-blur-md border border-white/10 hover:border-[#0055fe] hover:shadow-[0_0_15px_rgba(0,85,254,0.2)] transition-all duration-300 rounded-lg overflow-hidden"
+                className="group flex flex-col bg-white border border-black/5 hover:border-black/20 hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] transition-all duration-500 rounded-2xl overflow-hidden"
             >
-                <div className="aspect-square relative bg-black/40 flex items-center justify-center overflow-hidden">
+                <div className="aspect-square relative bg-black/5 flex items-center justify-center overflow-hidden">
                     <SafeImage src={imgs[0]} alt={p.name} fill className="p-2 group-hover:scale-110 transition-transform duration-300" />
                 </div>
                 <div className="p-2">
-                    <p className="text-[9px] font-medium text-slate-500 tracking-wide line-clamp-2 leading-tight group-hover:text-white transition-colors mb-1">{p.name}</p>
+                    <p className="text-[9px] font-medium text-slate-500 tracking-wide line-clamp-2 leading-tight group-hover:text-black transition-colors text-black/80 mb-1">{p.name}</p>
                     <p className="text-[10px] font-bold text-[#0055fe]">
                         ${calculateDiscountedPrice(p.price, userRole).toLocaleString('en-US', { minimumFractionDigits: 2 })}
                     </p>
@@ -823,7 +822,7 @@ function InfiniteProductScroll({ products, userRole }: { products: any[], userRo
                              <SafeImage src={safeParseArray(p.images)[0]} alt={p.name} fill className="p-3 group-hover:scale-105 transition-transform duration-300" />
                         </div>
                         <div className="p-3">
-                            <p className="text-[10px] font-medium text-slate-500 line-clamp-2 leading-snug mb-2 group-hover:text-white transition-colors">{p.name}</p>
+                            <p className="text-[10px] font-medium text-slate-500 line-clamp-2 leading-snug mb-2 group-hover:text-black transition-colors text-black/80">{p.name}</p>
                             <p className="text-xs font-bold text-[black]">${calculateDiscountedPrice(p.price, userRole).toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
                         </div>
                     </Link>
@@ -914,7 +913,7 @@ function CollectionBanner({ collection, products, reverse, userRole }: { collect
                                             </div>
                                             
                                             <div className="px-1">
-                                                <p className="text-slate-500 text-[11px] font-semibold line-clamp-2 mb-2 group-hover:text-white transition-colors leading-relaxed h-8">{p.name}</p>
+                                                <p className="text-slate-500 text-[11px] font-semibold line-clamp-2 mb-2 group-hover:text-black transition-colors text-black/80 leading-relaxed h-8">{p.name}</p>
                                                 <p className="text-sm font-black text-[black] bg-zinc-50 inline-block px-3 py-1.5 rounded-lg border border-zinc-200">${calculateDiscountedPrice(p.price, userRole).toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
                                             </div>
                                         </Link>
