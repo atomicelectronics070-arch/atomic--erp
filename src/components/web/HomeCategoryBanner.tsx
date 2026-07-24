@@ -3,8 +3,6 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 
 export default function HomeCategoryBanner({ activeMainCategoryId, categories }: any) {
-    const hogarId = categories?.find((c: any) => c.slug === 'hogar')?.id;
-    if (activeMainCategoryId !== hogarId || !activeMainCategoryId) return null;
 
     return (
         <motion.div
