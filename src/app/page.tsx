@@ -1,12 +1,17 @@
 "use client"
-// Atomic Industrias — Landing Page v9.0 — Framer Premium Dark
+// Atomic Industrias — Landing Page v10.0 — Ether Studio Aesthetic (3D + Framer Motion)
 
-import { useEffect } from "react"
-import { motion } from "framer-motion"
-import { LogIn, ShoppingBag } from "lucide-react"
+import { useEffect, useState } from "react"
+import { motion, AnimatePresence } from "framer-motion"
+import { LogIn, ShoppingBag, ArrowRight } from "lucide-react"
+import Atom3D from "@/components/ui/Atom3D"
+import Link from "next/link"
 
 export default function Home() {
+  const [mounted, setMounted] = useState(false);
+
   useEffect(() => {
+    setMounted(true);
     fetch("/api/track", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -15,178 +20,93 @@ export default function Home() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-[#080808] flex flex-col items-center justify-center relative overflow-hidden selection:bg-[#0055fe]/20">
-
-      {/* Subtle background texture */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
-        <div className="absolute top-0 left-0 w-full h-full"
-          style={{
-            backgroundImage: `radial-gradient(circle at 20% 20%, rgba(0,85,254,0.05) 0%, transparent 50%),
-                             radial-gradient(circle at 80% 80%, rgba(255,255,255,0.02) 0%, transparent 50%)`
-          }}
-        />
-        {/* Thin grid lines for high-end tech feel */}
-        <div className="absolute inset-0 opacity-[0.05]"
-          style={{
-            backgroundImage: `linear-gradient(to right, #fff 1px, transparent 1px),
-                             linear-gradient(to bottom, #fff 1px, transparent 1px)`,
-            backgroundSize: `80px 80px`
-          }}
-        />
+    <div className="min-h-screen bg-[#050505] text-white flex flex-col relative selection:bg-[#0055fe]/30 font-sans">
+      
+      {/* ── BACKGROUND 3D CANVAS ── */}
+      <div className="fixed inset-0 z-0 pointer-events-none opacity-40">
+        {mounted && <Atom3D />}
       </div>
+      
+      {/* ── GRAIN / NOISE OVERLAY ── */}
+      <div className="fixed inset-0 z-[1] pointer-events-none opacity-[0.03]" 
+           style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/stardust.png")' }} />
 
-      {/* Main Content */}
-      <main className="relative z-10 flex flex-col items-center text-center px-6 w-full max-w-3xl">
+      {/* ── NAVIGATION (Minimalist) ── */}
+      <nav className="relative z-10 w-full px-8 py-8 flex justify-between items-center mix-blend-difference">
+        <div className="text-xl font-black tracking-tighter">ATOMIC</div>
+        <div className="flex gap-8 text-[11px] font-bold tracking-[0.2em] uppercase text-white/60">
+          <Link href="/login" className="hover:text-white transition-colors">ERP Portal</Link>
+          <Link href="/web" className="hover:text-white transition-colors">Store</Link>
+        </div>
+      </nav>
 
-        {/* ── ATOM LOGO ── */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          className="mb-10"
-        >
-          <AtomLogo />
-        </motion.div>
+      {/* ── HERO CONTENT (Ether Studio Style) ── */}
+      <main className="relative z-10 flex-1 flex flex-col justify-center px-8 md:px-20 max-w-[1400px] mx-auto w-full mix-blend-difference">
+        
+        <div className="max-w-4xl pt-20">
+          {/* Subtle Subtitle */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            className="flex items-center gap-4 mb-8"
+          >
+            <span className="w-12 h-[1px] bg-[#0055fe]" />
+            <span className="text-[10px] font-black tracking-[0.3em] uppercase text-[#0055fe]">
+              The Future of Industry
+            </span>
+          </motion.div>
 
-        {/* ── BRAND NAME ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.5 }}
-          className="mb-3"
-        >
-          <h1 className="text-5xl md:text-6xl font-black tracking-tighter uppercase text-white leading-none">
-            ATOMIC <span className="text-[#0055fe]">INDUSTRIAS</span>
-          </h1>
-        </motion.div>
+          {/* Massive Typography */}
+          <motion.h1
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+            className="text-[12vw] md:text-[8vw] font-black leading-[0.85] tracking-tighter uppercase mb-6"
+          >
+            ATOMIC <br />
+            <span className="text-white/40">INDUSTRIAS</span>
+          </motion.h1>
 
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.35 }}
-          className="text-sm font-semibold tracking-[0.2em] uppercase text-white/50 mb-16"
-        >
-          Sistema de Gestión Empresarial
-        </motion.p>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1, delay: 0.3 }}
+            className="text-lg md:text-xl font-medium text-white/50 max-w-lg mb-16 leading-relaxed"
+          >
+            Next-generation enterprise resource planning and public e-commerce ecosystems, engineered for precision.
+          </motion.p>
+        </div>
 
-        {/* ── TWO ACTION CARDS ── */}
+        {/* ── ACTION LINKS (Minimalist Brutalism) ── */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.5 }}
-          className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full"
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.5 }}
+          className="flex flex-col sm:flex-row gap-6 mt-auto pb-12"
         >
-          {/* Card: Iniciar Sesión */}
-          <a
-            href="/login"
-            id="cta-login"
-            className="group relative flex flex-col items-center justify-center gap-5 bg-white/5 backdrop-blur-xl text-white rounded-[24px] p-10 border border-white/10
-                       hover:bg-white/10 hover:border-white/20 hover:scale-[1.02] hover:shadow-2xl hover:shadow-white/5
-                       active:scale-[0.98] transition-all duration-300 ease-out overflow-hidden"
-          >
-            {/* Hover shimmer */}
-            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-              style={{
-                background: 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 60%)'
-              }}
-            />
-            <div className="relative z-10 w-16 h-16 rounded-[100px] bg-white/10 flex items-center justify-center
-                            group-hover:bg-[#0055fe] transition-all duration-500">
-              <LogIn size={26} className="text-white" />
-            </div>
-            <div className="relative z-10 text-center">
-              <p className="text-xl font-bold tracking-tight text-white mb-1">Iniciar Sesión</p>
-              <p className="text-[11px] font-medium text-white/40 tracking-widest uppercase">Portal privado</p>
-            </div>
-          </a>
-
-          {/* Card: Tienda en Línea */}
-          <a
+          <Link
             href="/web"
-            id="cta-tienda"
-            className="group relative flex flex-col items-center justify-center gap-5 bg-[#0055fe]/10 backdrop-blur-xl text-white rounded-[24px] p-10 border border-[#0055fe]/20
-                       hover:bg-[#0055fe]/20 hover:border-[#0055fe]/40 hover:scale-[1.02] hover:shadow-2xl hover:shadow-[#0055fe]/20
-                       active:scale-[0.98] transition-all duration-300 ease-out overflow-hidden"
+            className="group flex items-center gap-4 text-2xl font-black tracking-tight uppercase hover:text-[#0055fe] transition-colors duration-500"
           >
-            {/* Hover fill */}
-            <div className="absolute inset-0 bg-[#0055fe] opacity-0 group-hover:opacity-[0.05] transition-opacity duration-300" />
-            <div className="relative z-10 w-16 h-16 rounded-[100px] bg-[#0055fe] flex items-center justify-center
-                            group-hover:scale-110 transition-all duration-500 shadow-lg shadow-[#0055fe]/30">
-              <ShoppingBag size={26} className="text-white" />
-            </div>
-            <div className="relative z-10 text-center">
-              <p className="text-xl font-bold tracking-tight text-white mb-1">Tienda en Línea</p>
-              <p className="text-[11px] font-medium text-white/40 tracking-widest uppercase">Catálogo público</p>
-            </div>
-          </a>
-        </motion.div>
+            Explore Store
+            <span className="flex items-center justify-center w-12 h-12 rounded-full border border-white/20 group-hover:border-[#0055fe] group-hover:bg-[#0055fe] transition-all duration-500">
+              <ArrowRight size={18} className="group-hover:text-white group-hover:translate-x-1 transition-transform duration-300" />
+            </span>
+          </Link>
 
-        {/* ── LIVE INDICATOR ── */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.9 }}
-          className="mt-16 flex items-center gap-3 bg-white/5 border border-white/10 px-5 py-2.5 rounded-[100px]"
-        >
-          <span className="w-2 h-2 rounded-full bg-[#0055fe] animate-pulse shadow-[0_0_8px_#0055fe]" />
-          <span className="text-[10px] font-bold text-white/60 uppercase tracking-[0.3em]">Sistemas operativos en línea</span>
+          <Link
+            href="/login"
+            className="group flex items-center gap-4 text-2xl font-black tracking-tight uppercase text-white/40 hover:text-white transition-colors duration-500 sm:ml-12"
+          >
+            Client Portal
+            <span className="flex items-center justify-center w-12 h-12 rounded-full border border-white/10 group-hover:border-white/40 transition-all duration-500">
+              <LogIn size={18} className="group-hover:translate-x-1 transition-transform duration-300" />
+            </span>
+          </Link>
         </motion.div>
       </main>
-
-      {/* ── FOOTER ── */}
-      <footer className="absolute bottom-0 left-0 right-0 z-10 py-8 flex justify-center border-t border-white/5">
-        <p className="text-[10px] font-medium text-white/30 uppercase tracking-[0.2em]">
-          © {new Date().getFullYear()} Atomic Industrias — Ecosistema Digital
-        </p>
-      </footer>
+      
     </div>
-  )
-}
-
-// ── SVG Atom Logo (White Framer Style) ──
-function AtomLogo() {
-  return (
-    <svg
-      width="80"
-      height="80"
-      viewBox="0 0 72 72"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className="drop-shadow-2xl"
-    >
-      {/* Nucleus */}
-      <circle cx="36" cy="36" r="5" fill="#0055fe" className="animate-pulse" />
-
-      {/* Orbit 1 — horizontal */}
-      <ellipse
-        cx="36" cy="36"
-        rx="30" ry="10"
-        stroke="rgba(255,255,255,0.4)" strokeWidth="1.5"
-        fill="none"
-      />
-
-      {/* Orbit 2 — rotated 60° */}
-      <ellipse
-        cx="36" cy="36"
-        rx="30" ry="10"
-        stroke="rgba(255,255,255,0.4)" strokeWidth="1.5"
-        fill="none"
-        transform="rotate(60 36 36)"
-      />
-
-      {/* Orbit 3 — rotated 120° */}
-      <ellipse
-        cx="36" cy="36"
-        rx="30" ry="10"
-        stroke="rgba(255,255,255,0.4)" strokeWidth="1.5"
-        fill="none"
-        transform="rotate(120 36 36)"
-      />
-
-      {/* Electron dots */}
-      <circle cx="66" cy="36" r="3" fill="#fff" />
-      <circle cx="21" cy="10.5" r="3" fill="#fff" />
-      <circle cx="21" cy="61.5" r="3" fill="#fff" />
-    </svg>
   )
 }
