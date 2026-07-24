@@ -42,22 +42,22 @@ export default function WebLayout({ children }: { children: React.ReactNode }) {
     ]
 
     return (
-        <div className="min-h-screen font-sans text-slate-900 bg-[#F8FAFC] relative">
+        <div className="min-h-screen font-sans text-white bg-[#080808] relative">
             {/* ── Navbar ── */}
-            <nav className="sticky top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200 shadow-sm">
+            <nav className="sticky top-0 w-full z-50 bg-[#080808]/80 backdrop-blur-xl border-b border-white/10 shadow-sm">
                 <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
 
                     {/* Logo + Links */}
                     <div className="flex items-center space-x-8 overflow-hidden w-full">
                         <Link href="/web" className="shrink-0 flex items-center group">
                             <svg width="40" height="40" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg" className="group-hover:scale-110 transition-transform duration-300">
-                                <circle cx="36" cy="36" r="5" fill="#000" />
-                                <ellipse cx="36" cy="36" rx="30" ry="10" stroke="#000" strokeWidth="1.5" fill="none" />
-                                <ellipse cx="36" cy="36" rx="30" ry="10" stroke="#000" strokeWidth="1.5" fill="none" transform="rotate(60 36 36)" />
-                                <ellipse cx="36" cy="36" rx="30" ry="10" stroke="#000" strokeWidth="1.5" fill="none" transform="rotate(120 36 36)" />
-                                <circle cx="66" cy="36" r="2.5" fill="#000" />
-                                <circle cx="21" cy="10.5" r="2.5" fill="#000" />
-                                <circle cx="21" cy="61.5" r="2.5" fill="#000" />
+                                <circle cx="36" cy="36" r="5" fill="#0055fe" className="animate-pulse" />
+                                <ellipse cx="36" cy="36" rx="30" ry="10" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" fill="none" />
+                                <ellipse cx="36" cy="36" rx="30" ry="10" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" fill="none" transform="rotate(60 36 36)" />
+                                <ellipse cx="36" cy="36" rx="30" ry="10" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" fill="none" transform="rotate(120 36 36)" />
+                                <circle cx="66" cy="36" r="2.5" fill="#fff" />
+                                <circle cx="21" cy="10.5" r="2.5" fill="#fff" />
+                                <circle cx="21" cy="61.5" r="2.5" fill="#fff" />
                             </svg>
                         </Link>
                         <div className="hidden md:flex overflow-x-auto items-center gap-3 pb-2 pt-2 flex-1 scrollbar-hide mask-edges">
@@ -69,8 +69,8 @@ export default function WebLayout({ children }: { children: React.ReactNode }) {
                                         href={link.href}
                                         className={`whitespace-nowrap px-5 py-2 rounded-full border text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-300
                                             ${isActive 
-                                                ? 'bg-black text-white border-black shadow-md' 
-                                                : 'bg-white text-zinc-500 border-zinc-200 hover:border-black hover:text-black hover:bg-zinc-50 hover:shadow-sm hover:-translate-y-0.5'
+                                                ? 'bg-[#0055fe] text-white border-[#0055fe] shadow-lg shadow-[#0055fe]/20' 
+                                                : 'bg-white/5 text-white/50 border-white/10 hover:border-white/30 hover:text-white hover:bg-white/10 hover:shadow-sm hover:-translate-y-0.5'
                                             }`}
                                     >
                                         {link.label}
@@ -113,7 +113,7 @@ export default function WebLayout({ children }: { children: React.ReactNode }) {
                 </div>
 
                 {/* Navy accent line at the very bottom of navbar */}
-                <div className="h-[1px] w-full bg-slate-200" />
+                <div className="h-[1px] w-full bg-white/5" />
 
                 {/* Mobile Menu Dropdown */}
                 <AnimatePresence>

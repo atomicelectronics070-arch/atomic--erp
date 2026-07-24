@@ -496,11 +496,11 @@ export default function PublicWebClient({ initialProducts, metadata, userRole, s
     })();
 
     return (
-        <div className="min-h-screen bg-white text-black selection:bg-black/10 pb-20 font-sans relative">
-            <div className="fixed inset-0 z-0 pointer-events-none opacity-[0.025]"
+        <div className="min-h-screen bg-[#080808] text-white selection:bg-[#0055fe]/20 pb-20 font-sans relative">
+            <div className="fixed inset-0 z-0 pointer-events-none opacity-[0.05]"
                 style={{
-                    backgroundImage: `linear-gradient(to right, #000 1px, transparent 1px),
-                                     linear-gradient(to bottom, #000 1px, transparent 1px)`,
+                    backgroundImage: `linear-gradient(to right, #fff 1px, transparent 1px),
+                                     linear-gradient(to bottom, #fff 1px, transparent 1px)`,
                     backgroundSize: `80px 80px`
                 }}
             />
@@ -586,7 +586,7 @@ function MinimalStoreHero({
     };
 
     return (
-        <section className="pt-24 pb-8 flex flex-col items-center justify-center text-center px-6 border-b border-zinc-100 bg-white">
+        <section className="pt-24 pb-8 flex flex-col items-center justify-center text-center px-6 border-b border-white/5 bg-[#080808]">
             {/* ATOM LOGO & TITLE */}
             <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
@@ -603,8 +603,8 @@ function MinimalStoreHero({
                 transition={{ delay: 0.2, duration: 0.5 }}
                 className="mb-2"
             >
-                <h1 className="text-4xl md:text-5xl font-black tracking-[0.15em] uppercase text-black leading-none">
-                    ATOMIC INDUSTRIAS
+                <h1 className="text-4xl md:text-5xl font-black tracking-[0.15em] uppercase text-white leading-none">
+                    ATOMIC <span className="text-[#0055fe]">INDUSTRIAS</span>
                 </h1>
             </motion.div>
 
@@ -640,12 +640,12 @@ function MinimalStoreHero({
                         setActiveSubcategoryId(null);
                     }}
                     placeholder="Buscar producto, marca, categoría, proveedor..."
-                    className="w-full bg-zinc-50 border border-zinc-200 rounded-2xl p-4 pl-12 pr-12 text-sm uppercase tracking-widest placeholder:text-slate-400 focus:border-black focus:bg-white transition-all outline-none shadow-sm hover:shadow-md"
+                    className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 pl-12 pr-12 text-sm uppercase tracking-widest placeholder:text-slate-400 text-white focus:border-[#0055fe] focus:bg-white/10 transition-all outline-none shadow-sm hover:shadow-[0_0_15px_rgba(0,85,254,0.3)]"
                 />
                 {searchQuery && (
                     <button 
                         onClick={() => setSearchQuery("")}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-black transition-colors"
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors"
                     >
                         <X size={16} />
                     </button>
@@ -678,14 +678,14 @@ function MinimalStoreHero({
                                     setActiveSubcategoryId(null);
                                 }
                             }}
-                            className={`group flex flex-col items-center justify-center gap-4 bg-white text-black rounded-2xl w-36 h-36 border ${activeMainCategoryId === card.id ? 'border-black bg-zinc-50 scale-[1.05] shadow-2xl shadow-black/10' : 'border-zinc-200'}
-                                       hover:scale-[1.05] hover:shadow-2xl hover:shadow-black/10 hover:border-black hover:bg-zinc-50
+                            className={`group flex flex-col items-center justify-center gap-4 bg-white/5 backdrop-blur-xl text-white rounded-2xl w-36 h-36 border ${activeMainCategoryId === card.id ? 'border-[#0055fe] bg-[#0055fe]/20 scale-[1.05] shadow-2xl shadow-[#0055fe]/20' : 'border-white/10'}
+                                       hover:scale-[1.05] hover:shadow-2xl hover:shadow-[#0055fe]/20 hover:border-[#0055fe] hover:bg-white/10
                                        active:scale-[0.98] transition-all duration-300 ease-out`}
                         >
-                            <div className={`w-12 h-12 rounded-xl border flex items-center justify-center transition-all duration-300 ${activeMainCategoryId === card.id ? 'bg-black text-white border-black' : 'bg-zinc-100 border-zinc-200 group-hover:bg-black group-hover:text-white group-hover:border-black'}`}>
+                            <div className={`w-12 h-12 rounded-xl border flex items-center justify-center transition-all duration-300 ${activeMainCategoryId === card.id ? 'bg-[#0055fe] text-white border-[#0055fe]' : 'bg-white/10 border-white/20 group-hover:bg-[#0055fe] group-hover:text-white group-hover:border-[#0055fe]'}`}>
                                 {card.icon}
                             </div>
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-black">
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white">
                                 {card.label}
                             </span>
                         </button>
@@ -710,8 +710,8 @@ function MinimalStoreHero({
                                     setActiveSubcategoryId(sub.id === activeSubcategoryId ? null : sub.id);
                                     scrollDown();
                                 }}
-                                className={`group flex flex-col items-center justify-center gap-2 bg-white text-black rounded-2xl w-32 h-32 border ${activeSubcategoryId === sub.id ? 'border-black bg-zinc-50 scale-[1.05] shadow-2xl shadow-black/10' : 'border-zinc-200'}
-                                           hover:scale-[1.05] hover:shadow-2xl hover:shadow-black/10 hover:border-black hover:bg-zinc-50
+                                className={`group flex flex-col items-center justify-center gap-2 bg-white/5 backdrop-blur-xl text-white rounded-2xl w-32 h-32 border ${activeSubcategoryId === sub.id ? 'border-[#0055fe] bg-[#0055fe]/20 scale-[1.05] shadow-2xl shadow-[#0055fe]/20' : 'border-white/10'}
+                                           hover:scale-[1.05] hover:shadow-2xl hover:shadow-[#0055fe]/20 hover:border-[#0055fe] hover:bg-white/10
                                            active:scale-[0.98] transition-all duration-300 ease-out flex-shrink-0`}
                             >
                                 <span className="text-[10px] font-black uppercase tracking-[0.15em] text-center px-4 leading-relaxed">
@@ -729,13 +729,13 @@ function MinimalStoreHero({
 function AtomLogo() {
     return (
         <svg width="64" height="64" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="36" cy="36" r="5" fill="#000" />
-            <ellipse cx="36" cy="36" rx="30" ry="10" stroke="#000" strokeWidth="1.5" fill="none" />
-            <ellipse cx="36" cy="36" rx="30" ry="10" stroke="#000" strokeWidth="1.5" fill="none" transform="rotate(60 36 36)" />
-            <ellipse cx="36" cy="36" rx="30" ry="10" stroke="#000" strokeWidth="1.5" fill="none" transform="rotate(120 36 36)" />
-            <circle cx="66" cy="36" r="2.5" fill="#000" />
-            <circle cx="21" cy="10.5" r="2.5" fill="#000" />
-            <circle cx="21" cy="61.5" r="2.5" fill="#000" />
+            <circle cx="36" cy="36" r="5" fill="#0055fe" className="animate-pulse" />
+            <ellipse cx="36" cy="36" rx="30" ry="10" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" fill="none" />
+            <ellipse cx="36" cy="36" rx="30" ry="10" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" fill="none" transform="rotate(60 36 36)" />
+            <ellipse cx="36" cy="36" rx="30" ry="10" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" fill="none" transform="rotate(120 36 36)" />
+            <circle cx="66" cy="36" r="3" fill="#fff" />
+            <circle cx="21" cy="10.5" r="3" fill="#fff" />
+            <circle cx="21" cy="61.5" r="3" fill="#fff" />
         </svg>
     )
 }
@@ -752,14 +752,14 @@ function MiniProductCard({ product: p, userRole, delay }: { product: any, userRo
         >
             <Link
                 href={`/web/product/${p.id}`}
-                className="group flex flex-col bg-white border border-slate-200 hover:border-[black]/60 hover:shadow-xl transition-all duration-300 rounded-lg overflow-hidden"
+                className="group flex flex-col bg-white/5 backdrop-blur-md border border-white/10 hover:border-[#0055fe] hover:shadow-[0_0_15px_rgba(0,85,254,0.2)] transition-all duration-300 rounded-lg overflow-hidden"
             >
-                <div className="aspect-square relative bg-slate-50 flex items-center justify-center overflow-hidden">
+                <div className="aspect-square relative bg-black/40 flex items-center justify-center overflow-hidden">
                     <SafeImage src={imgs[0]} alt={p.name} fill className="p-2 group-hover:scale-110 transition-transform duration-300" />
                 </div>
                 <div className="p-2">
-                    <p className="text-[9px] font-medium text-slate-500 tracking-wide line-clamp-2 leading-tight group-hover:text-[black] transition-colors mb-1">{p.name}</p>
-                    <p className="text-[10px] font-bold text-[black]">
+                    <p className="text-[9px] font-medium text-slate-500 tracking-wide line-clamp-2 leading-tight group-hover:text-white transition-colors mb-1">{p.name}</p>
+                    <p className="text-[10px] font-bold text-[#0055fe]">
                         ${calculateDiscountedPrice(p.price, userRole).toLocaleString('en-US', { minimumFractionDigits: 2 })}
                     </p>
                 </div>
@@ -823,7 +823,7 @@ function InfiniteProductScroll({ products, userRole }: { products: any[], userRo
                              <SafeImage src={safeParseArray(p.images)[0]} alt={p.name} fill className="p-3 group-hover:scale-105 transition-transform duration-300" />
                         </div>
                         <div className="p-3">
-                            <p className="text-[10px] font-medium text-slate-500 line-clamp-2 leading-snug mb-2 group-hover:text-[black] transition-colors">{p.name}</p>
+                            <p className="text-[10px] font-medium text-slate-500 line-clamp-2 leading-snug mb-2 group-hover:text-white transition-colors">{p.name}</p>
                             <p className="text-xs font-bold text-[black]">${calculateDiscountedPrice(p.price, userRole).toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
                         </div>
                     </Link>
@@ -914,7 +914,7 @@ function CollectionBanner({ collection, products, reverse, userRole }: { collect
                                             </div>
                                             
                                             <div className="px-1">
-                                                <p className="text-slate-500 text-[11px] font-semibold line-clamp-2 mb-2 group-hover:text-[black] transition-colors leading-relaxed h-8">{p.name}</p>
+                                                <p className="text-slate-500 text-[11px] font-semibold line-clamp-2 mb-2 group-hover:text-white transition-colors leading-relaxed h-8">{p.name}</p>
                                                 <p className="text-sm font-black text-[black] bg-zinc-50 inline-block px-3 py-1.5 rounded-lg border border-zinc-200">${calculateDiscountedPrice(p.price, userRole).toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
                                             </div>
                                         </Link>
