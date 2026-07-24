@@ -10,6 +10,7 @@ import { calculateDiscountedPrice } from "@/lib/utils/pricing"
 import SpyCameraBanner from "@/components/web/SpyCameraBanner"
 import SmartIntercomBanner from "@/components/web/SmartIntercomBanner"
 import HomeCategoryBanner from "@/components/web/HomeCategoryBanner"
+import ElectronicsCategoryBanner from "@/components/web/ElectronicsCategoryBanner"
 
 // Enhanced cleaning for damaged image data
 const safeParseArray = (str: any, fallback: any = []) => {
@@ -519,6 +520,11 @@ export default function PublicWebClient({ initialProducts, metadata, userRole, s
                 />
 
                 <HomeCategoryBanner 
+                    activeMainCategoryId={activeMainCategoryId} 
+                    categories={metadata.categories} 
+                />
+
+                <ElectronicsCategoryBanner 
                     activeMainCategoryId={activeMainCategoryId} 
                     categories={metadata.categories} 
                 />
