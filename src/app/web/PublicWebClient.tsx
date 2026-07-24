@@ -517,11 +517,6 @@ export default function PublicWebClient({ initialProducts, metadata, userRole, s
                     searchResults={searchResults}
                 />
 
-                {/* INTRODUCCIÓN */}
-                {!searchQuery && !activeMainCategoryId && (
-                    <IntroductionBanner />
-                )}
-
                 {/* PRODUCTOS */}
                 <section className="w-full max-w-7xl mx-auto px-6 py-8" id="productos">
                     {searchQuery ? (
@@ -660,6 +655,11 @@ function MinimalStoreHero({
                     </div>
                 )}
             </motion.div>
+
+            {/* INTRODUCCIÓN */}
+            {!searchQuery && !activeMainCategoryId && (
+                <IntroductionBanner />
+            )}
 
             {/* HORIZONTAL CARDS */}
             <motion.div
