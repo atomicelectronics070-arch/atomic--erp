@@ -32,15 +32,15 @@ export default function RootLayout({
         {/* Preload la fuente crítica para evitar FOIT (Flash of Invisible Text) */}
         <link
           rel="preload"
-          href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,600;0,700;1,700&family=IBM+Plex+Mono:wght@400;600&display=swap"
+          href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&display=swap"
           as="style"
         />
         <link
-          href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,600;0,700;1,700&family=IBM+Plex+Mono:wght@400;600&display=swap"
+          href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&display=swap"
           rel="stylesheet"
         />
       </head>
-      <body className="antialiased bg-[#F8FAFC] text-[#0F172A] selection:bg-[#1E3A8A]/10 selection:text-[#1E3A8A]" style={{ fontFamily: "'IBM Plex Sans', ui-sans-serif, system-ui" }}>
+      <body className="antialiased bg-[#080808] text-white selection:bg-[#0055fe]/20 selection:text-[#0055fe]" style={{ fontFamily: "'DM Sans', ui-sans-serif, system-ui" }}>
         <Providers>
           {children}
         </Providers>
