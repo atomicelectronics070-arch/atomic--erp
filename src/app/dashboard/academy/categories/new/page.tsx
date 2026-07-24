@@ -17,7 +17,7 @@ export default function NewCategoryPage() {
 
     return (
         <div className="min-h-screen bg-[#0F1923] text-white p-8">
-            <div className="max-w-2xl mx-auto bg-white/5 p-8 border border-white/10">
+            <div className="max-w-2xl mx-auto bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 p-8 border border-white/10">
                 <h1 className="text-2xl font-black uppercase tracking-tighter mb-8 text-[#2563EB]">Crear Nueva Categoría</h1>
                 
                 <form action={createCategory} className="space-y-6">
@@ -32,7 +32,7 @@ export default function NewCategoryPage() {
                     </div>
 
                     <div className="pt-4 flex gap-4">
-                        <button type="submit" className="flex-1 bg-[#2563EB] text-white py-4 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-white hover:text-[#2563EB] transition-colors">Guardar Categoría</button>
+                        <button type="submit" className="flex-1 bg-[#2563EB] text-white py-4 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50 hover:text-[#2563EB] transition-colors">Guardar Categoría</button>
                     </div>
                 </form>
             </div>

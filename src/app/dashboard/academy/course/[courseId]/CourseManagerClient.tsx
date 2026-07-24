@@ -164,7 +164,7 @@ export default function CourseManagerClient({ course: initialCourse, categories 
             </AnimatePresence>
 
             {/* Course Meta */}
-            <div className="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm space-y-6">
+            <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 rounded-2xl p-8 shadow-[0_4px_15px_rgba(0,0,0,0.3)] space-y-6">
                 <div className="flex items-center justify-between">
                     <h2 className="text-sm font-black text-slate-700 uppercase tracking-wider flex items-center gap-2">
                         <BookOpen size={16} className="text-indigo-500" /> Información del Curso
@@ -203,14 +203,14 @@ export default function CourseManagerClient({ course: initialCourse, categories 
 
                 <div className="flex justify-end">
                     <button onClick={saveCourse} disabled={saving}
-                        className="flex items-center gap-2 px-6 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 transition-all disabled:opacity-50 shadow-sm">
+                        className="flex items-center gap-2 px-6 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 transition-all disabled:opacity-50 shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
                         <Save size={15} /> {saving ? "Guardando..." : "Guardar Curso"}
                     </button>
                 </div>
             </div>
 
             {/* Lessons */}
-            <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+            <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 rounded-2xl shadow-[0_4px_15px_rgba(0,0,0,0.3)] overflow-hidden">
                 <div className="p-6 border-b border-slate-100 flex items-center justify-between">
                     <h2 className="text-sm font-black text-slate-700 uppercase tracking-wider flex items-center gap-2">
                         <PlayCircle size={16} className="text-indigo-500" /> Lecciones
@@ -237,14 +237,14 @@ export default function CourseManagerClient({ course: initialCourse, categories 
                                         <input type="text" value={newLesson.title}
                                             onChange={e => setNewLesson(p => ({ ...p, title: e.target.value }))}
                                             placeholder="Ej: Introducción a los protocolos TCP/IP"
-                                            className="w-full border border-slate-200 bg-white px-4 py-3 rounded-xl text-sm font-medium text-slate-800 outline-none focus:border-indigo-500 transition-all" />
+                                            className="w-full border border-slate-200 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 px-4 py-3 rounded-xl text-sm font-medium text-slate-800 outline-none focus:border-indigo-500 transition-all" />
                                     </div>
                                     <div className="space-y-1.5">
                                         <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">URL Video (YouTube / Vimeo)</label>
                                         <input type="url" value={newLesson.videoUrl}
                                             onChange={e => setNewLesson(p => ({ ...p, videoUrl: e.target.value }))}
                                             placeholder="https://youtube.com/watch?v=..."
-                                            className="w-full border border-slate-200 bg-white px-4 py-3 rounded-xl text-sm font-medium text-slate-800 outline-none focus:border-indigo-500 transition-all" />
+                                            className="w-full border border-slate-200 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 px-4 py-3 rounded-xl text-sm font-medium text-slate-800 outline-none focus:border-indigo-500 transition-all" />
                                     </div>
                                     {newLesson.videoUrl && (
                                         <div className="md:col-span-2"><VideoPreview url={newLesson.videoUrl} /></div>
@@ -253,7 +253,7 @@ export default function CourseManagerClient({ course: initialCourse, categories 
                                         <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Notas / Descripción</label>
                                         <textarea value={newLesson.content} onChange={e => setNewLesson(p => ({ ...p, content: e.target.value }))}
                                             rows={3} placeholder="Descripción de la lección o notas adicionales..."
-                                            className="w-full border border-slate-200 bg-white px-4 py-3 rounded-xl text-sm font-medium text-slate-800 outline-none focus:border-indigo-500 transition-all resize-none" />
+                                            className="w-full border border-slate-200 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 px-4 py-3 rounded-xl text-sm font-medium text-slate-800 outline-none focus:border-indigo-500 transition-all resize-none" />
                                     </div>
                                 </div>
                                 <div className="flex justify-end">
@@ -322,7 +322,7 @@ export default function CourseManagerClient({ course: initialCourse, categories 
                                     <AnimatePresence>
                                         {isExpanded && (
                                             <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25 }} className="overflow-hidden border-t border-slate-100">
-                                                <div className="p-6 space-y-5 bg-white">
+                                                <div className="p-6 space-y-5 bg-slate-900/50 backdrop-blur-xl border-slate-700/50">
                                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                                         <div className="space-y-1.5">
                                                             <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Título de la Lección</label>

@@ -144,18 +144,18 @@ function PhoneCatalogStrip({ products, userRole }: { products: any[], userRole?:
                 <div className="mb-5 flex items-center justify-between">
                     <div>
                         <h2 className="text-xl font-semibold text-[black] uppercase tracking-widest">
-                            CATÁLOGO DE <span className="font-bold text-black">CELULARES Y TABLETS</span>
+                            CATÁLOGO DE <span className="font-bold text-slate-100">CELULARES Y TABLETS</span>
                         </h2>
                         <p className="text-slate-400 text-[10px] mt-1 uppercase tracking-[0.3em] font-medium">Samsung · iPhone · Xiaomi · OPPO y más</p>
                     </div>
                     <div className="flex items-center gap-3">
-                        <button onClick={() => scroll('left')} className="w-8 h-8 flex items-center justify-center border border-slate-200 bg-white hover:border-blue-600 hover:text-black text-slate-400 rounded-lg transition-all shadow-sm">
+                        <button onClick={() => scroll('left')} className="w-8 h-8 flex items-center justify-center border border-slate-200 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 hover:border-blue-600 hover:text-slate-100 text-slate-400 rounded-lg transition-all shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
                             <ChevronLeft size={15} />
                         </button>
-                        <button onClick={() => scroll('right')} className="w-8 h-8 flex items-center justify-center border border-slate-200 bg-white hover:border-blue-600 hover:text-black text-slate-400 rounded-lg transition-all shadow-sm">
+                        <button onClick={() => scroll('right')} className="w-8 h-8 flex items-center justify-center border border-slate-200 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 hover:border-blue-600 hover:text-slate-100 text-slate-400 rounded-lg transition-all shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
                             <ChevronRight size={15} />
                         </button>
-                        <Link href="/web/phones" className="text-[10px] font-semibold text-slate-500 hover:text-black transition-colors flex items-center gap-1 uppercase tracking-widest">
+                        <Link href="/web/phones" className="text-[10px] font-semibold text-slate-500 hover:text-slate-100 transition-colors flex items-center gap-1 uppercase tracking-widest">
                             Ver todos <ArrowRight size={12} />
                         </Link>
                     </div>
@@ -174,7 +174,7 @@ function PhoneCatalogStrip({ products, userRole }: { products: any[], userRole?:
                             <Link
                                 key={p.id}
                                 href={`/web/product/${p.id}`}
-                                className="flex-none w-[120px] flex flex-col bg-white border border-slate-100 hover:border-blue-400 hover:shadow-md transition-all duration-200 rounded-xl overflow-hidden group"
+                                className="flex-none w-[120px] flex flex-col bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-100 hover:border-blue-400 hover:shadow-[0_8px_32px_rgba(0,0,0,0.5)] transition-all duration-200 rounded-xl overflow-hidden group"
                             >
                                 <div className="w-full h-[100px] relative bg-slate-50 overflow-hidden">
                                     {imgs.length > 0 ? (
@@ -186,7 +186,7 @@ function PhoneCatalogStrip({ products, userRole }: { products: any[], userRole?:
                                     )}
                                 </div>
                                 <div className="p-2 flex flex-col flex-1">
-                                    <p className="text-[9px] font-medium text-slate-500 line-clamp-2 leading-snug group-hover:text-black transition-colors flex-1 mb-1">{p.name}</p>
+                                    <p className="text-[9px] font-medium text-slate-500 line-clamp-2 leading-snug group-hover:text-slate-100 transition-colors flex-1 mb-1">{p.name}</p>
                                     <p className="text-[10px] font-bold text-slate-900">${price.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
                                 </div>
                             </Link>
@@ -625,7 +625,7 @@ function MinimalStoreHero({
                 transition={{ delay: 0.2, duration: 0.5 }}
                 className="mb-2"
             >
-                <h1 className="text-[10vw] md:text-[6vw] font-black tracking-tighter uppercase text-black leading-[0.85] mb-6">
+                <h1 className="text-[10vw] md:text-[6vw] font-black tracking-tighter uppercase text-slate-100 leading-[0.85] mb-6">
                     ATOMIC
                 </h1>
             </motion.div>
@@ -651,7 +651,7 @@ function MinimalStoreHero({
                         <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
                     </div>
                 ) : (
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-hover:text-black transition-colors" size={18} />
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-hover:text-slate-100 transition-colors" size={18} />
                 )}
                 <input 
                     type="text" 
@@ -662,12 +662,12 @@ function MinimalStoreHero({
                         setActiveSubcategoryId(null);
                     }}
                     placeholder="Buscar producto, marca, categoría, proveedor..."
-                    className="w-full bg-black/5 border border-black/10 rounded-full p-6 pl-14 pr-12 text-sm font-bold uppercase tracking-widest placeholder:text-black/30 text-black focus:border-[#0055fe] focus:bg-white transition-all outline-none shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)]"
+                    className="w-full bg-black/5 border border-black/10 rounded-full p-6 pl-14 pr-12 text-sm font-bold uppercase tracking-widest placeholder:text-slate-100/30 text-slate-100 focus:border-[#0055fe] focus:bg-slate-900/50 backdrop-blur-xl border-slate-700/50 transition-all outline-none shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)]"
                 />
                 {searchQuery && (
                     <button 
                         onClick={() => setSearchQuery("")}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 text-black/40 hover:text-black transition-colors"
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-100/40 hover:text-slate-100 transition-colors"
                     >
                         <X size={16} />
                     </button>
@@ -700,14 +700,14 @@ function MinimalStoreHero({
                                     setActiveSubcategoryId(null);
                                 }
                             }}
-                            className={`group flex flex-col items-center justify-center gap-4 bg-white text-black rounded-3xl w-36 h-36 border ${activeMainCategoryId === card.id ? 'border-[#0055fe] shadow-[0_10px_40px_rgba(0,85,254,0.15)] scale-[1.05]' : 'border-black/5 shadow-[0_4px_20px_rgba(0,0,0,0.03)]'}
+                            className={`group flex flex-col items-center justify-center gap-4 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-slate-100 rounded-3xl w-36 h-36 border ${activeMainCategoryId === card.id ? 'border-[#0055fe] shadow-[0_10px_40px_rgba(0,85,254,0.15)] scale-[1.05]' : 'border-black/5 shadow-[0_4px_20px_rgba(0,0,0,0.03)]'}
                                        hover:scale-[1.05] hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] hover:border-black/20 transition-all duration-500
                                        active:scale-[0.98] transition-all duration-300 ease-out`}
                         >
                             <div className={`w-12 h-12 rounded-xl border flex items-center justify-center transition-all duration-300 ${activeMainCategoryId === card.id ? 'bg-[#0055fe] text-white' : 'bg-black/5 group-hover:bg-black group-hover:text-white'}`}>
                                 {card.icon}
                             </div>
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-black">
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-100">
                                 {card.label}
                             </span>
                         </button>
@@ -732,8 +732,8 @@ function MinimalStoreHero({
                                     setActiveSubcategoryId(sub.id === activeSubcategoryId ? null : sub.id);
                                     scrollDown();
                                 }}
-                                className={`group flex flex-col items-center justify-center gap-2 bg-white/5 backdrop-blur-xl text-white rounded-2xl w-32 h-32 border ${activeSubcategoryId === sub.id ? 'border-[#0055fe] bg-[#0055fe]/20 scale-[1.05] shadow-2xl shadow-[#0055fe]/20' : 'border-white/10'}
-                                           hover:scale-[1.05] hover:shadow-2xl hover:shadow-[#0055fe]/20 hover:border-[#0055fe] hover:bg-white/10
+                                className={`group flex flex-col items-center justify-center gap-2 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 backdrop-blur-xl text-white rounded-2xl w-32 h-32 border ${activeSubcategoryId === sub.id ? 'border-[#0055fe] bg-[#0055fe]/20 scale-[1.05] shadow-2xl shadow-[#0055fe]/20' : 'border-white/10'}
+                                           hover:scale-[1.05] hover:shadow-2xl hover:shadow-[#0055fe]/20 hover:border-[#0055fe] hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50/10
                                            active:scale-[0.98] transition-all duration-300 ease-out flex-shrink-0`}
                             >
                                 <span className="text-[10px] font-black uppercase tracking-[0.15em] text-center px-4 leading-relaxed">
@@ -774,13 +774,13 @@ function MiniProductCard({ product: p, userRole, delay }: { product: any, userRo
         >
             <Link
                 href={`/web/product/${p.id}`}
-                className="group flex flex-col bg-white border border-black/5 hover:border-black/20 hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] transition-all duration-500 rounded-2xl overflow-hidden"
+                className="group flex flex-col bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-black/5 hover:border-black/20 hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] transition-all duration-500 rounded-2xl overflow-hidden"
             >
                 <div className="aspect-square relative bg-black/5 flex items-center justify-center overflow-hidden">
                     <SafeImage src={imgs[0]} alt={p.name} fill className="p-2 group-hover:scale-110 transition-transform duration-300" />
                 </div>
                 <div className="p-2">
-                    <p className="text-[9px] font-medium text-slate-500 tracking-wide line-clamp-2 leading-tight group-hover:text-black transition-colors text-black/80 mb-1">{p.name}</p>
+                    <p className="text-[9px] font-medium text-slate-500 tracking-wide line-clamp-2 leading-tight group-hover:text-slate-100 transition-colors text-slate-100/80 mb-1">{p.name}</p>
                     <p className="text-[10px] font-bold text-[#0055fe]">
                         ${calculateDiscountedPrice(p.price, userRole).toLocaleString('en-US', { minimumFractionDigits: 2 })}
                     </p>
@@ -819,10 +819,10 @@ function InfiniteProductScroll({ products, userRole }: { products: any[], userRo
             <div className="absolute left-0 top-0 bottom-4 w-16 bg-gradient-to-r from-[#F8FAFC] to-transparent z-10 pointer-events-none" />
             <div className="absolute right-0 top-0 bottom-4 w-16 bg-gradient-to-l from-[#F8FAFC] to-transparent z-10 pointer-events-none" />
 
-            <button onClick={() => scroll('left')} className="absolute left-2 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center hover:bg-white text-slate-500 shadow-md">
+            <button onClick={() => scroll('left')} className="absolute left-2 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-slate-500 shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
                 <ChevronLeft size={16} />
             </button>
-            <button onClick={() => scroll('right')} className="absolute right-2 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center hover:bg-white text-slate-500 shadow-md">
+            <button onClick={() => scroll('right')} className="absolute right-2 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-slate-500 shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
                 <ChevronRight size={16} />
             </button>
 
@@ -838,14 +838,14 @@ function InfiniteProductScroll({ products, userRole }: { products: any[], userRo
                     <Link
                         key={p.id}
                         href={`/web/product/${p.id}`}
-                        className="shrink-0 w-44 group bg-white border border-slate-200 hover:border-[black]/50 hover:shadow-lg transition-all duration-300 rounded-xl overflow-hidden"
+                        className="shrink-0 w-44 group bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 hover:border-[black]/50 hover:shadow-[0_12px_40px_rgba(0,0,0,0.5)] transition-all duration-300 rounded-xl overflow-hidden"
                         draggable={false}
                     >
                         <div className="h-32 relative bg-slate-50 flex items-center justify-center overflow-hidden border-b border-slate-100">
                              <SafeImage src={safeParseArray(p.images)[0]} alt={p.name} fill className="p-3 group-hover:scale-105 transition-transform duration-300" />
                         </div>
                         <div className="p-3">
-                            <p className="text-[10px] font-medium text-slate-500 line-clamp-2 leading-snug mb-2 group-hover:text-black transition-colors text-black/80">{p.name}</p>
+                            <p className="text-[10px] font-medium text-slate-500 line-clamp-2 leading-snug mb-2 group-hover:text-slate-100 transition-colors text-slate-100/80">{p.name}</p>
                             <p className="text-xs font-bold text-[black]">${calculateDiscountedPrice(p.price, userRole).toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
                         </div>
                     </Link>
@@ -874,7 +874,7 @@ function CollectionBanner({ collection, products, reverse, userRole }: { collect
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.7 }}
-            className="group relative bg-white border border-slate-200 hover:border-zinc-300 rounded-3xl overflow-hidden shadow-xl transition-all duration-500"
+            className="group relative bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 hover:border-zinc-300 rounded-3xl overflow-hidden shadow-xl transition-all duration-500"
         >
             <div className={`absolute top-0 ${reverse ? 'right-0' : 'left-0'} w-[500px] h-[500px] bg-gradient-to-br ${bgAccent} to-transparent opacity-20 blur-[100px] pointer-events-none`} />
             
@@ -916,8 +916,8 @@ function CollectionBanner({ collection, products, reverse, userRole }: { collect
                             <div className="flex justify-between items-center mb-6 px-2">
                                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Productos Destacados</span>
                                 <div className="flex gap-2">
-                                    <button onClick={() => scrollGallery('left')} className="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center hover:bg-[black] hover:text-white transition-all text-slate-400 shadow-md"><ChevronLeft size={16} /></button>
-                                    <button onClick={() => scrollGallery('right')} className="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center hover:bg-[black] hover:text-white transition-all text-slate-400 shadow-md"><ChevronRight size={16} /></button>
+                                    <button onClick={() => scrollGallery('left')} className="w-10 h-10 rounded-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 flex items-center justify-center hover:bg-[black] hover:text-white transition-all text-slate-400 shadow-[0_8px_32px_rgba(0,0,0,0.5)]"><ChevronLeft size={16} /></button>
+                                    <button onClick={() => scrollGallery('right')} className="w-10 h-10 rounded-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 flex items-center justify-center hover:bg-[black] hover:text-white transition-all text-slate-400 shadow-[0_8px_32px_rgba(0,0,0,0.5)]"><ChevronRight size={16} /></button>
                                 </div>
                             </div>
 
@@ -929,14 +929,14 @@ function CollectionBanner({ collection, products, reverse, userRole }: { collect
                                     >
                                         <Link 
                                             href={`/web/product/${p.id}`} 
-                                            className="block w-48 lg:w-56 group bg-white border border-slate-200 rounded-2xl hover:border-zinc-400 transition-all duration-300 p-3 shadow-lg hover:shadow-xl relative overflow-hidden"
+                                            className="block w-48 lg:w-56 group bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 rounded-2xl hover:border-zinc-400 transition-all duration-300 p-3 shadow-[0_12px_40px_rgba(0,0,0,0.5)] hover:shadow-xl relative overflow-hidden"
                                         >
                                             <div className="h-36 lg:h-44 bg-slate-50 flex items-center justify-center relative mb-4 rounded-xl overflow-hidden border border-slate-100">
                                                 <SafeImage src={safeParseArray(p.images)[0]} alt={p.name} fill className="p-4 group-hover:scale-110 transition-transform duration-500" />
                                             </div>
                                             
                                             <div className="px-1">
-                                                <p className="text-slate-500 text-[11px] font-semibold line-clamp-2 mb-2 group-hover:text-black transition-colors text-black/80 leading-relaxed h-8">{p.name}</p>
+                                                <p className="text-slate-500 text-[11px] font-semibold line-clamp-2 mb-2 group-hover:text-slate-100 transition-colors text-slate-100/80 leading-relaxed h-8">{p.name}</p>
                                                 <p className="text-sm font-black text-[black] bg-zinc-50 inline-block px-3 py-1.5 rounded-lg border border-zinc-200">${calculateDiscountedPrice(p.price, userRole).toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
                                             </div>
                                         </Link>
@@ -946,7 +946,7 @@ function CollectionBanner({ collection, products, reverse, userRole }: { collect
                         </div>
                     ) : (
                         <div className="h-full min-h-[300px] flex items-center justify-center">
-                            <div className="text-center bg-white p-10 rounded-3xl border border-slate-100 shadow-sm">
+                            <div className="text-center bg-slate-900/50 backdrop-blur-xl border-slate-700/50 p-10 rounded-3xl border border-slate-100 shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
                                 <Hexagon className="w-12 h-12 text-slate-200 mx-auto mb-4 animate-[spin_10s_linear_infinite]" strokeWidth={1} />
                                 <p className="text-slate-300 text-[11px] uppercase tracking-[0.4em] font-black">Catálogo en Sincronización</p>
                             </div>
@@ -971,12 +971,12 @@ function CategoriesBanner({ categories }: { categories: any[] }) {
                 <div className="flex items-end justify-between mb-6">
                     <div>
                         <h2 className="text-xl font-semibold text-[black] uppercase tracking-widest">
-                            NUESTRAS <span className="font-bold text-black">CATEGORÍAS</span>
+                            NUESTRAS <span className="font-bold text-slate-100">CATEGORÍAS</span>
                         </h2>
                     </div>
                     <div className="flex items-center gap-2">
-                        <button onClick={() => scroll('left')} className="w-8 h-8 rounded-full border border-slate-200 bg-white text-slate-400 flex items-center justify-center hover:bg-[black] hover:text-white transition-all shadow-sm"><ChevronLeft size={15} /></button>
-                        <button onClick={() => scroll('right')} className="w-8 h-8 rounded-full border border-slate-200 bg-white text-slate-400 flex items-center justify-center hover:bg-[black] hover:text-white transition-all shadow-sm"><ChevronRight size={15} /></button>
+                        <button onClick={() => scroll('left')} className="w-8 h-8 rounded-full border border-slate-200 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-slate-400 flex items-center justify-center hover:bg-[black] hover:text-white transition-all shadow-[0_4px_15px_rgba(0,0,0,0.3)]"><ChevronLeft size={15} /></button>
+                        <button onClick={() => scroll('right')} className="w-8 h-8 rounded-full border border-slate-200 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-slate-400 flex items-center justify-center hover:bg-[black] hover:text-white transition-all shadow-[0_4px_15px_rgba(0,0,0,0.3)]"><ChevronRight size={15} /></button>
                     </div>
                 </div>
 
@@ -992,15 +992,15 @@ function CategoriesBanner({ categories }: { categories: any[] }) {
                         >
                             <Link
                                 href={cat.slug === 'desarrollo' || cat.slug === 'software-desarrollo' || cat.slug.includes('diseno') || cat.name.toLowerCase().includes('diseño') ? '/web/demos' : `/web/category/${cat.slug}`}
-                                className="group block relative overflow-hidden w-48 h-60 rounded-xl border border-slate-200 bg-white hover:border-zinc-400 hover:shadow-lg transition-all duration-300"
+                                className="group block relative overflow-hidden w-48 h-60 rounded-xl border border-slate-200 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 hover:border-zinc-400 hover:shadow-[0_12px_40px_rgba(0,0,0,0.5)] transition-all duration-300"
                             >
                                 <div className="absolute inset-0 flex items-center justify-center p-6">
                                     <SafeImage src={cat.image} alt={cat.name} fill className="p-8 opacity-10 group-hover:opacity-30 transition-all duration-500 saturate-0" />
                                 </div>
                                 <div className="absolute inset-0 bg-gradient-to-t from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                                 <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-white via-white/95 to-transparent">
-                                    <h3 className="text-[black] text-[11px] font-semibold uppercase tracking-tight mb-0.5 group-hover:text-black transition-colors line-clamp-2">{cat.name}</h3>
-                                    <p className="text-slate-400 text-[9px] font-medium uppercase tracking-widest flex items-center gap-1 group-hover:text-black transition-colors">
+                                    <h3 className="text-[black] text-[11px] font-semibold uppercase tracking-tight mb-0.5 group-hover:text-slate-100 transition-colors line-clamp-2">{cat.name}</h3>
+                                    <p className="text-slate-400 text-[9px] font-medium uppercase tracking-widest flex items-center gap-1 group-hover:text-slate-100 transition-colors">
                                         Ver <ArrowRight size={10} className="group-hover:translate-x-0.5 transition-transform" />
                                     </p>
                                 </div>
@@ -1028,18 +1028,18 @@ function WebShowcase() {
     const scroll = (dir: 'left' | 'right') => { scrollRef.current?.scrollBy({ left: dir === 'right' ? 350 : -350, behavior: 'smooth' }) }
 
     return (
-        <div className="bg-white border border-slate-200 rounded-2xl p-8 relative overflow-hidden shadow-xl">
+        <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 rounded-2xl p-8 relative overflow-hidden shadow-xl">
             <div className="relative z-10 flex flex-col md:flex-row justify-between items-end mb-10 gap-4">
                 <div>
-                    <div className="flex items-center gap-2 text-black mb-2">
+                    <div className="flex items-center gap-2 text-slate-100 mb-2">
                         <Sparkles size={14} />
                         <span className="text-[10px] font-bold uppercase tracking-[0.3em]">Software & Web Demos</span>
                     </div>
-                    <h3 className="text-2xl font-black text-[black] uppercase tracking-tight">Showcase de <span className="text-black">Desarrollo</span></h3>
+                    <h3 className="text-2xl font-black text-[black] uppercase tracking-tight">Showcase de <span className="text-slate-100">Desarrollo</span></h3>
                 </div>
                 <div className="flex gap-2">
-                    <button onClick={() => scroll('left')} className="w-10 h-10 rounded-full border border-slate-200 bg-white text-slate-400 hover:text-black flex items-center justify-center transition-colors shadow-sm"><ChevronLeft size={20} /></button>
-                    <button onClick={() => scroll('right')} className="w-10 h-10 rounded-full border border-slate-200 bg-white text-slate-400 hover:text-black flex items-center justify-center transition-colors shadow-sm"><ChevronRight size={20} /></button>
+                    <button onClick={() => scroll('left')} className="w-10 h-10 rounded-full border border-slate-200 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-slate-400 hover:text-slate-100 flex items-center justify-center transition-colors shadow-[0_4px_15px_rgba(0,0,0,0.3)]"><ChevronLeft size={20} /></button>
+                    <button onClick={() => scroll('right')} className="w-10 h-10 rounded-full border border-slate-200 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-slate-400 hover:text-slate-100 flex items-center justify-center transition-colors shadow-[0_4px_15px_rgba(0,0,0,0.3)]"><ChevronRight size={20} /></button>
                 </div>
             </div>
 
@@ -1048,14 +1048,14 @@ function WebShowcase() {
                     <motion.div 
                         key={item.id}
                         whileHover={{ y: -5 }}
-                        className="snap-start shrink-0 w-72 bg-slate-50 border border-slate-200 rounded-xl overflow-hidden group cursor-pointer shadow-md hover:shadow-xl transition-all"
+                        className="snap-start shrink-0 w-72 bg-slate-50 border border-slate-200 rounded-xl overflow-hidden group cursor-pointer shadow-[0_8px_32px_rgba(0,0,0,0.5)] hover:shadow-xl transition-all"
                         onClick={() => setActivePreview({ url: item.previewUrl, title: item.title, accent: item.accent })}
                     >
-                        <div className="h-40 relative bg-white flex items-center justify-center overflow-hidden">
+                        <div className="h-40 relative bg-slate-900/50 backdrop-blur-xl border-slate-700/50 flex items-center justify-center overflow-hidden">
                              <iframe src={item.previewUrl} title={item.title} className="w-[400%] h-[400%] origin-top-left scale-[0.25] pointer-events-none opacity-40 group-hover:opacity-80 transition-opacity" />
-                             <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/10 opacity-100 group-hover:opacity-0 transition-opacity"><span className="text-[10px] font-bold text-black/40 uppercase tracking-widest">Ver Demo</span></div>
+                             <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/10 opacity-100 group-hover:opacity-0 transition-opacity"><span className="text-[10px] font-bold text-slate-100/40 uppercase tracking-widest">Ver Demo</span></div>
                         </div>
-                        <div className="p-4 border-t border-slate-100 bg-white">
+                        <div className="p-4 border-t border-slate-100 bg-slate-900/50 backdrop-blur-xl border-slate-700/50">
                             <span className="text-[9px] font-bold uppercase tracking-widest mb-1 block" style={{ color: item.accent }}>{item.category}</span>
                             <h4 className="text-sm font-bold text-slate-800 mb-2">{item.title}</h4>
                             <p className="text-[10px] text-slate-500 leading-relaxed line-clamp-2">{item.description}</p>
@@ -1067,12 +1067,12 @@ function WebShowcase() {
             <AnimatePresence>
                 {activePreview && (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 md:p-10" onClick={() => setActivePreview(null)}>
-                        <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="relative w-full h-full max-w-6xl bg-white border border-slate-200 shadow-2xl rounded-xl overflow-hidden flex flex-col" onClick={(e) => e.stopPropagation()}>
+                        <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="relative w-full h-full max-w-6xl bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 shadow-2xl rounded-xl overflow-hidden flex flex-col" onClick={(e) => e.stopPropagation()}>
                             <div className="h-14 bg-slate-50 border-b border-slate-200 flex items-center justify-between px-6">
                                 <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Demo: <span className="text-slate-900">{activePreview.title}</span></span>
                                 <button onClick={() => setActivePreview(null)} className="text-slate-400 hover:text-slate-900 transition-colors"><X size={20} /></button>
                             </div>
-                            <div className="flex-1 bg-white"><iframe src={activePreview.url} title="Active Demo" className="w-full h-full border-0" /></div>
+                            <div className="flex-1 bg-slate-900/50 backdrop-blur-xl border-slate-700/50"><iframe src={activePreview.url} title="Active Demo" className="w-full h-full border-0" /></div>
                         </motion.div>
                     </motion.div>
                 )}
@@ -1094,7 +1094,7 @@ function HeroBanner({ settings }: { settings: any }) {
     ]
 
     return (
-        <section className="w-full bg-white">
+        <section className="w-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50">
             <div className="flex flex-col">
                 {banners.map((b, i) => (
                     <div 
@@ -1126,7 +1126,7 @@ function IntroductionBanner() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="text-[6vw] md:text-[4vw] font-black tracking-tighter uppercase text-black leading-[0.9] mb-8"
+                className="text-[6vw] md:text-[4vw] font-black tracking-tighter uppercase text-slate-100 leading-[0.9] mb-8"
             >
                 TECNOLOGÍA QUE <br/> <span className="text-[#0055fe]">TRANSFORMA</span>
             </motion.h2>
@@ -1136,9 +1136,9 @@ function IntroductionBanner() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.2 }}
-                className="max-w-3xl text-sm md:text-base font-medium text-black/60 leading-relaxed mb-16"
+                className="max-w-3xl text-sm md:text-base font-medium text-slate-100/60 leading-relaxed mb-16"
             >
-                En <strong className="text-black font-black">ATOMIC</strong>, no solo vendemos equipos; construimos infraestructuras. Desde electrónica de consumo hasta soluciones industriales completas. Desarrollamos software a medida para requerimientos específicos y respaldamos cada proyecto con un <strong className="text-[#0055fe] font-black">servicio técnico altamente especializado</strong>.
+                En <strong className="text-slate-100 font-black">ATOMIC</strong>, no solo vendemos equipos; construimos infraestructuras. Desde electrónica de consumo hasta soluciones industriales completas. Desarrollamos software a medida para requerimientos específicos y respaldamos cada proyecto con un <strong className="text-[#0055fe] font-black">servicio técnico altamente especializado</strong>.
             </motion.p>
 
             <motion.div

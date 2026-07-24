@@ -25,7 +25,7 @@ export function SummaryModal() {
                             </h3>
                             <button 
                                 onClick={() => setIsOpen(false)}
-                                className="text-gray-500 hover:text-white transition-colors p-2 rounded-full hover:bg-white/5"
+                                className="text-slate-400 hover:text-white transition-colors p-2 rounded-full hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5"
                             >
                                 <X size={24} />
                             </button>
@@ -68,7 +68,7 @@ export function SummaryModal() {
                             </div>
                             
                             <div className="mt-8 p-6 bg-[#0a0a0a] rounded-xl border border-gray-800 text-center">
-                                <p className="text-sm !text-gray-500 italic mb-0">
+                                <p className="text-sm !text-slate-400 italic mb-0">
                                     "El futuro ya está escrito en sus oficinas antes de que nosotros lo vivamos." Para el análisis completo de datos duros, se recomienda leer la versión íntegra en inglés.
                                 </p>
                             </div>

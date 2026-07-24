@@ -21,7 +21,7 @@ export default async function CollectionPage({ params }: { params: Promise<{ slu
 
     if (!collection) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-white/60 backdrop-blur-sm text-center p-6">
+            <div className="min-h-screen flex items-center justify-center bg-slate-900/50 backdrop-blur-xl border-slate-700/50/60 backdrop-blur-sm text-center p-6">
                 <div>
                     <h1 className="text-4xl font-black uppercase text-[#0F1923]/20 tracking-tighter mb-4">Área de especialización no encontrada</h1>
                     <Link href="/web" className="text-[#E8341A] font-black uppercase tracking-widest text-[10px] hover:underline">Volver al inicio</Link>
@@ -31,7 +31,7 @@ export default async function CollectionPage({ params }: { params: Promise<{ slu
     }
 
     return (
-        <div className="min-h-screen bg-white/60 backdrop-blur-sm text-[#0F1923]">
+        <div className="min-h-screen bg-slate-900/50 backdrop-blur-xl border-slate-700/50/60 backdrop-blur-sm text-[#0F1923]">
             {/* Header / Cover */}
             <div className="relative h-96 md:h-[32rem] bg-[#0F1923] flex flex-col items-center justify-center overflow-hidden">
                 {collection.image && (
@@ -46,7 +46,7 @@ export default async function CollectionPage({ params }: { params: Promise<{ slu
                         <a 
                             href={collection.pdfUrl} 
                             download={`Brochure_${collection.name}.pdf`}
-                            className="inline-flex items-center gap-3 bg-white text-[#E8341A] px-10 py-5 text-[11px] font-black uppercase tracking-widest hover:bg-[#E8341A] hover:text-white transition-all shadow-2xl rounded-none"
+                            className="inline-flex items-center gap-3 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-[#E8341A] px-10 py-5 text-[11px] font-black uppercase tracking-widest hover:bg-[#E8341A] hover:text-white transition-all shadow-2xl rounded-none"
                         >
                             <Download size={16} />
                             <span>Descargar Brochure PDF</span>
@@ -90,7 +90,7 @@ export default async function CollectionPage({ params }: { params: Promise<{ slu
                                 imgs = Array.isArray(parsed) ? parsed : [];
                             } catch {}
                             return (
-                                <Link key={p.id} href={`/web/product/${p.id}`} className="bg-white group cursor-pointer border border-[#0F1923]/6 hover:border-[#E8341A]/30 transition-all flex flex-col h-full hover:shadow-2xl shadow-[#E8341A]/10 rounded-none overflow-hidden">
+                                <Link key={p.id} href={`/web/product/${p.id}`} className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 group cursor-pointer border border-[#0F1923]/6 hover:border-[#E8341A]/30 transition-all flex flex-col h-full hover:shadow-2xl shadow-[#E8341A]/10 rounded-none overflow-hidden">
                                     <div className="aspect-square bg-[#F5F3F0] relative overflow-hidden flex items-center justify-center p-8 border-b border-[#0F1923]/6">
                                         {imgs.length > 0 ? (
                                             <img src={imgs[0]} className="w-full h-full object-contain mix-blend-darken opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700 ease-out" />

@@ -10,7 +10,7 @@ export const revalidate = 60 // Cache for 60s - much faster repeated loads
 // Lightweight skeleton shown immediately while products load
 function StoreSkeleton() {
     return (
-        <div className="min-h-screen bg-white">
+        <div className="min-h-screen bg-slate-900/50 backdrop-blur-xl border-slate-700/50">
             {/* Hero skeleton */}
             <div className="h-[420px] bg-gradient-to-r from-slate-100 to-slate-200 animate-pulse" />
             

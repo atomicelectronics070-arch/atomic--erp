@@ -34,7 +34,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
         <div className="min-h-screen bg-[#F8FAFC] text-slate-900">
             {/* Header / Cover */}
             <div className="relative h-72 md:h-[450px] bg-[#1E3A8A] flex flex-col items-center justify-center overflow-hidden border-b border-slate-200">
-                <div className="absolute inset-0 bg-blue-600/[0.1] blur-[120px] rounded-full -top-[20%]" />
+                <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all/[0.1] blur-[120px] rounded-full -top-[20%]" />
                 {category.image && (
                     <img src={category.image} alt={category.name} className="absolute inset-0 w-full h-full object-cover opacity-10 grayscale" />
                 )}
@@ -55,7 +55,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
                         <a 
                             href={category.pdfUrl} 
                             download={`${category.name}.pdf`}
-                            className="flex items-center gap-3 bg-[#1E3A8A] text-white px-8 py-4 text-[10px] font-black uppercase tracking-widest hover:bg-blue-800 transition-all shadow-lg"
+                            className="flex items-center gap-3 bg-[#1E3A8A] text-white px-8 py-4 text-[10px] font-black uppercase tracking-widest hover:bg-blue-800 transition-all shadow-[0_12px_40px_rgba(0,0,0,0.5)]"
                         >
                             <Download size={14} />
                             <span>Descargar Catálogo PDF</span>
@@ -65,7 +65,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
 
                 {/* Special Banner for Consoles */}
                 {slug === 'consolas-de-video-juegos' && (
-                    <div className="mb-20 bg-white border border-slate-200 p-8 md:p-12 relative overflow-hidden group shadow-xl">
+                    <div className="mb-20 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 p-8 md:p-12 relative overflow-hidden group shadow-xl">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 blur-[80px] -translate-y-1/2 translate-x-1/2 group-hover:scale-125 transition-transform duration-700" />
                         <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                             <div className="space-y-6">
@@ -106,7 +106,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
                             }
                         }
                         return (
-                            <Link key={p.id} href={`/web/product/${p.id}`} className="group bg-white border border-slate-200 hover:border-blue-300 transition-all flex flex-col h-full hover:shadow-xl rounded-none overflow-hidden">
+                            <Link key={p.id} href={`/web/product/${p.id}`} className="group bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 hover:border-blue-300 transition-all flex flex-col h-full hover:shadow-xl rounded-none overflow-hidden">
                                 <div className="aspect-square bg-slate-50 relative overflow-hidden flex items-center justify-center p-6 border-b border-slate-100">
                                     {imgs.length > 0 ? (
                                         <img src={imgs[0]} alt={p.name} referrerPolicy="no-referrer" className="w-full h-full object-contain group-hover:scale-110 transition-all duration-700 ease-out p-4" />

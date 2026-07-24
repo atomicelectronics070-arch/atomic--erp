@@ -294,7 +294,7 @@ export default function ShopConfigPage() {
                     {session?.user?.role === "ADMIN" && (
                         <button 
                             onClick={() => { setEditingProduct(null); setView(view === 'list' ? 'add' : 'list') }}
-                            className="px-5 py-3 rounded-xl bg-blue-600 text-white font-semibold text-sm hover:bg-blue-500 transition-all duration-300 shadow-sm hover:shadow-[0_4px_12px_rgba(59,130,246,0.25)] flex items-center gap-2"
+                            className="px-5 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all text-white font-semibold text-sm hover:bg-blue-500 transition-all duration-300 shadow-[0_4px_15px_rgba(0,0,0,0.3)] hover:shadow-[0_4px_12px_rgba(59,130,246,0.25)] flex items-center gap-2"
                         >
                             <Plus size={16} />
                             <span>{view === 'list' ? "Subir Producto" : "Volver al Listado"}</span>
@@ -314,8 +314,8 @@ export default function ShopConfigPage() {
                                 onClick={() => setActiveTab(tab as any)}
                                 className={`px-5 py-2.5 text-xs font-semibold rounded-xl transition-all whitespace-nowrap ${
                                     activeTab === tab 
-                                        ? 'bg-white text-slate-900 shadow-sm border border-slate-200/50' 
-                                        : 'text-slate-500 hover:text-slate-800 hover:bg-white/40'
+                                        ? 'bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-slate-900 shadow-[0_4px_15px_rgba(0,0,0,0.3)] border border-slate-200/50' 
+                                        : 'text-slate-500 hover:text-slate-800 hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50/40'
                                 }`}
                             >
                                 {tab === 'products' ? 'Inventario' : 
@@ -351,7 +351,7 @@ export default function ShopConfigPage() {
                         <div className="space-y-8 animate-in fade-in duration-700">
                             {/* Modern Stats Summary */}
                             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 relative z-10">
-                                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white border border-slate-200/80 p-6 flex items-center gap-5 rounded-2xl relative overflow-hidden group shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.05)] hover:-translate-y-0.5 transition-all duration-300">
+                                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200/80 p-6 flex items-center gap-5 rounded-2xl relative overflow-hidden group shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.05)] hover:-translate-y-0.5 transition-all duration-300">
                                     <div className="absolute top-0 left-0 w-[4px] h-full bg-blue-500"></div>
                                     <div className="p-3 bg-blue-50 text-blue-600 rounded-xl group-hover:scale-105 transition-all duration-500"><ShoppingBag size={24} /></div>
                                     <div>
@@ -359,7 +359,7 @@ export default function ShopConfigPage() {
                                         <h4 className="text-2xl font-extrabold text-slate-900 tracking-tight">{totalProducts}</h4>
                                     </div>
                                 </motion.div>
-                                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-white border border-slate-200/80 p-6 flex items-center gap-5 rounded-2xl relative overflow-hidden group shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.05)] hover:-translate-y-0.5 transition-all duration-300">
+                                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200/80 p-6 flex items-center gap-5 rounded-2xl relative overflow-hidden group shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.05)] hover:-translate-y-0.5 transition-all duration-300">
                                     <div className="absolute top-0 left-0 w-[4px] h-full bg-indigo-500"></div>
                                     <div className="p-3 bg-indigo-50 text-indigo-600 rounded-xl group-hover:scale-105 transition-all duration-500"><TagIcon size={24} /></div>
                                     <div>
@@ -367,7 +367,7 @@ export default function ShopConfigPage() {
                                         <h4 className="text-2xl font-extrabold text-slate-900 tracking-tight">{metadata.categories.length}</h4>
                                     </div>
                                 </motion.div>
-                                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="bg-white border border-slate-200/80 p-6 flex items-center gap-5 rounded-2xl relative overflow-hidden group shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.05)] hover:-translate-y-0.5 transition-all duration-300">
+                                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200/80 p-6 flex items-center gap-5 rounded-2xl relative overflow-hidden group shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.05)] hover:-translate-y-0.5 transition-all duration-300">
                                     <div className="absolute top-0 left-0 w-[4px] h-full bg-violet-500"></div>
                                     <div className="p-3 bg-violet-50 text-violet-600 rounded-xl group-hover:scale-105 transition-all duration-500"><Globe size={24} /></div>
                                     <div>
@@ -375,7 +375,7 @@ export default function ShopConfigPage() {
                                         <h4 className="text-2xl font-extrabold text-slate-900 tracking-tight">{providerStats.length}</h4>
                                     </div>
                                 </motion.div>
-                                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="bg-white border border-slate-200/80 p-6 flex items-center gap-5 rounded-2xl relative overflow-hidden group shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.05)] hover:-translate-y-0.5 transition-all duration-300">
+                                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200/80 p-6 flex items-center gap-5 rounded-2xl relative overflow-hidden group shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.05)] hover:-translate-y-0.5 transition-all duration-300">
                                     <div className="absolute top-0 left-0 w-[4px] h-full bg-emerald-500"></div>
                                     <div className="p-3 bg-emerald-50 text-emerald-600 rounded-xl group-hover:scale-105 transition-all duration-500"><CheckCircle size={24} /></div>
                                     <div>
@@ -388,7 +388,7 @@ export default function ShopConfigPage() {
                             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
                                 {/* Sidebar: Insights & Maintenance */}
                                 <div className="lg:col-span-1 space-y-6 sticky top-32">
-                                    <div className="bg-white border border-slate-200/80 p-6 rounded-2xl shadow-sm relative overflow-hidden">
+                                    <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200/80 p-6 rounded-2xl shadow-[0_4px_15px_rgba(0,0,0,0.3)] relative overflow-hidden">
                                         <div className="flex items-center space-x-3 text-slate-800 border-b border-slate-100 pb-5 mb-5">
                                             <Store size={18} className="text-blue-500" />
                                             <h3 className="text-xs font-bold text-slate-800">Distribución por Proveedor</h3>
@@ -397,7 +397,7 @@ export default function ShopConfigPage() {
                                             {providerStats.length > 0 ? providerStats.map((s, i) => (
                                                 <div key={i} className="flex justify-between items-center group cursor-default p-2.5 hover:bg-slate-50 transition-all rounded-xl border border-transparent hover:border-slate-100">
                                                     <span className="text-xs font-semibold text-slate-600 truncate pr-3 group-hover:text-blue-600 transition-colors">{s.name}</span>
-                                                    <span className="text-[10px] font-bold text-slate-800 bg-slate-100 border border-slate-200/60 px-2 py-0.5 rounded-full shadow-sm">{s.count} <span className="opacity-55 ml-0.5 font-normal text-[9px]">uds</span></span>
+                                                    <span className="text-[10px] font-bold text-slate-800 bg-slate-100 border border-slate-200/60 px-2 py-0.5 rounded-full shadow-[0_4px_15px_rgba(0,0,0,0.3)]">{s.count} <span className="opacity-55 ml-0.5 font-normal text-[9px]">uds</span></span>
                                                 </div>
                                             )) : (
                                                 <div className="text-xs text-slate-400 font-semibold text-center py-16 flex flex-col items-center gap-3">
@@ -416,7 +416,7 @@ export default function ShopConfigPage() {
                                         </div>
                                     </div>
 
-                                    <div className="bg-white border border-slate-200/80 p-6 rounded-2xl shadow-sm relative overflow-hidden group">
+                                    <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200/80 p-6 rounded-2xl shadow-[0_4px_15px_rgba(0,0,0,0.3)] relative overflow-hidden group">
                                         <div className="flex items-center space-x-3 mb-4 pb-4 border-b border-slate-100">
                                             <div className="p-2 bg-rose-50 text-rose-500 rounded-lg"><Trash2 size={18} /></div>
                                             <div>
@@ -472,7 +472,7 @@ export default function ShopConfigPage() {
                                                 <button
                                                     onClick={handleFixImages}
                                                     disabled={isFixingImages}
-                                                    className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 text-xs font-bold transition-all rounded-lg disabled:opacity-50 flex items-center justify-center gap-2"
+                                                    className="w-full bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all hover:from-cyan-400 hover:to-indigo-500 text-white py-2 text-xs font-bold transition-all rounded-lg disabled:opacity-50 flex items-center justify-center gap-2"
                                                 >
                                                     <RefreshCw size={12} className={isFixingImages ? 'animate-spin' : ''}/>
                                                     {isFixingImages ? 'Buscando...' : 'Rellenar Imágenes'}
@@ -484,7 +484,7 @@ export default function ShopConfigPage() {
 
                                 {/* Main Content: Search & Table */}
                                 <div className="lg:col-span-3 space-y-8 relative z-10">
-                                    <div className="flex flex-col md:flex-row gap-4 items-center bg-white border border-slate-200/80 p-5 rounded-2xl shadow-sm relative overflow-hidden group">
+                                    <div className="flex flex-col md:flex-row gap-4 items-center bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200/80 p-5 rounded-2xl shadow-[0_4px_15px_rgba(0,0,0,0.3)] relative overflow-hidden group">
                                         <div className="absolute top-0 left-0 w-[4px] h-full bg-blue-500 transition-all"></div>
                                         <div className="flex-1 relative group w-full">
                                             <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" size={16} />
@@ -493,7 +493,7 @@ export default function ShopConfigPage() {
                                                 placeholder="Buscar por SKU, nombre o proveedor..."
                                                 value={localSearch}
                                                 onChange={(e) => setLocalSearch(e.target.value)}
-                                                className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-12 pr-10 py-3.5 text-xs font-semibold text-slate-800 outline-none focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/5 transition-all placeholder:text-slate-400"
+                                                className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-12 pr-10 py-3.5 text-xs font-semibold text-slate-800 outline-none focus:border-blue-500 focus:bg-slate-900/50 backdrop-blur-xl border-slate-700/50 focus:ring-4 focus:ring-blue-500/5 transition-all placeholder:text-slate-400"
                                             />
                                             {localSearch !== dashboardSearch && (
                                                 <div className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
@@ -508,7 +508,7 @@ export default function ShopConfigPage() {
                                             <select 
                                                 value={selectedProvider} 
                                                 onChange={(e) => { setSelectedProvider(e.target.value); setCurrentPage(1); }}
-                                                className="w-full md:w-auto bg-slate-50 border border-slate-200 px-4 py-3.5 text-xs font-bold text-slate-700 outline-none focus:border-blue-500 focus:bg-white transition-all rounded-xl appearance-none cursor-pointer pr-10"
+                                                className="w-full md:w-auto bg-slate-50 border border-slate-200 px-4 py-3.5 text-xs font-bold text-slate-700 outline-none focus:border-blue-500 focus:bg-slate-900/50 backdrop-blur-xl border-slate-700/50 transition-all rounded-xl appearance-none cursor-pointer pr-10"
                                                 style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 24 24\' stroke=\'%2364748b\' stroke-width=\'2.5\'%3E%3Cpath stroke-linecap=\'round\' stroke-linejoin=\'round\' d=\'M19 9l-7 7-7-7\'%3E%3C/path%3E%3C/svg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '0.8em' }}
                                             >
                                                 <option value="">TODOS LOS PROVEEDORES</option>
@@ -518,27 +518,27 @@ export default function ShopConfigPage() {
                                         <div className="flex bg-slate-100 border border-slate-200 p-1 rounded-xl w-full md:w-fit whitespace-nowrap shadow-inner">
                                             <button 
                                                 onClick={() => { setIsTrashView(false); setCurrentPage(1); }}
-                                                className={`px-4 py-2 text-xs font-semibold rounded-lg transition-all ${!isTrashView ? 'bg-white text-slate-900 shadow-sm border border-slate-200/50' : 'text-slate-500 hover:text-slate-800'}`}
+                                                className={`px-4 py-2 text-xs font-semibold rounded-lg transition-all ${!isTrashView ? 'bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-slate-900 shadow-[0_4px_15px_rgba(0,0,0,0.3)] border border-slate-200/50' : 'text-slate-500 hover:text-slate-800'}`}
                                             >
                                                 Activo
                                             </button>
                                             <button 
                                                 onClick={() => { setIsTrashView(true); setCurrentPage(1); }}
-                                                className={`px-4 py-2 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5 ${isTrashView ? 'bg-red-550 text-red-600 shadow-sm border border-red-200/50' : 'text-slate-500 hover:text-red-600'}`}
+                                                className={`px-4 py-2 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5 ${isTrashView ? 'bg-red-550 text-red-600 shadow-[0_4px_15px_rgba(0,0,0,0.3)] border border-red-200/50' : 'text-slate-500 hover:text-red-600'}`}
                                             >
                                                 <Trash2 size={13} /> Papelera
                                             </button>
                                         </div>
                                     </div>
 
-                                    <div className="bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden relative">
+                                    <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200/80 rounded-2xl shadow-[0_4px_15px_rgba(0,0,0,0.3)] overflow-hidden relative">
                                         <div className="overflow-x-auto custom-scrollbar">
                                             <table className="w-full text-left border-collapse">
                                                 <thead>
                                                     <tr className="bg-slate-50/60 text-[11px] font-bold text-slate-500 border-b border-slate-200/60">
                                                         <th className="px-6 py-4 w-16">
                                                             <button onClick={toggleAllProducts} className="text-slate-400 hover:text-blue-500 transition-colors">
-                                                                {selectedProducts.length === products.length && products.length > 0 ? <CheckSquare size={18} className="text-blue-600 shadow-sm" /> : <Square size={18} />}
+                                                                {selectedProducts.length === products.length && products.length > 0 ? <CheckSquare size={18} className="text-blue-600 shadow-[0_4px_15px_rgba(0,0,0,0.3)]" /> : <Square size={18} />}
                                                             </button>
                                                         </th>
                                                         <th className="px-6 py-4">Artículo</th>
@@ -548,7 +548,7 @@ export default function ShopConfigPage() {
                                                         <th className="px-6 py-4 text-right pr-8">Acciones</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody className="divide-y divide-slate-100 bg-white">
+                                                <tbody className="divide-y divide-slate-100 bg-slate-900/50 backdrop-blur-xl border-slate-700/50">
                                                     {products.length === 0 ? (
                                                         <tr>
                                                             <td colSpan={6} className="py-24 text-center">
@@ -579,7 +579,7 @@ export default function ShopConfigPage() {
                                                                                     setPreviewImages({ urls: safeParseArray(p.images), title: p.name });
                                                                                 }
                                                                             }}
-                                                                            className={`w-12 h-12 bg-slate-55 border border-slate-200/60 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center relative group-hover:border-blue-500/30 transition-all shadow-sm ${p.images && p.images !== 'null' && safeParseArray(p.images).length > 0 ? 'cursor-pointer' : ''}`}
+                                                                            className={`w-12 h-12 bg-slate-55 border border-slate-200/60 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center relative group-hover:border-blue-500/30 transition-all shadow-[0_4px_15px_rgba(0,0,0,0.3)] ${p.images && p.images !== 'null' && safeParseArray(p.images).length > 0 ? 'cursor-pointer' : ''}`}
                                                                         >
                                                                             {p.images && p.images !== 'null' && safeParseArray(p.images).length > 0 ? (
                                                                                 <img src={safeParseArray(p.images)[0]} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-550" />
@@ -648,7 +648,7 @@ export default function ShopConfigPage() {
                                                                         {isTrashView ? (
                                                                             <button 
                                                                                 onClick={() => handleRestore(p.id)}
-                                                                                className="px-4 py-2 bg-emerald-50 hover:bg-emerald-600 text-emerald-600 hover:text-white border border-emerald-200 hover:border-emerald-500 transition-all text-xs font-semibold rounded-lg shadow-sm"
+                                                                                className="px-4 py-2 bg-emerald-50 hover:bg-emerald-600 text-emerald-600 hover:text-white border border-emerald-200 hover:border-emerald-500 transition-all text-xs font-semibold rounded-lg shadow-[0_4px_15px_rgba(0,0,0,0.3)]"
                                                                             >
                                                                                 Restaurar
                                                                             </button>
@@ -656,7 +656,7 @@ export default function ShopConfigPage() {
                                                                             <>
                                                                                 <button 
                                                                                     onClick={() => { setEditingProduct(p); setView('edit'); }}
-                                                                                    className="p-2.5 bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-slate-800 transition-all rounded-lg border border-slate-200/60 shadow-sm active:scale-95 group/btn"
+                                                                                    className="p-2.5 bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-slate-800 transition-all rounded-lg border border-slate-200/60 shadow-[0_4px_15px_rgba(0,0,0,0.3)] active:scale-95 group/btn"
                                                                                 >
                                                                                     <Edit size={15} className="group-hover/btn:rotate-12 transition-transform" />
                                                                                 </button>
@@ -665,7 +665,7 @@ export default function ShopConfigPage() {
                                                                                         await toggleProductFeatured(p.id, !p.featured)
                                                                                         refreshData()
                                                                                     }}
-                                                                                    className={`p-2.5 transition-all rounded-lg border shadow-sm active:scale-95 ${
+                                                                                    className={`p-2.5 transition-all rounded-lg border shadow-[0_4px_15px_rgba(0,0,0,0.3)] active:scale-95 ${
                                                                                         p.featured 
                                                                                             ? 'bg-yellow-50 border-yellow-250 text-yellow-600 hover:bg-yellow-100'
                                                                                             : 'bg-slate-50 border-slate-200/60 text-slate-400 hover:bg-yellow-50 hover:text-yellow-500'
@@ -676,7 +676,7 @@ export default function ShopConfigPage() {
                                                                                 </button>
                                                                                 <button 
                                                                                     onClick={() => handleDelete(p.id)}
-                                                                                    className="p-2.5 bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white transition-all rounded-lg border border-rose-200/60 shadow-sm active:scale-95 group/del"
+                                                                                    className="p-2.5 bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white transition-all rounded-lg border border-rose-200/60 shadow-[0_4px_15px_rgba(0,0,0,0.3)] active:scale-95 group/del"
                                                                                 >
                                                                                     <Trash2 size={15} className="group-hover/del:scale-105 transition-transform" />
                                                                                 </button>
@@ -698,14 +698,14 @@ export default function ShopConfigPage() {
                                                 <button 
                                                     disabled={currentPage <= 1}
                                                     onClick={() => setCurrentPage(prev => prev - 1)}
-                                                    className="px-4 py-2 bg-white border border-slate-200 text-slate-600 hover:text-slate-800 disabled:opacity-30 transition-all font-semibold text-xs rounded-xl active:scale-95 shadow-sm"
+                                                    className="px-4 py-2 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 text-slate-600 hover:text-slate-800 disabled:opacity-30 transition-all font-semibold text-xs rounded-xl active:scale-95 shadow-[0_4px_15px_rgba(0,0,0,0.3)]"
                                                 >
                                                     <span>Anterior</span>
                                                 </button>
                                                 <button 
                                                     disabled={currentPage >= Math.ceil(totalProducts / pageSize)}
                                                     onClick={() => setCurrentPage(prev => prev + 1)}
-                                                    className="px-4 py-2 bg-white border border-slate-200 text-slate-650 hover:text-slate-800 disabled:opacity-30 transition-all font-semibold text-xs rounded-xl active:scale-95 shadow-sm"
+                                                    className="px-4 py-2 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 text-slate-650 hover:text-slate-800 disabled:opacity-30 transition-all font-semibold text-xs rounded-xl active:scale-95 shadow-[0_4px_15px_rgba(0,0,0,0.3)]"
                                                 >
                                                     <span>Siguiente</span>
                                                 </button>
@@ -715,9 +715,9 @@ export default function ShopConfigPage() {
 
                                     {/* Elevated Bulk Actions Bar */}
                                     {selectedProducts.length > 0 && (
-                                        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-white/95 border border-slate-200/80 text-slate-800 px-6 py-4 flex items-center justify-center gap-6 shadow-[0_20px_50px_rgba(0,0,0,0.1)] z-[500] animate-in slide-in-from-bottom-6 duration-500 rounded-2xl backdrop-blur-md">
+                                        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/95 border border-slate-200/80 text-slate-800 px-6 py-4 flex items-center justify-center gap-6 shadow-[0_20px_50px_rgba(0,0,0,0.1)] z-[500] animate-in slide-in-from-bottom-6 duration-500 rounded-2xl backdrop-blur-md">
                                             <div className="flex items-center space-x-4 border-r border-slate-100 pr-5">
-                                                <div className="w-8 h-8 bg-blue-600 text-white rounded-xl flex items-center justify-center font-bold text-sm shadow-sm">{selectedProducts.length}</div>
+                                                <div className="w-8 h-8 bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all text-white rounded-xl flex items-center justify-center font-bold text-sm shadow-[0_4px_15px_rgba(0,0,0,0.3)]">{selectedProducts.length}</div>
                                                 <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Seleccionados</span>
                                             </div>
                                             <div className="flex items-center gap-3">
@@ -725,14 +725,14 @@ export default function ShopConfigPage() {
                                                     <>
                                                         <button 
                                                             onClick={() => setShowBulkEdit(true)}
-                                                            className="flex items-center gap-2 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 px-4 py-2.5 text-xs font-bold transition-all rounded-xl border border-blue-100/50 shadow-sm active:scale-95"
+                                                            className="flex items-center gap-2 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 px-4 py-2.5 text-xs font-bold transition-all rounded-xl border border-blue-100/50 shadow-[0_4px_15px_rgba(0,0,0,0.3)] active:scale-95"
                                                         >
                                                             <Edit size={14} className="text-blue-500" />
                                                             <span>Edición Táctica</span>
                                                         </button>
                                                         <button 
                                                             onClick={handleBulkDeleteProducts}
-                                                            className="flex items-center gap-2 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 px-4 py-2.5 text-xs font-bold transition-all rounded-xl border border-red-100/50 shadow-sm active:scale-95"
+                                                            className="flex items-center gap-2 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 px-4 py-2.5 text-xs font-bold transition-all rounded-xl border border-red-100/50 shadow-[0_4px_15px_rgba(0,0,0,0.3)] active:scale-95"
                                                         >
                                                             <Trash2 size={14} />
                                                             <span>Eliminar</span>
@@ -742,14 +742,14 @@ export default function ShopConfigPage() {
                                                     <>
                                                         <button 
                                                             onClick={handleBulkRestore}
-                                                            className="flex items-center gap-2 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 hover:text-emerald-700 px-4 py-2.5 text-xs font-bold transition-all rounded-xl border border-emerald-100/50 shadow-sm active:scale-95"
+                                                            className="flex items-center gap-2 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 hover:text-emerald-700 px-4 py-2.5 text-xs font-bold transition-all rounded-xl border border-emerald-100/50 shadow-[0_4px_15px_rgba(0,0,0,0.3)] active:scale-95"
                                                         >
                                                             <Layers size={14} />
                                                             <span>Restaurar</span>
                                                         </button>
                                                         <button 
                                                             onClick={handleBulkPermanentDelete}
-                                                            className="flex items-center gap-2 bg-red-550/10 text-red-650 hover:bg-red-650 hover:text-white px-4 py-2.5 text-xs font-bold transition-all rounded-xl border border-red-500/20 shadow-sm active:scale-95"
+                                                            className="flex items-center gap-2 bg-red-550/10 text-red-650 hover:bg-red-650 hover:text-white px-4 py-2.5 text-xs font-bold transition-all rounded-xl border border-red-500/20 shadow-[0_4px_15px_rgba(0,0,0,0.3)] active:scale-95"
                                                         >
                                                             <Trash2 size={14} />
                                                             <span>Eliminar Permanente</span>
@@ -782,7 +782,7 @@ export default function ShopConfigPage() {
                         {activeTab === 'catalogs' && (
                         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-5 duration-700">
                             {/* Quick Category/Collection Creation */}
-                            <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 bg-white p-6 rounded-2xl border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.02)]">
+                            <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 p-6 rounded-2xl border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.02)]">
                                 <QuickCreate
                                     label="Arquitectura de Categoría"
                                     icon={<TagIcon size={18} className="text-blue-500" />}
@@ -796,7 +796,7 @@ export default function ShopConfigPage() {
                             </div>
 
                             <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-                                <div className="bg-white border border-slate-200/60 p-6 rounded-2xl shadow-sm relative overflow-hidden">
+                                <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200/60 p-6 rounded-2xl shadow-[0_4px_15px_rgba(0,0,0,0.3)] relative overflow-hidden">
                                     <h3 className="text-xs font-bold text-slate-800 mb-6 border-b border-slate-100 pb-5 flex items-center gap-2">
                                         <TagIcon size={16} className="text-blue-500" />
                                         <span>Jerarquía de Categorías</span>
@@ -817,7 +817,7 @@ export default function ShopConfigPage() {
                                         ))}
                                     </ul>
                                 </div>
-                                <div className="bg-white border border-slate-200/60 p-6 rounded-2xl shadow-sm relative overflow-hidden">
+                                <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200/60 p-6 rounded-2xl shadow-[0_4px_15px_rgba(0,0,0,0.3)] relative overflow-hidden">
                                     <div className="flex justify-between items-center mb-6 border-b border-slate-100 pb-5">
                                         <h3 className="text-xs font-bold text-slate-800 flex items-center gap-2">
                                             <Layers size={16} className="text-violet-500" />
@@ -826,7 +826,7 @@ export default function ShopConfigPage() {
                                         {selectedCollections.length > 0 && (
                                             <button 
                                                 onClick={handleBulkDeleteCollections}
-                                                className="flex items-center space-x-1.5 text-red-600 hover:bg-red-50 hover:text-red-700 px-3 py-1.5 rounded-lg border border-red-200 text-xs font-semibold transition-all shadow-sm"
+                                                className="flex items-center space-x-1.5 text-red-600 hover:bg-red-50 hover:text-red-700 px-3 py-1.5 rounded-lg border border-red-200 text-xs font-semibold transition-all shadow-[0_4px_15px_rgba(0,0,0,0.3)]"
                                             >
                                                 <Trash2 size={13} />
                                                 <span>Eliminar ({selectedCollections.length})</span>
@@ -908,7 +908,7 @@ export default function ShopConfigPage() {
                                 <motion.div 
                                     initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
                                     onClick={e => e.stopPropagation()}
-                                    className="bg-white rounded-2xl shadow-2xl overflow-hidden w-full max-w-4xl max-h-[90vh] flex flex-col relative"
+                                    className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 rounded-2xl shadow-2xl overflow-hidden w-full max-w-4xl max-h-[90vh] flex flex-col relative"
                                 >
                                     <div className="flex justify-between items-center p-4 border-b border-slate-100">
                                         <h3 className="text-sm font-bold text-slate-800 line-clamp-1 pr-8">{previewImages.title}</h3>
@@ -918,7 +918,7 @@ export default function ShopConfigPage() {
                                     </div>
                                     <div className="p-4 flex-1 overflow-y-auto bg-slate-50/50 flex flex-wrap gap-4 justify-center items-start custom-scrollbar">
                                         {previewImages.urls.map((url, i) => (
-                                            <div key={i} className="relative group rounded-xl overflow-hidden border border-slate-200/60 shadow-sm bg-white max-w-sm w-full">
+                                            <div key={i} className="relative group rounded-xl overflow-hidden border border-slate-200/60 shadow-[0_4px_15px_rgba(0,0,0,0.3)] bg-slate-900/50 backdrop-blur-xl border-slate-700/50 max-w-sm w-full">
                                                 <img src={url} alt={`Imagen ${i+1}`} className="w-full h-auto object-contain max-h-[500px]" />
                                                 <div className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/20 transition-all duration-300 flex items-start justify-end p-3 opacity-0 group-hover:opacity-100">
                                                     <a 
@@ -926,7 +926,7 @@ export default function ShopConfigPage() {
                                                         download={`imagen-${i+1}.jpg`} 
                                                         target="_blank"
                                                         rel="noopener noreferrer"
-                                                        className="p-2.5 bg-white text-slate-800 hover:text-blue-600 rounded-lg shadow-lg hover:scale-105 transition-all flex items-center gap-2"
+                                                        className="p-2.5 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-slate-800 hover:text-blue-600 rounded-lg shadow-[0_12px_40px_rgba(0,0,0,0.5)] hover:scale-105 transition-all flex items-center gap-2"
                                                     >
                                                         <Download size={16} />
                                                     </a>
@@ -950,14 +950,14 @@ export default function ShopConfigPage() {
                                 <motion.div 
                                     initial={{ scale: 0.95, opacity: 0, y: 10 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 10 }}
                                     onClick={e => e.stopPropagation()}
-                                    className="bg-white rounded-2xl shadow-2xl overflow-hidden w-full max-w-2xl flex flex-col relative"
+                                    className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 rounded-2xl shadow-2xl overflow-hidden w-full max-w-2xl flex flex-col relative"
                                 >
                                     <div className="flex justify-between items-start p-5 border-b border-slate-100 bg-slate-50/50">
                                         <div>
                                             <h3 className="text-base font-bold text-slate-800 pr-8 leading-tight">{previewDescription.title}</h3>
                                             <p className="text-[10px] text-slate-500 font-mono mt-1">SKU: {previewDescription.sku}</p>
                                         </div>
-                                        <button onClick={() => setPreviewDescription(null)} className="p-2 text-slate-400 hover:text-slate-700 bg-white hover:bg-slate-100 border border-slate-200/60 rounded-xl transition-all shadow-sm">
+                                        <button onClick={() => setPreviewDescription(null)} className="p-2 text-slate-400 hover:text-slate-700 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 hover:bg-slate-100 border border-slate-200/60 rounded-xl transition-all shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
                                             <X size={16} />
                                         </button>
                                     </div>
@@ -970,7 +970,7 @@ export default function ShopConfigPage() {
                                                 navigator.clipboard.writeText(`${previewDescription.title}\n\n${previewDescription.description.replace(/<[^>]*>?/gm, '')}`);
                                                 alert("¡Descripción copiada!");
                                             }}
-                                            className="px-5 py-2.5 bg-white border border-slate-200 text-slate-700 hover:text-blue-600 hover:border-blue-300 hover:bg-blue-50 transition-all font-semibold text-xs rounded-xl shadow-sm flex items-center gap-2"
+                                            className="px-5 py-2.5 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 text-slate-700 hover:text-blue-600 hover:border-blue-300 hover:bg-blue-50 transition-all font-semibold text-xs rounded-xl shadow-[0_4px_15px_rgba(0,0,0,0.3)] flex items-center gap-2"
                                         >
                                             <Copy size={14} />
                                             <span>Copiar al portapapeles</span>
@@ -1006,11 +1006,11 @@ function QuickCreate({ label, icon, onSave }: { label: string, icon: any, onSave
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Escriba el nombre..."
-                    className="flex-1 bg-slate-50 border border-slate-200 px-4 py-3 text-xs font-semibold text-slate-800 outline-none focus:border-blue-500 focus:bg-white transition-all rounded-xl placeholder:text-slate-400"
+                    className="flex-1 bg-slate-50 border border-slate-200 px-4 py-3 text-xs font-semibold text-slate-800 outline-none focus:border-blue-500 focus:bg-slate-900/50 backdrop-blur-xl border-slate-700/50 transition-all rounded-xl placeholder:text-slate-400"
                 />
                 <button
                     onClick={() => { if (name) { onSave(name); setName(''); } }}
-                    className="bg-blue-600 hover:bg-blue-500 text-white px-5 py-3 text-xs font-semibold rounded-xl shadow-sm active:scale-95 transition-all"
+                    className="bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all hover:bg-blue-500 text-white px-5 py-3 text-xs font-semibold rounded-xl shadow-[0_4px_15px_rgba(0,0,0,0.3)] active:scale-95 transition-all"
                 >
                     Agregar
                 </button>
@@ -1093,7 +1093,7 @@ function BannerConfigPanel({ bannerKey, label, icon, accentColor, data, allProdu
     const displayList = searchTerm.length >= 2 ? searchResults : allProducts.slice(0, 40)
 
     return (
-        <div className={`bg-white border border-slate-200/80 p-6 rounded-2xl shadow-sm transition-all duration-300 relative overflow-hidden group ${accentMap[accentColor] || accentMap.secondary}`}>
+        <div className={`bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200/80 p-6 rounded-2xl shadow-[0_4px_15px_rgba(0,0,0,0.3)] transition-all duration-300 relative overflow-hidden group ${accentMap[accentColor] || accentMap.secondary}`}>
             
             {/* Header */}
             <div className="flex items-center justify-between pb-5 border-b border-slate-100 mb-5">
@@ -1120,12 +1120,12 @@ function BannerConfigPanel({ bannerKey, label, icon, accentColor, data, allProdu
                 <div className="space-y-2">
                     <label className="text-xs font-semibold text-slate-500 ml-1">Etiqueta de Origen Visual</label>
                     {data.imageUrl ? (
-                        <div className="relative group/img overflow-hidden rounded-xl border border-slate-200 aspect-video shadow-sm">
+                        <div className="relative group/img overflow-hidden rounded-xl border border-slate-200 aspect-video shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
                             <img src={data.imageUrl} alt="Banner" className="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-550" />
                             <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm opacity-0 group-hover/img:opacity-100 transition-all duration-300 flex flex-col items-center justify-center gap-3">
                                 <button
                                     onClick={() => fileInputRef.current?.click()}
-                                    className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 text-xs font-semibold rounded-lg shadow-sm transition-all active:scale-95"
+                                    className="bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all hover:bg-blue-500 text-white px-4 py-2 text-xs font-semibold rounded-lg shadow-[0_4px_15px_rgba(0,0,0,0.3)] transition-all active:scale-95"
                                 >
                                     {uploading ? 'Subiendo...' : 'Reemplazar'}
                                 </button>
@@ -1158,7 +1158,7 @@ function BannerConfigPanel({ bannerKey, label, icon, accentColor, data, allProdu
                             value={data.imageUrl || ''}
                             onChange={(e) => onChange({ ...data, imageUrl: e.target.value })}
                             placeholder="Vincular dirección remota (URL)..."
-                            className="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 text-xs font-mono text-slate-650 outline-none focus:border-blue-500 focus:bg-white transition-all rounded-xl placeholder:text-slate-450"
+                            className="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 text-xs font-mono text-slate-650 outline-none focus:border-blue-500 focus:bg-slate-900/50 backdrop-blur-xl border-slate-700/50 transition-all rounded-xl placeholder:text-slate-450"
                         />
                     </div>
                 </div>
@@ -1171,7 +1171,7 @@ function BannerConfigPanel({ bannerKey, label, icon, accentColor, data, allProdu
                         value={data.title || ''}
                         onChange={(e) => onChange({ ...data, title: e.target.value })}
                         placeholder="Encabezado comercial..."
-                        className="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 text-xs font-semibold text-slate-800 outline-none focus:border-blue-500 focus:bg-white transition-all rounded-xl placeholder:text-slate-400"
+                        className="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 text-xs font-semibold text-slate-800 outline-none focus:border-blue-500 focus:bg-slate-900/50 backdrop-blur-xl border-slate-700/50 transition-all rounded-xl placeholder:text-slate-400"
                     />
                 </div>
 
@@ -1183,7 +1183,7 @@ function BannerConfigPanel({ bannerKey, label, icon, accentColor, data, allProdu
                         value={data.description || ''}
                         onChange={(e) => onChange({ ...data, description: e.target.value })}
                         placeholder="Breve descripción..."
-                        className="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 text-xs font-medium text-slate-700 outline-none resize-none focus:border-blue-500 focus:bg-white transition-all rounded-xl leading-relaxed placeholder:text-slate-400"
+                        className="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 text-xs font-medium text-slate-700 outline-none resize-none focus:border-blue-500 focus:bg-slate-900/50 backdrop-blur-xl border-slate-700/50 transition-all rounded-xl leading-relaxed placeholder:text-slate-400"
                     />
                 </div>
 
@@ -1206,7 +1206,7 @@ function BannerConfigPanel({ bannerKey, label, icon, accentColor, data, allProdu
                     </button>
 
                     {showProductPicker && (
-                        <div className="animate-in slide-in-from-top-4 duration-500 bg-white shadow-lg rounded-xl border border-slate-200 overflow-hidden">
+                        <div className="animate-in slide-in-from-top-4 duration-500 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 shadow-[0_12px_40px_rgba(0,0,0,0.5)] rounded-xl border border-slate-200 overflow-hidden">
                             <div className="relative group/search p-3 border-b border-slate-100">
                                 <Search size={12} className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within/search:text-blue-500 transition-colors" />
                                 <input
@@ -1214,7 +1214,7 @@ function BannerConfigPanel({ bannerKey, label, icon, accentColor, data, allProdu
                                     placeholder="Buscar producto..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full bg-slate-50 border border-slate-200 pl-10 pr-4 py-2 text-xs font-semibold text-slate-800 outline-none focus:border-blue-500 focus:bg-white transition-all rounded-lg placeholder:text-slate-400"
+                                    className="w-full bg-slate-50 border border-slate-200 pl-10 pr-4 py-2 text-xs font-semibold text-slate-800 outline-none focus:border-blue-500 focus:bg-slate-900/50 backdrop-blur-xl border-slate-700/50 transition-all rounded-lg placeholder:text-slate-400"
                                 />
                                 {searching && <RefreshCw size={12} className="absolute right-6 top-1/2 -translate-y-1/2 text-blue-500 animate-spin" />}
                             </div>
@@ -1282,9 +1282,9 @@ function BannerConfigPanel({ bannerKey, label, icon, accentColor, data, allProdu
 function StatCard({ label, value, icon }: { label: string, value: any, icon: any }) {
     return (
         <div className="glass-panel p-6 rounded-none-[2rem] border-white/5 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-24 h-24 bg-white/5 blur-3xl -mr-12 -mt-12 group-hover:bg-primary/10 transition-all duration-700"></div>
+            <div className="absolute top-0 right-0 w-24 h-24 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 blur-3xl -mr-12 -mt-12 group-hover:bg-primary/10 transition-all duration-700"></div>
             <div className="flex items-center space-x-3 text-slate-500 mb-4">
-                <div className="p-2 bg-white/5 rounded-none group-hover:text-primary transition-colors">
+                <div className="p-2 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 rounded-none group-hover:text-primary transition-colors">
                     {icon}
                 </div>
                 <span className="text-[9px] font-black uppercase tracking-[0.3em]">{label}</span>
@@ -1359,8 +1359,8 @@ function ProductForm({ initialData, metadata, onCancel, onSaved }: { initialData
                     </div>
                 </div>
                 <div className="flex gap-4">
-                    <button onClick={onCancel} className="px-8 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-white transition-all bg-white/5 hover:bg-white/10 rounded-none border border-white/5">Descartar</button>
-                    <button onClick={handleSubmit} disabled={loading} className="bg-white text-black px-10 py-4 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-secondary hover:text-white transition-all rounded-none shadow-2xl shadow-white/5 flex items-center gap-3">
+                    <button onClick={onCancel} className="px-8 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-white transition-all bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50/10 rounded-none border border-white/5">Descartar</button>
+                    <button onClick={handleSubmit} disabled={loading} className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-slate-100 px-10 py-4 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-secondary hover:text-white transition-all rounded-none shadow-2xl shadow-white/5 flex items-center gap-3">
                         <Save size={16} />
                         <span>{loading ? 'Sincronizando...' : 'Consolidar Cambios'}</span>
                     </button>
@@ -1441,7 +1441,7 @@ function ProductForm({ initialData, metadata, onCancel, onSaved }: { initialData
                                 onClick={() => setFormData({ ...formData, isConsultOnly: !formData.isConsultOnly })}
                                 className={`w-12 h-6 rounded-full p-1 transition-colors ${formData.isConsultOnly ? 'bg-secondary' : 'bg-slate-700'}`}
                             >
-                                <div className={`w-4 h-4 bg-white rounded-full transition-transform ${formData.isConsultOnly ? 'translate-x-6' : 'translate-x-0'}`} />
+                                <div className={`w-4 h-4 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 rounded-full transition-transform ${formData.isConsultOnly ? 'translate-x-6' : 'translate-x-0'}`} />
                             </button>
                             <div>
                                 <h4 className="text-sm font-black text-white">Modo Consultar Precio</h4>
@@ -1495,14 +1495,14 @@ function ProductForm({ initialData, metadata, onCancel, onSaved }: { initialData
                                             }}
                                         />
                                     </div>
-                                    <button onClick={() => removeSpec(index)} className="p-4 text-slate-500 hover:text-red-500 transition-colors bg-white/5 rounded-none border border-white/5">
+                                    <button onClick={() => removeSpec(index)} className="p-4 text-slate-500 hover:text-red-500 transition-colors bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 rounded-none border border-white/5">
                                         <Trash2 size={18} />
                                     </button>
                                 </div>
                             ))}
                             <button
                                 onClick={addSpec}
-                                className="w-full border-2 border-dashed border-white/5 py-8 rounded-none-[2rem] text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 hover:text-primary hover:border-primary/20 transition-all flex items-center justify-center space-x-4 bg-white/2 hover:bg-primary/5"
+                                className="w-full border-2 border-dashed border-white/5 py-8 rounded-none-[2rem] text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 hover:text-primary hover:border-primary/20 transition-all flex items-center justify-center space-x-4 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/2 hover:bg-primary/5"
                             >
                                 <PlusCircle size={20} /> <span>Añadir Especificación de Segmento</span>
                             </button>
@@ -1612,7 +1612,7 @@ function ProductForm({ initialData, metadata, onCancel, onSaved }: { initialData
                         <button 
                             disabled={loading}
                             onClick={handleSubmit} 
-                            className="w-full bg-secondary text-white py-8 rounded-none-[2.5rem] font-black uppercase tracking-[0.4em] text-[11px] hover:bg-white hover:text-black transition-all shadow-2xl shadow-secondary/20 active:scale-95 duration-500 flex items-center justify-center gap-4 group"
+                            className="w-full bg-secondary text-white py-8 rounded-none-[2.5rem] font-black uppercase tracking-[0.4em] text-[11px] hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50 hover:text-slate-100 transition-all shadow-2xl shadow-secondary/20 active:scale-95 duration-500 flex items-center justify-center gap-4 group"
                         >
                             <Save size={24} className="group-hover:scale-110 transition-transform" />
                             <span>{loading ? 'SINCRONIZANDO...' : 'ALINEAR ARCHIVO'}</span>
@@ -1633,9 +1633,9 @@ function Toggle({ label, checked, onChange, icon }: { label: string, checked: bo
             </div>
             <button
                 onClick={() => onChange(!checked)}
-                className={`w-14 h-7 flex items-center px-1.5 transition-all rounded-none border ${checked ? 'bg-secondary border-secondary shadow-lg shadow-secondary/20' : 'bg-slate-900 border-white/10'}`}
+                className={`w-14 h-7 flex items-center px-1.5 transition-all rounded-none border ${checked ? 'bg-secondary border-secondary shadow-[0_12px_40px_rgba(0,0,0,0.5)] shadow-secondary/20' : 'bg-slate-900 border-white/10'}`}
             >
-                <div className={`w-4 h-4 bg-white shadow-2xl transition-transform duration-300 rounded-none ${checked ? 'translate-x-7' : 'translate-x-0'}`}></div>
+                <div className={`w-4 h-4 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 shadow-2xl transition-transform duration-300 rounded-none ${checked ? 'translate-x-7' : 'translate-x-0'}`}></div>
             </button>
         </div>
     )
@@ -1662,7 +1662,7 @@ function BulkEditModal({ selectedCount, categories, collections, onClose, onSave
                         <h2 className="text-2xl font-black text-white uppercase tracking-tighter italic">Gestión de Edición Masiva</h2>
                         <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.4em] mt-2 italic leading-relaxed">Afectando a <span className="text-secondary">{selectedCount}</span> núcleos de activos comerciales en paralelo.</p>
                     </div>
-                    <button onClick={onClose} className="w-12 h-12 bg-white/5 hover:bg-white/10 flex items-center justify-center rounded-none border border-white/5 transition-all active:scale-90 duration-300">
+                    <button onClick={onClose} className="w-12 h-12 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50/10 flex items-center justify-center rounded-none border border-white/5 transition-all active:scale-90 duration-300">
                         <X size={20} className="text-slate-400" />
                     </button>
                 </div>
@@ -1733,15 +1733,15 @@ function BulkEditModal({ selectedCount, categories, collections, onClose, onSave
                             <div className="flex gap-4">
                                 <button 
                                     onClick={() => setData({ ...data, isActive: true })}
-                                    className={`flex-1 py-3 text-[9px] font-black uppercase tracking-widest transition-all rounded-none ${data.isActive === true ? 'bg-secondary text-white shadow-lg shadow-secondary/20' : 'bg-white/5 text-slate-500 border border-white/5'}`}
+                                    className={`flex-1 py-3 text-[9px] font-black uppercase tracking-widest transition-all rounded-none ${data.isActive === true ? 'bg-secondary text-white shadow-[0_12px_40px_rgba(0,0,0,0.5)] shadow-secondary/20' : 'bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 text-slate-500 border border-white/5'}`}
                                 > Activar </button>
                                 <button 
                                     onClick={() => setData({ ...data, isActive: false })}
-                                    className={`flex-1 py-3 text-[9px] font-black uppercase tracking-widest transition-all rounded-none ${data.isActive === false ? 'bg-red-500 text-white shadow-lg shadow-red-500/20' : 'bg-white/5 text-slate-500 border border-white/5'}`}
+                                    className={`flex-1 py-3 text-[9px] font-black uppercase tracking-widest transition-all rounded-none ${data.isActive === false ? 'bg-red-500 text-white shadow-[0_12px_40px_rgba(0,0,0,0.5)] shadow-red-500/20' : 'bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 text-slate-500 border border-white/5'}`}
                                 > Inactivar </button>
                                 <button 
                                     onClick={() => setData({ ...data, isActive: undefined })}
-                                    className={`flex-1 py-3 text-[9px] font-black uppercase tracking-widest transition-all rounded-none ${data.isActive === undefined ? 'bg-slate-700 text-white shadow-lg' : 'bg-white/5 text-slate-500 border border-white/5'}`}
+                                    className={`flex-1 py-3 text-[9px] font-black uppercase tracking-widest transition-all rounded-none ${data.isActive === undefined ? 'bg-slate-700 text-white shadow-[0_12px_40px_rgba(0,0,0,0.5)]' : 'bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 text-slate-500 border border-white/5'}`}
                                 > OMITIR </button>
                             </div>
                         </div>
@@ -1751,15 +1751,15 @@ function BulkEditModal({ selectedCount, categories, collections, onClose, onSave
                             <div className="flex gap-4">
                                 <button 
                                     onClick={() => setData({ ...data, featured: true })}
-                                    className={`flex-1 py-3 text-[9px] font-black uppercase tracking-widest transition-all rounded-none ${data.featured === true ? 'bg-yellow-500 text-white shadow-lg shadow-yellow-500/20' : 'bg-white/5 text-slate-500 border border-white/5'}`}
+                                    className={`flex-1 py-3 text-[9px] font-black uppercase tracking-widest transition-all rounded-none ${data.featured === true ? 'bg-yellow-500 text-white shadow-[0_12px_40px_rgba(0,0,0,0.5)] shadow-yellow-500/20' : 'bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 text-slate-500 border border-white/5'}`}
                                 > Destacar </button>
                                 <button 
                                     onClick={() => setData({ ...data, featured: false })}
-                                    className={`flex-1 py-3 text-[9px] font-black uppercase tracking-widest transition-all rounded-none ${data.featured === false ? 'bg-slate-800 text-white' : 'bg-white/5 text-slate-500 border border-white/5'}`}
+                                    className={`flex-1 py-3 text-[9px] font-black uppercase tracking-widest transition-all rounded-none ${data.featured === false ? 'bg-slate-800 text-white' : 'bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 text-slate-500 border border-white/5'}`}
                                 > Normal </button>
                                 <button 
                                     onClick={() => setData({ ...data, featured: undefined })}
-                                    className={`flex-1 py-3 text-[9px] font-black uppercase tracking-widest transition-all rounded-none ${data.featured === undefined ? 'bg-slate-700 text-white shadow-lg' : 'bg-white/5 text-slate-500 border border-white/5'}`}
+                                    className={`flex-1 py-3 text-[9px] font-black uppercase tracking-widest transition-all rounded-none ${data.featured === undefined ? 'bg-slate-700 text-white shadow-[0_12px_40px_rgba(0,0,0,0.5)]' : 'bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 text-slate-500 border border-white/5'}`}
                                 > OMITIR </button>
                             </div>
                         </div>
@@ -1769,7 +1769,7 @@ function BulkEditModal({ selectedCount, categories, collections, onClose, onSave
                 <div className="flex flex-col gap-6 pt-10 border-t border-white/5">
                     <button 
                         onClick={() => onSave(data)}
-                        className="w-full bg-white text-black py-10 rounded-none-[2.5rem] font-black uppercase tracking-[0.5em] text-[11px] hover:bg-secondary hover:text-white transition-all shadow-2xl active:scale-95 duration-500"
+                        className="w-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-slate-100 py-10 rounded-none-[2.5rem] font-black uppercase tracking-[0.5em] text-[11px] hover:bg-secondary hover:text-white transition-all shadow-2xl active:scale-95 duration-500"
                     >
                         Ejecutar Transmutación Masiva
                     </button>
@@ -1858,12 +1858,12 @@ function TaxonomyModal({ type, initialData, allProducts, onClose, onSaved }: { t
                 <div className="absolute top-0 left-0 w-64 h-64 bg-primary/10 blur-[120px] -ml-32 -mt-32 rounded-none"></div>
                 
                 {/* Header */}
-                <div className="bg-white/2 border-b border-white/5 p-10 flex justify-between items-center shrink-0">
+                <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50/2 border-b border-white/5 p-10 flex justify-between items-center shrink-0">
                     <div>
                         <h2 className="text-2xl font-black text-white uppercase tracking-tighter italic">Reconfiguración de {type === 'category' ? 'Categoría' : 'Colección'}</h2>
                         <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.4em] mt-2 italic">Anclaje de activos a Elementos taxonómicos</p>
                     </div>
-                    <button onClick={onClose} className="w-12 h-12 bg-white/5 hover:bg-white/10 flex items-center justify-center rounded-none border border-white/5 transition-all active:scale-90 duration-300">
+                    <button onClick={onClose} className="w-12 h-12 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50/10 flex items-center justify-center rounded-none border border-white/5 transition-all active:scale-90 duration-300">
                         <X size={20} className="text-slate-400" />
                     </button>
                 </div>
@@ -1916,7 +1916,7 @@ function TaxonomyModal({ type, initialData, allProducts, onClose, onSaved }: { t
                                 />
                             </div>
 
-                            <div className="flex items-center justify-between bg-white/2 p-6 rounded-none border border-white/5">
+                            <div className="flex items-center justify-between bg-slate-900/50 backdrop-blur-xl border-slate-700/50/2 p-6 rounded-none border border-white/5">
                                 <Toggle 
                                     label="Estado Público" 
                                     icon={<Globe size={18} className="text-primary" />} 
@@ -2019,18 +2019,18 @@ function TaxonomyModal({ type, initialData, allProducts, onClose, onSaved }: { t
                 </div>
 
                 {/* Footer */}
-                <div className="shrink-0 bg-white/2 border-t border-white/5 p-10 flex gap-8">
+                <div className="shrink-0 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/2 border-t border-white/5 p-10 flex gap-8">
                     <button 
                         disabled={loading}
                         onClick={onClose}
-                        className="flex-1 px-8 py-6 text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 hover:text-white transition-all bg-white/5 hover:bg-white/10 rounded-none border border-white/5 shadow-2xl"
+                        className="flex-1 px-8 py-6 text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 hover:text-white transition-all bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50/10 rounded-none border border-white/5 shadow-2xl"
                     >
                         Abortar
                     </button>
                     <button 
                         disabled={loading}
                         onClick={handleSubmit}
-                        className="flex-1 bg-white text-black py-6 rounded-none font-black uppercase tracking-[0.5em] text-[11px] hover:bg-secondary hover:text-white transition-all shadow-2xl active:scale-95 duration-500"
+                        className="flex-1 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-slate-100 py-6 rounded-none font-black uppercase tracking-[0.5em] text-[11px] hover:bg-secondary hover:text-white transition-all shadow-2xl active:scale-95 duration-500"
                     >
                         {loading ? 'SINCRONIZANDO...' : 'Comprometer Elemento'}
                     </button>
@@ -2043,7 +2043,7 @@ function TaxonomyModal({ type, initialData, allProducts, onClose, onSaved }: { t
 function ProductItem({ product, isSelected, onClick }: { product: any, isSelected: boolean, onClick: () => void }) {
     return (
         <div 
-            className={`flex items-center justify-between px-8 py-6 cursor-pointer transition-all duration-300 group border-b border-white/5 ${isSelected ? 'bg-secondary/10' : 'hover:bg-white/5 bg-transparent'}`} 
+            className={`flex items-center justify-between px-8 py-6 cursor-pointer transition-all duration-300 group border-b border-white/5 ${isSelected ? 'bg-secondary/10' : 'hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 bg-transparent'}`} 
             onClick={onClick}
         >
             <div className="flex items-center space-x-6">

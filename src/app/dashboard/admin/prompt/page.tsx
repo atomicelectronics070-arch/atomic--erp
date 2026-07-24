@@ -170,7 +170,7 @@ export default function AdminPromptPage() {
             <div className="w-full lg:w-80 bg-slate-900/30 border-r border-slate-800/50 backdrop-blur-md flex flex-col pt-4">
                 <div className="p-8 pb-6 border-b border-slate-800/50">
                     <div className="flex items-center gap-3 mb-6">
-                        <div className="bg-gradient-to-br from-indigo-500 to-violet-600 p-2 rounded-none shadow-lg shadow-indigo-500/20">
+                        <div className="bg-gradient-to-br from-indigo-500 to-violet-600 p-2 rounded-none shadow-[0_12px_40px_rgba(0,0,0,0.5)] shadow-indigo-500/20">
                             <Users className="text-white" size={18} />
                         </div>
                         <h2 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Asesores Activos</h2>
@@ -209,7 +209,7 @@ export default function AdminPromptPage() {
                             >
                                 <div className="z-10 flex items-center gap-4">
                                     <div className={`w-10 h-10 rounded-none flex items-center justify-center font-black text-xs transition-colors duration-300 ${
-                                        selectedUser === u.id ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/30' : 'bg-slate-800 text-slate-400 group-hover:bg-slate-700'
+                                        selectedUser === u.id ? 'bg-indigo-500 text-white shadow-[0_12px_40px_rgba(0,0,0,0.5)] shadow-indigo-500/30' : 'bg-slate-800 text-slate-400 group-hover:bg-slate-700'
                                     }`}>
                                         {u.name?.[0].toUpperCase() || '?'}
                                     </div>
@@ -267,7 +267,7 @@ export default function AdminPromptPage() {
                                     onClick={() => setSelectedType("CAPACITADOR")}
                                     className={`px-5 py-3 rounded-none text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 ${
                                         selectedType === "CAPACITADOR" 
-                                        ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' 
+                                        ? 'bg-indigo-600 text-white shadow-[0_12px_40px_rgba(0,0,0,0.5)] shadow-indigo-600/20' 
                                         : 'text-slate-500 hover:text-slate-300'
                                     }`}
                                 >
@@ -277,7 +277,7 @@ export default function AdminPromptPage() {
                                     onClick={() => setSelectedType("TUTOR")}
                                     className={`px-5 py-3 rounded-none text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 ${
                                         selectedType === "TUTOR" 
-                                        ? 'bg-violet-600 text-white shadow-lg shadow-violet-600/20' 
+                                        ? 'bg-violet-600 text-white shadow-[0_12px_40px_rgba(0,0,0,0.5)] shadow-violet-600/20' 
                                         : 'text-slate-500 hover:text-slate-300'
                                     }`}
                                 >
@@ -366,7 +366,7 @@ export default function AdminPromptPage() {
                                         className="w-full xl:w-auto relative group overflow-hidden"
                                     >
                                         <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-violet-600 rounded-none blur opacity-30 group-hover:opacity-70 transition duration-500"></div>
-                                        <div className="relative flex items-center justify-center gap-3 bg-white text-black px-12 py-5 text-xs font-black uppercase tracking-[0.25em] rounded-none hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:scale-100 disabled:grayscale">
+                                        <div className="relative flex items-center justify-center gap-3 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-slate-100 px-12 py-5 text-xs font-black uppercase tracking-[0.25em] rounded-none hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:scale-100 disabled:grayscale">
                                             {isSaving 
                                                 ? <div className="w-4 h-4 border-2 border-slate-900 border-t-transparent rounded-none animate-spin"></div> 
                                                 : <Sparkles size={16} className="text-indigo-600" />
@@ -501,7 +501,7 @@ export default function AdminPromptPage() {
                                                     setSelectedType(sp.type)
                                                     window.scrollTo({ top: 0, behavior: 'smooth' })
                                                 }}
-                                                className="mt-6 w-full py-3 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest bg-slate-950 text-slate-400 hover:bg-indigo-600 hover:text-white border border-slate-800 hover:border-indigo-500 transition-all rounded-none shadow-sm"
+                                                className="mt-6 w-full py-3 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest bg-slate-950 text-slate-400 hover:bg-indigo-600 hover:text-white border border-slate-800 hover:border-indigo-500 transition-all rounded-none shadow-[0_4px_15px_rgba(0,0,0,0.3)]"
                                             >
                                                 <Copy size={14} /> Aplicar Patrón
                                             </button>

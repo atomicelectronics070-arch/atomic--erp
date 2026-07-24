@@ -265,13 +265,13 @@ export default function FinanceManager() {
     return (
         <div className="space-y-8">
             {/* Period Filters and Search */}
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+            <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 rounded-xl shadow-[0_4px_15px_rgba(0,0,0,0.3)] border border-slate-200 p-6 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
                 <div className="flex flex-wrap items-center gap-2 bg-slate-100 p-1.5 rounded-lg border border-slate-200">
                     {(["TODOS", "ANUAL", "TRIMESTRAL", "MENSUAL"] as const).map(p => (
                         <button 
                             key={p}
                             onClick={() => setPeriodFilter(p)}
-                            className={`px-6 py-2 text-xs font-bold transition-all rounded-md ${periodFilter === p ? 'bg-white text-indigo-600 shadow-sm border border-slate-200' : 'text-slate-500 hover:text-slate-700'}`}
+                            className={`px-6 py-2 text-xs font-bold transition-all rounded-md ${periodFilter === p ? 'bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-indigo-600 shadow-[0_4px_15px_rgba(0,0,0,0.3)] border border-slate-200' : 'text-slate-500 hover:text-slate-700'}`}
                         >
                             {p === "TODOS" ? "HISTÓRICO" : p}
                         </button>
@@ -286,21 +286,21 @@ export default function FinanceManager() {
                             placeholder="Buscar transacción o cliente..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full bg-white border border-slate-200 rounded-lg py-2.5 pl-10 pr-4 text-sm font-medium text-[#0F172A] outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all placeholder:text-slate-400"
+                            className="w-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 rounded-lg py-2.5 pl-10 pr-4 text-sm font-medium text-[#0F172A] outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all placeholder:text-slate-400"
                         />
                     </div>
                     {isAdmin && (
                         <>
                             <button
                                 onClick={() => handleOpenModal(undefined, "INGRESO")}
-                                className="w-full md:w-auto bg-emerald-600 text-white px-5 py-2.5 rounded-lg font-bold text-sm flex items-center justify-center gap-2 hover:bg-emerald-700 transition-all shadow-sm"
+                                className="w-full md:w-auto bg-emerald-600 text-white px-5 py-2.5 rounded-lg font-bold text-sm flex items-center justify-center gap-2 hover:bg-emerald-700 transition-all shadow-[0_4px_15px_rgba(0,0,0,0.3)]"
                             >
                                 <ArrowUpRight size={18} />
                                 <span>Registrar Ingreso</span>
                             </button>
                             <button
                                 onClick={() => handleOpenModal(undefined, "EGRESO")}
-                                className="w-full md:w-auto bg-rose-600 text-white px-5 py-2.5 rounded-lg font-bold text-sm flex items-center justify-center gap-2 hover:bg-rose-700 transition-all shadow-sm"
+                                className="w-full md:w-auto bg-rose-600 text-white px-5 py-2.5 rounded-lg font-bold text-sm flex items-center justify-center gap-2 hover:bg-rose-700 transition-all shadow-[0_4px_15px_rgba(0,0,0,0.3)]"
                             >
                                 <ArrowDownRight size={18} />
                                 <span>Registrar Egreso</span>
@@ -310,7 +310,7 @@ export default function FinanceManager() {
                     {!isAdmin && (
                         <button
                             onClick={() => handleOpenModal(undefined, "INGRESO")}
-                            className="w-full md:w-auto bg-indigo-600 text-white px-5 py-2.5 rounded-lg font-bold text-sm flex items-center justify-center gap-2 hover:bg-indigo-700 transition-all shadow-sm"
+                            className="w-full md:w-auto bg-indigo-600 text-white px-5 py-2.5 rounded-lg font-bold text-sm flex items-center justify-center gap-2 hover:bg-indigo-700 transition-all shadow-[0_4px_15px_rgba(0,0,0,0.3)]"
                         >
                             <Plus size={18} />
                             <span>Registrar Venta</span>
@@ -330,7 +330,7 @@ export default function FinanceManager() {
             </div>
 
             {/* Data Table */}
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 rounded-xl shadow-[0_4px_15px_rgba(0,0,0,0.3)] border border-slate-200 overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse whitespace-nowrap">
                         <thead>
@@ -454,13 +454,13 @@ export default function FinanceManager() {
                             initial={{ opacity: 0, scale: 0.95, y: 10 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                            className="bg-white w-full max-w-4xl shadow-2xl border border-slate-200 overflow-hidden rounded-2xl relative z-10 flex flex-col max-h-[90vh]"
+                            className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 w-full max-w-4xl shadow-2xl border border-slate-200 overflow-hidden rounded-2xl relative z-10 flex flex-col max-h-[90vh]"
                         >
                             <div className="p-6 border-b border-slate-100 flex justify-between items-center" style={{
                                 background: entryMode === 'EGRESO' ? 'linear-gradient(135deg, #fff5f5 0%, #fff 100%)' : 'linear-gradient(135deg, #f0fdf4 0%, #fff 100%)'
                             }}>
                                 <div className="flex items-center gap-4">
-                                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-sm ${
+                                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-[0_4px_15px_rgba(0,0,0,0.3)] ${
                                         entryMode === 'EGRESO' ? 'bg-rose-100 text-rose-600' : 'bg-emerald-100 text-emerald-600'
                                     }`}>
                                         {entryMode === 'EGRESO' ? <ArrowDownRight size={24} /> : <ArrowUpRight size={24} />}
@@ -554,7 +554,7 @@ export default function FinanceManager() {
                                         <div className="md:col-span-2 pt-4">
                                             <button
                                                 type="submit"
-                                                className="w-full bg-rose-600 text-white font-bold py-4 rounded-lg text-sm shadow-md hover:bg-rose-700 transition-all flex items-center justify-center gap-3"
+                                                className="w-full bg-rose-600 text-white font-bold py-4 rounded-lg text-sm shadow-[0_8px_32px_rgba(0,0,0,0.5)] hover:bg-rose-700 transition-all flex items-center justify-center gap-3"
                                             >
                                                 <ArrowDownRight size={20} />
                                                 <span>REGISTRAR EGRESO</span>
@@ -680,7 +680,7 @@ export default function FinanceManager() {
                                                                 hasCommission ? 'bg-indigo-600' : 'bg-slate-200'
                                                             }`}
                                                         >
-                                                            <div className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-transform ${
+                                                            <div className={`absolute top-0.5 left-0.5 w-5 h-5 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 rounded-full shadow-[0_4px_15px_rgba(0,0,0,0.3)] transition-transform ${
                                                                 hasCommission ? 'translate-x-6' : 'translate-x-0'
                                                             }`} />
                                                         </div>
@@ -817,7 +817,7 @@ export default function FinanceManager() {
                                     <div className="md:col-span-2 pt-4">
                                         <button
                                             type="submit"
-                                            className="w-full bg-emerald-600 text-white font-bold py-4 rounded-lg text-sm shadow-md hover:bg-emerald-700 hover:shadow-lg transition-all flex items-center justify-center gap-3"
+                                            className="w-full bg-emerald-600 text-white font-bold py-4 rounded-lg text-sm shadow-[0_8px_32px_rgba(0,0,0,0.5)] hover:bg-emerald-700 hover:shadow-[0_12px_40px_rgba(0,0,0,0.5)] transition-all flex items-center justify-center gap-3"
                                         >
                                             <ArrowUpRight size={20} />
                                             <span>{isAdmin ? (editingItem ? 'ACTUALIZAR REGISTRO' : 'GUARDAR INGRESO') : 'ENVIAR PARA APROBACIÓN'}</span>
@@ -844,7 +844,7 @@ function StatSummary({ label, value, icon, trend, color }: any) {
     const colorKey = (color || 'indigo') as keyof typeof colors;
 
     return (
-        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden group hover:shadow-md transition-all">
+        <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 p-6 rounded-xl border border-slate-200 shadow-[0_4px_15px_rgba(0,0,0,0.3)] relative overflow-hidden group hover:shadow-[0_8px_32px_rgba(0,0,0,0.5)] transition-all">
             <div className="absolute right-[-10px] top-[-10px] opacity-[0.03] group-hover:opacity-[0.06] group-hover:scale-110 transition-transform">
                 {icon}
             </div>

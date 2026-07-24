@@ -160,7 +160,7 @@ export default function AcademyAdminPage() {
             </AnimatePresence>
 
             {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 rounded-2xl p-6 shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
                 <div className="flex items-center gap-4">
                     <div className="w-12 h-12 bg-indigo-50 border border-indigo-100 rounded-xl flex items-center justify-center">
                         <GraduationCap size={24} className="text-indigo-600" />
@@ -177,7 +177,7 @@ export default function AcademyAdminPage() {
                     {isAdmin && (
                         <button
                             onClick={() => setShowCreate(true)}
-                            className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white rounded-xl font-bold text-sm hover:bg-indigo-700 transition-all shadow-sm shadow-indigo-500/20"
+                            className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white rounded-xl font-bold text-sm hover:bg-indigo-700 transition-all shadow-[0_4px_15px_rgba(0,0,0,0.3)] shadow-indigo-500/20"
                         >
                             <Plus size={16} /> Nuevo Curso
                         </button>
@@ -188,7 +188,7 @@ export default function AcademyAdminPage() {
             {/* Stats */}
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                 {stats.map((s, i) => (
-                    <div key={i} className={`bg-white border ${s.border} rounded-2xl p-5 shadow-sm flex items-center gap-4`}>
+                    <div key={i} className={`bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border ${s.border} rounded-2xl p-5 shadow-[0_4px_15px_rgba(0,0,0,0.3)] flex items-center gap-4`}>
                         <div className={`w-10 h-10 ${s.bg} rounded-xl flex items-center justify-center flex-shrink-0`}>
                             <s.icon size={18} className={s.color} />
                         </div>
@@ -210,7 +210,7 @@ export default function AcademyAdminPage() {
                     >
                         <motion.div
                             initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }}
-                            className="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-2xl p-8 space-y-6"
+                            className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 rounded-2xl border border-slate-200 shadow-2xl w-full max-w-2xl p-8 space-y-6"
                         >
                             <div className="flex items-center justify-between">
                                 <div>
@@ -288,7 +288,7 @@ export default function AcademyAdminPage() {
             </AnimatePresence>
 
             {/* Filters & Search */}
-            <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col md:flex-row gap-4">
+            <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 rounded-2xl p-4 shadow-[0_4px_15px_rgba(0,0,0,0.3)] flex flex-col md:flex-row gap-4">
                 <div className="relative flex-1">
                     <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                     <input
@@ -316,7 +316,7 @@ export default function AcademyAdminPage() {
             </div>
 
             {/* Courses Table */}
-            <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+            <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 rounded-2xl shadow-[0_4px_15px_rgba(0,0,0,0.3)] overflow-hidden">
                 <div className="p-5 border-b border-slate-100 flex items-center justify-between">
                     <h2 className="text-sm font-black text-slate-700 uppercase tracking-wider flex items-center gap-2">
                         <BookMarked size={16} className="text-indigo-500" /> Catálogo de Cursos

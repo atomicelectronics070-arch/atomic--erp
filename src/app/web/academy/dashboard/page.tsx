@@ -77,7 +77,7 @@ export default async function AcademyDashboard() {
                         <h3 className="text-6xl font-black text-white italic tracking-tighter">{inProgressCourses.length}</h3>
                         <p className="text-white/30 text-[9px] font-bold uppercase tracking-widest mt-4">Sincronización de Conocimiento</p>
                     </div>
-                    <div className="bg-white p-10 border border-slate-200 shadow-2xl relative overflow-hidden group">
+                    <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 p-10 border border-slate-200 shadow-2xl relative overflow-hidden group">
                         <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
                             <Award size={120} className="text-[#E8341A]" />
                         </div>
@@ -85,7 +85,7 @@ export default async function AcademyDashboard() {
                         <h3 className="text-6xl font-black text-slate-900 italic tracking-tighter">{completedCourses.length}</h3>
                         <p className="text-slate-400 text-[9px] font-bold uppercase tracking-widest mt-4">Especialidades Maestras</p>
                     </div>
-                    <div className="bg-white p-10 border border-slate-200 shadow-2xl relative overflow-hidden group">
+                    <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 p-10 border border-slate-200 shadow-2xl relative overflow-hidden group">
                         <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity text-[#E8341A]">
                             <TrendingUp size={120} />
                         </div>
@@ -112,7 +112,7 @@ export default async function AcademyDashboard() {
                                 <Link 
                                     key={en.id} 
                                     href={`/web/academy/course/${en.course.slug}`}
-                                    className="group bg-white p-8 border border-slate-200 hover:border-[#E8341A]/30 transition-all flex flex-col md:flex-row items-center gap-10 shadow-xl hover:shadow-2xl"
+                                    className="group bg-slate-900/50 backdrop-blur-xl border-slate-700/50 p-8 border border-slate-200 hover:border-[#E8341A]/30 transition-all flex flex-col md:flex-row items-center gap-10 shadow-xl hover:shadow-2xl"
                                 >
                                     <div className="w-full md:w-48 h-32 bg-[#0F1923] shrink-0 overflow-hidden relative">
                                         {en.course.imageUrl && <img src={en.course.imageUrl} className="w-full h-full object-cover opacity-50 group-hover:scale-110 transition-transform duration-700" />}
@@ -159,7 +159,7 @@ export default async function AcademyDashboard() {
                                     <Link 
                                         key={course.id} 
                                         href={`/web/academy/course/${course.slug}`}
-                                        className="group bg-white p-6 border border-slate-200 hover:border-[#E8341A]/20 transition-all shadow-lg hover:shadow-2xl"
+                                        className="group bg-slate-900/50 backdrop-blur-xl border-slate-700/50 p-6 border border-slate-200 hover:border-[#E8341A]/20 transition-all shadow-[0_12px_40px_rgba(0,0,0,0.5)] hover:shadow-2xl"
                                     >
                                         <div className="h-40 bg-[#0F1923] mb-6 overflow-hidden relative">
                                             {course.imageUrl && <img src={course.imageUrl} className="w-full h-full object-cover opacity-40 group-hover:scale-110 transition-transform duration-700" />}
@@ -189,7 +189,7 @@ export default async function AcademyDashboard() {
                                 {categories.slice(0, 6).map((cat, i) => {
                                     const isMastered = completedCourses.some(e => e.course.categoryId === cat.id)
                                     return (
-                                        <div key={cat.id} className={`aspect-square flex flex-col items-center justify-center p-4 border transition-all ${isMastered ? 'bg-[#E8341A]/10 border-[#E8341A] shadow-[0_0_20px_rgba(232,52,26,0.2)]' : 'bg-white/5 border-white/5 opacity-20 grayscale'}`}>
+                                        <div key={cat.id} className={`aspect-square flex flex-col items-center justify-center p-4 border transition-all ${isMastered ? 'bg-[#E8341A]/10 border-[#E8341A] shadow-[0_0_20px_rgba(232,52,26,0.2)]' : 'bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 border-white/5 opacity-20 grayscale'}`}>
                                             <div className="w-10 h-10 mb-2 flex items-center justify-center">
                                                 {i % 3 === 0 ? <Zap size={24} /> : i % 3 === 1 ? <Shield size={24} /> : <Cpu size={24} />}
                                             </div>
@@ -208,8 +208,8 @@ export default async function AcademyDashboard() {
                             <h3 className="text-xl font-black uppercase tracking-tighter italic mb-8">Certificados Obtenidos</h3>
                             <div className="space-y-6">
                                 {completedCourses.length > 0 ? completedCourses.map(en => (
-                                    <div key={en.id} className="flex items-center gap-4 p-4 bg-white/5 border border-white/5 group hover:border-[#E8341A]/50 transition-all">
-                                        <div className="w-12 h-12 bg-[#E8341A] flex items-center justify-center text-white shrink-0 shadow-lg shadow-[#E8341A]/20">
+                                    <div key={en.id} className="flex items-center gap-4 p-4 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 border border-white/5 group hover:border-[#E8341A]/50 transition-all">
+                                        <div className="w-12 h-12 bg-[#E8341A] flex items-center justify-center text-white shrink-0 shadow-[0_12px_40px_rgba(0,0,0,0.5)] shadow-[#E8341A]/20">
                                             <Award size={20} />
                                         </div>
                                         <div className="flex-1">
@@ -228,7 +228,7 @@ export default async function AcademyDashboard() {
                             </div>
                         </div>
 
-                        <div className="bg-white p-10 border border-slate-200">
+                        <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 p-10 border border-slate-200">
                             <h3 className="text-xl font-black uppercase tracking-tighter italic mb-8">Categorías</h3>
                             <div className="space-y-4">
                                 {categories.map(cat => (
@@ -241,10 +241,10 @@ export default async function AcademyDashboard() {
                         </div>
 
                         <div className="bg-gradient-to-br from-[#E8341A] to-[#C0280F] p-10 text-white shadow-2xl relative overflow-hidden">
-                            <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
+                            <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/10 rounded-full blur-3xl"></div>
                             <h3 className="text-xl font-black uppercase tracking-tighter italic mb-4">¿Necesitas Ayuda?</h3>
                             <p className="text-[10px] font-bold uppercase tracking-widest opacity-80 leading-loose mb-8">Nuestros tutores IA y expertos están disponibles 24/7 para resolver tus dudas técnicas.</p>
-                            <button className="w-full bg-white text-[#E8341A] py-4 text-[9px] font-black uppercase tracking-widest hover:bg-[#0F1923] hover:text-white transition-all">Soporte Académico</button>
+                            <button className="w-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-[#E8341A] py-4 text-[9px] font-black uppercase tracking-widest hover:bg-[#0F1923] hover:text-white transition-all">Soporte Académico</button>
                         </div>
                     </div>
                 </div>

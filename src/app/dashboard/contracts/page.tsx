@@ -202,7 +202,7 @@ export default function ContractsEvidencePage() {
                     {isAdmin && (
                         /* Admin: Pending Requests */
                         <div className="glass-panel border-white/5 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col rounded-none-[3.5rem] backdrop-blur-3xl">
-                            <div className="p-12 border-b border-white/5 bg-white/[0.01]">
+                            <div className="p-12 border-b border-white/5 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/[0.01]">
                                 <h2 className="text-xl font-black text-white uppercase tracking-tighter italic flex items-center gap-6">
                                     <ShieldAlert size={28} className="text-primary drop-shadow-[0_0_10px_rgba(99,102,241,0.5)]" /> Detallesoría Pendiente
                                 </h2>
@@ -220,7 +220,7 @@ export default function ContractsEvidencePage() {
                                     </div>
                                 ) : (
                                     pendingRequests.map(cycle => (
-                                        <div key={cycle.id} className="glass-panel !bg-slate-900/40 p-8 rounded-none-[2.5rem] border-white/5 space-y-6 group hover:!bg-white/[0.04] transition-all relative overflow-hidden">
+                                        <div key={cycle.id} className="glass-panel !bg-slate-900/40 p-8 rounded-none-[2.5rem] border-white/5 space-y-6 group hover:!bg-slate-900/50 backdrop-blur-xl border-slate-700/50/[0.04] transition-all relative overflow-hidden">
                                             <div className="absolute left-0 top-0 w-1.5 h-full bg-primary opacity-20 group-hover:opacity-100 transition-opacity" />
                                             <div className="flex items-center gap-6">
                                                 <div className="w-14 h-14 bg-slate-950 rounded-none border border-white/5 flex items-center justify-center text-white font-black text-xl italic shadow-inner group-hover:scale-105 transition-transform">
@@ -265,7 +265,7 @@ export default function ContractsEvidencePage() {
 
                                             <button
                                                 onClick={() => handleApproveAdmin(cycle.id)}
-                                                className="w-full bg-primary hover:bg-white hover:text-primary text-white py-4 rounded-none text-[10px] font-black uppercase tracking-[0.4em] transition-all shadow-[0_15px_30px_rgba(99,102,241,0.4)] italic skew-x-[-15deg] group"
+                                                className="w-full bg-primary hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50 hover:text-primary text-white py-4 rounded-none text-[10px] font-black uppercase tracking-[0.4em] transition-all shadow-[0_15px_30px_rgba(99,102,241,0.4)] italic skew-x-[-15deg] group"
                                             >
                                                 <div className="skew-x-[8deg] flex items-center justify-center gap-3">
                                                     <Zap size={16} className="group-hover:scale-125 transition-transform" />
@@ -288,7 +288,7 @@ export default function ContractsEvidencePage() {
                             {!myCycle ? (
                                 /* No cycle at all -> Upload */
                                 <div className="relative z-10">
-                                    <div className="w-24 h-24 bg-white/5 text-primary rounded-none flex items-center justify-center mx-auto mb-10 border border-white/5 shadow-[0_0_50px_rgba(99,102,241,0.15)] group hover:scale-105 transition-transform duration-700">
+                                    <div className="w-24 h-24 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 text-primary rounded-none flex items-center justify-center mx-auto mb-10 border border-white/5 shadow-[0_0_50px_rgba(99,102,241,0.15)] group hover:scale-105 transition-transform duration-700">
                                         <FileSignature size={48} className="group-hover:rotate-12 transition-transform" />
                                     </div>
                                     <h2 className="text-3xl font-black text-white uppercase tracking-tighter mb-4 text-center italic">MI <span className="text-primary">CONTRATO</span></h2>
@@ -325,7 +325,7 @@ export default function ContractsEvidencePage() {
                                             <button
                                                 onClick={handleUpload}
                                                 disabled={isUploading}
-                                                className="w-full bg-primary hover:bg-white hover:text-primary disabled:opacity-20 text-white font-black py-6 rounded-none-[2rem] flex items-center justify-center transition-all shadow-[0_25px_60px_-10px_rgba(99,102,241,0.6)] active:scale-95 text-[11px] uppercase tracking-[0.4em] gap-6 italic skew-x-[-15deg] group"
+                                                className="w-full bg-primary hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50 hover:text-primary disabled:opacity-20 text-white font-black py-6 rounded-none-[2rem] flex items-center justify-center transition-all shadow-[0_25px_60px_-10px_rgba(99,102,241,0.6)] active:scale-95 text-[11px] uppercase tracking-[0.4em] gap-6 italic skew-x-[-15deg] group"
                                             >
                                                 <div className="skew-x-[12deg] flex items-center gap-4">
                                                     {isUploading ? (

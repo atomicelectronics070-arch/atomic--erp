@@ -105,13 +105,13 @@ export default function StoragePage() {
                 <div className="flex gap-3">
                     <button 
                         onClick={() => setShowNewFolder(true)} 
-                        className="bg-white border border-slate-200 text-slate-600 px-5 py-2.5 rounded-lg font-bold text-sm flex items-center gap-2 hover:bg-slate-50 transition-all shadow-sm"
+                        className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 text-slate-600 px-5 py-2.5 rounded-lg font-bold text-sm flex items-center gap-2 hover:bg-slate-50 transition-all shadow-[0_4px_15px_rgba(0,0,0,0.3)]"
                     >
                         <FolderPlus size={18} /> Nueva Carpeta
                     </button>
                     <button 
                         onClick={() => setShowUpload(true)} 
-                        className="bg-indigo-600 text-white px-5 py-2.5 rounded-lg font-bold text-sm flex items-center gap-2 hover:bg-indigo-700 transition-all shadow-sm"
+                        className="bg-indigo-600 text-white px-5 py-2.5 rounded-lg font-bold text-sm flex items-center gap-2 hover:bg-indigo-700 transition-all shadow-[0_4px_15px_rgba(0,0,0,0.3)]"
                     >
                         <Upload size={18} /> Subir Archivo
                     </button>
@@ -119,7 +119,7 @@ export default function StoragePage() {
             </div>
 
             {/* Breadcrumb Navigation */}
-            <div className="bg-white border border-slate-200 p-4 rounded-xl flex flex-wrap items-center gap-4 text-sm font-bold text-slate-500 shadow-sm">
+            <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 p-4 rounded-xl flex flex-wrap items-center gap-4 text-sm font-bold text-slate-500 shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
                 <button
                     onClick={() => fetchContents(null)}
                     className={`flex items-center space-x-2 px-3 py-1.5 rounded-md transition-all ${!currentFolderId ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-slate-50 hover:text-slate-700'}`}
@@ -157,7 +157,7 @@ export default function StoragePage() {
             </div>
 
             {/* Content Area */}
-            <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden min-h-[500px]">
+            <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 rounded-xl shadow-[0_4px_15px_rgba(0,0,0,0.3)] overflow-hidden min-h-[500px]">
                 <div className="p-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
                     <h2 className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2">
                         Contenido del Directorio
@@ -188,7 +188,7 @@ export default function StoragePage() {
                                 <div
                                     key={folder.id}
                                     onClick={() => fetchContents(folder.id)}
-                                    className="flex items-center justify-between p-4 bg-white border border-slate-200 hover:border-indigo-300 hover:shadow-md cursor-pointer group transition-all rounded-xl"
+                                    className="flex items-center justify-between p-4 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 hover:border-indigo-300 hover:shadow-[0_8px_32px_rgba(0,0,0,0.5)] cursor-pointer group transition-all rounded-xl"
                                 >
                                     <div className="flex items-center space-x-4 overflow-hidden">
                                         <div className="p-3 bg-indigo-50 text-indigo-600 rounded-lg group-hover:scale-105 transition-transform">
@@ -204,7 +204,7 @@ export default function StoragePage() {
                             {files.map(file => (
                                 <div 
                                     key={file.id} 
-                                    className="flex items-center justify-between p-4 bg-white border border-slate-200 hover:border-emerald-300 hover:shadow-md group transition-all rounded-xl"
+                                    className="flex items-center justify-between p-4 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 hover:border-emerald-300 hover:shadow-[0_8px_32px_rgba(0,0,0,0.5)] group transition-all rounded-xl"
                                 >
                                     <div className="flex items-center space-x-4 overflow-hidden">
                                         <div className="p-3 bg-emerald-50 text-emerald-600 rounded-lg group-hover:scale-105 transition-transform">
@@ -241,7 +241,7 @@ export default function StoragePage() {
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setShowNewFolder(false)} />
                         <motion.div 
                             initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
-                            className="bg-white w-full max-w-md p-8 rounded-2xl shadow-xl relative z-10 border border-slate-200"
+                            className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 w-full max-w-md p-8 rounded-2xl shadow-xl relative z-10 border border-slate-200"
                         >
                             <button onClick={() => setShowNewFolder(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600"><X size={20} /></button>
                             <h3 className="text-xl font-black text-[#0F172A] mb-6 flex items-center gap-3">
@@ -270,7 +270,7 @@ export default function StoragePage() {
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setShowUpload(false)} />
                         <motion.div 
                             initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
-                            className="bg-white w-full max-w-lg p-8 rounded-2xl shadow-xl relative z-10 border border-slate-200"
+                            className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 w-full max-w-lg p-8 rounded-2xl shadow-xl relative z-10 border border-slate-200"
                         >
                             <button onClick={() => setShowUpload(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600"><X size={20} /></button>
                             <h3 className="text-xl font-black text-[#0F172A] mb-2 flex items-center gap-3">

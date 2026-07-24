@@ -128,14 +128,14 @@ export default function PhoneRankingPanel({ isAdmin }: { isAdmin: boolean }) {
                     </div>
 
                     <div className="flex flex-col items-center gap-4">
-                        <div className="bg-white/5 backdrop-blur-md px-8 py-6 border border-white/10 text-center">
+                        <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 backdrop-blur-md px-8 py-6 border border-white/10 text-center">
                             <p className="text-[9px] font-black text-slate-500 uppercase italic mb-2 tracking-[0.2em]">REINICIO DE SISTEMA</p>
                             <div className="flex items-center gap-4">
                                 <div className="flex flex-col">
                                     <span className="text-2xl font-black text-white italic leading-none">LUNES</span>
                                     <span className="text-[10px] font-bold text-[#1E3A8A] uppercase tracking-widest">07:00 AM</span>
                                 </div>
-                                <div className="w-px h-10 bg-white/10" />
+                                <div className="w-px h-10 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/10" />
                                 <div className="flex flex-col">
                                     <span className="text-2xl font-black text-white italic leading-none">VIERNES</span>
                                     <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">07:00 PM</span>
@@ -160,7 +160,7 @@ export default function PhoneRankingPanel({ isAdmin }: { isAdmin: boolean }) {
                                 placeholder="MONTO $"
                                 value={newGoal.amount}
                                 onChange={(e) => setNewGoal({...newGoal, amount: e.target.value})}
-                                className="w-full bg-white border border-slate-200 p-4 text-sm font-black text-navy outline-none focus:border-emerald-500 italic"
+                                className="w-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 p-4 text-sm font-black text-navy outline-none focus:border-emerald-500 italic"
                             />
                         </div>
                         <div className="md:col-span-1">
@@ -169,7 +169,7 @@ export default function PhoneRankingPanel({ isAdmin }: { isAdmin: boolean }) {
                                 placeholder="DESCRIPCIÓN (OPCIONAL)"
                                 value={newGoal.description}
                                 onChange={(e) => setNewGoal({...newGoal, description: e.target.value})}
-                                className="w-full bg-white border border-slate-200 p-4 text-sm font-black text-navy outline-none focus:border-emerald-500 italic"
+                                className="w-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 p-4 text-sm font-black text-navy outline-none focus:border-emerald-500 italic"
                             />
                         </div>
                         <button 
@@ -263,13 +263,13 @@ export default function PhoneRankingPanel({ isAdmin }: { isAdmin: boolean }) {
                                     
                                     {/* ADMIN ADD NUMBERS */}
                                     {isAdmin && (
-                                        <div className="absolute right-0 top-0 opacity-0 group-hover:opacity-100 transition-all flex items-center gap-2 bg-white/80 backdrop-blur-sm p-1 border border-slate-100 z-20">
+                                        <div className="absolute right-0 top-0 opacity-0 group-hover:opacity-100 transition-all flex items-center gap-2 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/80 backdrop-blur-sm p-1 border border-slate-100 z-20">
                                             <input 
                                                 type="number"
                                                 placeholder="+"
                                                 value={addCounts[entry.userId] || ""}
                                                 onChange={(e) => setAddCounts({...addCounts, [entry.userId]: e.target.value})}
-                                                className="w-12 bg-white border border-slate-200 p-1 text-[10px] font-black text-navy outline-none"
+                                                className="w-12 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 p-1 text-[10px] font-black text-navy outline-none"
                                             />
                                             <button 
                                                 onClick={() => handleAddNumbers(entry.userId)}

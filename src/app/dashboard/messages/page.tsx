@@ -203,7 +203,7 @@ export default function MessagesPage() {
                 <div className="flex items-center gap-6">
                     <button
                         onClick={() => setActiveTab("compose")}
-                        className="bg-secondary text-white px-12 py-5 font-black uppercase tracking-[0.3em] text-[10px] flex items-center shadow-[0_20px_50px_-10px_rgba(255,99,71,0.5)] transition-all hover:bg-white hover:text-secondary rounded-none active:scale-95 group italic skew-x-[-12deg]"
+                        className="bg-secondary text-white px-12 py-5 font-black uppercase tracking-[0.3em] text-[10px] flex items-center shadow-[0_20px_50px_-10px_rgba(255,99,71,0.5)] transition-all hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50 hover:text-secondary rounded-none active:scale-95 group italic skew-x-[-12deg]"
                     >
                          <div className="skew-x-[12deg] flex items-center gap-4">
                             <MessageSquarePlus size={20} className="group-hover:rotate-12 transition-transform" />
@@ -220,7 +220,7 @@ export default function MessagesPage() {
                         <button
                             onClick={() => setActiveTab("inbox")}
                             className={`flex items-center justify-between p-6 w-full text-left transition-all rounded-none border-white/5 group ${activeTab === "inbox"
-                                ? "bg-white/[0.03] border-white/10 text-secondary shadow-inner"
+                                ? "bg-slate-900/50 backdrop-blur-xl border-slate-700/50/[0.03] border-white/10 text-secondary shadow-inner"
                                 : "text-slate-500 hover:text-white"
                                 }`}
                         >
@@ -237,7 +237,7 @@ export default function MessagesPage() {
                         <button
                             onClick={() => setActiveTab("outbox")}
                             className={`flex items-center space-x-4 p-6 w-full text-left transition-all rounded-none border-white/5 group ${activeTab === "outbox"
-                                ? "bg-white/[0.03] border-white/10 text-secondary shadow-inner"
+                                ? "bg-slate-900/50 backdrop-blur-xl border-slate-700/50/[0.03] border-white/10 text-secondary shadow-inner"
                                 : "text-slate-500 hover:text-white"
                                 }`}
                         >
@@ -265,7 +265,7 @@ export default function MessagesPage() {
                                         }))
                                         setActiveTab("compose")
                                     }}
-                                    className="w-full text-left p-4 hover:bg-white/[0.03] border border-transparent hover:border-white/5 rounded-none transition-all flex items-center gap-4 group/user"
+                                    className="w-full text-left p-4 hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50/[0.03] border border-transparent hover:border-white/5 rounded-none transition-all flex items-center gap-4 group/user"
                                 >
                                     <div className="w-10 h-10 rounded-none bg-slate-950 border border-white/5 text-secondary font-black text-[12px] flex items-center justify-center shrink-0 uppercase italic shadow-inner group-hover/user:scale-110 transition-transform">
                                         {(u.name?.[0] || u.email?.[0] || "?")}
@@ -419,7 +419,7 @@ export default function MessagesPage() {
                                         <button
                                             type="submit"
                                             disabled={isSending || users.length === 0 || usersLoading}
-                                            className="w-full bg-secondary text-white p-8 font-black uppercase tracking-[0.5em] text-[11px] flex items-center justify-center gap-6 shadow-[0_25px_60px_-10px_rgba(255,99,71,0.6)] transition-all hover:bg-white hover:text-secondary rounded-none-[3rem] active:scale-95 disabled:opacity-20 italic skew-x-[-8deg] group"
+                                            className="w-full bg-secondary text-white p-8 font-black uppercase tracking-[0.5em] text-[11px] flex items-center justify-center gap-6 shadow-[0_25px_60px_-10px_rgba(255,99,71,0.6)] transition-all hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50 hover:text-secondary rounded-none-[3rem] active:scale-95 disabled:opacity-20 italic skew-x-[-8deg] group"
                                         >
                                             <div className="skew-x-[8deg] flex items-center gap-4">
                                                 <Send size={24} className="group-hover:translate-x-2 group-hover:-translate-y-2 transition-transform" />
@@ -456,7 +456,7 @@ export default function MessagesPage() {
                                                 <motion.div
                                                     layout
                                                     key={msg.id}
-                                                    className={`glass-panel border-white/5 p-10 rounded-none-[3rem] transition-all group relative overflow-hidden ${!msg.isRead && activeTab === "inbox" ? "bg-white/[0.04] shadow-[0_0_50px_rgba(255,99,71,0.05)] border-secondary/20" : "bg-slate-950/20 hover:bg-white/[0.02]"}`}
+                                                    className={`glass-panel border-white/5 p-10 rounded-none-[3rem] transition-all group relative overflow-hidden ${!msg.isRead && activeTab === "inbox" ? "bg-slate-900/50 backdrop-blur-xl border-slate-700/50/[0.04] shadow-[0_0_50px_rgba(255,99,71,0.05)] border-secondary/20" : "bg-slate-950/20 hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50/[0.02]"}`}
                                                 >
                                                      <div 
                                                         className="absolute left-0 top-0 w-1.5 h-full opacity-40 group-hover:opacity-100 transition-opacity" 
@@ -522,7 +522,7 @@ export default function MessagesPage() {
                                                                                 onClick={() =>
                                                                                     handleStatusUpdate(msg.id, msg.status, true)
                                                                                 }
-                                                                                className="w-full flex items-center justify-center gap-4 bg-secondary text-white py-4 text-[10px] font-black uppercase tracking-[0.4em] hover:bg-white hover:text-secondary transition-all rounded-none shadow-2xl italic group/read"
+                                                                                className="w-full flex items-center justify-center gap-4 bg-secondary text-white py-4 text-[10px] font-black uppercase tracking-[0.4em] hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50 hover:text-secondary transition-all rounded-none shadow-2xl italic group/read"
                                                                             >
                                                                                 <MailOpen size={16} className="group-hover/read:scale-110 transition-transform" />
                                                                                 <span>Marcar Leído</span>

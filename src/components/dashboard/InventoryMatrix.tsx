@@ -350,7 +350,7 @@ export default function InventoryMatrix({ initialProducts, providers, onRefresh 
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
                         <thead>
-                            <tr className="bg-white/[0.02] border-b border-white/5 text-[9px] font-black uppercase tracking-[0.3em] text-slate-500 italic">
+                            <tr className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50/[0.02] border-b border-white/5 text-[9px] font-black uppercase tracking-[0.3em] text-slate-500 italic">
                                 <th className="px-8 py-8 w-16">
                                     <button onClick={() => setSelectedIds(selectedIds.length === filteredProducts.length ? [] : filteredProducts.map((p: any) => p.id))} className="text-slate-800 hover:text-secondary transition-colors">
                                         {selectedIds.length === filteredProducts.length && filteredProducts.length > 0 ? <CheckSquare size={18} className="text-secondary" /> : <Square size={18} />}
@@ -381,7 +381,7 @@ export default function InventoryMatrix({ initialProducts, providers, onRefresh 
                                     const isLowMargin = marginPercent < 15
                                     
                                     return (
-                                        <tr key={p.id} className={`hover:bg-white/[0.04] transition-all group ${selectedIds.includes(p.id) ? 'bg-secondary/5' : ''}`}>
+                                        <tr key={p.id} className={`hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50/[0.04] transition-all group ${selectedIds.includes(p.id) ? 'bg-secondary/5' : ''}`}>
                                             <td className="px-8 py-6">
                                                 <button onClick={() => setSelectedIds(prev => prev.includes(p.id) ? prev.filter(id => id !== p.id) : [...prev, p.id])} className={`transition-all ${selectedIds.includes(p.id) ? 'text-secondary scale-110' : 'text-slate-800 hover:text-slate-600'}`}>
                                                     {selectedIds.includes(p.id) ? <CheckSquare size={20} /> : <Square size={20} />}
@@ -421,7 +421,7 @@ export default function InventoryMatrix({ initialProducts, providers, onRefresh 
                                                 </div>
                                             </td>
                                             <td className="px-8 py-6 text-right pr-12">
-                                                <button className="p-3 bg-white/5 hover:bg-secondary text-slate-500 hover:text-white transition-all rounded-none">
+                                                <button className="p-3 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 hover:bg-secondary text-slate-500 hover:text-white transition-all rounded-none">
                                                     <Edit size={14} />
                                                 </button>
                                             </td>
@@ -449,7 +449,7 @@ export default function InventoryMatrix({ initialProducts, providers, onRefresh 
                             <div className="flex gap-6">
                                 <button 
                                     onClick={() => handleApplyRules(true)}
-                                    className="bg-white text-secondary px-10 py-4 text-[10px] font-black uppercase tracking-widest hover:bg-slate-900 hover:text-white transition-all shadow-2xl skew-x-[-12deg]"
+                                    className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-secondary px-10 py-4 text-[10px] font-black uppercase tracking-widest hover:bg-slate-900 hover:text-white transition-all shadow-2xl skew-x-[-12deg]"
                                 >
                                     <span className="skew-x-[12deg] block">Aplicar Reglas a Selección</span>
                                 </button>

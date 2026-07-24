@@ -40,16 +40,16 @@ export default async function PreciosVendedorPage() {
         <div className="space-y-8 animate-in fade-in duration-500 pb-32 font-sans">
             {/* Header */}
             <div className="bg-gradient-to-r from-[#10b981] to-emerald-400 rounded-3xl p-8 text-white shadow-xl relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 blur-[50px] rounded-full pointer-events-none" />
+                <div className="absolute top-0 right-0 w-64 h-64 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/10 blur-[50px] rounded-full pointer-events-none" />
                 <div className="relative z-10">
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 text-white font-bold text-xs uppercase tracking-widest mb-6">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50/20 backdrop-blur-sm border border-white/30 text-white font-bold text-xs uppercase tracking-widest mb-6">
                         <ShieldCheck size={16} /> Acceso Exclusivo de Socios
                     </div>
                     <h1 className="text-4xl lg:text-5xl font-black tracking-tight leading-tight mb-4">
                         Tus Precios de Distribuidor
                     </h1>
                     <p className="text-emerald-50 text-lg max-w-2xl font-medium">
-                        Como {session.user.role}, disfrutas de un <span className="font-black bg-white text-[#10b981] px-2 py-0.5 rounded-md mx-1">descuento fijo del {discountLabel}</span> en todos nuestros productos. Este es tu margen de ganancia neto por venta.
+                        Como {session.user.role}, disfrutas de un <span className="font-black bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-[#10b981] px-2 py-0.5 rounded-md mx-1">descuento fijo del {discountLabel}</span> en todos nuestros productos. Este es tu margen de ganancia neto por venta.
                     </p>
                 </div>
             </div>
@@ -64,10 +64,10 @@ export default async function PreciosVendedorPage() {
                     const profit = basePrice - discountedPrice
 
                     return (
-                        <div key={product.id} className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-xl transition-all group flex flex-col">
+                        <div key={product.id} className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 rounded-2xl border border-slate-200 overflow-hidden shadow-[0_4px_15px_rgba(0,0,0,0.3)] hover:shadow-xl transition-all group flex flex-col">
                             <div className="h-48 relative bg-slate-50 flex items-center justify-center p-4">
                                 <img src={imgUrl} alt={product.name} className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-500" />
-                                <div className="absolute top-4 right-4 bg-emerald-500 text-white px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider shadow-lg shadow-emerald-500/20">
+                                <div className="absolute top-4 right-4 bg-emerald-500 text-white px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider shadow-[0_12px_40px_rgba(0,0,0,0.5)] shadow-emerald-500/20">
                                     -{discountLabel}
                                 </div>
                             </div>
@@ -106,7 +106,7 @@ export default async function PreciosVendedorPage() {
             </div>
             
             {products.length === 0 && (
-                <div className="text-center py-20 bg-white border border-slate-200 rounded-3xl">
+                <div className="text-center py-20 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 rounded-3xl">
                     <Package size={48} className="mx-auto text-slate-300 mb-4" />
                     <h3 className="text-lg font-bold text-[#0F172A]">No hay productos disponibles</h3>
                     <p className="text-slate-500 mt-2">Actualmente no hay productos activos en el catálogo.</p>

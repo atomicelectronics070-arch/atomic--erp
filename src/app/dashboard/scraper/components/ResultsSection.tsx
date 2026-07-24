@@ -84,7 +84,7 @@ const ResultsSection: React.FC<ResultsSectionProps> = ({
                         <ActionButton icon={<History size={16} />} label="Historial" onClick={fetchHistory} />
                         <ActionButton icon={<Eye size={16} />} label="Vista Previa" onClick={handlePreview} disabled={results.length === 0} />
                         
-                        <div className="h-8 w-[1px] bg-white/10 mx-2 hidden xl:block"></div>
+                        <div className="h-8 w-[1px] bg-slate-900/50 backdrop-blur-xl border-slate-700/50/10 mx-2 hidden xl:block"></div>
                         
                         <ExportButton 
                             icon={<FileSpreadsheet size={16} />} 
@@ -116,7 +116,7 @@ const ResultsSection: React.FC<ResultsSectionProps> = ({
 
                 {/* FIELD SELECTOR FOR EXPORT */}
                 {results.length > 0 && (
-                    <div className="mb-8 p-5 bg-white/5 rounded-none border border-white/10">
+                    <div className="mb-8 p-5 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 rounded-none border border-white/10">
                         <div className="flex items-center gap-2 mb-4">
                             <CheckCircle2 size={14} className="text-green-500" />
                             <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Configurar Columnas de Salida</span>
@@ -172,7 +172,7 @@ const ActionButton = ({ icon, label, onClick, disabled }: any) => (
 const ExportButton = ({ icon, label, color, onClick, loading, disabled, highlighted }: any) => {
     const colors: any = {
         green: 'bg-green-600/10 border-green-500/30 text-green-400 hover:bg-green-600/40 hover:text-white',
-        blue: 'bg-blue-600/10 border-blue-500/30 text-blue-400 hover:bg-blue-600/40 hover:text-white',
+        blue: 'bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all/10 border-blue-500/30 text-blue-400 hover:bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all/40 hover:text-white',
         purple: 'bg-purple-600/10 border-purple-500/40 text-purple-400 hover:bg-purple-600/40 hover:text-white ring-purple-500/20 ring-offset-slate-900'
     };
     

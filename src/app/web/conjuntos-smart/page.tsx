@@ -58,7 +58,7 @@ export default function ConjuntosSmartPage() {
                 {/* Animated BG */}
                 <div className="absolute inset-0 opacity-20">
                     <div className="absolute top-0 left-1/4 w-96 h-96 bg-emerald-500 rounded-full blur-[120px]" />
-                    <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-600 rounded-full blur-[120px]" />
+                    <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all rounded-full blur-[120px]" />
                 </div>
 
                 <div className="relative z-10 max-w-7xl mx-auto px-6 py-24 flex flex-col lg:flex-row items-center gap-16">
@@ -90,7 +90,7 @@ export default function ConjuntosSmartPage() {
                             </a>
                             <button
                                 onClick={() => document.getElementById('contacto')?.scrollIntoView({ behavior: 'smooth' })}
-                                className="px-8 py-4 bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-xl font-bold text-lg transition-all"
+                                className="px-8 py-4 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50/10 text-white border border-white/10 rounded-xl font-bold text-lg transition-all"
                             >
                                 Consultar Disponibilidad
                             </button>
@@ -155,7 +155,7 @@ export default function ConjuntosSmartPage() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: i * 0.05 }}
-                            className="bg-white border border-slate-200 rounded-2xl p-6 hover:border-emerald-300 hover:shadow-lg hover:shadow-emerald-50 transition-all group"
+                            className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 rounded-2xl p-6 hover:border-emerald-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.5)] hover:shadow-emerald-50 transition-all group"
                         >
                             <div className="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform border border-emerald-100">
                                 <feat.icon size={22} className="text-emerald-600" />
@@ -192,7 +192,7 @@ export default function ConjuntosSmartPage() {
                                 { label: "Control de Acceso", sub: "Cerradura eléctrica" },
                                 { label: "Registros en Tiempo Real", sub: "Historial de eventos" },
                             ].map((item, i) => (
-                                <div key={i} className="bg-white/5 border border-white/10 rounded-xl p-4 hover:bg-white/10 transition-colors">
+                                <div key={i} className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 border border-white/10 rounded-xl p-4 hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50/10 transition-colors">
                                     <p className="text-white font-black text-sm">{item.label}</p>
                                     <p className="text-slate-500 text-xs mt-1">{item.sub}</p>
                                 </div>
@@ -216,7 +216,7 @@ export default function ConjuntosSmartPage() {
                     <h2 className="text-4xl font-black text-[#0F172A]">Especificaciones Técnicas</h2>
                     <p className="text-slate-500 text-lg max-w-xl mx-auto">Todo lo que necesitas saber para tomar la mejor decisión de seguridad.</p>
                 </div>
-                <div className="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm">
+                <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 rounded-3xl overflow-hidden shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
                     <div className="grid grid-cols-1 md:grid-cols-2">
                         {specs.map((spec, i) => (
                             <div key={i} className={`flex items-center justify-between p-5 border-b border-slate-100 ${i % 2 === 0 ? 'md:border-r' : ''} last:border-b-0`}>
@@ -231,7 +231,7 @@ export default function ConjuntosSmartPage() {
             {/* CONTACT */}
             <section id="contacto" className="py-24 bg-slate-50 relative">
                 <div className="max-w-3xl mx-auto px-6">
-                    <div className="bg-white rounded-3xl p-8 md:p-12 shadow-xl border border-slate-200">
+                    <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 rounded-3xl p-8 md:p-12 shadow-xl border border-slate-200">
                         <div className="text-center mb-10">
                             <h2 className="text-3xl font-black text-[#0F172A] mb-3">¿Quieres una demostración?</h2>
                             <p className="text-slate-500 font-medium">Cuéntanos dónde estás y qué necesitas proteger. Un asesor especializado te contactará hoy mismo.</p>
@@ -261,7 +261,7 @@ export default function ConjuntosSmartPage() {
                                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">¿Qué necesitas proteger?</label>
                                 <textarea required rows={3} value={form.message} onChange={e => setForm({...form, message: e.target.value})} className="w-full bg-slate-50 border border-slate-200 px-4 py-3.5 rounded-xl text-sm font-bold text-[#0F172A] outline-none focus:border-emerald-500 transition-all resize-none" placeholder="Cuéntanos brevemente..." />
                             </div>
-                            <button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-4 rounded-xl font-black text-lg transition-all hover:scale-[1.02] shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-2">
+                            <button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-4 rounded-xl font-black text-lg transition-all hover:scale-[1.02] shadow-[0_12px_40px_rgba(0,0,0,0.5)] shadow-emerald-600/20 flex items-center justify-center gap-2">
                                 Solicitar Asesoría Gratuita <Send size={20} />
                             </button>
                         </form>

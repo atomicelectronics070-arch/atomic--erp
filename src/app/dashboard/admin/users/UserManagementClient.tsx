@@ -103,7 +103,7 @@ export default function UserManagementClient({ users: initialUsers }: Props) {
     )
 
     return (
-        <div className="bg-white  border border-neutral-200  rounded-none shadow-sm overflow-hidden mt-8">
+        <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50  border border-neutral-200  rounded-none shadow-[0_4px_15px_rgba(0,0,0,0.3)] overflow-hidden mt-8">
 
             {/* Header / Tabs */}
             <div className="flex flex-col md:flex-row border-b border-neutral-50  px-4 text-neutral-900 ">
@@ -139,7 +139,7 @@ export default function UserManagementClient({ users: initialUsers }: Props) {
 
                                 {/* Left Col: Identity and Metrics */}
                                 <div className="flex-1 flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:space-x-4">
-                                    <div className="w-12 h-12 rounded-none bg-indigo-500 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-indigo-500/20 shrink-0">
+                                    <div className="w-12 h-12 rounded-none bg-indigo-500 flex items-center justify-center text-white font-bold text-xl shadow-[0_12px_40px_rgba(0,0,0,0.5)] shadow-indigo-500/20 shrink-0">
                                         {user.name?.[0] || "?"}
                                     </div>
                                     <div className="flex-1">
@@ -181,14 +181,14 @@ export default function UserManagementClient({ users: initialUsers }: Props) {
                                                 <button
                                                     onClick={() => handleUpdateStatus(user.id, "APPROVED")}
                                                     disabled={loadingId === user.id}
-                                                    className="w-full bg-indigo-500 hover:bg-orange-700 text-white font-bold py-4 rounded-none flex items-center justify-center transition-all disabled:opacity-50 text-[10px] uppercase tracking-widest shadow-lg shadow-indigo-500/20"
+                                                    className="w-full bg-indigo-500 hover:bg-orange-700 text-white font-bold py-4 rounded-none flex items-center justify-center transition-all disabled:opacity-50 text-[10px] uppercase tracking-widest shadow-[0_12px_40px_rgba(0,0,0,0.5)] shadow-indigo-500/20"
                                                 >
                                                     <Check size={16} className="mr-2" /> Aprobar Acceso
                                                 </button>
                                                 <button
                                                     onClick={() => handleUpdateStatus(user.id, "REJECTED")}
                                                     disabled={loadingId === user.id}
-                                                    className="w-full bg-white  border border-neutral-200  text-red-600 font-bold py-4 rounded-none flex items-center justify-center transition-all disabled:opacity-50 text-[10px] uppercase tracking-widest"
+                                                    className="w-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50  border border-neutral-200  text-red-600 font-bold py-4 rounded-none flex items-center justify-center transition-all disabled:opacity-50 text-[10px] uppercase tracking-widest"
                                                 >
                                                     <X size={16} className="mr-2" /> Declinar
                                                 </button>

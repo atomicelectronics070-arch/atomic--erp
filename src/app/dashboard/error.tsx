@@ -15,7 +15,7 @@ export default function Error({
     }, [error])
 
     return (
-        <div className="flex h-full w-full flex-col items-center justify-center p-8 text-center bg-white rounded-none shadow-sm">
+        <div className="flex h-full w-full flex-col items-center justify-center p-8 text-center bg-slate-900/50 backdrop-blur-xl border-slate-700/50 rounded-none shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
             <h2 className="text-2xl font-bold tracking-tight text-neutral-800 mb-2">Algo salió mal</h2>
             <p className="text-sm text-neutral-500 mb-6 max-w-md">
                 Hubo un problema al cargar esta sección. Puedes intentar recargar la página o volver al panel anterior.
@@ -24,7 +24,7 @@ export default function Error({
             <div className="flex gap-4">
                 <button
                     onClick={() => reset()}
-                    className="bg-orange-600 text-white px-6 py-2 rounded-none text-xs font-bold uppercase tracking-widest hover:bg-orange-700 transition-colors shadow-lg"
+                    className="bg-orange-600 text-white px-6 py-2 rounded-none text-xs font-bold uppercase tracking-widest hover:bg-orange-700 transition-colors shadow-[0_12px_40px_rgba(0,0,0,0.5)]"
                 >
                     Intentar de nuevo
                 </button>

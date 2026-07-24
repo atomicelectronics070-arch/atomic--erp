@@ -143,7 +143,7 @@ export default function SalesRankingPanel({ isAdmin }: { isAdmin: boolean }) {
                                 placeholder="MONTO META $"
                                 value={newGoal.amount}
                                 onChange={(e) => setNewGoal({...newGoal, amount: e.target.value})}
-                                className="w-full bg-white border border-slate-200 p-4 text-sm font-black text-navy outline-none focus:border-emerald-500 italic"
+                                className="w-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 p-4 text-sm font-black text-navy outline-none focus:border-emerald-500 italic"
                             />
                         </div>
                         <div className="md:col-span-1">
@@ -152,7 +152,7 @@ export default function SalesRankingPanel({ isAdmin }: { isAdmin: boolean }) {
                                 placeholder="DESCRIPCIÓN"
                                 value={newGoal.description}
                                 onChange={(e) => setNewGoal({...newGoal, description: e.target.value})}
-                                className="w-full bg-white border border-slate-200 p-4 text-sm font-black text-navy outline-none focus:border-emerald-500 italic"
+                                className="w-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 p-4 text-sm font-black text-navy outline-none focus:border-emerald-500 italic"
                             />
                         </div>
                         <button 
@@ -209,13 +209,13 @@ export default function SalesRankingPanel({ isAdmin }: { isAdmin: boolean }) {
                                     
                                     {/* ADMIN ADD SALES */}
                                     {isAdmin && (
-                                        <div className="absolute right-0 top-0 opacity-0 group-hover:opacity-100 transition-all flex items-center gap-2 bg-white/80 backdrop-blur-sm p-1 border border-slate-100 z-20">
+                                        <div className="absolute right-0 top-0 opacity-0 group-hover:opacity-100 transition-all flex items-center gap-2 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/80 backdrop-blur-sm p-1 border border-slate-100 z-20">
                                             <input 
                                                 type="number"
                                                 placeholder="+$"
                                                 value={addAmounts[entry.userId] || ""}
                                                 onChange={(e) => setAddAmounts({...addAmounts, [entry.userId]: e.target.value})}
-                                                className="w-16 bg-white border border-slate-200 p-1 text-[10px] font-black text-navy outline-none"
+                                                className="w-16 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 p-1 text-[10px] font-black text-navy outline-none"
                                             />
                                             <button 
                                                 onClick={() => handleAddSales(entry.userId)}

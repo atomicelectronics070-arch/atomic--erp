@@ -33,11 +33,11 @@ export default function BlogBarrerasAntipanico() {
                     </p>
 
                     <div className="flex flex-wrap items-center gap-4 pt-8 border-t border-gray-800">
-                        <span className="text-sm font-bold text-gray-500 uppercase tracking-widest mr-2">Síguenos en:</span>
+                        <span className="text-sm font-bold text-slate-400 uppercase tracking-widest mr-2">Síguenos en:</span>
                         <a href="https://www.instagram.com/atomic_industries_26?igsh=bDczYW9xN2F6NXFs" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-gray-900 flex items-center justify-center text-gray-400 hover:text-white hover:bg-gradient-to-tr hover:from-purple-500 hover:to-orange-500 transition-all">
                             <Instagram size={18} />
                         </a>
-                        <a href="https://www.facebook.com/share/18sPVQW2mN/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-gray-900 flex items-center justify-center text-gray-400 hover:text-white hover:bg-blue-600 transition-all">
+                        <a href="https://www.facebook.com/share/18sPVQW2mN/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-gray-900 flex items-center justify-center text-gray-400 hover:text-white hover:bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all transition-all">
                             <Facebook size={18} />
                         </a>
                         <a href="https://youtu.be/_rI46cUolfQ?si=9UDW8WG4SeFQM-RL" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-gray-900 flex items-center justify-center text-gray-400 hover:text-white hover:bg-red-600 transition-all">

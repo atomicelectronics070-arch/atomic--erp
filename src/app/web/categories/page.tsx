@@ -58,7 +58,7 @@ export default function CategoriesPage() {
         <div className="min-h-screen bg-[#F8FAFC] text-slate-900" style={{ fontFamily: "'IBM Plex Sans', ui-sans-serif, system-ui" }}>
 
             {/* Hero */}
-            <header className="border-b border-slate-200 py-14 px-6 bg-white">
+            <header className="border-b border-slate-200 py-14 px-6 bg-slate-900/50 backdrop-blur-xl border-slate-700/50">
                 <div className="max-w-7xl mx-auto">
                     <div className="flex items-center gap-3 text-[#1E3A8A] mb-4">
                         <Grid3X3 size={16} />
@@ -87,7 +87,7 @@ export default function CategoriesPage() {
                             >
                                 <Link
                                     href={`/web/category/${cat.slug}`}
-                                    className="group flex flex-col h-full bg-white border border-slate-200 rounded-2xl overflow-hidden hover:border-blue-300 hover:shadow-xl transition-all duration-300"
+                                    className="group flex flex-col h-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 rounded-2xl overflow-hidden hover:border-blue-300 hover:shadow-xl transition-all duration-300"
                                 >
                                     {/* Image area — silhouette mode */}
                                     <div className="relative h-44 bg-slate-50 flex items-center justify-center overflow-hidden border-b border-slate-100">

@@ -893,13 +893,13 @@ export default function BotRutaPage() {
             <h1 className="text-3xl font-black text-[#0F172A] flex items-center gap-3"><Settings className="text-indigo-600"/> Admin \u00b7 Bot Ruta</h1>
             <p className="text-sm text-slate-500 mt-1">Configura el per\u00edodo de recompensa y monitorea la actividad de asesores.</p>
           </div>
-          <button onClick={() => setAdminView(false)} className="bg-white border border-slate-200 px-5 py-2.5 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-50 shadow-sm">
+          <button onClick={() => setAdminView(false)} className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 px-5 py-2.5 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-50 shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
             Ver como Asesor
           </button>
         </div>
 
         {/* Reward Config */}
-        <div className="bg-white border border-slate-200 p-8 rounded-2xl shadow-sm">
+        <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 p-8 rounded-2xl shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
           <h2 className="text-lg font-black text-[#0F172A] mb-6 flex items-center gap-2"><CheckCircle2 className="text-emerald-500" size={20}/> Configuraci\u00f3n de Recompensa Semanal</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="space-y-2">
@@ -915,13 +915,13 @@ export default function BotRutaPage() {
               <input type="text" value={rewardConfig.goal} onChange={e => setRewardConfig(p => ({...p, goal:e.target.value}))} className="w-full bg-slate-50 border border-slate-200 px-4 py-3 rounded-lg text-sm font-bold text-[#0F172A] outline-none focus:border-indigo-500"/>
             </div>
           </div>
-          <button onClick={() => alert("Configuraci\u00f3n guardada. El bot usar\u00e1 estos datos.")} className="mt-6 bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold text-sm hover:bg-indigo-700 transition-colors shadow-sm">
+          <button onClick={() => alert("Configuraci\u00f3n guardada. El bot usar\u00e1 estos datos.")} className="mt-6 bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold text-sm hover:bg-indigo-700 transition-colors shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
             Guardar Configuraci\u00f3n
           </button>
         </div>
 
         {/* Advisor Stats */}
-        <div className="bg-white border border-slate-200 p-8 rounded-2xl shadow-sm">
+        <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 p-8 rounded-2xl shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
           <h2 className="text-lg font-black text-[#0F172A] mb-6 flex items-center gap-2"><Users className="text-indigo-600" size={20}/> Actividad de Asesores</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             {[
@@ -940,7 +940,7 @@ export default function BotRutaPage() {
               <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Capturas Subidas</p>
               <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
                 {screenshots.map((src,i) => (
-                  <div key={i} className="aspect-square rounded-lg overflow-hidden border border-slate-200 shadow-sm">
+                  <div key={i} className="aspect-square rounded-lg overflow-hidden border border-slate-200 shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
                     <img src={src} alt={`Cap ${i+1}`} className="w-full h-full object-cover"/>
                   </div>
                 ))}
@@ -955,9 +955,9 @@ export default function BotRutaPage() {
   return (
     <div className="flex h-[calc(100vh-5rem)] bg-slate-50 font-sans">
       {/* Main Chat */}
-      <div className="flex-1 flex flex-col bg-white border-r border-slate-200">
+      <div className="flex-1 flex flex-col bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border-r border-slate-200">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-200 bg-white flex items-center justify-between shadow-sm">
+        <div className="px-6 py-4 border-b border-slate-200 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 flex items-center justify-between shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center border border-indigo-100">
               <Bot size={22} className="text-indigo-600"/>
@@ -984,7 +984,7 @@ export default function BotRutaPage() {
               return (
                   <div key={msg.id} className="max-w-2xl space-y-4">
                       {generatedAds.map((ad, i) => (
-                          <div key={i} className="bg-slate-50 border border-slate-200 rounded-xl p-4 shadow-sm font-sans text-sm text-slate-700 whitespace-pre-wrap">
+                          <div key={i} className="bg-slate-50 border border-slate-200 rounded-xl p-4 shadow-[0_4px_15px_rgba(0,0,0,0.3)] font-sans text-sm text-slate-700 whitespace-pre-wrap">
                               {ad.text.split('\n').map((line: string, idx: number) => {
                                   const isBold = line.startsWith('**') && line.includes('**', 2);
                                   if (isBold) {
@@ -1009,11 +1009,11 @@ export default function BotRutaPage() {
                       const imgs = safeParseArray(p.images);
                       const imgUrl = imgs[0] || "https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?w=500";
                       return (
-                        <div key={i} className="relative border border-slate-200 bg-white rounded-xl p-3 flex flex-col items-center text-center shadow-sm">
+                        <div key={i} className="relative border border-slate-200 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 rounded-xl p-3 flex flex-col items-center text-center shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
                           {phase === "product_selection" && (
                             <button 
                               onClick={() => shuffleSingleProduct(i)}
-                              className="absolute -top-2 -right-2 bg-indigo-100 text-indigo-600 rounded-full p-1.5 hover:bg-indigo-200 shadow-sm transition-transform hover:rotate-180"
+                              className="absolute -top-2 -right-2 bg-indigo-100 text-indigo-600 rounded-full p-1.5 hover:bg-indigo-200 shadow-[0_4px_15px_rgba(0,0,0,0.3)] transition-transform hover:rotate-180"
                               title="Cambiar solo este producto"
                             >
                               <RefreshCw size={12} />
@@ -1032,13 +1032,13 @@ export default function BotRutaPage() {
                     <div className="flex flex-col gap-2 mt-3">
                       <button 
                         onClick={acceptProductsAndGenerate} 
-                        className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-black uppercase tracking-wider py-3.5 px-4 rounded-xl shadow-sm transition-all flex items-center justify-center gap-2"
+                        className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-black uppercase tracking-wider py-3.5 px-4 rounded-xl shadow-[0_4px_15px_rgba(0,0,0,0.3)] transition-all flex items-center justify-center gap-2"
                       >
                         ✅ Aceptar Productos y Generar (Sin marcha atrás)
                       </button>
                       <button 
                         onClick={shuffleProposedProducts} 
-                        className="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-black uppercase tracking-wider py-3.5 px-4 rounded-xl shadow-sm transition-all flex items-center justify-center gap-2"
+                        className="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-black uppercase tracking-wider py-3.5 px-4 rounded-xl shadow-[0_4px_15px_rgba(0,0,0,0.3)] transition-all flex items-center justify-center gap-2"
                       >
                         🔄 Cambiar Opciones de Ruleta
                       </button>
@@ -1050,7 +1050,7 @@ export default function BotRutaPage() {
                             addBotMsg("¡Excelente elección! Escribe las 3 categorías o palabras clave de productos (ej: cerraduras, parlantes, cámaras, routers) que crees que se venderán mejor hoy en tus redes. \n\nLas usaré como inspiración para buscar coincidencias perfectas en tu catálogo...");
                           }, 300);
                         }} 
-                        className="bg-amber-500 hover:bg-amber-600 text-white text-xs font-black uppercase tracking-wider py-3.5 px-4 rounded-xl shadow-sm transition-all flex items-center justify-center gap-2"
+                        className="bg-amber-500 hover:bg-amber-600 text-white text-xs font-black uppercase tracking-wider py-3.5 px-4 rounded-xl shadow-[0_4px_15px_rgba(0,0,0,0.3)] transition-all flex items-center justify-center gap-2"
                       >
                         ✨ Decir mis preferencias de hoy
                       </button>
@@ -1070,12 +1070,12 @@ export default function BotRutaPage() {
                       <p className="text-sm font-medium text-slate-600 mb-3">{msg.text}</p>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           {generatedAds.map((ad, i) => (
-                              <div key={i} className="rounded-xl overflow-hidden shadow-md border border-slate-200 bg-white flex flex-col">
+                              <div key={i} className="rounded-xl overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-slate-200 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 flex flex-col">
                                   <div className="relative aspect-square">
                                       <img src={ad.img} className="w-full h-full object-cover animate-in fade-in zoom-in duration-300" alt="Publicidad Generada" />
                                   </div>
                                   <div className="p-3 border-t border-slate-100 bg-slate-50 flex justify-center">
-                                      <a href={ad.img} download={`publicidad_atomic_${ad.id}.jpg`} className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg font-bold text-[10px] uppercase tracking-wider transition-colors w-full justify-center text-center shadow-sm">
+                                      <a href={ad.img} download={`publicidad_atomic_${ad.id}.jpg`} className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg font-bold text-[10px] uppercase tracking-wider transition-colors w-full justify-center text-center shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
                                           📥 Descargar Imagen
                                       </a>
                                   </div>
@@ -1084,7 +1084,7 @@ export default function BotRutaPage() {
                       </div>
                       {phase==="ads_ready" && (
                         <div className="flex gap-2 mt-4 w-full">
-                          <button onClick={() => { setPhase("upload_mode"); addBotMsg("¡Excelente! Ahora procede a publicar tus anuncios en tus redes. Cuando termines, sube tus evidencias de ley (máximo 3 evidencias).", "upload") }} className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-3.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all w-full shadow-sm flex items-center justify-center gap-2">
+                          <button onClick={() => { setPhase("upload_mode"); addBotMsg("¡Excelente! Ahora procede a publicar tus anuncios en tus redes. Cuando termines, sube tus evidencias de ley (máximo 3 evidencias).", "upload") }} className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-3.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all w-full shadow-[0_4px_15px_rgba(0,0,0,0.3)] flex items-center justify-center gap-2">
                               📸 Ya publiqué, subir las 3 evidencias
                           </button>
                         </div>
@@ -1098,7 +1098,7 @@ export default function BotRutaPage() {
                   <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-4 space-y-3">
                     <p className="text-sm font-bold text-indigo-700">\ud83d\udcf8 Sube tus evidencias</p>
                     <p className="text-xs text-slate-600 font-medium">Recuerda que cada captura debe mostrar una publicaci\u00f3n independiente en tus redes.</p>
-                    <label className="flex items-center gap-2 bg-white border border-indigo-200 text-indigo-700 px-4 py-2.5 rounded-lg font-bold text-sm cursor-pointer hover:bg-indigo-50 transition-colors w-full justify-center">
+                    <label className="flex items-center gap-2 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-indigo-200 text-indigo-700 px-4 py-2.5 rounded-lg font-bold text-sm cursor-pointer hover:bg-indigo-50 transition-colors w-full justify-center">
                       <Camera size={16}/> Seleccionar Im\u00e1genes
                       <input type="file" accept="image/*" multiple className="hidden" onChange={handleScreenshotUpload}/>
                     </label>
@@ -1116,11 +1116,11 @@ export default function BotRutaPage() {
                     <Bot size={16} className="text-indigo-600"/>
                   </div>
                 )}
-                <div className={`max-w-[75%] px-4 py-3 rounded-2xl text-sm font-medium shadow-sm ${msg.from==="bot" ? "bg-slate-50 border border-slate-200 text-[#0F172A] rounded-tl-sm whitespace-pre-wrap" : "bg-indigo-600 text-white rounded-tr-sm"}`}>
+                <div className={`max-w-[75%] px-4 py-3 rounded-2xl text-sm font-medium shadow-[0_4px_15px_rgba(0,0,0,0.3)] ${msg.from==="bot" ? "bg-slate-50 border border-slate-200 text-[#0F172A] rounded-tl-sm whitespace-pre-wrap" : "bg-indigo-600 text-white rounded-tr-sm"}`}>
                   {msg.text?.split("**").map((part, i) => i%2===1 ? <strong key={i}>{part}</strong> : <span key={i}>{part}</span>)}
                   {phase==="onboarding" && msg.id==="1" && (
                     <div className="flex gap-2 mt-4">
-                      <button onClick={goToProductSelection} className="bg-indigo-600 text-white px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider hover:bg-indigo-700 transition-colors w-full shadow-sm">\ud83d\ude80 Comenzar mi d\u00eda de trabajo</button>
+                      <button onClick={goToProductSelection} className="bg-indigo-600 text-white px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider hover:bg-indigo-700 transition-colors w-full shadow-[0_4px_15px_rgba(0,0,0,0.3)]">\ud83d\ude80 Comenzar mi d\u00eda de trabajo</button>
                     </div>
                   )}
                 </div>
@@ -1131,7 +1131,7 @@ export default function BotRutaPage() {
         </div>
 
         {/* Input */}
-        <div className="p-4 border-t border-slate-200 bg-white">
+        <div className="p-4 border-t border-slate-200 bg-slate-900/50 backdrop-blur-xl border-slate-700/50">
           {phase==="completed" ? (
             <div className="bg-emerald-50 border border-emerald-200 rounded-xl py-3.5 px-4 text-center text-emerald-800 font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2">
               🎉 Ruta del día completada y archivada con éxito
@@ -1156,7 +1156,7 @@ export default function BotRutaPage() {
       </div>
 
       {/* Right Panel - Summary */}
-      <div className="w-72 bg-white border-l border-slate-200 flex flex-col overflow-y-auto">
+      <div className="w-72 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border-l border-slate-200 flex flex-col overflow-y-auto">
         <div className="p-5 border-b border-slate-100">
           <h2 className="text-sm font-black text-[#0F172A] uppercase tracking-wider">Resumen de Actividad</h2>
           <p className="text-xs text-slate-500 font-medium mt-1">{session?.user?.name}</p>
@@ -1165,7 +1165,7 @@ export default function BotRutaPage() {
         <div className="p-5 space-y-4">
           {/* \ud83c\udfaf META SEMANAL EDITOR (ADMIN ONLY) */}
           {isAdmin && (
-            <div className="bg-white border border-slate-200 rounded-xl overflow-hidden mb-2">
+            <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 rounded-xl overflow-hidden mb-2">
               <div className="bg-slate-50 px-4 py-3 border-b border-slate-200 flex justify-between items-center">
                 <span className="text-[10px] font-black text-slate-500 uppercase tracking-wider">Meta Semanal</span>
                 <span className="text-[10px] font-black text-indigo-600">Admin</span>
@@ -1243,7 +1243,7 @@ export default function BotRutaPage() {
             {phones.length > 0 && (
               <div className="mt-3 space-y-1.5">
                 {phones.slice(-5).map((ph,i) => (
-                  <p key={i} className="text-xs font-bold text-slate-600 bg-white px-3 py-1.5 rounded-lg border border-slate-100">{ph}</p>
+                  <p key={i} className="text-xs font-bold text-slate-600 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 px-3 py-1.5 rounded-lg border border-slate-100">{ph}</p>
                 ))}
               </div>
             )}
@@ -1259,7 +1259,7 @@ export default function BotRutaPage() {
 
           {/* Phone mode toggle */}
           {phase==="upload_mode" || phase==="phone_mode" ? (
-            <button onClick={() => { setPhase("phone_mode"); addBotMsg("\u00a1Perfecto! Ingresa el n\u00famero de tel\u00e9fono de tu cliente y lo registraremos. Recuerda: es muy importante intentar obtener los datos, aunque no son obligatorios si el cliente no desea proporcionarlos.") }} className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-3 rounded-xl font-bold text-sm hover:bg-blue-700 transition-colors">
+            <button onClick={() => { setPhase("phone_mode"); addBotMsg("\u00a1Perfecto! Ingresa el n\u00famero de tel\u00e9fono de tu cliente y lo registraremos. Recuerda: es muy importante intentar obtener los datos, aunque no son obligatorios si el cliente no desea proporcionarlos.") }} className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all text-white py-3 rounded-xl font-bold text-sm hover:from-cyan-400 hover:to-indigo-500 transition-colors">
               <Phone size={16}/> Registrar Tel\u00e9fono
             </button>
           ) : null}
@@ -1271,7 +1271,7 @@ export default function BotRutaPage() {
         {showContactForm && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
             <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }} className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setShowContactForm(false)}/>
-            <motion.div initial={{ opacity:0, scale:0.95 }} animate={{ opacity:1, scale:1 }} exit={{ opacity:0, scale:0.95 }} className="bg-white p-8 max-w-md w-full rounded-2xl shadow-xl relative z-10 border border-slate-200">
+            <motion.div initial={{ opacity:0, scale:0.95 }} animate={{ opacity:1, scale:1 }} exit={{ opacity:0, scale:0.95 }} className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 p-8 max-w-md w-full rounded-2xl shadow-xl relative z-10 border border-slate-200">
               <button onClick={() => setShowContactForm(false)} className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 rounded-lg"><X size={18}/></button>
               <h3 className="text-lg font-black text-[#0F172A] mb-2">A\u00f1adir a Historial</h3>
               <p className="text-xs text-slate-500 font-medium mb-6">Es vital intentar obtener los datos del cliente. Los campos opcionales puedes dejarlos vac\u00edos si el cliente no desea compartirlos.</p>
@@ -1300,7 +1300,7 @@ export default function BotRutaPage() {
               </div>
               <div className="flex gap-3 mt-6">
                 <button onClick={() => setShowContactForm(false)} className="flex-1 bg-slate-50 border border-slate-200 text-slate-600 py-3 rounded-xl font-bold text-sm hover:bg-slate-100 transition-colors">Omitir</button>
-                <button onClick={handleSaveContact} className="flex-1 bg-indigo-600 text-white py-3 rounded-xl font-bold text-sm hover:bg-indigo-700 transition-colors shadow-sm">Guardar</button>
+                <button onClick={handleSaveContact} className="flex-1 bg-indigo-600 text-white py-3 rounded-xl font-bold text-sm hover:bg-indigo-700 transition-colors shadow-[0_4px_15px_rgba(0,0,0,0.3)]">Guardar</button>
               </div>
             </motion.div>
           </div>

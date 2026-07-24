@@ -85,7 +85,7 @@ export default function AcademyAutomationPage() {
                         Despliegue de automatización masiva para la creación de contenido educativo de alto nivel.
                     </p>
                 </div>
-                <div className="bg-white/[0.02] p-6 border border-white/[0.03] backdrop-blur-3xl">
+                <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50/[0.02] p-6 border border-white/[0.03] backdrop-blur-3xl">
                     <div className="text-[8px] font-black text-white/10 uppercase tracking-[0.4em] mb-3">SISTEMA STATUS</div>
                     <div className="flex items-center gap-3">
                         <div className={`w-1.5 h-1.5 ${status === 'COMPLETED' ? 'bg-green-500' : status === 'ERROR' ? 'bg-red-500' : 'bg-[#E8341A] animate-pulse'}`} />
@@ -124,7 +124,7 @@ export default function AcademyAutomationPage() {
                                 <div className="text-[8px] font-black text-white/10 uppercase tracking-[0.5em]">TASK PROGRESS</div>
                                 <div className="text-2xl font-light text-white/80 italic">{progress}%</div>
                             </div>
-                            <div className="h-[2px] bg-white/5 overflow-hidden">
+                            <div className="h-[2px] bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 overflow-hidden">
                                 <motion.div 
                                     initial={{ width: 0 }}
                                     animate={{ width: `${progress}%` }}
@@ -155,7 +155,7 @@ export default function AcademyAutomationPage() {
                             <motion.div 
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className="glass-panel p-10 !bg-white/[0.01] border-white/[0.03]"
+                                className="glass-panel p-10 !bg-slate-900/50 backdrop-blur-xl border-slate-700/50/[0.01] border-white/[0.03]"
                             >
                                 <div className="flex items-center gap-5 mb-10">
                                     <ShieldCheck className="text-[#E8341A]/40" size={24} />
@@ -166,7 +166,7 @@ export default function AcademyAutomationPage() {
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     {courseData.segments.map((s: any, i: number) => (
-                                        <div key={i} className="flex items-center justify-between p-5 bg-white/[0.01] border border-white/[0.02] hover:border-white/[0.05] transition-all">
+                                        <div key={i} className="flex items-center justify-between p-5 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/[0.01] border border-white/[0.02] hover:border-white/[0.05] transition-all">
                                             <div className="flex items-center gap-4">
                                                 <div className="text-[9px] font-black text-[#E8341A]/30 italic">M{i+1}</div>
                                                 <div className="text-[10px] font-medium text-white/50 uppercase tracking-widest truncate max-w-[150px]">{s.title}</div>

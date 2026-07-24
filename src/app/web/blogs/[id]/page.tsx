@@ -27,7 +27,7 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ id
             {/* Header / Nav */}
             <nav className="fixed top-0 w-full z-50 bg-slate-950/40 backdrop-blur-xl border-b border-white/5 px-6 py-4 flex items-center justify-between">
                 <Link href="/web/blogs" className="group flex items-center space-x-3 text-white/50 hover:text-white transition-colors">
-                    <div className="w-8 h-8 rounded-none border border-white/10 flex items-center justify-center bg-white/5 group-hover:bg-white/10 group-hover:border-indigo-500 transition-colors">
+                    <div className="w-8 h-8 rounded-none border border-white/10 flex items-center justify-center bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 group-hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50/10 group-hover:border-indigo-500 transition-colors">
                         <ArrowLeft size={16} />
                     </div>
                     <span className="text-[10px] font-black uppercase tracking-widest hidden sm:inline">Volver a Noticias</span>
@@ -57,7 +57,7 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ id
                     </h1>
 
                     {blog.excerpt && (
-                        <div className="max-w-2xl mx-auto border-l-4 border-indigo-600 bg-white/5 backdrop-blur-md p-8 text-left rounded-none">
+                        <div className="max-w-2xl mx-auto border-l-4 border-indigo-600 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 backdrop-blur-md p-8 text-left rounded-none">
                             <p className="text-lg md:text-xl text-white/60 font-medium italic leading-relaxed">
                                 "{blog.excerpt}"
                             </p>
@@ -87,7 +87,7 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ id
             {/* Footer Navigation */}
             <footer className="relative z-10 border-t border-white/5 bg-slate-950/20 px-6 py-20">
                 <div className="max-w-4xl mx-auto text-center">
-                    <Link href="/web/blogs" className="inline-flex items-center justify-center space-x-4 bg-indigo-600 text-white px-10 py-5 text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-indigo-600 transition-all shadow-2xl shadow-indigo-500/20 group rounded-none">
+                    <Link href="/web/blogs" className="inline-flex items-center justify-center space-x-4 bg-indigo-600 text-white px-10 py-5 text-[10px] font-black uppercase tracking-widest hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50 hover:text-indigo-600 transition-all shadow-2xl shadow-indigo-500/20 group rounded-none">
                         <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
                         <span>Regresar a la Galería</span>
                     </Link>

@@ -36,10 +36,10 @@ export default function PhonesCategoryBanner({ activeMainCategoryId, categories 
                         <h3 className="text-sm font-bold tracking-[0.4em] uppercase text-[#1e3a8a] mb-4">
                             Línea Móvil
                         </h3>
-                        <h2 className="text-3xl md:text-5xl font-black tracking-tighter uppercase text-black leading-[0.9] mb-4 md:mb-6">
+                        <h2 className="text-3xl md:text-5xl font-black tracking-tighter uppercase text-slate-100 leading-[0.9] mb-4 md:mb-6">
                             CONECTIVIDAD <br /> SIN LÍMITES
                         </h2>
-                        <p className="text-xs md:text-sm font-medium text-black/70 leading-relaxed max-w-md">
+                        <p className="text-xs md:text-sm font-medium text-slate-100/70 leading-relaxed max-w-md">
                             Smartphones de última generación, tablets premium y dispositivos móviles diseñados para mantenerte conectado con el mundo con el máximo rendimiento y estilo.
                         </p>
                     </motion.div>

@@ -134,7 +134,7 @@ export default function ProductsPage() {
         <div className="min-h-screen bg-[#F8FAFC] text-slate-900" style={{ fontFamily: "'IBM Plex Sans', ui-sans-serif, system-ui" }}>
 
             {/* ── Header ── */}
-            <header className="bg-white/90 border-b border-slate-200 sticky top-0 z-30 backdrop-blur-md">
+            <header className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50/90 border-b border-slate-200 sticky top-0 z-30 backdrop-blur-md">
                 <div className="max-w-7xl mx-auto px-6 py-4 flex flex-col md:flex-row gap-4 items-center">
                     <div className="flex-1">
                         <h1 className="text-sm font-semibold text-[#1E3A8A] uppercase tracking-widest">
@@ -188,8 +188,8 @@ export default function ProductsPage() {
                                 onClick={() => setActiveLetter(active ? null : l)}
                                 disabled={!has}
                                 className={`w-7 h-7 text-[10px] font-bold rounded transition-all ${
-                                    active ? 'bg-[#1E3A8A] text-white shadow-md' :
-                                    has ? 'bg-white border border-slate-200 text-slate-500 hover:border-[#1E3A8A] hover:text-[#1E3A8A]' :
+                                    active ? 'bg-[#1E3A8A] text-white shadow-[0_8px_32px_rgba(0,0,0,0.5)]' :
+                                    has ? 'bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 text-slate-500 hover:border-[#1E3A8A] hover:text-[#1E3A8A]' :
                                     'bg-slate-50 text-slate-200 cursor-not-allowed border border-transparent'
                                 }`}
                             >
@@ -219,7 +219,7 @@ export default function ProductsPage() {
                                 <Link
                                     key={p.id}
                                     href={`/web/product/${p.id}`}
-                                    className="group flex flex-col bg-white border border-slate-200 hover:border-blue-300 hover:shadow-xl transition-all duration-300 rounded-xl overflow-hidden"
+                                    className="group flex flex-col bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 hover:border-blue-300 hover:shadow-xl transition-all duration-300 rounded-xl overflow-hidden"
                                 >
                                     <div className="aspect-square relative bg-slate-50 overflow-hidden">
                                         {imgs.length > 0 ? (
@@ -256,7 +256,7 @@ export default function ProductsPage() {
                         <button
                             onClick={() => setPage(p => Math.max(1, p - 1))}
                             disabled={page === 1}
-                            className="w-9 h-9 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-400 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                            className="w-9 h-9 rounded-lg bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 flex items-center justify-center text-slate-400 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
                         >
                             <ChevronLeft size={15} />
                         </button>
@@ -273,8 +273,8 @@ export default function ProductsPage() {
                                     onClick={() => setPage(p)}
                                     className={`w-9 h-9 rounded-lg text-[11px] font-semibold transition-all ${
                                         page === p
-                                            ? 'bg-[#1E3A8A] text-white shadow-lg'
-                                            : 'bg-white border border-slate-200 text-slate-500 hover:border-[#1E3A8A] hover:text-[#1E3A8A]'
+                                            ? 'bg-[#1E3A8A] text-white shadow-[0_12px_40px_rgba(0,0,0,0.5)]'
+                                            : 'bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 text-slate-500 hover:border-[#1E3A8A] hover:text-[#1E3A8A]'
                                     }`}
                                 >
                                     {p}
@@ -285,7 +285,7 @@ export default function ProductsPage() {
                         <button
                             onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                             disabled={page === totalPages}
-                            className="w-9 h-9 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-400 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                            className="w-9 h-9 rounded-lg bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 flex items-center justify-center text-slate-400 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
                         >
                             <ChevronRight size={15} />
                         </button>

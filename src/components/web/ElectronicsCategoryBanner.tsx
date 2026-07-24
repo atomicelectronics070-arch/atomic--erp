@@ -34,10 +34,10 @@ export default function ElectronicsCategoryBanner({ activeMainCategoryId, catego
                         <h3 className="text-sm font-bold tracking-[0.4em] uppercase text-[#0f172a] mb-4">
                             Línea Electrónica
                         </h3>
-                        <h2 className="text-3xl md:text-5xl font-black tracking-tighter uppercase text-black leading-[0.9] mb-4 md:mb-6">
+                        <h2 className="text-3xl md:text-5xl font-black tracking-tighter uppercase text-slate-100 leading-[0.9] mb-4 md:mb-6">
                             TECNOLOGÍA <br /> DE VANGUARDIA
                         </h2>
-                        <p className="text-xs md:text-sm font-medium text-black/70 leading-relaxed max-w-md ml-auto">
+                        <p className="text-xs md:text-sm font-medium text-slate-100/70 leading-relaxed max-w-md ml-auto">
                             Componentes de alto rendimiento, microcontroladores avanzados y soluciones tecnológicas para mentes creativas y proyectos profesionales.
                         </p>
                     </motion.div>

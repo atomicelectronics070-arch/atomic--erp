@@ -162,7 +162,7 @@ export default function AdvancedCRMPage() {
                             placeholder="FILTRAR..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full bg-white/[0.02] border border-white/5 p-3 pl-10 text-[9px] font-black uppercase tracking-widest outline-none focus:border-indigo-500/30 transition-all italic"
+                            className="w-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50/[0.02] border border-white/5 p-3 pl-10 text-[9px] font-black uppercase tracking-widest outline-none focus:border-indigo-500/30 transition-all italic"
                         />
                     </div>
                     <button onClick={() => { setEditingClient(null); setFormData({ firstName: "", lastName: "", email: "", phone: "", city: "", requirement: "", status: "PROSPECTO", purchaseCount: 0, campaignsSent: 0 }); setIsPanelOpen(true); }} className="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-3 text-[9px] font-black uppercase tracking-widest italic transition-all hover:scale-105 active:scale-95 flex items-center gap-2 shadow-xl shadow-indigo-600/10">
@@ -185,12 +185,12 @@ export default function AdvancedCRMPage() {
                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6 h-[calc(100vh-350px)] min-h-[600px]">
                     {COLUMNS.map(col => (
                         <div key={col.id} className="flex flex-col gap-4 h-full group">
-                            <div className={`p-4 border-b-2 ${col.color} bg-white/[0.02] flex items-center justify-between`}>
+                            <div className={`p-4 border-b-2 ${col.color} bg-slate-900/50 backdrop-blur-xl border-slate-700/50/[0.02] flex items-center justify-between`}>
                                 <div className="flex items-center gap-3">
                                     <div className="text-white/40">{col.icon}</div>
                                     <h3 className="text-[11px] font-black uppercase tracking-[0.3em] italic">{col.title}</h3>
                                 </div>
-                                <span className="text-[9px] font-black bg-white/5 px-2 py-1 border border-white/10 opacity-40">{filteredClients.filter(c => c.status === col.id).length}</span>
+                                <span className="text-[9px] font-black bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 px-2 py-1 border border-white/10 opacity-40">{filteredClients.filter(c => c.status === col.id).length}</span>
                             </div>
                             
                             <div className={`flex-1 overflow-y-auto p-2 space-y-4 rounded-none border border-transparent transition-all group-hover:border-white/5 custom-scrollbar-hidden`}>
@@ -271,7 +271,7 @@ export default function AdvancedCRMPage() {
                                 </div>
                                 
                                 {editingClient && (
-                                    <div className="p-5 bg-white/[0.02] border border-white/5 space-y-4">
+                                    <div className="p-5 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/[0.02] border border-white/5 space-y-4">
                                         <label className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 italic">Personalizar Mensaje WA</label>
                                         <textarea 
                                             className="w-full bg-slate-900 border border-white/5 p-4 text-[11px] text-white font-bold italic outline-none min-h-[80px] resize-none"
@@ -288,14 +288,14 @@ export default function AdvancedCRMPage() {
                                     <textarea 
                                         value={formData.requirement} 
                                         onChange={(e) => setFormData({...formData, requirement: e.target.value})}
-                                        className="w-full bg-white/5 border border-white/10 p-5 text-[11px] font-bold text-white italic outline-none focus:border-indigo-500/40 min-h-[120px] resize-none"
+                                        className="w-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 border border-white/10 p-5 text-[11px] font-bold text-white italic outline-none focus:border-indigo-500/40 min-h-[120px] resize-none"
                                         placeholder="NOTAS TÉCNICAS SOBRE EL LEAD..."
                                     />
                                 </div>
                             </div>
 
                             <div className="pt-8 border-t border-white/5 grid grid-cols-2 gap-4 mt-8">
-                                <button onClick={() => setIsPanelOpen(false)} className="p-4 text-[9px] font-black uppercase italic border border-white/5 hover:bg-white/5 transition-all">CANCELAR</button>
+                                <button onClick={() => setIsPanelOpen(false)} className="p-4 text-[9px] font-black uppercase italic border border-white/5 hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 transition-all">CANCELAR</button>
                                 <button onClick={async () => {
                                     const method = editingClient ? 'PUT' : 'POST'
                                     const url = editingClient ? `/api/crm/${editingClient.id}` : '/api/crm'
@@ -318,7 +318,7 @@ export default function AdvancedCRMPage() {
                                             <select 
                                                 value={promoForm.medio}
                                                 onChange={e => setPromoForm({...promoForm, medio: e.target.value})}
-                                                className="w-full bg-white/5 border border-white/10 p-4 text-[11px] font-bold text-white uppercase outline-none focus:border-indigo-500"
+                                                className="w-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 border border-white/10 p-4 text-[11px] font-bold text-white uppercase outline-none focus:border-indigo-500"
                                             >
                                                 <option value="">Seleccione Medio...</option>
                                                 <option value="WhatsApp">WhatsApp</option>
@@ -335,7 +335,7 @@ export default function AdvancedCRMPage() {
                                                 placeholder="Ej. Descuento 10%, 2x1, Envío Gratis..."
                                                 value={promoForm.tipo}
                                                 onChange={e => setPromoForm({...promoForm, tipo: e.target.value})}
-                                                className="w-full bg-white/5 border border-white/10 p-4 text-[11px] font-bold text-white uppercase outline-none focus:border-indigo-500"
+                                                className="w-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 border border-white/10 p-4 text-[11px] font-bold text-white uppercase outline-none focus:border-indigo-500"
                                             />
                                         </div>
 
@@ -346,13 +346,13 @@ export default function AdvancedCRMPage() {
                                                 placeholder="Ej. Industrial, Herramientas, Black Friday..."
                                                 value={promoForm.categoria}
                                                 onChange={e => setPromoForm({...promoForm, categoria: e.target.value})}
-                                                className="w-full bg-white/5 border border-white/10 p-4 text-[11px] font-bold text-white uppercase outline-none focus:border-indigo-500"
+                                                className="w-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 border border-white/10 p-4 text-[11px] font-bold text-white uppercase outline-none focus:border-indigo-500"
                                             />
                                         </div>
                                     </div>
 
                                     <div className="mt-8 flex gap-4">
-                                        <button onClick={() => setIsPromoModalOpen(false)} className="flex-1 p-4 text-[9px] font-black uppercase border border-white/10 hover:bg-white/5 transition-all text-white/50">CANCELAR</button>
+                                        <button onClick={() => setIsPromoModalOpen(false)} className="flex-1 p-4 text-[9px] font-black uppercase border border-white/10 hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 transition-all text-white/50">CANCELAR</button>
                                         <button onClick={handleSavePromo} className="flex-1 p-4 text-[9px] font-black uppercase bg-indigo-600 hover:bg-indigo-500 text-white shadow-xl transition-all">REGISTRAR EN ENVÍO</button>
                                     </div>
                                 </div>
@@ -374,7 +374,7 @@ function SortableClientCard({ client, onClick, isDragging: isOverlayDragging }: 
         <div 
             ref={setNodeRef} 
             style={style} 
-            className={`group relative bg-white/[0.03] border border-white/5 p-6 space-y-4 cursor-pointer hover:border-indigo-500/30 transition-all ${isDragging ? 'opacity-30' : ''}`}
+            className={`group relative bg-slate-900/50 backdrop-blur-xl border-slate-700/50/[0.03] border border-white/5 p-6 space-y-4 cursor-pointer hover:border-indigo-500/30 transition-all ${isDragging ? 'opacity-30' : ''}`}
             onClick={onClick}
         >
             <div className="flex justify-between items-start">
@@ -409,7 +409,7 @@ function SortableClientCard({ client, onClick, isDragging: isOverlayDragging }: 
             <div className="pt-2 flex justify-between items-center border-t border-white/5">
                 <div className="flex gap-1">
                     {[...Array(3)].map((_, i) => (
-                        <div key={i} className={`w-1.5 h-1.5 rounded-none ${i < (client.purchaseCount || 1) ? 'bg-indigo-500' : 'bg-white/10'}`} />
+                        <div key={i} className={`w-1.5 h-1.5 rounded-none ${i < (client.purchaseCount || 1) ? 'bg-indigo-500' : 'bg-slate-900/50 backdrop-blur-xl border-slate-700/50/10'}`} />
                     ))}
                 </div>
                 <span className="text-[8px] font-black text-white/10 uppercase tracking-widest">{new Date(client.updatedAt).toLocaleDateString()}</span>
@@ -425,7 +425,7 @@ function StatBox({ label, value, color }: { label: string, value: string | numbe
         emerald: "border-emerald-500/20 text-emerald-400"
     }
     return (
-        <div className={`p-4 bg-white/[0.01] border ${colors[color]} space-y-1`}>
+        <div className={`p-4 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/[0.01] border ${colors[color]} space-y-1`}>
             <p className="text-[8px] font-black uppercase tracking-widest opacity-40 italic">{label}</p>
             <p className="text-xl font-black italic tracking-tighter text-white">{value}</p>
         </div>
@@ -441,7 +441,7 @@ function InputBlock({ label, value, onChange, placeholder = "..." }: any) {
                 value={value} 
                 onChange={(e) => onChange(e.target.value)}
                 placeholder={placeholder}
-                className="w-full bg-white/5 border border-white/10 p-5 text-[12px] font-bold text-white italic outline-none focus:border-indigo-500/40 transition-all"
+                className="w-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 border border-white/10 p-5 text-[12px] font-bold text-white italic outline-none focus:border-indigo-500/40 transition-all"
             />
         </div>
     )

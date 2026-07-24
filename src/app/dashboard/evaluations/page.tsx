@@ -217,7 +217,7 @@ export default function JobProfilesPage() {
                 {isAdmin && view !== "list" && (
                     <button
                         onClick={() => setView("list")}
-                        className="bg-white border border-slate-200 text-slate-700 px-6 py-2.5 rounded-lg font-bold text-sm hover:bg-slate-50 transition-all flex items-center gap-2 shadow-sm"
+                        className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 text-slate-700 px-6 py-2.5 rounded-lg font-bold text-sm hover:bg-slate-50 transition-all flex items-center gap-2 shadow-[0_4px_15px_rgba(0,0,0,0.3)]"
                     >
                         <ChevronLeft size={18} />
                         <span>Volver a Asesores</span>
@@ -232,7 +232,7 @@ export default function JobProfilesPage() {
                         initial={{ opacity: 0, scale: 0.98 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.98 }}
-                        className="bg-white border border-slate-200 shadow-sm overflow-hidden rounded-2xl relative z-10"
+                        className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 shadow-[0_4px_15px_rgba(0,0,0,0.3)] overflow-hidden rounded-2xl relative z-10"
                     >
                         <div className="p-6 border-b border-slate-100 flex flex-col md:flex-row justify-between items-center gap-6 bg-slate-50">
                             <div>
@@ -246,7 +246,7 @@ export default function JobProfilesPage() {
                                     placeholder="Buscar asesor..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 text-sm font-medium text-[#0F172A] outline-none rounded-lg focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all shadow-sm"
+                                    className="w-full pl-10 pr-4 py-2.5 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 text-sm font-medium text-[#0F172A] outline-none rounded-lg focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all shadow-[0_4px_15px_rgba(0,0,0,0.3)]"
                                 />
                             </div>
                         </div>
@@ -268,7 +268,7 @@ export default function JobProfilesPage() {
                                         <tr key={u.id} className="hover:bg-slate-50 transition-colors group">
                                             <td className="px-6 py-5">
                                                 <div className="flex items-center space-x-4">
-                                                    <div className={`w-12 h-12 bg-indigo-50 border ${u.resetRequested ? 'border-rose-300' : 'border-indigo-100'} flex items-center justify-center text-indigo-600 font-black text-lg rounded-xl shadow-sm`}>
+                                                    <div className={`w-12 h-12 bg-indigo-50 border ${u.resetRequested ? 'border-rose-300' : 'border-indigo-100'} flex items-center justify-center text-indigo-600 font-black text-lg rounded-xl shadow-[0_4px_15px_rgba(0,0,0,0.3)]`}>
                                                         {u.name?.[0] || u.email?.[0]}
                                                     </div>
                                                     <div>
@@ -345,14 +345,14 @@ export default function JobProfilesPage() {
                                                         <>
                                                             <button
                                                                 onClick={() => handleSelectUser(u)}
-                                                                className="p-2 border border-slate-200 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-all shadow-sm bg-white"
+                                                                className="p-2 border border-slate-200 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-all shadow-[0_4px_15px_rgba(0,0,0,0.3)] bg-slate-900/50 backdrop-blur-xl border-slate-700/50"
                                                                 title="Editar Perfil Laboral"
                                                             >
                                                                 <FileText size={18} />
                                                             </button>
                                                             <button
                                                                 onClick={() => deleteUser(u.id)}
-                                                                className="p-2 border border-slate-200 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-all shadow-sm bg-white"
+                                                                className="p-2 border border-slate-200 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-all shadow-[0_4px_15px_rgba(0,0,0,0.3)] bg-slate-900/50 backdrop-blur-xl border-slate-700/50"
                                                                 title="Eliminar Asesor"
                                                             >
                                                                 <Trash2 size={18} />
@@ -377,7 +377,7 @@ export default function JobProfilesPage() {
                     >
                         {/* Editor Form */}
                         <div className="xl:col-span-2 space-y-8">
-                            <div className="bg-white border border-slate-200 p-8 rounded-2xl shadow-sm overflow-hidden relative">
+                            <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 p-8 rounded-2xl shadow-[0_4px_15px_rgba(0,0,0,0.3)] overflow-hidden relative">
                                 <div className="flex justify-between items-start mb-8 border-b border-slate-100 pb-6">
                                     <div>
                                         <h2 className="text-2xl font-black text-[#0F172A] flex items-center gap-2">
@@ -409,7 +409,7 @@ export default function JobProfilesPage() {
                                                 disabled={!isAdmin}
                                                 value={formData.templateName}
                                                 onChange={(e) => setFormData({...formData, templateName: e.target.value})}
-                                                className="w-full bg-white border border-indigo-200 px-4 py-3 text-sm font-bold text-indigo-700 outline-none rounded-lg focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all shadow-sm disabled:opacity-70 disabled:bg-slate-50"
+                                                className="w-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-indigo-200 px-4 py-3 text-sm font-bold text-indigo-700 outline-none rounded-lg focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all shadow-[0_4px_15px_rgba(0,0,0,0.3)] disabled:opacity-70 disabled:bg-slate-50"
                                             />
                                         </div>
                                     </div>
@@ -492,7 +492,7 @@ export default function JobProfilesPage() {
                                     <div className="mt-10 pt-6 border-t border-slate-100">
                                         <button 
                                             onClick={handleSave}
-                                            className="w-full bg-indigo-600 text-white py-4 text-sm font-bold rounded-xl hover:bg-indigo-700 transition-all shadow-sm flex items-center justify-center gap-2"
+                                            className="w-full bg-indigo-600 text-white py-4 text-sm font-bold rounded-xl hover:bg-indigo-700 transition-all shadow-[0_4px_15px_rgba(0,0,0,0.3)] flex items-center justify-center gap-2"
                                         >
                                             <Save size={18} />
                                             <span>Guardar Cambios del Perfil</span>
@@ -504,10 +504,10 @@ export default function JobProfilesPage() {
 
                         {/* Sidebar Preview */}
                         <div className="xl:col-span-1 space-y-6">
-                            <div className="bg-white border border-slate-200 p-8 rounded-2xl shadow-sm">
+                            <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 p-8 rounded-2xl shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
                                 <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-6 text-center">Identificación de Asesor</h3>
                                 <div className="flex flex-col items-center gap-6 border-b border-slate-100 pb-6">
-                                    <div className="w-24 h-24 bg-indigo-50 border border-indigo-100 rounded-2xl flex items-center justify-center text-indigo-600 text-3xl font-black shadow-sm">
+                                    <div className="w-24 h-24 bg-indigo-50 border border-indigo-100 rounded-2xl flex items-center justify-center text-indigo-600 text-3xl font-black shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
                                         {isAdmin ? selectedUser?.name?.[0] : session?.user?.name?.[0]}
                                     </div>
                                     <div className="text-center">
@@ -536,7 +536,7 @@ export default function JobProfilesPage() {
                                 </button>
                             </div>
 
-                            <div className="bg-indigo-50 border border-indigo-100 p-8 rounded-2xl shadow-sm relative overflow-hidden">
+                            <div className="bg-indigo-50 border border-indigo-100 p-8 rounded-2xl shadow-[0_4px_15px_rgba(0,0,0,0.3)] relative overflow-hidden">
                                 <div className="absolute -right-4 -bottom-4 text-indigo-100 opacity-50"><Building2 size={100} /></div>
                                 <h3 className="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-3 relative z-10">Misión Corporativa</h3>
                                 <p className="text-sm font-medium text-slate-700 leading-relaxed relative z-10">

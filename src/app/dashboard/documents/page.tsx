@@ -187,7 +187,7 @@ export default function DocumentGenerator() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <button
                     onClick={() => setDocType("receipt")}
-                    className={`bg-white p-6 rounded-xl border transition-all flex flex-col items-center text-center shadow-sm ${docType === "receipt" ? "border-indigo-600 ring-1 ring-indigo-600" : "border-slate-200 hover:border-indigo-300"}`}
+                    className={`bg-slate-900/50 backdrop-blur-xl border-slate-700/50 p-6 rounded-xl border transition-all flex flex-col items-center text-center shadow-[0_4px_15px_rgba(0,0,0,0.3)] ${docType === "receipt" ? "border-indigo-600 ring-1 ring-indigo-600" : "border-slate-200 hover:border-indigo-300"}`}
                 >
                     <div className={`p-4 rounded-full mb-4 transition-colors ${docType === "receipt" ? "bg-indigo-50 text-indigo-600" : "bg-slate-50 text-slate-400"}`}>
                         <Receipt size={28} />
@@ -198,7 +198,7 @@ export default function DocumentGenerator() {
 
                 <button
                     onClick={() => setDocType("warranty")}
-                    className={`bg-white p-6 rounded-xl border transition-all flex flex-col items-center text-center shadow-sm ${docType === "warranty" ? "border-emerald-500 ring-1 ring-emerald-500" : "border-slate-200 hover:border-emerald-300"}`}
+                    className={`bg-slate-900/50 backdrop-blur-xl border-slate-700/50 p-6 rounded-xl border transition-all flex flex-col items-center text-center shadow-[0_4px_15px_rgba(0,0,0,0.3)] ${docType === "warranty" ? "border-emerald-500 ring-1 ring-emerald-500" : "border-slate-200 hover:border-emerald-300"}`}
                 >
                     <div className={`p-4 rounded-full mb-4 transition-colors ${docType === "warranty" ? "bg-emerald-50 text-emerald-600" : "bg-slate-50 text-slate-400"}`}>
                         <CheckCircle2 size={28} />
@@ -209,7 +209,7 @@ export default function DocumentGenerator() {
 
                 <button
                     onClick={() => setDocType("purchase_order")}
-                    className={`bg-white p-6 rounded-xl border transition-all flex flex-col items-center text-center shadow-sm ${docType === "purchase_order" ? "border-blue-500 ring-1 ring-blue-500" : "border-slate-200 hover:border-blue-300"}`}
+                    className={`bg-slate-900/50 backdrop-blur-xl border-slate-700/50 p-6 rounded-xl border transition-all flex flex-col items-center text-center shadow-[0_4px_15px_rgba(0,0,0,0.3)] ${docType === "purchase_order" ? "border-blue-500 ring-1 ring-blue-500" : "border-slate-200 hover:border-blue-300"}`}
                 >
                     <div className={`p-4 rounded-full mb-4 transition-colors ${docType === "purchase_order" ? "bg-blue-50 text-blue-600" : "bg-slate-50 text-slate-400"}`}>
                         <FileText size={28} />
@@ -220,7 +220,7 @@ export default function DocumentGenerator() {
             </div>
 
             {/* Document Form */}
-            <div className="bg-white border border-slate-200 p-8 rounded-xl shadow-sm">
+            <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 p-8 rounded-xl shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
                 <header className="mb-8 border-b border-slate-100 pb-6">
                     <h2 className="text-lg font-black text-[#0F172A]">
                         Detalles del {docType === 'receipt' ? 'Recibo' : docType === 'warranty' ? 'Certificado' : 'Pedido'}
@@ -249,7 +249,7 @@ export default function DocumentGenerator() {
                         <label className="block text-xs font-bold text-slate-500 mb-1 ml-1 flex items-center gap-1"><User size={14} className="text-indigo-600"/> Asesor Responsable</label>
                         <input
                             type="text" value={advisorName} onChange={(e) => setAdvisorName(e.target.value)}
-                            className="w-full bg-white border border-slate-300 p-3 rounded-lg text-sm font-bold text-indigo-700 focus:border-indigo-500 outline-none shadow-sm"
+                            className="w-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-300 p-3 rounded-lg text-sm font-bold text-indigo-700 focus:border-indigo-500 outline-none shadow-[0_4px_15px_rgba(0,0,0,0.3)]"
                         />
                     </div>
 
@@ -354,7 +354,7 @@ export default function DocumentGenerator() {
                                     <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} />
                                 </label>
                                 {productImage && (
-                                    <div className="w-24 h-24 rounded-lg border border-slate-200 overflow-hidden shrink-0 shadow-sm">
+                                    <div className="w-24 h-24 rounded-lg border border-slate-200 overflow-hidden shrink-0 shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
                                         <img src={productImage} alt="Preview" className="w-full h-full object-cover" />
                                     </div>
                                 )}
@@ -366,7 +366,7 @@ export default function DocumentGenerator() {
                 <div className="mt-8 pt-6 border-t border-slate-100 flex justify-end">
                     <button
                         onClick={handleGeneratePDF}
-                        className="bg-indigo-600 text-white font-bold py-3 px-8 rounded-lg shadow-sm hover:bg-indigo-700 transition-colors flex items-center gap-2"
+                        className="bg-indigo-600 text-white font-bold py-3 px-8 rounded-lg shadow-[0_4px_15px_rgba(0,0,0,0.3)] hover:bg-indigo-700 transition-colors flex items-center gap-2"
                     >
                         <Download size={18} />
                         Generar PDF

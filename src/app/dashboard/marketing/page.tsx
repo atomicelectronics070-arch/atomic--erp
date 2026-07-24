@@ -311,7 +311,7 @@ export default function MarketingDashboard() {
     const renderPlatformIcon = (platform: Platform) => {
         // Simplified icon logic, using text/color as replacement for external brand icons
         const colors = {
-            'Facebook': 'bg-blue-600',
+            'Facebook': 'bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all',
             'WhatsApp': 'bg-green-500',
             'Instagram': 'bg-pink-600',
             'TikTok': 'bg-black border border-white/20'
@@ -332,7 +332,7 @@ export default function MarketingDashboard() {
     }
 
     return (
-        <div className="min-h-screen bg-slate-50 text-slate-900 p-8 pt-32 lg:p-16 lg:pt-32 font-sans selection:bg-blue-600/20">
+        <div className="min-h-screen bg-slate-50 text-slate-900 p-8 pt-32 lg:p-16 lg:pt-32 font-sans selection:bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all/20">
             {/* Header */}
             <header className="mb-16">
                 <div className="inline-flex items-center gap-4 mb-6 text-blue-600/80 text-[10px] font-bold uppercase tracking-[0.5em]">
@@ -363,7 +363,7 @@ export default function MarketingDashboard() {
                                 placeholder="Ej: 5000"
                             />
                             <div className="flex gap-2 mt-4">
-                                <button onClick={handleUpdateMasterBudget} className="flex-1 py-3 bg-blue-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 shadow-lg shadow-blue-600/30 transition-all flex items-center justify-center gap-2">
+                                <button onClick={handleUpdateMasterBudget} className="flex-1 py-3 bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:from-cyan-400 hover:to-indigo-500 shadow-[0_12px_40px_rgba(0,0,0,0.5)] shadow-blue-600/30 transition-all flex items-center justify-center gap-2">
                                     <CheckCircle2 size={14} /> Guardar Maestro
                                 </button>
                                 <button onClick={handleArchiveMasterBudget} className="px-4 py-3 bg-slate-100 text-slate-500 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-200 hover:text-red-500 transition-all flex items-center justify-center" title="Archivar/Reiniciar Meta a 0">
@@ -388,7 +388,7 @@ export default function MarketingDashboard() {
                                 <p className="text-3xl font-black italic text-indigo-700">${availableBudget.toFixed(2)}</p>
                                 <p className="text-[8px] font-bold uppercase tracking-widest mt-1 text-indigo-400 leading-tight">Según asignaciones<br/>Neto: ${(availableBudget / 1.15).toFixed(2)}</p>
                             </div>
-                            <div className="bg-blue-600 p-5 rounded-2xl border border-blue-500 shadow-xl shadow-blue-600/20 text-white relative overflow-hidden">
+                            <div className="bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all p-5 rounded-2xl border border-blue-500 shadow-xl shadow-blue-600/20 text-white relative overflow-hidden">
                                 <Zap className="absolute -right-2 -bottom-2 w-16 h-16 text-white/10" />
                                 <p className="text-[9px] font-black uppercase tracking-widest text-blue-200 mb-1">Disponible Real</p>
                                 <p className="text-3xl font-black italic">${availableReal.toFixed(2)}</p>
@@ -574,7 +574,7 @@ export default function MarketingDashboard() {
                                     <div className="mt-8 pt-6 border-t border-slate-200">
                                         <button 
                                             onClick={() => { setSelectedCampaignId(campaign.id); setIsCloseModalOpen(true); }}
-                                            className="w-full py-4 bg-slate-900 text-white hover:bg-blue-600 transition-colors rounded-xl text-[10px] font-black uppercase tracking-[0.4em] shadow-lg flex items-center justify-center gap-3"
+                                            className="w-full py-4 bg-slate-900 text-white hover:bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all transition-colors rounded-xl text-[10px] font-black uppercase tracking-[0.4em] shadow-[0_12px_40px_rgba(0,0,0,0.5)] flex items-center justify-center gap-3"
                                         >
                                             <CheckCircle2 size={16} /> Cerrar & Conciliar
                                         </button>
@@ -594,7 +594,7 @@ export default function MarketingDashboard() {
                             initial={{ opacity: 0, scale: 0.95, y: 20 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                            className="w-full max-w-3xl bg-white rounded-[3rem] shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]"
+                            className="w-full max-w-3xl bg-slate-900/50 backdrop-blur-xl border-slate-700/50 rounded-[3rem] shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]"
                         >
                             <div className="bg-[#1E3A8A] p-8 flex justify-between items-center text-white shrink-0">
                                 <h3 className="text-xl font-black uppercase tracking-widest flex items-center gap-4 italic">
@@ -664,7 +664,7 @@ export default function MarketingDashboard() {
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.95 }}
-                            className="w-full max-w-md bg-white rounded-[2rem] shadow-2xl border border-slate-200 overflow-hidden"
+                            className="w-full max-w-md bg-slate-900/50 backdrop-blur-xl border-slate-700/50 rounded-[2rem] shadow-2xl border border-slate-200 overflow-hidden"
                         >
                             <div className="bg-slate-100 p-8 text-center border-b border-slate-200">
                                 <TrendingUp size={32} className="text-blue-600 mx-auto mb-4" />
@@ -677,7 +677,7 @@ export default function MarketingDashboard() {
                                 ) : (
                                     <div className="space-y-3">
                                         {selectedCampaign.spendLog.map(entry => (
-                                            <div key={entry.id} className="bg-white p-4 rounded-xl border border-slate-200 flex justify-between items-center shadow-sm group">
+                                            <div key={entry.id} className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 p-4 rounded-xl border border-slate-200 flex justify-between items-center shadow-[0_4px_15px_rgba(0,0,0,0.3)] group">
                                                 <div>
                                                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{new Date(entry.date).toLocaleString()}</p>
                                                     <p className="font-black text-slate-800">${entry.amount.toFixed(2)} <span className="text-[9px] text-slate-400 ml-1">(NETO)</span></p>
@@ -696,7 +696,7 @@ export default function MarketingDashboard() {
                                     </div>
                                 )}
                             </div>
-                            <div className="p-8 bg-white space-y-4">
+                            <div className="p-8 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 space-y-4">
                                 <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Registrar Nuevo Gasto</h4>
                                 <div className="grid grid-cols-2 gap-4">
                                     <CyberInput 
@@ -715,7 +715,7 @@ export default function MarketingDashboard() {
                                 <button 
                                     onClick={handleAddSpendEntry} 
                                     disabled={!newSpendEntry.date || newSpendEntry.amount <= 0}
-                                    className="w-full py-3 bg-blue-50 text-blue-600 border border-blue-200 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all disabled:opacity-50 disabled:pointer-events-none mt-2 flex items-center justify-center gap-2"
+                                    className="w-full py-3 bg-blue-50 text-blue-600 border border-blue-200 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all hover:text-white transition-all disabled:opacity-50 disabled:pointer-events-none mt-2 flex items-center justify-center gap-2"
                                 >
                                     <Plus size={14} /> Añadir a Bitácora
                                 </button>
@@ -725,7 +725,7 @@ export default function MarketingDashboard() {
                                     <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">Total Gastado Neto</p>
                                     <p className="text-xl font-black text-slate-800">${selectedCampaign.currentSpent.toFixed(2)}</p>
                                 </div>
-                                <button onClick={() => setIsUpdateModalOpen(false)} className="px-8 py-3 bg-slate-900 text-white text-xs font-black uppercase tracking-widest hover:bg-blue-600 rounded-xl shadow-lg transition-all">Cerrar</button>
+                                <button onClick={() => setIsUpdateModalOpen(false)} className="px-8 py-3 bg-slate-900 text-white text-xs font-black uppercase tracking-widest hover:bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all rounded-xl shadow-[0_12px_40px_rgba(0,0,0,0.5)] transition-all">Cerrar</button>
                             </div>
                         </motion.div>
                     </div>
@@ -738,7 +738,7 @@ export default function MarketingDashboard() {
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.95 }}
-                            className="w-full max-w-md bg-white rounded-[2rem] shadow-2xl border border-slate-200 overflow-hidden"
+                            className="w-full max-w-md bg-slate-900/50 backdrop-blur-xl border-slate-700/50 rounded-[2rem] shadow-2xl border border-slate-200 overflow-hidden"
                         >
                             <div className="bg-slate-100 p-8 text-center border-b border-slate-200">
                                 <DollarSign size={32} className="text-blue-600 mx-auto mb-4" />
@@ -756,14 +756,14 @@ export default function MarketingDashboard() {
                                     <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest">Nueva Reserva IVA</span>
                                     <span className="font-black text-red-500 text-sm">-${(editBudgetAmount * 0.15).toFixed(2)}</span>
                                 </div>
-                                <div className="mt-2 flex justify-between items-center bg-blue-600 p-4 rounded-xl text-white shadow-lg">
+                                <div className="mt-2 flex justify-between items-center bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all p-4 rounded-xl text-white shadow-[0_12px_40px_rgba(0,0,0,0.5)]">
                                     <span className="text-[10px] font-black uppercase tracking-widest">Nueva Inversión Neta</span>
                                     <span className="font-black text-lg">${(editBudgetAmount * 0.85).toFixed(2)}</span>
                                 </div>
                             </div>
                             <div className="p-6 border-t border-slate-200 flex gap-4">
                                 <button onClick={() => setIsEditBudgetModalOpen(false)} className="flex-1 py-4 text-xs font-black uppercase tracking-widest text-slate-500 hover:bg-slate-100 transition-colors rounded-xl">Cancelar</button>
-                                <button onClick={handleEditBudget} className="flex-1 py-4 bg-blue-600 text-white text-xs font-black uppercase tracking-widest hover:bg-blue-700 shadow-lg shadow-blue-600/30 transition-all rounded-xl">Guardar Cambios</button>
+                                <button onClick={handleEditBudget} className="flex-1 py-4 bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all text-white text-xs font-black uppercase tracking-widest hover:from-cyan-400 hover:to-indigo-500 shadow-[0_12px_40px_rgba(0,0,0,0.5)] shadow-blue-600/30 transition-all rounded-xl">Guardar Cambios</button>
                             </div>
                         </motion.div>
                     </div>
@@ -776,7 +776,7 @@ export default function MarketingDashboard() {
                             initial={{ opacity: 0, scale: 0.95, y: 20 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                            className="w-full max-w-4xl bg-white rounded-[3rem] shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]"
+                            className="w-full max-w-4xl bg-slate-900/50 backdrop-blur-xl border-slate-700/50 rounded-[3rem] shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]"
                         >
                             <div className="bg-[#1E3A8A] p-8 flex justify-between items-center text-white shrink-0">
                                 <div>
@@ -798,7 +798,7 @@ export default function MarketingDashboard() {
                                         <CyberInput label="Fecha y Hora Real Fin" type="datetime-local" value={closeStats.realEndDate || ''} onChange={(v) => setCloseStats({...closeStats, realEndDate: v})} />
                                     </div>
 
-                                    <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-xl relative overflow-hidden">
+                                    <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 p-8 rounded-3xl border border-slate-200 shadow-xl relative overflow-hidden">
                                         <BarChart3 className="absolute -right-10 -top-10 w-48 h-48 text-slate-50 pointer-events-none" />
                                         <h4 className="text-[11px] font-black uppercase tracking-[0.4em] text-blue-600 mb-8 relative z-10">Proyección Analítica</h4>
                                         
@@ -828,7 +828,7 @@ export default function MarketingDashboard() {
                                 </div>
                             </div>
                             
-                            <div className="p-8 border-t border-slate-200 bg-white flex justify-end shrink-0">
+                            <div className="p-8 border-t border-slate-200 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 flex justify-end shrink-0">
                                 <NeonButton variant="primary" onClick={handleCloseCampaign}>
                                     Confirmar Cierre <ArrowRight size={16} />
                                 </NeonButton>

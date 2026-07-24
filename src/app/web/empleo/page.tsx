@@ -49,12 +49,12 @@ export default function EmpleoLandingPage() {
             <nav className="fixed top-0 inset-x-0 z-50 border-b border-white/5 bg-black/40 backdrop-blur-xl">
                 <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-emerald-400 flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-emerald-400 flex items-center justify-center shadow-[0_12px_40px_rgba(0,0,0,0.5)] shadow-emerald-500/20">
                             <Target className="text-white" size={20} />
                         </div>
                         <span className="text-xl font-black text-white tracking-tight">Atomic Careers</span>
                     </div>
-                    <Link href="/register?role=SALESPERSON" className="px-6 py-2.5 rounded-full bg-white text-black font-bold text-sm hover:bg-slate-200 transition-colors">
+                    <Link href="/register?role=SALESPERSON" className="px-6 py-2.5 rounded-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-slate-100 font-bold text-sm hover:bg-slate-200 transition-colors">
                         Aplicar Ahora
                     </Link>
                 </div>
@@ -84,10 +84,10 @@ export default function EmpleoLandingPage() {
                             Buscamos talento con mentalidad de crecimiento para revolucionar el comercio a distancia.
                         </p>
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                            <Link href="/register?role=SALESPERSON" className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-emerald-400 text-black font-black text-lg hover:scale-105 transition-transform shadow-xl shadow-emerald-500/20 flex items-center justify-center gap-2">
+                            <Link href="/register?role=SALESPERSON" className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-emerald-400 text-slate-100 font-black text-lg hover:scale-105 transition-transform shadow-xl shadow-emerald-500/20 flex items-center justify-center gap-2">
                                 Iniciar como Vendedor <ArrowRight size={20} />
                             </Link>
-                            <Link href="/login" className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-white/5 border border-white/10 text-white font-black text-lg hover:bg-white/10 transition-colors flex items-center justify-center gap-2">
+                            <Link href="/login" className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 border border-white/10 text-white font-black text-lg hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50/10 transition-colors flex items-center justify-center gap-2">
                                 Ya tengo cuenta
                             </Link>
                         </div>
@@ -172,7 +172,7 @@ export default function EmpleoLandingPage() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: i * 0.1 }}
-                                className="bg-white/5 border border-white/10 rounded-3xl p-8 hover:bg-white/[0.07] transition-colors"
+                                className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 border border-white/10 rounded-3xl p-8 hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50/[0.07] transition-colors"
                             >
                                 <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 flex items-center justify-center mb-6">
                                     <step.icon size={28} className="text-emerald-400" />
@@ -198,8 +198,8 @@ export default function EmpleoLandingPage() {
                                         onClick={() => setActiveTab(tab.id)}
                                         className={`flex items-center gap-3 px-6 py-4 rounded-2xl text-left font-bold transition-all whitespace-nowrap ${
                                             activeTab === tab.id 
-                                            ? "bg-emerald-500 text-black shadow-lg shadow-emerald-500/20" 
-                                            : "text-slate-400 hover:bg-white/5 hover:text-white"
+                                            ? "bg-emerald-500 text-slate-100 shadow-[0_12px_40px_rgba(0,0,0,0.5)] shadow-emerald-500/20" 
+                                            : "text-slate-400 hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 hover:text-white"
                                         }`}
                                     >
                                         <tab.icon size={20} />
@@ -220,7 +220,7 @@ export default function EmpleoLandingPage() {
                                             transition={{ duration: 0.3 }}
                                             className="h-full flex flex-col justify-center"
                                         >
-                                            <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-8">
+                                            <div className="w-16 h-16 rounded-2xl bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 border border-white/10 flex items-center justify-center mb-8">
                                                 <tab.icon size={32} className="text-emerald-400" />
                                             </div>
                                             <h3 className="text-3xl font-black text-white mb-6">{tab.title}</h3>
@@ -244,7 +244,7 @@ export default function EmpleoLandingPage() {
                         className="relative overflow-hidden rounded-[2.5rem] bg-emerald-600 border border-emerald-500 p-10 md:p-16"
                     >
                         <div className="absolute inset-0 bg-[url('/noise.png')] opacity-10 mix-blend-overlay" />
-                        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-white/20 blur-[100px] rounded-full pointer-events-none translate-x-1/2 -translate-y-1/2" />
+                        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-slate-900/50 backdrop-blur-xl border-slate-700/50/20 blur-[100px] rounded-full pointer-events-none translate-x-1/2 -translate-y-1/2" />
                         
                         <div className="relative z-10 grid md:grid-cols-2 gap-12 items-center">
                             <div>

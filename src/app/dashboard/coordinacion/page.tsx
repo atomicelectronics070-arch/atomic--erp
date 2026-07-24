@@ -305,7 +305,7 @@ export default function CoordinacionPage() {
     return (
         <div className="max-w-6xl mx-auto space-y-8 p-6 text-slate-800">
             {isTestMode && (
-                <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded shadow-sm">
+                <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
                     <h3 className="font-bold flex items-center gap-2"><AlertCircle className="w-5 h-5"/> Modo Prueba Activo</h3>
                     <p className="text-sm mt-1">
                         Estás en un entorno de ensayo. Puedes usar esta interfaz para simular un día laboral como coordinadora. 
@@ -373,7 +373,7 @@ export default function CoordinacionPage() {
             </div>
 
             {activeTab === "COTIZACIONES" && (
-                <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 p-6 rounded-xl border border-slate-200 shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-5">
                         <div>
                             <h2 className="text-xl font-semibold flex items-center gap-2"><DollarSign /> Gestión de Cotizaciones</h2>
@@ -482,7 +482,7 @@ export default function CoordinacionPage() {
                 <>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* APERTURA Y CIERRE */}
-                        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 p-6 rounded-xl border border-slate-200 shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
                             <h2 className="text-xl font-semibold mb-4 flex items-center gap-2"><Clock /> Apertura y Cierre</h2>
                             <div className="flex gap-4">
                                 <button 
@@ -503,7 +503,7 @@ export default function CoordinacionPage() {
                         </div>
 
                         {/* AVISOS DEL DIA */}
-                        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 p-6 rounded-xl border border-slate-200 shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
                             <h2 className="text-xl font-semibold mb-4 flex items-center gap-2"><AlertCircle /> Avisos del Día</h2>
                             <textarea 
                                 value={notices}
@@ -516,14 +516,14 @@ export default function CoordinacionPage() {
                                     <input type="checkbox" checked={publishToSocial} onChange={e => setPublishToSocial(e.target.checked)} className="rounded text-blue-600" />
                                     Publicar en Red Social del Sistema
                                 </label>
-                                <button onClick={() => handleAction("SAVE_NOTICES", { notices, publishToSocial })} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2">
+                                <button onClick={() => handleAction("SAVE_NOTICES", { notices, publishToSocial })} className="bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all hover:from-cyan-400 hover:to-indigo-500 text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2">
                                     <Save size={16}/> Guardar Avisos
                                 </button>
                             </div>
                         </div>
                     </div>
 
-                    <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 p-6 rounded-xl border border-slate-200 shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
                         <h2 className="text-xl font-semibold mb-6 flex items-center gap-2"><CheckSquare /> Actividades y Recordatorios</h2>
                         
                         <div className="space-y-6">
@@ -553,7 +553,7 @@ export default function CoordinacionPage() {
                                                     {advisors.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
                                                 </select>
                                             )}
-                                            <button onClick={() => handleAction("ADD_FOLLOW_UP", followUpForm)} className="bg-blue-600 text-white px-4 py-2 rounded flex items-center gap-2"><Send size={16}/> Guardar Seguimiento</button>
+                                            <button onClick={() => handleAction("ADD_FOLLOW_UP", followUpForm)} className="bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all text-white px-4 py-2 rounded flex items-center gap-2"><Send size={16}/> Guardar Seguimiento</button>
                                         </div>
                                         {/* List saved followups */}
                                         {dailyData?.followUps?.length > 0 && (
@@ -620,7 +620,7 @@ export default function CoordinacionPage() {
                     </div>
 
                     {/* ASIGNACION CONTACTOS */}
-                    <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 p-6 rounded-xl border border-slate-200 shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
                         <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
                             <h2 className="text-xl font-semibold flex items-center gap-2"><Users /> Asignar Contactos (Inicio de semana)</h2>
                             <button 
@@ -657,7 +657,7 @@ export default function CoordinacionPage() {
                                     setContactsList(Array(assignmentForm.amount).fill({ name: "", objective: assignmentForm.objective, businessType: "", phone: "" }));
                                 }
                                 setAssignmentForm({ objective: "", amount: 10, advisorId: "", origin: "" });
-                            }} className="bg-blue-600 text-white px-6 py-2 rounded font-bold h-[42px]">Asignar</button>
+                            }} className="bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all text-white px-6 py-2 rounded font-bold h-[42px]">Asignar</button>
                         </div>
 
                         {showContactsDetails && (
@@ -665,7 +665,7 @@ export default function CoordinacionPage() {
                                 <h3 className="text-sm font-bold text-slate-700 bg-slate-50 p-2 rounded mb-3">Detalle de los {assignmentForm.amount} contactos a asignar</h3>
                                 {contactsList.map((c, i) => (
                                     <div key={i} className="flex flex-wrap md:flex-nowrap gap-3 p-3 bg-slate-50 border border-slate-200 rounded-lg items-center relative group mt-2">
-                                        <div className="absolute -left-2.5 -top-2.5 bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white shadow-sm">{i + 1}</div>
+                                        <div className="absolute -left-2.5 -top-2.5 bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white shadow-[0_4px_15px_rgba(0,0,0,0.3)]">{i + 1}</div>
                                         <input 
                                             type="text" placeholder="Nombre del Contacto" value={c.name} 
                                             onChange={e => { const n = [...contactsList]; n[i].name = e.target.value; setContactsList(n) }} 
@@ -692,7 +692,7 @@ export default function CoordinacionPage() {
                         )}
                     </div>
                     {/* RESUMEN DE LA BITACORA */}
-                    <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm mt-8">
+                    <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 p-6 rounded-xl border border-slate-200 shadow-[0_4px_15px_rgba(0,0,0,0.3)] mt-8">
                         <h2 className="text-xl font-semibold mb-6 flex items-center gap-2"><FileText /> Resumen de Bitácora (Registros Guardados)</h2>
                         
                         <div className="space-y-4 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-300 before:to-transparent">
@@ -703,7 +703,7 @@ export default function CoordinacionPage() {
                                     <div className="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-emerald-500 text-white shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
                                         <Clock size={18} />
                                     </div>
-                                    <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-slate-200 bg-white shadow-sm">
+                                    <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-slate-200 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
                                         <div className="flex items-center justify-between space-x-2 mb-1">
                                             <div className="font-bold text-slate-900">Apertura de Grupo</div>
                                             <time className="text-xs font-medium text-emerald-500">{new Date(dailyData.daily.openTime).toLocaleTimeString()}</time>
@@ -719,7 +719,7 @@ export default function CoordinacionPage() {
                                     <div className="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-blue-500 text-white shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
                                         <Send size={18} />
                                     </div>
-                                    <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-slate-200 bg-white shadow-sm">
+                                    <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-slate-200 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
                                         <div className="flex items-center justify-between space-x-2 mb-1">
                                             <div className="font-bold text-slate-900">Seguimiento: {f.clientName}</div>
                                             <time className="text-xs font-medium text-blue-500">Registrado</time>
@@ -739,7 +739,7 @@ export default function CoordinacionPage() {
                                     <div className="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-purple-500 text-white shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
                                         {r.type === 'ZOOM' ? <Video size={18} /> : <MessageSquare size={18} />}
                                     </div>
-                                    <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-slate-200 bg-white shadow-sm">
+                                    <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-slate-200 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
                                         <div className="flex items-center justify-between space-x-2 mb-1">
                                             <div className="font-bold text-slate-900">Reporte {r.type}</div>
                                             <time className="text-xs font-medium text-purple-500">Registrado</time>
@@ -764,7 +764,7 @@ export default function CoordinacionPage() {
                                     <div className="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-orange-500 text-white shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
                                         <Users size={18} />
                                     </div>
-                                    <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-slate-200 bg-white shadow-sm">
+                                    <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-slate-200 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
                                         <div className="flex items-center justify-between space-x-2 mb-1">
                                             <div className="font-bold text-slate-900">Asignación: {a.objective}</div>
                                             <time className="text-xs font-medium text-orange-500">Registrado</time>
@@ -805,7 +805,7 @@ export default function CoordinacionPage() {
                                     <div className="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-slate-800 text-white shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
                                         <CheckSquare size={18} />
                                     </div>
-                                    <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-slate-200 bg-white shadow-sm">
+                                    <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-slate-200 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
                                         <div className="flex items-center justify-between space-x-2 mb-1">
                                             <div className="font-bold text-slate-900">Cierre de Grupo</div>
                                             <time className="text-xs font-medium text-slate-500">{new Date(dailyData.daily.closeTime).toLocaleTimeString()}</time>
@@ -824,7 +824,7 @@ export default function CoordinacionPage() {
             )}
 
             {activeTab === "SCRAPER" && (
-                <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 p-6 rounded-xl border border-slate-200 shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6 border-b pb-4">
                         <div>
                             <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2"><Users className="text-blue-600" /> Motor Scraper de Leads</h2>
@@ -841,7 +841,7 @@ export default function CoordinacionPage() {
                                 <select 
                                     value={scraperCategory} 
                                     onChange={(e) => setScraperCategory(e.target.value)}
-                                    className="w-full border p-2 rounded-md bg-white focus:ring-2 focus:ring-blue-500 outline-none"
+                                    className="w-full border p-2 rounded-md bg-slate-900/50 backdrop-blur-xl border-slate-700/50 focus:ring-2 focus:ring-blue-500 outline-none"
                                 >
                                     {SCRAPER_CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
                                 </select>
@@ -851,7 +851,7 @@ export default function CoordinacionPage() {
                                 <select 
                                     value={scraperCount} 
                                     onChange={(e) => setScraperCount(Number(e.target.value))}
-                                    className="w-full border p-2 rounded-md bg-white focus:ring-2 focus:ring-blue-500 outline-none"
+                                    className="w-full border p-2 rounded-md bg-slate-900/50 backdrop-blur-xl border-slate-700/50 focus:ring-2 focus:ring-blue-500 outline-none"
                                 >
                                     {[1,2,3,4,5,6,7,8,9,10].map(n => <option key={n} value={n}>{n} contactos</option>)}
                                 </select>
@@ -859,7 +859,7 @@ export default function CoordinacionPage() {
                             <button 
                                 onClick={handleScrape}
                                 disabled={scraperLoading}
-                                className="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-md transition-colors flex items-center justify-center gap-2 disabled:opacity-70 h-[42px]"
+                                className="w-full md:w-auto bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all hover:from-cyan-400 hover:to-indigo-500 text-white font-bold py-2 px-6 rounded-md transition-colors flex items-center justify-center gap-2 disabled:opacity-70 h-[42px]"
                             >
                                 {scraperLoading ? (
                                     <><div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div> Buscando...</>
@@ -913,7 +913,7 @@ export default function CoordinacionPage() {
                                                     ) : (
                                                         <div className="flex items-center justify-end gap-2">
                                                             <select 
-                                                                className="border p-1.5 rounded text-sm bg-white min-w-[150px]"
+                                                                className="border p-1.5 rounded text-sm bg-slate-900/50 backdrop-blur-xl border-slate-700/50 min-w-[150px]"
                                                                 onChange={(e) => {
                                                                     if(e.target.value) handleAssignScrapedContact(contact.id, e.target.value)
                                                                 }}
@@ -949,7 +949,7 @@ export default function CoordinacionPage() {
                             initial={{ scale: 0.95, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
                             exit={{ scale: 0.95, opacity: 0 }}
-                            className="bg-white rounded-2xl shadow-2xl max-w-5xl w-full h-[90vh] overflow-hidden flex flex-col"
+                            className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 rounded-2xl shadow-2xl max-w-5xl w-full h-[90vh] overflow-hidden flex flex-col"
                             onClick={(e: any) => e.stopPropagation()}
                         >
                             <div className="p-4 border-b flex justify-between items-center bg-slate-50">
@@ -965,7 +965,7 @@ export default function CoordinacionPage() {
                                 {previewQuote.pdfUrl ? (
                                     <iframe src={previewQuote.pdfUrl} className="w-full h-full border-none" />
                                 ) : (
-                                    <div className="max-w-3xl mx-auto my-8 p-10 bg-white shadow-sm border border-slate-200 rounded">
+                                    <div className="max-w-3xl mx-auto my-8 p-10 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 shadow-[0_4px_15px_rgba(0,0,0,0.3)] border border-slate-200 rounded">
                                         <div className="flex justify-between items-start mb-8 border-b pb-6">
                                             <div>
                                                 <h2 className="text-2xl font-bold text-slate-900 tracking-tight">ATOMIC INDUSTRIES</h2>

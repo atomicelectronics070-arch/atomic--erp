@@ -572,9 +572,9 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
         <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] font-sans pb-32">
             
             {/* Header */}
-            <div className="bg-white border-b border-slate-200 px-8 py-6 flex flex-col md:flex-row justify-between items-center gap-6 shadow-sm sticky top-0 z-40">
+            <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border-b border-slate-200 px-8 py-6 flex flex-col md:flex-row justify-between items-center gap-6 shadow-[0_4px_15px_rgba(0,0,0,0.3)] sticky top-0 z-40">
                 <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg">
+                    <div className="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-[0_12px_40px_rgba(0,0,0,0.5)]">
                         <FileText size={24} />
                     </div>
                     <div>
@@ -587,14 +587,14 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                 <div className="flex items-center gap-4">
                     <button 
                         onClick={handleFillTest}
-                        className="px-4 py-2.5 bg-amber-50 text-amber-600 hover:bg-amber-100 font-bold text-sm rounded-lg transition-all flex items-center gap-2 shadow-sm"
+                        className="px-4 py-2.5 bg-amber-50 text-amber-600 hover:bg-amber-100 font-bold text-sm rounded-lg transition-all flex items-center gap-2 shadow-[0_4px_15px_rgba(0,0,0,0.3)]"
                         title="Rellenar cotización genérica de prueba"
                     >
                         <Zap size={16}/> Prueba
                     </button>
                     <button 
                         onClick={() => setIsHistoryOpen(true)} 
-                        className="px-5 py-2.5 bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-800 font-bold text-sm rounded-lg transition-all flex items-center gap-2 shadow-sm"
+                        className="px-5 py-2.5 bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-800 font-bold text-sm rounded-lg transition-all flex items-center gap-2 shadow-[0_4px_15px_rgba(0,0,0,0.3)]"
                     >
                         <History size={16}/> Historial
                     </button>
@@ -619,7 +619,7 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                 <div className="lg:col-span-2 space-y-8">
                     
                     {/* Project Subject */}
-                    <div className="bg-white p-8 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-indigo-600">
+                    <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 p-8 rounded-xl border border-slate-200 shadow-[0_4px_15px_rgba(0,0,0,0.3)] border-l-4 border-l-indigo-600">
                         <label className="text-[10px] font-black uppercase text-indigo-600 tracking-wider mb-2 flex items-center gap-2">
                             <Briefcase size={14} /> Asunto de la Cotización
                         </label>
@@ -632,7 +632,7 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                     </div>
 
                     {/* Client Info */}
-                    <div className="bg-white p-8 rounded-xl border border-slate-200 shadow-sm relative">
+                    <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 p-8 rounded-xl border border-slate-200 shadow-[0_4px_15px_rgba(0,0,0,0.3)] relative">
                         <div className="flex justify-between items-center mb-6 border-b border-slate-100 pb-4">
                             <h2 className="text-sm font-black text-[#0F172A] uppercase tracking-wider flex items-center gap-2">
                                 <Building2 className="text-indigo-600" size={16} /> Datos del Cliente
@@ -660,7 +660,7 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                                     placeholder="Buscar cliente existente..."
                                 />
                                 {showClientList && clientName && (
-                                    <div className="absolute top-full left-0 w-full bg-white border border-slate-200 shadow-xl rounded-lg z-50 max-h-48 overflow-y-auto mt-1">
+                                    <div className="absolute top-full left-0 w-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 shadow-xl rounded-lg z-50 max-h-48 overflow-y-auto mt-1">
                                         <div className="flex justify-between items-center p-2 border-b border-slate-100">
                                             <span className="text-[10px] font-bold text-slate-400 uppercase">Resultados ({initialClients.filter((c: any) => c.name.toLowerCase().includes(clientName.toLowerCase())).length})</span>
                                             <button onClick={() => setShowClientList(false)} className="text-slate-400 hover:text-slate-600"><X size={14}/></button>
@@ -721,7 +721,7 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                     </div>
  
                     {/* Products Detail */}
-                    <div className="bg-white p-8 rounded-xl border border-slate-200 shadow-sm">
+                    <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 p-8 rounded-xl border border-slate-200 shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
                         <div className="flex justify-between items-center mb-6 border-b border-slate-100 pb-4">
                             <h2 className="text-sm font-black text-[#0F172A] uppercase tracking-wider flex items-center gap-2">
                                 <ShoppingCart className="text-indigo-600" size={16} /> Detalle de Ítems
@@ -753,7 +753,7 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                                         initial={{ opacity: 0, y: 10 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         exit={{ opacity: 0, x: -20 }}
-                                        className="grid grid-cols-12 gap-2 items-center bg-white p-2 border border-slate-200 rounded-lg group hover:border-indigo-300 transition-all relative"
+                                        className="grid grid-cols-12 gap-2 items-center bg-slate-900/50 backdrop-blur-xl border-slate-700/50 p-2 border border-slate-200 rounded-lg group hover:border-indigo-300 transition-all relative"
                                     >
                                         <div className="col-span-1">
                                             <div className="w-10 h-10 bg-slate-50 border border-slate-100 rounded-md flex items-center justify-center relative overflow-hidden group-hover:border-indigo-200 transition-all mx-auto cursor-pointer">
@@ -792,7 +792,7 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                                                 placeholder="Buscar producto..."
                                             />
                                             {showProductList === item.id && (
-                                                <div className="absolute top-full left-0 w-full bg-white border border-slate-200 shadow-xl rounded-lg z-50 max-h-48 overflow-y-auto min-w-[250px]">
+                                                <div className="absolute top-full left-0 w-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 shadow-xl rounded-lg z-50 max-h-48 overflow-y-auto min-w-[250px]">
                                                     {initialProducts.filter((p: Product) => p.name.toLowerCase().includes(item.description.toLowerCase())).map((p: Product) => (
                                                         <button key={p.id} onClick={() => selectProduct(item.id, p)} className="w-full text-left p-3 hover:bg-slate-50 border-b border-slate-100 flex items-center gap-3">
                                                             <div className="w-8 h-8 bg-slate-100 rounded flex-shrink-0 overflow-hidden">
@@ -842,7 +842,7 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                 <div className="lg:col-span-1 space-y-8">
                     
                     {/* Generador Rápido */}
-                    <div className="bg-gradient-to-br from-indigo-50 to-white p-6 rounded-xl border border-indigo-100 shadow-sm">
+                    <div className="bg-gradient-to-br from-indigo-50 to-white p-6 rounded-xl border border-indigo-100 shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
                         <div className="flex items-center gap-2 mb-4 text-indigo-700">
                             <Wand2 size={18} />
                             <h2 className="text-sm font-black uppercase tracking-wider">Generador Rápido (IA)</h2>
@@ -854,7 +854,7 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                             value={quickText}
                             onChange={(e) => setQuickText(e.target.value)}
                             placeholder="Ej: cotizame a juan perez 2 camaras a 15 y un dvr a 40 para quito su tel es 0999"
-                            className="w-full bg-white border border-indigo-200 rounded-lg p-3 text-xs font-medium text-[#0F172A] outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 min-h-[100px] resize-none mb-4"
+                            className="w-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-indigo-200 rounded-lg p-3 text-xs font-medium text-[#0F172A] outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 min-h-[100px] resize-none mb-4"
                         />
                         
                         {quickWarning && (
@@ -867,7 +867,7 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                         <div className="flex gap-2">
                             <button 
                                 onClick={() => quickInputRef.current?.click()}
-                                className="flex-1 flex items-center justify-center gap-1 bg-white border border-indigo-200 text-indigo-600 font-bold text-[10px] py-2 rounded-lg hover:bg-indigo-50 transition-colors"
+                                className="flex-1 flex items-center justify-center gap-1 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-indigo-200 text-indigo-600 font-bold text-[10px] py-2 rounded-lg hover:bg-indigo-50 transition-colors"
                             >
                                 <Upload size={12} /> {quickImage ? "Imagen Lista" : "Subir 1 Imagen"}
                             </button>
@@ -876,7 +876,7 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                             <button 
                                 onClick={handleQuickGenerate}
                                 disabled={isExtracting || !quickText.trim()}
-                                className="flex-1 flex items-center justify-center gap-1 bg-indigo-600 text-white font-bold text-[10px] py-2 rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition-all shadow-sm"
+                                className="flex-1 flex items-center justify-center gap-1 bg-indigo-600 text-white font-bold text-[10px] py-2 rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition-all shadow-[0_4px_15px_rgba(0,0,0,0.3)]"
                             >
                                 {isExtracting ? "Analizando..." : "Auto-Completar"}
                             </button>
@@ -886,7 +886,7 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                             <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mt-4">
                                 <button 
                                     onClick={handleGeneratePDF}
-                                    className="w-full flex items-center justify-center gap-2 bg-[#0F172A] text-white font-bold text-[11px] py-3 rounded-lg hover:bg-slate-800 transition-all shadow-md"
+                                    className="w-full flex items-center justify-center gap-2 bg-[#0F172A] text-white font-bold text-[11px] py-3 rounded-lg hover:bg-slate-800 transition-all shadow-[0_8px_32px_rgba(0,0,0,0.5)]"
                                 >
                                     <Download size={14} /> DESCARGAR COTIZACIÓN
                                 </button>
@@ -894,7 +894,7 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                         )}
                     </div>
 
-                    <div className="bg-white p-8 rounded-xl border border-slate-200 shadow-sm sticky top-32">
+                    <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 p-8 rounded-xl border border-slate-200 shadow-[0_4px_15px_rgba(0,0,0,0.3)] sticky top-32">
                         <h2 className="text-sm font-black text-[#0F172A] uppercase tracking-wider mb-6 flex items-center gap-2 border-b border-slate-100 pb-4">
                             <Calculator className="text-indigo-600" size={16} /> Totales
                         </h2>
@@ -945,8 +945,8 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                                         onClick={() => setStatus(s as any)} 
                                         className={`py-3 text-xs font-black uppercase tracking-wider rounded-lg transition-all border ${
                                             status === s 
-                                            ? 'bg-indigo-50 border-indigo-200 text-indigo-700 shadow-sm' 
-                                            : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'
+                                            ? 'bg-indigo-50 border-indigo-200 text-indigo-700 shadow-[0_4px_15px_rgba(0,0,0,0.3)]' 
+                                            : 'bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border-slate-200 text-slate-500 hover:bg-slate-50'
                                         }`}
                                     >
                                         {s}
@@ -972,7 +972,7 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                             animate={{ x: 0 }}
                             exit={{ x: "100%" }}
                             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                            className="fixed top-0 right-0 h-full w-full max-w-sm bg-white border-l border-slate-200 z-[60] flex flex-col shadow-2xl"
+                            className="fixed top-0 right-0 h-full w-full max-w-sm bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border-l border-slate-200 z-[60] flex flex-col shadow-2xl"
                         >
                             <div className="px-6 py-5 flex justify-between items-center border-b border-slate-200 bg-slate-50">
                                 <h3 className="text-lg font-black text-[#0F172A] uppercase tracking-tight flex items-center gap-2">
@@ -982,7 +982,7 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                             </div>
                             <div className="p-6 overflow-y-auto h-full space-y-4 custom-scrollbar bg-[#F8FAFC]">
                                 {quoteHistory.map((q: any) => (
-                                    <div key={q.id} className="p-4 bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md hover:border-indigo-200 transition-all cursor-pointer group">
+                                    <div key={q.id} className="p-4 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 rounded-xl shadow-[0_4px_15px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(0,0,0,0.5)] hover:border-indigo-200 transition-all cursor-pointer group">
                                         <div className="flex justify-between items-start mb-3">
                                             <span className="text-[10px] font-black text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded uppercase tracking-widest">{q.quoteNumber}</span>
                                             <span className="text-[9px] text-slate-400 uppercase font-bold">{new Date(q.createdAt).toLocaleDateString()}</span>

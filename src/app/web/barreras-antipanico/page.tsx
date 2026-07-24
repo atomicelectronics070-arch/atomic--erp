@@ -110,7 +110,7 @@ export default async function PanicBarsLandingPage() {
                         </h2>
                         <p className="text-gray-400 font-medium">¿No sabes qué modelo elegir? Aprende las diferencias entre Push, Toallero y Vertical, y descubre por qué la instalación profesional es vital.</p>
                     </div>
-                    <Link href="/web/barreras-antipanico/blog" className="shrink-0 px-8 py-4 bg-[#FF6347] hover:bg-[#FF4500] text-white font-black rounded-xl shadow-lg hover:shadow-[#FF6347]/50 transition-all flex items-center gap-2">
+                    <Link href="/web/barreras-antipanico/blog" className="shrink-0 px-8 py-4 bg-[#FF6347] hover:bg-[#FF4500] text-white font-black rounded-xl shadow-[0_12px_40px_rgba(0,0,0,0.5)] hover:shadow-[#FF6347]/50 transition-all flex items-center gap-2">
                         LEER EL BLOG <ArrowRight size={18} />
                     </Link>
                 </div>
@@ -188,7 +188,7 @@ export default async function PanicBarsLandingPage() {
                 <div className="max-w-6xl mx-auto px-6">
                     <div className="text-center mb-20">
                         <h2 className="text-4xl md:text-5xl font-black text-white mb-6">Catálogo de Equipamiento</h2>
-                        <p className="text-gray-500 max-w-2xl mx-auto font-medium">
+                        <p className="text-slate-400 max-w-2xl mx-auto font-medium">
                             Comparamos las mejores barreras antipánico de la industria, ordenadas desde los modelos más accesibles hasta los sistemas de anclaje de grado militar.
                         </p>
                     </div>
@@ -204,7 +204,7 @@ export default async function PanicBarsLandingPage() {
                                 <div className="absolute -top-[300px] -right-[300px] w-[600px] h-[600px] bg-[#FF6347]/20 blur-[100px] rounded-full pointer-events-none"></div>
                                 
                                 <div className="lg:w-1/2 p-12 lg:p-20 relative z-10 text-white">
-                                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#FF6347] text-white font-black text-xs uppercase tracking-widest mb-8 shadow-lg shadow-[#FF6347]/30">
+                                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#FF6347] text-white font-black text-xs uppercase tracking-widest mb-8 shadow-[0_12px_40px_rgba(0,0,0,0.5)] shadow-[#FF6347]/30">
                                         <Flame size={14} /> Oferta Especial
                                     </div>
                                     <h3 className="text-4xl lg:text-6xl font-black mb-6 leading-tight">
@@ -222,14 +222,14 @@ export default async function PanicBarsLandingPage() {
                                                 <span className="text-sm text-gray-400 font-bold mb-2">+ IVA</span>
                                             </div>
                                         </div>
-                                        <Link href={`/web/product/${product.id}`} className="w-full sm:w-auto px-10 py-5 bg-white text-black font-black hover:bg-gray-200 transition-colors rounded-2xl flex items-center justify-center gap-2 group/btn">
+                                        <Link href={`/web/product/${product.id}`} className="w-full sm:w-auto px-10 py-5 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-slate-100 font-black hover:bg-gray-200 transition-colors rounded-2xl flex items-center justify-center gap-2 group/btn">
                                             Adquirir Ahora
                                             <ArrowRight size={18} className="group-hover/btn:translate-x-1 transition-transform" />
                                         </Link>
                                     </div>
                                 </div>
                                 
-                                <div className="lg:w-1/2 p-12 lg:p-20 relative z-10 flex items-center justify-center bg-white/5 backdrop-blur-sm h-full min-h-[400px]">
+                                <div className="lg:w-1/2 p-12 lg:p-20 relative z-10 flex items-center justify-center bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 backdrop-blur-sm h-full min-h-[400px]">
                                     <ClientImage 
                                         src={mainImage} 
                                         alt={product.name} 
@@ -260,7 +260,7 @@ export default async function PanicBarsLandingPage() {
                                     
                                     <div className="p-8 md:p-12 flex flex-col justify-between flex-1 relative">
                                         <div>
-                                            <div className="flex items-center gap-3 mb-4 text-xs font-bold text-gray-500 uppercase tracking-widest">
+                                            <div className="flex items-center gap-3 mb-4 text-xs font-bold text-slate-400 uppercase tracking-widest">
                                                 <span>Categoría Fuego y Evacuación</span>
                                                 <span>•</span>
                                                 <span className="text-[#FF6347]">Nivel {idx + 1}</span>
@@ -287,10 +287,10 @@ export default async function PanicBarsLandingPage() {
                                         
                                         <div className="flex flex-col sm:flex-row items-center justify-between pt-8 border-t border-gray-800 gap-6 mt-8">
                                             <div>
-                                                <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Inversión de Seguridad</p>
+                                                <p className="text-xs text-slate-400 font-bold uppercase tracking-wider mb-1">Inversión de Seguridad</p>
                                                 <div className="flex items-end gap-3">
                                                     <p className="text-4xl font-black text-white">${product.price.toFixed(2)}</p>
-                                                    <span className="text-sm text-gray-500 font-bold mb-1">+ IVA</span>
+                                                    <span className="text-sm text-slate-400 font-bold mb-1">+ IVA</span>
                                                 </div>
                                             </div>
                                             

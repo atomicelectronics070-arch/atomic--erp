@@ -164,7 +164,7 @@ function InlineEdit({ value, onSave, prefix = "$", min = 0, decimals = 2, step =
     )
 
     return (
-        <div className="flex items-center gap-1 bg-white border border-slate-900 p-1 shadow-sm rounded-lg animate-in zoom-in-95 duration-150">
+        <div className="flex items-center gap-1 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-900 p-1 shadow-[0_4px_15px_rgba(0,0,0,0.3)] rounded-lg animate-in zoom-in-95 duration-150">
             {prefix && <span className="text-slate-800 font-semibold text-xs px-1">{prefix}</span>}
             <input
                 ref={inputRef}
@@ -508,7 +508,7 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                             onClick={() => setViewMode("grouped")}
                             className={`px-4 py-2 text-xs font-semibold rounded-lg transition-all ${
                                 viewMode === "grouped"
-                                    ? "bg-white text-slate-900 shadow-sm border border-slate-200/50"
+                                    ? "bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-slate-900 shadow-[0_4px_15px_rgba(0,0,0,0.3)] border border-slate-200/50"
                                     : "text-slate-500 hover:text-slate-800"
                             }`}
                         >
@@ -521,7 +521,7 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                             onClick={() => setViewMode("table")}
                             className={`px-4 py-2 text-xs font-semibold rounded-lg transition-all ${
                                 viewMode === "table"
-                                    ? "bg-white text-slate-900 shadow-sm border border-slate-200/50"
+                                    ? "bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-slate-900 shadow-[0_4px_15px_rgba(0,0,0,0.3)] border border-slate-200/50"
                                     : "text-slate-500 hover:text-slate-800"
                             }`}
                         >
@@ -553,7 +553,7 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                             }
                         }}
                         disabled={loading}
-                        className="px-4 py-2.5 bg-white border border-slate-200 text-slate-700 font-semibold text-xs rounded-xl hover:bg-slate-50 hover:border-slate-300 transition-all duration-300 shadow-sm disabled:opacity-50 flex items-center gap-2 group"
+                        className="px-4 py-2.5 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 text-slate-700 font-semibold text-xs rounded-xl hover:bg-slate-50 hover:border-slate-300 transition-all duration-300 shadow-[0_4px_15px_rgba(0,0,0,0.3)] disabled:opacity-50 flex items-center gap-2 group"
                     >
                         <RefreshCw size={14} className={`${loading ? "animate-spin" : "group-hover:rotate-180 transition-transform duration-700"}`} />
                         <span>Actualizar</span>
@@ -576,7 +576,7 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                                 setSelectedSupplier(isSelected ? "" : s.name)
                                 setPage(1)
                             }}
-                            className={`flex-none w-[280px] sm:w-[320px] snap-center cursor-pointer relative overflow-hidden bg-white border p-5 rounded-2xl group transition-all duration-300 shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.05)] hover:-translate-y-0.5 ${
+                            className={`flex-none w-[280px] sm:w-[320px] snap-center cursor-pointer relative overflow-hidden bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border p-5 rounded-2xl group transition-all duration-300 shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.05)] hover:-translate-y-0.5 ${
                                 isSelected
                                     ? "border-blue-500 ring-2 ring-blue-500/10 bg-slate-50/10"
                                     : "border-slate-200/80 hover:border-slate-300 hover:bg-slate-50/30"
@@ -623,7 +623,7 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
             </div>
 
             {/* Filter Bar */}
-            <div className="bg-white border border-slate-200/80 p-5 rounded-2xl flex flex-col md:flex-row gap-4 items-center relative overflow-hidden shadow-sm">
+            <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200/80 p-5 rounded-2xl flex flex-col md:flex-row gap-4 items-center relative overflow-hidden shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
                 <div className="absolute top-0 left-0 w-[4px] h-full bg-blue-500"></div>
                 
                 {/* Search */}
@@ -634,7 +634,7 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                         placeholder="Buscar artículo por nombre o SKU..."
                         value={searchInputValue}
                         onChange={e => setSearchInputValue(e.target.value)}
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-12 pr-5 py-3.5 text-xs font-semibold text-slate-800 outline-none focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/5 transition-all placeholder:text-slate-400"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-12 pr-5 py-3.5 text-xs font-semibold text-slate-800 outline-none focus:border-blue-500 focus:bg-slate-900/50 backdrop-blur-xl border-slate-700/50 focus:ring-4 focus:ring-blue-500/5 transition-all placeholder:text-slate-400"
                     />
                 </div>
 
@@ -701,7 +701,7 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                                 key={supplierName}
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className="border border-slate-200/60 bg-white overflow-hidden relative rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.01)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.03)] transition-all duration-300"
+                                className="border border-slate-200/60 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 overflow-hidden relative rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.01)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.03)] transition-all duration-300"
                             >
                                 {/* Signature indicator bar */}
                                 <div className="absolute top-0 left-0 w-full h-[3px]" style={{ backgroundColor: styles.primary }} />
@@ -744,7 +744,7 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                                                     setMarginEditSupplier(marginEditSupplier === supplierName ? null : supplierName)
                                                     setMarginValue("")
                                                 }}
-                                                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:text-white bg-white border border-slate-200 hover:bg-blue-600 hover:border-blue-500 transition-all duration-300 rounded-lg group/btn shadow-sm"
+                                                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:text-white bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 hover:bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all hover:border-blue-500 transition-all duration-300 rounded-lg group/btn shadow-[0_4px_15px_rgba(0,0,0,0.3)]"
                                             >
                                                 <Percent size={12} className="text-blue-500 group-hover/btn:text-white" />
                                                 <span>Aplicar Margen</span>
@@ -787,7 +787,7 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                                                             value={marginValue}
                                                             onChange={e => setMarginValue(e.target.value)}
                                                             placeholder="EJ: 25"
-                                                            className="w-28 bg-slate-50 border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-800 outline-none focus:border-blue-500 focus:bg-white transition-all rounded-lg"
+                                                            className="w-28 bg-slate-50 border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-800 outline-none focus:border-blue-500 focus:bg-slate-900/50 backdrop-blur-xl border-slate-700/50 transition-all rounded-lg"
                                                         />
                                                         <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-bold">%</span>
                                                     </div>
@@ -795,7 +795,7 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                                                     <button
                                                         onClick={() => handleApplyMargin(supplierName)}
                                                         disabled={applyingMargin || !marginValue}
-                                                        className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs transition-all duration-300 disabled:opacity-40 shadow rounded-lg"
+                                                        className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all hover:bg-blue-500 text-white font-semibold text-xs transition-all duration-300 disabled:opacity-40 shadow rounded-lg"
                                                     >
                                                         <span className="flex items-center gap-1.5">
                                                             <Check size={14} />
@@ -825,7 +825,7 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                                             className="overflow-hidden border-t border-slate-200 bg-slate-50/10"
                                         >
                                             <div className="overflow-x-auto custom-scrollbar p-3">
-                                                <table className="w-full text-left border-collapse border border-slate-300 rounded-xl overflow-hidden shadow-sm bg-white">
+                                                <table className="w-full text-left border-collapse border border-slate-300 rounded-xl overflow-hidden shadow-[0_4px_15px_rgba(0,0,0,0.3)] bg-slate-900/50 backdrop-blur-xl border-slate-700/50">
                                                     <thead>
                                                         <tr className="text-sm font-extrabold text-slate-700 border-b border-slate-300 bg-slate-100 uppercase">
                                                             <th className="px-4 py-4 w-12 text-center">
@@ -850,7 +850,7 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                                                             <th className="px-4 py-4 w-20 text-center">Visible</th>
                                                         </tr>
                                                     </thead>
-                                                    <tbody className="divide-y divide-slate-100 bg-white">
+                                                    <tbody className="divide-y divide-slate-100 bg-slate-900/50 backdrop-blur-xl border-slate-700/50">
                                                         {prods.map((p) => {
                                                             const margin = calcMargin(p.compareAtPrice, p.price)
                                                             const isSaving = savingIds.has(p.id)
@@ -886,7 +886,7 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                                                                                         setPreviewImages({ urls: urls.length > 0 ? urls : [img], title: p.name });
                                                                                     }
                                                                                 }}
-                                                                                className={`w-12 h-12 bg-slate-50 border border-slate-300 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center relative shadow-sm ${img ? 'cursor-pointer hover:border-blue-500 hover:ring-2 hover:ring-blue-500/20 transition-all' : ''}`}>
+                                                                                className={`w-12 h-12 bg-slate-50 border border-slate-300 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center relative shadow-[0_4px_15px_rgba(0,0,0,0.3)] ${img ? 'cursor-pointer hover:border-blue-500 hover:ring-2 hover:ring-blue-500/20 transition-all' : ''}`}>
                                                                                 {img ? (
                                                                                     <img src={img} alt="" className="w-full h-full object-cover" />
                                                                                 ) : (
@@ -959,9 +959,9 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                 </div>
             ) : (
                 /* FLAT LIST TABLE VIEW */
-                <div className="border border-slate-200/60 bg-white overflow-hidden relative shadow-[0_4px_25px_rgba(0,0,0,0.015)] rounded-2xl">
+                <div className="border border-slate-200/60 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 overflow-hidden relative shadow-[0_4px_25px_rgba(0,0,0,0.015)] rounded-2xl">
                     <div className="overflow-x-auto custom-scrollbar p-3">
-                        <table className="w-full text-left border-collapse border border-slate-200/60 rounded-xl overflow-hidden bg-white shadow-[0_2px_12px_rgba(0,0,0,0.01)]">
+                        <table className="w-full text-left border-collapse border border-slate-200/60 rounded-xl overflow-hidden bg-slate-900/50 backdrop-blur-xl border-slate-700/50 shadow-[0_2px_12px_rgba(0,0,0,0.01)]">
                             <thead>
                                 <tr className="text-sm font-extrabold text-slate-700 border-b border-slate-300 bg-slate-100 uppercase">
                                     <th className="px-4 py-4 w-12 text-center">
@@ -986,7 +986,7 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                                     <th className="px-4 py-4 w-32">Margen (ROI)</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-slate-100 bg-white">
+                            <tbody className="divide-y divide-slate-100 bg-slate-900/50 backdrop-blur-xl border-slate-700/50">
                                 {paginatedProducts.map((p) => {
                                     const margin = calcMargin(p.compareAtPrice, p.price)
                                     const isSaving = savingIds.has(p.id)
@@ -1021,7 +1021,7 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                                                                 setPreviewImages({ urls: urls.length > 0 ? urls : [img], title: p.name });
                                                             }
                                                         }}
-                                                        className={`w-12 h-12 bg-slate-50 border border-slate-300 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center relative shadow-sm ${img ? 'cursor-pointer hover:border-blue-500 hover:ring-2 hover:ring-blue-500/20 transition-all' : ''}`}>
+                                                        className={`w-12 h-12 bg-slate-50 border border-slate-300 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center relative shadow-[0_4px_15px_rgba(0,0,0,0.3)] ${img ? 'cursor-pointer hover:border-blue-500 hover:ring-2 hover:ring-blue-500/20 transition-all' : ''}`}>
                                                         {img ? <img src={img} alt="" className="w-full h-full object-cover" /> : <Package size={20} className="text-slate-400" />}
                                                     </div>
                                                     <span 
@@ -1086,7 +1086,7 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
  
             {/* Pagination */}
             {totalPages > 1 && (
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-200 bg-slate-50/30 p-5 rounded-2xl shadow-sm">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-200 bg-slate-50/30 p-5 rounded-2xl shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
                     <span className="text-[11px] font-semibold text-slate-500">
                         Página {page} de {totalPages} · {total} artículos totales en catálogo
                     </span>
@@ -1094,14 +1094,14 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                         <button
                             onClick={() => setPage(p => Math.max(1, p - 1))}
                             disabled={page === 1}
-                            className="px-4 py-2 bg-white border border-slate-200 hover:border-slate-300 text-slate-600 hover:text-slate-800 text-xs font-semibold rounded-xl disabled:opacity-30 disabled:pointer-events-none transition-all duration-300 shadow-sm"
+                            className="px-4 py-2 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 hover:border-slate-300 text-slate-600 hover:text-slate-800 text-xs font-semibold rounded-xl disabled:opacity-30 disabled:pointer-events-none transition-all duration-300 shadow-[0_4px_15px_rgba(0,0,0,0.3)]"
                         >
                             <span>Anterior</span>
                         </button>
                         <button
                             onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                             disabled={page === totalPages}
-                            className="px-4 py-2 bg-white border border-slate-200 hover:border-slate-300 text-slate-600 hover:text-slate-800 text-xs font-semibold rounded-xl disabled:opacity-30 disabled:pointer-events-none transition-all duration-300 shadow-sm"
+                            className="px-4 py-2 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 hover:border-slate-300 text-slate-600 hover:text-slate-800 text-xs font-semibold rounded-xl disabled:opacity-30 disabled:pointer-events-none transition-all duration-300 shadow-[0_4px_15px_rgba(0,0,0,0.3)]"
                         >
                             <span>Siguiente</span>
                         </button>
@@ -1111,9 +1111,9 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
 
             {/* Elevated Bulk Actions Bar */}
             {selectedProducts.length > 0 && (
-                <div className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-white/95 border border-slate-200/80 text-slate-800 px-6 py-4 flex flex-wrap items-center justify-center gap-6 shadow-[0_20px_50px_rgba(0,0,0,0.1)] z-[500] animate-in slide-in-from-bottom-6 duration-500 rounded-2xl backdrop-blur-md">
+                <div className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/95 border border-slate-200/80 text-slate-800 px-6 py-4 flex flex-wrap items-center justify-center gap-6 shadow-[0_20px_50px_rgba(0,0,0,0.1)] z-[500] animate-in slide-in-from-bottom-6 duration-500 rounded-2xl backdrop-blur-md">
                     <div className="flex items-center space-x-4 border-r border-slate-100 pr-5">
-                        <div className="w-8 h-8 bg-slate-900 text-white rounded-xl flex items-center justify-center font-bold text-sm shadow-sm">{selectedProducts.length}</div>
+                        <div className="w-8 h-8 bg-slate-900 text-white rounded-xl flex items-center justify-center font-bold text-sm shadow-[0_4px_15px_rgba(0,0,0,0.3)]">{selectedProducts.length}</div>
                         <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Elegidos</span>
                     </div>
                     
@@ -1128,7 +1128,7 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                                 value={bulkStockValue}
                                 onChange={e => setBulkStockValue(e.target.value)}
                                 placeholder="Ej: 50"
-                                className="w-16 bg-slate-50 border border-slate-200 px-2 py-1 text-xs font-semibold text-slate-850 outline-none focus:border-slate-400 focus:bg-white transition-all rounded-lg"
+                                className="w-16 bg-slate-50 border border-slate-200 px-2 py-1 text-xs font-semibold text-slate-850 outline-none focus:border-slate-400 focus:bg-slate-900/50 backdrop-blur-xl border-slate-700/50 transition-all rounded-lg"
                             />
                             <button
                                 onClick={() => handleBulkPriceUpdate({ stock: parseInt(bulkStockValue) })}
@@ -1149,7 +1149,7 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                                     value={bulkMarginValue}
                                     onChange={e => setBulkMarginValue(e.target.value)}
                                     placeholder="Ej: 20"
-                                    className="w-16 bg-slate-50 border border-slate-200 pl-2 pr-5 py-1 text-xs font-semibold text-slate-855 outline-none focus:border-slate-400 focus:bg-white transition-all rounded-lg"
+                                    className="w-16 bg-slate-50 border border-slate-200 pl-2 pr-5 py-1 text-xs font-semibold text-slate-855 outline-none focus:border-slate-400 focus:bg-slate-900/50 backdrop-blur-xl border-slate-700/50 transition-all rounded-lg"
                                 />
                                 <span className="absolute right-1.5 top-1/2 -translate-y-1/2 text-slate-450 text-[10px] font-bold">%</span>
                             </div>
@@ -1167,7 +1167,7 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                             <button
                                 onClick={() => handleBulkPriceUpdate({ isActive: true })}
                                 disabled={updatingBulk}
-                                className="flex items-center gap-1 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 px-3 py-1.5 text-xs font-bold transition-all rounded-lg border border-emerald-100/50 shadow-sm"
+                                className="flex items-center gap-1 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 px-3 py-1.5 text-xs font-bold transition-all rounded-lg border border-emerald-100/50 shadow-[0_4px_15px_rgba(0,0,0,0.3)]"
                             >
                                 <Eye size={12} />
                                 <span>Mostrar</span>
@@ -1175,7 +1175,7 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                             <button
                                 onClick={() => handleBulkPriceUpdate({ isActive: false })}
                                 disabled={updatingBulk}
-                                className="flex items-center gap-1 bg-slate-100 text-slate-700 hover:bg-slate-200 px-3 py-1.5 text-xs font-bold transition-all rounded-lg border border-slate-200 shadow-sm"
+                                className="flex items-center gap-1 bg-slate-100 text-slate-700 hover:bg-slate-200 px-3 py-1.5 text-xs font-bold transition-all rounded-lg border border-slate-200 shadow-[0_4px_15px_rgba(0,0,0,0.3)]"
                             >
                                 <EyeOff size={12} />
                                 <span>Ocultar</span>
@@ -1207,7 +1207,7 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                             initial={{ scale: 0.95, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
                             exit={{ scale: 0.95, opacity: 0 }}
-                            className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col"
+                            className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col"
                             onClick={e => e.stopPropagation()}
                         >
                             <div className="p-4 border-b flex justify-between items-center bg-slate-50">
@@ -1221,7 +1221,7 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                             </div>
                             <div className="p-6 overflow-y-auto flex-1 bg-slate-100 flex gap-4 overflow-x-auto snap-x custom-scrollbar">
                                 {previewImages.urls.map((url, i) => (
-                                    <div key={i} className="min-w-full sm:min-w-[80%] flex-shrink-0 snap-center relative flex items-center justify-center bg-white rounded-xl overflow-hidden shadow-sm border border-slate-200 group">
+                                    <div key={i} className="min-w-full sm:min-w-[80%] flex-shrink-0 snap-center relative flex items-center justify-center bg-slate-900/50 backdrop-blur-xl border-slate-700/50 rounded-xl overflow-hidden shadow-[0_4px_15px_rgba(0,0,0,0.3)] border border-slate-200 group">
                                         <img src={url} alt={`${previewImages.title} ${i + 1}`} className="max-h-[60vh] object-contain" />
                                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                             <a 
@@ -1229,7 +1229,7 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                                                 download 
                                                 target="_blank" 
                                                 rel="noreferrer"
-                                                className="bg-white/90 hover:bg-white text-slate-800 p-3 rounded-full shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 flex items-center gap-2"
+                                                className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50/90 hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-slate-800 p-3 rounded-full shadow-[0_12px_40px_rgba(0,0,0,0.5)] transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 flex items-center gap-2"
                                             >
                                                 <Download size={20} />
                                                 <span className="font-bold text-sm">Descargar Foto</span>
@@ -1260,7 +1260,7 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                             initial={{ scale: 0.95, y: 20, opacity: 0 }}
                             animate={{ scale: 1, y: 0, opacity: 1 }}
                             exit={{ scale: 0.95, y: 20, opacity: 0 }}
-                            className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full flex flex-col"
+                            className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 rounded-2xl shadow-2xl max-w-2xl w-full flex flex-col"
                             onClick={e => e.stopPropagation()}
                         >
                             <div className="p-5 border-b flex justify-between items-start bg-slate-50/50 rounded-t-2xl">
@@ -1270,7 +1270,7 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                                 </div>
                                 <button
                                     onClick={() => setPreviewDescription(null)}
-                                    className="p-2 hover:bg-slate-200 rounded-full transition-colors ml-4 bg-white shadow-sm border border-slate-200"
+                                    className="p-2 hover:bg-slate-200 rounded-full transition-colors ml-4 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 shadow-[0_4px_15px_rgba(0,0,0,0.3)] border border-slate-200"
                                 >
                                     <X size={18} className="text-slate-500" />
                                 </button>

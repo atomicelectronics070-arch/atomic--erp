@@ -106,7 +106,7 @@ export default function SparePartsCatalogPage() {
                 <div className="max-w-7xl mx-auto relative z-10 flex flex-col md:flex-row justify-between items-center gap-10">
                     <div>
                         <div className="flex items-center gap-3 mb-4">
-                            <div className="bg-blue-600 p-2 rounded-none">
+                            <div className="bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all p-2 rounded-none">
                                 <Cpu size={24} className="text-white" />
                             </div>
                             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-blue-400">División Técnica de Hardware</span>
@@ -126,14 +126,14 @@ export default function SparePartsCatalogPage() {
                             value={search}
                             onChange={e => { setSearch(e.target.value); setPage(1); }}
                             placeholder="BUSCAR REPUESTO POR MODELO O SKU..."
-                            className="w-full bg-white/5 border border-white/10 pl-16 pr-8 py-5 text-sm uppercase font-black tracking-widest outline-none focus:border-blue-500 focus:bg-white/10 transition-all rounded-none backdrop-blur-md"
+                            className="w-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 border border-white/10 pl-16 pr-8 py-5 text-sm uppercase font-black tracking-widest outline-none focus:border-blue-500 focus:bg-slate-900/50 backdrop-blur-xl border-slate-700/50/10 transition-all rounded-none backdrop-blur-md"
                         />
                     </div>
                 </div>
             </div>
 
             {/* ── Stats / Legend ── */}
-            <div className="bg-white border-b border-slate-200">
+            <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border-b border-slate-200">
                 <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
                     <div className="flex items-center gap-8 overflow-x-auto hide-scrollbar whitespace-nowrap">
                         <div className="flex items-center gap-2">
@@ -160,11 +160,11 @@ export default function SparePartsCatalogPage() {
             {/* ── Industrial Grid ── */}
             <main className="max-w-7xl mx-auto px-6 py-12">
                 {paginated.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-40 text-center bg-white border-2 border-dashed border-slate-200">
+                    <div className="flex flex-col items-center justify-center py-40 text-center bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border-2 border-dashed border-slate-200">
                         <Settings className="w-16 h-16 text-slate-200 mb-6 animate-spin-slow" strokeWidth={1} />
                         <h2 className="text-lg font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Repuesto no encontrado</h2>
                         <p className="text-slate-300 text-[10px] font-bold uppercase tracking-widest max-w-xs mx-auto">Nuestro inventario de repuestos rota diariamente. Contacta con bodega para pedidos especiales.</p>
-                        <button onClick={() => setSearch("")} className="mt-8 bg-[#1E3A8A] text-white px-8 py-4 font-black uppercase tracking-[0.2em] text-[10px] hover:bg-blue-700 transition-all">Ver todo el inventario</button>
+                        <button onClick={() => setSearch("")} className="mt-8 bg-[#1E3A8A] text-white px-8 py-4 font-black uppercase tracking-[0.2em] text-[10px] hover:from-cyan-400 hover:to-indigo-500 transition-all">Ver todo el inventario</button>
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -175,7 +175,7 @@ export default function SparePartsCatalogPage() {
                                 <Link
                                     key={p.id}
                                     href={`/web/product/${p.id}`}
-                                    className="group flex flex-col bg-white border border-slate-200 hover:border-blue-600 transition-all duration-300 shadow-sm hover:shadow-2xl relative"
+                                    className="group flex flex-col bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 hover:border-blue-600 transition-all duration-300 shadow-[0_4px_15px_rgba(0,0,0,0.3)] hover:shadow-2xl relative"
                                 >
                                     <div className="aspect-video relative bg-slate-50 flex items-center justify-center overflow-hidden border-b border-slate-100">
                                         {imgs.length > 0 ? (
@@ -191,7 +191,7 @@ export default function SparePartsCatalogPage() {
                                             </div>
                                         )}
                                         <div className="absolute top-4 left-4 bg-slate-900/10 backdrop-blur-md px-2 py-1 flex items-center gap-2">
-                                            <div className="w-1.5 h-1.5 bg-blue-600 animate-pulse" />
+                                            <div className="w-1.5 h-1.5 bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all animate-pulse" />
                                             <span className="text-[8px] font-black text-slate-900 uppercase tracking-widest">In Stock</span>
                                         </div>
                                     </div>
@@ -207,14 +207,14 @@ export default function SparePartsCatalogPage() {
                                                 <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Precio Distribución</p>
                                                 <p className="text-xl font-black text-[#1E3A8A] tracking-tighter">${price.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
                                             </div>
-                                            <div className="w-10 h-10 bg-slate-900 text-white flex items-center justify-center group-hover:bg-blue-600 transition-colors">
+                                            <div className="w-10 h-10 bg-slate-900 text-white flex items-center justify-center group-hover:bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all transition-colors">
                                                 <ShoppingBag size={18} />
                                             </div>
                                         </div>
                                     </div>
                                     
                                     {/* Industrial accent */}
-                                    <div className="absolute bottom-0 left-0 w-full h-[2px] bg-slate-100 group-hover:bg-blue-600 transition-all" />
+                                    <div className="absolute bottom-0 left-0 w-full h-[2px] bg-slate-100 group-hover:bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all transition-all" />
                                 </Link>
                             )
                         })}
@@ -227,7 +227,7 @@ export default function SparePartsCatalogPage() {
                         <button
                             onClick={() => setPage(p => Math.max(1, p - 1))}
                             disabled={page === 1}
-                            className="px-6 py-4 bg-white border border-slate-200 font-black uppercase text-[10px] tracking-widest text-slate-400 hover:text-blue-600 disabled:opacity-40 transition-all"
+                            className="px-6 py-4 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 font-black uppercase text-[10px] tracking-widest text-slate-400 hover:text-blue-600 disabled:opacity-40 transition-all"
                         >
                             Anterior
                         </button>
@@ -237,7 +237,7 @@ export default function SparePartsCatalogPage() {
                                     key={p}
                                     onClick={() => setPage(p)}
                                     className={`w-12 h-12 text-xs font-black transition-all ${
-                                        page === p ? 'bg-blue-600 text-white' : 'bg-white border border-slate-200 text-slate-500 hover:border-blue-600'
+                                        page === p ? 'bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all text-white' : 'bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 text-slate-500 hover:border-blue-600'
                                     }`}
                                 >
                                     {p}
@@ -247,7 +247,7 @@ export default function SparePartsCatalogPage() {
                         <button
                             onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                             disabled={page === totalPages}
-                            className="px-6 py-4 bg-white border border-slate-200 font-black uppercase text-[10px] tracking-widest text-slate-400 hover:text-blue-600 disabled:opacity-40 transition-all"
+                            className="px-6 py-4 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 font-black uppercase text-[10px] tracking-widest text-slate-400 hover:text-blue-600 disabled:opacity-40 transition-all"
                         >
                             Siguiente
                         </button>

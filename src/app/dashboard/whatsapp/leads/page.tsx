@@ -75,7 +75,7 @@ export default function LeadsDashboard() {
             <div className="max-w-6xl mx-auto space-y-8">
                 
                 {/* Header */}
-                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 p-6 rounded-2xl border border-slate-200 shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
                     <div>
                         <h1 className="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
                             <Users size={24} className="text-emerald-500" />
@@ -92,7 +92,7 @@ export default function LeadsDashboard() {
                 </div>
 
                 {/* Table Section */}
-                <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 rounded-2xl border border-slate-200 shadow-[0_4px_15px_rgba(0,0,0,0.3)] overflow-hidden">
                     <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
                         <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
                             <Calendar size={18} className="text-slate-400" />
@@ -139,7 +139,7 @@ export default function LeadsDashboard() {
                                         <td className="px-6 py-4 text-right">
                                             <button 
                                                 onClick={() => handleWhatsApp(lead.name, lead.phone)}
-                                                className="inline-flex items-center gap-2 px-4 py-2 bg-[#25D366] hover:bg-[#20bd5a] text-white rounded-lg font-bold text-xs transition-all shadow-sm hover:shadow-md"
+                                                className="inline-flex items-center gap-2 px-4 py-2 bg-[#25D366] hover:bg-[#20bd5a] text-white rounded-lg font-bold text-xs transition-all shadow-[0_4px_15px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(0,0,0,0.5)]"
                                             >
                                                 <MessageSquare size={14} />
                                                 Escribir por WhatsApp

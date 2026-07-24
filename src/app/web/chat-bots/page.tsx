@@ -114,7 +114,7 @@ export default function ChatBotsPage() {
                             <button onClick={() => document.getElementById('bots')?.scrollIntoView({ behavior: 'smooth' })} className="inline-flex items-center gap-2 px-8 py-4 bg-orange-500 hover:bg-orange-400 text-[#020617] rounded-xl font-black text-lg transition-all hover:scale-105 shadow-xl shadow-orange-500/30">
                                 Ver Módulos de Bot <ArrowRight size={20} />
                             </button>
-                            <button onClick={() => document.getElementById('contacto')?.scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-xl font-bold text-lg transition-all">
+                            <button onClick={() => document.getElementById('contacto')?.scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50/10 text-white border border-white/10 rounded-xl font-bold text-lg transition-all">
                                 Activar mi Bot
                             </button>
                         </div>
@@ -139,7 +139,7 @@ export default function ChatBotsPage() {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                     {benefits.map((b, i) => (
                         <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
-                            className="bg-white border border-slate-200 rounded-2xl p-6 text-center hover:border-orange-200 hover:shadow-lg transition-all group">
+                            className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 rounded-2xl p-6 text-center hover:border-orange-200 hover:shadow-[0_12px_40px_rgba(0,0,0,0.5)] transition-all group">
                             <div className="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform border border-orange-100">
                                 <b.icon size={22} className="text-orange-500" />
                             </div>
@@ -162,7 +162,7 @@ export default function ChatBotsPage() {
                     <div className="flex flex-wrap justify-center gap-3 mb-12">
                         {bots.map((bot, i) => (
                             <button key={i} onClick={() => setActiveBot(i)}
-                                className={`px-6 py-3 rounded-xl font-black text-sm transition-all border ${activeBot === i ? `bg-gradient-to-r ${bot.accent} text-white border-transparent shadow-lg` : 'bg-white/5 text-slate-400 border-white/10 hover:bg-white/10'}`}>
+                                className={`px-6 py-3 rounded-xl font-black text-sm transition-all border ${activeBot === i ? `bg-gradient-to-r ${bot.accent} text-white border-transparent shadow-[0_12px_40px_rgba(0,0,0,0.5)]` : 'bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 text-slate-400 border-white/10 hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50/10'}`}>
                                 {bot.title}
                             </button>
                         ))}
@@ -187,7 +187,7 @@ export default function ChatBotsPage() {
                             <p className="text-slate-400 text-base leading-relaxed">{current.desc}</p>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 {current.features.map((feat, i) => (
-                                    <div key={i} className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl px-4 py-3 hover:bg-white/10 transition-colors">
+                                    <div key={i} className="flex items-center gap-3 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 border border-white/10 rounded-xl px-4 py-3 hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50/10 transition-colors">
                                         <CheckCircle2 size={16} className="text-orange-400 shrink-0" />
                                         <span className="text-sm font-bold text-white">{feat}</span>
                                     </div>
@@ -211,7 +211,7 @@ export default function ChatBotsPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {["/assets/bots/bot1.jpeg","/assets/bots/bot2.jpeg","/assets/bots/bot3.jpeg","/assets/bots/bot4.jpeg","/assets/bots/bot5.jpeg"].map((img, i) => (
                         <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
-                            className="rounded-2xl overflow-hidden shadow-lg border border-slate-200 bg-white hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer"
+                            className="rounded-2xl overflow-hidden shadow-[0_12px_40px_rgba(0,0,0,0.5)] border border-slate-200 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer"
                             onClick={() => setActiveBot(Math.min(i, bots.length - 1))}>
                             <img src={img} alt={`Bot ${i+1}`} className="w-full h-auto object-contain bg-[#020617]" />
                         </motion.div>
@@ -222,7 +222,7 @@ export default function ChatBotsPage() {
             {/* CONTACT */}
             <section id="contacto" className="py-24 bg-slate-50">
                 <div className="max-w-3xl mx-auto px-6">
-                    <div className="bg-white rounded-3xl p-8 md:p-12 shadow-xl border border-slate-200">
+                    <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 rounded-3xl p-8 md:p-12 shadow-xl border border-slate-200">
                         <div className="text-center mb-10">
                             <h2 className="text-3xl font-black text-[#0F172A] mb-3">🚀 Activa tu Bot Hoy</h2>
                             <p className="text-slate-500 font-medium">Cuéntanos qué procesos quieres automatizar y un especialista diseñará la solución exacta para tu negocio.</p>
@@ -252,7 +252,7 @@ export default function ChatBotsPage() {
                                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">¿Qué proceso quieres automatizar?</label>
                                 <textarea required rows={3} value={form.message} onChange={e => setForm({...form, message: e.target.value})} className="w-full bg-slate-50 border border-slate-200 px-4 py-3.5 rounded-xl text-sm font-bold text-[#0F172A] outline-none focus:border-orange-500 transition-all resize-none" placeholder="Ej: Quiero automatizar mi atención al cliente por WhatsApp..." />
                             </div>
-                            <button type="submit" className="w-full bg-orange-500 hover:bg-orange-600 text-white py-4 rounded-xl font-black text-lg transition-all hover:scale-[1.02] shadow-lg shadow-orange-500/20 flex items-center justify-center gap-2">
+                            <button type="submit" className="w-full bg-orange-500 hover:bg-orange-600 text-white py-4 rounded-xl font-black text-lg transition-all hover:scale-[1.02] shadow-[0_12px_40px_rgba(0,0,0,0.5)] shadow-orange-500/20 flex items-center justify-center gap-2">
                                 Quiero mi Bot Ahora <Send size={20} />
                             </button>
                         </form>

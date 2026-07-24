@@ -9,9 +9,9 @@ export default function FinanceTrackerPage() {
         <div className="w-full min-h-screen bg-[#F8FAFC] pb-32">
             
             {/* SaaS Header */}
-            <div className="bg-white border-b border-slate-200 px-8 py-6 mb-8 flex flex-col md:flex-row justify-between items-center gap-6 shadow-sm sticky top-0 z-40">
+            <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border-b border-slate-200 px-8 py-6 mb-8 flex flex-col md:flex-row justify-between items-center gap-6 shadow-[0_4px_15px_rgba(0,0,0,0.3)] sticky top-0 z-40">
                 <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg">
+                    <div className="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-[0_12px_40px_rgba(0,0,0,0.5)]">
                         <PieChart size={24} />
                     </div>
                     <div>
@@ -22,7 +22,7 @@ export default function FinanceTrackerPage() {
                     </div>
                 </div>
                 
-                <button className="bg-slate-900 text-white px-6 py-2.5 rounded-lg text-sm font-bold shadow-md hover:bg-slate-800 transition-all flex items-center gap-2">
+                <button className="bg-slate-900 text-white px-6 py-2.5 rounded-lg text-sm font-bold shadow-[0_8px_32px_rgba(0,0,0,0.5)] hover:bg-slate-800 transition-all flex items-center gap-2">
                     <Download size={16} /> Exportar Reporte
                 </button>
             </div>

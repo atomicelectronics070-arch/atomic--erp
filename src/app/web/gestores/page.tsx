@@ -116,7 +116,7 @@ export default function TiendasOnlineLanding() {
                 
                 <button 
                     onClick={toggleMute}
-                    className="absolute bottom-8 right-8 z-20 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white p-4 rounded-full transition-all shadow-xl"
+                    className="absolute bottom-8 right-8 z-20 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/10 hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50/20 backdrop-blur-md border border-white/20 text-white p-4 rounded-full transition-all shadow-xl"
                     title={isMuted ? "Activar sonido" : "Silenciar"}
                 >
                     {isMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
@@ -124,7 +124,7 @@ export default function TiendasOnlineLanding() {
                 
                 <div className="relative z-10 max-w-5xl mx-auto px-6 text-center space-y-8">
                     <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
-                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-sm font-bold uppercase tracking-wider mb-6">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50/10 backdrop-blur-md border border-white/20 text-white text-sm font-bold uppercase tracking-wider mb-6">
                             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" /> Soluciones Enterprise 2026
                         </div>
                         <h1 className="text-5xl md:text-7xl font-black text-white tracking-tight leading-[1.1]">
@@ -139,7 +139,7 @@ export default function TiendasOnlineLanding() {
                         <button onClick={() => document.getElementById('planes')?.scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold text-lg transition-all hover:scale-105 active:scale-95 shadow-xl shadow-indigo-600/30 flex items-center gap-2 w-full sm:w-auto justify-center">
                             Ver Planes Disponibles <ArrowRight size={20} />
                         </button>
-                        <button onClick={() => document.getElementById('contacto')?.scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white border border-white/20 rounded-xl font-bold text-lg transition-all w-full sm:w-auto justify-center">
+                        <button onClick={() => document.getElementById('contacto')?.scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/10 hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50/20 backdrop-blur-md text-white border border-white/20 rounded-xl font-bold text-lg transition-all w-full sm:w-auto justify-center">
                             Hablar con un Asesor
                         </button>
                     </motion.div>
@@ -163,10 +163,10 @@ export default function TiendasOnlineLanding() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: i * 0.1 }}
-                            className={`relative bg-white rounded-3xl p-8 border ${plan.popular ? 'border-indigo-500 shadow-2xl shadow-indigo-500/10' : 'border-slate-200 shadow-sm'} flex flex-col h-full`}
+                            className={`relative bg-slate-900/50 backdrop-blur-xl border-slate-700/50 rounded-3xl p-8 border ${plan.popular ? 'border-indigo-500 shadow-2xl shadow-indigo-500/10' : 'border-slate-200 shadow-[0_4px_15px_rgba(0,0,0,0.3)]'} flex flex-col h-full`}
                         >
                             {plan.popular && (
-                                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-indigo-600 text-white px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest shadow-md">
+                                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-indigo-600 text-white px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
                                     Más Elegido
                                 </div>
                             )}
@@ -190,7 +190,7 @@ export default function TiendasOnlineLanding() {
                                 <li className="text-xs font-bold text-indigo-500 mt-2">+ Ver todos los beneficios</li>
                             </ul>
 
-                            <button onClick={() => setSelectedPlan(plan)} className={`w-full py-3.5 rounded-xl font-bold text-sm transition-all ${plan.popular ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-md' : 'bg-slate-50 hover:bg-slate-100 text-[#0F172A] border border-slate-200'}`}>
+                            <button onClick={() => setSelectedPlan(plan)} className={`w-full py-3.5 rounded-xl font-bold text-sm transition-all ${plan.popular ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-[0_8px_32px_rgba(0,0,0,0.5)]' : 'bg-slate-50 hover:bg-slate-100 text-[#0F172A] border border-slate-200'}`}>
                                 Ver Detalles del Plan
                             </button>
                         </motion.div>
@@ -199,7 +199,7 @@ export default function TiendasOnlineLanding() {
             </section>
 
             {/* 2. TYPES OF MANAGERS */}
-            <section className="py-24 bg-white border-y border-slate-200">
+            <section className="py-24 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border-y border-slate-200">
                 <div className="max-w-7xl mx-auto px-6">
                     <div className="flex flex-col lg:flex-row items-center gap-16">
                         <div className="flex-1 space-y-6">
@@ -214,7 +214,7 @@ export default function TiendasOnlineLanding() {
                             <div className="grid gap-6 mt-10">
                                 {managers.map((m, i) => (
                                     <div key={i} className="flex items-start gap-4 p-5 rounded-2xl bg-slate-50 border border-slate-100 hover:border-indigo-200 hover:bg-indigo-50/30 transition-colors group">
-                                        <div className="w-12 h-12 shrink-0 bg-white border border-slate-200 rounded-xl flex items-center justify-center text-indigo-600 group-hover:scale-110 transition-transform shadow-sm">
+                                        <div className="w-12 h-12 shrink-0 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 rounded-xl flex items-center justify-center text-indigo-600 group-hover:scale-110 transition-transform shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
                                             <m.icon size={24} />
                                         </div>
                                         <div>
@@ -230,7 +230,7 @@ export default function TiendasOnlineLanding() {
                             <div className="aspect-[4/5] w-full max-w-md mx-auto rounded-3xl overflow-hidden shadow-2xl relative border-8 border-slate-50 bg-slate-900">
                                 <img src="/assets/ecommerce/img1.jpeg" alt="Ejemplo de Gestor" className="w-full h-full object-contain" />
                                 <div className="absolute inset-0 bg-gradient-to-t from-indigo-900/80 to-transparent flex items-end p-8">
-                                    <div className="bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-xl w-full text-white">
+                                    <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50/10 backdrop-blur-md border border-white/20 p-4 rounded-xl w-full text-white">
                                         <p className="font-black text-sm uppercase tracking-wider mb-1">Control Total</p>
                                         <p className="text-xs font-medium text-slate-200">Supervisa tus ventas, inventario y clientes desde tu celular o computadora.</p>
                                     </div>
@@ -262,7 +262,7 @@ export default function TiendasOnlineLanding() {
                                 { title: "3. Desarrollo Core", desc: "Programación robusta con tecnologías modernas." },
                                 { title: "4. Despliegue", desc: "Lanzamiento y capacitación de tu equipo." },
                             ].map((step, i) => (
-                                <li key={i} className="flex items-center gap-4 bg-white/5 p-4 rounded-xl border border-white/10">
+                                <li key={i} className="flex items-center gap-4 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 p-4 rounded-xl border border-white/10">
                                     <div className="w-10 h-10 bg-indigo-500 rounded-lg flex items-center justify-center font-black text-lg">{i+1}</div>
                                     <div>
                                         <h4 className="font-black text-white">{step.title}</h4>
@@ -284,7 +284,7 @@ export default function TiendasOnlineLanding() {
             {/* 4. CONTACT FORM */}
             <section id="contacto" className="py-24 bg-slate-50 relative">
                 <div className="max-w-3xl mx-auto px-6">
-                    <div className="bg-white rounded-3xl p-8 md:p-12 shadow-xl border border-slate-200">
+                    <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 rounded-3xl p-8 md:p-12 shadow-xl border border-slate-200">
                         <div className="text-center mb-10">
                             <h2 className="text-3xl font-black text-[#0F172A] mb-3">¿Listo para evolucionar tu negocio?</h2>
                             <p className="text-slate-500 font-medium">Déjanos tus datos y un especialista arquitecto de software se pondrá en contacto contigo hoy mismo.</p>
@@ -318,7 +318,7 @@ export default function TiendasOnlineLanding() {
                                 <textarea required rows={4} value={form.message} onChange={e => setForm({...form, message: e.target.value})} className="w-full bg-slate-50 border border-slate-200 px-4 py-3.5 rounded-xl text-sm font-bold text-[#0F172A] outline-none focus:border-indigo-500 transition-all resize-none" placeholder="Cuéntanos brevemente sobre tu negocio y lo que buscas lograr..." />
                             </div>
 
-                            <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-4 rounded-xl font-black text-lg transition-all hover:scale-[1.02] shadow-lg shadow-indigo-600/20 flex items-center justify-center gap-2">
+                            <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-4 rounded-xl font-black text-lg transition-all hover:scale-[1.02] shadow-[0_12px_40px_rgba(0,0,0,0.5)] shadow-indigo-600/20 flex items-center justify-center gap-2">
                                 Solicitar Asesoría Gratuita <Send size={20} />
                             </button>
                         </form>
@@ -327,7 +327,7 @@ export default function TiendasOnlineLanding() {
             </section>
 
             {/* 5. FOOTER */}
-            <footer className="bg-white border-t border-slate-200 py-12">
+            <footer className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border-t border-slate-200 py-12">
                 <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
                     <div>
                         <div className="flex items-center gap-2 mb-2">
@@ -353,7 +353,7 @@ export default function TiendasOnlineLanding() {
                             initial={{ opacity: 0, scale: 0.95, y: 20 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                            className="bg-white w-full max-w-2xl rounded-3xl shadow-2xl relative z-10 overflow-hidden"
+                            className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 w-full max-w-2xl rounded-3xl shadow-2xl relative z-10 overflow-hidden"
                         >
                             <button onClick={() => setSelectedPlan(null)} className="absolute top-4 right-4 p-2 bg-slate-100 hover:bg-slate-200 rounded-full text-slate-500 transition-colors z-20">
                                 <X size={20} />
@@ -380,7 +380,7 @@ export default function TiendasOnlineLanding() {
                                     ))}
                                 </div>
 
-                                <button onClick={() => { setSelectedPlan(null); document.getElementById('contacto')?.scrollIntoView({ behavior: 'smooth' }) }} className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-black text-lg transition-all shadow-lg shadow-indigo-600/20 flex items-center justify-center gap-2">
+                                <button onClick={() => { setSelectedPlan(null); document.getElementById('contacto')?.scrollIntoView({ behavior: 'smooth' }) }} className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-black text-lg transition-all shadow-[0_12px_40px_rgba(0,0,0,0.5)] shadow-indigo-600/20 flex items-center justify-center gap-2">
                                     Iniciar Proyecto Ahora <ArrowRight size={20} />
                                 </button>
                             </div>

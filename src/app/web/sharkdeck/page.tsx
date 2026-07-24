@@ -35,7 +35,7 @@ export default async function SharkdeckLandingPage() {
                     </p>
 
                     <div className="flex flex-col sm:flex-row items-center gap-4 animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-300">
-                        <a href="#manual" className="px-8 py-4 rounded-xl bg-white text-black font-black text-lg hover:bg-slate-200 transition-all flex items-center gap-2 group shadow-[0_0_40px_rgba(255,255,255,0.1)] hover:shadow-[0_0_60px_rgba(255,255,255,0.2)]">
+                        <a href="#manual" className="px-8 py-4 rounded-xl bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-slate-100 font-black text-lg hover:bg-slate-200 transition-all flex items-center gap-2 group shadow-[0_0_40px_rgba(255,255,255,0.1)] hover:shadow-[0_0_60px_rgba(255,255,255,0.2)]">
                             <Download size={20} className="group-hover:-translate-y-1 transition-transform" />
                             Descargar Guía PDF Gratis
                         </a>
@@ -223,7 +223,7 @@ export default async function SharkdeckLandingPage() {
 
                             <Link 
                                 href={productUrl}
-                                className="w-full sm:w-auto px-10 py-5 rounded-2xl bg-gradient-to-r from-emerald-500 to-emerald-400 text-black font-black text-lg hover:scale-105 transition-transform shadow-[0_0_30px_rgba(16,185,129,0.3)] hover:shadow-[0_0_50px_rgba(16,185,129,0.5)] flex items-center justify-center gap-2"
+                                className="w-full sm:w-auto px-10 py-5 rounded-2xl bg-gradient-to-r from-emerald-500 to-emerald-400 text-slate-100 font-black text-lg hover:scale-105 transition-transform shadow-[0_0_30px_rgba(16,185,129,0.3)] hover:shadow-[0_0_50px_rgba(16,185,129,0.5)] flex items-center justify-center gap-2"
                             >
                                 Comprar Kit Sharkdeck Completo <ArrowRight size={20} />
                             </Link>

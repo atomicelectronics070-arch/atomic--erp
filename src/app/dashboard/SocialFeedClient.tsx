@@ -140,9 +140,9 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
         <div className="w-full min-h-screen bg-[#F8FAFC] pb-32">
             
             {/* SaaS Header */}
-            <div className="bg-white border-b border-slate-200 px-8 py-6 mb-8 flex flex-col md:flex-row justify-between items-center gap-6 shadow-sm sticky top-0 z-40">
+            <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border-b border-slate-200 px-8 py-6 mb-8 flex flex-col md:flex-row justify-between items-center gap-6 shadow-[0_4px_15px_rgba(0,0,0,0.3)] sticky top-0 z-40">
                 <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg">
+                    <div className="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-[0_12px_40px_rgba(0,0,0,0.5)]">
                         <Globe size={24} />
                     </div>
                     <div>
@@ -167,7 +167,7 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
                     </div>
 
                     {/* Create Post Box */}
-                    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                    <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 rounded-xl shadow-[0_4px_15px_rgba(0,0,0,0.3)] border border-slate-200 p-6">
                         <div className="flex gap-4 items-start">
                             <div className="w-10 h-10 rounded-full bg-indigo-100 border border-indigo-200 flex items-center justify-center font-black text-lg text-indigo-700 shrink-0">
                                 {session.user?.name?.[0] || "U"}
@@ -183,7 +183,7 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
                                 {mediaFile && (
                                     <div className="relative inline-block border border-slate-200 rounded-lg overflow-hidden">
                                         <img src={mediaFile} className="h-32 w-auto object-cover" />
-                                        <button onClick={() => setMediaFile(null)} className="absolute top-2 right-2 p-1 bg-white rounded-full shadow-md text-slate-500 hover:text-red-500">
+                                        <button onClick={() => setMediaFile(null)} className="absolute top-2 right-2 p-1 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.5)] text-slate-500 hover:text-red-500">
                                             <X size={14} />
                                         </button>
                                     </div>
@@ -202,7 +202,7 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
                                     <button 
                                         onClick={handleCreatePost} 
                                         disabled={(!newPostContent.trim() && !mediaFile) || isSubmitting} 
-                                        className="bg-indigo-600 text-white px-6 py-2.5 rounded-lg text-sm font-bold shadow-sm hover:bg-indigo-700 disabled:opacity-50 transition-all flex items-center gap-2"
+                                        className="bg-indigo-600 text-white px-6 py-2.5 rounded-lg text-sm font-bold shadow-[0_4px_15px_rgba(0,0,0,0.3)] hover:bg-indigo-700 disabled:opacity-50 transition-all flex items-center gap-2"
                                     >
                                         {isSubmitting ? "Publicando..." : <><Send size={16} /> Publicar</>}
                                     </button>
@@ -216,7 +216,7 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
                         <AnimatePresence mode="popLayout">
                             {posts.map((post, i) => (
                                 <motion.div layout initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} key={post.id}>
-                                    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                                    <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 rounded-xl shadow-[0_4px_15px_rgba(0,0,0,0.3)] border border-slate-200 p-6">
                                         <div className="flex items-center justify-between mb-4">
                                             <div className="flex items-center gap-3">
                                                 <div className="w-10 h-10 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center font-black text-sm text-slate-600">
@@ -288,7 +288,7 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
                 <div className="lg:col-span-4 space-y-6">
                     
                     {/* Ranking Panel */}
-                    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 sticky top-32">
+                    <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 rounded-xl shadow-[0_4px_15px_rgba(0,0,0,0.3)] border border-slate-200 p-6 sticky top-32">
                         <div className="flex items-center justify-between mb-6">
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center">
@@ -330,9 +330,9 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
                                 if (rankingFilter === 'contacts') return (b.contactsCount || 0) - (a.contactsCount || 0);
                                 return a.name.localeCompare(b.name);
                             }).map((user, index) => (
-                                <div key={user.id} className={`flex flex-col p-3 rounded-xl border ${index === 0 ? 'bg-amber-50 border-amber-200' : 'bg-white border-slate-100'} transition-all`}>
+                                <div key={user.id} className={`flex flex-col p-3 rounded-xl border ${index === 0 ? 'bg-amber-50 border-amber-200' : 'bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border-slate-100'} transition-all`}>
                                     <div className="flex items-center gap-3">
-                                        <div className={`w-6 h-6 rounded-full flex items-center justify-center font-black text-[10px] ${index === 0 ? 'bg-amber-500 text-white shadow-sm' : 'bg-slate-100 text-slate-500'}`}>
+                                        <div className={`w-6 h-6 rounded-full flex items-center justify-center font-black text-[10px] ${index === 0 ? 'bg-amber-500 text-white shadow-[0_4px_15px_rgba(0,0,0,0.3)]' : 'bg-slate-100 text-slate-500'}`}>
                                             {index + 1}
                                         </div>
                                         <div className="flex-1 flex items-center justify-between">
@@ -382,7 +382,7 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
                     </div>
 
                     {/* Point System Guide */}
-                    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                    <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 rounded-xl shadow-[0_4px_15px_rgba(0,0,0,0.3)] border border-slate-200 p-6">
                         <div className="flex items-center gap-3 mb-6">
                             <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
                                 <Activity size={16} />
@@ -418,7 +418,7 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
 
                     {/* 🎯 META SEMANAL WIDGET */}
                     {isAdmin && (
-                        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                        <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 rounded-xl shadow-[0_4px_15px_rgba(0,0,0,0.3)] border border-slate-200 p-6">
                             <div className="flex items-center justify-between mb-4">
                                 <div>
                                     <h3 className="text-sm font-black text-[#0F172A] flex items-center gap-2">
@@ -453,7 +453,7 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
                                         </div>
                                     </div>
                                     <button onClick={saveWeeklyGoal}
-                                        className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-lg font-black text-sm transition-all shadow-sm flex items-center justify-center gap-2">
+                                        className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-lg font-black text-sm transition-all shadow-[0_4px_15px_rgba(0,0,0,0.3)] flex items-center justify-center gap-2">
                                         💾 Guardar Meta
                                     </button>
                                 </div>
@@ -482,7 +482,7 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
                     )}
 
                     {/* 📹 VIDEO DE GOOGLE DRIVE */}
-                    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                    <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 rounded-xl shadow-[0_4px_15px_rgba(0,0,0,0.3)] border border-slate-200 p-6">
                         <div className="flex items-center gap-3 mb-4">
                             <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
                                 <Video size={16} />
@@ -503,7 +503,7 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
                     </div>
 
                     {/* Academy Panel */}
-                    <div className="bg-gradient-to-br from-slate-900 to-[#0F172A] rounded-xl shadow-lg border border-slate-800 p-8 text-white relative overflow-hidden">
+                    <div className="bg-gradient-to-br from-slate-900 to-[#0F172A] rounded-xl shadow-[0_12px_40px_rgba(0,0,0,0.5)] border border-slate-800 p-8 text-white relative overflow-hidden">
 
                         <div className="absolute top-0 right-0 p-4 opacity-10">
                             <School size={80} />
@@ -512,7 +512,7 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
                             <h3 className="text-lg font-black tracking-tight mb-1">Academia Interna</h3>
                             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-6">Capacitación y Recursos</p>
                             
-                            <div className="bg-white/10 border border-white/20 rounded-lg p-4 mb-6 backdrop-blur-sm">
+                            <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50/10 border border-white/20 rounded-lg p-4 mb-6 backdrop-blur-sm">
                                 <p className="text-[10px] font-black text-indigo-300 uppercase tracking-wider mb-1">CURSO DESTACADO</p>
                                 <p className="text-sm font-bold text-white mb-3">Técnicas de Cierre Empresarial</p>
                                 <div className="flex justify-between items-center text-xs font-medium text-slate-300">
@@ -521,7 +521,7 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
                                 </div>
                             </div>
                             
-                            <Link href="/dashboard/academy" className="block w-full text-center py-3 bg-white text-[#0F172A] rounded-lg text-xs font-black uppercase tracking-wider hover:bg-indigo-50 transition-colors shadow-sm">
+                            <Link href="/dashboard/academy" className="block w-full text-center py-3 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-[#0F172A] rounded-lg text-xs font-black uppercase tracking-wider hover:bg-indigo-50 transition-colors shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
                                 Ingresar al Portal
                             </Link>
                         </div>
@@ -534,7 +534,7 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
                 {isQuickSaleOpen && (
                     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setIsQuickSaleOpen(false)} />
-                        <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="relative bg-white border border-slate-200 p-8 rounded-2xl max-w-md w-full space-y-6 shadow-2xl">
+                        <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="relative bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 p-8 rounded-2xl max-w-md w-full space-y-6 shadow-2xl">
                             <div className="flex justify-between items-center border-b border-slate-100 pb-4">
                                 <h2 className="text-lg font-black text-[#0F172A] flex items-center gap-2">
                                     <Zap size={20} className="text-amber-500" /> Registro Rápido
@@ -569,7 +569,7 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
                             <button 
                                 onClick={handleQuickSale}
                                 disabled={isSubmitting}
-                                className="w-full bg-indigo-600 text-white py-3.5 rounded-lg font-bold text-sm hover:bg-indigo-700 transition-all shadow-sm"
+                                className="w-full bg-indigo-600 text-white py-3.5 rounded-lg font-bold text-sm hover:bg-indigo-700 transition-all shadow-[0_4px_15px_rgba(0,0,0,0.3)]"
                             >
                                 {isSubmitting ? "Procesando..." : "Confirmar Ingreso"}
                             </button>

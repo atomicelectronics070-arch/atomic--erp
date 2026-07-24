@@ -231,7 +231,7 @@ export default function GuiaProveedoresPage() {
             {/* Navbar Placeholder to keep structure */}
             <nav className="relative z-20 w-full px-6 py-6 max-w-7xl mx-auto flex justify-between items-center">
                 <div className="flex items-center gap-2">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-500 flex items-center justify-center shadow-lg shadow-cyan-500/20">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-500 flex items-center justify-center shadow-[0_12px_40px_rgba(0,0,0,0.5)] shadow-cyan-500/20">
                         <FileText className="text-white" size={20} />
                     </div>
                     <span className="text-xl font-black text-slate-800 tracking-tight">Atomic B2B</span>
@@ -242,7 +242,7 @@ export default function GuiaProveedoresPage() {
             <section className="relative z-10 pt-16 pb-20 px-6 max-w-6xl mx-auto text-center space-y-8">
                 <motion.div 
                     initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}
-                    className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white/60 backdrop-blur-md border border-white/80 shadow-sm text-[10px] font-black uppercase tracking-widest text-cyan-600"
+                    className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50/60 backdrop-blur-md border border-white/80 shadow-[0_4px_15px_rgba(0,0,0,0.3)] text-[10px] font-black uppercase tracking-widest text-cyan-600"
                 >
                     <Sparkles size={14} className="animate-pulse" />
                     <span>Recurso Gratuito de Alto Valor</span>
@@ -276,7 +276,7 @@ export default function GuiaProveedoresPage() {
             {/* Author / Strategy Section */}
             <section className="relative z-10 py-24 px-6">
                 <div className="max-w-5xl mx-auto">
-                    <div className="bg-white/40 backdrop-blur-2xl border border-white/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[3rem] p-10 md:p-16 grid md:grid-cols-2 gap-16 items-center">
+                    <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50/40 backdrop-blur-2xl border border-white/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[3rem] p-10 md:p-16 grid md:grid-cols-2 gap-16 items-center">
                         <div className="space-y-8">
                             <div className="w-16 h-16 rounded-2xl bg-cyan-100 text-cyan-600 flex items-center justify-center mb-6">
                                 <Headset size={32} />
@@ -319,7 +319,7 @@ export default function GuiaProveedoresPage() {
             {/* Download & Lead Form */}
             <section id="download-section" className="relative z-10 py-24 px-6">
                 <div className="max-w-xl mx-auto">
-                    <div className="bg-white/60 backdrop-blur-xl border border-white/80 shadow-[0_20px_50px_rgb(0,0,0,0.05)] rounded-[2.5rem] p-10 md:p-12 relative overflow-hidden">
+                    <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50/60 backdrop-blur-xl border border-white/80 shadow-[0_20px_50px_rgb(0,0,0,0.05)] rounded-[2.5rem] p-10 md:p-12 relative overflow-hidden">
                         
                         <div className="text-center space-y-4 mb-10 relative z-10">
                             <h3 className="text-3xl font-black uppercase text-slate-900 tracking-tight">Acceso Inmediato</h3>
@@ -332,16 +332,16 @@ export default function GuiaProveedoresPage() {
                                     <div className="space-y-2">
                                         <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-2">Tu Nombre o Empresa</label>
                                         <input type="text" required value={name} onChange={e => setName(e.target.value)} placeholder="Ej: Juan Pérez / Digital Corp"
-                                            className="w-full bg-white/50 backdrop-blur-sm border border-slate-200 px-6 py-4 rounded-2xl text-sm font-bold text-slate-800 outline-none focus:border-cyan-500 focus:bg-white focus:shadow-[0_0_20px_rgba(6,182,212,0.1)] transition-all placeholder:text-slate-400" />
+                                            className="w-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50/50 backdrop-blur-sm border border-slate-200 px-6 py-4 rounded-2xl text-sm font-bold text-slate-800 outline-none focus:border-cyan-500 focus:bg-slate-900/50 backdrop-blur-xl border-slate-700/50 focus:shadow-[0_0_20px_rgba(6,182,212,0.1)] transition-all placeholder:text-slate-400" />
                                     </div>
                                     <div className="space-y-2">
                                         <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-2">Correo Electrónico</label>
                                         <input type="email" required value={email} onChange={e => setEmail(e.target.value)} placeholder="ejemplo@correo.com"
-                                            className="w-full bg-white/50 backdrop-blur-sm border border-slate-200 px-6 py-4 rounded-2xl text-sm font-bold text-slate-800 outline-none focus:border-cyan-500 focus:bg-white focus:shadow-[0_0_20px_rgba(6,182,212,0.1)] transition-all placeholder:text-slate-400" />
+                                            className="w-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50/50 backdrop-blur-sm border border-slate-200 px-6 py-4 rounded-2xl text-sm font-bold text-slate-800 outline-none focus:border-cyan-500 focus:bg-slate-900/50 backdrop-blur-xl border-slate-700/50 focus:shadow-[0_0_20px_rgba(6,182,212,0.1)] transition-all placeholder:text-slate-400" />
                                     </div>
-                                    {errorMsg && <p className="text-xs font-bold text-red-600 uppercase tracking-wide bg-red-50 border border-red-200 p-4 rounded-xl text-center shadow-sm">⚠️ {errorMsg}</p>}
+                                    {errorMsg && <p className="text-xs font-bold text-red-600 uppercase tracking-wide bg-red-50 border border-red-200 p-4 rounded-xl text-center shadow-[0_4px_15px_rgba(0,0,0,0.3)]">⚠️ {errorMsg}</p>}
                                     <button type="submit" disabled={submitting}
-                                        className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white py-5 rounded-2xl font-black text-sm uppercase tracking-widest transition-all shadow-lg shadow-blue-500/30 flex items-center justify-center gap-3 disabled:opacity-50 mt-4"
+                                        className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white py-5 rounded-2xl font-black text-sm uppercase tracking-widest transition-all shadow-[0_12px_40px_rgba(0,0,0,0.5)] shadow-blue-500/30 flex items-center justify-center gap-3 disabled:opacity-50 mt-4"
                                     >
                                         {submitting ? <span>Generando PDF...</span> : <><Download size={18} /><span>Descargar Ahora</span></>}
                                     </button>
@@ -369,7 +369,7 @@ export default function GuiaProveedoresPage() {
             </section>
 
             {/* Footer */}
-            <footer className="relative z-10 py-10 px-6 border-t border-slate-200/60 bg-white/40 backdrop-blur-md">
+            <footer className="relative z-10 py-10 px-6 border-t border-slate-200/60 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/40 backdrop-blur-md">
                 <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">© 2026 ATOMIC B2B SOLUTIONS</p>
                     <div className="flex gap-6 items-center">

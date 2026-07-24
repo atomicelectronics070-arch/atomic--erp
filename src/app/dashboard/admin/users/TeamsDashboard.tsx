@@ -89,7 +89,7 @@ export default function TeamsDashboard({ isAdmin = false }: { isAdmin?: boolean 
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {teams.map((team) => (
-                    <div key={team.id} className="bg-white border border-neutral-100 p-8 shadow-sm relative group hover:border-orange-600 transition-all">
+                    <div key={team.id} className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-neutral-100 p-8 shadow-[0_4px_15px_rgba(0,0,0,0.3)] relative group hover:border-orange-600 transition-all">
                         <div className="flex justify-between items-start mb-6">
                             <div className="p-3 bg-neutral-50 text-neutral-400 group-hover:bg-orange-50 group-hover:text-orange-600 transition-all">
                                 <Users size={20} />
@@ -131,8 +131,8 @@ export default function TeamsDashboard({ isAdmin = false }: { isAdmin?: boolean 
             </div>
 
             {isModalOpen && (
-                <div className="fixed inset-0 z-[110] flex items-center justify-center bg-white/80 backdrop-blur-sm p-6">
-                    <div className="bg-white w-full max-w-md border border-neutral-200 shadow-2xl p-10">
+                <div className="fixed inset-0 z-[110] flex items-center justify-center bg-slate-900/50 backdrop-blur-xl border-slate-700/50/80 backdrop-blur-sm p-6">
+                    <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 w-full max-w-md border border-neutral-200 shadow-2xl p-10">
                         <div className="flex justify-between items-center mb-10">
                             <h3 className="text-lg font-bold uppercase tracking-tight">Nueva Configuración de Equipo</h3>
                             <button onClick={() => setIsModalOpen(false)}><X size={24} className="text-neutral-400" /></button>

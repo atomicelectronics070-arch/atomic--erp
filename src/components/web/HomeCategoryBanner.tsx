@@ -34,10 +34,10 @@ export default function HomeCategoryBanner({ activeMainCategoryId, categories }:
                         <h3 className="text-sm font-bold tracking-[0.4em] uppercase text-[#0055fe] mb-4">
                             Línea Hogar
                         </h3>
-                        <h2 className="text-3xl md:text-5xl font-black tracking-tighter uppercase text-black leading-[0.9] mb-4 md:mb-6">
+                        <h2 className="text-3xl md:text-5xl font-black tracking-tighter uppercase text-slate-100 leading-[0.9] mb-4 md:mb-6">
                             EL FUTURO <br /> VIVE AQUÍ
                         </h2>
-                        <p className="text-xs md:text-sm font-medium text-black/70 leading-relaxed max-w-md">
+                        <p className="text-xs md:text-sm font-medium text-slate-100/70 leading-relaxed max-w-md">
                             Automatización inteligente, cerraduras biométricas, iluminación inteligente y tecnología de primer nivel diseñada para transformar tu hogar en un ecosistema de confort absoluto.
                         </p>
                     </motion.div>

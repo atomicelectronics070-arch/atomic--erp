@@ -11,7 +11,7 @@ export default function SmartIntercomBanner() {
             <div className="absolute inset-0 z-0">
                 <div className="absolute inset-0 bg-gradient-to-l from-white via-white/40 to-transparent z-10" />
                 <div className="absolute top-0 left-0 w-1/2 h-full overflow-hidden opacity-10">
-                    <div className="absolute inset-0 bg-blue-600/5 mix-blend-overlay" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all/5 mix-blend-overlay" />
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-100 to-transparent opacity-50" />
                     <div className="absolute inset-0 flex items-center justify-center">
                         <div className="w-[500px] h-[500px] border border-blue-600/10 skew-x-12 animate-pulse" />
@@ -42,7 +42,7 @@ export default function SmartIntercomBanner() {
                     </p>
                     
                     <div className="flex flex-wrap gap-4 pt-6 justify-end">
-                        <div className="flex items-center gap-8 px-6 border border-slate-200 bg-white/50 backdrop-blur-md">
+                        <div className="flex items-center gap-8 px-6 border border-slate-200 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/50 backdrop-blur-md">
                             <div className="flex flex-col items-center">
                                 <span className="text-[10px] font-black text-slate-900 italic">APP</span>
                                 <span className="text-[8px] text-slate-400 uppercase tracking-widest">Control</span>

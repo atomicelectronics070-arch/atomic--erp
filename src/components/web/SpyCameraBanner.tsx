@@ -6,7 +6,7 @@ import Link from "next/link"
 
 export default function SpyCameraBanner() {
     return (
-        <section className="relative w-full h-[380px] overflow-hidden group bg-white border-y border-slate-100">
+        <section className="relative w-full h-[380px] overflow-hidden group bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border-y border-slate-100">
             {/* Background elements */}
             <div className="absolute inset-0 z-0">
                 <div className="absolute inset-0 bg-gradient-to-r from-slate-50 via-white/80 to-transparent z-10" />

@@ -23,7 +23,7 @@ export default async function BlogsGallery() {
 
       <nav className="relative z-10 p-6 md:p-10 flex items-center justify-between pointer-events-auto">
           <Link href="/web" className="group flex items-center space-x-2 text-white/50 hover:text-white transition-colors">
-              <div className="w-8 h-8 rounded-none border border-white/10 flex items-center justify-center bg-white/5 group-hover:bg-white/10 transition-colors">
+              <div className="w-8 h-8 rounded-none border border-white/10 flex items-center justify-center bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 group-hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50/10 transition-colors">
                   <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
               </div>
               <span className="text-[10px] font-black uppercase tracking-[0.2em]">Volver a Tienda</span>
@@ -44,7 +44,7 @@ export default async function BlogsGallery() {
 
           {/* Floating Gallery */}
           {blogs.length === 0 ? (
-              <div className="text-center py-20 border border-white/5 bg-white/5 backdrop-blur-sm rounded-none">
+              <div className="text-center py-20 border border-white/5 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 backdrop-blur-sm rounded-none">
                   <p className="text-white/50 text-sm font-medium">Próximamente estaremos publicando artículos. Vuelve pronto.</p>
               </div>
           ) : (
@@ -54,7 +54,7 @@ export default async function BlogsGallery() {
                         <Link 
                             href={`/web/blogs/${blog.id}`}
                             key={blog.id} 
-                            className="group relative flex flex-col h-[500px] overflow-hidden bg-white/5 border border-white/10 hover:border-indigo-500/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(99,102,241,0.1)] rounded-none"
+                            className="group relative flex flex-col h-[500px] overflow-hidden bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 border border-white/10 hover:border-indigo-500/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(99,102,241,0.1)] rounded-none"
                             style={{
                                 transform: `translateY(${idx % 2 === 1 ? '40px' : '0px'})` // Staggered masonry effect vertically
                             }}
@@ -93,7 +93,7 @@ export default async function BlogsGallery() {
                                 {/* Animated Arrow */}
                                 <div className="mt-auto pt-6 flex items-center space-x-2 text-[10px] font-black uppercase tracking-widest text-white/50 group-hover:text-indigo-400 transition-colors">
                                     <span>Leer Artículo</span>
-                                    <div className="w-8 h-px bg-white/20 group-hover:w-12 group-hover:bg-indigo-500 transition-all duration-500 relative">
+                                    <div className="w-8 h-px bg-slate-900/50 backdrop-blur-xl border-slate-700/50/20 group-hover:w-12 group-hover:bg-indigo-500 transition-all duration-500 relative">
                                       <ChevronRight size={12} className="absolute -right-2 -top-1.5 opacity-0 group-hover:opacity-100 transition-opacity delay-100" />
                                     </div>
                                 </div>
@@ -118,7 +118,7 @@ export default async function BlogsGallery() {
                             <Link 
                                 href={`/web/blogs/${blog.id}`}
                                 key={`hist-${blog.id}`}
-                                className="group flex items-center justify-between p-6 bg-white/[0.02] border border-white/5 hover:bg-white/[0.05] hover:border-white/10 transition-all"
+                                className="group flex items-center justify-between p-6 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/[0.02] border border-white/5 hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50/[0.05] hover:border-white/10 transition-all"
                             >
                                 <div className="flex items-center space-x-6">
                                     <div className="text-[10px] font-black text-white/20 uppercase w-24">

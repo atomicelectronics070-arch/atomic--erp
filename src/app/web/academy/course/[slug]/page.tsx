@@ -43,7 +43,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
     const progressPercentage = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0
 
     return (
-        <div className="min-h-screen bg-white/60 backdrop-blur-sm text-[#0F1923]">
+        <div className="min-h-screen bg-slate-900/50 backdrop-blur-xl border-slate-700/50/60 backdrop-blur-sm text-[#0F1923]">
             {/* Header Hero */}
             <div className="bg-[#0F1923] py-24 relative overflow-hidden">
                 <div className="absolute inset-0 opacity-20">
@@ -56,7 +56,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0F1923] via-[#0F1923]/90 to-transparent"></div>
                 
                 <div className="max-w-4xl mx-auto px-6 relative z-10 text-center mt-12">
-                    <div className="inline-flex items-center gap-3 px-4 py-1.5 border border-white/10 bg-white/5 backdrop-blur-md mb-8">
+                    <div className="inline-flex items-center gap-3 px-4 py-1.5 border border-white/10 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 backdrop-blur-md mb-8">
                         <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[#E8341A]">{course.category.name}</span>
                     </div>
                     <h1 className="text-5xl md:text-7xl font-black text-white uppercase tracking-tighter leading-none mb-6 italic">
@@ -70,7 +70,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
 
             <div className="max-w-4xl mx-auto px-6 py-16 -mt-12 relative z-20">
                 {/* Status Bar */}
-                <div className="bg-white border border-[#0F1923]/10 shadow-2xl p-8 mb-16 flex flex-col md:flex-row items-center justify-between gap-8">
+                <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-[#0F1923]/10 shadow-2xl p-8 mb-16 flex flex-col md:flex-row items-center justify-between gap-8">
                     <div className="flex items-center gap-8 w-full md:w-auto">
                         <div className="flex flex-col">
                             <span className="text-[9px] font-black uppercase tracking-widest text-[#0F1923]/40 mb-1">Duración</span>
@@ -128,7 +128,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
                                 <Link 
                                     href={canAccess ? `/web/academy/lesson/${course.slug}/${lesson.slug}` : '#'}
                                     key={lesson.id} 
-                                    className={`group flex items-center gap-6 p-6 border transition-all ${canAccess ? 'bg-white border-[#0F1923]/5 hover:border-[#E8341A]/30 cursor-pointer shadow-sm hover:shadow-xl' : 'bg-white/60 backdrop-blur-sm border-[#0F1923]/5 opacity-60 cursor-not-allowed'}`}
+                                    className={`group flex items-center gap-6 p-6 border transition-all ${canAccess ? 'bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border-[#0F1923]/5 hover:border-[#E8341A]/30 cursor-pointer shadow-[0_4px_15px_rgba(0,0,0,0.3)] hover:shadow-xl' : 'bg-slate-900/50 backdrop-blur-xl border-slate-700/50/60 backdrop-blur-sm border-[#0F1923]/5 opacity-60 cursor-not-allowed'}`}
                                 >
                                     <div className={`w-12 h-12 flex items-center justify-center shrink-0 border ${isCompleted ? 'bg-green-50 border-green-200 text-green-600' : (canAccess ? 'bg-[#0F1923] border-[#0F1923] text-white' : 'bg-transparent border-[#0F1923]/20 text-[#0F1923]/20')}`}>
                                         {isCompleted ? <CheckCircle2 size={20} /> : <span className="font-mono font-black">{index + 1}</span>}

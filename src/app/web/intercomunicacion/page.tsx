@@ -317,7 +317,7 @@ export default function IntercomunicacionPage() {
 
                         <motion.a initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
                             href="#download-section"
-                            className="inline-flex items-center gap-3 bg-cyan-500 text-slate-950 px-8 py-4 font-black text-xs uppercase tracking-widest hover:bg-white transition-all"
+                            className="inline-flex items-center gap-3 bg-cyan-500 text-slate-950 px-8 py-4 font-black text-xs uppercase tracking-widest hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50 transition-all"
                         >
                             <Download size={16} />
                             Descargar Guía PDF Gratis
@@ -501,7 +501,7 @@ export default function IntercomunicacionPage() {
                                         </div>
                                         {errorMsg && <p className="text-xs font-bold text-red-400 text-center bg-red-950/20 border border-red-900/20 p-3">⚠ {errorMsg}</p>}
                                         <button type="submit" disabled={submitting}
-                                            className="w-full bg-cyan-500 hover:bg-white text-slate-950 py-4 font-black text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                                            className="w-full bg-cyan-500 hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-slate-950 py-4 font-black text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                                         >
                                             {submitting ? "Procesando..." : <><Download size={14} /> Registrar y Descargar PDF</>}
                                         </button>

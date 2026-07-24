@@ -89,7 +89,7 @@ export default function NotesPage() {
                     </div>
                     <button
                         onClick={() => { setEditingNote(null); setIsFormOpen(true); }}
-                        className="bg-secondary text-white px-12 py-5 font-black uppercase tracking-[0.3em] text-[10px] flex items-center shadow-[0_20px_50px_-10px_rgba(255,99,71,0.5)] transition-all hover:bg-white hover:text-secondary rounded-none active:scale-95 group italic skew-x-[-12deg]"
+                        className="bg-secondary text-white px-12 py-5 font-black uppercase tracking-[0.3em] text-[10px] flex items-center shadow-[0_20px_50px_-10px_rgba(255,99,71,0.5)] transition-all hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50 hover:text-secondary rounded-none active:scale-95 group italic skew-x-[-12deg]"
                     >
                          <div className="skew-x-[12deg] flex items-center gap-4">
                             <Plus size={20} className="group-hover:rotate-90 transition-transform" />
@@ -128,10 +128,10 @@ export default function NotesPage() {
                             <div className="flex justify-between items-start mb-6 relative z-10">
                                 <h3 className="text-lg font-black text-white uppercase tracking-tighter line-clamp-2 italic leading-tight group-hover:text-secondary transition-colors">{note.title || "SIN TÍTULO"}</h3>
                                 <div className="flex space-x-3 opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
-                                    <button onClick={() => { setEditingNote(note); setIsFormOpen(true); }} className="p-3 bg-white/5 border border-white/10 rounded-none text-slate-400 hover:text-white transition-all shadow-2xl">
+                                    <button onClick={() => { setEditingNote(note); setIsFormOpen(true); }} className="p-3 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 border border-white/10 rounded-none text-slate-400 hover:text-white transition-all shadow-2xl">
                                         <Save size={16} />
                                     </button>
-                                    <button onClick={() => handleDelete(note.id)} className="p-3 bg-white/5 border border-white/10 rounded-none text-slate-400 hover:text-red-500 transition-all shadow-2xl">
+                                    <button onClick={() => handleDelete(note.id)} className="p-3 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 border border-white/10 rounded-none text-slate-400 hover:text-red-500 transition-all shadow-2xl">
                                         <Trash2 size={16} />
                                     </button>
                                 </div>
@@ -157,7 +157,7 @@ export default function NotesPage() {
                         </motion.div>
                     ))}
                     {filteredNotes.length === 0 && (
-                        <div className="col-span-full py-40 text-center border border-dashed border-white/5 rounded-none-[4rem] bg-white/[0.01]">
+                        <div className="col-span-full py-40 text-center border border-dashed border-white/5 rounded-none-[4rem] bg-slate-900/50 backdrop-blur-xl border-slate-700/50/[0.01]">
                             <div className="w-24 h-24 bg-slate-900 text-slate-800 rounded-none-[2rem] flex items-center justify-center mx-auto mb-8 border border-white/5 shadow-inner">
                                 <Search size={40} />
                             </div>
@@ -279,7 +279,7 @@ function NoteForm({ initialData, onClose, onSave }: any) {
                 <button onClick={onClose} className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-700 hover:text-white transition-all italic">ABORTAR_CMD</button>
                 <button
                     onClick={() => onSave(formData)}
-                    className="bg-secondary text-white px-12 py-5 font-black uppercase tracking-[0.3em] text-[10px] flex items-center shadow-[0_15px_40px_-5px_rgba(255,99,71,0.5)] transition-all hover:bg-white hover:text-secondary rounded-none active:scale-95 group italic skew-x-[-12deg]"
+                    className="bg-secondary text-white px-12 py-5 font-black uppercase tracking-[0.3em] text-[10px] flex items-center shadow-[0_15px_40px_-5px_rgba(255,99,71,0.5)] transition-all hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50 hover:text-secondary rounded-none active:scale-95 group italic skew-x-[-12deg]"
                 >
                     <div className="skew-x-[12deg] flex items-center gap-4">
                         <Save size={20} className="group-hover:scale-110 transition-transform" />

@@ -153,7 +153,7 @@ export default function QuarterlyPage() {
                 {session?.user?.role === 'ADMIN' && (
                     <button
                         onClick={() => setIsModalOpen(true)}
-                        className="bg-secondary text-white px-10 py-5 font-black uppercase tracking-[0.3em] text-[10px] flex items-center shadow-[0_20px_50px_-10px_rgba(255,99,71,0.5)] transition-all hover:bg-white hover:text-secondary rounded-none active:scale-95 group italic skew-x-[-12deg]"
+                        className="bg-secondary text-white px-10 py-5 font-black uppercase tracking-[0.3em] text-[10px] flex items-center shadow-[0_20px_50px_-10px_rgba(255,99,71,0.5)] transition-all hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50 hover:text-secondary rounded-none active:scale-95 group italic skew-x-[-12deg]"
                     >
                         <div className="skew-x-[12deg] flex items-center gap-4">
                             <Plus size={20} className="group-hover:rotate-90 transition-transform" />
@@ -226,7 +226,7 @@ export default function QuarterlyPage() {
                                             </div>
                                         </div>
 
-                                        <button className="w-full mt-8 py-4 bg-white/5 border border-white/5 text-[9px] font-black uppercase tracking-[0.3em] text-slate-300 hover:bg-secondary hover:text-white transition-all italic">
+                                        <button className="w-full mt-8 py-4 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 border border-white/5 text-[9px] font-black uppercase tracking-[0.3em] text-slate-300 hover:bg-secondary hover:text-white transition-all italic">
                                             Ver Métricas de Cumplimiento
                                         </button>
                                     </motion.div>
@@ -325,7 +325,7 @@ export default function QuarterlyPage() {
                                     </h2>
                                     <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.4em] italic leading-none">Arquitectura de metas y sincronización de equipos</p>
                                 </div>
-                                <button onClick={() => setIsModalOpen(false)} className="p-4 hover:bg-white/5 text-slate-600 hover:text-white transition-all"><X size={24} /></button>
+                                <button onClick={() => setIsModalOpen(false)} className="p-4 hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 text-slate-600 hover:text-white transition-all"><X size={24} /></button>
                             </header>
 
                             <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-12">
@@ -379,7 +379,7 @@ export default function QuarterlyPage() {
                                                     className="hidden"
                                                 />
                                                 <div className={`w-12 h-6 border transition-all relative flex items-center ${formData.notifyUsers ? 'bg-secondary border-secondary' : 'bg-slate-900 border-white/10'}`}>
-                                                    <div className={`absolute w-4 h-4 bg-white transition-all ${formData.notifyUsers ? 'right-1' : 'left-1'}`}></div>
+                                                    <div className={`absolute w-4 h-4 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 transition-all ${formData.notifyUsers ? 'right-1' : 'left-1'}`}></div>
                                                 </div>
                                                 <span className="text-[10px] font-black text-slate-600 group-hover:text-slate-400 uppercase tracking-widest italic">Notificar Usuarios</span>
                                             </label>
@@ -486,7 +486,7 @@ export default function QuarterlyPage() {
                                 <div className="col-span-2 pt-12">
                                     <button
                                         type="submit"
-                                        className="w-full bg-secondary text-white py-8 font-black uppercase tracking-[0.5em] text-xs italic hover:bg-white hover:text-secondary transition-all shadow-[0_30px_60px_-15px_rgba(255,99,71,0.5)]"
+                                        className="w-full bg-secondary text-white py-8 font-black uppercase tracking-[0.5em] text-xs italic hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50 hover:text-secondary transition-all shadow-[0_30px_60px_-15px_rgba(255,99,71,0.5)]"
                                     >
                                         Sincronizar y Desplegar Plan Trimestral
                                     </button>

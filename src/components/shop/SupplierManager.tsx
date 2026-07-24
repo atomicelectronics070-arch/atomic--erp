@@ -75,7 +75,7 @@ export function SupplierManager({ providers, providerStats = [], settings, onUpd
                     className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all disabled:opacity-50 ${
                         saveOk 
                             ? 'bg-emerald-500 text-white' 
-                            : 'bg-white text-slate-900 hover:bg-slate-100'
+                            : 'bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-slate-900 hover:bg-slate-100'
                     }`}
                 >
                     <Save className="w-4 h-4" />

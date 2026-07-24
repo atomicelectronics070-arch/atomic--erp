@@ -170,7 +170,7 @@ export default function ShopPlatform() {
             <StaticMoleculesBackground />
 
             {/* Premium Header for Consumers */}
-            <header className="fixed top-0 left-0 w-full z-50 bg-white/80 backdrop-blur-2xl border-b border-black/5 px-6 py-4">
+            <header className="fixed top-0 left-0 w-full z-50 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/80 backdrop-blur-2xl border-b border-black/5 px-6 py-4">
                 <div className="max-w-7xl mx-auto flex items-center justify-between">
                     <div className="flex items-center gap-8">
                         <Link href="/shop" className="text-2xl font-black tracking-tighter italic uppercase">
@@ -219,7 +219,7 @@ export default function ShopPlatform() {
                         placeholder="Buscar productos..."
                         value={searchInput}
                         onChange={(e) => setSearchInput(e.target.value)}
-                        className="w-full bg-white border border-slate-200 pl-12 pr-4 py-4 text-[11px] font-bold uppercase tracking-widest outline-none shadow-xl"
+                        className="w-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 pl-12 pr-4 py-4 text-[11px] font-bold uppercase tracking-widest outline-none shadow-xl"
                     />
                 </div>
 
@@ -231,7 +231,7 @@ export default function ShopPlatform() {
                             <h2 className="text-white text-4xl md:text-5xl font-black uppercase tracking-tighter italic leading-none">EQUIPOS DE <br/><span className="text-[#E8341A]">ALTO RENDIMIENTO</span></h2>
                             <p className="text-white/40 text-[10px] font-bold uppercase tracking-[0.4em] mt-4">Tecnología certificada para el hogar y oficina</p>
                         </div>
-                        <Link href="#catalog" className="bg-[#E8341A] text-white px-10 py-5 font-black text-[10px] uppercase tracking-widest hover:bg-white hover:text-[#E8341A] transition-all shadow-2xl shadow-[#E8341A]/30">
+                        <Link href="#catalog" className="bg-[#E8341A] text-white px-10 py-5 font-black text-[10px] uppercase tracking-widest hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50 hover:text-[#E8341A] transition-all shadow-2xl shadow-[#E8341A]/30">
                             Explorar Catálogo
                         </Link>
                     </div>
@@ -280,7 +280,7 @@ export default function ShopPlatform() {
             </main>
 
             {/* Footer */}
-            <footer className="bg-white border-t border-black/5 py-10 px-6 mt-20 relative z-10">
+            <footer className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border-t border-black/5 py-10 px-6 mt-20 relative z-10">
                 <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
                     <div className="text-center md:text-left">
                         <h3 className="font-black text-xl tracking-tighter uppercase italic">ATOMIC<span className="text-[#E8341A]">.</span> SHOP</h3>
@@ -307,7 +307,7 @@ function ShopCard({ product, isFav, onToggleFav }: { product: any, isFav: boolea
     const [imageError, setImageError] = useState(false)
 
     return (
-        <div className="group bg-white p-6 border border-slate-100 hover:border-[#E8341A]/30 transition-all hover:shadow-2xl flex flex-col relative overflow-hidden">
+        <div className="group bg-slate-900/50 backdrop-blur-xl border-slate-700/50 p-6 border border-slate-100 hover:border-[#E8341A]/30 transition-all hover:shadow-2xl flex flex-col relative overflow-hidden">
             <div className="relative aspect-square mb-6 bg-slate-50 flex items-center justify-center p-6 group-hover:scale-105 transition-transform duration-700 overflow-hidden">
                 {imgs[0] && !imageError ? (
                     <img 

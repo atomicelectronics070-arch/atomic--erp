@@ -401,7 +401,7 @@ export default function ScraperPage() {
                                     <div className="flex flex-wrap gap-2">
                                         <ActionBtn icon={<History size={14} />} label="Historial" onClick={fetchHistory} />
                                         <ActionBtn icon={<Eye size={14} />} label="Preview" onClick={handlePreview} disabled={results.length === 0 || isExporting} />
-                                        <div className="w-px h-6 bg-white/10 self-center hidden xl:block" />
+                                        <div className="w-px h-6 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/10 self-center hidden xl:block" />
                                         <ExportBtn icon={<FileSpreadsheet size={14} />} label="Excel" color="green" onClick={() => handleExport('xlsx')} loading={isExporting} disabled={results.length === 0} />
                                         <ExportBtn icon={<FileText size={14} />} label="CSV" color="blue" onClick={() => handleExport('csv')} loading={isExporting} disabled={results.length === 0} />
                                         <ExportBtn icon={<Save size={14} />} label="→ Tienda" color="purple" onClick={() => handleExportStore()} loading={isExporting} disabled={results.length === 0} highlighted />
@@ -410,7 +410,7 @@ export default function ScraperPage() {
 
                                 {/* Field selector */}
                                 {results.length > 0 && (
-                                    <div className="mt-5 p-4 bg-white/[0.03] rounded-none border border-white/5">
+                                    <div className="mt-5 p-4 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/[0.03] rounded-none border border-white/5">
                                         <div className="flex items-center gap-2 mb-3">
                                             <CheckCircle2 size={12} className="text-green-500" />
                                             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Columnas de exportación</span>
@@ -501,7 +501,7 @@ export default function ScraperPage() {
                                     {selectedFields.map(f => <th key={f} className="py-3 px-5 text-slate-500 font-bold text-[10px] uppercase tracking-widest">{f}</th>)}
                                 </tr></thead>
                                 <tbody>{(previewData.data || []).map((item: any, i: number) => (
-                                    <tr key={i} className="border-b border-white/5 hover:bg-white/[0.02]">
+                                    <tr key={i} className="border-b border-white/5 hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50/[0.02]">
                                         {selectedFields.map(f => (
                                             <td key={f} className="py-3 px-5 text-xs text-slate-300 max-w-[200px] truncate">
                                                 {f === 'images' && item[f] ? (
@@ -525,7 +525,7 @@ export default function ScraperPage() {
 function Accordion({ id, title, icon, children, isOpen, toggle }: any) {
     return (
         <div className={`bg-slate-900/40 border border-white/5 rounded-none overflow-hidden transition-all ${isOpen ? 'ring-1 ring-indigo-500/30' : ''}`}>
-            <button onClick={toggle} className="w-full p-5 flex items-center justify-between text-slate-200 hover:bg-white/[0.03] transition-colors">
+            <button onClick={toggle} className="w-full p-5 flex items-center justify-between text-slate-200 hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50/[0.03] transition-colors">
                 <div className="flex items-center gap-3">
                     <div className={`transition-colors ${isOpen ? 'text-indigo-400' : 'text-slate-500'}`}>{icon}</div>
                     <span className={`text-xs font-bold ${isOpen ? 'text-white' : 'text-slate-300'}`}>{title}</span>
@@ -545,14 +545,14 @@ function Accordion({ id, title, icon, children, isOpen, toggle }: any) {
 
 function Toggle({ label, checked, onChange, description }: { label: string; checked: boolean; onChange: (v: boolean) => void; description?: string }) {
     return (
-        <label className="flex items-start justify-between gap-4 p-3 rounded-none hover:bg-white/[0.03] transition-all cursor-pointer group">
+        <label className="flex items-start justify-between gap-4 p-3 rounded-none hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50/[0.03] transition-all cursor-pointer group">
             <div>
                 <span className="text-xs font-bold text-slate-300 group-hover:text-white transition-colors block">{label}</span>
                 {description && <span className="text-[10px] text-slate-500 uppercase tracking-tighter">{description}</span>}
             </div>
             <div onClick={e => { e.preventDefault(); onChange(!checked); }}
                 className={`mt-1 relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-none border-2 border-transparent transition-colors ${checked ? 'bg-indigo-500' : 'bg-slate-800'}`}>
-                <span className={`inline-block h-4 w-4 transform rounded-none bg-white shadow transition duration-200 ${checked ? 'translate-x-4' : 'translate-x-0'}`} />
+                <span className={`inline-block h-4 w-4 transform rounded-none bg-slate-900/50 backdrop-blur-xl border-slate-700/50 shadow transition duration-200 ${checked ? 'translate-x-4' : 'translate-x-0'}`} />
             </div>
         </label>
     );
@@ -580,7 +580,7 @@ function ActionBtn({ icon, label, onClick, disabled }: any) {
 function ExportBtn({ icon, label, color, onClick, loading, disabled, highlighted }: any) {
     const colors: any = {
         green: 'bg-green-600/10 border-green-500/30 text-green-400 hover:bg-green-600/30',
-        blue: 'bg-blue-600/10 border-blue-500/30 text-blue-400 hover:bg-blue-600/30',
+        blue: 'bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all/10 border-blue-500/30 text-blue-400 hover:bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all/30',
         purple: 'bg-purple-600/10 border-purple-500/40 text-purple-400 hover:bg-purple-600/30'
     };
     return (
@@ -655,7 +655,7 @@ function Modal({ title, subtitle, children, footer, onClose }: any) {
                 onClick={e => e.stopPropagation()}>
                 <div className="p-7 border-b border-white/5 flex justify-between items-center bg-indigo-500/5">
                     <div><h2 className="text-xl font-bold text-white">{title}</h2>{subtitle && <p className="text-slate-400 text-xs mt-1">{subtitle}</p>}</div>
-                    <button onClick={onClose} className="p-2.5 bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white rounded-none transition-all"><X size={20} /></button>
+                    <button onClick={onClose} className="p-2.5 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50/10 text-slate-400 hover:text-white rounded-none transition-all"><X size={20} /></button>
                 </div>
                 <div className="p-7 overflow-y-auto">{children}</div>
                 {footer && <div className="p-7 border-t border-white/5 flex justify-end bg-slate-950/20">{footer}</div>}

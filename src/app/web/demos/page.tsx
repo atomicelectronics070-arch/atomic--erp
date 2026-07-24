@@ -36,10 +36,10 @@ export default function DemosPage() {
     const [activeChat, setActiveChat] = useState<any>(null)
 
     return (
-        <div className="min-h-screen bg-[#F8FAFC] text-slate-900 font-sans relative selection:bg-blue-600/20 selection:text-blue-600">
+        <div className="min-h-screen bg-[#F8FAFC] text-slate-900 font-sans relative selection:bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all/20 selection:text-blue-600">
             {/* Background FX */}
             <div className="fixed inset-0 pointer-events-none z-0">
-                <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-blue-600/5 blur-[200px]" />
+                <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all/5 blur-[200px]" />
                 <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-blue-400/5 blur-[200px]" />
             </div>
 
@@ -47,7 +47,7 @@ export default function DemosPage() {
                 <div className="flex flex-col md:flex-row justify-between items-end gap-8 mb-20">
                     <div className="space-y-4">
                         <div className="flex items-center gap-3 mb-2">
-                            <div className="px-3 py-1 bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest italic rounded-full shadow-[0_5px_15px_rgba(37,99,235,0.3)]">
+                            <div className="px-3 py-1 bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all text-white text-[10px] font-black uppercase tracking-widest italic rounded-full shadow-[0_5px_15px_rgba(37,99,235,0.3)]">
                                 Labs v7.1
                             </div>
                             <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Entorno de Pruebas</span>
@@ -58,7 +58,7 @@ export default function DemosPage() {
                     </div>
                     <button 
                         onClick={() => setIsGeneratingMode(true)}
-                        className="group flex items-center gap-6 bg-slate-950 text-white px-12 py-6 font-black uppercase italic tracking-widest text-xs hover:bg-blue-600 transition-all shadow-2xl"
+                        className="group flex items-center gap-6 bg-slate-950 text-white px-12 py-6 font-black uppercase italic tracking-widest text-xs hover:bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all transition-all shadow-2xl"
                     >
                         <Plus size={18} className="group-hover:rotate-90 transition-transform duration-500" />
                         GENERAR NUEVO SISTEMA
@@ -70,7 +70,7 @@ export default function DemosPage() {
                         <motion.div 
                             key={demo.id}
                             whileHover={{ y: -10 }}
-                            className="bg-white border border-slate-100 p-12 shadow-xl relative overflow-hidden group cursor-pointer w-full md:w-[calc(50%-24px)]"
+                            className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-100 p-12 shadow-xl relative overflow-hidden group cursor-pointer w-full md:w-[calc(50%-24px)]"
                             onClick={() => setActiveChat(demo)}
                         >
                             <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${demo.gradient} opacity-5 group-hover:opacity-10 transition-all rounded-bl-full`} />
@@ -154,7 +154,7 @@ function SaaSGeneratorOverlay({ onClose }: { onClose: () => void }) {
     return (
         <motion.div 
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-white flex flex-col p-8 md:p-24"
+            className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 flex flex-col p-8 md:p-24"
         >
             <div className="flex justify-between items-center mb-12">
                 <div className="flex items-center gap-4">
@@ -179,7 +179,7 @@ function SaaSGeneratorOverlay({ onClose }: { onClose: () => void }) {
                                 const html = generateDemoHtml(userData)
                                 const w = window.open(); w?.document.write(html); w?.document.close();
                             }}
-                            className="bg-blue-600 text-white px-10 py-4 font-black italic uppercase text-[10px] tracking-widest"
+                            className="bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all text-white px-10 py-4 font-black italic uppercase text-[10px] tracking-widest"
                         >
                             VER DEMO
                         </button>
@@ -208,8 +208,8 @@ function DemoChatOverlay({ demo, onClose }: { demo: any, onClose: () => void }) 
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-3xl flex items-center justify-center p-8"
         >
-            <div className="bg-white max-w-2xl w-full h-[600px] flex flex-col p-12 relative">
-                <button onClick={onClose} className="absolute top-6 right-6 text-slate-300 hover:text-black"><X size={24} /></button>
+            <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 max-w-2xl w-full h-[600px] flex flex-col p-12 relative">
+                <button onClick={onClose} className="absolute top-6 right-6 text-slate-300 hover:text-slate-100"><X size={24} /></button>
                 <div className="mb-12">
                     <h2 className="text-4xl font-black uppercase italic tracking-tighter text-slate-950 mb-2">{demo.title}</h2>
                     <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest italic">Entorno de Simulación Activo</p>
@@ -221,7 +221,7 @@ function DemoChatOverlay({ demo, onClose }: { demo: any, onClose: () => void }) 
                     </p>
                 </div>
                 <div className="pt-12">
-                    <button className="w-full bg-slate-950 text-white py-6 font-black uppercase italic tracking-widest text-xs hover:bg-blue-600 transition-all">
+                    <button className="w-full bg-slate-950 text-white py-6 font-black uppercase italic tracking-widest text-xs hover:bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all transition-all">
                         INICIAR PROTOCOLO DE PRUEBA
                     </button>
                 </div>

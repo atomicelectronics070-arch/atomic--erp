@@ -63,7 +63,7 @@ export default function DashboardOverview() {
                     {/* Top row: Total Visits Hero */}
                     <div className="p-8 pb-0 flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div className="flex items-center gap-5">
-                            <div className="w-16 h-16 bg-white/10 backdrop-blur rounded-2xl flex items-center justify-center border border-white/20">
+                            <div className="w-16 h-16 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/10 backdrop-blur rounded-2xl flex items-center justify-center border border-white/20">
                                 <Eye size={28} className="text-white" />
                             </div>
                             <div>
@@ -75,17 +75,17 @@ export default function DashboardOverview() {
                             </div>
                         </div>
                         <div className="flex gap-4">
-                            <div className="bg-white/10 border border-white/10 rounded-xl px-6 py-4 text-center min-w-[120px]">
+                            <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50/10 border border-white/10 rounded-xl px-6 py-4 text-center min-w-[120px]">
                                 <Monitor size={18} className="text-blue-300 mx-auto mb-2" />
                                 <p className="text-2xl font-black text-white">{(systemStats.visits?.visits_dashboard || 0).toLocaleString()}</p>
                                 <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mt-1">Dashboard</p>
                             </div>
-                            <div className="bg-white/10 border border-white/10 rounded-xl px-6 py-4 text-center min-w-[120px]">
+                            <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50/10 border border-white/10 rounded-xl px-6 py-4 text-center min-w-[120px]">
                                 <Globe size={18} className="text-emerald-300 mx-auto mb-2" />
                                 <p className="text-2xl font-black text-white">{(systemStats.visits?.visits_web || 0).toLocaleString()}</p>
                                 <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mt-1">Web Pública</p>
                             </div>
-                            <div className="bg-white/10 border border-white/10 rounded-xl px-6 py-4 text-center min-w-[120px]">
+                            <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50/10 border border-white/10 rounded-xl px-6 py-4 text-center min-w-[120px]">
                                 <Users size={18} className="text-purple-300 mx-auto mb-2" />
                                 <p className="text-2xl font-black text-white">{systemStats.users?.total || 0}</p>
                                 <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mt-1">Usuarios</p>
@@ -107,7 +107,7 @@ export default function DashboardOverview() {
                                     COORD_ASSISTANT: "bg-teal-500/20 border-teal-400/30 text-teal-300",
                                 }
                                 return (
-                                    <span key={role} className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-xs font-bold ${colors[role] || "bg-white/10 border-white/20 text-white/60"}`}>
+                                    <span key={role} className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-xs font-bold ${colors[role] || "bg-slate-900/50 backdrop-blur-xl border-slate-700/50/10 border-white/20 text-white/60"}`}>
                                         <UserCheck size={12} /> {role} <span className="font-black text-sm">{count}</span>
                                     </span>
                                 )
@@ -128,7 +128,7 @@ export default function DashboardOverview() {
                                 { label: "Productos", value: systemStats.activity?.products, icon: Package, color: "text-purple-300" },
                                 { label: "Transacciones", value: systemStats.activity?.transactions, icon: CreditCard, color: "text-yellow-300" },
                             ].map((item, i) => (
-                                <div key={i} className="bg-white/5 border border-white/10 rounded-xl p-4 hover:bg-white/10 transition-all">
+                                <div key={i} className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 border border-white/10 rounded-xl p-4 hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50/10 transition-all">
                                     <item.icon size={16} className={`${item.color} mb-2`} />
                                     <p className="text-xl font-black text-white">{(item.value || 0).toLocaleString()}</p>
                                     <p className="text-[9px] font-bold text-white/30 uppercase tracking-wider mt-1">{item.label}</p>
@@ -152,7 +152,7 @@ export default function DashboardOverview() {
                 
                 <button 
                     onClick={loadStats} 
-                    className="p-2.5 bg-white text-slate-500 hover:text-indigo-600 transition-all border border-slate-200 shadow-sm rounded-lg hover:bg-slate-50"
+                    className="p-2.5 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-slate-500 hover:text-indigo-600 transition-all border border-slate-200 shadow-[0_4px_15px_rgba(0,0,0,0.3)] rounded-lg hover:bg-slate-50"
                     title="Actualizar Datos"
                 >
                     <RefreshCw size={18} className={loading ? "animate-spin" : ""} />
@@ -192,7 +192,7 @@ export default function DashboardOverview() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 
                 {/* Ingresos Mensuales (Area Chart) */}
-                <div className="lg:col-span-2 bg-white border border-slate-200 rounded-xl shadow-sm p-6">
+                <div className="lg:col-span-2 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 rounded-xl shadow-[0_4px_15px_rgba(0,0,0,0.3)] p-6">
                     <div className="flex justify-between items-center mb-6">
                         <div>
                             <h3 className="text-lg font-black text-[#0F172A]">Ingresos Mensuales</h3>
@@ -226,7 +226,7 @@ export default function DashboardOverview() {
                 </div>
 
                 {/* Ingresos Semanales (Bar Chart) */}
-                <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-6">
+                <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 rounded-xl shadow-[0_4px_15px_rgba(0,0,0,0.3)] p-6">
                     <div className="mb-6">
                         <h3 className="text-lg font-black text-[#0F172A]">Rendimiento Semanal</h3>
                         <p className="text-xs text-slate-500 font-bold uppercase tracking-wider mt-1">Últimos 7 Días</p>
@@ -253,7 +253,7 @@ export default function DashboardOverview() {
 
             {/* Resumen de Rendimiento Compacto */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-white border border-slate-200 p-6 rounded-xl flex justify-between items-center group hover:border-indigo-300 transition-all shadow-sm">
+                <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 p-6 rounded-xl flex justify-between items-center group hover:border-indigo-300 transition-all shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
                     <div>
                         <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Ticket Promedio de Venta</p>
                         <p className="text-3xl font-black text-[#0F172A] tracking-tight">{fmt(data.annualSales / (data.quarterCount || 1))}</p>
@@ -263,7 +263,7 @@ export default function DashboardOverview() {
                     </div>
                 </div>
                 
-                <div className="bg-white border border-slate-200 p-6 rounded-xl flex justify-between items-center group hover:border-emerald-300 transition-all shadow-sm">
+                <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 p-6 rounded-xl flex justify-between items-center group hover:border-emerald-300 transition-all shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
                     <div>
                         <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Eficiencia de Conversión</p>
                         <p className="text-3xl font-black text-emerald-600 tracking-tight">{((data.quarterCount / (data.quotesCount || 1)) * 100).toFixed(1)}%</p>
@@ -279,7 +279,7 @@ export default function DashboardOverview() {
 
 function KPITile({ icon, iconBg, label, value, meta, trend, trendPositive }: any) {
     return (
-        <div className="bg-white border border-slate-200 p-6 rounded-xl space-y-4 hover:shadow-md transition-all group relative overflow-hidden">
+        <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 p-6 rounded-xl space-y-4 hover:shadow-[0_8px_32px_rgba(0,0,0,0.5)] transition-all group relative overflow-hidden">
             <div className="flex justify-between items-start">
                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${iconBg}`}>
                     {icon}

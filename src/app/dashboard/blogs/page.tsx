@@ -319,25 +319,25 @@ export default function BlogsDashboard() {
               <div className="flex bg-slate-100 p-1.5 rounded-lg border border-slate-200">
                   <button 
                       onClick={() => setActiveTab("mis_blogs")}
-                      className={`px-4 py-2 text-xs font-bold transition-all rounded-md flex items-center gap-2 ${activeTab === 'mis_blogs' ? 'bg-white text-indigo-600 shadow-sm border border-slate-200' : 'text-slate-500 hover:text-slate-700'}`}
+                      className={`px-4 py-2 text-xs font-bold transition-all rounded-md flex items-center gap-2 ${activeTab === 'mis_blogs' ? 'bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-indigo-600 shadow-[0_4px_15px_rgba(0,0,0,0.3)] border border-slate-200' : 'text-slate-500 hover:text-slate-700'}`}
                   >
                       <Layout size={14} /> Contenidos
                   </button>
                   <button 
                       onClick={() => setActiveTab("entornos")}
-                      className={`px-4 py-2 text-xs font-bold transition-all rounded-md flex items-center gap-2 ${activeTab === 'entornos' ? 'bg-white text-indigo-600 shadow-sm border border-slate-200' : 'text-slate-500 hover:text-slate-700'}`}
+                      className={`px-4 py-2 text-xs font-bold transition-all rounded-md flex items-center gap-2 ${activeTab === 'entornos' ? 'bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-indigo-600 shadow-[0_4px_15px_rgba(0,0,0,0.3)] border border-slate-200' : 'text-slate-500 hover:text-slate-700'}`}
                   >
                       <Layers size={14} /> Entornos
                   </button>
                   <button 
                       onClick={() => setActiveTab("permisos")}
-                      className={`px-4 py-2 text-xs font-bold transition-all rounded-md flex items-center gap-2 ${activeTab === 'permisos' ? 'bg-white text-indigo-600 shadow-sm border border-slate-200' : 'text-slate-500 hover:text-slate-700'}`}
+                      className={`px-4 py-2 text-xs font-bold transition-all rounded-md flex items-center gap-2 ${activeTab === 'permisos' ? 'bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-indigo-600 shadow-[0_4px_15px_rgba(0,0,0,0.3)] border border-slate-200' : 'text-slate-500 hover:text-slate-700'}`}
                   >
                       <Key size={14} /> Permisos
                   </button>
                   <button 
                       onClick={() => setActiveTab("social_settings")}
-                      className={`px-4 py-2 text-xs font-bold transition-all rounded-md flex items-center gap-2 ${activeTab === 'social_settings' ? 'bg-white text-indigo-600 shadow-sm border border-slate-200' : 'text-slate-500 hover:text-slate-700'}`}
+                      className={`px-4 py-2 text-xs font-bold transition-all rounded-md flex items-center gap-2 ${activeTab === 'social_settings' ? 'bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-indigo-600 shadow-[0_4px_15px_rgba(0,0,0,0.3)] border border-slate-200' : 'text-slate-500 hover:text-slate-700'}`}
                   >
                       <Settings size={14} /> APIs API
                   </button>
@@ -347,14 +347,14 @@ export default function BlogsDashboard() {
 
       {activeTab === "mis_blogs" && (
           <div className="space-y-6">
-            <div className="flex justify-between items-center bg-white p-6 border border-slate-200 rounded-xl shadow-sm">
+            <div className="flex justify-between items-center bg-slate-900/50 backdrop-blur-xl border-slate-700/50 p-6 border border-slate-200 rounded-xl shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
                 <div className="flex items-center gap-3">
                     <BookOpen className="text-slate-400" size={20} />
                     <h3 className="text-sm font-bold text-slate-600 uppercase tracking-wider">Gestión de Publicaciones</h3>
                 </div>
                 <button 
                     onClick={() => openModal()}
-                    className="bg-indigo-600 text-white px-6 py-2.5 rounded-lg font-bold text-sm flex items-center gap-2 hover:bg-indigo-700 transition-all shadow-sm"
+                    className="bg-indigo-600 text-white px-6 py-2.5 rounded-lg font-bold text-sm flex items-center gap-2 hover:bg-indigo-700 transition-all shadow-[0_4px_15px_rgba(0,0,0,0.3)]"
                 >
                     <Plus size={18} /> Nuevo Contenido
                 </button>
@@ -362,13 +362,13 @@ export default function BlogsDashboard() {
 
             <div className="grid grid-cols-1 gap-4">
                 {blogs.length === 0 && !loading && (
-                    <div className="py-20 text-center bg-white border border-slate-200 rounded-xl flex flex-col items-center justify-center">
+                    <div className="py-20 text-center bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 rounded-xl flex flex-col items-center justify-center">
                         <FileText size={32} className="text-slate-300 mb-4" />
                         <p className="text-slate-500 font-bold uppercase tracking-wider text-sm">No hay contenidos publicados.</p>
                     </div>
                 )}
                 {blogs.map(blog => (
-                    <div key={blog.id} className="bg-white border border-slate-200 p-4 rounded-xl flex items-center gap-6 hover:shadow-md transition-all group">
+                    <div key={blog.id} className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 p-4 rounded-xl flex items-center gap-6 hover:shadow-[0_8px_32px_rgba(0,0,0,0.5)] transition-all group">
                         <div className="w-24 h-24 shrink-0 rounded-lg overflow-hidden bg-slate-50 border border-slate-100 flex items-center justify-center">
                             {blog.contentType === 'video' ? (
                                 <Video size={24} className="text-slate-400" />
@@ -414,14 +414,14 @@ export default function BlogsDashboard() {
       {/* OTHER TABS (Entornos, Permisos, Settings) - Refactored to SaaS Aesthetic */}
       {activeTab === "entornos" && isAdmin && (
           <div className="space-y-6">
-              <div className="flex justify-between items-center bg-white p-6 border border-slate-200 rounded-xl shadow-sm">
+              <div className="flex justify-between items-center bg-slate-900/50 backdrop-blur-xl border-slate-700/50 p-6 border border-slate-200 rounded-xl shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
                   <div className="flex items-center gap-3">
                       <Layers className="text-indigo-600" size={20} />
                       <h3 className="text-sm font-bold text-slate-600 uppercase tracking-wider">Entornos de Distribución</h3>
                   </div>
                   <button 
                     onClick={() => setIsEnvModalOpen(true)}
-                    className="bg-indigo-600 text-white px-6 py-2.5 rounded-lg font-bold text-sm flex items-center gap-2 hover:bg-indigo-700 transition-all shadow-sm"
+                    className="bg-indigo-600 text-white px-6 py-2.5 rounded-lg font-bold text-sm flex items-center gap-2 hover:bg-indigo-700 transition-all shadow-[0_4px_15px_rgba(0,0,0,0.3)]"
                   >
                     <Plus size={18} /> Nuevo Entorno
                   </button>
@@ -429,12 +429,12 @@ export default function BlogsDashboard() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {environments.length === 0 && (
-                      <div className="col-span-full py-20 text-center bg-white border border-slate-200 rounded-xl">
+                      <div className="col-span-full py-20 text-center bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 rounded-xl">
                           <p className="text-slate-500 font-bold uppercase tracking-wider text-sm">Sin entornos configurados.</p>
                       </div>
                   )}
                   {environments.map(env => (
-                      <div key={env.id} className="bg-white border border-slate-200 p-6 rounded-xl shadow-sm relative">
+                      <div key={env.id} className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 p-6 rounded-xl shadow-[0_4px_15px_rgba(0,0,0,0.3)] relative">
                           <div className="flex justify-between items-start mb-6">
                               <div>
                                   <h3 className="text-lg font-black text-[#0F172A]">{env.name}</h3>
@@ -473,13 +473,13 @@ export default function BlogsDashboard() {
       )}
 
       {activeTab === "permisos" && isAdmin && (
-          <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+          <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 rounded-xl shadow-[0_4px_15px_rgba(0,0,0,0.3)] overflow-hidden">
              <div className="p-6 border-b border-slate-100 bg-slate-50">
                   <h3 className="text-sm font-bold text-slate-600 uppercase tracking-wider">Privilegios de Redacción</h3>
              </div>
              <table className="w-full text-left">
                  <thead>
-                     <tr className="border-b border-slate-100 bg-white">
+                     <tr className="border-b border-slate-100 bg-slate-900/50 backdrop-blur-xl border-slate-700/50">
                          <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500">Usuario</th>
                          <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500">Rol</th>
                          <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500 text-center">Permiso de Publicación</th>
@@ -507,7 +507,7 @@ export default function BlogsDashboard() {
                                      onClick={() => handleTogglePermission(u.id, u.canCreateBlogs)}
                                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${u.canCreateBlogs ? 'bg-emerald-500' : 'bg-slate-300'}`}
                                  >
-                                     <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${u.canCreateBlogs ? 'translate-x-6' : 'translate-x-1'}`} />
+                                     <span className={`inline-block h-4 w-4 transform rounded-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50 transition-transform ${u.canCreateBlogs ? 'translate-x-6' : 'translate-x-1'}`} />
                                  </button>
                              </td>
                          </tr>
@@ -518,7 +518,7 @@ export default function BlogsDashboard() {
       )}
 
       {activeTab === "social_settings" && isAdmin && (
-          <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-8">
+          <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 rounded-xl shadow-[0_4px_15px_rgba(0,0,0,0.3)] p-8">
               <div className="flex items-center space-x-3 mb-8 border-b border-slate-100 pb-4">
                   <Settings className="text-indigo-600" size={20} />
                   <h2 className="text-lg font-black text-[#0F172A]">API Keys & Credenciales</h2>
@@ -531,15 +531,15 @@ export default function BlogsDashboard() {
                           <h3 className="text-[#0F172A] font-bold flex items-center gap-2"><Facebook size={16} className="text-blue-600" /> Meta Graph API</h3>
                           <div>
                               <label className="block text-xs font-bold text-slate-500 mb-1">Page ID (Facebook)</label>
-                              <input type="text" className="w-full bg-white border border-slate-300 p-2.5 rounded-lg text-sm" value={socialSettings.metaPageId || ''} onChange={e => setSocialSettings({...socialSettings, metaPageId: e.target.value})} />
+                              <input type="text" className="w-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-300 p-2.5 rounded-lg text-sm" value={socialSettings.metaPageId || ''} onChange={e => setSocialSettings({...socialSettings, metaPageId: e.target.value})} />
                           </div>
                           <div>
                               <label className="block text-xs font-bold text-slate-500 mb-1">Page Access Token</label>
-                              <input type="password" placeholder="••••••••" className="w-full bg-white border border-slate-300 p-2.5 rounded-lg text-sm" value={socialSettings.metaPageToken || ''} onChange={e => setSocialSettings({...socialSettings, metaPageToken: e.target.value})} />
+                              <input type="password" placeholder="••••••••" className="w-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-300 p-2.5 rounded-lg text-sm" value={socialSettings.metaPageToken || ''} onChange={e => setSocialSettings({...socialSettings, metaPageToken: e.target.value})} />
                           </div>
                           <div>
                               <label className="block text-xs font-bold text-slate-500 mb-1">Instagram Business Account ID</label>
-                              <input type="text" className="w-full bg-white border border-slate-300 p-2.5 rounded-lg text-sm" value={socialSettings.metaInstagramActId || ''} onChange={e => setSocialSettings({...socialSettings, metaInstagramActId: e.target.value})} />
+                              <input type="text" className="w-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-300 p-2.5 rounded-lg text-sm" value={socialSettings.metaInstagramActId || ''} onChange={e => setSocialSettings({...socialSettings, metaInstagramActId: e.target.value})} />
                           </div>
                       </div>
 
@@ -548,16 +548,16 @@ export default function BlogsDashboard() {
                           <h3 className="text-[#0F172A] font-bold flex items-center gap-2"><Youtube size={16} className="text-red-600" /> YouTube API v3</h3>
                           <div>
                               <label className="block text-xs font-bold text-slate-500 mb-1">Channel ID</label>
-                              <input type="text" className="w-full bg-white border border-slate-300 p-2.5 rounded-lg text-sm" value={socialSettings.youtubeChannelId || ''} onChange={e => setSocialSettings({...socialSettings, youtubeChannelId: e.target.value})} />
+                              <input type="text" className="w-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-300 p-2.5 rounded-lg text-sm" value={socialSettings.youtubeChannelId || ''} onChange={e => setSocialSettings({...socialSettings, youtubeChannelId: e.target.value})} />
                           </div>
                           <div>
                               <label className="block text-xs font-bold text-slate-500 mb-1">Refresh Token</label>
-                              <input type="password" placeholder="••••••••" className="w-full bg-white border border-slate-300 p-2.5 rounded-lg text-sm" value={socialSettings.youtubeRefreshToken || ''} onChange={e => setSocialSettings({...socialSettings, youtubeRefreshToken: e.target.value})} />
+                              <input type="password" placeholder="••••••••" className="w-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-300 p-2.5 rounded-lg text-sm" value={socialSettings.youtubeRefreshToken || ''} onChange={e => setSocialSettings({...socialSettings, youtubeRefreshToken: e.target.value})} />
                           </div>
                       </div>
                   </div>
                   <div className="flex justify-end">
-                      <button type="submit" disabled={savingSettings} className="bg-indigo-600 text-white px-8 py-2.5 rounded-lg font-bold text-sm hover:bg-indigo-700 transition-all shadow-sm">
+                      <button type="submit" disabled={savingSettings} className="bg-indigo-600 text-white px-8 py-2.5 rounded-lg font-bold text-sm hover:bg-indigo-700 transition-all shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
                           {savingSettings ? 'Guardando...' : 'Guardar Credenciales'}
                       </button>
                   </div>
@@ -576,7 +576,7 @@ export default function BlogsDashboard() {
                 />
                 <motion.div 
                     initial={{ opacity: 0, scale: 0.95, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                    className="bg-white w-full max-w-4xl max-h-[90vh] overflow-y-auto border border-slate-200 shadow-2xl rounded-2xl relative z-10 flex flex-col"
+                    className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 w-full max-w-4xl max-h-[90vh] overflow-y-auto border border-slate-200 shadow-2xl rounded-2xl relative z-10 flex flex-col"
                 >
                     <div className="p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50 rounded-t-2xl">
                         <div className="flex items-center gap-4">
@@ -598,14 +598,14 @@ export default function BlogsDashboard() {
                             <button
                                 type="button"
                                 onClick={() => setContentType("article")}
-                                className={`flex-1 py-4 flex flex-col items-center gap-2 rounded-xl transition-all border ${contentType === 'article' ? 'bg-indigo-50 border-indigo-200 text-indigo-600' : 'bg-white border-slate-200 text-slate-500 hover:border-indigo-300'}`}
+                                className={`flex-1 py-4 flex flex-col items-center gap-2 rounded-xl transition-all border ${contentType === 'article' ? 'bg-indigo-50 border-indigo-200 text-indigo-600' : 'bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border-slate-200 text-slate-500 hover:border-indigo-300'}`}
                             >
                                 <FileText size={20} /> <span className="text-sm font-bold">Artículo (Blog)</span>
                             </button>
                             <button
                                 type="button"
                                 onClick={() => setContentType("video")}
-                                className={`flex-1 py-4 flex flex-col items-center gap-2 rounded-xl transition-all border ${contentType === 'video' ? 'bg-indigo-50 border-indigo-200 text-indigo-600' : 'bg-white border-slate-200 text-slate-500 hover:border-indigo-300'}`}
+                                className={`flex-1 py-4 flex flex-col items-center gap-2 rounded-xl transition-all border ${contentType === 'video' ? 'bg-indigo-50 border-indigo-200 text-indigo-600' : 'bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border-slate-200 text-slate-500 hover:border-indigo-300'}`}
                             >
                                 <Video size={20} /> <span className="text-sm font-bold">Video Social</span>
                             </button>
@@ -672,7 +672,7 @@ export default function BlogsDashboard() {
                                             onClick={() => setPublished(!published)}
                                             className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${published ? 'bg-emerald-500' : 'bg-slate-300'}`}
                                         >
-                                            <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${published ? 'translate-x-6' : 'translate-x-1'}`} />
+                                            <span className={`inline-block h-4 w-4 transform rounded-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50 transition-transform ${published ? 'translate-x-6' : 'translate-x-1'}`} />
                                         </button>
                                         <span className="text-sm font-bold text-slate-700">{published ? 'Público Activo' : 'Borrador Privado'}</span>
                                     </div>
@@ -684,7 +684,7 @@ export default function BlogsDashboard() {
                             <button type="button" onClick={closeModal} className="px-6 py-2.5 rounded-lg text-slate-500 font-bold text-sm hover:bg-slate-100 transition-colors border border-transparent">
                                 Cancelar
                             </button>
-                            <button type="submit" className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-2.5 rounded-lg font-bold text-sm shadow-sm transition-all flex items-center gap-2">
+                            <button type="submit" className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-2.5 rounded-lg font-bold text-sm shadow-[0_4px_15px_rgba(0,0,0,0.3)] transition-all flex items-center gap-2">
                                 <Check size={18} /> Guardar Contenido
                             </button>
                         </div>
@@ -698,7 +698,7 @@ export default function BlogsDashboard() {
       <AnimatePresence>
           {isEnvModalOpen && (
               <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
-                  <div className="bg-white p-8 max-w-md w-full rounded-2xl shadow-xl relative border border-slate-200">
+                  <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 p-8 max-w-md w-full rounded-2xl shadow-xl relative border border-slate-200">
                       <button onClick={() => setIsEnvModalOpen(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-700"><X size={20} /></button>
                       <h3 className="text-xl font-black text-[#0F172A] mb-6">Nuevo Entorno</h3>
                       <div className="space-y-4">
@@ -711,7 +711,7 @@ export default function BlogsDashboard() {
           )}
           {isAccModalOpen && (
               <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
-                  <div className="bg-white p-8 max-w-md w-full rounded-2xl shadow-xl relative border border-slate-200">
+                  <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 p-8 max-w-md w-full rounded-2xl shadow-xl relative border border-slate-200">
                       <button onClick={() => setIsAccModalOpen(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-700"><X size={20} /></button>
                       <h3 className="text-xl font-black text-[#0F172A] mb-6">Vincular Cuenta</h3>
                       <div className="space-y-4">

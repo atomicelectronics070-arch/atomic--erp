@@ -146,7 +146,7 @@ export default function ProductDetailPage() {
         return (
             <div className="min-h-screen bg-[#F8FAFC] flex flex-col items-center justify-center space-y-6">
                 <h1 className="text-4xl font-black uppercase text-slate-300 tracking-tighter">Producto no encontrado</h1>
-                <Link href="/web" className="text-[10px] font-black uppercase tracking-[0.3em] bg-[#1E3A8A] text-white px-8 py-4 hover:bg-blue-800 transition-all flex items-center space-x-3 rounded-none shadow-lg">
+                <Link href="/web" className="text-[10px] font-black uppercase tracking-[0.3em] bg-[#1E3A8A] text-white px-8 py-4 hover:bg-blue-800 transition-all flex items-center space-x-3 rounded-none shadow-[0_12px_40px_rgba(0,0,0,0.5)]">
                     <ArrowLeft size={14} />
                     <span>Volver al catálogo</span>
                 </Link>
@@ -177,10 +177,10 @@ export default function ProductDetailPage() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-20">
                     {/* Gallery */}
                     <div className="space-y-6">
-                        <div className="aspect-square bg-white border border-slate-200 relative overflow-hidden flex items-center justify-center p-12 group shadow-xl rounded-3xl">
+                        <div className="aspect-square bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 relative overflow-hidden flex items-center justify-center p-12 group shadow-xl rounded-3xl">
                              <SafeImage src={images[selectedImage]} alt={product.name} fill className="group-hover:scale-105 transition-transform duration-700" />
                             {product.featured && (
-                                <div className="absolute top-8 left-8 bg-[#1E3A8A] text-white text-[8px] font-black uppercase px-3 py-1.5 shadow-lg z-10">Destacado</div>
+                                <div className="absolute top-8 left-8 bg-[#1E3A8A] text-white text-[8px] font-black uppercase px-3 py-1.5 shadow-[0_12px_40px_rgba(0,0,0,0.5)] z-10">Destacado</div>
                             )}
                         </div>
                         {images.length > 1 && (
@@ -189,7 +189,7 @@ export default function ProductDetailPage() {
                                     <button 
                                         key={i}
                                         onClick={() => setSelectedImage(i)}
-                                        className={`aspect-square bg-white border transition-all p-3 flex items-center justify-center rounded-2xl overflow-hidden ${selectedImage === i ? 'border-[#1E3A8A] ring-2 ring-[#1E3A8A]/10' : 'border-slate-200 hover:border-blue-300'}`}
+                                        className={`aspect-square bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border transition-all p-3 flex items-center justify-center rounded-2xl overflow-hidden ${selectedImage === i ? 'border-[#1E3A8A] ring-2 ring-[#1E3A8A]/10' : 'border-slate-200 hover:border-blue-300'}`}
                                     >
                                         <SafeImage src={img} alt="" className="w-full h-full object-contain" />
                                     </button>
@@ -230,14 +230,14 @@ export default function ProductDetailPage() {
                         </div>
 
                         <div className="space-y-10 flex-1">
-                            <div className="p-8 bg-white border border-slate-100 text-slate-700 relative overflow-hidden group rounded-3xl shadow-sm">
+                            <div className="p-8 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-100 text-slate-700 relative overflow-hidden group rounded-3xl shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
                                 <div className="absolute right-0 top-0 h-full w-24 bg-blue-50/50 skew-x-[30deg] translate-x-12 group-hover:translate-x-0 transition-transform duration-1000"></div>
                                 <p className="text-[9px] font-black uppercase tracking-[0.3em] text-[#1E3A8A] mb-6 flex items-center italic">
                                     <Info size={14} className="mr-2" /> Descripción Técnica
                                 </p>
                                 {product.description && product.description.trim().startsWith('<') ? (
                                     <div 
-                                        className="text-sm leading-relaxed font-medium prose prose-sm max-w-none prose-img:rounded-xl prose-img:mx-auto prose-img:shadow-md [&_img]:max-w-full [&_img]:h-auto [&_ul]:list-disc [&_ul]:pl-5 [&_li]:mb-1 [&_strong]:font-black [&_strong]:text-[#1E3A8A]"
+                                        className="text-sm leading-relaxed font-medium prose prose-sm max-w-none prose-img:rounded-xl prose-img:mx-auto prose-img:shadow-[0_8px_32px_rgba(0,0,0,0.5)] [&_img]:max-w-full [&_img]:h-auto [&_ul]:list-disc [&_ul]:pl-5 [&_li]:mb-1 [&_strong]:font-black [&_strong]:text-[#1E3A8A]"
                                         dangerouslySetInnerHTML={{ __html: product.description }}
                                     />
                                 ) : (
@@ -288,14 +288,14 @@ export default function ProductDetailPage() {
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8 border-t border-slate-100">
                                 <div className="flex items-start space-x-4 group">
-                                    <div className="w-10 h-10 border border-slate-200 flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-all shadow-sm rounded-xl"><Truck size={18} /></div>
+                                    <div className="w-10 h-10 border border-slate-200 flex items-center justify-center text-blue-600 group-hover:bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all group-hover:text-white transition-all shadow-[0_4px_15px_rgba(0,0,0,0.3)] rounded-xl"><Truck size={18} /></div>
                                     <div className="space-y-1">
                                         <p className="text-[10px] font-black uppercase tracking-widest text-[#1E3A8A]">Envío Nacional</p>
                                         <p className="text-[10px] font-bold text-slate-400 uppercase">Logística de Alta Precisión</p>
                                     </div>
                                 </div>
                                 <div className="flex items-start space-x-4 group">
-                                    <div className="w-10 h-10 border border-slate-200 flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-all shadow-sm rounded-xl"><Shield size={18} /></div>
+                                    <div className="w-10 h-10 border border-slate-200 flex items-center justify-center text-blue-600 group-hover:bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all group-hover:text-white transition-all shadow-[0_4px_15px_rgba(0,0,0,0.3)] rounded-xl"><Shield size={18} /></div>
                                     <div className="space-y-1">
                                         <p className="text-[10px] font-black uppercase tracking-widest text-[#1E3A8A]">Garantía Protegida</p>
                                         <p className="text-[10px] font-bold text-slate-400 uppercase">Soporte Directo</p>
@@ -308,7 +308,7 @@ export default function ProductDetailPage() {
 
                 {/* Technical specs */}
                 {specs && Object.keys(specs).length > 0 && (
-                    <div className="mt-40 bg-white border border-slate-200 p-10 md:p-16 shadow-xl rounded-[3rem]">
+                    <div className="mt-40 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 p-10 md:p-16 shadow-xl rounded-[3rem]">
                         <div className="space-y-2 mb-16">
                             <p className="text-blue-600 text-[10px] font-black uppercase tracking-[0.3em]">Hardware & Performance</p>
                             <h2 className="text-4xl font-light text-[#1E3A8A] tracking-tighter leading-none italic">
@@ -338,7 +338,7 @@ export default function ProductDetailPage() {
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                             {related.map((p) => (
-                                <Link key={p.id} href={`/web/product/${p.id}`} className="group flex flex-col h-full bg-white border border-slate-200 p-6 hover:shadow-2xl hover:border-blue-300 transition-all duration-500 rounded-[2rem]">
+                                <Link key={p.id} href={`/web/product/${p.id}`} className="group flex flex-col h-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 p-6 hover:shadow-2xl hover:border-blue-300 transition-all duration-500 rounded-[2rem]">
                                     <div className="aspect-square bg-slate-50 relative overflow-hidden flex items-center justify-center p-6 mb-6 rounded-2xl">
                                          <SafeImage src={safeParseArray(p.images)[0]} alt={p.name} fill className="group-hover:scale-110 transition-transform duration-700" />
                                     </div>

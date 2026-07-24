@@ -118,7 +118,7 @@ export default function EconomistPage() {
                     
                 </article>
 
-                <div className="flex flex-wrap items-center justify-center gap-4 mt-20 pt-10 border-t border-gray-900 text-xs font-mono text-gray-600 uppercase">
+                <div className="flex flex-wrap items-center justify-center gap-4 mt-20 pt-10 border-t border-gray-900 text-xs font-mono text-slate-400 uppercase">
                     <span>#TheEconomist</span>
                     <span>#TheWorldAhead</span>
                     <span>#BigData</span>

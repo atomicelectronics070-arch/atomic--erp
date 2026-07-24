@@ -280,7 +280,7 @@ const ConfigAccordion: React.FC<AccordionProps> = ({ title, icon, children, isOp
     <div className={`glass-panel overflow-hidden transition-all duration-300 rounded-none ${isOpen ? 'ring-1 ring-indigo-500/30' : ''}`}>
         <button 
             onClick={toggle}
-            className="w-full p-6 flex items-center justify-between text-slate-200 hover:bg-white/5 transition-colors"
+            className="w-full p-6 flex items-center justify-between text-slate-200 hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 transition-colors"
         >
             <div className="flex items-center gap-3">
                 <div className={`${isOpen ? 'text-indigo-400' : 'text-slate-500'} transition-colors`}>{icon}</div>
@@ -311,7 +311,7 @@ interface ToggleProps {
 }
 
 const ToggleItem: React.FC<ToggleProps> = ({ label, checked, onChange, description }) => (
-    <label className="flex items-start justify-between gap-4 p-3 rounded-none hover:bg-white/5 border border-transparent hover:border-white/5 transition-all cursor-pointer group">
+    <label className="flex items-start justify-between gap-4 p-3 rounded-none hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 border border-transparent hover:border-white/5 transition-all cursor-pointer group">
         <div className="flex flex-col gap-0.5">
             <span className="text-xs font-bold text-slate-300 group-hover:text-white transition-colors">{label}</span>
             {description && <span className="text-[10px] text-slate-500 uppercase tracking-tighter">{description}</span>}
@@ -323,7 +323,7 @@ const ToggleItem: React.FC<ToggleProps> = ({ label, checked, onChange, descripti
             }}
             className={`mt-1 relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-none border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${checked ? 'bg-indigo-500' : 'bg-slate-800'}`}
         >
-            <span className={`pointer-events-none inline-block h-4 w-4 transform rounded-none bg-white shadow ring-0 transition duration-200 ease-in-out ${checked ? 'translate-x-4' : 'translate-x-0'}`} />
+            <span className={`pointer-events-none inline-block h-4 w-4 transform rounded-none bg-slate-900/50 backdrop-blur-xl border-slate-700/50 shadow ring-0 transition duration-200 ease-in-out ${checked ? 'translate-x-4' : 'translate-x-0'}`} />
         </div>
     </label>
 );

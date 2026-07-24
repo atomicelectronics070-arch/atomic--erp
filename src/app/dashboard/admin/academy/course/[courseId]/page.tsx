@@ -111,10 +111,10 @@ export default function CourseLessonsAdmin({ params: paramsPromise }: { params: 
                             </div>
                         </div>
                         <div className="flex gap-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button onClick={() => openEdit(lesson)} className="p-3 bg-white/5 text-white hover:bg-[#E8341A] transition-all">
+                            <button onClick={() => openEdit(lesson)} className="p-3 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 text-white hover:bg-[#E8341A] transition-all">
                                 <Edit3 size={18} />
                             </button>
-                            <button className="p-3 bg-white/5 text-white/30 hover:text-red-500 transition-all">
+                            <button className="p-3 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 text-white/30 hover:text-red-500 transition-all">
                                 <Trash2 size={18} />
                             </button>
                         </div>
@@ -132,7 +132,7 @@ export default function CourseLessonsAdmin({ params: paramsPromise }: { params: 
                     <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsLessonModalOpen(false)} className="absolute inset-0 bg-black/95 backdrop-blur-md" />
                         <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="w-full max-w-5xl bg-slate-950 border border-white/10 flex flex-col max-h-[90vh] relative z-10 overflow-hidden shadow-[0_0_100px_rgba(232,52,26,0.1)]">
-                            <div className="p-10 border-b border-white/5 flex justify-between items-center bg-white/[0.02]">
+                            <div className="p-10 border-b border-white/5 flex justify-between items-center bg-slate-900/50 backdrop-blur-xl border-slate-700/50/[0.02]">
                                 <h2 className="text-3xl font-black text-white uppercase tracking-tighter italic">{editingLesson ? "Editar" : "Nueva"} <span className="text-[#E8341A]">Lección</span></h2>
                                 <button onClick={() => setIsLessonModalOpen(false)} className="text-white/20 hover:text-white transition-colors uppercase text-[10px] font-black tracking-widest">Cerrar</button>
                             </div>
@@ -142,19 +142,19 @@ export default function CourseLessonsAdmin({ params: paramsPromise }: { params: 
                                     <div className="space-y-8">
                                         <div className="space-y-2">
                                             <label className="text-[9px] font-black text-white/30 uppercase tracking-widest ml-1">Título de Fase</label>
-                                            <input value={lessonForm.title} onChange={(e) => setLessonForm({...lessonForm, title: e.target.value})} placeholder="Fundamentos de Redes" className="w-full bg-white/5 border border-white/10 p-5 text-white text-xs font-black uppercase tracking-widest focus:border-[#E8341A] outline-none transition-all" />
+                                            <input value={lessonForm.title} onChange={(e) => setLessonForm({...lessonForm, title: e.target.value})} placeholder="Fundamentos de Redes" className="w-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 border border-white/10 p-5 text-white text-xs font-black uppercase tracking-widest focus:border-[#E8341A] outline-none transition-all" />
                                         </div>
                                         <div className="space-y-2">
                                             <label className="text-[9px] font-black text-white/30 uppercase tracking-widest ml-1">Slug Académico</label>
-                                            <input value={lessonForm.slug} onChange={(e) => setLessonForm({...lessonForm, slug: e.target.value})} placeholder="fundamentos-redes" className="w-full bg-white/5 border border-white/10 p-5 text-white text-xs font-black uppercase tracking-widest focus:border-[#E8341A] outline-none transition-all" />
+                                            <input value={lessonForm.slug} onChange={(e) => setLessonForm({...lessonForm, slug: e.target.value})} placeholder="fundamentos-redes" className="w-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 border border-white/10 p-5 text-white text-xs font-black uppercase tracking-widest focus:border-[#E8341A] outline-none transition-all" />
                                         </div>
                                         <div className="space-y-2">
                                             <label className="text-[9px] font-black text-white/30 uppercase tracking-widest ml-1">URL de Video (YouTube/Vimeo)</label>
-                                            <input value={lessonForm.videoUrl} onChange={(e) => setLessonForm({...lessonForm, videoUrl: e.target.value})} placeholder="https://..." className="w-full bg-white/5 border border-white/10 p-5 text-white text-xs font-black uppercase tracking-widest focus:border-[#E8341A] outline-none transition-all" />
+                                            <input value={lessonForm.videoUrl} onChange={(e) => setLessonForm({...lessonForm, videoUrl: e.target.value})} placeholder="https://..." className="w-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 border border-white/10 p-5 text-white text-xs font-black uppercase tracking-widest focus:border-[#E8341A] outline-none transition-all" />
                                         </div>
                                         <div className="space-y-2">
                                             <label className="text-[9px] font-black text-white/30 uppercase tracking-widest ml-1">Orden de Visualización</label>
-                                            <input type="number" value={lessonForm.order} onChange={(e) => setLessonForm({...lessonForm, order: parseInt(e.target.value)})} className="w-full bg-white/5 border border-white/10 p-5 text-white text-xs font-black uppercase tracking-widest focus:border-[#E8341A] outline-none transition-all" />
+                                            <input type="number" value={lessonForm.order} onChange={(e) => setLessonForm({...lessonForm, order: parseInt(e.target.value)})} className="w-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 border border-white/10 p-5 text-white text-xs font-black uppercase tracking-widest focus:border-[#E8341A] outline-none transition-all" />
                                         </div>
                                         <div className="space-y-2">
                                             <label className="text-[9px] font-black text-white/30 uppercase tracking-widest ml-1">Examen Rápido (JSON)</label>
@@ -163,7 +163,7 @@ export default function CourseLessonsAdmin({ params: paramsPromise }: { params: 
                                                 onChange={(e) => setLessonForm({...lessonForm, quizData: e.target.value})} 
                                                 rows={8}
                                                 placeholder='[{"q": "¿...", "a": ["Op1", "Op2"], "c": 0}]'
-                                                className="w-full bg-white/5 border border-white/10 p-5 text-white text-[10px] font-mono focus:border-[#E8341A] outline-none transition-all resize-none" 
+                                                className="w-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 border border-white/10 p-5 text-white text-[10px] font-mono focus:border-[#E8341A] outline-none transition-all resize-none" 
                                             />
                                         </div>
                                     </div>
@@ -172,15 +172,15 @@ export default function CourseLessonsAdmin({ params: paramsPromise }: { params: 
                                         <textarea 
                                             value={lessonForm.content} 
                                             onChange={(e) => setLessonForm({...lessonForm, content: e.target.value})} 
-                                            className="flex-1 w-full bg-white/5 border border-white/10 p-8 text-white text-sm font-medium focus:border-[#E8341A] outline-none transition-all resize-none min-h-[400px] font-mono leading-relaxed custom-scrollbar-hidden" 
+                                            className="flex-1 w-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 border border-white/10 p-8 text-white text-sm font-medium focus:border-[#E8341A] outline-none transition-all resize-none min-h-[400px] font-mono leading-relaxed custom-scrollbar-hidden" 
                                             placeholder="Desarrolla el contenido técnico aquí..." 
                                         />
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="p-10 border-t border-white/5 bg-white/[0.02]">
-                                <button onClick={handleSaveLesson} className="w-full py-6 bg-[#E8341A] text-white font-black text-[12px] uppercase tracking-[0.6em] hover:bg-white hover:text-[#0F1923] transition-all flex items-center justify-center gap-4">
+                            <div className="p-10 border-t border-white/5 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/[0.02]">
+                                <button onClick={handleSaveLesson} className="w-full py-6 bg-[#E8341A] text-white font-black text-[12px] uppercase tracking-[0.6em] hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50 hover:text-[#0F1923] transition-all flex items-center justify-center gap-4">
                                     <Save size={20} /> Sincronizar Lección
                                 </button>
                             </div>

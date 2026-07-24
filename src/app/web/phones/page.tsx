@@ -64,26 +64,26 @@ export default function MobileBlogPage() {
     }, [products, search])
 
     if (loading) return (
-        <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="min-h-screen bg-slate-900/50 backdrop-blur-xl border-slate-700/50 flex items-center justify-center">
             <div className="flex flex-col items-center gap-4">
                 <div className="animate-spin h-10 w-10 border-4 border-black border-t-transparent rounded-full" />
-                <p className="text-[10px] font-black text-black uppercase tracking-[0.3em]">Cargando Catálogo Móvil...</p>
+                <p className="text-[10px] font-black text-slate-100 uppercase tracking-[0.3em]">Cargando Catálogo Móvil...</p>
             </div>
         </div>
     )
 
     return (
-        <div className="min-h-screen bg-white text-black font-sans pb-32">
+        <div className="min-h-screen bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-slate-100 font-sans pb-32">
             {/* Minimalist Navigation */}
-            <nav className="border-b border-black/5 bg-white/80 backdrop-blur-xl sticky top-0 z-50">
+            <nav className="border-b border-black/5 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/80 backdrop-blur-xl sticky top-0 z-50">
                 <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-                    <Link href="/web" className="flex items-center gap-3 group text-black/50 hover:text-black transition-colors">
+                    <Link href="/web" className="flex items-center gap-3 group text-slate-100/50 hover:text-slate-100 transition-colors">
                         <ChevronLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
                         <span className="text-[10px] font-black uppercase tracking-[0.2em]">Volver a la Tienda</span>
                     </Link>
                     
                     <div className="relative w-full max-w-xs hidden md:block">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-black/30" size={14} />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-100/30" size={14} />
                         <input
                             type="text"
                             value={search}
@@ -104,9 +104,9 @@ export default function MobileBlogPage() {
                 >
                     <h4 className="text-[#1e3a8a] text-[10px] font-black uppercase tracking-[0.4em] mb-6">El Ecosistema Móvil 2026</h4>
                     <h1 className="text-5xl md:text-7xl font-black tracking-tighter uppercase leading-[0.9] max-w-4xl mb-8">
-                        DISEÑADOS PARA <br /> <span className="text-black/30">EL MAÑANA.</span>
+                        DISEÑADOS PARA <br /> <span className="text-slate-100/30">EL MAÑANA.</span>
                     </h1>
-                    <p className="text-sm md:text-base font-medium text-black/60 max-w-2xl leading-relaxed">
+                    <p className="text-sm md:text-base font-medium text-slate-100/60 max-w-2xl leading-relaxed">
                         Explora nuestra colección curada de smartphones y tablets. Desde la precisión quirúrgica del ecosistema Apple hasta la innovación desbordante de Samsung y Xiaomi. Encuentra el dispositivo que elevará tu productividad y creatividad al siguiente nivel.
                     </p>
                 </motion.div>
@@ -130,14 +130,14 @@ export default function MobileBlogPage() {
             <main className="max-w-7xl mx-auto px-6 py-12">
                 <div className="flex items-end justify-between border-b border-black/10 pb-4 mb-12">
                     <h2 className="text-2xl font-black tracking-tighter uppercase">Todos los Modelos</h2>
-                    <span className="text-[10px] font-bold text-black/40 uppercase tracking-widest">{filtered.length} Dispositivos</span>
+                    <span className="text-[10px] font-bold text-slate-100/40 uppercase tracking-widest">{filtered.length} Dispositivos</span>
                 </div>
 
                 {filtered.length === 0 ? (
                     <div className="py-32 text-center border border-dashed border-black/10 rounded-[2rem]">
-                        <Smartphone className="w-12 h-12 text-black/20 mx-auto mb-4" strokeWidth={1} />
-                        <h2 className="text-sm font-bold text-black/40 uppercase tracking-widest mb-2">No se encontraron dispositivos</h2>
-                        <button onClick={() => setSearch("")} className="mt-4 text-black font-black uppercase tracking-widest text-[10px] hover:underline">Ver todo el catálogo</button>
+                        <Smartphone className="w-12 h-12 text-slate-100/20 mx-auto mb-4" strokeWidth={1} />
+                        <h2 className="text-sm font-bold text-slate-100/40 uppercase tracking-widest mb-2">No se encontraron dispositivos</h2>
+                        <button onClick={() => setSearch("")} className="mt-4 text-slate-100 font-black uppercase tracking-widest text-[10px] hover:underline">Ver todo el catálogo</button>
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
@@ -165,16 +165,16 @@ export default function MobileBlogPage() {
                                                     referrerPolicy="no-referrer"
                                                 />
                                             ) : (
-                                                <Smartphone size={40} className="text-black/20" />
+                                                <Smartphone size={40} className="text-slate-100/20" />
                                             )}
                                         </div>
                                         
                                         <div>
-                                            <h3 className="text-lg font-black tracking-tight text-black leading-snug mb-2 group-hover:text-[#1e3a8a] transition-colors">
+                                            <h3 className="text-lg font-black tracking-tight text-slate-100 leading-snug mb-2 group-hover:text-[#1e3a8a] transition-colors">
                                                 {p.name}
                                             </h3>
                                             <div className="flex items-center justify-between">
-                                                <p className="text-sm font-bold text-black/60">${price.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
+                                                <p className="text-sm font-bold text-slate-100/60">${price.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
                                                 <span className="text-[10px] font-black uppercase tracking-widest text-[#1e3a8a] flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity -translate-x-4 group-hover:translate-x-0 duration-300">
                                                     Ver Detalles <ChevronRight size={12} />
                                                 </span>

@@ -36,9 +36,9 @@ export default function BenefitsPage() {
     ]
 
     return (
-        <div className="min-h-screen bg-[#F8FAFC] text-slate-900 selection:bg-blue-600/10">
+        <div className="min-h-screen bg-[#F8FAFC] text-slate-900 selection:bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all/10">
             {/* Hero Section */}
-            <div className="relative py-48 overflow-hidden bg-white border-b border-slate-200">
+            <div className="relative py-48 overflow-hidden bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border-b border-slate-200">
                 <div className="absolute inset-0 bg-blue-500/[0.03] blur-[140px] rounded-full -top-[20%] -right-[10%]" />
                 <div className="max-w-7xl mx-auto px-8 relative z-10">
                     <div className="inline-flex items-center gap-4 mb-10 text-blue-600/60 text-[9px] font-bold uppercase tracking-[0.6em]">
@@ -58,7 +58,7 @@ export default function BenefitsPage() {
             <section className="max-w-7xl mx-auto px-8 py-32">
                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     {benefits.map((b, i) => (
-                        <div key={i} className="group p-8 bg-white border border-slate-200 hover:border-blue-300 transition-all hover:shadow-2xl relative overflow-hidden">
+                        <div key={i} className="group p-8 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 hover:border-blue-300 transition-all hover:shadow-2xl relative overflow-hidden">
                             <div className="text-blue-600/40 mb-6 group-hover:scale-110 group-hover:text-blue-600 transition-all duration-500">{b.icon}</div>
                             <h3 className="text-sm font-black uppercase tracking-tight mb-3 italic text-slate-800">{b.title}</h3>
                             <p className="text-[9px] text-slate-400 uppercase tracking-widest leading-relaxed font-bold group-hover:text-slate-500 transition-colors">{b.desc}</p>
@@ -91,7 +91,7 @@ export default function BenefitsPage() {
                                 ))}
                             </div>
                         </div>
-                        <div className="lg:w-1/2 bg-white p-12 md:p-20 text-slate-900 space-y-12 relative overflow-hidden border border-slate-200 shadow-2xl rounded-2xl">
+                        <div className="lg:w-1/2 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 p-12 md:p-20 text-slate-900 space-y-12 relative overflow-hidden border border-slate-200 shadow-2xl rounded-2xl">
                             <div className="absolute top-0 right-0 w-48 h-48 bg-blue-500/5 blur-[100px]" />
                             <h3 className="text-2xl font-black uppercase tracking-widest italic border-b border-slate-100 pb-8 text-[#1E3A8A]">MANTENIMIENTO <span className="text-blue-600">ELITE</span></h3>
                             <ul className="space-y-8 text-[9px] font-bold uppercase tracking-[0.3em]">
@@ -99,19 +99,19 @@ export default function BenefitsPage() {
                                 <li className="flex items-center gap-6 text-slate-400 hover:text-slate-900 transition-colors"><CheckCircle2 size={12} className="text-blue-600" /> Limpieza de Sensores y Lentes Opticos</li>
                                 <li className="flex items-center gap-6 text-slate-400 hover:text-slate-900 transition-colors"><CheckCircle2 size={12} className="text-blue-600" /> Auditor\u00eda de Seguridad Digital</li>
                             </ul>
-                            <button className="w-full py-5 bg-[#1E3A8A] text-white hover:bg-blue-700 transition-all text-[9px] font-black uppercase tracking-[0.4em] italic shadow-lg">Agendar Revisi\u00f3n T\u00e9cnica</button>
+                            <button className="w-full py-5 bg-[#1E3A8A] text-white hover:from-cyan-400 hover:to-indigo-500 transition-all text-[9px] font-black uppercase tracking-[0.4em] italic shadow-[0_12px_40px_rgba(0,0,0,0.5)]">Agendar Revisi\u00f3n T\u00e9cnica</button>
                         </div>
                     </div>
                 </div>
             </section>
 
             {/* Call to Action */}
-            <section className="py-40 text-center relative overflow-hidden bg-white">
+            <section className="py-40 text-center relative overflow-hidden bg-slate-900/50 backdrop-blur-xl border-slate-700/50">
                 <div className="absolute inset-0 bg-blue-500/[0.02] blur-[120px]" />
                 <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic mb-12 relative z-10 text-[#1E3A8A]">
                     \u00bfLISTO PARA <span className="text-blue-600">TRANSFORMAR</span> <br/> TU HOGAR?
                 </h2>
-                <Link href="/web/contact" className="inline-flex items-center gap-4 px-16 py-6 bg-blue-600 text-white font-black uppercase tracking-[0.4em] text-[12px] italic hover:scale-105 transition-all relative z-10 shadow-2xl">
+                <Link href="/web/contact" className="inline-flex items-center gap-4 px-16 py-6 bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all text-white font-black uppercase tracking-[0.4em] text-[12px] italic hover:scale-105 transition-all relative z-10 shadow-2xl">
                     Solicitar Consultor\u00eda <ArrowRight size={16} />
                 </Link>
             </section>

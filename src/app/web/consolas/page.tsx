@@ -39,7 +39,7 @@ export default function ConsolasPage() {
             desc: "Traemos tu consola a revisión técnica gratuita. Si está en buen estado, te hacemos una oferta justa de compra inmediata.",
             color: "bg-blue-50 border-blue-200 text-blue-700",
             badge: "Pago Inmediato",
-            badgeColor: "bg-blue-600 text-white"
+            badgeColor: "bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all text-white"
         },
         {
             icon: Store,
@@ -57,7 +57,7 @@ export default function ConsolasPage() {
             {/* HERO */}
             <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden bg-[#020617]">
                 <div className="absolute inset-0 opacity-20">
-                    <div className="absolute top-0 left-1/3 w-96 h-96 bg-blue-600 rounded-full blur-[140px]" />
+                    <div className="absolute top-0 left-1/3 w-96 h-96 bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all rounded-full blur-[140px]" />
                     <div className="absolute bottom-0 right-1/3 w-80 h-80 bg-cyan-400 rounded-full blur-[120px]" />
                 </div>
                 <div className="relative z-10 max-w-7xl mx-auto px-6 py-24 flex flex-col lg:flex-row items-center gap-16">
@@ -79,7 +79,7 @@ export default function ConsolasPage() {
                                 Quiero Comprar <ArrowRight size={20} />
                             </button>
                             <button onClick={() => { setActiveTab("vende"); document.getElementById('como-funciona')?.scrollIntoView({ behavior: 'smooth' }) }}
-                                className="px-8 py-4 bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-xl font-bold text-lg transition-all">
+                                className="px-8 py-4 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50/10 text-white border border-white/10 rounded-xl font-bold text-lg transition-all">
                                 Quiero Vender mi Consola
                             </button>
                         </div>
@@ -116,11 +116,11 @@ export default function ConsolasPage() {
                 </div>
                 <div className="flex justify-center gap-4 mb-16">
                     <button onClick={() => setActiveTab("compra")}
-                        className={`px-8 py-4 rounded-xl font-black text-base transition-all border ${activeTab === "compra" ? "bg-blue-600 text-white border-transparent shadow-lg shadow-blue-600/20" : "bg-white text-slate-600 border-slate-200 hover:border-blue-200"}`}>
+                        className={`px-8 py-4 rounded-xl font-black text-base transition-all border ${activeTab === "compra" ? "bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all text-white border-transparent shadow-[0_12px_40px_rgba(0,0,0,0.5)] shadow-blue-600/20" : "bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-slate-600 border-slate-200 hover:border-blue-200"}`}>
                         🎮 Quiero Comprar una Consola
                     </button>
                     <button onClick={() => setActiveTab("vende")}
-                        className={`px-8 py-4 rounded-xl font-black text-base transition-all border ${activeTab === "vende" ? "bg-purple-600 text-white border-transparent shadow-lg shadow-purple-600/20" : "bg-white text-slate-600 border-slate-200 hover:border-purple-200"}`}>
+                        className={`px-8 py-4 rounded-xl font-black text-base transition-all border ${activeTab === "vende" ? "bg-purple-600 text-white border-transparent shadow-[0_12px_40px_rgba(0,0,0,0.5)] shadow-purple-600/20" : "bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-slate-600 border-slate-200 hover:border-purple-200"}`}>
                         💰 Quiero Vender mi Consola
                     </button>
                 </div>
@@ -139,7 +139,7 @@ export default function ConsolasPage() {
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                                     {process.map((p, i) => (
                                         <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
-                                            className="bg-white border border-slate-200 rounded-2xl p-6 hover:border-blue-300 hover:shadow-lg transition-all relative overflow-hidden group">
+                                            className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 rounded-2xl p-6 hover:border-blue-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.5)] transition-all relative overflow-hidden group">
                                             <div className="absolute top-4 right-4 text-5xl font-black text-slate-100 group-hover:text-blue-50 transition-colors">{p.step}</div>
                                             <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center mb-4 border border-blue-100">
                                                 <p.icon size={22} className="text-blue-600" />
@@ -164,7 +164,7 @@ export default function ConsolasPage() {
                                         </p>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                             {buyFeatures.map((f, i) => (
-                                                <div key={i} className="flex items-start gap-3 bg-white/5 border border-white/10 rounded-xl p-4 hover:bg-white/10 transition-colors">
+                                                <div key={i} className="flex items-start gap-3 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 border border-white/10 rounded-xl p-4 hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50/10 transition-colors">
                                                     <div className="w-9 h-9 bg-blue-500/20 rounded-lg flex items-center justify-center shrink-0 mt-0.5">
                                                         <f.icon size={18} className="text-blue-400" />
                                                     </div>
@@ -201,8 +201,8 @@ export default function ConsolasPage() {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
                                     {/* Card 1 - Compramos */}
                                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0 }}
-                                        className="bg-white/5 border border-blue-500/30 rounded-2xl p-8 hover:bg-white/10 transition-all flex flex-col">
-                                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-black mb-6 bg-blue-600 text-white w-fit">
+                                        className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 border border-blue-500/30 rounded-2xl p-8 hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50/10 transition-all flex flex-col">
+                                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-black mb-6 bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all text-white w-fit">
                                             Pago Inmediato
                                         </div>
                                         <div className="w-14 h-14 bg-blue-500/20 rounded-2xl flex items-center justify-center mb-5 border border-blue-500/20">
@@ -216,14 +216,14 @@ export default function ConsolasPage() {
                                                 <MessageCircle size={18} /> Vender por WhatsApp
                                             </a>
                                             <button onClick={() => document.getElementById('contacto')?.scrollIntoView({ behavior: 'smooth' })}
-                                                className="w-full py-3 bg-white/10 hover:bg-white/20 text-white border border-white/10 rounded-xl font-bold text-sm transition-all">
+                                                className="w-full py-3 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/10 hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50/20 text-white border border-white/10 rounded-xl font-bold text-sm transition-all">
                                                 Llenar Formulario
                                             </button>
                                         </div>
                                     </motion.div>
                                     {/* Card 2 - Exhibimos */}
                                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
-                                        className="bg-white/5 border border-purple-500/30 rounded-2xl p-8 hover:bg-white/10 transition-all flex flex-col">
+                                        className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 border border-purple-500/30 rounded-2xl p-8 hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50/10 transition-all flex flex-col">
                                         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-black mb-6 bg-purple-600 text-white w-fit">
                                             Sin Complicaciones
                                         </div>
@@ -238,7 +238,7 @@ export default function ConsolasPage() {
                                                 <MessageCircle size={18} /> Exhibir por WhatsApp
                                             </a>
                                             <button onClick={() => document.getElementById('contacto')?.scrollIntoView({ behavior: 'smooth' })}
-                                                className="w-full py-3 bg-white/10 hover:bg-white/20 text-white border border-white/10 rounded-xl font-bold text-sm transition-all">
+                                                className="w-full py-3 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/10 hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50/20 text-white border border-white/10 rounded-xl font-bold text-sm transition-all">
                                                 Llenar Formulario
                                             </button>
                                         </div>
@@ -246,7 +246,7 @@ export default function ConsolasPage() {
                                 </div>
 
                                 {/* Process sell */}
-                                <div className="bg-white/5 border border-purple-500/20 rounded-2xl p-8">
+                                <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 border border-purple-500/20 rounded-2xl p-8">
                                     <h4 className="text-xl font-black text-white mb-6 flex items-center gap-3">
                                         <div className="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center"><Wrench size={18} className="text-purple-400" /></div>
                                         ¿Cómo es el proceso?
@@ -276,7 +276,7 @@ export default function ConsolasPage() {
             {/* CONTACT */}
             <section id="contacto" className="py-24 bg-slate-50">
                 <div className="max-w-3xl mx-auto px-6">
-                    <div className="bg-white rounded-3xl p-8 md:p-12 shadow-xl border border-slate-200">
+                    <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 rounded-3xl p-8 md:p-12 shadow-xl border border-slate-200">
                         <div className="text-center mb-10">
                             <h2 className="text-3xl font-black text-[#0F172A] mb-3">
                                 {activeTab === "compra" ? "🎮 Reservar o Consultar Consola" : "💰 Quiero Vender mi Consola"}
@@ -310,11 +310,11 @@ export default function ConsolasPage() {
                                     placeholder={activeTab === "compra" ? "Ej: Busco PS4 Slim con 2 controles y juegos instalados..." : "Ej: Tengo una PS4 Pro, funciona bien, tiene 1 control..."} />
                             </div>
                             <div className="flex flex-col sm:flex-row gap-3">
-                                <button type="submit" className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-black text-base transition-all shadow-lg shadow-blue-600/20 flex items-center justify-center gap-2">
+                                <button type="submit" className="flex-1 bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all hover:from-cyan-400 hover:to-indigo-500 text-white py-4 rounded-xl font-black text-base transition-all shadow-[0_12px_40px_rgba(0,0,0,0.5)] shadow-blue-600/20 flex items-center justify-center gap-2">
                                     Enviar Consulta <Send size={18} />
                                 </button>
                                 <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer"
-                                    className="flex-1 bg-green-500 hover:bg-green-400 text-white py-4 rounded-xl font-black text-base transition-all shadow-lg shadow-green-500/20 flex items-center justify-center gap-2">
+                                    className="flex-1 bg-green-500 hover:bg-green-400 text-white py-4 rounded-xl font-black text-base transition-all shadow-[0_12px_40px_rgba(0,0,0,0.5)] shadow-green-500/20 flex items-center justify-center gap-2">
                                     <MessageCircle size={18} /> WhatsApp Directo
                                 </a>
                             </div>
@@ -334,7 +334,7 @@ export default function ConsolasPage() {
                         <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Tu Aliado en Cada Partida · Ecuador</p>
                     </div>
                     <div className="flex gap-4">
-                        <button onClick={() => { setActiveTab("compra"); document.getElementById('contacto')?.scrollIntoView({ behavior: 'smooth' }) }} className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-black text-sm transition-all">
+                        <button onClick={() => { setActiveTab("compra"); document.getElementById('contacto')?.scrollIntoView({ behavior: 'smooth' }) }} className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all hover:bg-blue-500 text-white rounded-xl font-black text-sm transition-all">
                             🎮 Quiero Comprar
                         </button>
                         <button onClick={() => { setActiveTab("vende"); document.getElementById('contacto')?.scrollIntoView({ behavior: 'smooth' }) }} className="px-6 py-3 bg-purple-600 hover:bg-purple-500 text-white rounded-xl font-black text-sm transition-all">

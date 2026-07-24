@@ -12,13 +12,13 @@ export default function TrabajosPage() {
                 animate={{ opacity: 1, y: 0 }}
                 className="text-center space-y-10 max-w-2xl relative z-10"
             >
-                <div className="w-24 h-24 bg-white/5 flex items-center justify-center mx-auto border border-white/10 shadow-[0_0_50px_rgba(255,255,255,0.05)]">
+                <div className="w-24 h-24 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 flex items-center justify-center mx-auto border border-white/10 shadow-[0_0_50px_rgba(255,255,255,0.05)]">
                     <Briefcase size={40} className="text-white animate-pulse" />
                 </div>
                 <div className="space-y-4">
                     <h1 className="text-5xl font-black text-white uppercase italic tracking-tighter">PORTAFOLIO_TÁCTICO</h1>
                     <div className="flex items-center justify-center gap-4">
-                        <span className="px-4 py-1.5 bg-white text-slate-950 text-[10px] font-black uppercase tracking-widest italic">HISTORIAL_OPERACIONES</span>
+                        <span className="px-4 py-1.5 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-slate-950 text-[10px] font-black uppercase tracking-widest italic">HISTORIAL_OPERACIONES</span>
                         <span className="text-white/30 font-bold text-[10px] uppercase tracking-widest italic flex items-center gap-2"><ShieldCheck size={14}/> REGISTRO_EN_PROCESO</span>
                     </div>
                 </div>

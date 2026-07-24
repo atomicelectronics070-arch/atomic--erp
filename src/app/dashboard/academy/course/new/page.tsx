@@ -69,7 +69,7 @@ export default async function NewCoursePage() {
             {/* Form */}
             <div className="relative z-10 max-w-3xl">
                 <form action={createCourse} className="space-y-8">
-                    <div className="border border-white/[0.06] bg-white/[0.02] p-8 space-y-8">
+                    <div className="border border-white/[0.06] bg-slate-900/50 backdrop-blur-xl border-slate-700/50/[0.02] p-8 space-y-8">
                         <h2 className="text-xs font-black uppercase italic tracking-widest text-white border-b border-white/5 pb-4">
                             Información del Curso
                         </h2>
@@ -82,7 +82,7 @@ export default async function NewCoursePage() {
                                 name="title"
                                 required
                                 placeholder="Ej: Fundamentos de Redes Cisco"
-                                className="w-full bg-white/[0.03] border border-white/10 px-5 py-4 text-sm text-white font-medium outline-none focus:border-[#E8341A]/50 transition-all placeholder-white/20"
+                                className="w-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50/[0.03] border border-white/10 px-5 py-4 text-sm text-white font-medium outline-none focus:border-[#E8341A]/50 transition-all placeholder-white/20"
                             />
                         </div>
 
@@ -94,7 +94,7 @@ export default async function NewCoursePage() {
                                 name="description"
                                 rows={4}
                                 placeholder="Describe el contenido y objetivo del curso..."
-                                className="w-full bg-white/[0.03] border border-white/10 px-5 py-4 text-sm text-white font-medium outline-none focus:border-[#E8341A]/50 transition-all resize-none placeholder-white/20"
+                                className="w-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50/[0.03] border border-white/10 px-5 py-4 text-sm text-white font-medium outline-none focus:border-[#E8341A]/50 transition-all resize-none placeholder-white/20"
                             />
                         </div>
 
@@ -123,12 +123,12 @@ export default async function NewCoursePage() {
                                     name="imageUrl"
                                     type="url"
                                     placeholder="https://..."
-                                    className="w-full bg-white/[0.03] border border-white/10 px-5 py-4 text-sm text-white font-medium outline-none focus:border-[#E8341A]/50 transition-all placeholder-white/20"
+                                    className="w-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50/[0.03] border border-white/10 px-5 py-4 text-sm text-white font-medium outline-none focus:border-[#E8341A]/50 transition-all placeholder-white/20"
                                 />
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-4 p-5 border border-white/5 bg-white/[0.01]">
+                        <div className="flex items-center gap-4 p-5 border border-white/5 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/[0.01]">
                             <input
                                 type="checkbox"
                                 name="published"

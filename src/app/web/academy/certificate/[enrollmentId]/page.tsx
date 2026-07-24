@@ -42,14 +42,14 @@ export default async function CertificatePage({ params }: { params: Promise<{ en
             <div className="fixed top-8 right-8 z-50 flex gap-4 print:hidden">
                 <button 
                     onClick={() => window.print()} 
-                    className="px-6 py-3 bg-white/5 border border-white/10 text-white text-[9px] font-black uppercase tracking-widest hover:bg-white/10 transition-all flex items-center gap-3"
+                    className="px-6 py-3 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 border border-white/10 text-white text-[9px] font-black uppercase tracking-widest hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50/10 transition-all flex items-center gap-3"
                 >
                     <Printer size={16} /> Imprimir
                 </button>
             </div>
 
             {/* THE CERTIFICATE */}
-            <div className="w-full max-w-[1100px] aspect-[1.414/1] bg-white relative shadow-[0_80px_160px_-40px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col p-20 border-[20px] border-[#0F1923]">
+            <div className="w-full max-w-[1100px] aspect-[1.414/1] bg-slate-900/50 backdrop-blur-xl border-slate-700/50 relative shadow-[0_80px_160px_-40px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col p-20 border-[20px] border-[#0F1923]">
                 {/* Background Textures */}
                 <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
                 <div className="absolute top-0 right-0 w-[40%] h-[40%] bg-gradient-to-bl from-[#E8341A]/5 to-transparent"></div>
@@ -78,7 +78,7 @@ export default async function CertificatePage({ params }: { params: Promise<{ en
 
                     <p className="text-[11px] font-bold uppercase tracking-[0.4em] text-slate-400 mb-6 italic">Por la presente se otorga a:</p>
                     
-                    <h2 className="text-6xl font-black text-[#0F1923] uppercase tracking-tight mb-10 italic drop-shadow-sm">
+                    <h2 className="text-6xl font-black text-[#0F1923] uppercase tracking-tight mb-10 italic drop-shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
                         {enrollment.user.name} {enrollment.user.lastName || ''}
                     </h2>
 

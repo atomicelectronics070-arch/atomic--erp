@@ -32,9 +32,9 @@ export default async function AcademyPage() {
     ])
 
     return (
-        <div className="min-h-screen bg-[#F8FAFC] text-slate-900 selection:bg-blue-600/10">
+        <div className="min-h-screen bg-[#F8FAFC] text-slate-900 selection:bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all/10">
             {/* White Premium Hero Section */}
-            <div className="bg-white py-40 relative overflow-hidden border-b border-slate-200">
+            <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 py-40 relative overflow-hidden border-b border-slate-200">
                 {/* Subtle Background pattern */}
                 <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#1E3A8A 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
                 <div className="absolute top-[-10%] right-[-5%] w-[50%] h-[100%] bg-blue-500/5 blur-[120px] rounded-full animate-pulse"></div>
@@ -42,7 +42,7 @@ export default async function AcademyPage() {
                 <div className="max-w-7xl mx-auto px-8 relative z-10">
                     <div className="flex flex-col lg:flex-row items-center justify-between gap-20">
                         <div className="max-w-3xl text-center lg:text-left">
-                            <div className="inline-flex items-center gap-4 px-5 py-2 bg-slate-50 border border-slate-200 mb-10 shadow-sm">
+                            <div className="inline-flex items-center gap-4 px-5 py-2 bg-slate-50 border border-slate-200 mb-10 shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
                                 <Sparkles size={16} className="text-blue-600" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-500">Ecosistema de Formación Élite</span>
                             </div>
@@ -54,9 +54,9 @@ export default async function AcademyPage() {
                             </p>
                             
                             <div className="flex flex-wrap justify-center lg:justify-start gap-6">
-                                <Link href="#categorias" className="px-10 py-5 bg-[#1E3A8A] text-white text-[11px] font-black uppercase tracking-[0.4em] hover:bg-blue-700 transition-all shadow-xl hover:-translate-y-1">Explorar Catálogo</Link>
+                                <Link href="#categorias" className="px-10 py-5 bg-[#1E3A8A] text-white text-[11px] font-black uppercase tracking-[0.4em] hover:from-cyan-400 hover:to-indigo-500 transition-all shadow-xl hover:-translate-y-1">Explorar Catálogo</Link>
                                 {session && (
-                                    <Link href="/web/academy/dashboard" className="px-10 py-5 border-2 border-slate-200 bg-white text-slate-900 text-[11px] font-black uppercase tracking-[0.4em] hover:bg-slate-50 transition-all flex items-center gap-3 shadow-md">
+                                    <Link href="/web/academy/dashboard" className="px-10 py-5 border-2 border-slate-200 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-slate-900 text-[11px] font-black uppercase tracking-[0.4em] hover:bg-slate-50 transition-all flex items-center gap-3 shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
                                         Mi Dashboard <LayoutDashboard size={18} />
                                     </Link>
                                 )}
@@ -65,11 +65,11 @@ export default async function AcademyPage() {
 
                         {/* Quick Stats */}
                         <div className="hidden xl:flex flex-col gap-6">
-                            <div className="p-8 bg-white border border-slate-200 shadow-2xl w-72 hover:border-blue-200 transition-colors">
+                            <div className="p-8 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 shadow-2xl w-72 hover:border-blue-200 transition-colors">
                                 <h4 className="text-4xl font-black text-blue-600 italic">24/7</h4>
                                 <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-2">Soporte Técnico Especializado</p>
                             </div>
-                            <div className="p-8 bg-white border border-slate-200 shadow-2xl w-72 hover:border-blue-200 transition-colors">
+                            <div className="p-8 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 shadow-2xl w-72 hover:border-blue-200 transition-colors">
                                 <h4 className="text-4xl font-black text-[#1E3A8A] italic">100%</h4>
                                 <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-2">Certificación Oficial Atomic</p>
                             </div>
@@ -91,7 +91,7 @@ export default async function AcademyPage() {
                                 <Link 
                                     key={en.id} 
                                     href={`/web/academy/course/${en.course.slug}`}
-                                    className="group bg-white p-6 border border-slate-200 hover:border-blue-300 transition-all flex items-center gap-6 shadow-sm hover:shadow-md"
+                                    className="group bg-slate-900/50 backdrop-blur-xl border-slate-700/50 p-6 border border-slate-200 hover:border-blue-300 transition-all flex items-center gap-6 shadow-[0_4px_15px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(0,0,0,0.5)]"
                                 >
                                     <div className="w-16 h-16 bg-slate-100 shrink-0 flex items-center justify-center text-blue-600 relative overflow-hidden rounded-lg">
                                         {en.course.imageUrl && <img src={en.course.imageUrl} className="absolute inset-0 w-full h-full object-cover opacity-20" />}
@@ -100,7 +100,7 @@ export default async function AcademyPage() {
                                     <div className="flex-1 overflow-hidden">
                                         <h4 className="text-xs font-black uppercase tracking-tight truncate text-slate-700">{en.course.title}</h4>
                                         <div className="mt-2 w-full h-1 bg-slate-100 rounded-full overflow-hidden">
-                                            <div className="h-full bg-blue-600" style={{ width: `${en.progress}%` }}></div>
+                                            <div className="h-full bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all" style={{ width: `${en.progress}%` }}></div>
                                         </div>
                                     </div>
                                 </Link>
@@ -122,7 +122,7 @@ export default async function AcademyPage() {
                                 </div>
                                 <h2 className="text-5xl font-black text-[#1E3A8A] uppercase tracking-tighter italic leading-none">{cat.name}</h2>
                             </div>
-                            <div className="bg-white px-6 py-3 border border-slate-200 shadow-md">
+                            <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 px-6 py-3 border border-slate-200 shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
                                 <span className="text-[10px] font-black text-slate-400 tracking-[0.3em] uppercase">{cat.courses.length} Módulos Disponibles</span>
                             </div>
                         </div>
@@ -132,7 +132,7 @@ export default async function AcademyPage() {
                                 <Link 
                                     key={course.id} 
                                     href={`/web/academy/course/${course.slug}`}
-                                    className="group bg-white border border-slate-200 hover:border-blue-200 transition-all shadow-sm hover:shadow-2xl flex flex-col h-full overflow-hidden relative"
+                                    className="group bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 hover:border-blue-200 transition-all shadow-[0_4px_15px_rgba(0,0,0,0.3)] hover:shadow-2xl flex flex-col h-full overflow-hidden relative"
                                 >
                                     <div className="h-64 bg-slate-50 relative overflow-hidden">
                                         {course.imageUrl ? (
@@ -144,7 +144,7 @@ export default async function AcademyPage() {
                                         )}
                                         <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent"></div>
                                         <div className="absolute bottom-8 left-8">
-                                            <div className="bg-blue-600 text-white text-[8px] font-black uppercase px-4 py-2 mb-4 inline-block italic shadow-lg">Fase Profesional</div>
+                                            <div className="bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all text-white text-[8px] font-black uppercase px-4 py-2 mb-4 inline-block italic shadow-[0_12px_40px_rgba(0,0,0,0.5)]">Fase Profesional</div>
                                             <h3 className="text-[#1E3A8A] text-2xl font-black uppercase tracking-tighter leading-none italic">{course.title}</h3>
                                         </div>
                                     </div>
@@ -178,7 +178,7 @@ export default async function AcademyPage() {
             </div>
 
             {/* Premium White Footer */}
-            <footer className="bg-white py-20 px-8 border-t border-slate-200">
+            <footer className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 py-20 px-8 border-t border-slate-200">
                 <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-10">
                     <div className="text-center md:text-left">
                         <h4 className="text-2xl font-black text-[#1E3A8A] uppercase italic tracking-tighter">ATOMIC <span className="text-blue-600">ACADEMY.</span></h4>

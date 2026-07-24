@@ -61,7 +61,7 @@ const ModalManager: React.FC<ModalManagerProps> = ({
                             </thead>
                             <tbody>
                                 {previewData.data.map((item: any, i: number) => (
-                                    <tr key={i} className="border-b border-white/5 hover:bg-white/[0.02]">
+                                    <tr key={i} className="border-b border-white/5 hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50/[0.02]">
                                         {selectedFields.map(f => (
                                             <td key={f} className="py-4 px-6 text-sm text-slate-300 max-w-[200px] truncate">
                                                 {f === 'images' && item[f] ? (
@@ -96,7 +96,7 @@ const ModalManager: React.FC<ModalManagerProps> = ({
                             </div>
                         ) : (
                             history.map(item => (
-                                <div key={item.id} className="p-5 glass-panel border-white/5 hover:border-indigo-500/20 bg-white/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 group transition-all rounded-none overflow-hidden">
+                                <div key={item.id} className="p-5 glass-panel border-white/5 hover:border-indigo-500/20 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 group transition-all rounded-none overflow-hidden">
                                     <div className="space-y-1">
                                         <div className="flex items-center gap-2">
                                             <Database size={14} className="text-indigo-400" />
@@ -175,7 +175,7 @@ const Modal: React.FC<ModalProps> = ({ title, subtitle, children, footer, onClos
                 </div>
                 <button 
                     onClick={onClose} 
-                    className="p-3 bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white rounded-none transition-all"
+                    className="p-3 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50/10 text-slate-400 hover:text-white rounded-none transition-all"
                 >
                     <X size={24} />
                 </button>

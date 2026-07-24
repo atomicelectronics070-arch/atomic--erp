@@ -158,7 +158,7 @@ export default function CartPage() {
 
     if (items.length === 0) {
         return (
-            <div className="min-h-[70vh] flex flex-col items-center justify-center bg-white px-6">
+            <div className="min-h-[70vh] flex flex-col items-center justify-center bg-slate-900/50 backdrop-blur-xl border-slate-700/50 px-6">
                 <div className="w-24 h-24 bg-blue-50 flex items-center justify-center mb-8 border border-blue-100 rounded-2xl">
                     <ShoppingBag className="text-blue-200" size={40} />
                 </div>
@@ -179,7 +179,7 @@ export default function CartPage() {
                 <motion.div 
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-white border border-blue-100 p-6 mb-12 rounded-3xl flex items-center gap-6 shadow-sm"
+                    className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-blue-100 p-6 mb-12 rounded-3xl flex items-center gap-6 shadow-[0_4px_15px_rgba(0,0,0,0.3)]"
                 >
                     <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center border border-blue-100 shrink-0">
                         <Bot className="text-[#1E3A8A]" size={32} />
@@ -215,7 +215,7 @@ export default function CartPage() {
                     <div className="lg:col-span-2 space-y-12">
                         <div className="space-y-6">
                             {items.map((item) => (
-                                <div key={item.id} className="bg-white border border-slate-200 p-6 flex flex-col md:flex-row items-center gap-8 group hover:border-blue-300 transition-all rounded-3xl shadow-sm">
+                                <div key={item.id} className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 p-6 flex flex-col md:flex-row items-center gap-8 group hover:border-blue-300 transition-all rounded-3xl shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
                                     <div className="w-32 h-32 bg-slate-50 shrink-0 border border-slate-100 p-4 flex items-center justify-center rounded-2xl overflow-hidden">
                                         {item.image ? (
                                             <img src={item.image} alt={item.name} className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" />
@@ -247,7 +247,7 @@ export default function CartPage() {
 
                         {/* Smart Recommendations Bar - REAL DATA */}
                         {suggestedProducts.length > 0 && (
-                            <div className="p-10 bg-white border border-blue-50 rounded-[2.5rem] shadow-sm relative overflow-hidden">
+                            <div className="p-10 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-blue-50 rounded-[2.5rem] shadow-[0_4px_15px_rgba(0,0,0,0.3)] relative overflow-hidden">
                                 <div className="absolute top-0 right-0 p-8 text-blue-500/5"><Sparkles size={120} /></div>
                                 <h3 className="text-sm font-black text-[#1E3A8A] uppercase tracking-widest mb-8 flex items-center gap-3 italic">
                                     <Sparkles size={18} className="text-blue-600" /> PRODUCTOS QUE COMBINAN CON TU ESTILO
@@ -255,13 +255,13 @@ export default function CartPage() {
                                 <div className="flex gap-4 overflow-x-auto pb-4 custom-scrollbar">
                                     {suggestedProducts.map((p) => (
                                         <div key={p.id} className="shrink-0 w-48 p-4 bg-slate-50 border border-slate-100 rounded-2xl group hover:border-blue-200 transition-all">
-                                            <div className="aspect-square bg-white rounded-xl mb-4 border border-slate-100 flex items-center justify-center overflow-hidden">
+                                            <div className="aspect-square bg-slate-900/50 backdrop-blur-xl border-slate-700/50 rounded-xl mb-4 border border-slate-100 flex items-center justify-center overflow-hidden">
                                                 {p.images && <img src={JSON.parse(p.images)[0]} className="w-full h-full object-contain p-2" />}
                                             </div>
                                             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Sugerido</p>
                                             <p className="text-[11px] font-black text-[#1E3A8A] mb-3 uppercase tracking-tight line-clamp-1">{p.name}</p>
                                             <p className="text-xs font-black text-blue-600 mb-4">{formatCurrency(p.price)}</p>
-                                            <Link href={`/web/product/${p.id}`} className="block w-full py-2 bg-white border border-slate-200 text-center text-[9px] font-black uppercase tracking-widest hover:bg-[#1E3A8A] hover:text-white transition-all rounded-lg">Ver Detalle</Link>
+                                            <Link href={`/web/product/${p.id}`} className="block w-full py-2 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 text-center text-[9px] font-black uppercase tracking-widest hover:bg-[#1E3A8A] hover:text-white transition-all rounded-lg">Ver Detalle</Link>
                                         </div>
                                     ))}
                                 </div>
@@ -272,7 +272,7 @@ export default function CartPage() {
                     {/* Summary & Checkout */}
                     <div className="space-y-8">
                         {/* Permanent Explanatory Box (Contra Entrega) */}
-                        <div className="p-8 bg-white border-l-4 border-l-amber-500 rounded-2xl shadow-md space-y-4">
+                        <div className="p-8 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border-l-4 border-l-amber-500 rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.5)] space-y-4">
                             <div className="flex items-center gap-3 text-amber-600 font-black uppercase tracking-widest text-[10px] italic">
                                 <Info size={16} /> Política de Entregas Nacionales
                             </div>
@@ -282,7 +282,7 @@ export default function CartPage() {
                             </p>
                         </div>
 
-                        <div className="bg-white border border-slate-200 p-10 rounded-[3rem] shadow-xl relative overflow-hidden">
+                        <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 p-10 rounded-[3rem] shadow-xl relative overflow-hidden">
                             <h2 className="text-[11px] font-black uppercase tracking-[0.4em] text-blue-600 mb-10 italic">Resumen de Inversión</h2>
                             
                             <div className="space-y-6 border-b border-slate-100 pb-10 mb-10">
@@ -319,7 +319,7 @@ export default function CartPage() {
                                         { id: 'debit', icon: <CreditCard />, title: 'Débito', sub: 'Pago Seguro' },
                                         { id: 'oc', icon: <FileText />, title: 'Orden de Compra', sub: 'Corporativo' }
                                     ].map((m) => (
-                                        <button key={m.id} onClick={() => { setPaymentMethod(m.id as any); if (m.id === 'oc') setShowOCForm(true); }} className={`flex items-center gap-4 p-4 border rounded-2xl transition-all ${paymentMethod === m.id ? 'border-blue-600 bg-blue-50/50 shadow-md' : 'border-slate-100 hover:border-slate-300'}`}>
+                                        <button key={m.id} onClick={() => { setPaymentMethod(m.id as any); if (m.id === 'oc') setShowOCForm(true); }} className={`flex items-center gap-4 p-4 border rounded-2xl transition-all ${paymentMethod === m.id ? 'border-blue-600 bg-blue-50/50 shadow-[0_8px_32px_rgba(0,0,0,0.5)]' : 'border-slate-100 hover:border-slate-300'}`}>
                                             <div className={`${paymentMethod === m.id ? 'text-blue-600' : 'text-slate-300'}`}>{m.icon}</div>
                                             <div className="text-left">
                                                 <p className="text-[10px] font-black uppercase tracking-widest text-[#1E3A8A]">{m.title}</p>
@@ -349,7 +349,7 @@ export default function CartPage() {
             <AnimatePresence>
                 {showOCForm && (
                     <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-xl">
-                        <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-white max-w-4xl w-full max-h-[90vh] overflow-y-auto rounded-[3rem] p-12 custom-scrollbar">
+                        <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 max-w-4xl w-full max-h-[90vh] overflow-y-auto rounded-[3rem] p-12 custom-scrollbar">
                             <div className="flex justify-between items-center mb-12 border-b border-slate-100 pb-8">
                                 <div className="flex items-center gap-5">
                                     <div className="p-4 bg-[#1E3A8A] text-white rounded-2xl"><FileText size={24} /></div>
@@ -378,7 +378,7 @@ export default function CartPage() {
                             </div>
 
                             <div className="flex gap-4">
-                                <button onClick={handleExportOC} className="flex-1 bg-slate-100 text-slate-600 py-6 rounded-2xl text-[11px] font-black uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all flex items-center justify-center gap-3"><Download size={18} /> EXPORTAR PDF</button>
+                                <button onClick={handleExportOC} className="flex-1 bg-slate-100 text-slate-600 py-6 rounded-2xl text-[11px] font-black uppercase tracking-widest hover:bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all hover:text-white transition-all flex items-center justify-center gap-3"><Download size={18} /> EXPORTAR PDF</button>
                                 <button onClick={() => setShowOCForm(false)} className="flex-[2] bg-[#1E3A8A] text-white py-6 rounded-2xl text-[11px] font-black uppercase tracking-widest hover:bg-blue-800 transition-all shadow-xl flex items-center justify-center gap-3 italic">CONSOLIDAR Y CONTINUAR <CheckCircle2 size={18} /></button>
                             </div>
                         </motion.div>
