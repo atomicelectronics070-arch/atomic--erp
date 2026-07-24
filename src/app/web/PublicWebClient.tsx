@@ -517,6 +517,11 @@ export default function PublicWebClient({ initialProducts, metadata, userRole, s
                     searchResults={searchResults}
                 />
 
+                {/* INTRODUCCIÓN */}
+                {!searchQuery && !activeMainCategoryId && (
+                    <IntroductionBanner />
+                )}
+
                 {/* PRODUCTOS */}
                 <section className="w-full max-w-7xl mx-auto px-6 py-8" id="productos">
                     {searchQuery ? (
@@ -1095,3 +1100,43 @@ function HeroBanner({ settings }: { settings: any }) {
 
 
 /* ─── Minimal Store Hero ─── */
+
+function IntroductionBanner() {
+    return (
+        <section className="w-full max-w-7xl mx-auto px-6 pt-4 pb-20 flex flex-col items-center justify-center text-center">
+            <motion.h2 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="text-[6vw] md:text-[4vw] font-black tracking-tighter uppercase text-black leading-[0.9] mb-8"
+            >
+                TECNOLOGÍA QUE <br/> <span className="text-[#0055fe]">TRANSFORMA</span>
+            </motion.h2>
+
+            <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.2 }}
+                className="max-w-3xl text-sm md:text-base font-medium text-black/60 leading-relaxed mb-16"
+            >
+                En <strong className="text-black font-black">ATOMIC</strong>, no solo vendemos equipos; construimos infraestructuras. Desde electrónica de consumo hasta soluciones industriales completas. Desarrollamos software a medida para requerimientos específicos y respaldamos cada proyecto con un <strong className="text-[#0055fe] font-black">servicio técnico altamente especializado</strong>.
+            </motion.p>
+
+            <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.4, duration: 0.8 }}
+                className="w-full max-w-5xl mx-auto aspect-[16/7] md:aspect-[21/9] relative rounded-3xl overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.1)] border border-black/5"
+            >
+                <Image 
+                    src="/assets/ecommerce/intro_banner.jpg" 
+                    alt="Atomic Industrial Equipment"
+                    fill
+                    className="object-cover"
+                />
+            </motion.div>
+        </section>
+    )
+}
