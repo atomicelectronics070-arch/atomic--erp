@@ -603,7 +603,7 @@ function MinimalStoreHero({
                 className="mb-2"
             >
                 <h1 className="text-[10vw] md:text-[6vw] font-black tracking-tighter uppercase text-black leading-[0.85] mb-6">
-                    ATOMIC <span className="text-[#0055fe]">INDUSTRIAS</span>
+                    ATOMIC
                 </h1>
             </motion.div>
 
@@ -611,7 +611,7 @@ function MinimalStoreHero({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.35 }}
-                className="text-xs font-bold tracking-[0.4em] uppercase text-zinc-400 mb-12"
+                className="text-xs font-bold tracking-[0.4em] uppercase text-[#0055fe] mb-12"
             >
                 Tienda en Línea
             </motion.p>
