@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import NfcContactModal from '@/components/nfc/NfcContactModal';
 import NfcDemoQRModal from '@/components/nfc/NfcDemoQRModal';
 import AtomicBotChat from '@/components/nfc/AtomicBotChat';
+import NfcProShowcase from '@/components/nfc/NfcProShowcase';
 
 export default function NFCLandingPage() {
   const [isContactOpen, setIsContactOpen] = useState(false);
@@ -96,42 +97,10 @@ export default function NFCLandingPage() {
         </div>
       </section>
 
-      {/* Casos Prácticos (Más allá de Menús) */}
-      <section className="py-24 px-6 max-w-7xl mx-auto bg-slate-50">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-slate-900 mb-4">Casos de Uso Revolucionarios</h2>
-          <p className="text-xl text-slate-600 max-w-3xl mx-auto">La tecnología NFC va mucho más allá de un simple enlace web. Mira lo que podemos construir para ti.</p>
-        </div>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {/* Tarjetas de Presentación Inteligentes */}
-          <div className="bg-white p-6 rounded-3xl shadow-lg border border-slate-100 hover:shadow-xl transition-all">
-            <div className="aspect-[9/16] rounded-2xl overflow-hidden mb-6 bg-slate-100 relative">
-              <video onClick={(e) => { e.currentTarget.muted = !e.currentTarget.muted; }} style={{ cursor: "pointer" }} title="Click para activar/desactivar volumen" src="/nfc/nfc-1.mp4" autoPlay muted loop playsInline className="w-full h-full object-cover" />
-            </div>
-            <h3 className="text-2xl font-bold text-slate-900 mb-2">Networking Inteligente</h3>
-            <p className="text-slate-600">Tarjetas de presentación NFC. Acerca tu tarjeta al celular de tu contacto y tus datos se guardarán directamente en su agenda en un segundo.</p>
-          </div>
-
-          {/* Menús de Restaurantes Interactivos */}
-          <div className="bg-white p-6 rounded-3xl shadow-lg border border-slate-100 hover:shadow-xl transition-all">
-            <div className="aspect-[9/16] rounded-2xl overflow-hidden mb-6 bg-slate-100 relative">
-              <video onClick={(e) => { e.currentTarget.muted = !e.currentTarget.muted; }} style={{ cursor: "pointer" }} title="Click para activar/desactivar volumen" src="/nfc/nfc-2.mp4" autoPlay muted loop playsInline className="w-full h-full object-cover" />
-            </div>
-            <h3 className="text-2xl font-bold text-slate-900 mb-2">Menús Dinámicos</h3>
-            <p className="text-slate-600">Menús interactivos y completos que superan al QR. Actualiza precios en tiempo real, añade fotos de alta calidad y botones de pedido directo a WhatsApp.</p>
-          </div>
-
-          {/* Control de Acceso y Gimnasios */}
-          <div className="bg-white p-6 rounded-3xl shadow-lg border border-slate-100 hover:shadow-xl transition-all">
-            <div className="aspect-[9/16] rounded-2xl overflow-hidden mb-6 bg-slate-100 relative">
-              <video onClick={(e) => { e.currentTarget.muted = !e.currentTarget.muted; }} style={{ cursor: "pointer" }} title="Click para activar/desactivar volumen" src="/nfc/nfc-3.mp4" autoPlay muted loop playsInline className="w-full h-full object-cover" />
-            </div>
-            <h3 className="text-2xl font-bold text-slate-900 mb-2">Accesos y Membresías</h3>
-            <p className="text-slate-600">Llaveros o pulseras NFC para gimnasios y condominios. Acceso seguro, rápido e identificable para gestionar membresías sin fricción.</p>
-          </div>
-        </div>
-      </section>
+      {/* Catálogo de Productos PRO */}
+      <div className="px-6">
+        <NfcProShowcase />
+      </div>
 
       {/* Recuadro Destacado de Acompañamiento */}
       <section className="py-12 px-6 max-w-5xl mx-auto">
