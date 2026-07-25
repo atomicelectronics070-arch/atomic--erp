@@ -30,7 +30,11 @@ export default async function LaptopDetailPage({ params }: { params: Promise<{ i
         "Almacenamiento": "1TB SSD NVMe",
         "Pantalla": "15.6 pulgadas FHD 144Hz"
       }),
-      images: JSON.stringify(['https://images.unsplash.com/photo-1593640408182-31c70c8268f5?q=80&w=2042&auto=format&fit=crop'])
+      images: JSON.stringify([
+        '/laptops/nitro_v_carousel_1.jpg',
+        '/laptops/nitro_v_carousel_2.jpg',
+        '/laptops/nitro_v_carousel_3.jpg'
+      ])
     } as any;
   }
 
