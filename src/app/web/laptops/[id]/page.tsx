@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import { notFound } from 'next/navigation';
 import parse from 'html-react-parser';
 import Link from 'next/link';
+import AcerNitroBanner from '@/components/marketing/AcerNitroBanner';
 
 export const revalidate = 60; // Revalidate every 60 seconds
 
@@ -139,19 +140,25 @@ export default async function LaptopDetailPage({ params }: { params: Promise<{ i
         </div>
       </div>
 
-      {/* Descripción Dinámica (Con Imágenes del Scraper) */}
-      <div className="max-w-4xl mx-auto px-6 mt-20">
-        <div className="bg-white/90 backdrop-blur-2xl rounded-[2.5rem] border border-slate-200/50 p-10 md:p-16 shadow-[0_20px_50px_rgba(0,0,0,0.03)] prose prose-lg prose-blue max-w-none prose-img:rounded-[2rem] prose-img:shadow-xl prose-img:mx-auto prose-headings:text-slate-900 prose-a:text-blue-600 hover:prose-a:text-blue-700 transition-all">
-          <h2 className="text-3xl font-extrabold text-slate-900 mb-10 pb-6 border-b border-slate-100 flex items-center gap-4">
-            <span className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-              <span className="w-3 h-3 rounded-full bg-blue-600"></span>
-            </span>
-            Detalles del Equipo
-          </h2>
-          {/* El parser se encargará de inyectar los tags <img> reales que haya encontrado el scraper */}
-          {parse(descriptionHtml)}
+      {/* Descripción Dinámica (Con Imágenes del Scraper) o Mega Banner */}
+      {product.name.toLowerCase().includes('nitro') ? (
+        <div className="max-w-6xl mx-auto px-6 mb-20">
+          <AcerNitroBanner />
         </div>
-      </div>
+      ) : (
+        <div className="max-w-4xl mx-auto px-6 mt-20">
+          <div className="bg-white/90 backdrop-blur-2xl rounded-[2.5rem] border border-slate-200/50 p-10 md:p-16 shadow-[0_20px_50px_rgba(0,0,0,0.03)] prose prose-lg prose-blue max-w-none prose-img:rounded-[2rem] prose-img:shadow-xl prose-img:mx-auto prose-headings:text-slate-900 prose-a:text-blue-600 hover:prose-a:text-blue-700 transition-all">
+            <h2 className="text-3xl font-extrabold text-slate-900 mb-10 pb-6 border-b border-slate-100 flex items-center gap-4">
+              <span className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                <span className="w-3 h-3 rounded-full bg-blue-600"></span>
+              </span>
+              Detalles del Equipo
+            </h2>
+            {/* El parser se encargará de inyectar los tags <img> reales que haya encontrado el scraper */}
+            {parse(descriptionHtml)}
+          </div>
+        </div>
+      )}
 
     </div>
   );
