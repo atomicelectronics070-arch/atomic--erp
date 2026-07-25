@@ -31,11 +31,17 @@ export default function AcerNitroBanner() {
           </p>
         </motion.div>
         
-        {/* Decoración abstracta */}
-        <motion.div 
-          initial={{ scale: 0.8, opacity: 0 }} whileInView={{ scale: 1, opacity: 1 }} transition={{ duration: 1.5 }}
-          className="absolute inset-0 z-0 bg-[url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-[0.15] mix-blend-overlay"
-        />
+        {/* Imagen de la Laptop (Fondo transparente sugerido) */}
+        <div className="absolute -right-20 top-1/2 -translate-y-1/2 w-[800px] h-[600px] z-10 hidden lg:block group">
+          <motion.img 
+            initial={{ x: 100, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 1, ease: "easeOut" }}
+            src="/laptops/nitro_v_main.jpg" 
+            alt="Acer Nitro V 15" 
+            className="w-full h-full object-cover rounded-3xl drop-shadow-[0_0_50px_rgba(59,130,246,0.3)] group-hover:scale-105 transition-transform duration-700"
+          />
+        </div>
       </div>
 
       {/* 2. PROCESADOR INTEL (AZUL) */}
@@ -99,6 +105,18 @@ export default function AcerNitroBanner() {
             El sistema de doble ventilador mantiene tu Nitro V 16 fresca incluso en las partidas más intensas. Disfruta todo este poder en un panel WUXGA 16:10 de 165Hz para una ventaja visual letal y sin tearing (cortes de pantalla).
           </p>
           
+          <div className="rounded-3xl overflow-hidden relative h-[400px] shadow-2xl group mb-12">
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent z-10"></div>
+            <img 
+              src="/laptops/nitro_v_keyboard.jpg" 
+              alt="Teclado Retroiluminado Nitro V" 
+              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
+            />
+            <div className="absolute bottom-8 left-8 right-8 z-20 text-left">
+              <h4 className="text-2xl font-bold text-white mb-2">Refrigeración Dual</h4>
+            </div>
+          </div>
+
           <div className="grid sm:grid-cols-3 gap-6">
             <div className="bg-white/5 border border-white/10 p-6 rounded-2xl">
               <div className="text-3xl font-black text-white mb-2">16"</div>
