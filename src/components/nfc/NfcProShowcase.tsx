@@ -9,7 +9,7 @@ const showcaseItems = [
     subtitle: 'El Nuevo Estándar del Networking',
     desc: 'Olvídate del papel. Una sola tarjeta ultra premium en PVC Mate, Metal o Madera Sustentable. La acercas al teléfono de tu cliente y toda tu información, portafolio y redes sociales se guardan instantáneamente en su agenda.',
     features: ['PVC Mate / Metal', 'Sin recargas', 'Diseño Personalizado', 'Actualizable'],
-    imgUrl: 'https://images.unsplash.com/photo-1579389083046-c236746811cc?q=80&w=2070&auto=format&fit=crop',
+    imgUrl: '/nfc/cards.jpg',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
     )
@@ -20,7 +20,7 @@ const showcaseItems = [
     subtitle: 'Interacción en el Punto de Venta',
     desc: 'Acrílicos de lujo cortados a láser, perfectos para mesas de restaurantes, barras o la recepción. Ideales para disparar tus Reseñas en Google o cargar tu Menú Digital sin que el cliente pelee con la cámara para leer un QR.',
     features: ['Google Reviews', 'Menús Digitales', 'Pagos Rápidos', 'Base LED opcional'],
-    imgUrl: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=1974&auto=format&fit=crop',
+    imgUrl: '/nfc/acrylics.jpg',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"></path></svg>
     )
@@ -31,7 +31,7 @@ const showcaseItems = [
     subtitle: 'Tecnología Invisible',
     desc: 'Convierte cualquier mesa, pared o vitrina en una superficie inteligente. Los chips NFC en formato sticker son diminutos, discretos y pueden pegarse debajo de la mesa o detrás de posters publicitarios. ¡El usuario solo acerca su móvil al objeto físico!',
     features: ['Económicos', 'Resistentes al agua', 'Completamente ocultables', 'Múltiples tamaños'],
-    imgUrl: 'https://images.unsplash.com/photo-1620063231464-9b265bd17e2e?q=80&w=2070&auto=format&fit=crop',
+    imgUrl: '/nfc/stickers.jpg',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
     )
@@ -42,7 +42,7 @@ const showcaseItems = [
     subtitle: 'Accesos y Membresías sin Fricción',
     desc: 'Llaveros epoxy de alta durabilidad y pulseras de silicón con tecnología NFC incrustada. La solución definitiva para gimnasios, condominios, clubes VIP y eventos, permitiendo accesos instantáneos e identificación segura.',
     features: ['Pulseras de Silicón', 'Llaveros Epoxy', 'Alta durabilidad', 'Control de Acceso'],
-    imgUrl: 'https://images.unsplash.com/photo-1506466010722-395aa2bef877?q=80&w=2088&auto=format&fit=crop',
+    imgUrl: '/nfc/wearables.jpg',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
     )
