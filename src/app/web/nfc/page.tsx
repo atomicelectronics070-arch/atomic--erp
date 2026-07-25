@@ -11,6 +11,10 @@ import NfcVideoGallery from '@/components/nfc/NfcVideoGallery';
 import NfcSoftwareAnalytics from '@/components/nfc/NfcSoftwareAnalytics';
 import NfcIndustries from '@/components/nfc/NfcIndustries';
 import NfcEcoFriendly from '@/components/nfc/NfcEcoFriendly';
+import NfcComparisonTable from '@/components/nfc/NfcComparisonTable';
+import NfcPricing from '@/components/nfc/NfcPricing';
+import NfcTestimonials from '@/components/nfc/NfcTestimonials';
+import NfcFAQ from '@/components/nfc/NfcFAQ';
 
 export default function NFCLandingPage() {
   const [isContactOpen, setIsContactOpen] = useState(false);
@@ -70,8 +74,20 @@ export default function NFCLandingPage() {
       {/* 5. Inteligencia y Datos (Software) */}
       <NfcSoftwareAnalytics />
 
-      {/* 6. Sostenibilidad Eco-Friendly */}
+      {/* 6. Tabla Comparativa Destructora */}
+      <NfcComparisonTable />
+
+      {/* 7. Planes de Inversión (Pricing) */}
+      <NfcPricing />
+
+      {/* 8. Sostenibilidad Eco-Friendly */}
       <NfcEcoFriendly />
+
+      {/* 9. Casos de Éxito Reales (Testimonios) */}
+      <NfcTestimonials />
+
+      {/* 10. Preguntas Frecuentes FAQ */}
+      <NfcFAQ />
 
       {/* Recuadro Destacado de Acompañamiento (CTA Final) */}
       <section className="py-24 px-6 max-w-5xl mx-auto">
