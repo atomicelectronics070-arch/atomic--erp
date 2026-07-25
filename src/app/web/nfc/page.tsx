@@ -55,7 +55,7 @@ export default function NFCLandingPage() {
             </p>
           </div>
           <div className="relative rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-slate-200 bg-white p-2">
-            <video 
+            <video onClick={(e) => { e.currentTarget.muted = !e.currentTarget.muted; }} style={{ cursor: "pointer" }} title="Click para activar/desactivar volumen" 
               src="/nfc/nfc-long.mp4" 
               autoPlay 
               muted 
@@ -102,7 +102,7 @@ export default function NFCLandingPage() {
           {/* Tarjetas de Presentación Inteligentes */}
           <div className="bg-white p-6 rounded-3xl shadow-lg border border-slate-100 hover:shadow-xl transition-all">
             <div className="aspect-[9/16] rounded-2xl overflow-hidden mb-6 bg-slate-100 relative">
-              <video src="/nfc/nfc-1.mp4" autoPlay muted loop playsInline className="w-full h-full object-cover" />
+              <video onClick={(e) => { e.currentTarget.muted = !e.currentTarget.muted; }} style={{ cursor: "pointer" }} title="Click para activar/desactivar volumen" src="/nfc/nfc-1.mp4" autoPlay muted loop playsInline className="w-full h-full object-cover" />
             </div>
             <h3 className="text-2xl font-bold text-slate-900 mb-2">Networking Inteligente</h3>
             <p className="text-slate-600">Tarjetas de presentación NFC. Acerca tu tarjeta al celular de tu contacto y tus datos se guardarán directamente en su agenda en un segundo.</p>
@@ -111,7 +111,7 @@ export default function NFCLandingPage() {
           {/* Menús de Restaurantes Interactivos */}
           <div className="bg-white p-6 rounded-3xl shadow-lg border border-slate-100 hover:shadow-xl transition-all">
             <div className="aspect-[9/16] rounded-2xl overflow-hidden mb-6 bg-slate-100 relative">
-              <video src="/nfc/nfc-2.mp4" autoPlay muted loop playsInline className="w-full h-full object-cover" />
+              <video onClick={(e) => { e.currentTarget.muted = !e.currentTarget.muted; }} style={{ cursor: "pointer" }} title="Click para activar/desactivar volumen" src="/nfc/nfc-2.mp4" autoPlay muted loop playsInline className="w-full h-full object-cover" />
             </div>
             <h3 className="text-2xl font-bold text-slate-900 mb-2">Menús Dinámicos</h3>
             <p className="text-slate-600">Menús interactivos y completos que superan al QR. Actualiza precios en tiempo real, añade fotos de alta calidad y botones de pedido directo a WhatsApp.</p>
@@ -120,7 +120,7 @@ export default function NFCLandingPage() {
           {/* Control de Acceso y Gimnasios */}
           <div className="bg-white p-6 rounded-3xl shadow-lg border border-slate-100 hover:shadow-xl transition-all">
             <div className="aspect-[9/16] rounded-2xl overflow-hidden mb-6 bg-slate-100 relative">
-              <video src="/nfc/nfc-3.mp4" autoPlay muted loop playsInline className="w-full h-full object-cover" />
+              <video onClick={(e) => { e.currentTarget.muted = !e.currentTarget.muted; }} style={{ cursor: "pointer" }} title="Click para activar/desactivar volumen" src="/nfc/nfc-3.mp4" autoPlay muted loop playsInline className="w-full h-full object-cover" />
             </div>
             <h3 className="text-2xl font-bold text-slate-900 mb-2">Accesos y Membresías</h3>
             <p className="text-slate-600">Llaveros o pulseras NFC para gimnasios y condominios. Acceso seguro, rápido e identificable para gestionar membresías sin fricción.</p>
@@ -149,13 +149,13 @@ export default function NFCLandingPage() {
         <h2 className="text-4xl font-bold text-center text-slate-900 mb-12">Más Ejemplos en Acción</h2>
         <div className="grid md:grid-cols-3 gap-6">
           <div className="rounded-3xl overflow-hidden shadow-lg border border-slate-200 bg-white p-2 hover:scale-[1.02] transition-transform">
-            <video src="/nfc/nfc-4.mp4" autoPlay muted loop playsInline className="w-full h-auto rounded-2xl" />
+            <video onClick={(e) => { e.currentTarget.muted = !e.currentTarget.muted; }} style={{ cursor: "pointer" }} title="Click para activar/desactivar volumen" src="/nfc/nfc-4.mp4" autoPlay muted loop playsInline className="w-full h-auto rounded-2xl" />
           </div>
           <div className="rounded-3xl overflow-hidden shadow-lg border border-slate-200 bg-white p-2 hover:scale-[1.02] transition-transform">
-            <video src="/nfc/nfc-5.mp4" autoPlay muted loop playsInline className="w-full h-auto rounded-2xl" />
+            <video onClick={(e) => { e.currentTarget.muted = !e.currentTarget.muted; }} style={{ cursor: "pointer" }} title="Click para activar/desactivar volumen" src="/nfc/nfc-5.mp4" autoPlay muted loop playsInline className="w-full h-auto rounded-2xl" />
           </div>
           <div className="rounded-3xl overflow-hidden shadow-lg border border-slate-200 bg-white p-2 hover:scale-[1.02] transition-transform">
-            <video src="/nfc/nfc-6.mp4" autoPlay muted loop playsInline className="w-full h-auto rounded-2xl" />
+            <video onClick={(e) => { e.currentTarget.muted = !e.currentTarget.muted; }} style={{ cursor: "pointer" }} title="Click para activar/desactivar volumen" src="/nfc/nfc-6.mp4" autoPlay muted loop playsInline className="w-full h-auto rounded-2xl" />
           </div>
         </div>
       </section>
