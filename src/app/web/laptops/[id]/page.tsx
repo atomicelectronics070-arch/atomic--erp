@@ -32,12 +32,12 @@ export default async function LaptopDetailPage({ params }: { params: Promise<{ i
         "Pantalla": "15.6 pulgadas FHD 144Hz"
       }),
       images: JSON.stringify([
-        '/laptops/nitro_v_carousel_1.jpg',
-        '/laptops/nitro_v_carousel_2.jpg',
-        '/laptops/nitro_v_carousel_3.jpg',
-        '/laptops/nitro_v_carousel_4.jpg',
-        '/laptops/nitro_v_carousel_5.jpg',
-        '/laptops/nitro_v_carousel_6.jpg'
+        'https://m.media-amazon.com/images/I/71F-Wcriq4L._AC_SL1500_.jpg',
+        'https://m.media-amazon.com/images/I/81NC7hXhciL._AC_SL1500_.jpg',
+        'https://m.media-amazon.com/images/I/61igkEY73KL._AC_SL1000_.jpg',
+        'https://m.media-amazon.com/images/I/61Jba5M+XAL._AC_SL1000_.jpg',
+        'https://m.media-amazon.com/images/I/710JGMmTGJL._AC_SL1000_.jpg',
+        'https://m.media-amazon.com/images/I/61xBdjk+eTL._AC_SL1000_.jpg'
       ])
     } as any;
   }

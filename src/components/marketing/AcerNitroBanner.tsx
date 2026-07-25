@@ -32,16 +32,16 @@ export default function AcerNitroBanner() {
         </motion.div>
         
         {/* Imagen de la Laptop (Fondo transparente sugerido) */}
-        <div className="absolute -right-20 top-1/2 -translate-y-1/2 w-[800px] h-[600px] z-10 hidden lg:block group">
-          <motion.img 
-            initial={{ x: 100, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ duration: 1, ease: "easeOut" }}
-            src="/laptops/nitro_v_main.jpg" 
-            alt="Acer Nitro V 15" 
-            className="w-full h-full object-cover rounded-3xl drop-shadow-[0_0_50px_rgba(59,130,246,0.3)] group-hover:scale-105 transition-transform duration-700"
-          />
-        </div>
+          <div className="absolute -right-20 top-1/2 -translate-y-1/2 w-[800px] h-[600px] z-10 hidden lg:block group">
+            <motion.img 
+              initial={{ x: 100, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ duration: 1, ease: "easeOut" }}
+              src="https://m.media-amazon.com/images/I/71F-Wcriq4L._AC_SL1500_.jpg" 
+              alt="Acer Nitro V 15" 
+              className="w-full h-full object-contain rounded-3xl drop-shadow-[0_0_50px_rgba(59,130,246,0.3)] group-hover:scale-105 transition-transform duration-700"
+            />
+          </div>
       </div>
 
       {/* 2. PROCESADOR INTEL (AZUL) */}
@@ -105,12 +105,12 @@ export default function AcerNitroBanner() {
             El sistema de doble ventilador mantiene tu Nitro V 16 fresca incluso en las partidas más intensas. Disfruta todo este poder en un panel WUXGA 16:10 de 165Hz para una ventaja visual letal y sin tearing (cortes de pantalla).
           </p>
           
-          <div className="rounded-3xl overflow-hidden relative h-[400px] shadow-2xl group mb-12">
+          <div className="rounded-3xl overflow-hidden relative h-[400px] shadow-2xl group mb-12 bg-white">
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent z-10"></div>
             <img 
-              src="/laptops/nitro_v_keyboard.jpg" 
+              src="https://m.media-amazon.com/images/I/710JGMmTGJL._AC_SL1000_.jpg" 
               alt="Teclado Retroiluminado Nitro V" 
-              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
+              className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-1000"
             />
             <div className="absolute bottom-8 left-8 right-8 z-20 text-left">
               <h4 className="text-2xl font-bold text-white mb-2">Refrigeración Dual</h4>
