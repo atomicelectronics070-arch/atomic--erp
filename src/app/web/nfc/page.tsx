@@ -15,6 +15,10 @@ import NfcComparisonTable from '@/components/nfc/NfcComparisonTable';
 import NfcPricing from '@/components/nfc/NfcPricing';
 import NfcTestimonials from '@/components/nfc/NfcTestimonials';
 import NfcFAQ from '@/components/nfc/NfcFAQ';
+import NfcUseCasesMasonry from '@/components/nfc/NfcUseCasesMasonry';
+import NfcOnboardingProcess from '@/components/nfc/NfcOnboardingProcess';
+import NfcSecurity from '@/components/nfc/NfcSecurity';
+import NfcClientsMarquee from '@/components/nfc/NfcClientsMarquee';
 
 export default function NFCLandingPage() {
   const [isContactOpen, setIsContactOpen] = useState(false);
@@ -74,19 +78,31 @@ export default function NFCLandingPage() {
       {/* 5. Inteligencia y Datos (Software) */}
       <NfcSoftwareAnalytics />
 
-      {/* 6. Tabla Comparativa Destructora */}
+      {/* 6. Casos de Uso Infinitos (Masonry) */}
+      <NfcUseCasesMasonry />
+
+      {/* 7. Proceso de Onboarding */}
+      <NfcOnboardingProcess />
+
+      {/* 8. Tabla Comparativa Destructora */}
       <NfcComparisonTable />
 
-      {/* 7. Planes de Inversión (Pricing) */}
+      {/* 9. Seguridad y Encriptación Bancaria */}
+      <NfcSecurity />
+
+      {/* 10. Marquee de Clientes */}
+      <NfcClientsMarquee />
+
+      {/* 11. Planes de Inversión (Pricing) */}
       <NfcPricing />
 
-      {/* 8. Sostenibilidad Eco-Friendly */}
+      {/* 12. Sostenibilidad Eco-Friendly */}
       <NfcEcoFriendly />
 
-      {/* 9. Casos de Éxito Reales (Testimonios) */}
+      {/* 13. Casos de Éxito Reales (Testimonios) */}
       <NfcTestimonials />
 
-      {/* 10. Preguntas Frecuentes FAQ */}
+      {/* 14. Preguntas Frecuentes FAQ */}
       <NfcFAQ />
 
       {/* Recuadro Destacado de Acompañamiento (CTA Final) */}
