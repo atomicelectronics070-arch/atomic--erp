@@ -29,6 +29,7 @@
     "csv-writer": "^1.6.0",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.38.0",
+    "html-react-parser": "^6.1.5",
     "jspdf": "^4.2.0",
     "jspdf-autotable": "^5.0.7",
     "leaflet": "^1.9.4",
