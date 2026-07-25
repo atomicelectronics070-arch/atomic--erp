@@ -10,9 +10,29 @@ export default async function LaptopDetailPage({ params }: { params: Promise<{ i
   const resolvedParams = await params;
   const prisma = new PrismaClient();
   
-  const product = await prisma.product.findUnique({
+  let product = await prisma.product.findUnique({
     where: { id: resolvedParams.id }
   });
+
+  if (!product && resolvedParams.id === 'acer-nitro-v') {
+    product = {
+      id: 'acer-nitro-v',
+      name: 'Laptop Gamer Acer Nitro V 15',
+      price: 1150.00,
+      compareAtPrice: 1450.00,
+      stock: 8,
+      sku: 'AC-NITRO-2026',
+      description: '',
+      specs: JSON.stringify({
+        "Procesador": "Intel Core i7 13va Gen",
+        "Tarjeta Gráfica": "NVIDIA RTX 4060 8GB",
+        "Memoria RAM": "16GB DDR5 5200MHz",
+        "Almacenamiento": "1TB SSD NVMe",
+        "Pantalla": "15.6 pulgadas FHD 144Hz"
+      }),
+      images: JSON.stringify(['https://images.unsplash.com/photo-1593640408182-31c70c8268f5?q=80&w=2042&auto=format&fit=crop'])
+    } as any;
+  }
 
   if (!product) {
     notFound();
