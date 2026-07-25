@@ -36,7 +36,7 @@ export default function WebLayout({ children }: { children: React.ReactNode }) {
     ]
 
     return (
-        <div className="min-h-screen font-sans text-slate-100 bg-[#ffffff] relative overflow-x-hidden selection:bg-[#0055fe]/20">
+        <div className="min-h-screen font-sans text-slate-100 bg-slate-950 relative overflow-x-hidden selection:bg-cyan-500/20">
             
             {/* ── BACKGROUND 3D CANVAS & NOISE ── */}
             <div className="fixed inset-0 z-0 pointer-events-none opacity-40">

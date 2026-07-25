@@ -10,20 +10,20 @@ export const revalidate = 60 // Cache for 60s - much faster repeated loads
 // Lightweight skeleton shown immediately while products load
 function StoreSkeleton() {
     return (
-        <div className="min-h-screen bg-slate-900/50 backdrop-blur-xl border-slate-700/50">
+        <div className="min-h-screen bg-slate-950 backdrop-blur-xl">
             {/* Hero skeleton */}
-            <div className="h-[420px] bg-gradient-to-r from-slate-100 to-slate-200 animate-pulse" />
+            <div className="h-[420px] bg-slate-900/50 border-b border-white/10 animate-pulse" />
             
             {/* Product grid skeleton */}
             <div className="max-w-7xl mx-auto px-6 py-16">
-                <div className="h-8 w-48 bg-slate-200 rounded-lg mb-10 animate-pulse" />
+                <div className="h-8 w-48 bg-slate-900/50 rounded-lg mb-10 animate-pulse border border-white/10" />
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     {Array.from({ length: 12 }).map((_, i) => (
-                        <div key={i} className="bg-slate-100 rounded-2xl overflow-hidden animate-pulse">
-                            <div className="aspect-square bg-slate-200" />
+                        <div key={i} className="bg-slate-900/50 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden animate-pulse">
+                            <div className="aspect-square bg-slate-800/50" />
                             <div className="p-4 space-y-2">
-                                <div className="h-4 bg-slate-200 rounded w-3/4" />
-                                <div className="h-4 bg-slate-200 rounded w-1/2" />
+                                <div className="h-4 bg-slate-800/50 rounded w-3/4" />
+                                <div className="h-4 bg-slate-800/50 rounded w-1/2" />
                             </div>
                         </div>
                     ))}
