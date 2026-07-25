@@ -5,11 +5,12 @@ import Link from 'next/link';
 
 export const revalidate = 60; // Revalidate every 60 seconds
 
-export default async function CampanaDetailPage({ params }: { params: { id: string } }) {
+export default async function CampanaDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = await params;
   const prisma = new PrismaClient();
   
   const product = await prisma.product.findUnique({
-    where: { id: params.id }
+    where: { id: resolvedParams.id }
   });
 
   if (!product) {
