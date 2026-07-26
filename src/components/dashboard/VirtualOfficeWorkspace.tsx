@@ -1,126 +1,186 @@
-'use client';
-import { useState } from 'react';
-import { motion } from 'framer-motion';
+"use client"
+
+import { useState, useEffect } from "react"
+import Link from "next/link"
+import { motion } from "framer-motion"
 import { 
-  Building2, ShoppingCart, Share2, Target, DollarSign, 
-  Sparkles, ArrowRight, Activity
-} from 'lucide-react';
-import Link from 'next/link';
+  Building2, Users, ShoppingBag, ShieldCheck, FileText, 
+  MapPin, Sparkles, ArrowRight, Activity, Cpu, Key, UserCheck, Bot
+} from "lucide-react"
 
-type OfficeZone = 'ventas' | 'marketing' | 'coordinacion' | 'finanzas';
+type OfficeZone = "ventas" | "inventario" | "coordinacion" | "prospeccion"
 
-export default function VirtualOfficeWorkspace({ currentModule = 'ventas' }: { currentModule?: OfficeZone }) {
-  const [activeZone, setActiveZone] = useState<OfficeZone>(currentModule);
-  const [avatarPos, setAvatarPos] = useState<{ x: number; y: number }>({ x: 25, y: 35 });
+const FIXED_PROFILES = [
+  {
+    role: "ADMIN",
+    title: "ADMINISTRACIÓN CENTRAL",
+    email: "atomic@administrador.com",
+    emoji: "🛡️",
+    badge: "Visión 360° • Supervisión Maestro",
+    color: "from-rose-500 to-pink-600",
+    glow: "border-rose-500/50 shadow-[0_0_20px_rgba(244,63,94,0.3)]",
+    tag: "ADMIN_ROOT",
+    area: "Directiva",
+  },
+  {
+    role: "TECHMAN",
+    title: "JEFE DE TECNOLOGÍA",
+    email: "atomic@techman.com",
+    emoji: "💻",
+    badge: "Hardware & Redes • Servidores",
+    color: "from-purple-500 to-indigo-600",
+    glow: "border-purple-500/50 shadow-[0_0_20px_rgba(168,85,247,0.3)]",
+    tag: "TECH_LEAD",
+    area: "Tecnología",
+  },
+  {
+    role: "SOFTMAN",
+    title: "JEFE DE SISTEMAS & IA",
+    email: "atomic@softman.com",
+    emoji: "⚙️",
+    badge: "Desarrollo ERP • Automatizaciones",
+    color: "from-cyan-500 to-blue-600",
+    glow: "border-cyan-500/50 shadow-[0_0_20px_rgba(6,182,212,0.3)]",
+    tag: "SYS_LEAD",
+    area: "Sistemas",
+  },
+  {
+    role: "COORDINATOR",
+    title: "DEPARTAMENTO DE COORDINACIÓN",
+    email: "atomic@cordinacion.com",
+    emoji: "🎯",
+    badge: "Supervisión Asesores • Leads",
+    color: "from-amber-500 to-orange-600",
+    glow: "border-amber-500/50 shadow-[0_0_20px_rgba(245,158,11,0.3)]",
+    tag: "COORD_LEAD",
+    area: "Coordinación",
+  },
+  {
+    role: "MEDIA",
+    title: "DEPARTAMENTO DE EDICIÓN & MEDIA",
+    email: "atomic@media.com",
+    emoji: "📢",
+    badge: "Contenido • Blogs • Redes",
+    color: "from-emerald-500 to-teal-600",
+    glow: "border-emerald-500/50 shadow-[0_0_20px_rgba(16,185,129,0.3)]",
+    tag: "MEDIA_LEAD",
+    area: "Marketing",
+  },
+]
+
+export default function VirtualOfficeWorkspace({ currentModule = "ventas" }: { currentModule?: string }) {
+  const [activeZone, setActiveZone] = useState<OfficeZone>("ventas")
+  const [avatarPos, setAvatarPos] = useState({ x: 20, y: 25 })
+  const [systemUsers, setSystemUsers] = useState<any[]>([])
+
+  useEffect(() => {
+    fetch("/api/admin/manage-users")
+      .then(r => r.json())
+      .then(d => {
+        if (d.users) setSystemUsers(d.users)
+      })
+      .catch(() => {})
+  }, [])
 
   const zones = {
     ventas: {
-      id: 'ventas',
-      title: 'Módulo de Ventas & Cotizaciones',
-      code: 'ZONE-01',
-      color: 'from-blue-600 to-indigo-600',
-      badgeColor: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-      glow: 'shadow-[0_0_50px_rgba(59,130,246,0.3)]',
-      icon: ShoppingCart,
-      x: 22,
-      y: 30,
-      link: '/dashboard/quotes',
-      stats: '14 Cotizaciones Activas • $12,450 en Cierre',
-      desc: 'Área dedicada a la formulación de cotizaciones empresariales, atención comercial a clientes y cierre de ventas.',
-      avatarEmoji: '👨‍💼',
-      avatarRole: 'Líder Comercial (Carlos V.)',
-      avatarStatus: 'Cotizando cliente VIP...',
-      staff: ['Asesor Carlos V.', 'Ing. Elena M.']
+      code: "STATION-V01",
+      title: "Módulo de Cotizaciones & Ventas",
+      desc: "Emisión acelerada de PDF con cálculo de impuestos y firma digital.",
+      link: "/dashboard/quotes",
+      icon: FileText,
+      color: "from-indigo-600 to-purple-600",
+      glow: "shadow-[0_0_30px_rgba(99,102,241,0.4)]",
+      badgeColor: "bg-indigo-500/10 text-indigo-400 border-indigo-500/30",
+      avatarEmoji: "👨‍💼",
+      avatarRole: "Asesor Comercial (Avatar)",
+      avatarStatus: "Enfocado en Cierre de Ventas",
+      stats: "Sistema de Cotizaciones Activo",
+      x: 20,
+      y: 25
     },
-    marketing: {
-      id: 'marketing',
-      title: 'Módulo de Marketing & Redes Sociales',
-      code: 'ZONE-02',
-      color: 'from-purple-600 to-pink-600',
-      badgeColor: 'bg-pink-500/20 text-pink-400 border-pink-500/30',
-      glow: 'shadow-[0_0_50px_rgba(236,72,153,0.3)]',
-      icon: Share2,
-      x: 75,
-      y: 30,
-      link: '/dashboard/blogs',
-      stats: '4 Redes Conectadas • 8 Publicaciones Programadas',
-      desc: 'Centro neurálgico de automatización omni-canal: difusión simultánea en TikTok, YouTube, Instagram y Facebook.',
-      avatarEmoji: '👩‍💻',
-      avatarRole: 'Head of Social Media (Sofía R.)',
-      avatarStatus: 'Publicando en 4 redes...',
-      staff: ['Social Media Lead', 'Diseñador IA']
+    inventario: {
+      code: "STATION-I02",
+      title: "Módulo de Inventario & Precios",
+      desc: "Catálogo completo con precios, stock en tiempo real y fichas técnicas.",
+      link: "/dashboard/shop",
+      icon: ShoppingBag,
+      color: "from-purple-600 to-pink-600",
+      glow: "shadow-[0_0_30px_rgba(168,85,247,0.4)]",
+      badgeColor: "bg-purple-500/10 text-purple-400 border-purple-500/30",
+      avatarEmoji: "📦",
+      avatarRole: "Encargado de Logística (Avatar)",
+      avatarStatus: "Stock Actualizado al 100%",
+      stats: "2,480 Productos Listados",
+      x: 70,
+      y: 25
     },
     coordinacion: {
-      id: 'coordinacion',
-      title: 'Módulo de Coordinación & Operaciones',
-      code: 'ZONE-03',
-      color: 'from-emerald-600 to-teal-600',
-      badgeColor: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
-      glow: 'shadow-[0_0_50px_rgba(16,185,129,0.3)]',
-      icon: Target,
-      x: 22,
-      y: 75,
-      link: '/dashboard/coordinacion',
-      stats: '6 Proyectos en Ejecución • 98% Eficiencia',
-      desc: 'Gestión técnica de proyectos, logística de envíos de productos y asignación de tareas operativas.',
-      avatarEmoji: '👨‍🔧',
-      avatarRole: 'Director Operativo (Ing. Mateo H.)',
-      avatarStatus: 'Supervisando logística...',
-      staff: ['Coordinador General', 'Supervisora de Operaciones']
+      code: "STATION-C03",
+      title: "Módulo de Coordinación",
+      desc: "Asignación de tareas, seguimiento de metas y supervisión diaria.",
+      link: "/dashboard/coordinacion",
+      icon: ShieldCheck,
+      color: "from-pink-600 to-rose-600",
+      glow: "shadow-[0_0_30px_rgba(236,72,153,0.4)]",
+      badgeColor: "bg-pink-500/10 text-pink-400 border-pink-500/30",
+      avatarEmoji: "👔",
+      avatarRole: "Coordinador General (Avatar)",
+      avatarStatus: "Supervisando Operaciones",
+      stats: "5 Metas Activas",
+      x: 20,
+      y: 75
     },
-    finanzas: {
-      id: 'finanzas',
-      title: 'Módulo de Finanzas & Cuentas',
-      code: 'ZONE-04',
-      color: 'from-amber-500 to-orange-600',
-      badgeColor: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
-      glow: 'shadow-[0_0_50px_rgba(245,158,11,0.3)]',
-      icon: DollarSign,
-      x: 75,
-      y: 75,
-      link: '/dashboard/finance',
-      stats: 'Balance Positivo • Cierre Mensual al 85%',
-      desc: 'Supervisión de tickets de facturación, libro diario, cobranzas y balances contables corporativos.',
-      avatarEmoji: '👩‍💼',
-      avatarRole: 'Controller Financiero (Valeria M.)',
-      avatarStatus: 'Auditando facturas...',
-      staff: ['Contador Principal', 'Analista Financiero']
+    prospeccion: {
+      code: "STATION-P04",
+      title: "Prospección Mapa Radar",
+      desc: "Radar satelital para prospección comercial de nuevos negocios.",
+      link: "/dashboard/map-prospecting",
+      icon: MapPin,
+      color: "from-blue-600 to-indigo-600",
+      glow: "shadow-[0_0_30px_rgba(37,99,235,0.4)]",
+      badgeColor: "bg-blue-500/10 text-blue-400 border-blue-500/30",
+      avatarEmoji: "📡",
+      avatarRole: "Agente de Inteligencia (Avatar)",
+      avatarStatus: "Radar Escaneando Zona",
+      stats: "+2,200 Prospectos",
+      x: 70,
+      y: 75
     }
-  };
+  }
 
   const handleSelectZone = (zoneKey: OfficeZone) => {
-    setActiveZone(zoneKey);
-    setAvatarPos({ x: zones[zoneKey].x, y: zones[zoneKey].y });
-  };
+    setActiveZone(zoneKey)
+    setAvatarPos({ x: zones[zoneKey].x, y: zones[zoneKey].y })
+  }
 
-  const current = zones[activeZone];
+  const current = zones[activeZone]
 
   return (
-    <div className="w-full bg-slate-950 text-white rounded-3xl p-6 lg:p-10 border border-slate-800 shadow-2xl relative overflow-hidden">
+    <div className="w-full bg-slate-950 text-white rounded-3xl p-6 lg:p-10 border border-slate-800 shadow-2xl relative overflow-hidden space-y-12">
       
-      {/* Dynamic Ambient Blur */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-600/10 rounded-full blur-[140px] pointer-events-none"></div>
-      <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-600/10 rounded-full blur-[140px] pointer-events-none"></div>
+      {/* Ambient Glows */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-600/10 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-600/10 rounded-full blur-[140px] pointer-events-none" />
 
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-6 border-b border-slate-800">
+      {/* SECTION 1: HEADER */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-800">
         <div>
           <div className="inline-flex items-center space-x-2 px-3 py-1 bg-indigo-500/10 border border-indigo-500/30 rounded-full text-indigo-400 font-mono text-[10px] font-bold uppercase tracking-widest mb-2">
-            <span className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse"></span>
+            <span className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse" />
             <span>Entorno Interactivo Virtual ATOMIC v4.0</span>
           </div>
           <h2 className="text-2xl md:text-3xl font-black tracking-tight text-white flex items-center gap-3">
             <Building2 className="text-indigo-400" />
-            <span>Estaciones de Trabajo</span>
+            <span>Estaciones de Trabajo & Perfiles Fijos</span>
           </h2>
         </div>
 
-        {/* Quick Nav Switches */}
+        {/* Quick Zone Switcher */}
         <div className="flex items-center gap-2 bg-slate-900 p-1.5 rounded-2xl border border-slate-800">
           {(Object.keys(zones) as OfficeZone[]).map((key) => {
-            const z = zones[key];
-            const Icon = z.icon;
-            const isSelected = activeZone === key;
+            const z = zones[key]
+            const isSelected = activeZone === key
             return (
               <button
                 key={key}
@@ -134,36 +194,31 @@ export default function VirtualOfficeWorkspace({ currentModule = 'ventas' }: { c
                 <span className="text-sm">{z.avatarEmoji}</span>
                 <span className="hidden sm:inline capitalize">{key}</span>
               </button>
-            );
+            )
           })}
         </div>
       </div>
 
-      {/* Main Interactive Map & Details Grid */}
+      {/* SECTION 2: 2.5D INTERACTIVE FLOORPLAN + ZONE DETAILS */}
       <div className="grid lg:grid-cols-12 gap-8 items-stretch">
         
-        {/* 2.5D Animated Floorplan (8 Cols) */}
+        {/* Floorplan (8 Cols) */}
         <div className="lg:col-span-8 bg-slate-900/90 border border-slate-800 rounded-3xl p-6 relative min-h-[440px] flex flex-col justify-between overflow-hidden shadow-inner group">
-          
-          {/* Floorplan Grid Pattern */}
-          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none"></div>
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none" />
 
-          {/* Map Title Overlay */}
           <div className="relative z-10 flex justify-between items-center text-[11px] font-mono text-slate-400 uppercase tracking-widest border-b border-slate-800/80 pb-3">
             <span className="flex items-center gap-2">
               <Activity size={14} className="text-emerald-400 animate-pulse" />
               <span>Mapa 2.5D • Estaciones de Avatares Asignados</span>
             </span>
-            <span className="text-indigo-400 font-bold">4 Avatares Operativos</span>
+            <span className="text-indigo-400 font-bold">4 Estaciones Operativas</span>
           </div>
 
-          {/* 4 Interactive Office Rooms with Avatar Stations */}
           <div className="relative z-10 grid grid-cols-2 gap-6 my-auto py-6">
-            
             {(Object.keys(zones) as OfficeZone[]).map((key) => {
-              const z = zones[key];
-              const Icon = z.icon;
-              const isActive = activeZone === key;
+              const z = zones[key]
+              const Icon = z.icon
+              const isActive = activeZone === key
 
               return (
                 <div
@@ -175,12 +230,10 @@ export default function VirtualOfficeWorkspace({ currentModule = 'ventas' }: { c
                       : 'bg-slate-950/70 border-slate-800/80 hover:border-slate-700 hover:bg-slate-900/50'
                   }`}
                 >
-                  {/* Glowing Active Border Line */}
                   {isActive && (
-                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-indigo-500 to-transparent animate-pulse"></div>
+                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-indigo-500 to-transparent animate-pulse" />
                   )}
 
-                  {/* Department Avatar Badge */}
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-3">
                       <div className={`p-3 rounded-xl border ${z.badgeColor}`}>
@@ -198,11 +251,10 @@ export default function VirtualOfficeWorkspace({ currentModule = 'ventas' }: { c
                   </h3>
                   
                   <p className="text-[10px] text-emerald-400 font-mono font-bold flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
                     {z.avatarStatus}
                   </p>
 
-                  {/* Room Status Indicator */}
                   <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-[10px]">
                     <span className="text-slate-400 font-mono">
                       {z.avatarRole.split(' (')[0]}
@@ -210,12 +262,10 @@ export default function VirtualOfficeWorkspace({ currentModule = 'ventas' }: { c
                     <span className="text-indigo-400 font-bold group-hover:translate-x-1 transition-transform">Ir a Estación →</span>
                   </div>
                 </div>
-              );
+              )
             })}
-
           </div>
 
-          {/* Animated Operator Avatar moving across floorplan */}
           <motion.div 
             animate={{ x: `${avatarPos.x}%`, y: `${avatarPos.y}%` }}
             transition={{ type: "spring", stiffness: 100, damping: 15 }}
@@ -228,12 +278,10 @@ export default function VirtualOfficeWorkspace({ currentModule = 'ventas' }: { c
               Tú (Operador)
             </span>
           </motion.div>
-
         </div>
 
-        {/* Zone Details & Portal Link (4 Cols) */}
+        {/* Details Card (4 Cols) */}
         <div className="lg:col-span-4 bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800 rounded-3xl p-6 flex flex-col justify-between shadow-xl relative overflow-hidden">
-          
           <div>
             <div className="flex items-center justify-between mb-6">
               <span className={`px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase border ${current.badgeColor}`}>
@@ -242,7 +290,6 @@ export default function VirtualOfficeWorkspace({ currentModule = 'ventas' }: { c
               <span className="text-[10px] text-slate-500 font-mono">Estación Activa</span>
             </div>
 
-            {/* Department Lead Avatar Header */}
             <div className="flex items-center space-x-4 mb-6 p-4 bg-slate-950/80 rounded-2xl border border-slate-800">
               <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 flex items-center justify-center text-2xl shadow-md">
                 {current.avatarEmoji}
@@ -256,7 +303,6 @@ export default function VirtualOfficeWorkspace({ currentModule = 'ventas' }: { c
             <h3 className="text-xl font-black text-white mb-3 leading-tight">{current.title}</h3>
             <p className="text-slate-400 text-xs font-light leading-relaxed mb-6">{current.desc}</p>
 
-            {/* Live Stats */}
             <div className="p-4 bg-slate-950/80 rounded-2xl border border-slate-800/80 mb-6 space-y-2">
               <span className="text-[10px] font-mono uppercase text-slate-500 block">Estadística de Operación</span>
               <p className="text-xs font-bold text-emerald-400 flex items-center gap-2">
@@ -266,7 +312,6 @@ export default function VirtualOfficeWorkspace({ currentModule = 'ventas' }: { c
             </div>
           </div>
 
-          {/* Quick Action Portal Button */}
           <Link
             href={current.link}
             className={`w-full py-4 rounded-2xl font-black text-xs uppercase tracking-widest text-white bg-gradient-to-r ${current.color} shadow-lg hover:scale-[1.02] transition-all flex items-center justify-center space-x-2 group`}
@@ -274,11 +319,145 @@ export default function VirtualOfficeWorkspace({ currentModule = 'ventas' }: { c
             <span>Ingresar a {current.title.split('Módulo de ')[1] || 'Módulo'}</span>
             <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
           </Link>
+        </div>
+      </div>
 
+      {/* SECTION 3: DEPARTAMENTOS Y CUENTAS MATRIZ FIJAS */}
+      <div className="space-y-6 pt-6 border-t border-slate-800">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-xl font-black text-white flex items-center gap-2">
+              <Cpu className="text-cyan-400" />
+              <span>Departamentos Fijos & Conexión Directa a Bots Matriz</span>
+            </h3>
+            <p className="text-xs font-mono text-slate-400 mt-0.5">
+              Cuentas corporativas fijas con etiqueta única e Inteligencia Artificial individual en la base de datos
+            </p>
+          </div>
+          <span className="px-3 py-1 bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-[10px] font-mono font-bold rounded-full">
+            5 Cuentas Matrices Conectadas
+          </span>
         </div>
 
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          {FIXED_PROFILES.map((prof) => {
+            const matchedUser = systemUsers.find(u => u.email === prof.email)
+            const botName = matchedUser?.personalBot?.botName || "Bot Activo"
+
+            return (
+              <div 
+                key={prof.email}
+                className={`bg-slate-900/90 border p-5 rounded-2xl flex flex-col justify-between space-y-4 hover:scale-[1.02] transition-all ${prof.glow}`}
+              >
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="w-10 h-10 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center text-xl">
+                      {prof.emoji}
+                    </div>
+                    <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded bg-slate-950 text-slate-400 border border-slate-800">
+                      {prof.tag}
+                    </span>
+                  </div>
+
+                  <div>
+                    <h4 className="font-black text-white text-xs leading-snug">{prof.title}</h4>
+                    <p className="text-[10px] font-mono text-slate-400 truncate mt-0.5">{prof.email}</p>
+                  </div>
+
+                  <p className="text-[10px] text-slate-300 font-medium leading-relaxed bg-slate-950/60 p-2.5 rounded-xl border border-slate-800/80">
+                    {prof.badge}
+                  </p>
+                </div>
+
+                <div className="pt-3 border-t border-slate-800 space-y-2">
+                  <div className="flex items-center justify-between text-[10px] font-mono">
+                    <span className="text-slate-400 flex items-center gap-1">
+                      <Bot size={12} className="text-emerald-400" /> IA Personal:
+                    </span>
+                    <span className="text-emerald-400 font-bold">{botName}</span>
+                  </div>
+                  <Link
+                    href="/dashboard/admin/personal-management"
+                    className="w-full py-2 bg-slate-950 hover:bg-slate-800 border border-slate-800 rounded-xl text-[10px] font-mono font-bold text-center block text-slate-200 hover:text-white transition-colors"
+                  >
+                    Ver IA & Reporte →
+                  </Link>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* SECTION 4: RED DE VENDEDORES & ASESORES DEL SISTEMA */}
+      <div className="space-y-6 pt-6 border-t border-slate-800">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-xl font-black text-white flex items-center gap-2">
+              <Users className="text-emerald-400" />
+              <span>Vendedores & Asesores Registrados en el Sistema</span>
+            </h3>
+            <p className="text-xs font-mono text-slate-400 mt-0.5">
+              Tarjetas dinámicas de todo el personal con indicador de bot asignado y rendimiento
+            </p>
+          </div>
+          <span className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] font-mono font-bold rounded-full">
+            {systemUsers.length} Usuarios Registrados
+          </span>
+        </div>
+
+        {systemUsers.length === 0 ? (
+          <div className="text-center py-8 bg-slate-900/40 rounded-2xl border border-slate-800 text-xs font-mono text-slate-500">
+            Cargando vendedores y asesores...
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {systemUsers.map((usr) => {
+              const days = Math.floor((Date.now() - new Date(usr.createdAt).getTime()) / 86400000)
+              const botName = usr.personalBot?.botName
+
+              return (
+                <div 
+                  key={usr.id}
+                  className="bg-slate-900/70 border border-slate-800 hover:border-slate-700 p-4 rounded-2xl flex items-center justify-between gap-3 shadow-md hover:scale-[1.01] transition-all"
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center font-black text-emerald-400 text-sm shrink-0">
+                      {(usr.name?.[0] || usr.email[0]).toUpperCase()}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-bold text-white text-xs truncate">
+                        {usr.name} {usr.lastName || ""}
+                      </p>
+                      <p className="text-[10px] font-mono text-slate-400 truncate">{usr.email}</p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-[9px] font-mono text-indigo-400 font-bold">
+                          {usr.role}
+                        </span>
+                        <span className="text-slate-600">•</span>
+                        <span className="text-[9px] font-mono text-slate-400">
+                          {days}d en ATOMIC
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="shrink-0 text-right space-y-1">
+                    {botName ? (
+                      <span className="inline-flex items-center gap-1 text-[9px] font-mono font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/30">
+                        <Bot size={10} /> {botName}
+                      </span>
+                    ) : (
+                      <span className="text-[9px] font-mono text-slate-500 block">Sin bot</span>
+                    )}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
       </div>
 
     </div>
-  );
+  )
 }

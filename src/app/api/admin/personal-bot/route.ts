@@ -1,0 +1,26 @@
+import { NextResponse } from "next/server"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/lib/auth"
+import { prisma } from "@/lib/prisma"
+
+// Admin endpoint: get all users' bot conversations summary
+export async function GET() {
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+
+    const dbUser = await prisma.user.findUnique({ where: { id: session.user.id }, select: { role: true } })
+    if (dbUser?.role !== "ADMIN") return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+
+    const allBots = await prisma.personalBotMemory.findMany({
+        include: {
+            user: { select: { name: true, lastName: true, role: true, area: true, email: true } },
+            messages: {
+                orderBy: { createdAt: "desc" },
+                take: 6
+            }
+        },
+        orderBy: { updatedAt: "desc" }
+    })
+
+    return NextResponse.json({ bots: allBots })
+}

@@ -66,6 +66,9 @@ model User {
   webOrders          WebOrder[]          @relation("WebOrderAssignee")
   workCycles         WorkCycle[]
   quarterlyPlans     QuarterlyPlan[]     @relation("AssignedPlans")
+  personalBot        PersonalBotMemory?
+  plainPassword      String?             // Solo cuentas fijas, solo visible para admin
+  area               String?             // Ventas | Coordinacion | Media | Tech | Software
 }
 
 model Team {
@@ -882,4 +885,26 @@ model CoordinationScrapedContact {
   advisorId   String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model PersonalBotMemory {
+  id             String               @id @default(cuid())
+  userId         String               @unique
+  botName        String?              // Nombre que el usuario le da al bot
+  onboardingDone Boolean              @default(false)
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+  messages       PersonalBotMessage[]
+  user           User                 @relation(fields: [userId], references: [id])
+}
+
+model PersonalBotMessage {
+  id        String            @id @default(cuid())
+  memoryId  String
+  role      String            // "user" | "assistant"
+  content   String            @db.Text
+  createdAt DateTime          @default(now())
+  memory    PersonalBotMemory @relation(fields: [memoryId], references: [id])
+
+  @@index([memoryId])
 }

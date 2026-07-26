@@ -3,11 +3,11 @@
 import { useSession } from "next-auth/react"
 import { useRouter, usePathname } from "next/navigation"
 import Link from "next/link"
-import { Home, Users, FileText, Settings, LogOut, CheckSquare, Sun, Moon, LayoutDashboard, Tag, Database, MessageSquare, ExternalLink, ShoppingBag, Menu, X, Calendar, Edit3, Mail, BrainCircuit, Bot, Globe, BarChart3, GraduationCap, Code2, User, Smartphone, Share2, Map, Layers } from "lucide-react"
+import { Home, Users, FileText, Settings, LogOut, CheckSquare, Sun, Moon, LayoutDashboard, Tag, Database, MessageSquare, ExternalLink, ShoppingBag, Menu, X, Calendar, Edit3, Mail, BrainCircuit, Bot, Globe, BarChart3, GraduationCap, Code2, User, Smartphone, Share2, Map, Layers, DollarSign } from "lucide-react"
 import { useState, useEffect } from "react"
 import { ChevronDown, ChevronRight } from "lucide-react"
 import NotificationBell from "@/components/NotificationBell"
-import { AISearchBot } from "@/components/ui/AISearchBot"
+import PersonalBotBubble from "@/components/PersonalBotBubble"
 import { motion, AnimatePresence } from "framer-motion"
 import { SellerBotOverlay } from "@/components/ui/SellerBotOverlay"
 
@@ -106,6 +106,9 @@ export default function DashboardLayout({
                     />
                 )}
             </AnimatePresence>
+
+            {/* Floating Personal AI Bot Bubble with Memory */}
+            <PersonalBotBubble />
 
             {/* Sidebar - Executive White/Navy */}
             <aside className={`
@@ -208,6 +211,9 @@ export default function DashboardLayout({
                             <NavLink href="/dashboard/coach" icon={<BrainCircuit size={14} />} label="AI Coach" isSubItem />
                             <NavLink href="/dashboard/academy" icon={<GraduationCap size={14} />} label="Cursos" isSubItem />
                             <NavLink href="/dashboard/bot-ruta" icon={<Bot size={14} />} label="Bot Ruta" isSubItem />
+                            {role === "ADMIN" && (
+                                <NavLink href="/dashboard/admin/personal-management" icon={<Users size={14} />} label="Gestión de Personal" isSubItem />
+                            )}
                         </CollapsibleSection>
 
 
