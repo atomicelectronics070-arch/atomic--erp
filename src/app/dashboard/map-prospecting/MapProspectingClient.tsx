@@ -376,10 +376,15 @@ export default function MapProspectingClient() {
                                             <span>{place.address || "Dirección registrada en mapa"}</span>
                                         </p>
 
-                                        {place.phone && (
+                                        {place.phone ? (
                                             <p className="flex items-center gap-1.5 text-[11px] text-emerald-400 font-bold">
                                                 <Phone size={12} className="shrink-0" />
                                                 <a href={`tel:${place.phone}`} className="hover:underline">{place.phone}</a>
+                                            </p>
+                                        ) : (
+                                            <p className="flex items-center gap-1.5 text-[10px] text-amber-300 font-bold bg-amber-500/10 border border-amber-500/30 px-2 py-1 rounded-lg">
+                                                <Phone size={11} className="shrink-0 text-amber-400" />
+                                                <span>Sin número de teléfono</span>
                                             </p>
                                         )}
 

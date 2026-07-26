@@ -330,11 +330,11 @@ export default function FinanceManager() {
             </div>
 
             {/* Data Table */}
-            <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 rounded-xl shadow-[0_4px_15px_rgba(0,0,0,0.3)] border border-slate-200 overflow-hidden">
+            <div className="bg-slate-900/90 border border-slate-800 rounded-3xl shadow-xl overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse whitespace-nowrap">
                         <thead>
-                            <tr className="border-b border-slate-200 bg-slate-50 text-xs font-bold text-slate-500 uppercase">
+                            <tr className="border-b border-slate-800 bg-slate-950 text-[10px] font-mono font-bold text-slate-300 uppercase tracking-widest">
                                 <th className="px-4 py-4">Fecha</th>
                                 <th className="px-4 py-4">TRX</th>
                                 <th className="px-4 py-4">Cliente</th>
@@ -350,12 +350,12 @@ export default function FinanceManager() {
                                 <th className="px-4 py-4 text-right">Acciones</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-100">
+                        <tbody className="divide-y divide-slate-800/80">
                             {filteredData.map((item) => {
                                 const isEgreso = item.type === 'Egreso Operativo'
                                 const isCancelled = item.status === 'CANCELADO'
                                 return (
-                                <tr key={item.id} className={`hover:bg-slate-50 transition-all group text-sm font-medium ${isCancelled ? 'text-slate-400 opacity-60 bg-slate-50 line-through' : 'text-[#0F172A]'}`}>
+                                <tr key={item.id} className={`hover:bg-slate-800/40 transition-all group text-xs font-bold ${isCancelled ? 'text-slate-500 opacity-60 bg-slate-950 line-through' : 'text-white'}`}>
                                     <td className="px-4 py-3 text-slate-500 text-xs">
                                         {new Date(item.date).toLocaleDateString()}
                                     </td>
@@ -836,26 +836,23 @@ export default function FinanceManager() {
 
 function StatSummary({ label, value, icon, trend, color }: any) {
     const colors = {
-        indigo: "text-indigo-600 bg-indigo-50 border-indigo-100",
-        emerald: "text-emerald-600 bg-emerald-50 border-emerald-100",
-        rose: "text-rose-600 bg-rose-50 border-rose-100"
+        indigo: "text-cyan-400 bg-cyan-500/10 border-cyan-500/30",
+        emerald: "text-emerald-400 bg-emerald-500/10 border-emerald-500/30",
+        rose: "text-rose-400 bg-rose-500/10 border-rose-500/30"
     }
 
     const colorKey = (color || 'indigo') as keyof typeof colors;
 
     return (
-        <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 p-6 rounded-xl border border-slate-200 shadow-[0_4px_15px_rgba(0,0,0,0.3)] relative overflow-hidden group hover:shadow-[0_8px_32px_rgba(0,0,0,0.5)] transition-all">
-            <div className="absolute right-[-10px] top-[-10px] opacity-[0.03] group-hover:opacity-[0.06] group-hover:scale-110 transition-transform">
-                {icon}
-            </div>
-            <div className="flex justify-between items-start mb-8">
-                <div className={`p-3 rounded-lg border ${colors[colorKey]} transition-colors`}>
+        <div className="bg-slate-900/90 border border-slate-800 p-5 rounded-2xl shadow-xl relative overflow-hidden group hover:border-slate-700 transition-all">
+            <div className="flex justify-between items-start mb-4">
+                <div className={`p-3 rounded-xl border ${colors[colorKey]} transition-colors`}>
                     {icon}
                 </div>
-                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider pt-2">{trend}</div>
+                <div className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest">{trend}</div>
             </div>
-            <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{label}</h4>
-            <p className="text-3xl font-black text-[#0F172A] tracking-tight group-hover:text-indigo-600 transition-colors">
+            <h4 className="text-[10px] font-mono font-bold text-slate-300 uppercase tracking-widest mb-1">{label}</h4>
+            <p className="text-2xl font-black text-white font-mono tracking-tight group-hover:text-cyan-300 transition-colors">
                 ${value.toLocaleString()}
             </p>
         </div>
