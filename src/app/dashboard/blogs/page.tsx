@@ -8,16 +8,15 @@ import {
     Check, X, Image as ImageIcon, BookOpen, 
     Settings, Layout, Layers, Key,
     Video, Facebook, Instagram, Youtube,
-    Globe, User as UserIcon, Share2, Search
+    Globe, User as UserIcon, Share2, Search, Sparkles, Laptop, Building2
 } from "lucide-react"
 
-import VirtualOfficeWorkspace from "@/components/dashboard/VirtualOfficeWorkspace"
 import MultiSocialPublisher from "@/components/dashboard/MultiSocialPublisher"
+import Link from "next/link"
 
 export default function BlogsDashboard() {
   const { data: session } = useSession()
-  const [masterMode, setMasterMode] = useState<"red_social" | "area_trabajo">("red_social")
-  const [activeTab, setActiveTab] = useState<"mis_blogs" | "permisos" | "social_settings" | "entornos">("mis_blogs")
+  const [activeTab, setActiveTab] = useState<"mis_blogs" | "laptops" | "bloques" | "videoporteros" | "permisos" | "social_settings" | "entornos">("mis_blogs")
   const isAdmin = session?.user?.role === "ADMIN" || session?.user?.role === "MANAGEMENT"
   const canPublish = isAdmin || (session?.user as any)?.canCreateBlogs
 
@@ -125,6 +124,11 @@ export default function BlogsDashboard() {
                   setSocialSettings(data)
               }
           }
+      } catch (e) {
+          console.error(e)
+      }
+  }
+
   const handleSaveBlog = async (e: React.FormEvent) => {
     e.preventDefault()
     
@@ -275,12 +279,6 @@ export default function BlogsDashboard() {
     setEditingBlog(null)
   }
 
-  const toggleAccountSelection = (id: string) => {
-      setSelectedAccountIds(prev => 
-          prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
-      )
-  }
-
   useEffect(() => {
     fetchBlogs()
     fetchEnvironments()
@@ -290,436 +288,333 @@ export default function BlogsDashboard() {
     }
   }, [isAdmin])
 
+  if (!isAdmin && !canPublish) {
+    return (
+        <div className="flex flex-col items-center justify-center p-20 text-center text-slate-500">
+            <Shield size={48} className="text-red-500 mb-4" />
+            <h2 className="text-2xl font-black text-white tracking-tight">Acceso Restringido</h2>
+            <p className="mt-2 font-medium">No cuentas con privilegios para la creación de contenidos.</p>
+        </div>
+    )
+  }
+
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
+    <div className="space-y-10 animate-in fade-in duration-500 text-white">
       
-      {/* MASTER SWITCH: RED SOCIAL VS ÁREA DE TRABAJO */}
-      <div className="bg-slate-900 border border-slate-800 p-2 rounded-2xl flex items-center justify-between shadow-xl">
-        <div className="flex items-center space-x-2">
-          <button
-            onClick={() => setMasterMode("red_social")}
-            className={`px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all flex items-center space-x-2 ${
-              masterMode === 'red_social' 
-                ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-lg' 
-                : 'text-slate-400 hover:text-white hover:bg-slate-800'
-            }`}
-          >
-            <Share2 size={16} />
-            <span>📱 Red Social & Publicador Omni-Canal</span>
-          </button>
-          
-          <button
-            onClick={() => setMasterMode("area_trabajo")}
-            className={`px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all flex items-center space-x-2 ${
-              masterMode === 'area_trabajo' 
-                ? 'bg-gradient-to-r from-indigo-500 to-blue-600 text-white shadow-lg' 
-                : 'text-slate-400 hover:text-white hover:bg-slate-800'
-            }`}
-          >
-            <Globe size={16} />
-            <span>🏢 Área de Trabajo (Oficina Virtual 2.5D)</span>
-          </button>
-        </div>
+      {/* 1. PUBLICADOR MULTI-RED SOCIAL (TIKTOK, YOUTUBE, INSTAGRAM, FACEBOOK) */}
+      <MultiSocialPublisher />
 
-        <div className="hidden md:flex items-center space-x-2 px-4 py-1.5 bg-slate-950 rounded-xl border border-slate-800 text-[10px] font-mono text-slate-400">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span>Plataforma ATOMIC Conectada</span>
-        </div>
-      </div>
-
-      {/* RENDER VIRTUAL OFFICE WHEN ÁREA DE TRABAJO ACTIVE */}
-      {masterMode === "area_trabajo" && (
-        <VirtualOfficeWorkspace currentModule="marketing" />
-      )}
-
-      {/* RENDER MULTI-SOCIAL PUBLISHER & CMS WHEN RED SOCIAL ACTIVE */}
-      {masterMode === "red_social" && (
-        <>
-          <MultiSocialPublisher />
-
-          {/* Header & Sub-Tabs */}
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-slate-200 pt-6 pb-6">
-              <div>
-                  <h1 className="text-3xl font-black text-[#0F172A] flex items-center gap-3">
-                      <Share2 className="text-indigo-600" /> Contenidos & Configuración de Redes
-                  </h1>
-                  <p className="text-sm text-slate-500 font-medium mt-1">
-                      Gestión de artículos de blog, entornos y llaves API oficiales.
-                  </p>
-              </div>
-              {isAdmin && (
-                  <div className="flex bg-slate-100 p-1.5 rounded-lg border border-slate-200">
-                      <button 
-                          onClick={() => setActiveTab("mis_blogs")}
-                          className={`px-4 py-2 text-xs font-bold transition-all rounded-md flex items-center gap-2 ${activeTab === 'mis_blogs' ? 'bg-white text-indigo-600 shadow-md border border-slate-200' : 'text-slate-500 hover:text-slate-700'}`}
-                      >
-                          <Layout size={14} /> Contenidos
-                      </button>
-                      <button 
-                          onClick={() => setActiveTab("entornos")}
-                          className={`px-4 py-2 text-xs font-bold transition-all rounded-md flex items-center gap-2 ${activeTab === 'entornos' ? 'bg-white text-indigo-600 shadow-md border border-slate-200' : 'text-slate-500 hover:text-slate-700'}`}
-                      >
-                          <Layers size={14} /> Entornos
-                      </button>
-                      <button 
-                          onClick={() => setActiveTab("permisos")}
-                          className={`px-4 py-2 text-xs font-bold transition-all rounded-md flex items-center gap-2 ${activeTab === 'permisos' ? 'bg-white text-indigo-600 shadow-md border border-slate-200' : 'text-slate-500 hover:text-slate-700'}`}
-                      >
-                          <Key size={14} /> Permisos
-                      </button>
-                      <button 
-                          onClick={() => setActiveTab("social_settings")}
-                          className={`px-4 py-2 text-xs font-bold transition-all rounded-md flex items-center gap-2 ${activeTab === 'social_settings' ? 'bg-white text-indigo-600 shadow-md border border-slate-200' : 'text-slate-500 hover:text-slate-700'}`}
-                      >
-                          <Settings size={14} /> APIs API
-                      </button>
-                  </div>
-              )}
+      {/* 2. GESTIÓN UNIFICADA DE BLOGS & NEWSLETTERS */}
+      <div className="bg-neutral-900/90 border border-white/10 rounded-3xl p-6 lg:p-8 space-y-6">
+        
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 pb-6 border-b border-white/10">
+          <div>
+            <div className="inline-flex items-center space-x-2 px-3 py-1 bg-indigo-500/10 border border-indigo-500/30 rounded-full text-indigo-400 font-mono text-[10px] font-bold uppercase tracking-widest mb-2">
+              <Sparkles size={12} />
+              <span>Gestión Unificada v4.0</span>
+            </div>
+            <h2 className="text-2xl lg:text-3xl font-black text-white tracking-tight flex items-center gap-3">
+              <BookOpen className="text-indigo-400" />
+              <span>Gestión de Blogs, Newsletters & Videos</span>
+            </h2>
+            <p className="text-neutral-400 text-xs font-light mt-1">
+              Administra todas las publicaciones públicas, newsletters empresariales y entradas de video.
+            </p>
           </div>
 
-      {activeTab === "mis_blogs" && (
-          <div className="space-y-6">
-            <div className="flex justify-between items-center bg-slate-900/50 backdrop-blur-xl border-slate-700/50 p-6 border border-slate-200 rounded-xl shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
-                <div className="flex items-center gap-3">
-                    <BookOpen className="text-slate-400" size={20} />
-                    <h3 className="text-sm font-bold text-slate-600 uppercase tracking-wider">Gestión de Publicaciones</h3>
-                </div>
+          {/* Sub-Tabs Selector */}
+          <div className="flex flex-wrap bg-black/60 p-1.5 rounded-2xl border border-white/10 gap-1">
+            <button 
+                onClick={() => setActiveTab("mis_blogs")}
+                className={`px-4 py-2.5 text-xs font-bold transition-all rounded-xl flex items-center gap-2 ${activeTab === 'mis_blogs' ? 'bg-indigo-600 text-white shadow-lg' : 'text-neutral-400 hover:text-white'}`}
+            >
+                <FileText size={14} /> Todos ({blogs.length})
+            </button>
+            <button 
+                onClick={() => setActiveTab("laptops")}
+                className={`px-4 py-2.5 text-xs font-bold transition-all rounded-xl flex items-center gap-2 ${activeTab === 'laptops' ? 'bg-indigo-600 text-white shadow-lg' : 'text-neutral-400 hover:text-white'}`}
+            >
+                <Laptop size={14} /> Blog Laptops
+            </button>
+            <button 
+                onClick={() => setActiveTab("bloques")}
+                className={`px-4 py-2.5 text-xs font-bold transition-all rounded-xl flex items-center gap-2 ${activeTab === 'bloques' ? 'bg-indigo-600 text-white shadow-lg' : 'text-neutral-400 hover:text-white'}`}
+            >
+                <Building2 size={14} /> Bloques
+            </button>
+            <button 
+                onClick={() => setActiveTab("videoporteros")}
+                className={`px-4 py-2.5 text-xs font-bold transition-all rounded-xl flex items-center gap-2 ${activeTab === 'videoporteros' ? 'bg-indigo-600 text-white shadow-lg' : 'text-neutral-400 hover:text-white'}`}
+            >
+                <Video size={14} /> Videoporteros
+            </button>
+            {isAdmin && (
+              <>
                 <button 
-                    onClick={() => openModal()}
-                    className="bg-indigo-600 text-white px-6 py-2.5 rounded-lg font-bold text-sm flex items-center gap-2 hover:bg-indigo-700 transition-all shadow-[0_4px_15px_rgba(0,0,0,0.3)]"
+                    onClick={() => setActiveTab("entornos")}
+                    className={`px-4 py-2.5 text-xs font-bold transition-all rounded-xl flex items-center gap-2 ${activeTab === 'entornos' ? 'bg-indigo-600 text-white shadow-lg' : 'text-neutral-400 hover:text-white'}`}
                 >
-                    <Plus size={18} /> Nuevo Contenido
+                    <Layers size={14} /> Entornos
                 </button>
-            </div>
-
-            <div className="grid grid-cols-1 gap-4">
-                {blogs.length === 0 && !loading && (
-                    <div className="py-20 text-center bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 rounded-xl flex flex-col items-center justify-center">
-                        <FileText size={32} className="text-slate-300 mb-4" />
-                        <p className="text-slate-500 font-bold uppercase tracking-wider text-sm">No hay contenidos publicados.</p>
-                    </div>
-                )}
-                {blogs.map(blog => (
-                    <div key={blog.id} className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 p-4 rounded-xl flex items-center gap-6 hover:shadow-[0_8px_32px_rgba(0,0,0,0.5)] transition-all group">
-                        <div className="w-24 h-24 shrink-0 rounded-lg overflow-hidden bg-slate-50 border border-slate-100 flex items-center justify-center">
-                            {blog.contentType === 'video' ? (
-                                <Video size={24} className="text-slate-400" />
-                            ) : blog.imageUrl ? (
-                                <img src={blog.imageUrl} alt={blog.title} className="w-full h-full object-cover" />
-                            ) : (
-                                <ImageIcon size={24} className="text-slate-300" />
-                            )}
-                        </div>
-
-                        <div className="flex-1 flex justify-between items-center">
-                            <div className="max-w-xl">
-                                <div className="flex items-center gap-3 mb-1">
-                                    <h3 className="text-lg font-black text-[#0F172A] truncate">{blog.title}</h3>
-                                    <span className={`px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-md ${blog.published ? 'text-emerald-700 bg-emerald-50 border border-emerald-100' : 'text-slate-600 bg-slate-100 border border-slate-200'}`}>
-                                        {blog.published ? 'Publicado' : 'Borrador'}
-                                    </span>
-                                </div>
-                                <p className="text-sm text-slate-500 font-medium line-clamp-2">{blog.excerpt || 'Sin extracto...'}</p>
-                            </div>
-
-                            <div className="flex items-center gap-8">
-                                <div className="text-right hidden lg:block">
-                                    <p className="text-[10px] font-bold text-slate-400 uppercase">Autor</p>
-                                    <p className="text-sm font-bold text-[#0F172A]">{blog.author?.name || 'Sistema'}</p>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <button onClick={() => openModal(blog)} className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors">
-                                        <Edit size={18} />
-                                    </button>
-                                    <button onClick={() => handleDelete(blog.id)} className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors">
-                                        <Trash2 size={18} />
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                ))}
-            </div>
+                <button 
+                    onClick={() => setActiveTab("permisos")}
+                    className={`px-4 py-2.5 text-xs font-bold transition-all rounded-xl flex items-center gap-2 ${activeTab === 'permisos' ? 'bg-indigo-600 text-white shadow-lg' : 'text-neutral-400 hover:text-white'}`}
+                >
+                    <Key size={14} /> Permisos
+                </button>
+                <button 
+                    onClick={() => setActiveTab("social_settings")}
+                    className={`px-4 py-2.5 text-xs font-bold transition-all rounded-xl flex items-center gap-2 ${activeTab === 'social_settings' ? 'bg-indigo-600 text-white shadow-lg' : 'text-neutral-400 hover:text-white'}`}
+                >
+                    <Settings size={14} /> APIs
+                </button>
+              </>
+            )}
           </div>
-      )}
+        </div>
 
-      {/* OTHER TABS (Entornos, Permisos, Settings) - Refactored to SaaS Aesthetic */}
-      {activeTab === "entornos" && isAdmin && (
-          <div className="space-y-6">
-              <div className="flex justify-between items-center bg-slate-900/50 backdrop-blur-xl border-slate-700/50 p-6 border border-slate-200 rounded-xl shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
-                  <div className="flex items-center gap-3">
-                      <Layers className="text-indigo-600" size={20} />
-                      <h3 className="text-sm font-bold text-slate-600 uppercase tracking-wider">Entornos de Distribución</h3>
-                  </div>
+        {/* TAB 1: TODOS LOS BLOGS & NEWSLETTERS */}
+        {activeTab === "mis_blogs" && (
+            <div className="space-y-6">
+              <div className="flex justify-between items-center">
+                  <h3 className="text-xs font-mono font-bold uppercase tracking-widest text-neutral-400">
+                    Artículos & Newsletters Registrados ({blogs.length})
+                  </h3>
                   <button 
-                    onClick={() => setIsEnvModalOpen(true)}
-                    className="bg-indigo-600 text-white px-6 py-2.5 rounded-lg font-bold text-sm flex items-center gap-2 hover:bg-indigo-700 transition-all shadow-[0_4px_15px_rgba(0,0,0,0.3)]"
+                      onClick={() => openModal()}
+                      className="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all shadow-lg"
                   >
-                    <Plus size={18} /> Nuevo Entorno
+                      <Plus size={16} /> Crear Nuevo Blog / Newsletter
                   </button>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {environments.length === 0 && (
-                      <div className="col-span-full py-20 text-center bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 rounded-xl">
-                          <p className="text-slate-500 font-bold uppercase tracking-wider text-sm">Sin entornos configurados.</p>
+              <div className="grid grid-cols-1 gap-4">
+                  {blogs.length === 0 && !loading && (
+                      <div className="py-16 text-center bg-black/40 border border-white/5 rounded-2xl flex flex-col items-center justify-center space-y-3">
+                          <FileText size={32} className="text-neutral-500" />
+                          <p className="text-neutral-400 font-bold uppercase tracking-wider text-xs">No hay contenidos publicados aún.</p>
                       </div>
                   )}
-                  {environments.map(env => (
-                      <div key={env.id} className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 p-6 rounded-xl shadow-[0_4px_15px_rgba(0,0,0,0.3)] relative">
-                          <div className="flex justify-between items-start mb-6">
-                              <div>
-                                  <h3 className="text-lg font-black text-[#0F172A]">{env.name}</h3>
-                                  <p className="text-sm text-slate-500 mt-1">{env.description || 'Sin descripción'}</p>
-                              </div>
-                              <div className="flex gap-2">
-                                  <button onClick={() => { setTargetEnvId(env.id); setIsAccModalOpen(true) }} className="p-2 text-slate-400 hover:text-indigo-600 bg-slate-50 hover:bg-indigo-50 rounded-lg transition-colors border border-slate-200">
-                                      <Plus size={16} />
-                                  </button>
-                                  <button onClick={() => handleDeleteEnv(env.id)} className="p-2 text-slate-400 hover:text-rose-600 bg-slate-50 hover:bg-rose-50 rounded-lg transition-colors border border-slate-200">
-                                      <Trash2 size={16} />
-                                  </button>
-                              </div>
+                  {blogs.map(blog => (
+                      <div key={blog.id} className="bg-black/40 border border-white/10 p-5 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center gap-5 hover:border-indigo-500/50 transition-all group">
+                          <div className="w-20 h-20 shrink-0 rounded-xl overflow-hidden bg-neutral-900 border border-white/10 flex items-center justify-center">
+                              {blog.contentType === 'video' ? (
+                                  <Video size={24} className="text-pink-400" />
+                              ) : blog.imageUrl ? (
+                                  <img src={blog.imageUrl} alt={blog.title} className="w-full h-full object-cover" />
+                              ) : (
+                                  <ImageIcon size={24} className="text-neutral-500" />
+                              )}
                           </div>
-                          
-                          <div className="space-y-3">
-                              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Cuentas Vinculadas</p>
-                              {env.accounts?.length === 0 && <p className="text-sm text-slate-400 italic">No hay cuentas</p>}
-                              {env.accounts?.map((acc: any) => (
-                                  <div key={acc.id} className="flex justify-between items-center p-3 bg-slate-50 border border-slate-100 rounded-lg">
-                                      <div className="flex items-center gap-3">
-                                          {acc.platform === 'facebook' && <Facebook size={16} className="text-blue-600" />}
-                                          {acc.platform === 'instagram' && <Instagram size={16} className="text-pink-600" />}
-                                          {acc.platform === 'youtube' && <Youtube size={16} className="text-red-600" />}
-                                          {acc.platform === 'tiktok' && <span className="font-black text-xs">TK</span>}
-                                          <span className="text-sm font-bold text-slate-700">{acc.name}</span>
-                                      </div>
-                                      <button onClick={() => handleDeleteAcc(acc.id)} className="text-slate-400 hover:text-rose-500"><X size={14} /></button>
+
+                          <div className="flex-1 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 w-full">
+                              <div className="max-w-xl space-y-1">
+                                  <div className="flex items-center gap-3">
+                                      <h3 className="text-base font-black text-white truncate">{blog.title}</h3>
+                                      <span className={`px-2.5 py-0.5 text-[9px] font-mono font-bold uppercase rounded-md border ${
+                                        blog.published 
+                                          ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30' 
+                                          : 'text-neutral-400 bg-neutral-800 border-white/10'
+                                      }`}>
+                                          {blog.published ? 'PUBLICADO' : 'BORRADOR'}
+                                      </span>
                                   </div>
-                              ))}
+                                  <p className="text-xs text-neutral-400 line-clamp-1">{blog.excerpt || 'Sin extracto...'}</p>
+                              </div>
+
+                              <div className="flex items-center gap-6">
+                                  <div className="text-right hidden sm:block">
+                                      <p className="text-[9px] font-mono text-neutral-500 uppercase">Autor</p>
+                                      <p className="text-xs font-bold text-white">{blog.author?.name || 'Coordinación'}</p>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                      <button onClick={() => openModal(blog)} className="p-2 text-neutral-400 hover:text-indigo-400 hover:bg-white/5 rounded-xl transition-colors">
+                                          <Edit size={16} />
+                                      </button>
+                                      <button onClick={() => handleDelete(blog.id)} className="p-2 text-neutral-400 hover:text-red-400 hover:bg-white/5 rounded-xl transition-colors">
+                                          <Trash2 size={16} />
+                                      </button>
+                                  </div>
+                              </div>
                           </div>
                       </div>
                   ))}
               </div>
-          </div>
-      )}
+            </div>
+        )}
 
-      {activeTab === "permisos" && isAdmin && (
-          <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 rounded-xl shadow-[0_4px_15px_rgba(0,0,0,0.3)] overflow-hidden">
-             <div className="p-6 border-b border-slate-100 bg-slate-50">
-                  <h3 className="text-sm font-bold text-slate-600 uppercase tracking-wider">Privilegios de Redacción</h3>
-             </div>
-             <table className="w-full text-left">
-                 <thead>
-                     <tr className="border-b border-slate-100 bg-slate-900/50 backdrop-blur-xl border-slate-700/50">
-                         <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500">Usuario</th>
-                         <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500">Rol</th>
-                         <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500 text-center">Permiso de Publicación</th>
-                     </tr>
-                 </thead>
-                 <tbody className="divide-y divide-slate-100">
-                     {users.map(u => (
-                         <tr key={u.id} className="hover:bg-slate-50 transition-colors">
-                             <td className="px-6 py-4">
-                                 <div className="flex items-center gap-3">
-                                     <div className="w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-black">
-                                         {u.name?.[0] || 'U'}
-                                     </div>
-                                     <div>
-                                         <div className="font-bold text-[#0F172A]">{u.name || 'Sin Nombre'}</div>
-                                         <div className="text-xs text-slate-500">{u.email}</div>
-                                     </div>
-                                 </div>
-                             </td>
-                             <td className="px-6 py-4">
-                                 <span className="text-xs font-bold text-slate-600 bg-slate-100 px-3 py-1 rounded-full">{u.role}</span>
-                             </td>
-                             <td className="px-6 py-4 text-center">
-                                 <button 
-                                     onClick={() => handleTogglePermission(u.id, u.canCreateBlogs)}
-                                     className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${u.canCreateBlogs ? 'bg-emerald-500' : 'bg-slate-300'}`}
-                                 >
-                                     <span className={`inline-block h-4 w-4 transform rounded-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50 transition-transform ${u.canCreateBlogs ? 'translate-x-6' : 'translate-x-1'}`} />
-                                 </button>
-                             </td>
-                         </tr>
-                     ))}
-                 </tbody>
-             </table>
-          </div>
-      )}
-
-      {activeTab === "social_settings" && isAdmin && (
-          <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 rounded-xl shadow-[0_4px_15px_rgba(0,0,0,0.3)] p-8">
-              <div className="flex items-center space-x-3 mb-8 border-b border-slate-100 pb-4">
-                  <Settings className="text-indigo-600" size={20} />
-                  <h2 className="text-lg font-black text-[#0F172A]">API Keys & Credenciales</h2>
+        {/* TAB 2: CATÁLOGO DE LAPTOPS */}
+        {activeTab === "laptops" && (
+          <div className="p-6 bg-black/40 border border-white/10 rounded-2xl space-y-4">
+            <div className="flex justify-between items-center">
+              <div>
+                <h3 className="text-base font-black text-white flex items-center gap-2">
+                  <Laptop className="text-blue-400" size={18} /> Blog Catálogo de Laptops (54 Modelos)
+                </h3>
+                <p className="text-xs text-neutral-400 mt-1">Colección curada de equipos portátiles con ficha técnica y galerías HD.</p>
               </div>
-              
-              <form onSubmit={handleSaveSettings} className="space-y-8">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                      {/* Meta */}
-                      <div className="space-y-4 bg-slate-50 p-6 rounded-xl border border-slate-200">
-                          <h3 className="text-[#0F172A] font-bold flex items-center gap-2"><Facebook size={16} className="text-blue-600" /> Meta Graph API</h3>
-                          <div>
-                              <label className="block text-xs font-bold text-slate-500 mb-1">Page ID (Facebook)</label>
-                              <input type="text" className="w-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-300 p-2.5 rounded-lg text-sm" value={socialSettings.metaPageId || ''} onChange={e => setSocialSettings({...socialSettings, metaPageId: e.target.value})} />
-                          </div>
-                          <div>
-                              <label className="block text-xs font-bold text-slate-500 mb-1">Page Access Token</label>
-                              <input type="password" placeholder="••••••••" className="w-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-300 p-2.5 rounded-lg text-sm" value={socialSettings.metaPageToken || ''} onChange={e => setSocialSettings({...socialSettings, metaPageToken: e.target.value})} />
-                          </div>
-                          <div>
-                              <label className="block text-xs font-bold text-slate-500 mb-1">Instagram Business Account ID</label>
-                              <input type="text" className="w-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-300 p-2.5 rounded-lg text-sm" value={socialSettings.metaInstagramActId || ''} onChange={e => setSocialSettings({...socialSettings, metaInstagramActId: e.target.value})} />
-                          </div>
-                      </div>
-
-                      {/* YouTube */}
-                      <div className="space-y-4 bg-slate-50 p-6 rounded-xl border border-slate-200">
-                          <h3 className="text-[#0F172A] font-bold flex items-center gap-2"><Youtube size={16} className="text-red-600" /> YouTube API v3</h3>
-                          <div>
-                              <label className="block text-xs font-bold text-slate-500 mb-1">Channel ID</label>
-                              <input type="text" className="w-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-300 p-2.5 rounded-lg text-sm" value={socialSettings.youtubeChannelId || ''} onChange={e => setSocialSettings({...socialSettings, youtubeChannelId: e.target.value})} />
-                          </div>
-                          <div>
-                              <label className="block text-xs font-bold text-slate-500 mb-1">Refresh Token</label>
-                              <input type="password" placeholder="••••••••" className="w-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-300 p-2.5 rounded-lg text-sm" value={socialSettings.youtubeRefreshToken || ''} onChange={e => setSocialSettings({...socialSettings, youtubeRefreshToken: e.target.value})} />
-                          </div>
-                      </div>
-                  </div>
-                  <div className="flex justify-end">
-                      <button type="submit" disabled={savingSettings} className="bg-indigo-600 text-white px-8 py-2.5 rounded-lg font-bold text-sm hover:bg-indigo-700 transition-all shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
-                          {savingSettings ? 'Guardando...' : 'Guardar Credenciales'}
-                      </button>
-                  </div>
-              </form>
+              <Link href="/web/laptops-blog" target="_blank" className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold transition-all">
+                Ver Blog Público ↗
+              </Link>
+            </div>
           </div>
-      )}
-        </>
-      )}
+        )}
 
-      {/* Editor Modal */}
+        {/* TAB 3: MÁQUINAS DE BLOQUES */}
+        {activeTab === "bloques" && (
+          <div className="p-6 bg-black/40 border border-white/10 rounded-2xl space-y-4">
+            <div className="flex justify-between items-center">
+              <div>
+                <h3 className="text-base font-black text-white flex items-center gap-2">
+                  <Building2 className="text-amber-400" size={18} /> Landing Industrial Máquinas de Bloques
+                </h3>
+                <p className="text-xs text-neutral-400 mt-1">Guía completa de maquinaria pesada, cálculo de ROI y modelos de bloqueadoras.</p>
+              </div>
+              <Link href="/web/blogs/guia-maquinas-de-bloques" target="_blank" className="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded-xl text-xs font-bold transition-all">
+                Ver Landing Industrial ↗
+              </Link>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 4: VIDEOPORTEROS & YOUTUBE */}
+        {activeTab === "videoporteros" && (
+          <div className="p-6 bg-black/40 border border-white/10 rounded-2xl space-y-4">
+            <div className="flex justify-between items-center">
+              <div>
+                <h3 className="text-base font-black text-white flex items-center gap-2">
+                  <Video className="text-pink-400" size={18} /> Videoporteros & Contenidos YouTube
+                </h3>
+                <p className="text-xs text-neutral-400 mt-1">Demostraciones en video de kits de videoporteros IP y sistemas de seguridad.</p>
+              </div>
+              <button onClick={() => openModal()} className="px-4 py-2 bg-pink-600 hover:bg-pink-500 text-white rounded-xl text-xs font-bold transition-all">
+                + Añadir Video Blog
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ADMIN TABS: ENTORNOS, PERMISOS, APIS */}
+        {activeTab === "entornos" && isAdmin && (
+            <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                    <h3 className="text-xs font-mono font-bold uppercase tracking-widest text-neutral-400">Entornos de Distribución</h3>
+                    <button onClick={() => setIsEnvModalOpen(true)} className="bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 hover:bg-indigo-500">
+                      <Plus size={16} /> Nuevo Entorno
+                    </button>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {environments.map(env => (
+                        <div key={env.id} className="bg-black/40 border border-white/10 p-5 rounded-2xl relative space-y-3">
+                            <div className="flex justify-between items-start">
+                                <div>
+                                    <h4 className="text-base font-black text-white">{env.name}</h4>
+                                    <p className="text-xs text-neutral-400">{env.description || 'Sin descripción'}</p>
+                                </div>
+                                <button onClick={() => handleDeleteEnv(env.id)} className="text-neutral-500 hover:text-red-400"><Trash2 size={16} /></button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        )}
+
+        {activeTab === "permisos" && isAdmin && (
+            <div className="bg-black/40 border border-white/10 rounded-2xl overflow-hidden">
+               <div className="p-4 border-b border-white/10 text-xs font-mono font-bold text-neutral-400 uppercase">
+                  Privilegios de Redacción
+               </div>
+               <table className="w-full text-left">
+                   <thead>
+                       <tr className="border-b border-white/10 text-[10px] font-mono uppercase text-neutral-400">
+                           <th className="px-6 py-3">Usuario</th>
+                           <th className="px-6 py-3">Rol</th>
+                           <th className="px-6 py-3 text-center">Publicar Blogs</th>
+                       </tr>
+                   </thead>
+                   <tbody className="divide-y divide-white/5 text-xs font-medium">
+                       {users.map(u => (
+                           <tr key={u.id}>
+                               <td className="px-6 py-4">{u.name || u.email}</td>
+                               <td className="px-6 py-4"><span className="px-2.5 py-1 bg-white/5 border border-white/10 rounded-md font-mono text-[10px]">{u.role}</span></td>
+                               <td className="px-6 py-4 text-center">
+                                   <button onClick={() => handleTogglePermission(u.id, u.canCreateBlogs)} className={`px-3 py-1 rounded-full text-[10px] font-bold ${u.canCreateBlogs ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}`}>
+                                       {u.canCreateBlogs ? 'PERMITIDO' : 'BLOQUEADO'}
+                                   </button>
+                               </td>
+                           </tr>
+                       ))}
+                   </tbody>
+               </table>
+            </div>
+        )}
+
+        {activeTab === "social_settings" && isAdmin && (
+            <div className="bg-black/40 border border-white/10 p-6 rounded-2xl space-y-6">
+                <h3 className="text-base font-black text-white flex items-center gap-2"><Settings size={18} /> API Keys de Redes Sociales</h3>
+                <form onSubmit={handleSaveSettings} className="space-y-4 max-w-xl">
+                    <div>
+                        <label className="text-[10px] font-mono uppercase font-bold text-neutral-400 block mb-1">Facebook Page ID</label>
+                        <input type="text" className="w-full bg-neutral-900 border border-white/10 p-3 rounded-xl text-xs" value={socialSettings.metaPageId || ''} onChange={e => setSocialSettings({...socialSettings, metaPageId: e.target.value})} />
+                    </div>
+                    <div>
+                        <label className="text-[10px] font-mono uppercase font-bold text-neutral-400 block mb-1">Meta Access Token</label>
+                        <input type="password" className="w-full bg-neutral-900 border border-white/10 p-3 rounded-xl text-xs" value={socialSettings.metaPageToken || ''} onChange={e => setSocialSettings({...socialSettings, metaPageToken: e.target.value})} />
+                    </div>
+                    <button type="submit" disabled={savingSettings} className="px-6 py-3 bg-indigo-600 text-white font-bold text-xs uppercase rounded-xl hover:bg-indigo-500">
+                        {savingSettings ? 'Guardando...' : 'Guardar Credenciales'}
+                    </button>
+                </form>
+            </div>
+        )}
+
+      </div>
+
+      {/* MODAL CREAR/EDITAR BLOG */}
       <AnimatePresence>
           {isModalOpen && (
-              <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+              <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
                 <motion.div 
-                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                    className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" 
-                    onClick={closeModal} 
-                />
-                <motion.div 
-                    initial={{ opacity: 0, scale: 0.95, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                    className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 w-full max-w-4xl max-h-[90vh] overflow-y-auto border border-slate-200 shadow-2xl rounded-2xl relative z-10 flex flex-col"
+                    initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
+                    className="bg-neutral-900 border border-white/10 w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 lg:p-8 rounded-3xl relative shadow-2xl space-y-6"
                 >
-                    <div className="p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50 rounded-t-2xl">
-                        <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center">
-                                <FileText size={24} />
-                            </div>
-                            <div>
-                                <h2 className="text-xl font-black text-[#0F172A] tracking-tight">{editingBlog ? 'Editar Contenido' : 'Crear Contenido'}</h2>
-                                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mt-1">Editor Centralizado</p>
-                            </div>
-                        </div>
-                        <button onClick={closeModal} className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-200 rounded-lg transition-colors">
-                            <X size={20} />
-                        </button>
-                    </div>
+                    <button onClick={closeModal} className="absolute top-6 right-6 text-neutral-400 hover:text-white"><X size={18} /></button>
+                    <h3 className="text-xl font-black text-white uppercase tracking-tight">{editingBlog ? 'Editar Publicación' : 'Crear Nueva Publicación'}</h3>
 
-                    <form onSubmit={handleSaveBlog} className="p-8 space-y-6">
-                        <div className="flex gap-4 border-b border-slate-100 pb-6">
-                            <button
-                                type="button"
-                                onClick={() => setContentType("article")}
-                                className={`flex-1 py-4 flex flex-col items-center gap-2 rounded-xl transition-all border ${contentType === 'article' ? 'bg-indigo-50 border-indigo-200 text-indigo-600' : 'bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border-slate-200 text-slate-500 hover:border-indigo-300'}`}
-                            >
-                                <FileText size={20} /> <span className="text-sm font-bold">Artículo (Blog)</span>
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => setContentType("video")}
-                                className={`flex-1 py-4 flex flex-col items-center gap-2 rounded-xl transition-all border ${contentType === 'video' ? 'bg-indigo-50 border-indigo-200 text-indigo-600' : 'bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border-slate-200 text-slate-500 hover:border-indigo-300'}`}
-                            >
-                                <Video size={20} /> <span className="text-sm font-bold">Video Social</span>
-                            </button>
+                    <form onSubmit={handleSaveBlog} className="space-y-4">
+                        <div>
+                            <label className="text-[10px] font-mono uppercase font-bold text-neutral-400 block mb-1">Título del Blog / Newsletter</label>
+                            <input 
+                                type="text" required 
+                                value={title} onChange={e => setTitle(e.target.value)}
+                                className="w-full bg-black/60 border border-white/10 p-3 text-xs text-white rounded-xl outline-none focus:border-indigo-500"
+                                placeholder="Ej: Nueva tecnología de seguridad IP..."
+                            />
                         </div>
 
-                        <div className="space-y-4">
-                            <div>
-                                <label className="block text-xs font-bold text-slate-500 mb-1 ml-1 uppercase">Título Principal</label>
-                                <input 
-                                    type="text" required 
-                                    value={title} onChange={e => setTitle(e.target.value)}
-                                    className="w-full bg-slate-50 border border-slate-200 p-3.5 rounded-lg text-[#0F172A] font-bold focus:border-indigo-500 outline-none transition-all"
-                                    placeholder="Ej. Nuevas tendencias tecnológicas 2024"
-                                />
-                            </div>
-
-                            {contentType === 'article' && (
-                                <div>
-                                    <label className="block text-xs font-bold text-slate-500 mb-1 ml-1 uppercase">Extracto Corto</label>
-                                    <textarea 
-                                        value={excerpt} onChange={e => setExcerpt(e.target.value)}
-                                        className="w-full bg-slate-50 border border-slate-200 p-3.5 rounded-lg text-[#0F172A] font-medium focus:border-indigo-500 outline-none resize-none transition-all"
-                                        rows={2} placeholder="Breve resumen del contenido..."
-                                    />
-                                </div>
-                            )}
-
-                            <div>
-                                <label className="block text-xs font-bold text-slate-500 mb-1 ml-1 uppercase">{contentType === 'article' ? 'Contenido Completo' : 'Descripción del Video'}</label>
-                                <textarea 
-                                    required 
-                                    value={content} onChange={e => setContent(e.target.value)}
-                                    className="w-full bg-slate-50 border border-slate-200 p-4 rounded-lg text-[#0F172A] text-sm focus:border-indigo-500 outline-none min-h-[200px] resize-y transition-all"
-                                    placeholder={contentType === 'article' ? 'Desarrollo del artículo...' : 'Hashtags, descripción, menciones...'}
-                                />
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {contentType === 'article' ? (
-                                    <div>
-                                        <label className="block text-xs font-bold text-slate-500 mb-1 ml-1 uppercase">URL de Imagen (Portada)</label>
-                                        <input 
-                                            type="url" value={imageUrl} onChange={e => setImageUrl(e.target.value)}
-                                            className="w-full bg-slate-50 border border-slate-200 p-3.5 rounded-lg text-[#0F172A] text-sm focus:border-indigo-500 outline-none"
-                                            placeholder="https://..."
-                                        />
-                                    </div>
-                                ) : (
-                                    <div>
-                                        <label className="block text-xs font-bold text-slate-500 mb-1 ml-1 uppercase">URL del Video (MP4)</label>
-                                        <input 
-                                            type="url" required value={videoUrl} onChange={e => setVideoUrl(e.target.value)}
-                                            className="w-full bg-slate-50 border border-slate-200 p-3.5 rounded-lg text-[#0F172A] text-sm focus:border-indigo-500 outline-none"
-                                            placeholder="https://...mp4"
-                                        />
-                                    </div>
-                                )}
-                                
-                                <div>
-                                    <label className="block text-xs font-bold text-slate-500 mb-1 ml-1 uppercase">Estado de Publicación</label>
-                                    <div className="flex items-center gap-3 mt-3">
-                                        <button 
-                                            type="button"
-                                            onClick={() => setPublished(!published)}
-                                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${published ? 'bg-emerald-500' : 'bg-slate-300'}`}
-                                        >
-                                            <span className={`inline-block h-4 w-4 transform rounded-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50 transition-transform ${published ? 'translate-x-6' : 'translate-x-1'}`} />
-                                        </button>
-                                        <span className="text-sm font-bold text-slate-700">{published ? 'Público Activo' : 'Borrador Privado'}</span>
-                                    </div>
-                                </div>
-                            </div>
+                        <div>
+                            <label className="text-[10px] font-mono uppercase font-bold text-neutral-400 block mb-1">Resumen Corto (Newsletter)</label>
+                            <textarea 
+                                value={excerpt} onChange={e => setExcerpt(e.target.value)}
+                                className="w-full bg-black/60 border border-white/10 p-3 text-xs text-white rounded-xl outline-none focus:border-indigo-500 resize-none"
+                                rows={2} placeholder="Breve introducción para envíos por mail..."
+                            />
                         </div>
 
-                        <div className="pt-6 border-t border-slate-100 flex justify-end gap-3">
-                            <button type="button" onClick={closeModal} className="px-6 py-2.5 rounded-lg text-slate-500 font-bold text-sm hover:bg-slate-100 transition-colors border border-transparent">
-                                Cancelar
-                            </button>
-                            <button type="submit" className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-2.5 rounded-lg font-bold text-sm shadow-[0_4px_15px_rgba(0,0,0,0.3)] transition-all flex items-center gap-2">
-                                <Check size={18} /> Guardar Contenido
+                        <div>
+                            <label className="text-[10px] font-mono uppercase font-bold text-neutral-400 block mb-1">Contenido Completo del Artículo</label>
+                            <textarea 
+                                required 
+                                value={content} onChange={e => setContent(e.target.value)}
+                                className="w-full bg-black/60 border border-white/10 p-4 text-xs text-white rounded-xl outline-none focus:border-indigo-500 min-h-[160px] resize-y"
+                                placeholder="Desarrollo completo..."
+                            />
+                        </div>
+
+                        <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
+                            <button type="button" onClick={closeModal} className="px-5 py-2.5 rounded-xl text-neutral-400 text-xs font-bold">Cancelar</button>
+                            <button type="submit" className="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2.5 rounded-xl font-bold text-xs shadow-lg">
+                                Guardar Publicación
                             </button>
                         </div>
                     </form>
@@ -728,40 +623,6 @@ export default function BlogsDashboard() {
           )}
       </AnimatePresence>
 
-      {/* Env / Acc Modals (Simplified versions for SaaS) */}
-      <AnimatePresence>
-          {isEnvModalOpen && (
-              <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
-                  <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 p-8 max-w-md w-full rounded-2xl shadow-xl relative border border-slate-200">
-                      <button onClick={() => setIsEnvModalOpen(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-700"><X size={20} /></button>
-                      <h3 className="text-xl font-black text-[#0F172A] mb-6">Nuevo Entorno</h3>
-                      <div className="space-y-4">
-                          <input type="text" placeholder="Nombre del Entorno" className="w-full bg-slate-50 border border-slate-200 p-3 rounded-lg text-sm" value={envName} onChange={e => setEnvName(e.target.value)} />
-                          <textarea placeholder="Descripción..." className="w-full bg-slate-50 border border-slate-200 p-3 rounded-lg text-sm h-24" value={envDesc} onChange={e => setEnvDesc(e.target.value)} />
-                          <button onClick={handleCreateEnv} className="w-full bg-indigo-600 text-white py-3 rounded-lg font-bold text-sm hover:bg-indigo-700">Crear Entorno</button>
-                      </div>
-                  </div>
-              </div>
-          )}
-          {isAccModalOpen && (
-              <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
-                  <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 p-8 max-w-md w-full rounded-2xl shadow-xl relative border border-slate-200">
-                      <button onClick={() => setIsAccModalOpen(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-700"><X size={20} /></button>
-                      <h3 className="text-xl font-black text-[#0F172A] mb-6">Vincular Cuenta</h3>
-                      <div className="space-y-4">
-                          <input type="text" placeholder="Nombre (Ej. IG Principal)" className="w-full bg-slate-50 border border-slate-200 p-3 rounded-lg text-sm" value={accName} onChange={e => setAccName(e.target.value)} />
-                          <select className="w-full bg-slate-50 border border-slate-200 p-3 rounded-lg text-sm font-bold text-slate-700" value={accPlatform} onChange={e => setAccPlatform(e.target.value)}>
-                              <option value="facebook">Facebook</option>
-                              <option value="instagram">Instagram</option>
-                              <option value="youtube">YouTube</option>
-                              <option value="tiktok">TikTok</option>
-                          </select>
-                          <button onClick={handleCreateAcc} className="w-full bg-indigo-600 text-white py-3 rounded-lg font-bold text-sm hover:bg-indigo-700">Añadir Cuenta</button>
-                      </div>
-                  </div>
-              </div>
-          )}
-      </AnimatePresence>
     </div>
   )
 }
