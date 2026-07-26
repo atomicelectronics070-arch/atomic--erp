@@ -14,6 +14,9 @@ import { createPost, toggleLike, addComment, fetchFeed, getSalesRanking, deleteP
 import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
 
+import VirtualOfficeWorkspace from "@/components/dashboard/VirtualOfficeWorkspace"
+import MultiSocialPublisher from "@/components/dashboard/MultiSocialPublisher"
+
 interface SocialFeedClientProps {
     initialPosts: any[]
     initialRanking: any[]
@@ -21,6 +24,7 @@ interface SocialFeedClientProps {
 }
 
 export default function SocialFeedClient({ initialPosts, initialRanking, session }: SocialFeedClientProps) {
+    const [masterMode, setMasterMode] = useState<"area_trabajo" | "red_social">("area_trabajo")
     const [posts, setPosts] = useState<any[]>(initialPosts)
     const [ranking, setRanking] = useState<any[]>(initialRanking)
     const [loading, setLoading] = useState(false)
@@ -137,22 +141,68 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
     }
 
     return (
-        <div className="w-full min-h-screen bg-[#F8FAFC] pb-32">
+        <div className="w-full min-h-screen bg-[#050505] text-white pb-32 space-y-8">
             
-            {/* SaaS Header */}
-            <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border-b border-slate-200 px-8 py-6 mb-8 flex flex-col md:flex-row justify-between items-center gap-6 shadow-[0_4px_15px_rgba(0,0,0,0.3)] sticky top-0 z-40">
-                <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-[0_12px_40px_rgba(0,0,0,0.5)]">
-                        <Globe size={24} />
-                    </div>
-                    <div>
-                        <h1 className="text-2xl font-black text-[#0F172A] tracking-tight">Social & Ranking</h1>
-                        <p className="text-sm text-slate-500 font-medium flex items-center gap-2">
-                            <span className="text-indigo-600 font-bold">Feed Corporativo</span> • Interacción Global
-                        </p>
-                    </div>
+            {/* MASTER SWITCH: ÁREA DE TRABAJO (OFICINA VIRTUAL 2.5D) VS RED SOCIAL */}
+            <div className="bg-slate-900/90 backdrop-blur-xl border border-slate-800 p-3 rounded-3xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-2xl sticky top-20 z-40">
+                <div className="flex items-center space-x-3 w-full sm:w-auto">
+                    <button
+                        onClick={() => setMasterMode("area_trabajo")}
+                        className={`flex-1 sm:flex-initial px-6 py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest transition-all flex items-center justify-center space-x-2.5 ${
+                            masterMode === 'area_trabajo' 
+                                ? 'bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white shadow-[0_0_30px_rgba(99,102,241,0.4)] scale-105' 
+                                : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
+                        }`}
+                    >
+                        <Globe size={18} className="text-cyan-400" />
+                        <span>🎮 Área de Trabajo (Oficina Virtual 2.5D)</span>
+                    </button>
+                    
+                    <button
+                        onClick={() => setMasterMode("red_social")}
+                        className={`flex-1 sm:flex-initial px-6 py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest transition-all flex items-center justify-center space-x-2.5 ${
+                            masterMode === 'red_social' 
+                                ? 'bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-600 text-white shadow-[0_0_30px_rgba(236,72,153,0.4)] scale-105' 
+                                : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
+                        }`}
+                    >
+                        <Share2 size={18} className="text-pink-400" />
+                        <span>📱 Red Social & Publicador Multi-Red</span>
+                    </button>
+                </div>
+
+                <div className="hidden lg:flex items-center space-x-3 px-4 py-2 bg-slate-950 rounded-2xl border border-slate-800 text-[10px] font-mono text-slate-400">
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+                    <span className="text-white font-bold">Oficina Virtual & CRM Conectados</span>
                 </div>
             </div>
+
+            {/* MODE 1: ÁREA DE TRABAJO (OFICINA VIRTUAL 2.5D) */}
+            {masterMode === "area_trabajo" && (
+                <div className="space-y-8 animate-in fade-in zoom-in-95 duration-500">
+                    <VirtualOfficeWorkspace currentModule="ventas" />
+                </div>
+            )}
+
+            {/* MODE 2: RED SOCIAL (PUBLICADOR OMNI-CANAL + FEED & RANKING) */}
+            {masterMode === "red_social" && (
+                <div className="space-y-8 animate-in fade-in zoom-in-95 duration-500">
+                    <MultiSocialPublisher />
+
+                    {/* SaaS Feed Header */}
+                    <div className="bg-slate-900/80 backdrop-blur-xl border border-slate-800 px-8 py-6 rounded-3xl flex flex-col md:flex-row justify-between items-center gap-6 shadow-xl">
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 bg-pink-600 rounded-2xl flex items-center justify-center text-white shadow-lg">
+                                <Globe size={24} />
+                            </div>
+                            <div>
+                                <h2 className="text-2xl font-black text-white tracking-tight">Social Feed & Ranking Corporativo</h2>
+                                <p className="text-sm text-slate-400 font-medium flex items-center gap-2">
+                                    <span className="text-pink-400 font-bold">Muro Interno</span> • Clasificación de Ventas
+                                </p>
+                            </div>
+                        </div>
+                    </div>
 
             <div className="max-w-7xl mx-auto px-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
                 
@@ -577,6 +627,8 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
                     </div>
                 )}
             </AnimatePresence>
+                </div>
+            )}
         </div>
     )
 }
