@@ -7,7 +7,7 @@ import {
     User, ShieldCheck, Mail, Phone, MapPin, 
     MessageSquare, History, X, ChevronRight,
     Briefcase, Save, Clock, Search, CheckCircle2,
-    FileText, Zap, Building2, Tag, Percent, ShoppingCart, Wand2, Upload, AlertTriangle, Download
+    FileText, Zap, Building2, Tag, Percent, ShoppingCart, Wand2, Upload, AlertTriangle, Download, Sparkles
 } from "lucide-react"
 import jsPDF from "jspdf"
 import autoTable from "jspdf-autotable"
@@ -64,7 +64,6 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
     const [deliveryAddress, setDeliveryAddress] = useState("")
     const [quoteNumber, setQuoteNumber] = useState(nextNumber)
 
-    // Pre-fill from URL params
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
         const urlClient = params.get('client');
@@ -258,10 +257,9 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
         }
 
         const doc = new jsPDF()
-        const primaryColor = [15, 23, 42] // Slate-900
-        const accentColor = [79, 70, 229] // Indigo-600
+        const primaryColor = [15, 23, 42]
+        const accentColor = [79, 70, 229]
         
-        // Logo / Company Name
         doc.setFont("helvetica", "bold")
         doc.setFontSize(26)
         doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2])
@@ -277,7 +275,6 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
         doc.text("Soluciones Tecnológicas e Industriales de Alto Rendimiento", 14, 32)
         doc.text("División Corporativa | Quito, Ecuador", 14, 37)
         
-        // Quote Info Right Side
         doc.setFontSize(22)
         doc.setFont("helvetica", "bold")
         doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2])
@@ -290,9 +287,8 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
         doc.text(`Fecha: ${new Date().toLocaleDateString()}`, 195, 37, { align: "right" })
         
         doc.setDrawColor(220, 220, 220)
-        doc.line(14, 42, 196, 42) // Separator line
+        doc.line(14, 42, 196, 42)
         
-        // Client Info
         doc.setFontSize(10)
         doc.setFont("helvetica", "bold")
         doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2])
@@ -306,7 +302,6 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
         doc.text(`Tel: ${clientPhone}`, 14, 68)
         doc.text(`Email: ${emailNotSpecified ? "No especificado" : clientEmail}`, 14, 73)
         
-        // Project Info
         doc.setFontSize(10)
         doc.setFont("helvetica", "bold")
         doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2])
@@ -319,7 +314,6 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
         doc.text(splitSubject, 106, 58)
         doc.text(`Asesor Comercial: ${advisorName}`, 106, 68 + ((splitSubject.length - 1) * 4))
         
-        // Table
         autoTable(doc, {
             startY: 85,
             head: [["IMG", "CÓDIGO", "DESCRIPCIÓN", "CANT", "PRECIO", "SUBTOT", "DESC", "TOTAL"]],
@@ -328,7 +322,7 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                 const desc = sub * ((i.discountPercent || 0) / 100);
                 const tot = sub - desc;
                 return [
-                    '', // Placeholder for image
+                    '', 
                     i.productId, 
                     i.description, 
                     i.quantity, 
@@ -375,7 +369,6 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
         
         const finalY = (doc as any).lastAutoTable.finalY + 10;
         
-        // Totals Block
         doc.setFillColor(248, 250, 252)
         doc.rect(130, finalY, 66, 35, 'F')
         doc.setDrawColor(226, 232, 240)
@@ -399,68 +392,59 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
             doc.text(`Descuento:`, 135, finalY + 24)
             doc.setFont("helvetica", "normal")
             doc.text(`-$${totalDiscountAmount.toFixed(2)}`, 190, finalY + 24, { align: "right" })
-            
-            doc.setFontSize(12)
-            doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2])
-            doc.setFont("helvetica", "bold")
-            doc.text("TOTAL USD:", 135, finalY + 32)
-            doc.text(`$${total.toFixed(2)}`, 190, finalY + 32, { align: "right" })
-        } else {
-            doc.setFontSize(12)
-            doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2])
-            doc.setFont("helvetica", "bold")
-            doc.text("TOTAL USD:", 135, finalY + 26)
-            doc.text(`$${total.toFixed(2)}`, 190, finalY + 26, { align: "right" })
         }
         
-        // Footer Notes
-        doc.setFontSize(8)
-        doc.setTextColor(150, 150, 150)
-        doc.setFont("helvetica", "normal")
-        doc.text("Condiciones: Esta cotización tiene una validez de 15 días. Los valores incluyen IVA.", 14, 280)
-        doc.text("Forma de pago: Según acuerdo comercial vigente. Los productos están sujetos a disponibilidad de stock.", 14, 285)
-
+        doc.setFont("helvetica", "bold")
+        doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2])
+        doc.setFontSize(12)
+        doc.text("TOTAL USD:", 135, finalY + 31)
+        doc.text(`$${total.toFixed(2)}`, 190, finalY + 31, { align: "right" })
+        
         doc.save(`${quoteNumber}_${clientName.replace(/\s+/g, "_")}.pdf`)
 
-        // Save to DB & Sync CRM
-        await fetch("/api/quotes", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                quoteNumber, 
-                clientName, 
-                clientEmail: finalEmail, 
-                clientPhone, 
-                city: clientCity,
-                quoteSubject,
-                items, 
-                subtotal,
-                discountPercent,
-                tax: taxAmount,
-                total, 
-                status, 
-                advisorName,
-                deliveryAddress
+        try {
+            const res = await fetch("/api/quotes/save", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    quoteNumber,
+                    clientName,
+                    clientEmail: finalEmail,
+                    clientPhone,
+                    clientCity,
+                    quoteSubject,
+                    subtotal,
+                    discountPercent,
+                    totalDiscountAmount,
+                    taxAmount,
+                    total,
+                    items,
+                    status
+                })
             })
-        })
-        alert("Cotización generada y guardada en el CRM con éxito.");
+            if (res.ok) {
+                const data = await res.json()
+                if (data.nextQuoteNumber) setQuoteNumber(data.nextQuoteNumber)
+                if (data.history) setQuoteHistory(data.history)
+            }
+        } catch(e) {
+            console.error("Save error:", e)
+        }
     }
 
     const handleGenerateTicket = async () => {
-        if (!clientName.trim() || !quoteSubject.trim()) {
-            alert("⚠️ CAMPOS OBLIGATORIOS: Nombre y Tema de la Cotización.");
+        if (!clientName.trim() || !clientPhone.trim()) {
+            alert("⚠️ CAMPOS OBLIGATORIOS PARA TICKET: Nombre y Teléfono.");
             return
         }
 
         const doc = new jsPDF({
-            orientation: "portrait",
             unit: "mm",
-            format: [80, 297]
-        });
+            format: [80, 200]
+        })
 
-        const primaryColor = [15, 23, 42]; // Slate-900
+        const primaryColor = [15, 23, 42];
 
-        // Header
         doc.setFont("helvetica", "bold");
         doc.setFontSize(16);
         doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
@@ -482,7 +466,6 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
         doc.setFont("helvetica", "bold");
         doc.text("------------------------------------------------------------------", 40, 38, { align: "center" });
         
-        // Client Info
         doc.text("CLIENTE:", 5, 43);
         doc.setFont("helvetica", "normal");
         const clientNameLines = doc.splitTextToSize(clientName.toUpperCase(), 70);
@@ -495,14 +478,12 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
         doc.text("------------------------------------------------------------------", 40, currY, { align: "center" });
         currY += 5;
         
-        // Items Header
         doc.setFontSize(7);
         doc.text("CANT DESCRIPCION           P.UNIT   TOTAL", 5, currY);
         currY += 4;
         doc.text("---------------------------------------------------------------------------", 40, currY, { align: "center" });
         currY += 4;
         
-        // Items
         doc.setFont("helvetica", "normal");
         items.forEach(item => {
             const itemSub = item.quantity * item.unitPrice;
@@ -530,7 +511,6 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
         doc.text("------------------------------------------------------------------", 40, currY, { align: "center" });
         currY += 5;
         
-        // Totals
         doc.setFontSize(8);
         doc.text("SUBTOTAL:", 35, currY);
         doc.setFont("helvetica", "normal");
@@ -569,89 +549,97 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
     }
 
     return (
-        <div className="min-h-screen bg-[#050505] text-white font-sans pb-32 space-y-8">
+        <div className="min-h-screen bg-[#030712] text-slate-100 font-sans pb-32 space-y-8 p-6 lg:p-10 rounded-3xl border border-slate-800/80 shadow-2xl relative overflow-hidden">
             
+            {/* Ambient Background Glow */}
+            <div className="absolute top-0 right-1/3 w-[500px] h-[500px] bg-cyan-500/5 rounded-full blur-[120px] pointer-events-none" />
+            <div className="absolute bottom-1/4 left-0 w-[400px] h-[400px] bg-indigo-500/5 rounded-full blur-[100px] pointer-events-none" />
+
             {/* Header */}
-            <div className="bg-slate-900/90 backdrop-blur-xl border-b border-slate-800 px-8 py-6 flex flex-col md:flex-row justify-between items-center gap-6 shadow-2xl sticky top-0 z-40">
+            <div className="bg-slate-900/90 border border-slate-800/80 p-6 rounded-3xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6 shadow-xl">
                 <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-[0_0_25px_rgba(99,102,241,0.4)]">
-                        <FileText size={24} />
+                    <div className="w-14 h-14 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-[0_0_25px_rgba(99,102,241,0.4)] shrink-0">
+                        <FileText size={28} />
                     </div>
                     <div>
-                        <h1 className="text-2xl font-black text-white tracking-tight flex items-center gap-2">
+                        <h1 className="text-2xl font-black text-white tracking-tight flex items-center gap-3">
                             <span>Cotizador Empresarial Pro</span>
-                            <span className="px-2.5 py-0.5 text-[9px] font-mono font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 rounded-full">CYBERPUNK v4.0</span>
+                            <span className="px-3 py-1 text-[10px] font-mono font-bold bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 rounded-full">
+                                CYBERPUNK v4.0
+                            </span>
                         </h1>
-                        <p className="text-xs text-slate-400 font-medium flex items-center gap-2 mt-0.5">
-                            <span className="text-cyan-400 font-bold">{quoteNumber}</span> • Cálculo Instantáneo & Emisión PDF
+                        <p className="text-xs text-slate-400 font-medium flex items-center gap-2 mt-1">
+                            Doc N°: <span className="text-cyan-400 font-bold font-mono">{quoteNumber}</span> • Emisión instantánea en PDF A4 & Ticket
                         </p>
                     </div>
                 </div>
-                <div className="flex items-center gap-4">
+
+                <div className="flex flex-wrap items-center gap-3">
                     <button 
                         onClick={handleFillTest}
-                        className="px-4 py-2.5 bg-amber-50 text-amber-600 hover:bg-amber-100 font-bold text-sm rounded-lg transition-all flex items-center gap-2 shadow-[0_4px_15px_rgba(0,0,0,0.3)]"
+                        className="px-4 py-2.5 bg-amber-500/10 border border-amber-500/30 text-amber-300 hover:bg-amber-500/20 font-mono font-bold text-xs rounded-2xl transition-all flex items-center gap-2"
                         title="Rellenar cotización genérica de prueba"
                     >
-                        <Zap size={16}/> Prueba
+                        <Zap size={15}/> Prueba
                     </button>
                     <button 
                         onClick={() => setIsHistoryOpen(true)} 
-                        className="px-5 py-2.5 bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-800 font-bold text-sm rounded-lg transition-all flex items-center gap-2 shadow-[0_4px_15px_rgba(0,0,0,0.3)]"
+                        className="px-4 py-2.5 bg-slate-950 border border-slate-800 text-slate-300 hover:text-white font-mono font-bold text-xs rounded-2xl transition-all flex items-center gap-2"
                     >
-                        <History size={16}/> Historial
+                        <History size={15}/> Historial
                     </button>
                     <button 
                         onClick={handleGeneratePDF}
-                        className="px-6 py-2.5 bg-[#0F172A] text-white hover:bg-[#1E293B] font-bold text-sm rounded-lg transition-all flex items-center gap-2 shadow-[0_4px_14px_0_rgb(0,0,0,0.1)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.15)]"
+                        className="px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-xs uppercase tracking-wider rounded-2xl transition-all flex items-center gap-2 shadow-[0_0_15px_rgba(6,182,212,0.3)]"
                     >
-                        <FileOutput size={16} /> PDF A4
+                        <FileOutput size={15} /> Exportar PDF A4
                     </button>
                     <button 
                         onClick={handleGenerateTicket}
-                        className="px-6 py-2.5 bg-indigo-600 text-white hover:bg-indigo-700 font-bold text-sm rounded-lg transition-all flex items-center gap-2 shadow-[0_4px_14px_0_rgb(79,70,229,0.3)] hover:shadow-[0_6px_20px_rgba(79,70,229,0.4)]"
+                        className="px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-black text-xs uppercase tracking-wider rounded-2xl transition-all flex items-center gap-2 shadow-[0_0_15px_rgba(99,102,241,0.3)]"
                     >
-                        <FileOutput size={16} /> TICKET
+                        <FileOutput size={15} /> Ticket POS
                     </button>
                 </div>
             </div>
 
-            <div className="max-w-7xl mx-auto px-8 py-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 
                 {/* Left Column: Form & Items */}
                 <div className="lg:col-span-2 space-y-8">
                     
                     {/* Project Subject */}
-                    <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 p-8 rounded-xl border border-slate-200 shadow-[0_4px_15px_rgba(0,0,0,0.3)] border-l-4 border-l-indigo-600">
-                        <label className="text-[10px] font-black uppercase text-indigo-600 tracking-wider mb-2 flex items-center gap-2">
-                            <Briefcase size={14} /> Asunto de la Cotización
+                    <div className="bg-slate-900/90 border border-indigo-500/30 p-6 rounded-3xl shadow-xl space-y-2">
+                        <label className="text-[10px] font-mono font-bold uppercase text-indigo-400 tracking-wider flex items-center gap-2">
+                            <Briefcase size={14} /> Asunto / Tema del Proyecto
                         </label>
                         <input 
                             value={quoteSubject} 
                             onChange={e => setQuoteSubject(e.target.value)} 
                             placeholder="Ej: Implementación de Sistema de Seguridad Perimetral..."
-                            className="w-full bg-transparent text-xl font-bold text-white outline-none placeholder:text-slate-300 placeholder:font-normal" 
+                            className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-base font-bold text-white outline-none focus:border-indigo-500/50 transition-colors placeholder:text-slate-600" 
                         />
                     </div>
 
                     {/* Client Info */}
-                    <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 p-8 rounded-xl border border-slate-200 shadow-[0_4px_15px_rgba(0,0,0,0.3)] relative">
-                        <div className="flex justify-between items-center mb-6 border-b border-slate-100 pb-4">
+                    <div className="bg-slate-900/90 border border-slate-800/80 p-6 lg:p-8 rounded-3xl space-y-6 shadow-xl relative">
+                        <div className="flex justify-between items-center border-b border-slate-800 pb-4">
                             <h2 className="text-sm font-black text-white uppercase tracking-wider flex items-center gap-2">
-                                <Building2 className="text-indigo-600" size={16} /> Datos del Cliente
+                                <Building2 className="text-cyan-400" size={18} /> Datos del Cliente
                             </h2>
                             <button 
                                 onClick={handleSaveClient} 
                                 disabled={isSavingClient}
-                                className="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 transition-colors disabled:opacity-50"
+                                className="bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/20 px-4 py-2 rounded-2xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all disabled:opacity-50"
                                 title="Guardar como nuevo cliente en la base de datos"
                             >
                                 {isSavingClient ? <span className="animate-pulse">Guardando...</span> : <><Plus size={14} /> Guardar Cliente</>}
                             </button>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2 relative">
-                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Razón Social / Nombre</label>
+                                <label className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider">Razón Social / Nombre</label>
                                 <input 
                                     value={clientName} 
                                     onChange={e => {
@@ -659,14 +647,14 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                                         setShowClientList(true)
                                     }} 
                                     onFocus={() => setShowClientList(true)}
-                                    className="w-full bg-slate-900 border border-slate-700 text-white p-3 text-sm font-bold text-white uppercase rounded-lg outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all" 
+                                    className="w-full bg-slate-950 border border-slate-800 text-white p-3.5 text-xs font-bold font-mono uppercase rounded-2xl outline-none focus:border-cyan-500/50 transition-colors" 
                                     placeholder="Buscar cliente existente..."
                                 />
                                 {showClientList && clientName && (
-                                    <div className="absolute top-full left-0 w-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 shadow-xl rounded-lg z-50 max-h-48 overflow-y-auto mt-1">
-                                        <div className="flex justify-between items-center p-2 border-b border-slate-100">
-                                            <span className="text-[10px] font-bold text-slate-400 uppercase">Resultados ({initialClients.filter((c: any) => c.name.toLowerCase().includes(clientName.toLowerCase())).length})</span>
-                                            <button onClick={() => setShowClientList(false)} className="text-slate-400 hover:text-slate-600"><X size={14}/></button>
+                                    <div className="absolute top-full left-0 w-full bg-slate-950 border border-slate-800 shadow-2xl rounded-2xl z-50 max-h-52 overflow-y-auto mt-1">
+                                        <div className="flex justify-between items-center p-3 border-b border-slate-800">
+                                            <span className="text-[10px] font-mono font-bold text-slate-400 uppercase">Coincidencias ({initialClients.filter((c: any) => c.name.toLowerCase().includes(clientName.toLowerCase())).length})</span>
+                                            <button onClick={() => setShowClientList(false)} className="text-slate-400 hover:text-white"><X size={14}/></button>
                                         </div>
                                         {initialClients.filter((c: any) => c.name.toLowerCase().includes(clientName.toLowerCase())).map((c: any) => (
                                             <button 
@@ -684,60 +672,63 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                                                     }
                                                     setShowClientList(false)
                                                 }} 
-                                                className="w-full text-left p-3 hover:bg-slate-50 border-b border-slate-100 flex items-center justify-between group"
+                                                className="w-full text-left p-3 hover:bg-slate-900 border-b border-slate-800/60 flex items-center justify-between group transition-colors"
                                             >
                                                 <div>
-                                                    <p className="text-xs font-black text-white uppercase">{c.name}</p>
-                                                    <p className="text-[10px] text-slate-500 font-bold mt-0.5">{c.city || "Sin ciudad"} • {c.phone || "Sin tel"}</p>
+                                                    <p className="text-xs font-bold text-white uppercase">{c.name}</p>
+                                                    <p className="text-[10px] text-slate-400 font-mono mt-0.5">{c.city || "Sin ciudad"} • {c.phone || "Sin tel"}</p>
                                                 </div>
-                                                <ChevronRight size={14} className="text-slate-300 group-hover:text-indigo-500" />
+                                                <ChevronRight size={14} className="text-slate-600 group-hover:text-cyan-400" />
                                             </button>
                                         ))}
                                     </div>
                                 )}
                             </div>
+
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Ciudad / Ubicación</label>
-                                <input value={clientCity} onChange={e => setClientCity(e.target.value)} className="w-full bg-slate-900 border border-slate-700 text-white p-3 text-sm font-bold text-white uppercase rounded-lg outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all" />
+                                <label className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider">Ciudad / Ubicación</label>
+                                <input value={clientCity} onChange={e => setClientCity(e.target.value)} className="w-full bg-slate-950 border border-slate-800 text-white p-3.5 text-xs font-bold font-mono uppercase rounded-2xl outline-none focus:border-cyan-500/50 transition-colors" placeholder="Quito, Guayaquil..." />
                             </div>
+
                             <div className="space-y-2">
                                 <div className="flex justify-between items-center">
-                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Correo Electrónico</label>
+                                    <label className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider">Correo Electrónico</label>
                                     <label className="flex items-center gap-1.5 cursor-pointer group">
-                                        <input type="checkbox" checked={emailNotSpecified} onChange={e => setEmailNotSpecified(e.target.checked)} className="accent-indigo-600" />
-                                        <span className="text-[9px] font-bold text-slate-400 group-hover:text-slate-600 uppercase">Sin correo</span>
+                                        <input type="checkbox" checked={emailNotSpecified} onChange={e => setEmailNotSpecified(e.target.checked)} className="rounded border-slate-700 bg-slate-950 text-cyan-400" />
+                                        <span className="text-[9px] font-mono font-bold text-slate-400 group-hover:text-slate-200 uppercase">Sin correo</span>
                                     </label>
                                 </div>
                                 <input 
                                     disabled={emailNotSpecified}
                                     value={clientEmail} 
                                     onChange={e => setClientEmail(e.target.value)} 
-                                    className={`w-full bg-slate-900 border border-slate-700 text-white p-3 text-sm font-bold text-white rounded-lg outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all ${emailNotSpecified ? 'opacity-50 cursor-not-allowed' : ''}`} 
+                                    className={`w-full bg-slate-950 border border-slate-800 text-white p-3.5 text-xs font-bold font-mono rounded-2xl outline-none focus:border-cyan-500/50 transition-colors ${emailNotSpecified ? 'opacity-50 cursor-not-allowed' : ''}`} 
                                     placeholder={emailNotSpecified ? "NO ESPECIFICA" : "correo@empresa.com"}
                                 />
                             </div>
+
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Teléfono / Celular</label>
-                                <input value={clientPhone} onChange={e => setClientPhone(e.target.value)} className="w-full bg-slate-900 border border-slate-700 text-white p-3 text-sm font-bold text-white rounded-lg outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all" />
+                                <label className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider">Teléfono / Celular</label>
+                                <input value={clientPhone} onChange={e => setClientPhone(e.target.value)} className="w-full bg-slate-950 border border-slate-800 text-white p-3.5 text-xs font-bold font-mono rounded-2xl outline-none focus:border-cyan-500/50 transition-colors" placeholder="099..." />
                             </div>
                         </div>
                     </div>
- 
+
                     {/* Products Detail */}
-                    <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 p-8 rounded-xl border border-slate-200 shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
-                        <div className="flex justify-between items-center mb-6 border-b border-slate-100 pb-4">
+                    <div className="bg-slate-900/90 border border-slate-800/80 p-6 lg:p-8 rounded-3xl space-y-6 shadow-xl">
+                        <div className="flex justify-between items-center border-b border-slate-800 pb-4">
                             <h2 className="text-sm font-black text-white uppercase tracking-wider flex items-center gap-2">
-        <ShoppingCart className="text-indigo-600" size={16} /> Detalle de Ítems
+                                <ShoppingCart className="text-emerald-400" size={18} /> Detalle de Ítems
                             </h2>
-                            <button onClick={handleAddItem} className="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 transition-colors">
-                                <Plus size={14} /> Fila
+                            <button onClick={handleAddItem} className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 hover:bg-emerald-500/20 px-4 py-2 rounded-2xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all">
+                                <Plus size={14} /> Añadir Fila
                             </button>
                         </div>
                         
                         {/* Table Header */}
-                        <div className="hidden md:flex items-center gap-4 px-4 py-3 bg-slate-100 border border-slate-200 rounded-t-xl text-[10px] font-black text-slate-500 uppercase tracking-wider">
+                        <div className="hidden md:flex items-center gap-3 px-4 py-3 bg-slate-950 border border-slate-800 rounded-2xl text-[10px] font-mono font-bold text-cyan-400 uppercase tracking-wider">
                             <div className="w-12 text-center">Img</div>
-                            <div className="w-24">Código</div>
+                            <div className="w-24">SKU</div>
                             <div className="flex-1">Descripción del Producto</div>
                             <div className="w-16 text-center">Stock</div>
                             <div className="w-24 text-center">Cant.</div>
@@ -747,7 +738,7 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                             <div className="w-10"></div>
                         </div>
 
-                        <div className="space-y-3 mt-2">
+                        <div className="space-y-3">
                             <AnimatePresence mode="popLayout">
                                 {items.map((item) => (
                                     <motion.div 
@@ -755,10 +746,10 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                                         initial={{ opacity: 0, y: 10 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         exit={{ opacity: 0, x: -20 }}
-                                        className="flex flex-col md:flex-row items-stretch md:items-center gap-3 p-3 bg-white border border-slate-200 rounded-xl group hover:border-indigo-400 hover:shadow-md transition-all relative"
+                                        className="flex flex-col md:flex-row items-stretch md:items-center gap-3 p-3.5 bg-slate-950 border border-slate-800 rounded-2xl group hover:border-slate-700 transition-all relative"
                                     >
                                         {/* Image */}
-                                        <div className="w-12 h-12 bg-slate-900 border border-slate-700 text-white rounded-lg flex items-center justify-center relative overflow-hidden shrink-0 mx-auto md:mx-0">
+                                        <div className="w-12 h-12 bg-slate-900 border border-slate-800 rounded-xl flex items-center justify-center relative overflow-hidden shrink-0 mx-auto md:mx-0">
                                             <input 
                                                 type="file" 
                                                 accept="image/*" 
@@ -778,45 +769,45 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                                                         return <img src={parsedImages[0]} className="w-full h-full object-contain" alt="preview" />;
                                                     }
                                                 }
-                                                return <ImageIcon size={16} className="text-slate-300" />;
+                                                return <ImageIcon size={16} className="text-slate-600" />;
                                             })()}
                                         </div>
 
                                         {/* SKU Code */}
                                         <div className="w-full md:w-24 shrink-0">
-                                            <label className="md:hidden text-[9px] font-bold text-slate-400 block mb-1">CÓDIGO SKU</label>
+                                            <label className="md:hidden text-[9px] font-mono font-bold text-slate-400 block mb-1">CÓDIGO SKU</label>
                                             <input 
                                                 value={item.productId} 
                                                 readOnly 
-                                                className="w-full bg-slate-900 border border-slate-700 text-white p-2 text-slate-600 text-xs font-mono font-bold uppercase rounded-lg text-center" 
+                                                className="w-full bg-slate-900 border border-slate-800 text-cyan-300 p-2 text-xs font-mono font-bold uppercase rounded-xl text-center" 
                                                 placeholder="SKU" 
                                             />
                                         </div>
 
                                         {/* Product Description Search */}
                                         <div className="flex-1 min-w-[220px] relative">
-                                            <label className="md:hidden text-[9px] font-bold text-slate-400 block mb-1">DESCRIPCIÓN</label>
+                                            <label className="md:hidden text-[9px] font-mono font-bold text-slate-400 block mb-1">DESCRIPCIÓN</label>
                                             <input 
                                                 value={item.description} 
                                                 onFocus={() => setShowProductList(item.id)}
                                                 onChange={e => handleItemChange(item.id, "description", e.target.value)} 
-                                                className="w-full bg-slate-900 border border-slate-700 text-white p-2.5 text-slate-900 text-xs font-bold rounded-lg outline-none focus:border-indigo-500 focus:bg-white transition-all" 
-                                                placeholder="Escribe para buscar producto..."
+                                                className="w-full bg-slate-900 border border-slate-800 text-white p-2.5 text-xs font-bold rounded-xl outline-none focus:border-cyan-500/50 transition-colors" 
+                                                placeholder="Buscar producto..."
                                             />
                                             {showProductList === item.id && (
-                                                <div className="absolute top-full left-0 w-full bg-white border border-slate-200 shadow-2xl rounded-xl z-50 max-h-56 overflow-y-auto mt-1 min-w-[280px]">
+                                                <div className="absolute top-full left-0 w-full bg-slate-950 border border-slate-800 shadow-2xl rounded-2xl z-50 max-h-56 overflow-y-auto mt-1 min-w-[280px]">
                                                     {initialProducts.filter((p: Product) => p.name.toLowerCase().includes(item.description.toLowerCase())).map((p: Product) => (
-                                                        <button key={p.id} onClick={() => selectProduct(item.id, p)} className="w-full text-left p-3 hover:bg-indigo-50 border-b border-slate-100 flex items-center gap-3 transition-colors">
-                                                            <div className="w-9 h-9 bg-slate-100 rounded-lg flex-shrink-0 overflow-hidden border border-slate-200 flex items-center justify-center">
+                                                        <button key={p.id} onClick={() => selectProduct(item.id, p)} className="w-full text-left p-3 hover:bg-slate-900 border-b border-slate-800 flex items-center gap-3 transition-colors">
+                                                            <div className="w-9 h-9 bg-slate-900 rounded-lg flex-shrink-0 overflow-hidden border border-slate-800 flex items-center justify-center">
                                                                 {p.images && safeParseArray(p.images).length > 0 ? (
                                                                     <img src={safeParseArray(p.images)[0]} className="w-full h-full object-contain" />
                                                                 ) : (
-                                                                    <ImageIcon size={14} className="text-slate-400" />
+                                                                    <ImageIcon size={14} className="text-slate-600" />
                                                                 )}
                                                             </div>
                                                             <div className="flex-1 min-w-0">
-                                                                <p className="text-xs font-bold text-slate-900 truncate">{p.name}</p>
-                                                                <p className="text-[10px] text-slate-500 font-mono">${p.price.toFixed(2)} • Stock: {p.stock || 0}</p>
+                                                                <p className="text-xs font-bold text-white truncate">{p.name}</p>
+                                                                <p className="text-[10px] text-cyan-400 font-mono">${p.price.toFixed(2)} • Stock: {p.stock || 0}</p>
                                                             </div>
                                                         </button>
                                                     ))}
@@ -826,57 +817,57 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
 
                                         {/* Stock Badge */}
                                         <div className="w-full md:w-16 text-center shrink-0 flex md:block items-center justify-between">
-                                            <span className="md:hidden text-[9px] font-bold text-slate-400">STOCK</span>
-                                            <span className="text-xs font-bold text-slate-600 bg-slate-100 px-2.5 py-1 rounded-md inline-block">
+                                            <span className="md:hidden text-[9px] font-mono font-bold text-slate-400">STOCK</span>
+                                            <span className="text-xs font-mono font-bold text-slate-400 bg-slate-900 border border-slate-800 px-2.5 py-1 rounded-lg inline-block">
                                                 {findProduct(item.productId, item.description)?.stock || 0}
                                             </span>
                                         </div>
 
                                         {/* Quantity Input */}
                                         <div className="w-full md:w-24 shrink-0">
-                                            <label className="md:hidden text-[9px] font-bold text-slate-400 block mb-1">CANTIDAD</label>
+                                            <label className="md:hidden text-[9px] font-mono font-bold text-slate-400 block mb-1">CANTIDAD</label>
                                             <input 
                                                 type="number" 
                                                 min="1"
                                                 value={item.quantity === 0 ? '' : item.quantity} 
                                                 onChange={e => handleItemChange(item.id, "quantity", parseInt(e.target.value) || 0)} 
-                                                className="w-full bg-slate-900 border border-slate-700 text-white p-2.5 text-center text-slate-900 rounded-lg font-black text-xs outline-none focus:border-indigo-500 focus:bg-white transition-all" 
+                                                className="w-full bg-slate-900 border border-slate-800 text-white p-2.5 text-center rounded-xl font-mono font-black text-xs outline-none focus:border-cyan-500/50" 
                                             />
                                         </div>
 
                                         {/* Unit Price Input */}
                                         <div className="w-full md:w-32 shrink-0 relative">
-                                            <label className="md:hidden text-[9px] font-bold text-slate-400 block mb-1">PRECIO UNIT ($)</label>
+                                            <label className="md:hidden text-[9px] font-mono font-bold text-slate-400 block mb-1">PRECIO UNIT ($)</label>
                                             <div className="relative flex items-center">
-                                                <span className="absolute left-3 text-slate-400 text-xs font-bold">$</span>
+                                                <span className="absolute left-3 text-slate-500 text-xs font-bold">$</span>
                                                 <input 
                                                     type="number" 
                                                     step="0.01"
                                                     value={item.unitPrice === 0 ? '' : item.unitPrice} 
                                                     onChange={e => handleItemChange(item.id, "unitPrice", parseFloat(e.target.value) || 0)} 
-                                                    className="w-full bg-slate-50 border border-slate-200 p-2.5 pl-7 text-right text-slate-900 rounded-lg font-black text-xs outline-none focus:border-indigo-500 focus:bg-white transition-all" 
+                                                    className="w-full bg-slate-900 border border-slate-800 p-2.5 pl-7 text-right text-emerald-400 rounded-xl font-mono font-black text-xs outline-none focus:border-emerald-500/50" 
                                                 />
                                             </div>
                                         </div>
 
                                         {/* Discount % */}
                                         <div className="w-full md:w-20 shrink-0">
-                                            <label className="md:hidden text-[9px] font-bold text-slate-400 block mb-1">DESC %</label>
+                                            <label className="md:hidden text-[9px] font-mono font-bold text-slate-400 block mb-1">DESC %</label>
                                             <input 
                                                 type="number" 
                                                 min="0" 
                                                 max="100"
                                                 value={item.discountPercent || 0} 
                                                 onChange={e => handleItemChange(item.id, "discountPercent", parseFloat(e.target.value) || 0)} 
-                                                className="w-full bg-slate-50 border border-slate-200 p-2.5 text-center text-slate-900 rounded-lg font-bold text-xs outline-none focus:border-indigo-500 focus:bg-white transition-all" 
+                                                className="w-full bg-slate-900 border border-slate-800 p-2.5 text-center text-pink-400 rounded-xl font-mono font-bold text-xs outline-none focus:border-pink-500/50" 
                                                 title="Descuento individual (%)" 
                                             />
                                         </div>
 
                                         {/* Item Total */}
                                         <div className="w-full md:w-28 text-right shrink-0 flex md:block items-center justify-between">
-                                            <span className="md:hidden text-[9px] font-bold text-slate-400">TOTAL</span>
-                                            <span className="text-xs font-black text-indigo-600 font-mono block">
+                                            <span className="md:hidden text-[9px] font-mono font-bold text-slate-400">TOTAL</span>
+                                            <span className="text-xs font-black text-emerald-400 font-mono block">
                                                 ${((item.quantity * item.unitPrice) * (1 - ((item.discountPercent || 0)/100))).toFixed(2)}
                                             </span>
                                         </div>
@@ -885,7 +876,7 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                                         <div className="w-full md:w-10 flex justify-end md:justify-center shrink-0">
                                             <button 
                                                 onClick={() => handleRemoveItem(item.id)} 
-                                                className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                                                className="p-2 text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 rounded-xl transition-colors"
                                                 title="Eliminar fila"
                                             >
                                                 <Trash2 size={16} />
@@ -901,33 +892,33 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                 {/* Right Column: Totals & State */}
                 <div className="lg:col-span-1 space-y-8">
                     
-                    {/* Generador Rápido */}
-                    <div className="bg-gradient-to-br from-indigo-50 to-white p-6 rounded-xl border border-indigo-100 shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
-                        <div className="flex items-center gap-2 mb-4 text-indigo-700">
-                            <Wand2 size={18} />
-                            <h2 className="text-sm font-black uppercase tracking-wider">Generador Rápido (IA)</h2>
+                    {/* Generador Rápido IA */}
+                    <div className="bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950/70 p-6 rounded-3xl border border-indigo-500/30 shadow-xl space-y-4 relative overflow-hidden">
+                        <div className="flex items-center gap-2 text-cyan-400">
+                            <Sparkles size={18} />
+                            <h2 className="text-xs font-mono font-bold uppercase tracking-wider">Generador Rápido con IA</h2>
                         </div>
-                        <p className="text-[10px] font-bold text-slate-500 mb-4 leading-relaxed">
-                            Pega el texto desordenado de WhatsApp o notas. La IA extraerá cliente, productos y valores automáticamente.
+                        <p className="text-[11px] text-slate-400 leading-relaxed">
+                            Pega texto desordenado de WhatsApp o notas. La IA extraerá cliente, productos y valores automáticamente.
                         </p>
                         <textarea 
                             value={quickText}
                             onChange={(e) => setQuickText(e.target.value)}
                             placeholder="Ej: cotizame a juan perez 2 camaras a 15 y un dvr a 40 para quito su tel es 0999"
-                            className="w-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-indigo-200 rounded-lg p-3 text-xs font-medium text-[#0F172A] outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 min-h-[100px] resize-none mb-4"
+                            className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-xs font-mono text-white placeholder-slate-600 outline-none focus:border-cyan-500/50 min-h-[100px] resize-none"
                         />
                         
                         {quickWarning && (
-                            <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-2 text-amber-700">
+                            <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl flex items-start gap-2 text-amber-300">
                                 <AlertTriangle size={14} className="shrink-0 mt-0.5" />
-                                <p className="text-[10px] font-bold leading-tight">{quickWarning}</p>
+                                <p className="text-[10px] font-mono leading-tight">{quickWarning}</p>
                             </div>
                         )}
 
                         <div className="flex gap-2">
                             <button 
                                 onClick={() => quickInputRef.current?.click()}
-                                className="flex-1 flex items-center justify-center gap-1 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-indigo-200 text-indigo-600 font-bold text-[10px] py-2 rounded-lg hover:bg-indigo-50 transition-colors"
+                                className="flex-1 flex items-center justify-center gap-1.5 bg-slate-950 border border-slate-800 text-slate-300 font-mono font-bold text-[10px] py-2.5 rounded-xl hover:bg-slate-900 transition-colors"
                             >
                                 <Upload size={12} /> {quickImage ? "Imagen Lista" : "Subir 1 Imagen"}
                             </button>
@@ -936,77 +927,79 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                             <button 
                                 onClick={handleQuickGenerate}
                                 disabled={isExtracting || !quickText.trim()}
-                                className="flex-1 flex items-center justify-center gap-1 bg-indigo-600 text-white font-bold text-[10px] py-2 rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition-all shadow-[0_4px_15px_rgba(0,0,0,0.3)]"
+                                className="flex-1 flex items-center justify-center gap-1.5 bg-gradient-to-r from-cyan-500 to-indigo-600 text-slate-950 font-mono font-black text-[10px] py-2.5 rounded-xl uppercase tracking-wider hover:scale-105 transition-all shadow-[0_0_15px_rgba(6,182,212,0.3)] disabled:opacity-50"
                             >
                                 {isExtracting ? "Analizando..." : "Auto-Completar"}
                             </button>
                         </div>
 
                         {quickSuccess && (
-                            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mt-4">
+                            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
                                 <button 
                                     onClick={handleGeneratePDF}
-                                    className="w-full flex items-center justify-center gap-2 bg-[#0F172A] text-white font-bold text-[11px] py-3 rounded-lg hover:bg-slate-800 transition-all shadow-[0_8px_32px_rgba(0,0,0,0.5)]"
+                                    className="w-full flex items-center justify-center gap-2 bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-mono font-bold text-xs py-3 rounded-2xl hover:bg-emerald-500/30 transition-all shadow-[0_0_15px_rgba(16,185,129,0.3)]"
                                 >
-                                    <Download size={14} /> DESCARGAR COTIZACIÓN
+                                    <Download size={14} /> DESCARGAR COTIZACIÓN EN PDF
                                 </button>
                             </motion.div>
                         )}
                     </div>
 
-                    <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 p-8 rounded-xl border border-slate-200 shadow-[0_4px_15px_rgba(0,0,0,0.3)] sticky top-32">
-                        <h2 className="text-sm font-black text-[#0F172A] uppercase tracking-wider mb-6 flex items-center gap-2 border-b border-slate-100 pb-4">
-                            <Calculator className="text-indigo-600" size={16} /> Totales
+                    {/* Totals Summary */}
+                    <div className="bg-slate-900/90 border border-slate-800/80 p-6 lg:p-8 rounded-3xl space-y-6 shadow-xl sticky top-24">
+                        <h2 className="text-sm font-black text-white uppercase tracking-wider flex items-center gap-2 border-b border-slate-800 pb-4">
+                            <Calculator className="text-emerald-400" size={18} /> Resumen de Totales
                         </h2>
                         
-                        <div className="space-y-4 mb-6">
-                            <div className="flex justify-between items-center text-sm font-bold text-slate-600">
+                        <div className="space-y-4 text-xs font-mono font-bold">
+                            <div className="flex justify-between items-center text-slate-300">
                                 <span>Subtotal</span>
                                 <span>${subtotal.toFixed(2)}</span>
                             </div>
                             
-                            {/* Descuento Dinámico */}
-                            <div className="flex justify-between items-center text-sm font-bold text-slate-600">
-                                <span className="flex items-center gap-1">Descuento <Percent size={12}/></span>
+                            <div className="flex justify-between items-center text-slate-300">
+                                <span className="flex items-center gap-1">Descuento Global <Percent size={12}/></span>
                                 <div className="flex items-center gap-2">
                                     <input 
                                         type="number" 
                                         min="0" max="100" 
                                         value={discountPercent} 
                                         onChange={(e) => setDiscountPercent(parseFloat(e.target.value) || 0)}
-                                        className="w-16 bg-slate-50 border border-slate-200 p-1 text-right rounded-md outline-none focus:border-indigo-500"
+                                        className="w-16 bg-slate-950 border border-slate-800 p-1 text-right text-pink-400 rounded-lg outline-none focus:border-pink-500/50"
                                     /> %
                                 </div>
                             </div>
                             {totalDiscountAmount > 0 && (
-                                <div className="flex justify-between items-center text-sm font-bold text-red-500">
+                                <div className="flex justify-between items-center text-rose-400">
                                     <span>Valor Descontado</span>
                                     <span>-${totalDiscountAmount.toFixed(2)}</span>
                                 </div>
                             )}
 
-                            <div className="flex justify-between items-center text-sm font-bold text-slate-600">
+                            <div className="flex justify-between items-center text-slate-300">
                                 <span>IVA (15%)</span>
                                 <span>${taxAmount.toFixed(2)}</span>
                             </div>
                         </div>
 
-                        <div className="pt-6 border-t border-slate-100">
-                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Liquidación</p>
-                            <p className="text-4xl font-black text-indigo-600 tracking-tight">${total.toFixed(2)}</p>
+                        <div className="pt-6 border-t border-slate-800">
+                            <p className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest mb-1">Total Liquidación</p>
+                            <p className="text-4xl font-black text-emerald-400 font-mono tracking-tight" style={{ textShadow: "0 0 20px rgba(74,222,128,0.4)" }}>
+                                ${total.toFixed(2)}
+                            </p>
                         </div>
                         
-                        <div className="mt-8 space-y-3">
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Estado Inicial</label>
+                        <div className="pt-4 border-t border-slate-800 space-y-3">
+                            <label className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest block">Estado Inicial</label>
                             <div className="flex flex-col gap-2">
                                 {["PENDIENTE", "CERRADO", "ABANDONADO"].map(s => (
                                     <button 
                                         key={s} 
                                         onClick={() => setStatus(s as any)} 
-                                        className={`py-3 text-xs font-black uppercase tracking-wider rounded-lg transition-all border ${
+                                        className={`py-3 px-4 text-xs font-mono font-bold uppercase tracking-wider rounded-2xl transition-all border ${
                                             status === s 
-                                            ? 'bg-indigo-50 border-indigo-200 text-indigo-700 shadow-[0_4px_15px_rgba(0,0,0,0.3)]' 
-                                            : 'bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border-slate-200 text-slate-500 hover:bg-slate-50'
+                                            ? 'bg-cyan-500/20 border-cyan-500/40 text-cyan-300 shadow-[0_0_15px_rgba(6,182,212,0.3)]' 
+                                            : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-white'
                                         }`}
                                     >
                                         {s}
@@ -1024,7 +1017,7 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                     <>
                         <motion.div 
                             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                            className="fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-50"
+                            className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50"
                             onClick={() => setIsHistoryOpen(false)}
                         />
                         <motion.div 
@@ -1032,26 +1025,26 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                             animate={{ x: 0 }}
                             exit={{ x: "100%" }}
                             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                            className="fixed top-0 right-0 h-full w-full max-w-sm bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border-l border-slate-200 z-[60] flex flex-col shadow-2xl"
+                            className="fixed top-0 right-0 h-full w-full max-w-sm bg-slate-900 border-l border-slate-800 z-[60] flex flex-col shadow-2xl text-white"
                         >
-                            <div className="px-6 py-5 flex justify-between items-center border-b border-slate-200 bg-slate-50">
-                                <h3 className="text-lg font-black text-[#0F172A] uppercase tracking-tight flex items-center gap-2">
-                                    <History size={18} className="text-indigo-600" /> Historial de Cotizaciones
+                            <div className="px-6 py-5 flex justify-between items-center border-b border-slate-800 bg-slate-950">
+                                <h3 className="text-sm font-mono font-black text-cyan-400 uppercase tracking-tight flex items-center gap-2">
+                                    <History size={16} /> Historial de Cotizaciones
                                 </h3>
-                                <button onClick={() => setIsHistoryOpen(false)} className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-200 rounded-lg transition-all"><X size={20}/></button>
+                                <button onClick={() => setIsHistoryOpen(false)} className="p-2 text-slate-400 hover:text-white rounded-full"><X size={18}/></button>
                             </div>
-                            <div className="p-6 overflow-y-auto h-full space-y-4 custom-scrollbar bg-[#F8FAFC]">
+                            <div className="p-6 overflow-y-auto h-full space-y-4 font-mono bg-slate-950">
                                 {quoteHistory.map((q: any) => (
-                                    <div key={q.id} className="p-4 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 rounded-xl shadow-[0_4px_15px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(0,0,0,0.5)] hover:border-indigo-200 transition-all cursor-pointer group">
+                                    <div key={q.id} className="p-4 bg-slate-900 border border-slate-800 rounded-2xl shadow-xl hover:border-cyan-500/40 transition-all cursor-pointer group">
                                         <div className="flex justify-between items-start mb-3">
-                                            <span className="text-[10px] font-black text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded uppercase tracking-widest">{q.quoteNumber}</span>
-                                            <span className="text-[9px] text-slate-400 uppercase font-bold">{new Date(q.createdAt).toLocaleDateString()}</span>
+                                            <span className="text-[10px] font-bold text-cyan-300 bg-cyan-500/10 border border-cyan-500/30 px-2 py-0.5 rounded-full">{q.quoteNumber}</span>
+                                            <span className="text-[9px] text-slate-400 font-bold">{new Date(q.createdAt).toLocaleDateString()}</span>
                                         </div>
-                                        <p className="text-sm font-black text-[#0F172A] uppercase tracking-tight line-clamp-1 mb-2">{q.clientName}</p>
+                                        <p className="text-xs font-bold text-white uppercase tracking-tight line-clamp-1 mb-2 font-sans">{q.clientName}</p>
                                         <div className="flex justify-between items-end mt-4">
-                                            <span className="text-[10px] font-bold px-2 py-0.5 bg-slate-100 text-slate-600 rounded uppercase">{q.status}</span>
+                                            <span className="text-[10px] font-bold px-2.5 py-1 bg-slate-950 text-slate-300 rounded-full border border-slate-800">{q.status}</span>
                                             <div className="flex flex-col items-end gap-2">
-                                                <p className="text-lg font-black text-emerald-600">${q.total.toFixed(2)}</p>
+                                                <p className="text-base font-black text-emerald-400">${q.total.toFixed(2)}</p>
                                                 <button 
                                                     onClick={(e) => {
                                                         e.stopPropagation();
@@ -1069,7 +1062,7 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                                                         }
                                                         setIsHistoryOpen(false);
                                                     }}
-                                                    className="px-3 py-1 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 font-bold text-[10px] rounded uppercase tracking-widest transition-colors flex items-center gap-1"
+                                                    className="px-3 py-1 bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/20 font-bold text-[10px] rounded-xl uppercase tracking-widest transition-colors flex items-center gap-1"
                                                 >
                                                     <Briefcase size={10} /> Clonar
                                                 </button>

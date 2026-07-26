@@ -587,7 +587,7 @@ export default function LiveTradingChart({ isAdmin = false }: TradingChartProps)
                 <canvas
                     ref={canvasRef}
                     width={900}
-                    height={330}
+                    height={210}
                     className="w-full h-auto block"
                 />
                 {isLoading && (
