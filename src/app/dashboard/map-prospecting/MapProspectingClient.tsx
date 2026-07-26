@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react"
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from "react-leaflet"
 import L from "leaflet"
 import "leaflet/dist/leaflet.css"
-import { Search, MapPin, Save, CheckCircle, Crosshair, Navigation } from "lucide-react"
+import { Search, MapPin, Save, CheckCircle, Crosshair, Navigation, Phone, Globe } from "lucide-react"
 
 // Íconos personalizados
 const newProspectIcon = new L.Icon({
@@ -360,15 +360,58 @@ export default function MapProspectingClient() {
                             icon={newProspectIcon}
                         >
                             <Popup className="prospect-popup">
-                                <div className="p-1">
-                                    <h4 className="font-bold text-sm mb-1 text-slate-200">{place.name}</h4>
-                                    <p className="text-[10px] text-slate-400 mb-3">{place.address}</p>
-                                    <button 
-                                        onClick={() => saveProspect(place)}
-                                        className="w-full py-2 bg-gradient-to-r from-cyan-600 to-indigo-600 text-white text-xs font-bold rounded-lg flex items-center justify-center gap-1 hover:from-cyan-500 hover:to-indigo-500 transition-colors shadow-[0_0_10px_rgba(6,182,212,0.3)]"
-                                    >
-                                        <Save size={14} /> Guardar Lead
-                                    </button>
+                                <div className="p-3 max-w-xs space-y-2">
+                                    <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                                        <span className="text-[9px] font-mono font-bold uppercase text-cyan-400 tracking-wider">
+                                            {place.category || "Prospecto Comercial"}
+                                        </span>
+                                        <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
+                                    </div>
+
+                                    <h4 className="font-black text-sm text-white leading-snug">{place.name}</h4>
+
+                                    <div className="space-y-1 text-xs text-slate-300">
+                                        <p className="flex items-start gap-1.5 text-[11px]">
+                                            <MapPin size={12} className="text-cyan-400 shrink-0 mt-0.5" />
+                                            <span>{place.address || "Dirección registrada en mapa"}</span>
+                                        </p>
+
+                                        {place.phone && (
+                                            <p className="flex items-center gap-1.5 text-[11px] text-emerald-400 font-bold">
+                                                <Phone size={12} className="shrink-0" />
+                                                <a href={`tel:${place.phone}`} className="hover:underline">{place.phone}</a>
+                                            </p>
+                                        )}
+
+                                        <p className="flex items-center gap-1.5 text-[11px] text-indigo-300">
+                                            <Globe size={12} className="shrink-0" />
+                                            <a 
+                                                href={place.website || `https://www.google.com/search?q=${encodeURIComponent(place.name + " " + place.address)}`} 
+                                                target="_blank" 
+                                                rel="noopener noreferrer" 
+                                                className="hover:underline text-cyan-300 font-medium truncate max-w-[200px]"
+                                            >
+                                                {place.website ? place.website.replace(/^https?:\/\//, '') : "Buscar Web en Google ↗"}
+                                            </a>
+                                        </p>
+                                    </div>
+
+                                    <div className="pt-2 border-t border-slate-800 flex gap-2">
+                                        <a
+                                            href={`https://www.google.com/maps/search/?api=1&query=${place.lat},${place.lng}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="flex-1 py-2 bg-slate-900 border border-slate-700 hover:border-cyan-400 text-slate-300 text-[10px] font-bold rounded-lg text-center transition-colors"
+                                        >
+                                            Ver Maps ↗
+                                        </a>
+                                        <button 
+                                            onClick={() => saveProspect(place)}
+                                            className="flex-1 py-2 bg-gradient-to-r from-cyan-500 to-indigo-600 text-white text-[10px] font-bold rounded-lg flex items-center justify-center gap-1 hover:scale-105 transition-all shadow-[0_0_12px_rgba(6,182,212,0.4)]"
+                                        >
+                                            <Save size={12} /> Guardar
+                                        </button>
+                                    </div>
                                 </div>
                             </Popup>
                         </Marker>

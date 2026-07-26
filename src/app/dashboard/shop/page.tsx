@@ -286,7 +286,7 @@ export default function ShopConfigPage() {
                         <ShoppingBag size={18} />
                         <span className="text-[10px] uppercase font-bold tracking-wider">MÓDULO DE CATÁLOGO</span>
                     </div>
-                    <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight leading-none">
+                    <h1 className="text-3xl font-extrabold text-white tracking-tight leading-none">
                         Catálogo General
                     </h1>
                 </motion.div>
@@ -314,7 +314,7 @@ export default function ShopConfigPage() {
                                 onClick={() => setActiveTab(tab as any)}
                                 className={`px-5 py-2.5 text-xs font-semibold rounded-xl transition-all whitespace-nowrap ${
                                     activeTab === tab 
-                                        ? 'bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-slate-900 shadow-[0_4px_15px_rgba(0,0,0,0.3)] border border-slate-200/50' 
+                                        ? 'bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-white shadow-[0_4px_15px_rgba(0,0,0,0.3)] border border-slate-200/50' 
                                         : 'text-slate-500 hover:text-slate-800 hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50/40'
                                 }`}
                             >
@@ -356,7 +356,7 @@ export default function ShopConfigPage() {
                                     <div className="p-3 bg-blue-50 text-blue-600 rounded-xl group-hover:scale-105 transition-all duration-500"><ShoppingBag size={24} /></div>
                                     <div>
                                         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Total Artículos</p>
-                                        <h4 className="text-2xl font-extrabold text-slate-900 tracking-tight">{totalProducts}</h4>
+                                        <h4 className="text-2xl font-extrabold text-white tracking-tight">{totalProducts}</h4>
                                     </div>
                                 </motion.div>
                                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200/80 p-6 flex items-center gap-5 rounded-2xl relative overflow-hidden group shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.05)] hover:-translate-y-0.5 transition-all duration-300">
@@ -364,7 +364,7 @@ export default function ShopConfigPage() {
                                     <div className="p-3 bg-indigo-50 text-indigo-600 rounded-xl group-hover:scale-105 transition-all duration-500"><TagIcon size={24} /></div>
                                     <div>
                                         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Total Categorías</p>
-                                        <h4 className="text-2xl font-extrabold text-slate-900 tracking-tight">{metadata.categories.length}</h4>
+                                        <h4 className="text-2xl font-extrabold text-white tracking-tight">{metadata.categories.length}</h4>
                                     </div>
                                 </motion.div>
                                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200/80 p-6 flex items-center gap-5 rounded-2xl relative overflow-hidden group shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.05)] hover:-translate-y-0.5 transition-all duration-300">
@@ -372,7 +372,7 @@ export default function ShopConfigPage() {
                                     <div className="p-3 bg-violet-50 text-violet-600 rounded-xl group-hover:scale-105 transition-all duration-500"><Globe size={24} /></div>
                                     <div>
                                         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Proveedores</p>
-                                        <h4 className="text-2xl font-extrabold text-slate-900 tracking-tight">{providerStats.length}</h4>
+                                        <h4 className="text-2xl font-extrabold text-white tracking-tight">{providerStats.length}</h4>
                                     </div>
                                 </motion.div>
                                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200/80 p-6 flex items-center gap-5 rounded-2xl relative overflow-hidden group shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.05)] hover:-translate-y-0.5 transition-all duration-300">

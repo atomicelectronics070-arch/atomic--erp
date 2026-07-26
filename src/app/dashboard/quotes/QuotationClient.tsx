@@ -630,14 +630,14 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                             value={quoteSubject} 
                             onChange={e => setQuoteSubject(e.target.value)} 
                             placeholder="Ej: Implementación de Sistema de Seguridad Perimetral..."
-                            className="w-full bg-transparent text-xl font-bold text-[#0F172A] outline-none placeholder:text-slate-300 placeholder:font-normal" 
+                            className="w-full bg-transparent text-xl font-bold text-white outline-none placeholder:text-slate-300 placeholder:font-normal" 
                         />
                     </div>
 
                     {/* Client Info */}
                     <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 p-8 rounded-xl border border-slate-200 shadow-[0_4px_15px_rgba(0,0,0,0.3)] relative">
                         <div className="flex justify-between items-center mb-6 border-b border-slate-100 pb-4">
-                            <h2 className="text-sm font-black text-[#0F172A] uppercase tracking-wider flex items-center gap-2">
+                            <h2 className="text-sm font-black text-white uppercase tracking-wider flex items-center gap-2">
                                 <Building2 className="text-indigo-600" size={16} /> Datos del Cliente
                             </h2>
                             <button 
@@ -659,7 +659,7 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                                         setShowClientList(true)
                                     }} 
                                     onFocus={() => setShowClientList(true)}
-                                    className="w-full bg-slate-50 border border-slate-200 p-3 text-sm font-bold text-[#0F172A] uppercase rounded-lg outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all" 
+                                    className="w-full bg-slate-900 border border-slate-700 text-white p-3 text-sm font-bold text-white uppercase rounded-lg outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all" 
                                     placeholder="Buscar cliente existente..."
                                 />
                                 {showClientList && clientName && (
@@ -687,7 +687,7 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                                                 className="w-full text-left p-3 hover:bg-slate-50 border-b border-slate-100 flex items-center justify-between group"
                                             >
                                                 <div>
-                                                    <p className="text-xs font-black text-[#0F172A] uppercase">{c.name}</p>
+                                                    <p className="text-xs font-black text-white uppercase">{c.name}</p>
                                                     <p className="text-[10px] text-slate-500 font-bold mt-0.5">{c.city || "Sin ciudad"} • {c.phone || "Sin tel"}</p>
                                                 </div>
                                                 <ChevronRight size={14} className="text-slate-300 group-hover:text-indigo-500" />
@@ -698,7 +698,7 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                             </div>
                             <div className="space-y-2">
                                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Ciudad / Ubicación</label>
-                                <input value={clientCity} onChange={e => setClientCity(e.target.value)} className="w-full bg-slate-50 border border-slate-200 p-3 text-sm font-bold text-[#0F172A] uppercase rounded-lg outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all" />
+                                <input value={clientCity} onChange={e => setClientCity(e.target.value)} className="w-full bg-slate-900 border border-slate-700 text-white p-3 text-sm font-bold text-white uppercase rounded-lg outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all" />
                             </div>
                             <div className="space-y-2">
                                 <div className="flex justify-between items-center">
@@ -712,13 +712,13 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                                     disabled={emailNotSpecified}
                                     value={clientEmail} 
                                     onChange={e => setClientEmail(e.target.value)} 
-                                    className={`w-full bg-slate-50 border border-slate-200 p-3 text-sm font-bold text-[#0F172A] rounded-lg outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all ${emailNotSpecified ? 'opacity-50 cursor-not-allowed' : ''}`} 
+                                    className={`w-full bg-slate-900 border border-slate-700 text-white p-3 text-sm font-bold text-white rounded-lg outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all ${emailNotSpecified ? 'opacity-50 cursor-not-allowed' : ''}`} 
                                     placeholder={emailNotSpecified ? "NO ESPECIFICA" : "correo@empresa.com"}
                                 />
                             </div>
                             <div className="space-y-2">
                                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Teléfono / Celular</label>
-                                <input value={clientPhone} onChange={e => setClientPhone(e.target.value)} className="w-full bg-slate-50 border border-slate-200 p-3 text-sm font-bold text-[#0F172A] rounded-lg outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all" />
+                                <input value={clientPhone} onChange={e => setClientPhone(e.target.value)} className="w-full bg-slate-900 border border-slate-700 text-white p-3 text-sm font-bold text-white rounded-lg outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all" />
                             </div>
                         </div>
                     </div>
@@ -726,7 +726,7 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                     {/* Products Detail */}
                     <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 p-8 rounded-xl border border-slate-200 shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
                         <div className="flex justify-between items-center mb-6 border-b border-slate-100 pb-4">
-                            <h2 className="text-sm font-black text-[#0F172A] uppercase tracking-wider flex items-center gap-2">
+                            <h2 className="text-sm font-black text-white uppercase tracking-wider flex items-center gap-2">
         <ShoppingCart className="text-indigo-600" size={16} /> Detalle de Ítems
                             </h2>
                             <button onClick={handleAddItem} className="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 transition-colors">
@@ -758,7 +758,7 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                                         className="flex flex-col md:flex-row items-stretch md:items-center gap-3 p-3 bg-white border border-slate-200 rounded-xl group hover:border-indigo-400 hover:shadow-md transition-all relative"
                                     >
                                         {/* Image */}
-                                        <div className="w-12 h-12 bg-slate-50 border border-slate-200 rounded-lg flex items-center justify-center relative overflow-hidden shrink-0 mx-auto md:mx-0">
+                                        <div className="w-12 h-12 bg-slate-900 border border-slate-700 text-white rounded-lg flex items-center justify-center relative overflow-hidden shrink-0 mx-auto md:mx-0">
                                             <input 
                                                 type="file" 
                                                 accept="image/*" 
@@ -788,7 +788,7 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                                             <input 
                                                 value={item.productId} 
                                                 readOnly 
-                                                className="w-full bg-slate-50 border border-slate-200 p-2 text-slate-600 text-xs font-mono font-bold uppercase rounded-lg text-center" 
+                                                className="w-full bg-slate-900 border border-slate-700 text-white p-2 text-slate-600 text-xs font-mono font-bold uppercase rounded-lg text-center" 
                                                 placeholder="SKU" 
                                             />
                                         </div>
@@ -800,7 +800,7 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                                                 value={item.description} 
                                                 onFocus={() => setShowProductList(item.id)}
                                                 onChange={e => handleItemChange(item.id, "description", e.target.value)} 
-                                                className="w-full bg-slate-50 border border-slate-200 p-2.5 text-slate-900 text-xs font-bold rounded-lg outline-none focus:border-indigo-500 focus:bg-white transition-all" 
+                                                className="w-full bg-slate-900 border border-slate-700 text-white p-2.5 text-slate-900 text-xs font-bold rounded-lg outline-none focus:border-indigo-500 focus:bg-white transition-all" 
                                                 placeholder="Escribe para buscar producto..."
                                             />
                                             {showProductList === item.id && (
@@ -840,7 +840,7 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                                                 min="1"
                                                 value={item.quantity === 0 ? '' : item.quantity} 
                                                 onChange={e => handleItemChange(item.id, "quantity", parseInt(e.target.value) || 0)} 
-                                                className="w-full bg-slate-50 border border-slate-200 p-2.5 text-center text-slate-900 rounded-lg font-black text-xs outline-none focus:border-indigo-500 focus:bg-white transition-all" 
+                                                className="w-full bg-slate-900 border border-slate-700 text-white p-2.5 text-center text-slate-900 rounded-lg font-black text-xs outline-none focus:border-indigo-500 focus:bg-white transition-all" 
                                             />
                                         </div>
 

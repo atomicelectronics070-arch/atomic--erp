@@ -303,41 +303,41 @@ export default function CoordinacionPage() {
     if (loading) return <div className="p-10 text-center">Cargando módulo de coordinación...</div>
 
     return (
-        <div className="max-w-6xl mx-auto space-y-8 p-6 text-slate-800">
+        <div className="max-w-6xl mx-auto space-y-8 p-6 text-white bg-[#050505] min-h-screen rounded-3xl border border-slate-800 shadow-2xl">
             {isTestMode && (
-                <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
-                    <h3 className="font-bold flex items-center gap-2"><AlertCircle className="w-5 h-5"/> Modo Prueba Activo</h3>
-                    <p className="text-sm mt-1">
+                <div className="bg-amber-950/80 border-l-4 border-amber-500 text-amber-200 p-4 rounded-xl shadow-xl">
+                    <h3 className="font-bold flex items-center gap-2 text-white"><AlertCircle className="w-5 h-5 text-amber-400"/> Modo Prueba Activo</h3>
+                    <p className="text-xs mt-1 text-slate-300">
                         Estás en un entorno de ensayo. Puedes usar esta interfaz para simular un día laboral como coordinadora. 
-                        <strong> Ningún dato será guardado en el servidor</strong>. El registro se mantendrá de forma local durante máximo un rato y se borrará si cierras o recargas la página.
+                        <strong> Ningún dato será guardado en el servidor</strong>. El registro se mantendrá de forma local durante máximo 20 minutos.
                     </p>
                 </div>
             )}
             
-            <div className="border-b border-slate-200 pb-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div className="border-b border-slate-800 pb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-2">
-                        <Calendar className="text-blue-600" /> Coordinación General
+                    <h1 className="text-3xl font-black text-white flex items-center gap-3">
+                        <Calendar className="text-cyan-400" /> Coordinación General
                     </h1>
-                    <p className="text-slate-500 mt-2">Panel de control diario para gestión de asesores, reportes y cotizaciones.</p>
+                    <p className="text-slate-300 text-xs mt-1 font-medium">Panel de control diario para gestión de asesores, reportes y cotizaciones.</p>
                 </div>
                 <div className="flex flex-col sm:flex-row items-center gap-3">
                     <div className="flex flex-col">
-                        <label className="text-xs font-bold text-slate-500 mb-1">Fecha de Bitácora</label>
+                        <label className="text-[10px] font-mono font-bold uppercase text-slate-400 mb-1">Fecha de Bitácora</label>
                         <input 
                             type="date" 
                             value={selectedDate}
                             onChange={(e) => setSelectedDate(e.target.value)}
-                            className="border border-slate-300 rounded px-3 py-2 text-sm font-medium focus:ring-2 focus:ring-blue-500 outline-none disabled:opacity-50"
+                            className="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-white focus:border-cyan-400 outline-none"
                             disabled={isTestMode}
                         />
                     </div>
                     <button 
                         onClick={() => setIsTestMode(!isTestMode)}
-                        className={`mt-5 px-4 py-2 rounded font-bold text-sm transition-all flex items-center gap-2 ${
+                        className={`mt-5 px-4 py-2 rounded-xl font-bold text-xs transition-all flex items-center gap-2 ${
                             isTestMode 
-                                ? "bg-red-100 text-red-700 hover:bg-red-200 border border-red-300" 
-                                : "bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-300"
+                                ? "bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/40" 
+                                : "bg-slate-800 text-white hover:bg-slate-700 border border-slate-700"
                         }`}
                     >
                         {isTestMode ? <X className="w-4 h-4"/> : <CheckSquare className="w-4 h-4"/>}
@@ -346,29 +346,29 @@ export default function CoordinacionPage() {
                 </div>
             </div>
             
-            <div className="flex gap-4 border-b border-slate-200">
+            <div className="flex gap-4 border-b border-slate-800 pb-2">
                 <button 
                     onClick={() => setActiveTab("BITACORA")} 
-                    className={`pb-3 px-4 font-bold text-sm ${activeTab === "BITACORA" ? "border-b-2 border-blue-600 text-blue-600" : "text-slate-500 hover:text-slate-700"}`}
+                    className={`pb-3 px-5 font-black text-xs uppercase tracking-widest transition-all ${activeTab === "BITACORA" ? "border-b-2 border-cyan-400 text-cyan-300" : "text-slate-400 hover:text-white"}`}
                 >
                     BITÁCORA DIARIA
                 </button>
                 <button 
                     onClick={() => setActiveTab("COTIZACIONES")} 
-                    className={`pb-3 px-4 font-bold text-sm flex items-center gap-2 ${activeTab === "COTIZACIONES" ? "border-b-2 border-blue-600 text-blue-600" : "text-slate-500 hover:text-slate-700"}`}
+                    className={`pb-3 px-5 font-black text-xs uppercase tracking-widest transition-all flex items-center gap-2 ${activeTab === "COTIZACIONES" ? "border-b-2 border-cyan-400 text-cyan-300" : "text-slate-400 hover:text-white"}`}
                 >
                     COTIZACIONES
                     {quotes.filter(q => q.status === 'DRAFT').length > 0 && (
-                        <span className="bg-orange-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-                            {quotes.filter(q => q.status === 'DRAFT').length} pendiente{quotes.filter(q => q.status === 'DRAFT').length !== 1 ? 's' : ''}
+                        <span className="bg-orange-500 text-white text-[10px] font-mono font-bold px-2 py-0.5 rounded-full shadow-md">
+                            {quotes.filter(q => q.status === 'DRAFT').length}
                         </span>
                     )}
                 </button>
                 <button 
                     onClick={() => setActiveTab("SCRAPER")} 
-                    className={`pb-3 px-4 font-bold text-sm flex items-center gap-2 ${activeTab === "SCRAPER" ? "border-b-2 border-blue-600 text-blue-600" : "text-slate-500 hover:text-slate-700"}`}
+                    className={`pb-3 px-5 font-black text-xs uppercase tracking-widest transition-all flex items-center gap-2 ${activeTab === "SCRAPER" ? "border-b-2 border-cyan-400 text-cyan-300" : "text-slate-400 hover:text-white"}`}
                 >
-                    <Users size={16} /> SCRAPER (LEADS)
+                    <Users size={14} /> SCRAPER (LEADS)
                 </button>
             </div>
 
