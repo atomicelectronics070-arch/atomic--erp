@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
 import { 
     Users, Key, Shield, UserPlus, Eye, EyeOff, CheckCircle2, XCircle, 
-    Sparkles, RefreshCw, Layers, Cpu, Search, Bot, MessageSquare, Send, X, Box
+    Sparkles, RefreshCw, Layers, Cpu, Search, Bot, MessageSquare, Send, X, Box, Globe2, ShoppingBag, GraduationCap, Code2, Compass
 } from "lucide-react"
 
 interface SystemUser {
@@ -46,6 +46,54 @@ interface AdminBotOverview {
     }[]
 }
 
+const GENERAL_PROPOSAL_INTERFACES = [
+    {
+        name: "Ecosistema Tienda & E-Commerce",
+        icon: ShoppingBag,
+        color: "from-blue-500/20 to-indigo-600/20 border-blue-500/40",
+        badge: "PROPUESTA DE VALOR • TIENDA",
+        desc: "Catálogo público, cotizador express en tiempo real, carritos inteligentes y pasarelas de pago.",
+        authority: "SOFTMAN & MEDIA",
+        profiles: ["CLIENTES WEB", "VENDEDORES", "GUEST"]
+    },
+    {
+        name: "Academia ATOMIC & Certificaciones",
+        icon: GraduationCap,
+        color: "from-purple-500/20 to-pink-600/20 border-purple-500/40",
+        badge: "PROPUESTA DE VALOR • CAPACITACIÓN",
+        desc: "Cursos interactivos, lecciones multimedia en video, exámenes y diplomas digitales.",
+        authority: "COORDINACIÓN & TECHMAN",
+        profiles: ["ASESORES DE VENTA", "COORDINADORES", "ALUMNO"]
+    },
+    {
+        name: "Interfaz de Vendedores & CRM WhatsApp",
+        icon: Users,
+        color: "from-emerald-500/20 to-teal-600/20 border-emerald-500/40",
+        badge: "PROPUESTA DE VALOR • OPERATIVA",
+        desc: "Panel de cotizaciones PDF, asignación de prospectos, ranking diario y chat omnicanal.",
+        authority: "COORDINACIÓN",
+        profiles: ["SALESPERSON", "COORDINATOR"]
+    },
+    {
+        name: "Perfiles Fijos & Matriz de Autoridades",
+        icon: Key,
+        color: "from-amber-500/20 to-orange-600/20 border-amber-500/40",
+        badge: "JERARQUÍA ATOMIC",
+        desc: "Cuentas fijos de control (Admin, Techman, Softman, Coordinación, Media) con bots dedicados.",
+        authority: "ADMINISTRACIÓN CENTRAL",
+        profiles: ["ADMIN", "MANAGEMENT"]
+    },
+    {
+        name: "Radar Satelital & Visitas Técnicas",
+        icon: Compass,
+        color: "from-cyan-500/20 to-blue-600/20 border-cyan-500/40",
+        badge: "PROPUESTA DE VALOR • PROSPECCIÓN",
+        desc: "Búsqueda geográfica de conjuntos y negocios con derivación a CRM y visitas técnicas.",
+        authority: "TECHMAN & VENTAS",
+        profiles: ["TODOS LOS ASESORES"]
+    }
+]
+
 export default function PersonalManagementPage() {
     const { data: session } = useSession()
     const [users, setUsers] = useState<SystemUser[]>([])
@@ -54,9 +102,9 @@ export default function PersonalManagementPage() {
     const [showPasswords, setShowPasswords] = useState<Record<string, boolean>>({})
     const [search, setSearch] = useState("")
     const [roleFilter, setRoleFilter] = useState("ALL")
-    const [activeTab, setActiveTab] = useState<"users" | "org" | "ai_network">("org")
+    const [activeTab, setActiveTab] = useState<"general_3d" | "org" | "users" | "ai_network">("general_3d")
 
-    // Admin direct chat modal with profile bot
+    // Admin direct chat modal
     const [selectedBotUser, setSelectedBotUser] = useState<SystemUser | null>(null)
     const [adminChatMessage, setAdminChatMessage] = useState("")
     const [adminChatHistory, setAdminChatHistory] = useState<{ role: string; content: string }[]>([])
@@ -197,9 +245,9 @@ export default function PersonalManagementPage() {
                             <Users size={24} />
                         </div>
                         <div>
-                            <h1 className="text-3xl font-black tracking-tight text-white">Gestión de Personal & Mapa 3D de Bots</h1>
+                            <h1 className="text-3xl font-black tracking-tight text-white">Gestión de Personal & Mapa 3D General</h1>
                             <p className="text-xs font-mono text-cyan-400 font-bold uppercase tracking-widest mt-1">
-                                Control Maestro • Mapa Conceptual 3D • Diálogo Directo con Perfiles
+                                Control Maestro • Mapa 3D General • Estructuración de la Industria & Permisos
                             </p>
                         </div>
                     </div>
@@ -223,7 +271,17 @@ export default function PersonalManagementPage() {
             </div>
 
             {/* Navigation Tabs */}
-            <div className="flex gap-3 border-b border-slate-800 pb-4">
+            <div className="flex flex-wrap gap-3 border-b border-slate-800 pb-4">
+                <button
+                    onClick={() => setActiveTab("general_3d")}
+                    className={`px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all flex items-center gap-2 ${
+                        activeTab === "general_3d" 
+                            ? "bg-gradient-to-r from-cyan-500/20 to-blue-600/20 border border-cyan-500/50 text-cyan-300 shadow-[0_0_20px_rgba(6,182,212,0.3)]" 
+                            : "text-slate-400 hover:text-white hover:bg-slate-800/50"
+                    }`}
+                >
+                    <Globe2 size={16} /> Mapa 3D General (Estructuración Industria)
+                </button>
                 <button
                     onClick={() => setActiveTab("org")}
                     className={`px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all flex items-center gap-2 ${
@@ -232,7 +290,7 @@ export default function PersonalManagementPage() {
                             : "text-slate-400 hover:text-white hover:bg-slate-800/50"
                     }`}
                 >
-                    <Box size={16} /> Mapa Conceptual 3D & Tarjetas de Perfil
+                    <Box size={16} /> Mapa Conceptual 3D & Perfiles
                 </button>
                 <button
                     onClick={() => setActiveTab("users")}
@@ -242,7 +300,7 @@ export default function PersonalManagementPage() {
                             : "text-slate-400 hover:text-white hover:bg-slate-800/50"
                     }`}
                 >
-                    <Key size={16} /> Matriz de Usuarios & Claves ({users.length})
+                    <Key size={16} /> Matriz de Usuarios ({users.length})
                 </button>
                 <button
                     onClick={() => setActiveTab("ai_network")}
@@ -252,11 +310,73 @@ export default function PersonalManagementPage() {
                             : "text-slate-400 hover:text-white hover:bg-slate-800/50"
                     }`}
                 >
-                    <Cpu size={16} /> Red de Bots & Actividad ({botOverviews.length})
+                    <Cpu size={16} /> Red de Bots ({botOverviews.length})
                 </button>
             </div>
 
-            {/* TAB: MAPA CONCEPTUAL 3D CON CONEXIÓN DIRECTA */}
+            {/* TAB: MAPA 3D GENERAL - ESTRUCTURACIÓN DE LA INDUSTRIA & PROPUESTA DE VALOR */}
+            {activeTab === "general_3d" && (
+                <div className="space-y-8">
+                    <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 shadow-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div>
+                            <h2 className="text-xl font-black text-white flex items-center gap-2">
+                                <Globe2 className="text-cyan-400" /> Mapa 3D General • Estructuración de la Industria & Permisos ATOMIC
+                            </h2>
+                            <p className="text-xs font-mono text-slate-400 mt-1">
+                                Esquema integral 3D que conecta interfaces (Academia, Tienda, Vendedores, Perfiles Fijos) y autoridades del sistema.
+                            </p>
+                        </div>
+                        <span className="px-3 py-1 bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-[10px] font-mono font-bold rounded-full">
+                            Visión Macro 3D
+                        </span>
+                    </div>
+
+                    {/* 3D Dynamic Proposal Cards */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {GENERAL_PROPOSAL_INTERFACES.map((item, idx) => {
+                            const Icon = item.icon
+                            return (
+                                <div 
+                                    key={idx}
+                                    className={`bg-gradient-to-br ${item.color} border backdrop-blur-xl p-6 rounded-3xl space-y-4 hover:scale-[1.02] transition-all shadow-2xl relative overflow-hidden group`}
+                                >
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-[9px] font-mono font-black uppercase px-2.5 py-1 rounded-full bg-slate-950 text-cyan-400 border border-cyan-500/30">
+                                            {item.badge}
+                                        </span>
+                                        <div className="w-10 h-10 rounded-2xl bg-slate-950 border border-slate-800 flex items-center justify-center text-cyan-400 group-hover:scale-110 transition-transform">
+                                            <Icon size={20} />
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <h3 className="font-black text-white text-lg">{item.name}</h3>
+                                        <p className="text-xs text-slate-300 font-medium leading-relaxed mt-2 bg-slate-950/60 p-3 rounded-2xl border border-slate-800/80">
+                                            {item.desc}
+                                        </p>
+                                    </div>
+
+                                    <div className="pt-2 border-t border-slate-800/80 space-y-2 text-[10px] font-mono">
+                                        <div className="flex justify-between">
+                                            <span className="text-slate-400">Autoridad a Cargo:</span>
+                                            <span className="text-emerald-400 font-bold">{item.authority}</span>
+                                        </div>
+                                        <div className="flex flex-wrap gap-1 mt-1">
+                                            {item.profiles.map((p, i) => (
+                                                <span key={i} className="px-2 py-0.5 bg-slate-950 text-slate-400 rounded border border-slate-800">
+                                                    {p}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            )
+                        })}
+                    </div>
+                </div>
+            )}
+
+            {/* TAB: MAPA CONCEPTUAL 3D PERFILES */}
             {activeTab === "org" && (
                 <div className="space-y-8">
                     <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 shadow-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -268,15 +388,9 @@ export default function PersonalManagementPage() {
                                 Haz clic en cualquier tarjeta de perfil para **conversar en vivo con la IA interina del puesto** y darle instrucciones.
                             </p>
                         </div>
-                        <span className="px-3 py-1 bg-purple-500/10 border border-purple-500/30 text-purple-300 text-[10px] font-mono font-bold rounded-full">
-                            Vista 3D Interactiva
-                        </span>
                     </div>
 
-                    {/* 3D Visual Map Container */}
                     <div className="bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 border border-slate-800 rounded-3xl p-8 relative overflow-hidden shadow-2xl min-h-[500px]">
-                        <div className="absolute inset-0 bg-[linear-gradient(rgba(168,85,247,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(168,85,247,0.03)_1px,transparent_1px)] bg-[size:50px_50px] pointer-events-none" />
-
                         <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
                             {users.map(u => {
                                 const botName = u.personalBot?.botName
@@ -318,9 +432,6 @@ export default function PersonalManagementPage() {
                                                 <span>Estado del Bot:</span>
                                                 <span className="text-emerald-400 font-bold">{botName || "IA Interina Activa"}</span>
                                             </p>
-                                            <p className="text-[10px] font-mono text-slate-500">
-                                                {botName ? "Colaborador + Bot sincronizados" : "Sin sesión física — IA respondiendo"}
-                                            </p>
                                         </div>
 
                                         <div className="pt-2 flex items-center justify-between text-xs font-mono font-bold text-cyan-400 group-hover:translate-x-1 transition-transform">
@@ -360,7 +471,6 @@ export default function PersonalManagementPage() {
                                         <th className="px-6 py-4">Email Matriz</th>
                                         <th className="px-6 py-4">Contraseña</th>
                                         <th className="px-6 py-4">Rol & Área</th>
-                                        <th className="px-6 py-4">Bot Personal</th>
                                         <th className="px-6 py-4 text-right">Acción</th>
                                     </tr>
                                 </thead>
@@ -376,7 +486,6 @@ export default function PersonalManagementPage() {
                                                 </button>
                                             </td>
                                             <td className="px-6 py-4 text-xs font-mono">{user.role} - {user.area}</td>
-                                            <td className="px-6 py-4 text-xs font-mono text-emerald-300">{user.personalBot?.botName || "Sin bot"}</td>
                                             <td className="px-6 py-4 text-right">
                                                 <button 
                                                     onClick={() => openAdminBotChat(user)}
@@ -445,13 +554,6 @@ export default function PersonalManagementPage() {
                                     </div>
                                 </div>
                             ))}
-                            {isSendingAdminMsg && (
-                                <div className="flex justify-start">
-                                    <div className="bg-slate-800 text-slate-400 px-4 py-2 rounded-2xl text-xs flex items-center gap-2">
-                                        <Loader2 size={14} className="animate-spin text-cyan-400" /> Procesando instrucción de administración...
-                                    </div>
-                                </div>
-                            )}
                         </div>
 
                         <div className="p-4 border-t border-slate-800 bg-slate-950 flex gap-2">
@@ -460,7 +562,7 @@ export default function PersonalManagementPage() {
                                 value={adminChatMessage}
                                 onChange={e => setAdminChatMessage(e.target.value)}
                                 onKeyDown={e => e.key === 'Enter' && sendAdminMessage()}
-                                placeholder="Escribe instrucciones para este puesto (ej: Conseguir 30 leads este mes)..."
+                                placeholder="Escribe instrucciones para este puesto..."
                                 className="flex-1 bg-slate-900 border border-slate-800 rounded-2xl px-4 py-3 text-xs text-white outline-none focus:border-cyan-500"
                             />
                             <button 
