@@ -24,7 +24,7 @@ interface SocialFeedClientProps {
 }
 
 export default function SocialFeedClient({ initialPosts, initialRanking, session }: SocialFeedClientProps) {
-    const [masterMode, setMasterMode] = useState<"area_trabajo" | "red_social">("area_trabajo")
+    const [masterMode, setMasterMode] = useState<"area_trabajo" | "publicador" | "feed_interno">("area_trabajo")
     const [posts, setPosts] = useState<any[]>(initialPosts)
     const [ranking, setRanking] = useState<any[]>(initialRanking)
     const [loading, setLoading] = useState(false)
@@ -143,35 +143,47 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
     return (
         <div className="w-full min-h-screen bg-[#050505] text-white pb-32 space-y-8">
             
-            {/* MASTER SWITCH: ÁREA DE TRABAJO (OFICINA VIRTUAL 2.5D) VS RED SOCIAL */}
-            <div className="bg-slate-900/90 backdrop-blur-xl border border-slate-800 p-3 rounded-3xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-2xl sticky top-20 z-40">
-                <div className="flex items-center space-x-3 w-full sm:w-auto">
+            {/* MASTER SWITCH 3-WAY: ÁREA DE TRABAJO | PUBLICADOR MULTI-RED | FEED SOCIAL INTERNO */}
+            <div className="bg-slate-900/90 backdrop-blur-xl border border-slate-800 p-2.5 rounded-3xl flex flex-col lg:flex-row items-center justify-between gap-4 shadow-2xl sticky top-20 z-40">
+                <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto">
                     <button
                         onClick={() => setMasterMode("area_trabajo")}
-                        className={`flex-1 sm:flex-initial px-6 py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest transition-all flex items-center justify-center space-x-2.5 ${
+                        className={`flex-1 sm:flex-initial px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all flex items-center justify-center space-x-2 ${
                             masterMode === 'area_trabajo' 
-                                ? 'bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white shadow-[0_0_30px_rgba(99,102,241,0.4)] scale-105' 
+                                ? 'bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white shadow-[0_0_25px_rgba(99,102,241,0.4)] scale-105' 
                                 : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
                         }`}
                     >
-                        <Globe size={18} className="text-cyan-400" />
+                        <Globe size={16} className="text-cyan-400" />
                         <span>🎮 Área de Trabajo (Oficina Virtual 2.5D)</span>
                     </button>
                     
                     <button
-                        onClick={() => setMasterMode("red_social")}
-                        className={`flex-1 sm:flex-initial px-6 py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest transition-all flex items-center justify-center space-x-2.5 ${
-                            masterMode === 'red_social' 
-                                ? 'bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-600 text-white shadow-[0_0_30px_rgba(236,72,153,0.4)] scale-105' 
+                        onClick={() => setMasterMode("publicador")}
+                        className={`flex-1 sm:flex-initial px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all flex items-center justify-center space-x-2 ${
+                            masterMode === 'publicador' 
+                                ? 'bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-600 text-white shadow-[0_0_25px_rgba(236,72,153,0.4)] scale-105' 
                                 : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
                         }`}
                     >
-                        <Share2 size={18} className="text-pink-400" />
-                        <span>📱 Red Social & Publicador Multi-Red</span>
+                        <Share2 size={16} className="text-pink-400" />
+                        <span>🚀 Publicador Multi-Red</span>
+                    </button>
+
+                    <button
+                        onClick={() => setMasterMode("feed_interno")}
+                        className={`flex-1 sm:flex-initial px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all flex items-center justify-center space-x-2 ${
+                            masterMode === 'feed_interno' 
+                                ? 'bg-gradient-to-r from-emerald-500 via-teal-600 to-cyan-600 text-white shadow-[0_0_25px_rgba(16,185,129,0.4)] scale-105' 
+                                : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
+                        }`}
+                    >
+                        <Users size={16} className="text-emerald-400" />
+                        <span>💬 Feed Social Interno & Rankings</span>
                     </button>
                 </div>
 
-                <div className="hidden lg:flex items-center space-x-3 px-4 py-2 bg-slate-950 rounded-2xl border border-slate-800 text-[10px] font-mono text-slate-400">
+                <div className="hidden xl:flex items-center space-x-3 px-4 py-2 bg-slate-950 rounded-2xl border border-slate-800 text-[10px] font-mono text-slate-400">
                     <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
                     <span className="text-white font-bold">Oficina Virtual & CRM Conectados</span>
                 </div>
@@ -184,21 +196,25 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
                 </div>
             )}
 
-            {/* MODE 2: RED SOCIAL (PUBLICADOR OMNI-CANAL + FEED & RANKING) */}
-            {masterMode === "red_social" && (
+            {/* MODE 2: PUBLICADOR MULTI-RED SOCIAL */}
+            {masterMode === "publicador" && (
                 <div className="space-y-8 animate-in fade-in zoom-in-95 duration-500">
                     <MultiSocialPublisher />
+                </div>
+            )}
 
-                    {/* SaaS Feed Header */}
+            {/* MODE 3: FEED SOCIAL INTERNO & RANKINGS DE EMPRESA */}
+            {masterMode === "feed_interno" && (
+                <div className="space-y-8 animate-in fade-in zoom-in-95 duration-500">
                     <div className="bg-slate-900/80 backdrop-blur-xl border border-slate-800 px-8 py-6 rounded-3xl flex flex-col md:flex-row justify-between items-center gap-6 shadow-xl">
                         <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-pink-600 rounded-2xl flex items-center justify-center text-white shadow-lg">
-                                <Globe size={24} />
+                            <div className="w-12 h-12 bg-emerald-600 rounded-2xl flex items-center justify-center text-white shadow-lg">
+                                <Users size={24} />
                             </div>
                             <div>
-                                <h2 className="text-2xl font-black text-white tracking-tight">Social Feed & Ranking Corporativo</h2>
+                                <h2 className="text-2xl font-black text-white tracking-tight">Muro de Interacción Social Interno</h2>
                                 <p className="text-sm text-slate-400 font-medium flex items-center gap-2">
-                                    <span className="text-pink-400 font-bold">Muro Interno</span> • Clasificación de Ventas
+                                    <span className="text-emerald-400 font-bold">Comunidad ATOMIC</span> • Publicaciones & Rankings de Ventas
                                 </p>
                             </div>
                         </div>
