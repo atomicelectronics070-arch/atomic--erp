@@ -199,13 +199,13 @@ ${getRoleAdvice(user.role)}
         const data = await response.json()
         let replyText = data.candidates?.[0]?.content?.parts?.[0]?.text || "Sin respuesta."
 
-        const suggestMatch = replyText.match(/\[\[SUGGESTIONS:\s*(.*?)\]\]/s)
+        const suggestMatch = replyText.match(/\[\[SUGGESTIONS:\s*([\s\S]*?)\]\]/)
         let suggestions: string[] = []
         if (suggestMatch) {
             try {
-                suggestions = suggestMatch[1].match(/"([^"]+)"/g)?.map(s => s.replace(/"/g, "")) || []
+                suggestions = suggestMatch[1].match(/"([^"]+)"/g)?.map((s: string) => s.replace(/"/g, "")) || []
             } catch { suggestions = [] }
-            replyText = replyText.replace(/\[\[SUGGESTIONS:.*?\]\]/s, "").trim()
+            replyText = replyText.replace(/\[\[SUGGESTIONS:[\s\S]*?\]\]/, "").trim()
         }
 
         await prisma.personalBotMessage.createMany({
