@@ -24,12 +24,18 @@ export default async function GuiaMaquinasBloquesPage() {
   });
 
   // Filtrar falsos positivos por si acaso (ej. candados o cosas que tengan 'bloque' pero no sean maquinas)
-  const blockMachines = products.filter(p => {
-    const n = p.name.toLowerCase();
-    const isLock = n.includes('candado') || n.includes('construcción') || n.includes('esponja');
-    if (isLock && p.price < 100) return false;
-    return true;
-  });
+  const blockMachines = products
+    .filter(p => {
+      const n = p.name.toLowerCase();
+      const isLock = n.includes('candado') || n.includes('construcción') || n.includes('esponja');
+      const price = Number(p.price) || 0;
+      if (isLock && price < 100) return false;
+      return true;
+    })
+    .map(p => ({
+      ...p,
+      price: Number(p.price) || 0
+    }));
 
   return (
     <div className="bg-[#030712] min-h-screen">
