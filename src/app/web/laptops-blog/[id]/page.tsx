@@ -23,7 +23,24 @@ export default async function LaptopsDynamicLandingPage({ params }: { params: Pr
   
   try {
     const laptops = JSON.parse(fs.readFileSync(dataPath, 'utf-8'));
-    laptop = laptops.find((l: any) => l.slug === id || l.id === id);
+    const cleanId = id.toLowerCase().trim();
+    
+    // 1. Exact match by slug or ID
+    laptop = laptops.find((l: any) => l.slug === cleanId || l.id === cleanId);
+    
+    // 2. Partial match by slug or cleanName
+    if (!laptop) {
+      laptop = laptops.find((l: any) => 
+        l.slug.toLowerCase().includes(cleanId) || 
+        cleanId.includes(l.slug.toLowerCase()) ||
+        l.cleanName.toLowerCase().includes(cleanId.replace(/-/g, ' '))
+      );
+    }
+
+    // 3. Fallback to first available laptop if slug not found (zero 404s)
+    if (!laptop && laptops.length > 0) {
+      laptop = laptops[0];
+    }
   } catch (err) {
     console.error(err);
   }
