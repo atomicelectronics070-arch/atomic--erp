@@ -29,7 +29,7 @@ export default async function GuiaMaquinasBloquesPage() {
       const n = p.name.toLowerCase();
       const isLock = n.includes('candado') || n.includes('construcción') || n.includes('esponja');
       const price = Number(p.price) || 0;
-      if (isLock && price < 100) return false;
+      if (price < 5000) return false; // Las verdaderas máquinas industriales cuestan más de $5,000
       return true;
     })
     .map(p => ({
@@ -38,16 +38,16 @@ export default async function GuiaMaquinasBloquesPage() {
     }));
 
   return (
-    <div className="bg-[#030712] min-h-screen">
+    <div className="bg-white min-h-screen">
       {/* Navegación para volver a Blogs */}
-      <nav className="fixed top-0 w-full z-50 p-6 flex items-center justify-between pointer-events-auto bg-gradient-to-b from-[#030712]/90 to-transparent backdrop-blur-sm">
-          <Link href="/web/blogs" className="group flex items-center space-x-2 text-white/50 hover:text-white transition-colors">
-              <div className="w-8 h-8 rounded-none border border-white/10 flex items-center justify-center bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 group-hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50/10 transition-colors">
+      <nav className="fixed top-0 w-full z-50 p-6 flex items-center justify-between pointer-events-auto bg-gradient-to-b from-white/90 to-transparent backdrop-blur-sm">
+          <Link href="/web/blogs" className="group flex items-center space-x-2 text-slate-500 hover:text-slate-900 transition-colors">
+              <div className="w-8 h-8 rounded-none border border-slate-200 flex items-center justify-center bg-white/50 backdrop-blur-xl group-hover:bg-slate-100 transition-colors">
                   <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
               </div>
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] shadow-black drop-shadow-md">Volver a Blogs</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] drop-shadow-sm text-slate-700">Volver a Blogs</span>
           </Link>
-          <div className="text-[10px] uppercase font-black tracking-[0.3em] text-orange-500 shadow-black drop-shadow-md">Maquinaria Industrial</div>
+          <div className="text-[10px] uppercase font-black tracking-[0.3em] text-orange-600 drop-shadow-sm">Maquinaria Industrial</div>
       </nav>
 
       <BlockMachineLanding products={blockMachines} />
