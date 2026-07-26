@@ -31,10 +31,10 @@ export default function LaptopsLongFormTemplate({ laptop }: { laptop: any }) {
             NUEVA GENERACIÓN
           </div>
           <h2 className="text-5xl lg:text-7xl font-black text-white mb-6 leading-tight tracking-tight">
-            {laptop.features.hero.title}
+            {laptop?.features?.hero?.title || laptop?.cleanName || "Laptop Premium"}
           </h2>
           <p className="text-slate-300 text-xl font-medium leading-relaxed mb-10">
-            {laptop.features.hero.subtitle}
+            {laptop?.features?.hero?.subtitle || "Rendimiento extremo y diseño de vanguardia."}
           </p>
           
           <a 

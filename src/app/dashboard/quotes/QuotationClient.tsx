@@ -724,7 +724,7 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                     <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 p-8 rounded-xl border border-slate-200 shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
                         <div className="flex justify-between items-center mb-6 border-b border-slate-100 pb-4">
                             <h2 className="text-sm font-black text-[#0F172A] uppercase tracking-wider flex items-center gap-2">
-                                <ShoppingCart className="text-indigo-600" size={16} /> Detalle de Ítems
+        <ShoppingCart className="text-indigo-600" size={16} /> Detalle de Ítems
                             </h2>
                             <button onClick={handleAddItem} className="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 transition-colors">
                                 <Plus size={14} /> Fila
@@ -732,104 +732,161 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                         </div>
                         
                         {/* Table Header */}
-                        <div className="grid grid-cols-12 gap-2 px-4 py-2 bg-slate-50 border border-slate-200 rounded-t-lg text-[9px] font-black text-slate-500 uppercase tracking-wider">
-                            <div className="col-span-1 text-center">Img</div>
-                            <div className="col-span-1">Código</div>
-                            <div className="col-span-3">Descripción del Producto</div>
-                            <div className="col-span-1 text-center">Stock</div>
-                            <div className="col-span-1 text-center">Cant.</div>
-                            <div className="col-span-1 text-right">Precio</div>
-                            <div className="col-span-1 text-right">Subtotal</div>
-                            <div className="col-span-1 text-center">Desc %</div>
-                            <div className="col-span-1 text-right">Total</div>
-                            <div className="col-span-1"></div>
+                        <div className="hidden md:flex items-center gap-4 px-4 py-3 bg-slate-100 border border-slate-200 rounded-t-xl text-[10px] font-black text-slate-500 uppercase tracking-wider">
+                            <div className="w-12 text-center">Img</div>
+                            <div className="w-24">Código</div>
+                            <div className="flex-1">Descripción del Producto</div>
+                            <div className="w-16 text-center">Stock</div>
+                            <div className="w-24 text-center">Cant.</div>
+                            <div className="w-32 text-right">Precio Unit.</div>
+                            <div className="w-20 text-center">Desc %</div>
+                            <div className="w-28 text-right">Total</div>
+                            <div className="w-10"></div>
                         </div>
 
-                        <div className="space-y-2 mt-2">
+                        <div className="space-y-3 mt-2">
                             <AnimatePresence mode="popLayout">
-                                {items.map((item, i) => (
+                                {items.map((item) => (
                                     <motion.div 
                                         key={item.id}
                                         initial={{ opacity: 0, y: 10 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         exit={{ opacity: 0, x: -20 }}
-                                        className="grid grid-cols-12 gap-2 items-center bg-slate-900/50 backdrop-blur-xl border-slate-700/50 p-2 border border-slate-200 rounded-lg group hover:border-indigo-300 transition-all relative"
+                                        className="flex flex-col md:flex-row items-stretch md:items-center gap-3 p-3 bg-white border border-slate-200 rounded-xl group hover:border-indigo-400 hover:shadow-md transition-all relative"
                                     >
-                                        <div className="col-span-1">
-                                            <div className="w-10 h-10 bg-slate-50 border border-slate-100 rounded-md flex items-center justify-center relative overflow-hidden group-hover:border-indigo-200 transition-all mx-auto cursor-pointer">
-                                                <input 
-                                                    type="file" 
-                                                    accept="image/*" 
-                                                    className="absolute inset-0 opacity-0 cursor-pointer z-10" 
-                                                    title="Añadir/Cambiar imagen"
-                                                    onChange={(e) => handleImageUpload(item.id, e)}
-                                                />
-                                                {(() => {
-                                                    if (item.customImage) {
-                                                        return <img src={item.customImage} className="w-full h-full object-contain" alt="preview" />;
+                                        {/* Image */}
+                                        <div className="w-12 h-12 bg-slate-50 border border-slate-200 rounded-lg flex items-center justify-center relative overflow-hidden shrink-0 mx-auto md:mx-0">
+                                            <input 
+                                                type="file" 
+                                                accept="image/*" 
+                                                className="absolute inset-0 opacity-0 cursor-pointer z-10" 
+                                                title="Añadir/Cambiar imagen"
+                                                onChange={(e) => handleImageUpload(item.id, e)}
+                                            />
+                                            {(() => {
+                                                if (item.customImage) {
+                                                    return <img src={item.customImage} className="w-full h-full object-contain" alt="preview" />;
+                                                }
+                                                const product = findProduct(item.productId, item.description);
+                                                const images = product?.images;
+                                                if (images && images !== 'null') {
+                                                    const parsedImages = safeParseArray(images);
+                                                    if (parsedImages.length > 0) {
+                                                        return <img src={parsedImages[0]} className="w-full h-full object-contain" alt="preview" />;
                                                     }
-                                                    const product = findProduct(item.productId, item.description);
-                                                    const images = product?.images;
-                                                    if (images && images !== 'null') {
-                                                        const parsedImages = safeParseArray(images);
-                                                        if (parsedImages.length > 0) {
-                                                            return <img src={parsedImages[0]} className="w-full h-full object-contain" alt="preview" />;
-                                                        }
-                                                    }
-                                                    return <ImageIcon size={14} className="text-slate-300" />;
-                                                })()}
-                                            </div>
+                                                }
+                                                return <ImageIcon size={16} className="text-slate-300" />;
+                                            })()}
                                         </div>
-                                        <div className="col-span-1">
-                                            <input value={item.productId} readOnly className="w-full bg-transparent border-none text-slate-500 text-[9px] font-bold uppercase text-center" placeholder="SKU" />
+
+                                        {/* SKU Code */}
+                                        <div className="w-full md:w-24 shrink-0">
+                                            <label className="md:hidden text-[9px] font-bold text-slate-400 block mb-1">CÓDIGO SKU</label>
+                                            <input 
+                                                value={item.productId} 
+                                                readOnly 
+                                                className="w-full bg-slate-50 border border-slate-200 p-2 text-slate-600 text-xs font-mono font-bold uppercase rounded-lg text-center" 
+                                                placeholder="SKU" 
+                                            />
                                         </div>
-                                        <div className="col-span-3 relative">
+
+                                        {/* Product Description Search */}
+                                        <div className="flex-1 min-w-[220px] relative">
+                                            <label className="md:hidden text-[9px] font-bold text-slate-400 block mb-1">DESCRIPCIÓN</label>
                                             <input 
                                                 value={item.description} 
                                                 onFocus={() => setShowProductList(item.id)}
                                                 onChange={e => handleItemChange(item.id, "description", e.target.value)} 
-                                                className="w-full bg-slate-50 border border-slate-200 p-2 text-[#0F172A] text-[10px] font-bold rounded-md outline-none focus:border-indigo-500 transition-all" 
-                                                placeholder="Buscar producto..."
+                                                className="w-full bg-slate-50 border border-slate-200 p-2.5 text-slate-900 text-xs font-bold rounded-lg outline-none focus:border-indigo-500 focus:bg-white transition-all" 
+                                                placeholder="Escribe para buscar producto..."
                                             />
                                             {showProductList === item.id && (
-                                                <div className="absolute top-full left-0 w-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 shadow-xl rounded-lg z-50 max-h-48 overflow-y-auto min-w-[250px]">
+                                                <div className="absolute top-full left-0 w-full bg-white border border-slate-200 shadow-2xl rounded-xl z-50 max-h-56 overflow-y-auto mt-1 min-w-[280px]">
                                                     {initialProducts.filter((p: Product) => p.name.toLowerCase().includes(item.description.toLowerCase())).map((p: Product) => (
-                                                        <button key={p.id} onClick={() => selectProduct(item.id, p)} className="w-full text-left p-3 hover:bg-slate-50 border-b border-slate-100 flex items-center gap-3">
-                                                            <div className="w-8 h-8 bg-slate-100 rounded flex-shrink-0 overflow-hidden">
-                                                                {p.images && safeParseArray(p.images).length > 0 && <img src={safeParseArray(p.images)[0]} className="w-full h-full object-contain" />}
+                                                        <button key={p.id} onClick={() => selectProduct(item.id, p)} className="w-full text-left p-3 hover:bg-indigo-50 border-b border-slate-100 flex items-center gap-3 transition-colors">
+                                                            <div className="w-9 h-9 bg-slate-100 rounded-lg flex-shrink-0 overflow-hidden border border-slate-200 flex items-center justify-center">
+                                                                {p.images && safeParseArray(p.images).length > 0 ? (
+                                                                    <img src={safeParseArray(p.images)[0]} className="w-full h-full object-contain" />
+                                                                ) : (
+                                                                    <ImageIcon size={14} className="text-slate-400" />
+                                                                )}
                                                             </div>
-                                                            <div>
-                                                                <p className="text-[10px] font-black text-[#0F172A] uppercase">{p.name}</p>
-                                                                <p className="text-[10px] text-indigo-600 font-bold mt-0.5">${p.price} • Stock: {p.stock || 0}</p>
+                                                            <div className="flex-1 min-w-0">
+                                                                <p className="text-xs font-bold text-slate-900 truncate">{p.name}</p>
+                                                                <p className="text-[10px] text-slate-500 font-mono">${p.price.toFixed(2)} • Stock: {p.stock || 0}</p>
                                                             </div>
                                                         </button>
                                                     ))}
                                                 </div>
                                             )}
                                         </div>
-                                        <div className="col-span-1 text-center">
-                                            <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded-md">
+
+                                        {/* Stock Badge */}
+                                        <div className="w-full md:w-16 text-center shrink-0 flex md:block items-center justify-between">
+                                            <span className="md:hidden text-[9px] font-bold text-slate-400">STOCK</span>
+                                            <span className="text-xs font-bold text-slate-600 bg-slate-100 px-2.5 py-1 rounded-md inline-block">
                                                 {findProduct(item.productId, item.description)?.stock || 0}
                                             </span>
                                         </div>
-                                        <div className="col-span-1">
-                                            <input type="number" value={item.quantity} onChange={e => handleItemChange(item.id, "quantity", parseInt(e.target.value) || 0)} className="w-full bg-slate-50 border border-slate-200 p-2 text-center text-[#0F172A] rounded-md font-bold text-[10px] outline-none focus:border-indigo-500" />
+
+                                        {/* Quantity Input */}
+                                        <div className="w-full md:w-24 shrink-0">
+                                            <label className="md:hidden text-[9px] font-bold text-slate-400 block mb-1">CANTIDAD</label>
+                                            <input 
+                                                type="number" 
+                                                min="1"
+                                                value={item.quantity === 0 ? '' : item.quantity} 
+                                                onChange={e => handleItemChange(item.id, "quantity", parseInt(e.target.value) || 0)} 
+                                                className="w-full bg-slate-50 border border-slate-200 p-2.5 text-center text-slate-900 rounded-lg font-black text-xs outline-none focus:border-indigo-500 focus:bg-white transition-all" 
+                                            />
                                         </div>
-                                        <div className="col-span-1 relative">
-                                            <span className="absolute left-1 top-1/2 -translate-y-1/2 text-slate-400 text-[10px] font-bold">$</span>
-                                            <input type="number" value={item.unitPrice} onChange={e => handleItemChange(item.id, "unitPrice", parseFloat(e.target.value) || 0)} className="w-full bg-slate-50 border border-slate-200 p-2 pl-4 text-right text-[#0F172A] rounded-md font-bold text-[10px] outline-none focus:border-indigo-500" />
+
+                                        {/* Unit Price Input */}
+                                        <div className="w-full md:w-32 shrink-0 relative">
+                                            <label className="md:hidden text-[9px] font-bold text-slate-400 block mb-1">PRECIO UNIT ($)</label>
+                                            <div className="relative flex items-center">
+                                                <span className="absolute left-3 text-slate-400 text-xs font-bold">$</span>
+                                                <input 
+                                                    type="number" 
+                                                    step="0.01"
+                                                    value={item.unitPrice === 0 ? '' : item.unitPrice} 
+                                                    onChange={e => handleItemChange(item.id, "unitPrice", parseFloat(e.target.value) || 0)} 
+                                                    className="w-full bg-slate-50 border border-slate-200 p-2.5 pl-7 text-right text-slate-900 rounded-lg font-black text-xs outline-none focus:border-indigo-500 focus:bg-white transition-all" 
+                                                />
+                                            </div>
                                         </div>
-                                        <div className="col-span-1 text-right pr-1">
-                                            <span className="text-[10px] font-black text-slate-500">${(item.quantity * item.unitPrice).toFixed(2)}</span>
+
+                                        {/* Discount % */}
+                                        <div className="w-full md:w-20 shrink-0">
+                                            <label className="md:hidden text-[9px] font-bold text-slate-400 block mb-1">DESC %</label>
+                                            <input 
+                                                type="number" 
+                                                min="0" 
+                                                max="100"
+                                                value={item.discountPercent || 0} 
+                                                onChange={e => handleItemChange(item.id, "discountPercent", parseFloat(e.target.value) || 0)} 
+                                                className="w-full bg-slate-50 border border-slate-200 p-2.5 text-center text-slate-900 rounded-lg font-bold text-xs outline-none focus:border-indigo-500 focus:bg-white transition-all" 
+                                                title="Descuento individual (%)" 
+                                            />
                                         </div>
-                                        <div className="col-span-1">
-                                            <input type="number" value={item.discountPercent || 0} onChange={e => handleItemChange(item.id, "discountPercent", parseFloat(e.target.value) || 0)} className="w-full bg-slate-50 border border-slate-200 p-2 text-center text-[#0F172A] rounded-md font-bold text-[10px] outline-none focus:border-indigo-500" title="Descuento (%)" />
+
+                                        {/* Item Total */}
+                                        <div className="w-full md:w-28 text-right shrink-0 flex md:block items-center justify-between">
+                                            <span className="md:hidden text-[9px] font-bold text-slate-400">TOTAL</span>
+                                            <span className="text-xs font-black text-indigo-600 font-mono block">
+                                                ${((item.quantity * item.unitPrice) * (1 - ((item.discountPercent || 0)/100))).toFixed(2)}
+                                            </span>
                                         </div>
-                                        <div className="col-span-1 text-right pr-2">
-                                            <span className="text-[10px] font-black text-indigo-600">${((item.quantity * item.unitPrice) * (1 - ((item.discountPercent || 0)/100))).toFixed(2)}</span>
-                                        </div>
-                                        <div className="col-span-1 flex justify-center">
-                                            <button onClick={() => handleRemoveItem(item.id)} className="p-1.5 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-md transition-all"><Trash2 size={14} /></button>
+
+                                        {/* Remove Action */}
+                                        <div className="w-full md:w-10 flex justify-end md:justify-center shrink-0">
+                                            <button 
+                                                onClick={() => handleRemoveItem(item.id)} 
+                                                className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                                                title="Eliminar fila"
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
                                         </div>
                                     </motion.div>
                                 ))}

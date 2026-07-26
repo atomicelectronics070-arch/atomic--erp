@@ -11,8 +11,12 @@ import {
     Globe, User as UserIcon, Share2, Search
 } from "lucide-react"
 
+import VirtualOfficeWorkspace from "@/components/dashboard/VirtualOfficeWorkspace"
+import MultiSocialPublisher from "@/components/dashboard/MultiSocialPublisher"
+
 export default function BlogsDashboard() {
   const { data: session } = useSession()
+  const [masterMode, setMasterMode] = useState<"red_social" | "area_trabajo">("red_social")
   const [activeTab, setActiveTab] = useState<"mis_blogs" | "permisos" | "social_settings" | "entornos">("mis_blogs")
   const isAdmin = session?.user?.role === "ADMIN" || session?.user?.role === "MANAGEMENT"
   const canPublish = isAdmin || (session?.user as any)?.canCreateBlogs
@@ -70,7 +74,6 @@ export default function BlogsDashboard() {
       tiktokOpenId: ""
   })
   const [savingSettings, setSavingSettings] = useState(false)
-  const [isNemotronProcessing, setIsNemotronProcessing] = useState(false)
 
   const fetchBlogs = async () => {
     setLoading(true)
@@ -122,20 +125,6 @@ export default function BlogsDashboard() {
                   setSocialSettings(data)
               }
           }
-      } catch (e) {
-          console.error(e)
-      }
-  }
-
-  useEffect(() => {
-    fetchBlogs()
-    fetchEnvironments()
-    if (isAdmin) {
-        fetchUsers()
-        fetchSocialSettings()
-    }
-  }, [isAdmin])
-
   const handleSaveBlog = async (e: React.FormEvent) => {
     e.preventDefault()
     
@@ -151,7 +140,6 @@ export default function BlogsDashboard() {
         contentType,
         videoUrl: contentType === 'video' ? videoUrl : null,
         socialTargets: targets.length > 0 ? targets : null,
-        // Matrix Data
         environmentId: selectedEnvId || null,
         targetAccounts: selectedAccountIds.length > 0 ? JSON.stringify(selectedAccountIds) : null
     }
@@ -293,57 +281,101 @@ export default function BlogsDashboard() {
       )
   }
 
-  if (!isAdmin && !canPublish) {
-    return (
-        <div className="flex flex-col items-center justify-center p-20 text-center text-slate-500">
-            <Shield size={48} className="text-red-500 mb-4" />
-            <h2 className="text-2xl font-black text-[#0F172A] tracking-tight">Acceso Restringido</h2>
-            <p className="mt-2 font-medium">No cuentas con privilegios para la creación de contenidos.</p>
-        </div>
-    )
-  }
+  useEffect(() => {
+    fetchBlogs()
+    fetchEnvironments()
+    if (isAdmin) {
+        fetchUsers()
+        fetchSocialSettings()
+    }
+  }, [isAdmin])
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-slate-200 pb-6">
-          <div>
-              <h1 className="text-3xl font-black text-[#0F172A] flex items-center gap-3">
-                  <Share2 className="text-indigo-600" /> Omnicanalidad
-              </h1>
-              <p className="text-sm text-slate-500 font-medium mt-1">
-                  Distribución y gestión centralizada de contenidos.
-              </p>
-          </div>
-          {isAdmin && (
-              <div className="flex bg-slate-100 p-1.5 rounded-lg border border-slate-200">
-                  <button 
-                      onClick={() => setActiveTab("mis_blogs")}
-                      className={`px-4 py-2 text-xs font-bold transition-all rounded-md flex items-center gap-2 ${activeTab === 'mis_blogs' ? 'bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-indigo-600 shadow-[0_4px_15px_rgba(0,0,0,0.3)] border border-slate-200' : 'text-slate-500 hover:text-slate-700'}`}
-                  >
-                      <Layout size={14} /> Contenidos
-                  </button>
-                  <button 
-                      onClick={() => setActiveTab("entornos")}
-                      className={`px-4 py-2 text-xs font-bold transition-all rounded-md flex items-center gap-2 ${activeTab === 'entornos' ? 'bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-indigo-600 shadow-[0_4px_15px_rgba(0,0,0,0.3)] border border-slate-200' : 'text-slate-500 hover:text-slate-700'}`}
-                  >
-                      <Layers size={14} /> Entornos
-                  </button>
-                  <button 
-                      onClick={() => setActiveTab("permisos")}
-                      className={`px-4 py-2 text-xs font-bold transition-all rounded-md flex items-center gap-2 ${activeTab === 'permisos' ? 'bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-indigo-600 shadow-[0_4px_15px_rgba(0,0,0,0.3)] border border-slate-200' : 'text-slate-500 hover:text-slate-700'}`}
-                  >
-                      <Key size={14} /> Permisos
-                  </button>
-                  <button 
-                      onClick={() => setActiveTab("social_settings")}
-                      className={`px-4 py-2 text-xs font-bold transition-all rounded-md flex items-center gap-2 ${activeTab === 'social_settings' ? 'bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-indigo-600 shadow-[0_4px_15px_rgba(0,0,0,0.3)] border border-slate-200' : 'text-slate-500 hover:text-slate-700'}`}
-                  >
-                      <Settings size={14} /> APIs API
-                  </button>
-              </div>
-          )}
+      
+      {/* MASTER SWITCH: RED SOCIAL VS ÁREA DE TRABAJO */}
+      <div className="bg-slate-900 border border-slate-800 p-2 rounded-2xl flex items-center justify-between shadow-xl">
+        <div className="flex items-center space-x-2">
+          <button
+            onClick={() => setMasterMode("red_social")}
+            className={`px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all flex items-center space-x-2 ${
+              masterMode === 'red_social' 
+                ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-lg' 
+                : 'text-slate-400 hover:text-white hover:bg-slate-800'
+            }`}
+          >
+            <Share2 size={16} />
+            <span>📱 Red Social & Publicador Omni-Canal</span>
+          </button>
+          
+          <button
+            onClick={() => setMasterMode("area_trabajo")}
+            className={`px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all flex items-center space-x-2 ${
+              masterMode === 'area_trabajo' 
+                ? 'bg-gradient-to-r from-indigo-500 to-blue-600 text-white shadow-lg' 
+                : 'text-slate-400 hover:text-white hover:bg-slate-800'
+            }`}
+          >
+            <Globe size={16} />
+            <span>🏢 Área de Trabajo (Oficina Virtual 2.5D)</span>
+          </button>
+        </div>
+
+        <div className="hidden md:flex items-center space-x-2 px-4 py-1.5 bg-slate-950 rounded-xl border border-slate-800 text-[10px] font-mono text-slate-400">
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>Plataforma ATOMIC Conectada</span>
+        </div>
       </div>
+
+      {/* RENDER VIRTUAL OFFICE WHEN ÁREA DE TRABAJO ACTIVE */}
+      {masterMode === "area_trabajo" && (
+        <VirtualOfficeWorkspace currentModule="marketing" />
+      )}
+
+      {/* RENDER MULTI-SOCIAL PUBLISHER & CMS WHEN RED SOCIAL ACTIVE */}
+      {masterMode === "red_social" && (
+        <>
+          <MultiSocialPublisher />
+
+          {/* Header & Sub-Tabs */}
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-slate-200 pt-6 pb-6">
+              <div>
+                  <h1 className="text-3xl font-black text-[#0F172A] flex items-center gap-3">
+                      <Share2 className="text-indigo-600" /> Contenidos & Configuración de Redes
+                  </h1>
+                  <p className="text-sm text-slate-500 font-medium mt-1">
+                      Gestión de artículos de blog, entornos y llaves API oficiales.
+                  </p>
+              </div>
+              {isAdmin && (
+                  <div className="flex bg-slate-100 p-1.5 rounded-lg border border-slate-200">
+                      <button 
+                          onClick={() => setActiveTab("mis_blogs")}
+                          className={`px-4 py-2 text-xs font-bold transition-all rounded-md flex items-center gap-2 ${activeTab === 'mis_blogs' ? 'bg-white text-indigo-600 shadow-md border border-slate-200' : 'text-slate-500 hover:text-slate-700'}`}
+                      >
+                          <Layout size={14} /> Contenidos
+                      </button>
+                      <button 
+                          onClick={() => setActiveTab("entornos")}
+                          className={`px-4 py-2 text-xs font-bold transition-all rounded-md flex items-center gap-2 ${activeTab === 'entornos' ? 'bg-white text-indigo-600 shadow-md border border-slate-200' : 'text-slate-500 hover:text-slate-700'}`}
+                      >
+                          <Layers size={14} /> Entornos
+                      </button>
+                      <button 
+                          onClick={() => setActiveTab("permisos")}
+                          className={`px-4 py-2 text-xs font-bold transition-all rounded-md flex items-center gap-2 ${activeTab === 'permisos' ? 'bg-white text-indigo-600 shadow-md border border-slate-200' : 'text-slate-500 hover:text-slate-700'}`}
+                      >
+                          <Key size={14} /> Permisos
+                      </button>
+                      <button 
+                          onClick={() => setActiveTab("social_settings")}
+                          className={`px-4 py-2 text-xs font-bold transition-all rounded-md flex items-center gap-2 ${activeTab === 'social_settings' ? 'bg-white text-indigo-600 shadow-md border border-slate-200' : 'text-slate-500 hover:text-slate-700'}`}
+                      >
+                          <Settings size={14} /> APIs API
+                      </button>
+                  </div>
+              )}
+          </div>
 
       {activeTab === "mis_blogs" && (
           <div className="space-y-6">
@@ -563,6 +595,8 @@ export default function BlogsDashboard() {
                   </div>
               </form>
           </div>
+      )}
+        </>
       )}
 
       {/* Editor Modal */}

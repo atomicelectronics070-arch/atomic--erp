@@ -16,12 +16,14 @@ export async function generateStaticParams() {
   }
 }
 
-export default function LaptopsDynamicLandingPage({ params }: { params: { id: string } }) {
+export default async function LaptopsDynamicLandingPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const dataPath = path.join(process.cwd(), 'src', 'data', 'enrichedLaptops.json');
   let laptop = null;
+  
   try {
     const laptops = JSON.parse(fs.readFileSync(dataPath, 'utf-8'));
-    laptop = laptops.find((l: any) => l.slug === params.id);
+    laptop = laptops.find((l: any) => l.slug === id || l.id === id);
   } catch (err) {
     console.error(err);
   }
