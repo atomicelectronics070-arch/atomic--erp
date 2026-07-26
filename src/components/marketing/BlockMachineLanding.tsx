@@ -1,225 +1,608 @@
 'use client';
-import { motion } from 'framer-motion';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 
 export default function BlockMachineLanding({ products }: { products: any[] }) {
   const whatsappNumber = "593969043453";
-  const whatsappLink = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Hola Atomic, requiero cotización y asesoría técnica de nivel industrial sobre sus plantas concreteras y formadoras de bloques.')}`;
+  const whatsappLink = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Hola Atomic, deseo asesoría técnica especializada y cotización completa sobre las Plantas Industriales de Bloques y Adoquines.')}`;
+
+  // State for ROI Calculator
+  const [blocksPerDay, setBlocksPerDay] = useState(5000);
+  const [profitPerBlock, setProfitPerBlock] = useState(0.12);
+  const monthlyProfit = blocksPerDay * profitPerBlock * 26; // 26 working days
+  const annualProfit = monthlyProfit * 12;
+
+  // State for FAQ Accordion
+  const [activeFaq, setActiveFaq] = useState<number | null>(null);
+
+  const faqs = [
+    {
+      q: "¿De qué tamaño y estilos vienen los bloques que puede producir la máquina?",
+      a: "Nuestras plantas son multi-molde de intercambio rápido. Pueden fabricar: 1) Bloques Huecos Estándar (400x200x200mm, 400x150x200mm, 400x100x200mm), 2) Adoquines de Alta Resistencia (Holandés 200x100mm, Hexagonal, Unidecor, Hueso/Zig-Zag), 3) Bloques Ecológicos Interlocking (tipo Lego sin mortero) y 4) Bordillos viales de hasta 1 metro. La matriz intercambiable permite fabricar prácticamente cualquier geometría de concreto prefabricado."
+    },
+    {
+      q: "¿Qué incluye exactamente la compra de una planta completa con ATOMIC?",
+      a: "Se entrega una solución 'Llave en Mano' (Turnkey Project). Incluye: Máquina Principal Vibratoria e Hidráulica (Host Machine), Mezcladora Obligatoria de Doble Eje JS350/JS500/JS750, Cinta Transportadora de Agregados automatizada, Apilador Automático de Paletas (Stacker), Tablero de Control Digital PLC Siemens/Mitsubishi con pantalla táctil, 1 Molde de acero templado al manganeso a elección, Kit de repuestos críticos y Carritos manuales de retiro."
+    },
+    {
+      q: "¿Qué cobertura y características tiene el Soporte Técnico y Garantía?",
+      a: "Todas las plantas cuentan con 2 Años de Garantía Estructural y Mecánica. Nuestro servicio incluye: Instalación y montaje en planta por nuestros ingenieros mecánicos/electrónicos, calibración de presiones y ciclos de vibración, capacitación técnica en sitio para su personal de operarios, tele-diagnóstico remoto vía módem industrial PLC 24/7 y stock permanente de repuestos originales (sellos hidráulicos, electroválvulas, motores vibradores, sensores inductivos)."
+    },
+    {
+      q: "¿Cuál es el tiempo de retorno de inversión (ROI) estimado?",
+      a: "Para una planta media (ej. QT4-15 o QTJ4-35) operando al 70% de su capacidad nominal en una jornada de 8 horas (aprox. 4,000 a 6,000 bloques/día), el margen neto promedio por bloque oscila entre $0.10 y $0.15 USD. El retorno total del capital invertido se logra típicamente entre los 6 y 10 meses de operación continua."
+    },
+    {
+      q: "¿Qué requerimientos eléctricos e infraestructura se necesitan previa instalación?",
+      a: "Se requiere acometida eléctrica trifásica a 220V o 380V (60Hz) con una capacidad instalada recomendada de 35 kW a 75 kW según el modelo. El terreno para la nave industrial debe contar con un piso nivelado de hormigón armado de 15 a 20 cm de espesor y un área de curado al aire libre de al menos 800 a 1,500 m² para acopio de producto final."
+    }
+  ];
 
   return (
-    <div className="bg-transparent min-h-screen text-white font-sans selection:bg-amber-500/30">
+    <div className="bg-[#050505] min-h-screen text-white font-sans selection:bg-amber-500/30 overflow-x-hidden">
       
+      {/* BACKGROUND DECORATIVE ELEMENTS */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute top-[10%] left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-gradient-to-tr from-amber-600/10 via-yellow-500/5 to-transparent blur-[160px] rounded-full"></div>
+        <div className="absolute top-[40%] right-[-10%] w-[600px] h-[600px] bg-orange-600/5 blur-[180px] rounded-full"></div>
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:80px_80px]"></div>
+      </div>
+
       {/* 1. HERO SECTION */}
-      <section className="relative min-h-[90vh] flex flex-col items-center justify-center overflow-hidden pt-20 pb-32 border-b border-white/[0.02]">
-        <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-b from-[#050505]/40 via-[#050505]/90 to-[#050505] z-10" />
-          <img 
-            src="https://images.unsplash.com/photo-1541888081622-15cb3a5d898a?q=80&w=2070&auto=format&fit=crop" 
-            alt="Construcción Industrial" 
-            className="w-full h-full object-cover opacity-[0.15] mix-blend-luminosity grayscale"
-          />
-        </div>
-        
-        <div className="relative z-20 max-w-5xl mx-auto px-6 text-center">
+      <section className="relative min-h-screen flex flex-col items-center justify-center pt-24 pb-20 px-6 z-10 border-b border-white/[0.05]">
+        <div className="max-w-6xl mx-auto text-center">
+          
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.8 }}
           >
-            <div className="inline-flex items-center space-x-2 px-4 py-1.5 bg-amber-500/10 border border-amber-500/20 rounded-full text-amber-500 font-bold text-[9px] tracking-[0.4em] mb-8 uppercase drop-shadow-[0_0_15px_rgba(245,158,11,0.5)] backdrop-blur-md">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
-              <span>Línea Industrial Premium</span>
+            <div className="inline-flex items-center space-x-3 px-5 py-2 bg-amber-500/10 border border-amber-500/30 rounded-full mb-8 shadow-[0_0_20px_rgba(245,158,11,0.2)]">
+              <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+              <span className="text-[10px] font-black uppercase tracking-[0.35em] text-amber-400">
+                División de Maquinaria Pesada & Prefabricados
+              </span>
             </div>
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-black mb-6 tracking-tighter leading-none text-white">
-              EL PODER DE <br /><span className="text-transparent bg-clip-text bg-gradient-to-b from-amber-200 via-amber-500 to-yellow-700 italic pr-4">FABRICAR.</span>
+
+            <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tighter uppercase leading-[0.9] mb-8 text-white">
+              EL PODER DE <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-yellow-600 italic">
+                FABRICAR.
+              </span>
             </h1>
-            <p className="text-lg md:text-xl text-neutral-400 max-w-3xl mx-auto mb-16 font-light leading-relaxed tracking-wide">
-              Equipamiento de grado industrial para la masificación de bloques de hormigón. Capacidades masivas, ingeniería de precisión y rentabilidad absoluta.
+
+            <p className="text-lg md:text-2xl text-neutral-400 max-w-3xl mx-auto font-light leading-relaxed mb-12 tracking-wide">
+              Ingeniería industrial de compresión hidráulica y vibración de alta frecuencia. Diseñadas para producir hasta <strong className="text-white font-semibold">18,000 bloques por turno</strong> con estándares europeos.
             </p>
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-5">
+              <a 
+                href={whatsappLink} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="w-full sm:w-auto px-10 py-5 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-black font-black text-xs uppercase tracking-[0.25em] rounded-full transition-all duration-300 shadow-[0_0_35px_rgba(245,158,11,0.4)] hover:shadow-[0_0_50px_rgba(245,158,11,0.6)] hover:scale-105 flex items-center justify-center space-x-3"
+              >
+                <span>Solicitar Asesoría & Cotización</span>
+                <span className="text-base">→</span>
+              </a>
+              <a 
+                href="#catalogo" 
+                className="w-full sm:w-auto px-10 py-5 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-black text-xs uppercase tracking-[0.25em] rounded-full transition-all duration-300 backdrop-blur-md hover:border-amber-500/40"
+              >
+                Ver Catálogo de Plantas
+              </a>
+            </div>
+          </motion.div>
+
+          {/* Quick Metrics Bar */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-24 pt-12 border-t border-white/10 text-left max-w-5xl mx-auto">
+            <div className="p-4 border-l-2 border-amber-500 bg-white/[0.01]">
+              <div className="text-3xl md:text-4xl font-black text-white font-mono">100 KN</div>
+              <div className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 mt-1">Fuerza de Compresión</div>
+            </div>
+            <div className="p-4 border-l-2 border-amber-500 bg-white/[0.01]">
+              <div className="text-3xl md:text-4xl font-black text-white font-mono">15-20 s</div>
+              <div className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 mt-1">Ciclo de Moldeo</div>
+            </div>
+            <div className="p-4 border-l-2 border-amber-500 bg-white/[0.01]">
+              <div className="text-3xl md:text-4xl font-black text-white font-mono">100% PLC</div>
+              <div className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 mt-1">Control Siemens/Mitsubishi</div>
+            </div>
+            <div className="p-4 border-l-2 border-amber-500 bg-white/[0.01]">
+              <div className="text-3xl md:text-4xl font-black text-white font-mono">2 AÑOS</div>
+              <div className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 mt-1">Garantía Estructural</div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      {/* 2. CATÁLOGO INTEGRADO DE PRODUCTOS DE BBDD */}
+      <section className="py-28 px-6 relative z-10 border-b border-white/[0.05]" id="catalogo">
+        <div className="max-w-7xl mx-auto">
+          
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+            <div>
+              <span className="text-amber-400 font-mono text-xs uppercase tracking-[0.3em] block mb-2">● Inventario Industrial Disponible</span>
+              <h2 className="text-4xl md:text-6xl font-black text-white tracking-tight uppercase">
+                Plantas & Máquinas <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-yellow-600 italic">Destacadas</span>
+              </h2>
+            </div>
+            <p className="text-neutral-400 text-sm max-w-md font-light">
+              Equipos de alta presión importados directamente con configuración personalizada de moldes y voltaje adaptado a tu planta local.
+            </p>
+          </div>
+
+          {products.length === 0 ? (
+            <div className="p-16 border border-white/10 rounded-3xl bg-white/[0.02] text-center">
+              <p className="text-neutral-400">Cargando inventario de maquinaria...</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {products.map((p) => {
+                let firstImage = "https://images.unsplash.com/photo-1541888081622-15cb3a5d898a?q=80&w=2070";
+                try {
+                  if (p.images) {
+                    const parsed = typeof p.images === 'string' ? JSON.parse(p.images) : p.images;
+                    if (Array.isArray(parsed) && parsed.length > 0) firstImage = parsed[0];
+                  }
+                } catch(e) {}
+
+                // Strip HTML tags for clean card description preview
+                const cleanDesc = p.description ? p.description.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim() : '';
+
+                return (
+                  <div key={p.id} className="bg-neutral-950 border border-white/10 rounded-3xl overflow-hidden hover:border-amber-500/50 transition-all duration-500 group flex flex-col sm:flex-row shadow-2xl">
+                    <div className="sm:w-2/5 h-64 sm:h-auto relative overflow-hidden bg-neutral-900">
+                      <img 
+                        src={firstImage} 
+                        alt={p.name} 
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-90 group-hover:opacity-100"
+                      />
+                      <div className="absolute top-4 left-4 bg-black/80 backdrop-blur-md border border-amber-500/30 text-amber-400 px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider">
+                        Industrial Grade
+                      </div>
+                    </div>
+
+                    <div className="sm:w-3/5 p-8 flex flex-col justify-between">
+                      <div>
+                        <h3 className="text-xl md:text-2xl font-black text-white mb-3 uppercase tracking-tight leading-snug group-hover:text-amber-400 transition-colors">
+                          {p.name}
+                        </h3>
+                        <p className="text-neutral-400 text-xs font-light line-clamp-3 mb-6 leading-relaxed">
+                          {cleanDesc || "Planta industrial automatizada para la fabricación en masa de bloques de concreto, adoquines viales y prefabricados con sistema de alta presión vibratoria."}
+                        </p>
+                      </div>
+
+                      <div>
+                        <div className="flex items-center justify-between pt-6 border-t border-white/10 mb-6">
+                          <div>
+                            <span className="text-[10px] uppercase font-bold text-neutral-500 block">Inversión Estimada</span>
+                            <span className="text-2xl font-black text-amber-400 font-mono">
+                              ${p.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                            </span>
+                          </div>
+                          <div className="text-right">
+                            <span className="text-[10px] uppercase font-bold text-neutral-500 block">Soporte</span>
+                            <span className="text-xs font-bold text-white">Incluido 24/7</span>
+                          </div>
+                        </div>
+
+                        <Link 
+                          href={`/web/product/${p.id}`} 
+                          className="w-full py-3.5 bg-white/5 hover:bg-amber-500 hover:text-black text-white font-bold text-xs uppercase tracking-widest rounded-xl transition-all duration-300 flex items-center justify-center space-x-2 border border-white/10 hover:border-amber-500"
+                        >
+                          <span>Ver Ficha Técnica Completa</span>
+                          <span>→</span>
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+        </div>
+      </section>
+
+      {/* 3. ANÁLISIS DETALLADO DE PRODUCTOS & ESTILOS DE BLOQUES */}
+      <section className="py-28 px-6 relative z-10 border-b border-white/[0.05] bg-neutral-950/50">
+        <div className="max-w-7xl mx-auto">
+          
+          <div className="text-center max-w-3xl mx-auto mb-20">
+            <span className="text-amber-400 font-mono text-xs uppercase tracking-[0.3em] block mb-3">● Versatilidad de Moldeado</span>
+            <h2 className="text-4xl md:text-6xl font-black text-white tracking-tight uppercase mb-6">
+              ¿Qué Tipos y Tamaños de Bloques <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-yellow-500 italic">Puedes Producir?</span>
+            </h2>
+            <p className="text-neutral-400 text-base font-light">
+              Nuestras máquinas emplean matrices intercambiables de acero aleado tratado térmicamente con carbonitruración, aumentando la vida útil a más de 120,000 ciclos de moldeo.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            
+            {/* ITEM 1 */}
+            <div className="bg-neutral-900/60 border border-white/10 rounded-3xl p-8 hover:border-amber-500/40 transition-all duration-300">
+              <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 font-mono text-2xl font-black mb-6">
+                01
+              </div>
+              <h3 className="text-xl font-bold text-white mb-3">Bloques Huecos Estándar</h3>
+              <p className="text-neutral-400 text-xs font-light leading-relaxed mb-6">
+                El elemento fundamental de construcción estructural sismo-resistente. Ofrece cámaras de aire ideales para aislamiento térmico y alojar varillas de refuerzo.
+              </p>
+              <div className="space-y-2 border-t border-white/10 pt-4 text-[11px] font-mono text-neutral-300">
+                <div className="flex justify-between"><span>400 x 200 x 200 mm</span><span className="text-amber-400">(Estándar 20)</span></div>
+                <div className="flex justify-between"><span>400 x 150 x 200 mm</span><span className="text-amber-400">(Estándar 15)</span></div>
+                <div className="flex justify-between"><span>400 x 100 x 200 mm</span><span className="text-amber-400">(Tabique 10)</span></div>
+              </div>
+            </div>
+
+            {/* ITEM 2 */}
+            <div className="bg-neutral-900/60 border border-white/10 rounded-3xl p-8 hover:border-amber-500/40 transition-all duration-300">
+              <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 font-mono text-2xl font-black mb-6">
+                02
+              </div>
+              <h3 className="text-xl font-bold text-white mb-3">Adoquines Viales (Pavers)</h3>
+              <p className="text-neutral-400 text-xs font-light leading-relaxed mb-6">
+                Resistencia a la compresión superior a 45 MPa. Ideal para tráfico pesado, áreas portuarias, aceras urbanas y estacionamientos industriales.
+              </p>
+              <div className="space-y-2 border-t border-white/10 pt-4 text-[11px] font-mono text-neutral-300">
+                <div className="flex justify-between"><span>Holandés 200x100x60mm</span><span className="text-amber-400">Tráfico Mediano</span></div>
+                <div className="flex justify-between"><span>Hexagonal 200x80mm</span><span className="text-amber-400">Tráfico Pesado</span></div>
+                <div className="flex justify-between"><span>Zig-Zag / Unidecor</span><span className="text-amber-400">Traba Alta</span></div>
+              </div>
+            </div>
+
+            {/* ITEM 3 */}
+            <div className="bg-neutral-900/60 border border-white/10 rounded-3xl p-8 hover:border-amber-500/40 transition-all duration-300">
+              <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 font-mono text-2xl font-black mb-6">
+                03
+              </div>
+              <h3 className="text-xl font-bold text-white mb-3">Bloques Ecológicos Interlocking</h3>
+              <p className="text-neutral-400 text-xs font-light leading-relaxed mb-6">
+                Bloques de auto-encaje estilo Lego producidos a partir de suelo-cemento con prensado hidráulico extremo. No requieren mortero para su ensamble.
+              </p>
+              <div className="space-y-2 border-t border-white/10 pt-4 text-[11px] font-mono text-neutral-300">
+                <div className="flex justify-between"><span>300 x 150 x 100 mm</span><span className="text-amber-400">2 Cavidades</span></div>
+                <div className="flex justify-between"><span>250 x 125 x 100 mm</span><span className="text-amber-400">Manual / Auto</span></div>
+                <div className="flex justify-between"><span>Ahorro Mortero</span><span className="text-amber-400">Hasta 80%</span></div>
+              </div>
+            </div>
+
+            {/* ITEM 4 */}
+            <div className="bg-neutral-900/60 border border-white/10 rounded-3xl p-8 hover:border-amber-500/40 transition-all duration-300">
+              <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 font-mono text-2xl font-black mb-6">
+                04
+              </div>
+              <h3 className="text-xl font-bold text-white mb-3">Paneles de Pared EPS & Bordillos</h3>
+              <p className="text-neutral-400 text-xs font-light leading-relaxed mb-6">
+                Líneas avanzadas para paneles sándwich de poliestireno expandido y bordillos de contención vial de gran escala.
+              </p>
+              <div className="space-y-2 border-t border-white/10 pt-4 text-[11px] font-mono text-neutral-300">
+                <div className="flex justify-between"><span>Paneles EPS 2270x610mm</span><span className="text-amber-400">Livianos</span></div>
+                <div className="flex justify-between"><span>Bordillo 500x300x150mm</span><span className="text-amber-400">Vialidad</span></div>
+                <div className="flex justify-between"><span>Canales de Drenaje</span><span className="text-amber-400">Urbano</span></div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      {/* 4. ¿QUÉ INCLUYE LA PLANTA COMPLETA? (COMPONENTES DE SERIE) */}
+      <section className="py-28 px-6 relative z-10 border-b border-white/[0.05]">
+        <div className="max-w-7xl mx-auto">
+          
+          <div className="flex flex-col md:flex-row items-center justify-between mb-16 gap-8">
+            <div className="max-w-2xl">
+              <span className="text-amber-400 font-mono text-xs uppercase tracking-[0.3em] block mb-3">● Equipamiento de Serie Incluido</span>
+              <h2 className="text-4xl md:text-6xl font-black text-white tracking-tight uppercase">
+                ¿Qué Incluye Tu Compra por la <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-yellow-500 italic">Adquisición de la Planta?</span>
+              </h2>
+            </div>
             <a 
               href={whatsappLink} 
               target="_blank" 
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-4 bg-white/5 hover:bg-white/10 border border-white/10 text-white px-10 py-5 rounded-full font-black text-[11px] uppercase tracking-[0.3em] transition-all duration-500 shadow-[0_0_40px_rgba(255,255,255,0.05)] hover:shadow-[0_0_40px_rgba(245,158,11,0.2)] hover:border-amber-500/30 backdrop-blur-md group"
+              className="px-8 py-4 bg-white/5 border border-white/10 hover:border-amber-500 text-white font-bold text-xs uppercase tracking-widest rounded-full transition-all duration-300 flex items-center space-x-3 shrink-0"
             >
-              <span>Contactar Ingeniería</span>
-              <span className="w-8 h-8 rounded-full bg-amber-500 text-black flex items-center justify-center group-hover:bg-amber-400 transition-colors">→</span>
+              <span>Solicitar Lista de Partes</span>
+              <span>→</span>
             </a>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* 2. ¿QUÉ TAMAÑOS Y TIPOS SE PUEDEN HACER? */}
-      <section className="py-32 relative z-10 bg-[#050505] border-b border-white/[0.02]">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="mb-20">
-            <p className="text-amber-500 font-black text-[10px] tracking-[0.4em] uppercase mb-4">Ingeniería Multi-Propósito</p>
-            <h2 className="text-4xl md:text-5xl font-light tracking-tighter mb-4 text-white">
-              Capacidades <span className="font-black italic text-neutral-500">Ilimitadas</span>
-            </h2>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6">
-            <div className="bg-white/[0.02] border border-white/5 p-10 rounded-[2rem] hover:border-amber-500/30 transition-all duration-700 hover:bg-white/[0.04] group relative overflow-hidden backdrop-blur-xl">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/5 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2 group-hover:bg-amber-500/10 transition-colors"></div>
-              <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center mb-8 text-xl shadow-lg relative z-10 text-neutral-400 group-hover:text-amber-500 transition-colors">🧱</div>
-              <h3 className="text-2xl font-black tracking-tight mb-4 text-white relative z-10">Bloques Huecos</h3>
-              <p className="text-neutral-500 mb-8 font-light relative z-10">Estructuras ligeras y de alta resistencia. Ahorro sustancial de material y óptimo desempeño sismo-resistente.</p>
-              <ul className="text-[11px] font-black tracking-widest text-neutral-400 space-y-3 uppercase relative z-10">
-                <li className="flex justify-between border-b border-white/5 pb-2"><span>Estándar</span> <span className="text-amber-500">400x200x200</span></li>
-                <li className="flex justify-between border-b border-white/5 pb-2"><span>Medio</span> <span className="text-amber-500">400x150x200</span></li>
-                <li className="flex justify-between pb-2"><span>Delgado</span> <span className="text-amber-500">400x100x200</span></li>
-              </ul>
-            </div>
-            <div className="bg-white/[0.02] border border-white/5 p-10 rounded-[2rem] hover:border-amber-500/30 transition-all duration-700 hover:bg-white/[0.04] group relative overflow-hidden backdrop-blur-xl">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/5 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2 group-hover:bg-amber-500/10 transition-colors"></div>
-              <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center mb-8 text-xl shadow-lg relative z-10 text-neutral-400 group-hover:text-amber-500 transition-colors">🏗️</div>
-              <h3 className="text-2xl font-black tracking-tight mb-4 text-white relative z-10">Adoquines Paving</h3>
-              <p className="text-neutral-500 mb-8 font-light relative z-10">Fabricación en masa para obra pública y privada. Aceras, parques y zonas de rodamiento vehicular pesado.</p>
-              <ul className="text-[11px] font-black tracking-widest text-neutral-400 space-y-3 uppercase relative z-10">
-                <li className="flex justify-between border-b border-white/5 pb-2"><span>Rectangular</span> <span className="text-amber-500">200x100x60</span></li>
-                <li className="flex justify-between border-b border-white/5 pb-2"><span>Diseño</span> <span className="text-amber-500">Zig-Zag</span></li>
-                <li className="flex justify-between pb-2"><span>Geometría</span> <span className="text-amber-500">Hexagonal</span></li>
-              </ul>
-            </div>
-            <div className="bg-white/[0.02] border border-white/5 p-10 rounded-[2rem] hover:border-amber-500/30 transition-all duration-700 hover:bg-white/[0.04] group relative overflow-hidden backdrop-blur-xl">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/5 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2 group-hover:bg-amber-500/10 transition-colors"></div>
-              <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center mb-8 text-xl shadow-lg relative z-10 text-neutral-400 group-hover:text-amber-500 transition-colors">🧩</div>
-              <h3 className="text-2xl font-black tracking-tight mb-4 text-white relative z-10">Interlocking</h3>
-              <p className="text-neutral-500 mb-8 font-light relative z-10">Sistema tipo "Lego" ecológico de alta compresión (Suelo-Cemento). Elimina el uso de mortero en las juntas.</p>
-              <ul className="text-[11px] font-black tracking-widest text-neutral-400 space-y-3 uppercase relative z-10">
-                <li className="flex justify-between border-b border-white/5 pb-2"><span>Sólido</span> <span className="text-amber-500">240x115x53</span></li>
-                <li className="flex justify-between border-b border-white/5 pb-2"><span>Ecológico</span> <span className="text-amber-500">Suelo-Cemento</span></li>
-                <li className="flex justify-between pb-2"><span>Vial</span> <span className="text-amber-500">Bordillos</span></li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 3. ¿QUÉ INCLUYE LA INVERSIÓN? */}
-      <section className="py-32 bg-[#050505] relative border-b border-white/[0.02] overflow-hidden">
-        {/* Decorative Grid */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:100px_100px] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,#000_10%,transparent_100%)] pointer-events-none"></div>
-
-        <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <div className="mb-20 max-w-2xl">
-            <p className="text-amber-500 font-black text-[10px] tracking-[0.4em] uppercase mb-4">Línea de Producción</p>
-            <h2 className="text-4xl md:text-5xl font-light tracking-tighter mb-6 text-white leading-tight">
-              Ecosistema Operativo <span className="font-black italic text-neutral-500 block">Llave en Mano</span>
-            </h2>
-            <p className="text-neutral-400 text-lg font-light">
-              Nuestros equipos industriales no son simples máquinas; son plantas completas diseñadas para operar desde el día uno con eficiencia implacable.
-            </p>
-          </div>
-
-          <div className="grid lg:grid-cols-2 gap-6 items-center">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="bg-white/[0.02] p-8 rounded-3xl border border-white/5 hover:bg-white/[0.04] transition-colors group">
-                <div className="text-amber-500 font-mono text-sm mb-4">01.</div>
-                <h4 className="text-xl font-black text-white mb-3">Mezcladora</h4>
-                <p className="text-sm text-neutral-500 font-light">Equipos obligatorios de doble eje (JD350/JS500) para mezclas ultra homogéneas.</p>
-              </div>
-              <div className="bg-white/[0.02] p-8 rounded-3xl border border-white/5 hover:bg-white/[0.04] transition-colors group mt-0 sm:mt-12">
-                <div className="text-amber-500 font-mono text-sm mb-4">02.</div>
-                <h4 className="text-xl font-black text-white mb-3">Banda Transportadora</h4>
-                <p className="text-sm text-neutral-500 font-light">Automatización del flujo de material crudo directo a la tolva principal.</p>
-              </div>
-              <div className="bg-gradient-to-br from-amber-500/20 to-transparent p-8 rounded-3xl border border-amber-500/30 group">
-                <div className="text-amber-400 font-mono text-sm mb-4">03.</div>
-                <h4 className="text-xl font-black text-amber-500 mb-3 drop-shadow-md">Host Machine</h4>
-                <p className="text-sm text-neutral-400 font-light">Prensa vibratoria hidráulica. El corazón de la línea, capaz de ejercer presiones masivas.</p>
-              </div>
-              <div className="bg-white/[0.02] p-8 rounded-3xl border border-white/5 hover:bg-white/[0.04] transition-colors group mt-0 sm:mt-12">
-                <div className="text-amber-500 font-mono text-sm mb-4">04.</div>
-                <h4 className="text-xl font-black text-white mb-3">Matrices & Logística</h4>
-                <p className="text-sm text-neutral-500 font-light">Moldes de acero endurecido y carritos de transporte de paletas para la obra terminada.</p>
-              </div>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             
-            <div className="relative rounded-[2rem] overflow-hidden bg-neutral-900 aspect-square border border-white/5 p-2 lg:ml-12 mt-12 lg:mt-0">
-              <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-40 mix-blend-luminosity grayscale"></div>
-              <div className="absolute inset-0 bg-gradient-to-tr from-[#050505] via-transparent to-[#050505]/50"></div>
-              <div className="absolute bottom-10 left-10 right-10">
-                <div className="bg-black/40 backdrop-blur-md border border-white/10 p-6 rounded-2xl">
-                  <p className="text-amber-500 font-mono text-[10px] uppercase tracking-widest mb-2">Transformación de Materia</p>
-                  <p className="text-white font-medium text-lg">Convierte residuos de construcción y agregados en capital líquido con la mayor eficiencia del mercado.</p>
-                </div>
-              </div>
+            <div className="bg-neutral-950 p-8 rounded-3xl border border-white/10 relative overflow-hidden">
+              <div className="text-amber-500 font-mono text-xs mb-4">COMPONENTE 01</div>
+              <h3 className="text-2xl font-bold text-white mb-3">Máquina Principal (Host)</h3>
+              <p className="text-neutral-400 text-xs font-light leading-relaxed mb-6">
+                Chasis de acero estructural electro-soldado de alta densidad. Incorpora mesa vibratoria síncrona accionado por motores de 11 kW y sistema hidráulico de presión descendente.
+              </p>
+              <ul className="text-xs text-neutral-300 space-y-2 font-mono">
+                <li className="flex items-center space-x-2"><span className="text-amber-400">✓</span><span>Sistema de alimentación automática de material.</span></li>
+                <li className="flex items-center space-x-2"><span className="text-amber-400">✓</span><span>Válvulas electro-hidráulicas de proporcionalidad.</span></li>
+              </ul>
             </div>
+
+            <div className="bg-neutral-950 p-8 rounded-3xl border border-white/10 relative overflow-hidden">
+              <div className="text-amber-500 font-mono text-xs mb-4">COMPONENTE 02</div>
+              <h3 className="text-2xl font-bold text-white mb-3">Mezcladora Obligatoria</h3>
+              <p className="text-neutral-400 text-xs font-light leading-relaxed mb-6">
+                Mezcladora de doble eje JS500 o tipo sartén Pan-Mixer. Diseñada específicamente para concreto seco de baja relación agua/cemento.
+              </p>
+              <ul className="text-xs text-neutral-300 space-y-2 font-mono">
+                <li className="flex items-center space-x-2"><span className="text-amber-400">✓</span><span>Revestimiento interno con placas de aleación anti-desgaste.</span></li>
+                <li className="flex items-center space-x-2"><span className="text-amber-400">✓</span><span>Descarga neumática/hidráulica automatizada.</span></li>
+              </ul>
+            </div>
+
+            <div className="bg-neutral-950 p-8 rounded-3xl border border-white/10 relative overflow-hidden">
+              <div className="text-amber-500 font-mono text-xs mb-4">COMPONENTE 03</div>
+              <h3 className="text-2xl font-bold text-white mb-3">Panel de Control PLC Siemens</h3>
+              <p className="text-neutral-400 text-xs font-light leading-relaxed mb-6">
+                Cerebro automatizado con pantalla táctil HMI a color. Permite monitorear presiones, tiempos de vibración, conteo de bloques y diagnóstico de fallas en tiempo real.
+              </p>
+              <ul className="text-xs text-neutral-300 space-y-2 font-mono">
+                <li className="flex items-center space-x-2"><span className="text-amber-400">✓</span><span>Modo Automático, Semi-Automático y Manual.</span></li>
+                <li className="flex items-center space-x-2"><span className="text-amber-400">✓</span><span>Módulo de tele-asistencia remota vía red IP.</span></li>
+              </ul>
+            </div>
+
+            <div className="bg-neutral-950 p-8 rounded-3xl border border-white/10 relative overflow-hidden">
+              <div className="text-amber-500 font-mono text-xs mb-4">COMPONENTE 04</div>
+              <h3 className="text-2xl font-bold text-white mb-3">Cinta Transportadora de Agregados</h3>
+              <p className="text-neutral-400 text-xs font-light leading-relaxed mb-6">
+                Banda transportadora vulcanizada de 6 a 8 metros con rodillos de rodamiento blindados para la elevación continua de la mezcla desde la mezcladora a la tolva.
+              </p>
+            </div>
+
+            <div className="bg-neutral-950 p-8 rounded-3xl border border-white/10 relative overflow-hidden">
+              <div className="text-amber-500 font-mono text-xs mb-4">COMPONENTE 05</div>
+              <h3 className="text-2xl font-bold text-white mb-3">Apilador de Paletas (Block Stacker)</h3>
+              <p className="text-neutral-400 text-xs font-light leading-relaxed mb-6">
+                Sistema elevar-apilar que agrupa automáticamente 3 a 5 paletas de bloques frescos producidos para su fácil retiro mediante montacargas o carritos.
+              </p>
+            </div>
+
+            <div className="bg-neutral-950 p-8 rounded-3xl border border-white/10 relative overflow-hidden">
+              <div className="text-amber-500 font-mono text-xs mb-4">COMPONENTE 06</div>
+              <h3 className="text-2xl font-bold text-white mb-3">Kit de Repuestos & Carritos</h3>
+              <p className="text-neutral-400 text-xs font-light leading-relaxed mb-6">
+                Incluye 2 carritos de extracción manual, caja de herramientas de mantenimiento industrial y paquete de sellos hidráulicos, relés e interruptores de repuesto.
+              </p>
+            </div>
+
           </div>
+
         </div>
       </section>
 
-      {/* 5. CATÁLOGO INTEGRADO */}
-      <section className="py-32 bg-[#050505]" id="catalogo">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row items-end justify-between mb-20 gap-8">
+      {/* 5. COBERTURA DE SOPORTE TÉCNICO & GARANTÍA */}
+      <section className="py-28 px-6 relative z-10 border-b border-white/[0.05] bg-neutral-950/40">
+        <div className="max-w-7xl mx-auto">
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <p className="text-amber-500 font-black text-[10px] tracking-[0.4em] uppercase mb-4">Catálogo de Equipamiento</p>
-              <h2 className="text-4xl md:text-5xl font-light tracking-tighter text-white">
-                Maquinaria <span className="font-black italic text-neutral-500">Disponible</span>
+              <span className="text-amber-400 font-mono text-xs uppercase tracking-[0.3em] block mb-3">● Respaldo Corporativo ATOMIC</span>
+              <h2 className="text-4xl md:text-6xl font-black text-white tracking-tight uppercase mb-6 leading-none">
+                Soporte Técnico <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-yellow-500 italic">Especializado 24/7</span>
               </h2>
+              <p className="text-neutral-300 text-base font-light mb-8 leading-relaxed">
+                Entendemos que el paro de una planta de producción significa pérdidas inmediatas. Por ello, estructuramos un plan integral de acompañamiento técnico post-venta.
+              </p>
+
+              <div className="space-y-6">
+                <div className="flex space-x-4">
+                  <div className="w-10 h-10 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 font-bold shrink-0">1</div>
+                  <div>
+                    <h4 className="text-lg font-bold text-white mb-1">Montaje e Instalación On-Site</h4>
+                    <p className="text-xs text-neutral-400 font-light">Nuestros ingenieros se trasladan a tu terreno para supervisar el anclaje, conexiones eléctricas e hidráulicas.</p>
+                  </div>
+                </div>
+
+                <div className="flex space-x-4">
+                  <div className="w-10 h-10 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 font-bold shrink-0">2</div>
+                  <div>
+                    <h4 className="text-lg font-bold text-white mb-1">Capacitación Operativa de Personal</h4>
+                    <p className="text-xs text-neutral-400 font-light">Entrenamos a tus operarios en el manejo del panel PLC, dosificación correcta de la mezcla y limpieza preventiva.</p>
+                  </div>
+                </div>
+
+                <div className="flex space-x-4">
+                  <div className="w-10 h-10 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 font-bold shrink-0">3</div>
+                  <div>
+                    <h4 className="text-lg font-bold text-white mb-1">Stock de Repuestos & Tele-Diagnóstico</h4>
+                    <p className="text-xs text-neutral-400 font-light">Acceso a repuestos originales en bodega local y diagnóstico remoto en tiempo real de códigos de falla PLC.</p>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="text-[10px] uppercase tracking-[0.2em] font-black text-neutral-600 border-b border-neutral-800 pb-1">
-              Importación y Entrega Técnica
+
+            <div className="bg-gradient-to-br from-neutral-900 to-black p-10 rounded-3xl border border-white/10 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-3xl"></div>
+              <h3 className="text-2xl font-black text-white uppercase mb-6">Garantía Certificada ATOMIC</h3>
+              
+              <div className="space-y-4 mb-8">
+                <div className="p-4 bg-white/5 rounded-2xl border border-white/5 flex items-center justify-between">
+                  <span className="text-xs font-bold text-neutral-300">Garantía Estructural Chasis</span>
+                  <span className="text-xs font-mono font-bold text-amber-400">2 Años</span>
+                </div>
+                <div className="p-4 bg-white/5 rounded-2xl border border-white/5 flex items-center justify-between">
+                  <span className="text-xs font-bold text-neutral-300">Garantía Sistema Hidráulico</span>
+                  <span className="text-xs font-mono font-bold text-amber-400">12 Meses</span>
+                </div>
+                <div className="p-4 bg-white/5 rounded-2xl border border-white/5 flex items-center justify-between">
+                  <span className="text-xs font-bold text-neutral-300">Garantía Módulos Electrónicos PLC</span>
+                  <span className="text-xs font-mono font-bold text-amber-400">12 Meses</span>
+                </div>
+              </div>
+
+              <div className="p-6 bg-amber-500/10 border border-amber-500/30 rounded-2xl text-center">
+                <p className="text-xs font-bold uppercase tracking-wider text-amber-400 mb-2">¿Tienes dudas técnicas sobre tu proyecto?</p>
+                <a 
+                  href={whatsappLink} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-xs font-bold text-white underline hover:text-amber-300"
+                >
+                  Hablar directamente con un Ingeniero de Soporte →
+                </a>
+              </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {products.map((p) => (
-              <Link href={`/web/product/${p.id}`} key={p.id}>
-                <div className="bg-white/[0.02] backdrop-blur-xl border border-white/5 rounded-[2rem] p-8 hover:border-amber-500/40 hover:bg-white/[0.04] transition-all duration-500 group flex flex-col sm:flex-row gap-8 relative h-full">
-                  
-                  {/* Imagen del Catálogo (Youtube thumbnail extraído en BBDD) */}
-                  <div className="w-full sm:w-48 h-48 sm:h-auto rounded-2xl overflow-hidden bg-neutral-900 border border-white/5 flex-shrink-0 relative">
-                    <div className="absolute inset-0 bg-amber-500/20 mix-blend-overlay group-hover:opacity-0 transition-opacity z-10"></div>
-                    <img 
-                      src={p.images ? JSON.parse(p.images)[0] : "https://images.unsplash.com/photo-1541888081622-15cb3a5d898a?q=80&w=2070"} 
-                      alt={p.name} 
-                      className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" 
-                    />
-                  </div>
+        </div>
+      </section>
 
-                  <div className="flex-1 flex flex-col justify-between py-2">
-                    <div>
-                      <div className="inline-block px-3 py-1 border border-white/10 rounded-full text-[9px] font-black uppercase tracking-widest text-neutral-500 mb-4 group-hover:border-amber-500/30 group-hover:text-amber-500 transition-colors">
-                        Industrial Grade
-                      </div>
-                      <h3 className="text-xl font-black text-white mb-4 leading-tight italic uppercase tracking-tight group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-amber-500 transition-all">
-                        {p.name}
-                      </h3>
-                      <p className="text-neutral-500 text-xs font-light line-clamp-3 mb-6">
-                        {p.description ? p.description.replace(/<[^>]+>/g, '').substring(0, 120) + '...' : "Equipo industrial de alta compresión hidráulica para la masificación y optimización de materiales prefabricados."}
-                      </p>
-                    </div>
-                    
-                    <div className="flex items-center justify-between pt-6 border-t border-white/5">
-                      <span className="font-mono text-amber-500 text-lg font-black tracking-tighter">
-                        ${p.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                      </span>
-                      <div className="flex items-center text-[9px] font-black uppercase tracking-[0.2em] text-neutral-500 group-hover:text-white transition-colors">
-                        <span className="mr-3">Explorar</span>
-                        <div className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-white group-hover:text-black transition-all">
-                          →
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+      {/* 6. CALCULADORA INTERACTIVA DE PROYECCIÓN FINANCIERA (ROI) */}
+      <section className="py-28 px-6 relative z-10 border-b border-white/[0.05]">
+        <div className="max-w-5xl mx-auto">
+          
+          <div className="text-center mb-16">
+            <span className="text-amber-400 font-mono text-xs uppercase tracking-[0.3em] block mb-3">● Proyección Financiera</span>
+            <h2 className="text-4xl md:text-5xl font-black text-white uppercase">Simula el Retorno de tu Inversión (ROI)</h2>
+            <p className="text-neutral-400 text-sm font-light mt-2">Ajusta la producción estimada y calcula la ganancia líquida estimada para tu bloquera.</p>
+          </div>
 
-                </div>
-              </Link>
+          <div className="bg-neutral-950 border border-white/10 p-8 md:p-12 rounded-3xl shadow-2xl">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-12">
+              
+              {/* Slider 1 */}
+              <div>
+                <label className="text-xs font-bold uppercase tracking-wider text-neutral-300 flex justify-between mb-3">
+                  <span>Producción Diaria (Bloques):</span>
+                  <span className="text-amber-400 font-mono text-base">{blocksPerDay.toLocaleString()} und</span>
+                </label>
+                <input 
+                  type="range" 
+                  min="1000" 
+                  max="15000" 
+                  step="500"
+                  value={blocksPerDay}
+                  onChange={(e) => setBlocksPerDay(Number(e.target.value))}
+                  className="w-full h-2 bg-neutral-800 rounded-lg appearance-none cursor-pointer accent-amber-500"
+                />
+                <span className="text-[10px] text-neutral-500 mt-2 block">Capacidad estimada para turnos de 8 horas.</span>
+              </div>
+
+              {/* Slider 2 */}
+              <div>
+                <label className="text-xs font-bold uppercase tracking-wider text-neutral-300 flex justify-between mb-3">
+                  <span>Margen Neto Estimado / Bloque:</span>
+                  <span className="text-amber-400 font-mono text-base">${profitPerBlock.toFixed(2)} USD</span>
+                </label>
+                <input 
+                  type="range" 
+                  min="0.05" 
+                  max="0.30" 
+                  step="0.01"
+                  value={profitPerBlock}
+                  onChange={(e) => setProfitPerBlock(Number(e.target.value))}
+                  className="w-full h-2 bg-neutral-800 rounded-lg appearance-none cursor-pointer accent-amber-500"
+                />
+                <span className="text-[10px] text-neutral-500 mt-2 block">Promedio de ganancia neta restando materia prima y energía.</span>
+              </div>
+
+            </div>
+
+            {/* ROI Results Display */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-8 bg-neutral-900/80 rounded-2xl border border-white/10 text-center">
+              <div>
+                <span className="text-[10px] uppercase font-bold text-neutral-400 block mb-1">Ganancia Estimada Mensual (26 días)</span>
+                <span className="text-3xl md:text-4xl font-black text-amber-400 font-mono">
+                  ${monthlyProfit.toLocaleString('en-US', { maximumFractionDigits: 0 })} USD
+                </span>
+              </div>
+              <div className="border-t md:border-t-0 md:border-l border-white/10 pt-4 md:pt-0">
+                <span className="text-[10px] uppercase font-bold text-neutral-400 block mb-1">Ganancia Anual Proyectada</span>
+                <span className="text-3xl md:text-4xl font-black text-white font-mono">
+                  ${annualProfit.toLocaleString('en-US', { maximumFractionDigits: 0 })} USD
+                </span>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      {/* 7. FAQ ACCORDION SECTION */}
+      <section className="py-28 px-6 relative z-10 border-b border-white/[0.05] bg-neutral-950/60">
+        <div className="max-w-4xl mx-auto">
+          
+          <div className="text-center mb-16">
+            <span className="text-amber-400 font-mono text-xs uppercase tracking-[0.3em] block mb-3">● Resolviendo tus Dudas</span>
+            <h2 className="text-4xl md:text-5xl font-black text-white uppercase">Preguntas Frecuentes de Clientes</h2>
+          </div>
+
+          <div className="space-y-4">
+            {faqs.map((faq, idx) => (
+              <div 
+                key={idx}
+                className="bg-neutral-900/80 border border-white/10 rounded-2xl overflow-hidden transition-colors"
+              >
+                <button
+                  onClick={() => setActiveFaq(activeFaq === idx ? null : idx)}
+                  className="w-full p-6 text-left flex justify-between items-center space-x-4 hover:text-amber-400 transition-colors"
+                >
+                  <span className="font-bold text-sm md:text-base text-white">{faq.q}</span>
+                  <span className="text-amber-400 font-mono text-xl font-black">
+                    {activeFaq === idx ? "−" : "+"}
+                  </span>
+                </button>
+                
+                <AnimatePresence>
+                  {activeFaq === idx && (
+                    <motion.div 
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="px-6 pb-6 text-xs md:text-sm text-neutral-400 font-light leading-relaxed border-t border-white/5 pt-4"
+                    >
+                      {faq.a}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             ))}
           </div>
 
-          {products.length === 0 && (
-            <div className="text-center py-32 border border-dashed border-white/10 rounded-[2rem] text-neutral-600 font-light">
-              No se encontró equipamiento en la base de datos de producción.
-            </div>
-          )}
         </div>
       </section>
-      
+
+      {/* 8. FOOTER CTA PREMIUM */}
+      <section className="py-24 px-6 text-center relative z-10 bg-gradient-to-b from-neutral-950 to-black">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-4xl md:text-6xl font-black text-white uppercase tracking-tight mb-6">
+            ¿Listo para montar tu <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-400 to-yellow-500 italic">
+              Planta Industrial de Bloques?
+            </span>
+          </h2>
+          <p className="text-neutral-400 text-base font-light mb-10 max-w-2xl mx-auto">
+            Cotiza directamente con nuestros especialistas de la división de maquinaria pesada. Te enviamos planos de distribución de planta y propuesta económica formal.
+          </p>
+
+          <a 
+            href={whatsappLink}
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="inline-flex items-center space-x-4 px-12 py-6 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-black font-black text-xs uppercase tracking-[0.3em] rounded-full transition-all duration-300 shadow-[0_0_50px_rgba(245,158,11,0.5)] hover:scale-105"
+          >
+            <span>Contactar por WhatsApp Directo</span>
+            <span className="text-lg">→</span>
+          </a>
+        </div>
+      </section>
+
     </div>
   );
 }
