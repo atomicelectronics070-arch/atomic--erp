@@ -156,6 +156,14 @@ export async function POST(req: Request) {
             return NextResponse.json({ success: true, postContent })
         }
 
+        if (action === "cancel") {
+            // Delete the active cycle WITHOUT saving to history
+            await prisma.systemSetting.deleteMany({
+                where: { key: "ACTIVE_TRADING_CYCLE" }
+            })
+            return NextResponse.json({ success: true, message: "Ciclo cancelado y descartado" })
+        }
+
         return NextResponse.json({ error: "Unknown action" }, { status: 400 })
     } catch (err) {
         console.error("Trading chart action error:", err)
