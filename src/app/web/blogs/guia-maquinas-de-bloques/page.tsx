@@ -38,16 +38,16 @@ export default async function GuiaMaquinasBloquesPage() {
     }));
 
   return (
-    <div className="bg-white min-h-screen">
+    <div className="bg-[#050505] min-h-screen text-white">
       {/* Navegación para volver a Blogs */}
-      <nav className="fixed top-0 w-full z-50 p-6 flex items-center justify-between pointer-events-auto bg-gradient-to-b from-white/90 to-transparent backdrop-blur-sm">
-          <Link href="/web/blogs" className="group flex items-center space-x-2 text-slate-500 hover:text-slate-900 transition-colors">
-              <div className="w-8 h-8 rounded-none border border-slate-200 flex items-center justify-center bg-white/50 backdrop-blur-xl group-hover:bg-slate-100 transition-colors">
+      <nav className="fixed top-0 w-full z-50 p-6 flex items-center justify-between pointer-events-auto bg-gradient-to-b from-[#050505]/90 to-transparent backdrop-blur-md">
+          <Link href="/web/blogs" className="group flex items-center space-x-3 text-neutral-500 hover:text-white transition-colors">
+              <div className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center bg-white/5 backdrop-blur-xl group-hover:bg-white/10 transition-colors">
                   <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
               </div>
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] drop-shadow-sm text-slate-700">Volver a Blogs</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-neutral-400 group-hover:text-white transition-colors">Volver a Blogs</span>
           </Link>
-          <div className="text-[10px] uppercase font-black tracking-[0.3em] text-orange-600 drop-shadow-sm">Maquinaria Industrial</div>
+          <div className="text-[9px] uppercase font-black tracking-[0.4em] text-amber-500 drop-shadow-[0_0_15px_rgba(245,158,11,0.3)]">Heavy Machinery</div>
       </nav>
 
       <BlockMachineLanding products={blockMachines} />
