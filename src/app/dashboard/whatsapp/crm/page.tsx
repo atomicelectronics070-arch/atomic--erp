@@ -19,8 +19,8 @@ export default function WhatsappCrmPage() {
             </div>
             <div className="flex-1 bg-[#050505] relative overflow-hidden">
                 <iframe
-                    src="https://whatsapp-crm-two-pi.vercel.app/login"
-                    className="w-full h-full border-0 absolute inset-0"
+                    src="https://whatsapp-crm-two-pi.vercel.app/dashboard"
+                    className="w-full h-full border-0 absolute inset-0 bg-[#050505]"
                     title="WhatsApp CRM Cloud"
                     allow="microphone; camera; display-capture"
                 />

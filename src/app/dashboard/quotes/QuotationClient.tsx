@@ -569,18 +569,21 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
     }
 
     return (
-        <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] font-sans pb-32">
+        <div className="min-h-screen bg-[#050505] text-white font-sans pb-32 space-y-8">
             
             {/* Header */}
-            <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border-b border-slate-200 px-8 py-6 flex flex-col md:flex-row justify-between items-center gap-6 shadow-[0_4px_15px_rgba(0,0,0,0.3)] sticky top-0 z-40">
+            <div className="bg-slate-900/90 backdrop-blur-xl border-b border-slate-800 px-8 py-6 flex flex-col md:flex-row justify-between items-center gap-6 shadow-2xl sticky top-0 z-40">
                 <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-[0_12px_40px_rgba(0,0,0,0.5)]">
+                    <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-[0_0_25px_rgba(99,102,241,0.4)]">
                         <FileText size={24} />
                     </div>
                     <div>
-                        <h1 className="text-2xl font-black text-[#0F172A] tracking-tight">Cotizador Empresarial</h1>
-                        <p className="text-sm text-slate-500 font-medium flex items-center gap-2">
-                            <span className="text-indigo-600 font-bold">{quoteNumber}</span> • Modo SaaS Activo
+                        <h1 className="text-2xl font-black text-white tracking-tight flex items-center gap-2">
+                            <span>Cotizador Empresarial Pro</span>
+                            <span className="px-2.5 py-0.5 text-[9px] font-mono font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 rounded-full">CYBERPUNK v4.0</span>
+                        </h1>
+                        <p className="text-xs text-slate-400 font-medium flex items-center gap-2 mt-0.5">
+                            <span className="text-cyan-400 font-bold">{quoteNumber}</span> • Cálculo Instantáneo & Emisión PDF
                         </p>
                     </div>
                 </div>

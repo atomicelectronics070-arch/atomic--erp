@@ -1,9 +1,9 @@
 'use client';
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { 
   Building2, ShoppingCart, Share2, Target, DollarSign, 
-  Users, Sparkles, CheckCircle2, ArrowRight, Activity, Laptop, Zap
+  Sparkles, ArrowRight, Activity
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -27,6 +27,9 @@ export default function VirtualOfficeWorkspace({ currentModule = 'ventas' }: { c
       link: '/dashboard/quotes',
       stats: '14 Cotizaciones Activas • $12,450 en Cierre',
       desc: 'Área dedicada a la formulación de cotizaciones empresariales, atención comercial a clientes y cierre de ventas.',
+      avatarEmoji: '👨‍💼',
+      avatarRole: 'Líder Comercial (Carlos V.)',
+      avatarStatus: 'Cotizando cliente VIP...',
       staff: ['Asesor Carlos V.', 'Ing. Elena M.']
     },
     marketing: {
@@ -42,6 +45,9 @@ export default function VirtualOfficeWorkspace({ currentModule = 'ventas' }: { c
       link: '/dashboard/blogs',
       stats: '4 Redes Conectadas • 8 Publicaciones Programadas',
       desc: 'Centro neurálgico de automatización omni-canal: difusión simultánea en TikTok, YouTube, Instagram y Facebook.',
+      avatarEmoji: '👩‍💻',
+      avatarRole: 'Head of Social Media (Sofía R.)',
+      avatarStatus: 'Publicando en 4 redes...',
       staff: ['Social Media Lead', 'Diseñador IA']
     },
     coordinacion: {
@@ -57,6 +63,9 @@ export default function VirtualOfficeWorkspace({ currentModule = 'ventas' }: { c
       link: '/dashboard/coordinacion',
       stats: '6 Proyectos en Ejecución • 98% Eficiencia',
       desc: 'Gestión técnica de proyectos, logística de envíos de productos y asignación de tareas operativas.',
+      avatarEmoji: '👨‍🔧',
+      avatarRole: 'Director Operativo (Ing. Mateo H.)',
+      avatarStatus: 'Supervisando logística...',
       staff: ['Coordinador General', 'Supervisora de Operaciones']
     },
     finanzas: {
@@ -72,6 +81,9 @@ export default function VirtualOfficeWorkspace({ currentModule = 'ventas' }: { c
       link: '/dashboard/finance',
       stats: 'Balance Positivo • Cierre Mensual al 85%',
       desc: 'Supervisión de tickets de facturación, libro diario, cobranzas y balances contables corporativos.',
+      avatarEmoji: '👩‍💼',
+      avatarRole: 'Controller Financiero (Valeria M.)',
+      avatarStatus: 'Auditando facturas...',
       staff: ['Contador Principal', 'Analista Financiero']
     }
   };
@@ -99,7 +111,7 @@ export default function VirtualOfficeWorkspace({ currentModule = 'ventas' }: { c
           </div>
           <h2 className="text-2xl md:text-3xl font-black tracking-tight text-white flex items-center gap-3">
             <Building2 className="text-indigo-400" />
-            <span>Oficina Virtual Corporativa</span>
+            <span>Oficina Virtual Corporativa (Estaciones con Avatares)</span>
           </h2>
         </div>
 
@@ -119,7 +131,7 @@ export default function VirtualOfficeWorkspace({ currentModule = 'ventas' }: { c
                     : 'text-slate-400 hover:text-white hover:bg-slate-800'
                 }`}
               >
-                <Icon size={14} />
+                <span className="text-sm">{z.avatarEmoji}</span>
                 <span className="hidden sm:inline capitalize">{key}</span>
               </button>
             );
@@ -131,7 +143,7 @@ export default function VirtualOfficeWorkspace({ currentModule = 'ventas' }: { c
       <div className="grid lg:grid-cols-12 gap-8 items-stretch">
         
         {/* 2.5D Animated Floorplan (8 Cols) */}
-        <div className="lg:col-span-8 bg-slate-900/90 border border-slate-800 rounded-3xl p-6 relative min-h-[420px] flex flex-col justify-between overflow-hidden shadow-inner group">
+        <div className="lg:col-span-8 bg-slate-900/90 border border-slate-800 rounded-3xl p-6 relative min-h-[440px] flex flex-col justify-between overflow-hidden shadow-inner group">
           
           {/* Floorplan Grid Pattern */}
           <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none"></div>
@@ -140,12 +152,12 @@ export default function VirtualOfficeWorkspace({ currentModule = 'ventas' }: { c
           <div className="relative z-10 flex justify-between items-center text-[11px] font-mono text-slate-400 uppercase tracking-widest border-b border-slate-800/80 pb-3">
             <span className="flex items-center gap-2">
               <Activity size={14} className="text-emerald-400 animate-pulse" />
-              <span>Mapa de Navegación 2.5D en Tiempo Real</span>
+              <span>Mapa 2.5D • Estaciones de Avatares Asignados</span>
             </span>
-            <span className="text-indigo-400 font-bold">4 Zonas Operativas</span>
+            <span className="text-indigo-400 font-bold">4 Avatares Operativos</span>
           </div>
 
-          {/* 4 Interactive Office Rooms */}
+          {/* 4 Interactive Office Rooms with Avatar Stations */}
           <div className="relative z-10 grid grid-cols-2 gap-6 my-auto py-6">
             
             {(Object.keys(zones) as OfficeZone[]).map((key) => {
@@ -168,9 +180,15 @@ export default function VirtualOfficeWorkspace({ currentModule = 'ventas' }: { c
                     <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-indigo-500 to-transparent animate-pulse"></div>
                   )}
 
+                  {/* Department Avatar Badge */}
                   <div className="flex items-start justify-between mb-4">
-                    <div className={`p-3 rounded-xl border ${z.badgeColor}`}>
-                      <Icon size={20} />
+                    <div className="flex items-center gap-3">
+                      <div className={`p-3 rounded-xl border ${z.badgeColor}`}>
+                        <Icon size={18} />
+                      </div>
+                      <div className="w-9 h-9 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-lg shadow-md group-hover:scale-110 transition-transform">
+                        {z.avatarEmoji}
+                      </div>
                     </div>
                     <span className="font-mono text-[10px] text-slate-500">{z.code}</span>
                   </div>
@@ -178,15 +196,18 @@ export default function VirtualOfficeWorkspace({ currentModule = 'ventas' }: { c
                   <h3 className={`font-black text-sm md:text-base mb-1 transition-colors ${isActive ? 'text-white' : 'text-slate-300 group-hover:text-white'}`}>
                     {z.title.split('Módulo de ')[1] || z.title}
                   </h3>
-                  <p className="text-[11px] text-slate-500 font-medium line-clamp-1">{z.stats}</p>
+                  
+                  <p className="text-[10px] text-emerald-400 font-mono font-bold flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                    {z.avatarStatus}
+                  </p>
 
                   {/* Room Status Indicator */}
                   <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-[10px]">
-                    <span className="text-slate-400 font-mono flex items-center gap-1.5">
-                      <span className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-emerald-400 animate-ping' : 'bg-slate-600'}`}></span>
-                      {isActive ? 'ZONA ACTIVA' : 'Módulo Listo'}
+                    <span className="text-slate-400 font-mono">
+                      {z.avatarRole.split(' (')[0]}
                     </span>
-                    <span className="text-indigo-400 font-bold group-hover:translate-x-1 transition-transform">Ver →</span>
+                    <span className="text-indigo-400 font-bold group-hover:translate-x-1 transition-transform">Ir a Estación →</span>
                   </div>
                 </div>
               );
@@ -194,13 +215,13 @@ export default function VirtualOfficeWorkspace({ currentModule = 'ventas' }: { c
 
           </div>
 
-          {/* Animated Walking Avatar */}
+          {/* Animated Operator Avatar moving across floorplan */}
           <motion.div 
             animate={{ x: `${avatarPos.x}%`, y: `${avatarPos.y}%` }}
             transition={{ type: "spring", stiffness: 100, damping: 15 }}
             className="absolute top-1/2 left-1/2 w-10 h-10 -ml-5 -mt-5 z-30 pointer-events-none flex flex-col items-center"
           >
-            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 border-2 border-white flex items-center justify-center text-black font-black text-xs shadow-[0_0_20px_rgba(245,158,11,0.8)] animate-bounce">
+            <div className="w-9 h-9 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 border-2 border-white flex items-center justify-center text-black font-black text-sm shadow-[0_0_25px_rgba(245,158,11,0.9)] animate-bounce">
               👾
             </div>
             <span className="px-2 py-0.5 bg-black/90 text-[9px] font-mono font-bold text-amber-400 rounded-full border border-amber-500/40 whitespace-nowrap -mt-1 shadow-md">
@@ -218,11 +239,18 @@ export default function VirtualOfficeWorkspace({ currentModule = 'ventas' }: { c
               <span className={`px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase border ${current.badgeColor}`}>
                 {current.code}
               </span>
-              <span className="text-[10px] text-slate-500 font-mono">Conexión Segura v4</span>
+              <span className="text-[10px] text-slate-500 font-mono">Estación Activa</span>
             </div>
 
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 flex items-center justify-center text-white mb-6 shadow-lg">
-              <current.icon size={28} className="text-indigo-400" />
+            {/* Department Lead Avatar Header */}
+            <div className="flex items-center space-x-4 mb-6 p-4 bg-slate-950/80 rounded-2xl border border-slate-800">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 flex items-center justify-center text-2xl shadow-md">
+                {current.avatarEmoji}
+              </div>
+              <div>
+                <h4 className="text-sm font-black text-white">{current.avatarRole}</h4>
+                <p className="text-[11px] text-emerald-400 font-mono font-bold">{current.avatarStatus}</p>
+              </div>
             </div>
 
             <h3 className="text-xl font-black text-white mb-3 leading-tight">{current.title}</h3>
@@ -235,18 +263,6 @@ export default function VirtualOfficeWorkspace({ currentModule = 'ventas' }: { c
                 <Sparkles size={14} />
                 <span>{current.stats}</span>
               </p>
-            </div>
-
-            {/* Staff On Duty */}
-            <div className="mb-6">
-              <span className="text-[10px] font-mono uppercase text-slate-500 block mb-2">Personal Asignado en Zona</span>
-              <div className="flex items-center space-x-2">
-                {current.staff.map((name, i) => (
-                  <span key={i} className="px-2.5 py-1 bg-slate-800/80 border border-slate-700 rounded-lg text-[10px] font-medium text-slate-300">
-                    👤 {name}
-                  </span>
-                ))}
-              </div>
             </div>
           </div>
 
