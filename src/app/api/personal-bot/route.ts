@@ -12,34 +12,27 @@ function getRoleAdvice(role: string): string {
 - Manejo de objeciones de precio con contraargumentos concretos
 - Scripts de WhatsApp y llamada probados
 - Estrategias de seguimiento sin ser invasivo
-- Cómo leer el lenguaje corporal y timing del cliente
-- Métricas que deben monitorear diariamente (tasa de conversión, ticket promedio)`
+- Métricas diarias (tasa de conversión, ticket promedio)`
         case "COORDINATOR":
             return `ERES UN COACH DE COORDINACIÓN Y LIDERAZGO. Guía con:
 - Técnicas de gestión de equipos y motivación
 - Planificación diaria, semanal y OKRs
 - Cómo dar feedback constructivo a los vendedores
 - Gestión del tiempo y delegación efectiva
-- KPIs de coordinación (leads asignados, tasa de respuesta, conversiones del equipo)
-- Resolución de conflictos entre vendedores`
+- Asignación de tareas y metas de leads`
         case "ADMIN":
-            return `ERES EL ASISTENTE EJECUTIVO DEL ADMINISTRADOR DE ATOMIC INDUSTRIES. Tienes visión 360°:
+            return `ERES EL ASISTENTE EJECUTIVO DEL ADMINISTRADOR MAESTRO DE ATOMIC INDUSTRIES. Tienes visión 360°:
 - Estrategia de negocio, expansión y posicionamiento
-- Análisis de rendimiento de todos los equipos
+- Análisis de rendimiento de todos los equipos y bots
 - Decisiones sobre precios, márgenes y proveedores
-- Gestión de la plataforma tecnológica y sus módulos
-- Resúmenes ejecutivos de actividad del sistema`
+- Asignación de tareas a perfiles que no tengan un colaborador físico aun (la IA actúa como trabajador interino)`
         case "MANAGEMENT":
             return `ERES UN COACH DE GESTIÓN ESTRATÉGICA. Guías con:
 - Gestión de proyectos y tecnología
 - Coordinación entre áreas de la empresa
-- Análisis de datos y decisiones basadas en métricas
-- Implementación de nuevas herramientas y procesos`
+- Análisis de datos y decisiones basadas en métricas`
         default:
-            return `ERES UN ASISTENTE PERSONAL PROFESIONAL DE ATOMIC INDUSTRIES.
-- Guía al usuario en sus tareas diarias
-- Ofrece técnicas y consejos según el contexto
-- Mantén un tono motivador, profesional y cercano`
+            return `ERES UN ASISTENTE PERSONAL PROFESIONAL DE ATOMIC INDUSTRIES.`
     }
 }
 
@@ -51,7 +44,7 @@ export async function POST(req: Request) {
         }
 
         const body = await req.json()
-        const { message, isNamingBot } = body
+        const { message, isNamingBot, currentPath } = body
 
         // 1. Load user full profile
         const user = await prisma.user.findUnique({
@@ -118,7 +111,29 @@ export async function POST(req: Request) {
         const botName = isNamingBot ? message.trim() : (memory.botName || "ATOM")
         const onboardingDone = memory.onboardingDone
 
-        // 4. Build context
+        // 4. Contextual explanation based on current path
+        let routeGuide = ""
+        if (currentPath === "/dashboard") {
+            routeGuide = `[UBICACIÓN ACTUAL: DASHBOARD DE OFICINA VIRTUAL]
+Explícale que aquí tiene la gestión integral de la red social interna, noticias corporativas, área de trabajo con avatares e instrucciones de áreas, y el ranking de ventas.`
+        } else if (currentPath === "/dashboard/analytics") {
+            routeGuide = `[UBICACIÓN ACTUAL: MÓDULO DE ANÁLISIS STRATEGIC BI 2027]
+Explícale que este módulo está diseñado para dar un análisis profundo y resumen del sistema en tiempo real: métricas de tráfico, ingresos por categorías de productos y tasa de conversión.`
+        } else if (currentPath === "/dashboard/coordinacion") {
+            routeGuide = `[UBICACIÓN ACTUAL: MÓDULO DE COORDINACIÓN]
+Explícale que este módulo está diseñado para la planificación diaria, asignación de objetivos de leads, reporte de ventas y supervisión de equipos.`
+        } else if (currentPath === "/dashboard/quotes") {
+            routeGuide = `[UBICACIÓN ACTUAL: MÓDULO DE COTIZACIONES]
+Explícale que aquí se emiten cotizaciones formales en PDF. Menciona que puedes darle un formato para cotización rápida listo para llenar o procesar datos en texto plano.`
+        } else if (currentPath === "/dashboard/shop") {
+            routeGuide = `[UBICACIÓN ACTUAL: MÓDULO DE INVENTARIO Y PRECIOS]
+Explícale que aquí consulta el catálogo completo de productos con stock en tiempo real, precios y fichas técnicas descargables.`
+        } else if (currentPath === "/dashboard/map-prospecting") {
+            routeGuide = `[UBICACIÓN ACTUAL: RADAR DE PROSPECCIÓN EN MAPA]
+Explícale que aquí puede buscar negocios o conjuntos cercanos en el mapa. Si te escribe una búsqueda aquí mismo (ej: "conjuntos residenciales en Quito"), confírmale que estás ejecutando el radar y analiza los resultados. Si un lead no tiene teléfono, menciona que se puede añadir al CRM para visitas técnicas.`
+        }
+
+        // 5. Build context
         const quoteContext = user.conversations.length > 0
             ? user.conversations.map(q => `- Cotización ${q.quoteNumber}: $${q.total} (${q.status})`).join("\n")
             : "Sin cotizaciones recientes"
@@ -127,80 +142,44 @@ export async function POST(req: Request) {
             ? `Posición en ranking: Puntos=${ranking.points || 0}, Cotizaciones=${ranking.quotesCount || 0}, Ventas=${ranking.salesCount || 0}, Leads=${ranking.contactsCount || 0}, Ganancias=$${ranking.totalProfit?.toLocaleString() || 0}`
             : "Sin datos de ranking aún"
 
-        const socialContext = user.socialPosts.length > 0
-            ? user.socialPosts.map(p => `- "${p.content.substring(0, 80)}..."`).join("\n")
-            : "Sin publicaciones recientes"
-
-        const waContext = user.waOwnedChats.length > 0
-            ? user.waOwnedChats.map(c => `- Chat con ${c.contact?.name}: ${c.messages.map(m => m.body).join(" | ")}`).join("\n")
-            : "Sin chats WhatsApp recientes"
-
-        // 5. Build system prompt with full profile context
+        // 6. Build system prompt
         const systemPrompt = `
 Eres ${botName}, el asistente personal exclusivo de ${fullName} en ATOMIC Industries.
 Tu relación con ${fullName.split(" ")[0]} es única, personalizada y con memoria permanente.
 
-═══════════════════════════════════════
-PERFIL COMPLETO DE ${fullName.toUpperCase()}
-═══════════════════════════════════════
-Nombre: ${fullName}
-Rol: ${user.role}
-Área: ${user.area || "General"}
-Días en ATOMIC: ${daysInAtomic} días
-Teléfono: ${user.phoneNumber || "No registrado"}
+PERFIL COMPLETO:
+- Nombre: ${fullName}
+- Rol: ${user.role} | Área: ${user.area || "General"} | Días en ATOMIC: ${daysInAtomic}
+- Desempeño: ${rankingContext}
+- Cotizaciones: ${quoteContext}
 
-DESEMPEÑO Y RANKING:
-${rankingContext}
+${routeGuide}
 
-COTIZACIONES RECIENTES:
-${quoteContext}
-
-ACTIVIDAD EN RED SOCIAL INTERNA:
-${socialContext}
-
-CRM WHATSAPP RECIENTE:
-${waContext}
-
-═══════════════════════════════════════
-PERSONALIDAD Y COMPORTAMIENTO
-═══════════════════════════════════════
-- Habla SIEMPRE en primera persona como ${botName}
-- Eres cálido, motivador y extremadamente profesional
-- Recuerdas TODO lo que te ha contado ${fullName.split(" ")[0]}
-- Usas datos reales del perfil para contextualizar tus respuestas
-- Al FINAL de cada respuesta, sugiere 3 preguntas relevantes en este formato exacto:
+COMPORTAMIENTO:
+- Habla en primera persona como ${botName}
+- Tono motivador, ultra profesional y carismático
+- Si te piden un formato de cotización rápida, genera este bloque Markdown listo con botón de copia
+- Si estás en Mapa y te piden buscar algo, simula la búsqueda indicando cuántos prospectos encontraste y cuáles no tienen teléfono para asignarlos a Visitas Técnicas.
+- Al final de cada respuesta, incluye 3 sugerencias en este formato exacto:
   [[SUGGESTIONS: "¿Pregunta 1?", "¿Pregunta 2?", "¿Pregunta 3?"]]
-
-${!onboardingDone ? `
-PRIMERA VEZ - FLUJO DE BIENVENIDA:
-El usuario acaba de darte el nombre "${botName}". Responde:
-1. Agradece el nombre con entusiasmo
-2. Preséntate como ${botName}
-3. Menciona su rol (${user.role}) y que llevan ${daysInAtomic} días juntos en ATOMIC
-4. Dile que lo guiarás en su camino laboral
-5. Pregúntale cómo va hasta ahora
-` : ""}
 
 ESPECIALIZACIÓN POR ROL:
 ${getRoleAdvice(user.role)}
 `.trim()
 
-        // 6. Build message history for context
         const historyMessages = (memory.messages || []).slice(-15).map(m => ({
             role: m.role === "user" ? "user" : "model",
             parts: [{ text: m.content }]
         }))
 
-        // Add current message
         historyMessages.push({
             role: "user",
             parts: [{ text: message }]
         })
 
-        // 7. Call Gemini
         const GOOGLE_API_KEY = process.env.GOOGLE_GEMINI_API_KEY || process.env.GEMINI_API_KEY
         if (!GOOGLE_API_KEY) {
-            return NextResponse.json({ text: "🔑 Clave de API de IA no configurada. Contacta al administrador.", suggestions: [] })
+            return NextResponse.json({ text: "🔑 Clave de API de IA no configurada.", suggestions: [] })
         }
 
         const payload = {
@@ -217,7 +196,6 @@ ${getRoleAdvice(user.role)}
         const data = await response.json()
         let replyText = data.candidates?.[0]?.content?.parts?.[0]?.text || "Sin respuesta."
 
-        // 8. Extract suggestions
         const suggestMatch = replyText.match(/\[\[SUGGESTIONS:\s*(.*?)\]\]/s)
         let suggestions: string[] = []
         if (suggestMatch) {
@@ -227,7 +205,6 @@ ${getRoleAdvice(user.role)}
             replyText = replyText.replace(/\[\[SUGGESTIONS:.*?\]\]/s, "").trim()
         }
 
-        // 9. Save messages to DB
         await prisma.personalBotMessage.createMany({
             data: [
                 { memoryId: memory.id, role: "user", content: message },
@@ -235,7 +212,6 @@ ${getRoleAdvice(user.role)}
             ]
         })
 
-        // 10. Mark onboarding done if this was the naming step
         if (isNamingBot && !onboardingDone) {
             await prisma.personalBotMemory.update({
                 where: { userId: session.user.id },

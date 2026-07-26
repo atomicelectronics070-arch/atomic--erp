@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
 import { 
     Users, Key, Shield, UserPlus, Eye, EyeOff, CheckCircle2, XCircle, 
-    Sparkles, RefreshCw, Layers, Cpu, Code, Share2, Award, Search, Filter, MessageSquare
+    Sparkles, RefreshCw, Layers, Cpu, Search, Bot, MessageSquare, Send, X, Box
 } from "lucide-react"
 
 interface SystemUser {
@@ -22,11 +22,6 @@ interface SystemUser {
         botName: string | null
         onboardingDone: boolean
         updatedAt: string
-    }
-    salesRanking?: {
-        points: number
-        quotesCount: number
-        salesCount: number
     }
 }
 
@@ -59,7 +54,13 @@ export default function PersonalManagementPage() {
     const [showPasswords, setShowPasswords] = useState<Record<string, boolean>>({})
     const [search, setSearch] = useState("")
     const [roleFilter, setRoleFilter] = useState("ALL")
-    const [activeTab, setActiveTab] = useState<"users" | "org" | "ai_network">("users")
+    const [activeTab, setActiveTab] = useState<"users" | "org" | "ai_network">("org")
+
+    // Admin direct chat modal with profile bot
+    const [selectedBotUser, setSelectedBotUser] = useState<SystemUser | null>(null)
+    const [adminChatMessage, setAdminChatMessage] = useState("")
+    const [adminChatHistory, setAdminChatHistory] = useState<{ role: string; content: string }[]>([])
+    const [isSendingAdminMsg, setIsSendingAdminMsg] = useState(false)
 
     // Create User Modal
     const [isCreateOpen, setIsCreateOpen] = useState(false)
@@ -101,6 +102,46 @@ export default function PersonalManagementPage() {
         setShowPasswords(prev => ({ ...prev, [id]: !prev[id] }))
     }
 
+    const openAdminBotChat = (user: SystemUser) => {
+        setSelectedBotUser(user)
+        const overview = botOverviews.find(b => b.userId === user.id)
+        if (overview && overview.messages.length > 0) {
+            setAdminChatHistory(overview.messages.map(m => ({ role: m.role, content: m.content })).reverse())
+        } else {
+            setAdminChatHistory([
+                {
+                    role: "assistant",
+                    content: `👋 **Hola Administrador**. Aún no existe una sesión activa con un colaborador físico en esta cuenta de **${user.name} (${user.role})**.\n\n🤖 Como Inteligencia Artificial asignada a este perfil, me encuentro **actuando como trabajador interino**. Puedes darme instrucciones directas (ej: metas de leads, tareas del mes) y las guardaré para ejecutarlas y reportarlas cuando ingrese un colaborador.`
+                }
+            ])
+        }
+    }
+
+    const sendAdminMessage = async () => {
+        if (!adminChatMessage.trim() || !selectedBotUser || isSendingAdminMsg) return
+        const text = adminChatMessage.trim()
+        setAdminChatHistory(prev => [...prev, { role: "user", content: text }])
+        setAdminChatMessage("")
+        setIsSendingAdminMsg(true)
+
+        try {
+            const res = await fetch("/api/personal-bot", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    message: `[INSTRUCCIÓN ADMINISTRATIVA]: ${text}`,
+                    currentPath: "/dashboard/admin/personal-management"
+                })
+            })
+            const data = await res.json()
+            setAdminChatHistory(prev => [...prev, { role: "assistant", content: data.text }])
+        } catch {
+            setAdminChatHistory(prev => [...prev, { role: "assistant", content: "❌ Error procesando instrucción." }])
+        } finally {
+            setIsSendingAdminMsg(false)
+        }
+    }
+
     const handleCreateUser = async (e: React.FormEvent) => {
         e.preventDefault()
         setIsSubmitting(true)
@@ -121,7 +162,7 @@ export default function PersonalManagementPage() {
                 setNewUser({ name: "", lastName: "", email: "", password: "", role: "SALESPERSON", area: "Ventas" })
                 fetchData()
             }
-        } catch (err) {
+        } catch {
             setError("Error de servidor")
         } finally {
             setIsSubmitting(false)
@@ -146,7 +187,7 @@ export default function PersonalManagementPage() {
     return (
         <div className="min-h-screen bg-[#050914] text-white p-8 space-y-8">
             
-            {/* Header Cyberpunk */}
+            {/* Header */}
             <div className="bg-slate-900/90 border border-slate-800 p-8 rounded-3xl flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 shadow-2xl relative overflow-hidden">
                 <div className="absolute -right-10 -bottom-10 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
                 
@@ -156,9 +197,9 @@ export default function PersonalManagementPage() {
                             <Users size={24} />
                         </div>
                         <div>
-                            <h1 className="text-3xl font-black tracking-tight text-white">Gestión de Personal & Matriz de Bots</h1>
+                            <h1 className="text-3xl font-black tracking-tight text-white">Gestión de Personal & Mapa 3D de Bots</h1>
                             <p className="text-xs font-mono text-cyan-400 font-bold uppercase tracking-widest mt-1">
-                                Control Maestro • Credenciales Fijas • Red de Inteligencia Personalizada
+                                Control Maestro • Mapa Conceptual 3D • Diálogo Directo con Perfiles
                             </p>
                         </div>
                     </div>
@@ -184,6 +225,16 @@ export default function PersonalManagementPage() {
             {/* Navigation Tabs */}
             <div className="flex gap-3 border-b border-slate-800 pb-4">
                 <button
+                    onClick={() => setActiveTab("org")}
+                    className={`px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all flex items-center gap-2 ${
+                        activeTab === "org" 
+                            ? "bg-purple-500/15 border border-purple-500/40 text-purple-300 shadow-[0_0_15px_rgba(168,85,247,0.2)]" 
+                            : "text-slate-400 hover:text-white hover:bg-slate-800/50"
+                    }`}
+                >
+                    <Box size={16} /> Mapa Conceptual 3D & Tarjetas de Perfil
+                </button>
+                <button
                     onClick={() => setActiveTab("users")}
                     className={`px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all flex items-center gap-2 ${
                         activeTab === "users" 
@@ -192,16 +243,6 @@ export default function PersonalManagementPage() {
                     }`}
                 >
                     <Key size={16} /> Matriz de Usuarios & Claves ({users.length})
-                </button>
-                <button
-                    onClick={() => setActiveTab("org")}
-                    className={`px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all flex items-center gap-2 ${
-                        activeTab === "org" 
-                            ? "bg-purple-500/15 border border-purple-500/40 text-purple-300 shadow-[0_0_15px_rgba(168,85,247,0.2)]" 
-                            : "text-slate-400 hover:text-white hover:bg-slate-800/50"
-                    }`}
-                >
-                    <Layers size={16} /> Organigrama del Sistema
                 </button>
                 <button
                     onClick={() => setActiveTab("ai_network")}
@@ -215,10 +256,88 @@ export default function PersonalManagementPage() {
                 </button>
             </div>
 
-            {/* TAB 1: USERS TABLE EXCEL STYLE */}
+            {/* TAB: MAPA CONCEPTUAL 3D CON CONEXIÓN DIRECTA */}
+            {activeTab === "org" && (
+                <div className="space-y-8">
+                    <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 shadow-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div>
+                            <h2 className="text-xl font-black text-white flex items-center gap-2">
+                                <Box className="text-purple-400" /> Mapa Conceptual 3D • Jerarquía Corporativa ATOMIC
+                            </h2>
+                            <p className="text-xs font-mono text-slate-400 mt-1">
+                                Haz clic en cualquier tarjeta de perfil para **conversar en vivo con la IA interina del puesto** y darle instrucciones.
+                            </p>
+                        </div>
+                        <span className="px-3 py-1 bg-purple-500/10 border border-purple-500/30 text-purple-300 text-[10px] font-mono font-bold rounded-full">
+                            Vista 3D Interactiva
+                        </span>
+                    </div>
+
+                    {/* 3D Visual Map Container */}
+                    <div className="bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 border border-slate-800 rounded-3xl p-8 relative overflow-hidden shadow-2xl min-h-[500px]">
+                        <div className="absolute inset-0 bg-[linear-gradient(rgba(168,85,247,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(168,85,247,0.03)_1px,transparent_1px)] bg-[size:50px_50px] pointer-events-none" />
+
+                        <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+                            {users.map(u => {
+                                const botName = u.personalBot?.botName
+                                const isFixed = ["atomic@administrador.com", "atomic@techman.com", "atomic@softman.com", "atomic@cordinacion.com", "atomic@media.com"].includes(u.email)
+                                const roleColors = u.role === "ADMIN" ? "from-rose-500/20 to-pink-600/20 border-rose-500/40 shadow-[0_10px_30px_rgba(244,63,94,0.2)]" :
+                                                   u.role === "MANAGEMENT" ? "from-purple-500/20 to-indigo-600/20 border-purple-500/40 shadow-[0_10px_30px_rgba(168,85,247,0.2)]" :
+                                                   u.role === "COORDINATOR" ? "from-amber-500/20 to-orange-600/20 border-amber-500/40 shadow-[0_10px_30px_rgba(245,158,11,0.2)]" :
+                                                   "from-emerald-500/20 to-teal-600/20 border-emerald-500/40 shadow-[0_10px_30px_rgba(16,185,129,0.2)]"
+
+                                return (
+                                    <div
+                                        key={u.id}
+                                        onClick={() => openAdminBotChat(u)}
+                                        className={`bg-gradient-to-br ${roleColors} border backdrop-blur-xl p-6 rounded-3xl cursor-pointer hover:scale-105 transition-all duration-300 space-y-4 group relative overflow-hidden`}
+                                    >
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-[9px] font-mono font-bold uppercase px-2.5 py-1 rounded-full bg-slate-950 border border-slate-800 text-slate-300">
+                                                {u.area || u.role}
+                                            </span>
+                                            {isFixed && (
+                                                <span className="text-[9px] font-mono font-black text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/30">
+                                                    CUENTA MATRIZ
+                                                </span>
+                                            )}
+                                        </div>
+
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-12 h-12 rounded-2xl bg-slate-950 border border-slate-800 flex items-center justify-center font-black text-white text-lg shadow-md group-hover:scale-110 transition-transform">
+                                                {(u.name?.[0] || u.email[0]).toUpperCase()}
+                                            </div>
+                                            <div className="min-w-0">
+                                                <h3 className="font-black text-white text-base truncate">{u.name} {u.lastName || ""}</h3>
+                                                <p className="text-xs font-mono text-slate-400 truncate">{u.email}</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="bg-slate-950/80 p-3 rounded-2xl border border-slate-800/80 space-y-1">
+                                            <p className="text-[10px] font-mono text-slate-400 flex items-center justify-between">
+                                                <span>Estado del Bot:</span>
+                                                <span className="text-emerald-400 font-bold">{botName || "IA Interina Activa"}</span>
+                                            </p>
+                                            <p className="text-[10px] font-mono text-slate-500">
+                                                {botName ? "Colaborador + Bot sincronizados" : "Sin sesión física — IA respondiendo"}
+                                            </p>
+                                        </div>
+
+                                        <div className="pt-2 flex items-center justify-between text-xs font-mono font-bold text-cyan-400 group-hover:translate-x-1 transition-transform">
+                                            <span>Hablar & Asignar Tarea →</span>
+                                            <MessageSquare size={14} />
+                                        </div>
+                                    </div>
+                                )
+                            })}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* TAB USERS EXCEL */}
             {activeTab === "users" && (
                 <div className="space-y-6">
-                    {/* Filters */}
                     <div className="flex flex-col md:flex-row gap-4 justify-between items-center bg-slate-900/60 p-4 rounded-2xl border border-slate-800">
                         <div className="relative flex-1 w-full">
                             <Search className="absolute left-4 top-3.5 text-slate-500" size={16} />
@@ -230,22 +349,8 @@ export default function PersonalManagementPage() {
                                 className="w-full bg-slate-950 border border-slate-800 text-sm font-medium text-white placeholder:text-slate-500 rounded-xl pl-11 pr-4 py-2.5 outline-none focus:border-cyan-500/50 transition-all"
                             />
                         </div>
-                        <div className="flex gap-2 w-full md:w-auto">
-                            <select
-                                value={roleFilter}
-                                onChange={e => setRoleFilter(e.target.value)}
-                                className="bg-slate-950 border border-slate-800 text-xs font-mono font-bold text-white rounded-xl px-4 py-2.5 outline-none focus:border-cyan-500/50"
-                            >
-                                <option value="ALL">Todos los Roles</option>
-                                <option value="ADMIN">ADMIN</option>
-                                <option value="MANAGEMENT">MANAGEMENT</option>
-                                <option value="COORDINATOR">COORDINATOR</option>
-                                <option value="SALESPERSON">SALESPERSON</option>
-                            </select>
-                        </div>
                     </div>
 
-                    {/* Table */}
                     <div className="bg-slate-900/90 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
                         <div className="overflow-x-auto">
                             <table className="w-full text-left font-sans">
@@ -253,94 +358,35 @@ export default function PersonalManagementPage() {
                                     <tr className="bg-slate-950 text-[10px] font-mono uppercase tracking-widest text-slate-400 border-b border-slate-800">
                                         <th className="px-6 py-4">Usuario</th>
                                         <th className="px-6 py-4">Email Matriz</th>
-                                        <th className="px-6 py-4">Contraseña (Fija / Asignada)</th>
+                                        <th className="px-6 py-4">Contraseña</th>
                                         <th className="px-6 py-4">Rol & Área</th>
                                         <th className="px-6 py-4">Bot Personal</th>
-                                        <th className="px-6 py-4">Antigüedad</th>
-                                        <th className="px-6 py-4 text-right">Estado</th>
+                                        <th className="px-6 py-4 text-right">Acción</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-800/60 text-sm">
-                                    {filteredUsers.map(user => {
-                                        const days = Math.floor((Date.now() - new Date(user.createdAt).getTime()) / 86400000)
-                                        const isFixed = ["atomic@administrador.com", "atomic@techman.com", "atomic@softman.com", "atomic@cordinacion.com", "atomic@media.com"].includes(user.email)
-
-                                        return (
-                                            <tr key={user.id} className="hover:bg-slate-800/40 transition-colors">
-                                                <td className="px-6 py-4">
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center font-black text-cyan-400">
-                                                            {(user.name?.[0] || user.email[0]).toUpperCase()}
-                                                        </div>
-                                                        <div>
-                                                            <p className="font-bold text-white flex items-center gap-1.5">
-                                                                {user.name} {user.lastName}
-                                                                {isFixed && (
-                                                                    <span className="px-1.5 py-0.5 bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-[9px] font-mono rounded font-bold">
-                                                                        CUENTA FIJA
-                                                                    </span>
-                                                                )}
-                                                            </p>
-                                                            <p className="text-[10px] font-mono text-slate-400">{user.id.substring(0, 8)}...</p>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-4 font-mono text-xs text-slate-200">{user.email}</td>
-                                                <td className="px-6 py-4">
-                                                    {user.plainPassword ? (
-                                                        <div className="flex items-center gap-2">
-                                                            <span className="font-mono text-xs bg-slate-950 px-3 py-1.5 rounded-lg border border-slate-800 text-emerald-400 font-bold min-w-[120px] inline-block">
-                                                                {showPasswords[user.id] ? user.plainPassword : "••••••••••••"}
-                                                            </span>
-                                                            <button 
-                                                                onClick={() => togglePassword(user.id)}
-                                                                className="text-slate-500 hover:text-white p-1"
-                                                            >
-                                                                {showPasswords[user.id] ? <EyeOff size={14} /> : <Eye size={14} />}
-                                                            </button>
-                                                        </div>
-                                                    ) : (
-                                                        <span className="text-xs text-slate-500 italic">Encriptada (BCrypt)</span>
-                                                    )}
-                                                </td>
-                                                <td className="px-6 py-4">
-                                                    <div className="space-y-1">
-                                                        <span className={`inline-block px-2.5 py-1 rounded-md text-[10px] font-mono font-black uppercase tracking-wider ${
-                                                            user.role === 'ADMIN' ? 'bg-rose-500/10 text-rose-400 border border-rose-500/30' :
-                                                            user.role === 'MANAGEMENT' ? 'bg-purple-500/10 text-purple-400 border border-purple-500/30' :
-                                                            user.role === 'COORDINATOR' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/30' :
-                                                            'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
-                                                        }`}>
-                                                            {user.role}
-                                                        </span>
-                                                        {user.area && (
-                                                            <p className="text-[11px] text-slate-400 font-medium">{user.area}</p>
-                                                        )}
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-4">
-                                                    {user.personalBot?.botName ? (
-                                                        <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-mono font-bold rounded-xl">
-                                                            <Sparkles size={12} /> {user.personalBot.botName}
-                                                        </span>
-                                                    ) : (
-                                                        <span className="text-xs text-slate-500 font-mono">Sin configurar</span>
-                                                    )}
-                                                </td>
-                                                <td className="px-6 py-4 font-mono text-xs text-slate-300">
-                                                    {days} días en ATOMIC
-                                                </td>
-                                                <td className="px-6 py-4 text-right">
-                                                    <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-mono font-bold ${
-                                                        user.isActive ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/10 text-rose-400 border border-rose-500/30'
-                                                    }`}>
-                                                        {user.isActive ? <CheckCircle2 size={10} /> : <XCircle size={10} />}
-                                                        {user.isActive ? 'ACTIVO' : 'INACTIVO'}
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                        )
-                                    })}
+                                    {filteredUsers.map(user => (
+                                        <tr key={user.id} className="hover:bg-slate-800/40 transition-colors">
+                                            <td className="px-6 py-4 font-bold text-white">{user.name} {user.lastName}</td>
+                                            <td className="px-6 py-4 font-mono text-xs text-slate-300">{user.email}</td>
+                                            <td className="px-6 py-4 font-mono text-xs text-emerald-400">
+                                                {showPasswords[user.id] ? user.plainPassword : "••••••••••••"}
+                                                <button onClick={() => togglePassword(user.id)} className="ml-2 text-slate-500">
+                                                    {showPasswords[user.id] ? <EyeOff size={12} /> : <Eye size={12} />}
+                                                </button>
+                                            </td>
+                                            <td className="px-6 py-4 text-xs font-mono">{user.role} - {user.area}</td>
+                                            <td className="px-6 py-4 text-xs font-mono text-emerald-300">{user.personalBot?.botName || "Sin bot"}</td>
+                                            <td className="px-6 py-4 text-right">
+                                                <button 
+                                                    onClick={() => openAdminBotChat(user)}
+                                                    className="px-3 py-1.5 bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 rounded-xl text-xs font-mono font-bold hover:bg-cyan-500/20"
+                                                >
+                                                    Hablar con IA
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
                                 </tbody>
                             </table>
                         </div>
@@ -348,254 +394,83 @@ export default function PersonalManagementPage() {
                 </div>
             )}
 
-            {/* TAB 2: ORGANIGRAMA DEL SISTEMA */}
-            {activeTab === "org" && (
-                <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-8 shadow-2xl space-y-8">
-                    <div>
-                        <h2 className="text-xl font-black text-white">Organigrama Estratégico & Red de Nodos de Inteligencia</h2>
-                        <p className="text-xs font-mono text-slate-400 mt-1">Estructura jerárquica de cuentas fijas y bots de personal</p>
-                    </div>
-
-                    {/* Hierarchy Diagram */}
-                    <div className="space-y-12 max-w-4xl mx-auto py-6">
-                        
-                        {/* LEVEL 1: ADMIN MATRIX */}
-                        <div className="flex flex-col items-center">
-                            <div className="bg-gradient-to-br from-rose-600 to-pink-700 p-6 rounded-3xl shadow-[0_0_40px_rgba(244,63,94,0.4)] border border-rose-400 text-center max-w-md w-full relative">
-                                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-slate-950 px-3 py-0.5 border border-rose-500 text-rose-400 text-[9px] font-mono font-black rounded-full uppercase">
-                                    🛡️ Círculo Mayor (Visión 360°)
-                                </span>
-                                <h3 className="text-lg font-black text-white">ADMINISTRACIÓN MAESTRA</h3>
-                                <p className="text-xs font-mono text-rose-200 mt-1">atomic@administrador.com</p>
-                                <p className="text-[11px] text-slate-200 mt-2 bg-slate-950/40 p-2 rounded-xl border border-rose-500/30">
-                                    IA Admin monitorea todos los bots y tiene contexto de toda la organización.
-                                </p>
-                            </div>
-                            <div className="w-0.5 h-10 bg-gradient-to-b from-rose-500 to-purple-500" />
-                        </div>
-
-                        {/* LEVEL 2: MANAGEMENT & TECH */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative">
-                            <div className="bg-slate-950 border border-purple-500/40 p-6 rounded-3xl shadow-[0_0_25px_rgba(168,85,247,0.2)] text-center space-y-2">
-                                <span className="px-2.5 py-0.5 bg-purple-500/10 text-purple-300 text-[9px] font-mono font-bold rounded-full border border-purple-500/30 uppercase">
-                                    💻 Tecnología & Infraestructura
-                                </span>
-                                <h4 className="font-black text-white text-base">TECHMAN</h4>
-                                <p className="text-xs font-mono text-slate-400">atomic@techman.com</p>
-                                <p className="text-[11px] text-slate-300 bg-slate-900/80 p-2.5 rounded-xl border border-slate-800">
-                                    Gestión de hardware, servidores y conexiones de red.
-                                </p>
-                            </div>
-
-                            <div className="bg-slate-950 border border-purple-500/40 p-6 rounded-3xl shadow-[0_0_25px_rgba(168,85,247,0.2)] text-center space-y-2">
-                                <span className="px-2.5 py-0.5 bg-purple-500/10 text-purple-300 text-[9px] font-mono font-bold rounded-full border border-purple-500/30 uppercase">
-                                    ⚙️ Desarrollo & Software
-                                </span>
-                                <h4 className="font-black text-white text-base">SOFTMAN</h4>
-                                <p className="text-xs font-mono text-slate-400">atomic@softman.com</p>
-                                <p className="text-[11px] text-slate-300 bg-slate-900/80 p-2.5 rounded-xl border border-slate-800">
-                                    Desarrollo de módulos ERP, automatizaciones e IA.
-                                </p>
-                            </div>
-                        </div>
-
-                        {/* CONNECTOR LINE */}
-                        <div className="flex justify-center">
-                            <div className="w-0.5 h-10 bg-gradient-to-b from-purple-500 to-amber-500" />
-                        </div>
-
-                        {/* LEVEL 3: COORDINATION & MEDIA */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <div className="bg-slate-950 border border-amber-500/40 p-6 rounded-3xl shadow-[0_0_25px_rgba(245,158,11,0.2)] text-center space-y-2">
-                                <span className="px-2.5 py-0.5 bg-amber-500/10 text-amber-300 text-[9px] font-mono font-bold rounded-full border border-amber-500/30 uppercase">
-                                    🎯 Coordinación de Asesores
-                                </span>
-                                <h4 className="font-black text-white text-base">COORDINACIÓN</h4>
-                                <p className="text-xs font-mono text-slate-400">atomic@cordinacion.com</p>
-                                <p className="text-[11px] text-slate-300 bg-slate-900/80 p-2.5 rounded-xl border border-slate-800">
-                                    Supervisión de vendedores, asignación de leads y metas diarias.
-                                </p>
-                            </div>
-
-                            <div className="bg-slate-950 border border-emerald-500/40 p-6 rounded-3xl shadow-[0_0_25px_rgba(16,185,129,0.2)] text-center space-y-2">
-                                <span className="px-2.5 py-0.5 bg-emerald-500/10 text-emerald-300 text-[9px] font-mono font-bold rounded-full border border-emerald-500/30 uppercase">
-                                    📢 Marketing & Media
-                                </span>
-                                <h4 className="font-black text-white text-base">MEDIA ATOMIC</h4>
-                                <p className="text-xs font-mono text-slate-400">atomic@media.com</p>
-                                <p className="text-[11px] text-slate-300 bg-slate-900/80 p-2.5 rounded-xl border border-slate-800">
-                                    Gestión de redes sociales, campañas y blogs de la plataforma.
-                                </p>
-                            </div>
-                        </div>
-
-                        {/* CONNECTOR */}
-                        <div className="flex justify-center">
-                            <div className="w-0.5 h-10 bg-gradient-to-b from-emerald-500 to-cyan-500" />
-                        </div>
-
-                        {/* LEVEL 4: ADVISORS & INDIVIDUAL BOTS */}
-                        <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 border border-cyan-500/30 p-6 rounded-3xl text-center space-y-4 shadow-xl">
-                            <span className="px-3 py-1 bg-cyan-500/10 text-cyan-300 text-[10px] font-mono font-black rounded-full border border-cyan-500/30 uppercase">
-                                💬 Círculos de Asistencia Individual (Nodos Asesores)
-                            </span>
-                            <p className="text-xs text-slate-300 max-w-xl mx-auto">
-                                Cada asesor de ventas tiene su propio bot personal con memoria permanente, especializado en su rol y con técnicas de cierre en vivo.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* TAB 3: AI NETWORK OVERVIEW */}
+            {/* TAB AI NETWORK */}
             {activeTab === "ai_network" && (
-                <div className="space-y-6">
-                    <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 shadow-2xl">
-                        <h2 className="text-lg font-black text-white flex items-center gap-2">
-                            <Cpu className="text-emerald-400" /> Matriz de Bots de Personal en Actividad
-                        </h2>
-                        <p className="text-xs font-mono text-slate-400 mt-1">
-                            Como Administrador, la IA te sintetiza el diálogo e inquietudes de cada usuario con su bot personal.
-                        </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {botOverviews.map(b => (
-                            <div key={b.id} className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 space-y-4 shadow-xl hover:border-slate-700 transition-all">
-                                <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center font-black">
-                                            {b.botName?.[0] || "A"}
-                                        </div>
-                                        <div>
-                                            <h3 className="font-black text-white text-sm">{b.botName || "Sin Nombre"}</h3>
-                                            <p className="text-[11px] text-slate-400 font-mono">
-                                                Bot de: <span className="text-emerald-400 font-bold">{b.user.name} {b.user.lastName}</span> ({b.user.role})
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <span className="text-[10px] font-mono bg-slate-950 px-2.5 py-1 rounded-lg border border-slate-800 text-slate-400">
-                                        {b.messages.length} msgs
-                                    </span>
-                                </div>
-
-                                <div className="space-y-2 bg-slate-950/80 p-4 rounded-2xl border border-slate-800/80 max-h-60 overflow-y-auto">
-                                    {b.messages.length === 0 ? (
-                                        <p className="text-xs text-slate-500 italic">Sin interacción reciente registrada.</p>
-                                    ) : (
-                                        b.messages.map(m => (
-                                            <div key={m.id} className="text-xs space-y-1">
-                                                <span className={`font-mono font-bold text-[9px] uppercase ${m.role === 'user' ? 'text-cyan-400' : 'text-emerald-400'}`}>
-                                                    {m.role === 'user' ? b.user.name : b.botName}:
-                                                </span>
-                                                <p className="text-slate-300 text-xs pl-2 border-l border-slate-800 whitespace-pre-wrap">
-                                                    {m.content.length > 150 ? m.content.substring(0, 150) + "..." : m.content}
-                                                </p>
-                                            </div>
-                                        ))
-                                    )}
-                                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {botOverviews.map(b => (
+                        <div key={b.id} className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 space-y-4">
+                            <h3 className="font-black text-white">{b.botName || "Bot Sin Nombre"} ({b.user.name})</h3>
+                            <div className="space-y-2 bg-slate-950 p-4 rounded-2xl border border-slate-800 max-h-48 overflow-y-auto">
+                                {b.messages.map(m => (
+                                    <p key={m.id} className="text-xs text-slate-300">
+                                        <strong className="text-cyan-400">{m.role}:</strong> {m.content}
+                                    </p>
+                                ))}
                             </div>
-                        ))}
-                    </div>
+                        </div>
+                    ))}
                 </div>
             )}
 
-            {/* Modal: Create User */}
-            {isCreateOpen && (
+            {/* MODAL: ADMIN CHAT DIRECTO CON BOT DE PERFIL */}
+            {selectedBotUser && (
                 <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
-                    <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 max-w-md w-full shadow-2xl space-y-6 animate-in fade-in zoom-in-95">
-                        <div className="flex justify-between items-center border-b border-slate-800 pb-4">
-                            <h3 className="text-lg font-black text-white">Crear Nueva Cuenta</h3>
-                            <button onClick={() => setIsCreateOpen(false)} className="text-slate-500 hover:text-white">
-                                <XCircle size={20} />
+                    <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-2xl h-[620px] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95">
+                        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-950">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-cyan-400 to-emerald-600 flex items-center justify-center font-black text-white text-lg">
+                                    {(selectedBotUser.name?.[0] || "U").toUpperCase()}
+                                </div>
+                                <div>
+                                    <h3 className="font-black text-white text-sm">
+                                        Asistente IA de: {selectedBotUser.name} ({selectedBotUser.role})
+                                    </h3>
+                                    <p className="text-[10px] font-mono text-cyan-400">
+                                        {selectedBotUser.personalBot?.botName ? `Bot Asignado: ${selectedBotUser.personalBot.botName}` : "Sin colaborador físico — Modos de Instrucciones de Tareas"}
+                                    </p>
+                                </div>
+                            </div>
+                            <button onClick={() => setSelectedBotUser(null)} className="text-slate-500 hover:text-white">
+                                <X size={20} />
                             </button>
                         </div>
 
-                        {error && (
-                            <div className="p-3 bg-rose-500/10 border border-rose-500/30 text-rose-400 rounded-xl text-xs font-mono">
-                                {error}
-                            </div>
-                        )}
-
-                        <form onSubmit={handleCreateUser} className="space-y-4 text-xs font-medium">
-                            <div className="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label className="text-slate-400 block mb-1">Nombre</label>
-                                    <input 
-                                        type="text"
-                                        required
-                                        value={newUser.name}
-                                        onChange={e => setNewUser({ ...newUser, name: e.target.value })}
-                                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white outline-none focus:border-cyan-500"
-                                    />
+                        <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-slate-950/50">
+                            {adminChatHistory.map((m, i) => (
+                                <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                                    <div className={`max-w-[85%] px-4 py-3 rounded-2xl text-xs leading-relaxed ${
+                                        m.role === 'user' ? 'bg-cyan-600 text-white rounded-br-sm' : 'bg-slate-800 text-slate-100 rounded-bl-sm border border-slate-700'
+                                    }`}>
+                                        <p className="whitespace-pre-wrap">{m.content}</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <label className="text-slate-400 block mb-1">Apellido</label>
-                                    <input 
-                                        type="text"
-                                        value={newUser.lastName}
-                                        onChange={e => setNewUser({ ...newUser, lastName: e.target.value })}
-                                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white outline-none focus:border-cyan-500"
-                                    />
+                            ))}
+                            {isSendingAdminMsg && (
+                                <div className="flex justify-start">
+                                    <div className="bg-slate-800 text-slate-400 px-4 py-2 rounded-2xl text-xs flex items-center gap-2">
+                                        <Loader2 size={14} className="animate-spin text-cyan-400" /> Procesando instrucción de administración...
+                                    </div>
                                 </div>
-                            </div>
+                            )}
+                        </div>
 
-                            <div>
-                                <label className="text-slate-400 block mb-1">Correo Electrónico</label>
-                                <input 
-                                    type="email"
-                                    required
-                                    value={newUser.email}
-                                    onChange={e => setNewUser({ ...newUser, email: e.target.value })}
-                                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white outline-none focus:border-cyan-500 font-mono"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="text-slate-400 block mb-1">Contraseña Fija Asignada</label>
-                                <input 
-                                    type="text"
-                                    required
-                                    value={newUser.password}
-                                    onChange={e => setNewUser({ ...newUser, password: e.target.value })}
-                                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-emerald-400 outline-none focus:border-cyan-500 font-mono"
-                                />
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label className="text-slate-400 block mb-1">Rol</label>
-                                    <select
-                                        value={newUser.role}
-                                        onChange={e => setNewUser({ ...newUser, role: e.target.value })}
-                                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white outline-none focus:border-cyan-500"
-                                    >
-                                        <option value="SALESPERSON">Vendedor</option>
-                                        <option value="COORDINATOR">Coordinador</option>
-                                        <option value="MANAGEMENT">Gestión</option>
-                                        <option value="ADMIN">Administrador</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="text-slate-400 block mb-1">Área</label>
-                                    <input 
-                                        type="text"
-                                        value={newUser.area}
-                                        onChange={e => setNewUser({ ...newUser, area: e.target.value })}
-                                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white outline-none focus:border-cyan-500"
-                                    />
-                                </div>
-                            </div>
-
+                        <div className="p-4 border-t border-slate-800 bg-slate-950 flex gap-2">
+                            <input 
+                                type="text"
+                                value={adminChatMessage}
+                                onChange={e => setAdminChatMessage(e.target.value)}
+                                onKeyDown={e => e.key === 'Enter' && sendAdminMessage()}
+                                placeholder="Escribe instrucciones para este puesto (ej: Conseguir 30 leads este mes)..."
+                                className="flex-1 bg-slate-900 border border-slate-800 rounded-2xl px-4 py-3 text-xs text-white outline-none focus:border-cyan-500"
+                            />
                             <button 
-                                type="submit"
-                                disabled={isSubmitting}
-                                className="w-full py-3 bg-gradient-to-r from-cyan-500 to-emerald-500 text-slate-950 font-black text-xs uppercase tracking-widest rounded-xl hover:scale-[1.02] transition-all disabled:opacity-50 mt-4"
+                                onClick={sendAdminMessage}
+                                disabled={isSendingAdminMsg || !adminChatMessage.trim()}
+                                className="px-5 py-3 bg-cyan-500 text-slate-950 font-black rounded-2xl text-xs uppercase tracking-wider hover:bg-cyan-400 disabled:opacity-50"
                             >
-                                {isSubmitting ? "Creando..." : "Guardar & Aprobar Cuenta"}
+                                <Send size={16} />
                             </button>
-                        </form>
+                        </div>
                     </div>
                 </div>
             )}
