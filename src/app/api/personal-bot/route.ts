@@ -62,7 +62,7 @@ export async function POST(req: Request) {
                     select: { quoteNumber: true, total: true, status: true, createdAt: true }
                 },
                 salesRanking: {
-                    select: { points: true, quotesCount: true, salesCount: true, contactsCount: true, totalProfit: true }
+                    select: { quotesCount: true, salesCount: true, contactsCount: true, totalProfit: true }
                 },
                 socialPosts: {
                     orderBy: { createdAt: "desc" },

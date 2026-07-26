@@ -28,7 +28,7 @@ export async function GET() {
                 select: { botName: true, onboardingDone: true, updatedAt: true }
             },
             salesRanking: {
-                select: { points: true, quotesCount: true, salesCount: true }
+                select: { quotesCount: true, salesCount: true, totalProfit: true }
             }
         },
         orderBy: { createdAt: "asc" }
