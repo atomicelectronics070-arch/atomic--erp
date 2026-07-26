@@ -16,6 +16,7 @@ import Link from "next/link"
 
 import VirtualOfficeWorkspace from "@/components/dashboard/VirtualOfficeWorkspace"
 import MultiSocialPublisher from "@/components/dashboard/MultiSocialPublisher"
+import LiveTradingChart from "@/components/LiveTradingChart"
 
 interface SocialFeedClientProps {
     initialPosts: any[]
@@ -222,6 +223,11 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
                                 </p>
                             </div>
                         </div>
+                    </div>
+
+                    {/* LIVE TRADING CHART — Visible for all, admin controls only */}
+                    <div className="px-2">
+                        <LiveTradingChart isAdmin={isAdmin} />
                     </div>
 
             <div className="max-w-7xl mx-auto px-8 grid grid-cols-1 lg:grid-cols-12 gap-8">

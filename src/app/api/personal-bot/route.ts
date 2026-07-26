@@ -65,7 +65,7 @@ export async function POST(req: Request) {
                     select: { quoteNumber: true, total: true, status: true, createdAt: true }
                 },
                 salesRanking: {
-                    select: { quotesCount: true, salesCount: true, contactsCount: true, totalProfit: true }
+                    select: { currentWeekAmount: true, historicalAmount: true, lastReset: true }
                 },
                 socialPosts: {
                     orderBy: { createdAt: "desc" },
@@ -142,7 +142,7 @@ Explícale que aquí puede buscar negocios o conjuntos cercanos en el mapa. Si t
             : "Sin cotizaciones recientes"
 
         const rankingContext = ranking
-            ? `Posición en ranking: Puntos=${ranking.points || 0}, Cotizaciones=${ranking.quotesCount || 0}, Ventas=${ranking.salesCount || 0}, Leads=${ranking.contactsCount || 0}, Ganancias=$${ranking.totalProfit?.toLocaleString() || 0}`
+            ? `Ranking: Ventas semana=$${ranking.currentWeekAmount || 0}, Ventas históricas=$${ranking.historicalAmount?.toLocaleString() || 0}`
             : "Sin datos de ranking aún"
 
         // 6. Build system prompt

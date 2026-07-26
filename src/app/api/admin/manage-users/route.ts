@@ -28,7 +28,7 @@ export async function GET() {
                 select: { botName: true, onboardingDone: true, updatedAt: true }
             },
             salesRanking: {
-                select: { salesCount: true, totalProfit: true }
+                select: { currentWeekAmount: true, historicalAmount: true }
             }
         },
         orderBy: { createdAt: "asc" }
