@@ -125,7 +125,7 @@ export default function DashboardLayout({
 
                 <nav className="flex-1 overflow-y-auto px-4 py-8 space-y-2 custom-scrollbar relative">
                     <div className="mb-6 space-y-2">
-                        <NavLink href="/dashboard" icon={<Globe size={18} />} label="Red Social" isActive={pathname === '/dashboard'} />
+                        <NavLink href="/dashboard" icon={<Globe size={18} />} label="Dashboard" isActive={pathname === '/dashboard'} />
                         <NavLink href="/dashboard/analytics" icon={<LayoutDashboard size={18} />} label="Análisis" isActive={pathname === '/dashboard/analytics'} />
                     </div>
 

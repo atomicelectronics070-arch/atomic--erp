@@ -155,7 +155,7 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
                         }`}
                     >
                         <Globe size={16} className="text-cyan-400" />
-                        <span>🎮 Área de Trabajo (Oficina Virtual 2.5D)</span>
+                        <span>Oficina Virtual</span>
                     </button>
                     
                     <button
@@ -167,7 +167,7 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
                         }`}
                     >
                         <Share2 size={16} className="text-pink-400" />
-                        <span>🚀 Publicador Multi-Red</span>
+                        <span>🚀 Gestor de Redes</span>
                     </button>
 
                     <button

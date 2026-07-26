@@ -111,7 +111,7 @@ export default function VirtualOfficeWorkspace({ currentModule = 'ventas' }: { c
           </div>
           <h2 className="text-2xl md:text-3xl font-black tracking-tight text-white flex items-center gap-3">
             <Building2 className="text-indigo-400" />
-            <span>Oficina Virtual Corporativa (Estaciones con Avatares)</span>
+            <span>Estaciones de Trabajo</span>
           </h2>
         </div>
 
