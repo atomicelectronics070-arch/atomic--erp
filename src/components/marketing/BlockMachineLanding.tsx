@@ -158,6 +158,14 @@ export default function BlockMachineLanding({ products }: { products: any[] }) {
                       <img 
                         src={firstImage} 
                         alt={p.name} 
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          if (target.src.includes('maxresdefault.jpg')) {
+                            target.src = target.src.replace('maxresdefault.jpg', 'hqdefault.jpg');
+                          } else {
+                            target.src = "https://images.unsplash.com/photo-1541888081622-15cb3a5d898a?q=80&w=2070";
+                          }
+                        }}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-90 group-hover:opacity-100"
                       />
                       <div className="absolute top-4 left-4 bg-black/80 backdrop-blur-md border border-amber-500/30 text-amber-400 px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider">
