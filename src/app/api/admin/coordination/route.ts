@@ -83,6 +83,14 @@ export async function POST(req: NextRequest) {
 
         switch (action) {
             case "OPEN_GROUP":
+                const activeCycleSetting = await prisma.systemSetting.findUnique({
+                    where: { key: "ACTIVE_TRADING_CYCLE" }
+                })
+                if (!activeCycleSetting) {
+                    return NextResponse.json({ 
+                        error: "No hay un ciclo activo en la Gráfica de Trading. Debes iniciar un ciclo antes de registrar la apertura del grupo." 
+                    }, { status: 400 })
+                }
                 dailyLog = await prisma.coordinationDaily.update({
                     where: { id: dailyLog.id },
                     data: { openTime: new Date() }

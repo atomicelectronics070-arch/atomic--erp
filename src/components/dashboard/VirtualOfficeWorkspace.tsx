@@ -85,7 +85,7 @@ export default function VirtualOfficeWorkspace({ currentModule = "ventas" }: { c
   const zones = {
     ventas: {
       code: "STATION-V01",
-      title: "Módulo de Cotizaciones & Ventas",
+      title: "Módulo de Ventas",
       desc: "Emisión acelerada de PDF con cálculo de impuestos y firma digital.",
       link: "/dashboard/quotes",
       icon: FileText,
@@ -101,7 +101,7 @@ export default function VirtualOfficeWorkspace({ currentModule = "ventas" }: { c
     },
     inventario: {
       code: "STATION-I02",
-      title: "Módulo de Inventario & Precios",
+      title: "Módulo de Inventario",
       desc: "Catálogo completo con precios, stock en tiempo real y fichas técnicas.",
       link: "/dashboard/shop",
       icon: ShoppingBag,
@@ -133,7 +133,7 @@ export default function VirtualOfficeWorkspace({ currentModule = "ventas" }: { c
     },
     prospeccion: {
       code: "STATION-P04",
-      title: "Prospección Mapa Radar",
+      title: "Prospección",
       desc: "Radar satelital para prospección comercial de nuevos negocios.",
       link: "/dashboard/map-prospecting",
       icon: MapPin,
@@ -172,7 +172,7 @@ export default function VirtualOfficeWorkspace({ currentModule = "ventas" }: { c
           </div>
           <h2 className="text-2xl md:text-3xl font-black tracking-tight text-white flex items-center gap-3">
             <Building2 className="text-indigo-400" />
-            <span>Estaciones de Trabajo & Perfiles Fijos</span>
+            <span>Estaciones de Trabajo</span>
           </h2>
         </div>
 
@@ -209,9 +209,9 @@ export default function VirtualOfficeWorkspace({ currentModule = "ventas" }: { c
           <div className="relative z-10 flex justify-between items-center text-[11px] font-mono text-slate-400 uppercase tracking-widest border-b border-slate-800/80 pb-3">
             <span className="flex items-center gap-2">
               <Activity size={14} className="text-emerald-400 animate-pulse" />
-              <span>Mapa 2.5D • Estaciones de Avatares Asignados</span>
+              <span>Mapa Laboral</span>
             </span>
-            <span className="text-indigo-400 font-bold">4 Estaciones Operativas</span>
+            <span className="text-indigo-400 font-bold">Estaciones Operativas</span>
           </div>
 
           <div className="relative z-10 grid grid-cols-2 gap-6 my-auto py-6">

@@ -10,6 +10,7 @@ interface DataPoint {
     contacts: number
     sales: number
     mk: number
+    attendance: number
 }
 
 interface CycleData {
@@ -22,6 +23,7 @@ interface CycleData {
         contacts: number
         sales: number
         payments: number
+        attendance: number
     }
 }
 
@@ -30,10 +32,11 @@ interface TradingChartProps {
 }
 
 const SERIES = [
-    { key: "sales" as const,    label: "Ventas",       color: "#4ade80", glow: "rgba(74,222,128,0.9)",   w: 3, dashed: false, alpha: 1 },
-    { key: "quotes" as const,   label: "Cotizaciones", color: "#f472b6", glow: "rgba(244,114,182,0.8)", w: 2, dashed: false, alpha: 1 },
-    { key: "contacts" as const, label: "Contactos",    color: "#22d3ee", glow: "rgba(34,211,238,0.8)",  w: 2, dashed: false, alpha: 1 },
-    { key: "mk" as const,       label: "MK",           color: "rgba(234,179,8,0.4)", glow: "rgba(234,179,8,0.25)", w: 1.5, dashed: true, alpha: 0.45 },
+    { key: "sales" as const,      label: "Ventas",       color: "#4ade80",              glow: "rgba(74,222,128,0.9)",   w: 3,   dashed: false, alpha: 1    },
+    { key: "quotes" as const,     label: "Cotizaciones", color: "#f472b6",              glow: "rgba(244,114,182,0.8)", w: 2,   dashed: false, alpha: 1    },
+    { key: "contacts" as const,   label: "Contactos",    color: "#22d3ee",              glow: "rgba(34,211,238,0.8)",  w: 2,   dashed: false, alpha: 1    },
+    { key: "mk" as const,         label: "MK",           color: "rgba(234,179,8,0.4)", glow: "rgba(234,179,8,0.25)",  w: 1.5, dashed: true,  alpha: 0.45 },
+    { key: "attendance" as const, label: "Asistencia",   color: "#f87171",              glow: "rgba(248,113,113,0.7)", w: 1.5, dashed: true,  alpha: 0.75 },
 ]
 
 function drawIdleChart(ctx: CanvasRenderingContext2D, W: number, H: number) {
@@ -105,10 +108,11 @@ function drawIdleChart(ctx: CanvasRenderingContext2D, W: number, H: number) {
     const originY = PAD.top + cH
 
     const dotSeries = [
-        { color: "#4ade80", glow: "rgba(74,222,128,0.7)", r: 7 },
-        { color: "#f472b6", glow: "rgba(244,114,182,0.7)", r: 6 },
-        { color: "#22d3ee", glow: "rgba(34,211,238,0.7)", r: 6 },
-        { color: "rgba(234,179,8,0.5)", glow: "rgba(234,179,8,0.3)", r: 4 },
+        { color: "#4ade80",              glow: "rgba(74,222,128,0.7)",   r: 7 },
+        { color: "#f472b6",              glow: "rgba(244,114,182,0.7)", r: 6 },
+        { color: "#22d3ee",              glow: "rgba(34,211,238,0.7)",  r: 6 },
+        { color: "rgba(234,179,8,0.5)", glow: "rgba(234,179,8,0.3)",   r: 4 },
+        { color: "#f87171",              glow: "rgba(248,113,113,0.6)",  r: 4 },
     ]
     dotSeries.forEach(({ color, glow, r }, i) => {
         // Stagger dots slightly so they're all visible
@@ -128,6 +132,7 @@ function drawIdleChart(ctx: CanvasRenderingContext2D, W: number, H: number) {
         { color: "rgba(74,222,128,0.15)",  glow: "rgba(74,222,128,0.08)" },
         { color: "rgba(244,114,182,0.12)", glow: "rgba(244,114,182,0.06)" },
         { color: "rgba(34,211,238,0.12)",  glow: "rgba(34,211,238,0.06)" },
+        { color: "rgba(248,113,113,0.12)", glow: "rgba(248,113,113,0.06)" },
     ]
     flatSeries.forEach(({ color, glow }) => {
         ctx.shadowBlur = 6
@@ -168,7 +173,7 @@ function drawActiveChart(ctx: CanvasRenderingContext2D, W: number, H: number, da
     ctx.fillStyle = bg
     ctx.fillRect(0, 0, W, H)
 
-    const maxVal = Math.max(...dataPoints.map(d => Math.max(d.quotes, d.contacts, d.sales, d.mk)), 5)
+    const maxVal = Math.max(...dataPoints.map(d => Math.max(d.quotes, d.contacts, d.sales, d.mk, d.attendance ?? 0)), 5)
     const scale = cH / (maxVal * 1.18)
 
     // Grid
@@ -287,12 +292,13 @@ function drawActiveChart(ctx: CanvasRenderingContext2D, W: number, H: number, da
 
 function drawLegend(ctx: CanvasRenderingContext2D, leftPad: number, cW: number, idle: boolean) {
     const items = [
-        { label: "VENTAS",       color: "#4ade80",             glow: "rgba(74,222,128,0.8)",  dashed: false },
-        { label: "COTIZACIONES", color: "#f472b6",             glow: "rgba(244,114,182,0.8)", dashed: false },
-        { label: "CONTACTOS",    color: "#22d3ee",             glow: "rgba(34,211,238,0.8)",  dashed: false },
-        { label: "MK",           color: "rgba(234,179,8,0.45)", glow: "rgba(234,179,8,0.3)",  dashed: true  },
+        { label: "VENTAS",       color: "#4ade80",              glow: "rgba(74,222,128,0.8)",  dashed: false },
+        { label: "COTIZACIONES", color: "#f472b6",              glow: "rgba(244,114,182,0.8)", dashed: false },
+        { label: "CONTACTOS",    color: "#22d3ee",              glow: "rgba(34,211,238,0.8)",  dashed: false },
+        { label: "MK",           color: "rgba(234,179,8,0.45)", glow: "rgba(234,179,8,0.3)",   dashed: true  },
+        { label: "ASISTENCIA",   color: "#f87171",              glow: "rgba(248,113,113,0.7)", dashed: true  },
     ]
-    const totalW = items.reduce((acc, it) => acc + it.label.length * 7.5 + 50, 0)
+    const totalW = items.reduce((acc, it) => acc + it.label.length * 7.5 + 46, 0)
     let lx = leftPad + (cW - totalW) / 2
     const ly = 22
     items.forEach(({ label, color, glow, dashed }) => {
@@ -301,19 +307,19 @@ function drawLegend(ctx: CanvasRenderingContext2D, leftPad: number, cW: number, 
         ctx.strokeStyle = color
         ctx.lineWidth = dashed ? 1.2 : 2
         if (dashed) ctx.setLineDash([4, 4])
-        ctx.beginPath(); ctx.moveTo(lx, ly); ctx.lineTo(lx + 22, ly); ctx.stroke()
+        ctx.beginPath(); ctx.moveTo(lx, ly); ctx.lineTo(lx + 20, ly); ctx.stroke()
         ctx.setLineDash([])
         ctx.shadowBlur = 0
         ctx.beginPath()
         ctx.shadowBlur = 8; ctx.shadowColor = glow
-        ctx.arc(lx + 11, ly, dashed ? 2 : 3, 0, Math.PI * 2)
+        ctx.arc(lx + 10, ly, dashed ? 2 : 3, 0, Math.PI * 2)
         ctx.fillStyle = color; ctx.fill()
         ctx.shadowBlur = 0
-        ctx.fillStyle = idle ? color.replace("0.", "0.4") : color
-        ctx.font = "bold 9px 'Courier New', monospace"
+        ctx.fillStyle = idle ? color.replace(/,[\d.]+\)$/, ",0.35)") : color
+        ctx.font = "bold 8.5px 'Courier New', monospace"
         ctx.textAlign = "left"
-        ctx.fillText(label, lx + 28, ly + 4)
-        lx += label.length * 7.5 + 50
+        ctx.fillText(label, lx + 26, ly + 4)
+        lx += label.length * 7.5 + 46
     })
 }
 
@@ -527,7 +533,7 @@ export default function LiveTradingChart({ isAdmin = false }: TradingChartProps)
 
             {/* ── INLINE LEGEND TOOLTIP ── */}
             {showLegend && (
-                <div className="bg-slate-950 border border-slate-800 rounded-2xl p-4 grid grid-cols-2 sm:grid-cols-4 gap-3 text-[10px] font-mono animate-in fade-in slide-in-from-top-1 duration-200">
+                <div className="bg-slate-950 border border-slate-800 rounded-2xl p-4 grid grid-cols-2 sm:grid-cols-3 gap-3 text-[10px] font-mono animate-in fade-in slide-in-from-top-1 duration-200">
                     <div className="flex items-center gap-2">
                         <span className="w-3 h-0.5 bg-emerald-400 rounded shadow-[0_0_6px_rgba(74,222,128,0.8)]" />
                         <span className="text-slate-300"><span className="text-emerald-400 font-bold">Ventas</span> — transacciones cerradas en el sistema</span>
@@ -541,6 +547,10 @@ export default function LiveTradingChart({ isAdmin = false }: TradingChartProps)
                         <span className="text-slate-300"><span className="text-cyan-400 font-bold">Contactos</span> — nuevos clientes registrados</span>
                     </div>
                     <div className="flex items-center gap-2">
+                        <span className="w-3 h-0.5 bg-red-400 rounded shadow-[0_0_6px_rgba(248,113,113,0.7)]" style={{ borderTop: "2px dashed" }} />
+                        <span className="text-slate-300"><span className="text-red-400 font-bold">Asistencia</span> — días con apertura de grupo registrada en coordinación</span>
+                    </div>
+                    <div className="flex items-center gap-2">
                         <span className="w-3 h-0.5 border-t-2 border-dashed border-yellow-400/40 rounded" style={{ borderStyle: "dashed" }} />
                         <span className="text-slate-500"><span className="text-yellow-400/50 font-bold">MK</span> — tickets de pago internos (solo lectura estratégica)</span>
                     </div>
@@ -549,28 +559,32 @@ export default function LiveTradingChart({ isAdmin = false }: TradingChartProps)
 
             {/* ── METRICS CARDS (only when active) ── */}
             {cycle && (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2.5">
                     {[
-                        { label: "Ventas",        val: cycle.totals.sales,    color: "emerald", glow: "rgba(74,222,128,0.5)", icon: "💰" },
-                        { label: "Cotizaciones",  val: cycle.totals.quotes,   color: "pink",    glow: "rgba(244,114,182,0.5)", icon: "📄" },
-                        { label: "Contactos",     val: cycle.totals.contacts, color: "cyan",    glow: "rgba(34,211,238,0.5)", icon: "📍" },
-                        { label: "MK",            val: cycle.totals.payments, color: "amber",   glow: "rgba(234,179,8,0.3)",  icon: "⬤", secret: true },
+                        { label: "Ventas",       val: cycle.totals.sales,      color: "emerald", glow: "rgba(74,222,128,0.5)",  icon: "💰",  secret: false },
+                        { label: "Cotizaciones", val: cycle.totals.quotes,     color: "pink",    glow: "rgba(244,114,182,0.5)", icon: "📄",  secret: false },
+                        { label: "Contactos",    val: cycle.totals.contacts,   color: "cyan",    glow: "rgba(34,211,238,0.5)",  icon: "📍",  secret: false },
+                        { label: "Asistencia",   val: cycle.totals.attendance ?? 0, color: "red", glow: "rgba(248,113,113,0.5)", icon: "🗂️", secret: false },
+                        { label: "MK",           val: cycle.totals.payments,   color: "amber",   glow: "rgba(234,179,8,0.3)",   icon: "⬤",  secret: true  },
                     ].map(({ label, val, color, glow, icon, secret }) => (
                         <div
                             key={label}
                             className={`bg-slate-950/80 border rounded-2xl p-3 text-center transition-all ${
                                 secret
                                     ? "border-amber-500/10 opacity-50 hover:opacity-70"
-                                    : `border-${color}-500/20 hover:border-${color}-500/40`
+                                    : color === "red"
+                                        ? "border-red-500/20 hover:border-red-500/40"
+                                        : `border-${color}-500/20 hover:border-${color}-500/40`
                             }`}
                         >
                             <p className="text-xl font-black"
-                                style={{ color: secret ? "rgba(234,179,8,0.5)" : undefined,
-                                    textShadow: `0 0 18px ${glow}`,
-                                    ...(secret ? {} : {}) }}
+                                style={{
+                                    color: secret ? "rgba(234,179,8,0.5)" : color === "red" ? "#f87171" : undefined,
+                                    textShadow: `0 0 18px ${glow}`
+                                }}
                                 data-color={color}
                             >
-                                <span className={secret ? "text-amber-400/50" : `text-${color}-400`}>{val}</span>
+                                <span className={secret ? "text-amber-400/50" : color === "red" ? "text-red-400" : `text-${color}-400`}>{val}</span>
                             </p>
                             <p className="text-[9px] font-mono mt-0.5 flex items-center justify-center gap-1"
                                 style={{ color: secret ? "rgba(100,80,30,0.7)" : undefined }}>

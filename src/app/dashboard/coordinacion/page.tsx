@@ -272,7 +272,8 @@ export default function CoordinacionPage() {
                 fetchData()
                 if (action === "ADD_FOLLOW_UP") setFollowUpForm({ clientName: "", phone: "", case: "", responsibleType: "ASESOR", advisorId: "" })
             } else {
-                alert("Error al procesar la acción")
+                const errData = await res.json().catch(() => ({}))
+                alert(errData.error || "Error al procesar la acción")
             }
         } catch (e) {
             console.error(e)

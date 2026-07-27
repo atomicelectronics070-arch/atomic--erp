@@ -45,6 +45,11 @@ export async function GET() {
             where: { createdAt: { gte: cycleStart } }
         })
 
+        // Count attendance (days with group opening) since cycle start
+        const attendance = await prisma.coordinationDaily.count({
+            where: { date: { gte: cycleStart }, openTime: { not: null } }
+        })
+
         // Get daily data points for the chart
         const dataPoints = []
         for (let d = 0; d <= Math.min(daysPassed, 29); d++) {
@@ -53,11 +58,12 @@ export async function GET() {
             const dayEnd = new Date(dayStart)
             dayEnd.setDate(dayEnd.getDate() + 1)
 
-            const [dQuotes, dContacts, dSales, dPayments] = await Promise.all([
+            const [dQuotes, dContacts, dSales, dPayments, dAttendance] = await Promise.all([
                 prisma.quote.count({ where: { createdAt: { gte: dayStart, lt: dayEnd } } }),
                 prisma.client.count({ where: { createdAt: { gte: dayStart, lt: dayEnd } } }),
                 prisma.transaction.count({ where: { createdAt: { gte: dayStart, lt: dayEnd } } }),
-                prisma.paymentTicket.count({ where: { createdAt: { gte: dayStart, lt: dayEnd } } })
+                prisma.paymentTicket.count({ where: { createdAt: { gte: dayStart, lt: dayEnd } } }),
+                prisma.coordinationDaily.count({ where: { date: { gte: dayStart, lt: dayEnd }, openTime: { not: null } } })
             ])
 
             dataPoints.push({
@@ -66,7 +72,8 @@ export async function GET() {
                 quotes: dQuotes,
                 contacts: dContacts,
                 sales: dSales,
-                mk: dPayments
+                mk: dPayments,
+                attendance: dAttendance
             })
         }
 
@@ -74,7 +81,7 @@ export async function GET() {
             cycle: {
                 ...cycle,
                 daysPassed: daysPassed + 1,
-                totals: { quotes, contacts, sales, payments }
+                totals: { quotes, contacts, sales, payments, attendance }
             },
             dataPoints
         })
