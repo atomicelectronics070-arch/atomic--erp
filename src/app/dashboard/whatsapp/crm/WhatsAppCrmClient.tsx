@@ -18,53 +18,13 @@ interface Chat {
 }
 
 export default function WhatsAppCrmClient() {
-    const [chats, setChats] = useState<Chat[]>([
-        {
-            id: "1",
-            name: "Ing. Carlos Mendoza (Conjunto Madrigal)",
-            phone: "+593 96 904 3453",
-            lastMessage: "Hola, me interesa la cotización para 12 videoporteros IP.",
-            time: "10:42 AM",
-            unread: 2,
-            status: "COTIZANDO",
-            messages: [
-                { id: "m1", text: "Buenos días, vi su anuncio sobre porteros inteligentes.", sender: "them", time: "10:40 AM" },
-                { id: "m2", text: "Hola Carlos, excelente. Le saluda el equipo de ATOMIC. ¿Cuántas casas tiene el conjunto?", sender: "me", time: "10:41 AM" },
-                { id: "m3", text: "Hola, me interesa la cotización para 12 videoporteros IP.", sender: "them", time: "10:42 AM" }
-            ]
-        },
-        {
-            id: "2",
-            name: "Lcda. Andrea Ruiz (Clínica Salud)",
-            phone: "+593 98 445 1122",
-            lastMessage: "Confirmado el depósito para la barrera antipánico.",
-            time: "Ayer",
-            unread: 0,
-            status: "CLIENTE",
-            messages: [
-                { id: "m10", text: "Buenas tardes, ¿tienen stock de la barrera de 4 metros?", sender: "them", time: "Ayer" },
-                { id: "m11", text: "Confirmado el depósito para la barrera antipánico.", sender: "them", time: "Ayer" }
-            ]
-        },
-        {
-            id: "3",
-            name: "Arq. Esteban Silva (Edificio Platinum)",
-            phone: "+593 99 778 3344",
-            lastMessage: "¿Me puede enviar la ficha técnica en PDF?",
-            time: "Hace 2 días",
-            unread: 0,
-            status: "LEAD",
-            messages: [
-                { id: "m20", text: "¿Me puede enviar la ficha técnica en PDF?", sender: "them", time: "Hace 2 días" }
-            ]
-        }
-    ])
+    const [chats, setChats] = useState<Chat[]>([])
 
-    const [activeChatId, setActiveChatId] = useState<string>("1")
+    const [activeChatId, setActiveChatId] = useState<string>("")
     const [inputText, setInputText] = useState("")
     const [searchQuery, setSearchQuery] = useState("")
 
-    const activeChat = chats.find(c => c.id === activeChatId) || chats[0]
+    const activeChat = chats.find(c => c.id === activeChatId) || null
 
     const handleSendMessage = () => {
         if (!inputText.trim() || !activeChat) return
@@ -170,61 +130,78 @@ export default function WhatsAppCrmClient() {
 
                 {/* Right Area: Chat Window */}
                 <div className="flex-1 flex flex-col bg-[#050505] relative">
-                    
-                    {/* Chat Header */}
-                    <div className="p-4 bg-slate-950 border-b border-slate-800 flex justify-between items-center">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-bold">
-                                <User size={20} />
+                    {!activeChat ? (
+                        <div className="flex-1 flex flex-col items-center justify-center gap-4 text-center p-8">
+                            <div className="w-20 h-20 rounded-3xl bg-slate-900 border border-slate-800 flex items-center justify-center">
+                                <MessageSquare size={36} className="text-slate-700" />
                             </div>
                             <div>
-                                <h3 className="font-bold text-sm text-white">{activeChat.name}</h3>
-                                <p className="text-xs text-emerald-400 font-mono font-bold flex items-center gap-1">
-                                    <Phone size={12} /> {activeChat.phone}
+                                <h3 className="text-sm font-black text-slate-400">Sin conversaciones activas</h3>
+                                <p className="text-xs text-slate-600 font-mono mt-1 max-w-xs">
+                                    Conecta tu WhatsApp Business para ver los chats en tiempo real.<br />
+                                    El módulo estará activo una vez configurada la API.
                                 </p>
                             </div>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                            <span className="text-xs font-mono text-slate-400 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-xl">
-                                Estado: <strong className="text-cyan-300">{activeChat.status}</strong>
+                            <span className="px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-[10px] font-mono text-slate-500">
+                                SIN LOGIN • WhatsApp API no conectada
                             </span>
                         </div>
-                    </div>
-
-                    {/* Messages Scroll View */}
-                    <div className="flex-1 p-6 overflow-y-auto space-y-4 bg-slate-950/40">
-                        {activeChat.messages.map(msg => (
-                            <div
-                                key={msg.id}
-                                className={`flex ${msg.sender === 'me' ? 'justify-end' : 'justify-start'}`}
-                            >
-                                <div className={`max-w-md p-4 rounded-2xl text-xs space-y-1 ${msg.sender === 'me' ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-br-none shadow-[0_0_15px_rgba(16,185,129,0.2)]' : 'bg-slate-900 border border-slate-800 text-slate-100 rounded-bl-none'}`}>
-                                    <p className="leading-relaxed font-medium">{msg.text}</p>
-                                    <p className="text-[9px] font-mono text-right opacity-70">{msg.time}</p>
+                    ) : (
+                        <>
+                            {/* Chat Header */}
+                            <div className="p-4 bg-slate-950 border-b border-slate-800 flex justify-between items-center">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-bold">
+                                        <User size={20} />
+                                    </div>
+                                    <div>
+                                        <h3 className="font-bold text-sm text-white">{activeChat.name}</h3>
+                                        <p className="text-xs text-emerald-400 font-mono font-bold flex items-center gap-1">
+                                            <Phone size={12} /> {activeChat.phone}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-xs font-mono text-slate-400 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-xl">
+                                        Estado: <strong className="text-cyan-300">{activeChat.status}</strong>
+                                    </span>
                                 </div>
                             </div>
-                        ))}
-                    </div>
 
-                    {/* Message Input Box */}
-                    <div className="p-4 bg-slate-950 border-t border-slate-800 flex gap-3 items-center">
-                        <input
-                            type="text"
-                            value={inputText}
-                            onChange={e => setInputText(e.target.value)}
-                            onKeyDown={e => e.key === "Enter" && handleSendMessage()}
-                            placeholder="Escribe una respuesta para WhatsApp..."
-                            className="flex-1 bg-slate-900 border border-slate-800 p-3 rounded-2xl text-xs text-white placeholder-slate-500 outline-none focus:border-emerald-400 font-sans"
-                        />
-                        <button
-                            onClick={handleSendMessage}
-                            className="bg-emerald-600 hover:bg-emerald-500 text-white p-3 rounded-2xl transition-all shadow-[0_0_15px_rgba(16,185,129,0.3)] hover:scale-105"
-                        >
-                            <Send size={18} />
-                        </button>
-                    </div>
+                            {/* Messages Scroll View */}
+                            <div className="flex-1 p-6 overflow-y-auto space-y-4 bg-slate-950/40">
+                                {activeChat.messages.map(msg => (
+                                    <div
+                                        key={msg.id}
+                                        className={`flex ${msg.sender === 'me' ? 'justify-end' : 'justify-start'}`}
+                                    >
+                                        <div className={`max-w-md p-4 rounded-2xl text-xs space-y-1 ${msg.sender === 'me' ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-br-none shadow-[0_0_15px_rgba(16,185,129,0.2)]' : 'bg-slate-900 border border-slate-800 text-slate-100 rounded-bl-none'}`}>
+                                            <p className="leading-relaxed font-medium">{msg.text}</p>
+                                            <p className="text-[9px] font-mono text-right opacity-70">{msg.time}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
 
+                            {/* Message Input Box */}
+                            <div className="p-4 bg-slate-950 border-t border-slate-800 flex gap-3 items-center">
+                                <input
+                                    type="text"
+                                    value={inputText}
+                                    onChange={e => setInputText(e.target.value)}
+                                    onKeyDown={e => e.key === "Enter" && handleSendMessage()}
+                                    placeholder="Escribe una respuesta para WhatsApp..."
+                                    className="flex-1 bg-slate-900 border border-slate-800 p-3 rounded-2xl text-xs text-white placeholder-slate-500 outline-none focus:border-emerald-400 font-sans"
+                                />
+                                <button
+                                    onClick={handleSendMessage}
+                                    className="bg-emerald-600 hover:bg-emerald-500 text-white p-3 rounded-2xl transition-all shadow-[0_0_15px_rgba(16,185,129,0.3)] hover:scale-105"
+                                >
+                                    <Send size={18} />
+                                </button>
+                            </div>
+                        </>
+                    )}
                 </div>
 
             </div>

@@ -213,7 +213,7 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
                                 <Users size={26} />
                             </div>
                             <div>
-                                <h2 className="text-2xl font-black text-white tracking-tight">Muro de Red Social Interna</h2>
+                                <h2 className="text-2xl font-black text-white tracking-tight">Red Social Interna</h2>
                                 <p className="text-sm font-mono font-bold flex items-center gap-2 mt-0.5">
                                     <span className="text-white font-black tracking-widest uppercase">ATOMIC</span>
                                     <span className="text-slate-500">•</span>
