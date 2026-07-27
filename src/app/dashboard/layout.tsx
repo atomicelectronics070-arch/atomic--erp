@@ -9,7 +9,6 @@ import { ChevronDown, ChevronRight } from "lucide-react"
 import NotificationBell from "@/components/NotificationBell"
 import PersonalBotBubble from "@/components/PersonalBotBubble"
 import { motion, AnimatePresence } from "framer-motion"
-import { SellerBotOverlay } from "@/components/ui/SellerBotOverlay"
 
 export default function DashboardLayout({
     children,
@@ -300,7 +299,6 @@ export default function DashboardLayout({
                     </div>
                 </div>
             </main>
-            <SellerBotOverlay />
         </div>
     )
 }
