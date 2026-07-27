@@ -19,6 +19,7 @@ export default function DashboardLayout({
     const [sidebarOpen, setSidebarOpen] = useState(false)
     const [unreadCount, setUnreadCount] = useState(0)
     const [openSections, setOpenSections] = useState<Record<string, boolean>>({
+        areas: true,
         operaciones: true, // Also open operations by default for convenience
         rrhh: false,
         comunicacion: false,
@@ -135,16 +136,20 @@ export default function DashboardLayout({
                         {(role === "ADMIN" || role === "MANAGEMENT" || role === "SALESPERSON" || role === "AFILIADO") && (
                             <>
                                 <CollapsibleSection
-                                    label="Apps"
-                                    isOpen={openSections.operaciones}
-                                    onToggle={() => toggleSection('operaciones')}
+                                    label="Áreas de Trabajo"
+                                    isOpen={openSections.areas}
+                                    onToggle={() => toggleSection('areas')}
                                 >
+                                    <NavLink href="/dashboard/quotes" icon={<FileText size={14} />} label="Ventas" isSubItem />
+                                    <NavLink href="/dashboard/shop" icon={<ShoppingBag size={14} />} label="Inventario" isSubItem />
                                     {role === "ADMIN" && (
                                         <NavLink href="/dashboard/coordinacion" icon={<Users size={14} />} label="Coordinación" isSubItem />
                                     )}
-                                    <NavLink href="/dashboard/quotes" icon={<FileText size={14} />} label="Cotizaciones" isSubItem />
-                                    <NavLink href="/dashboard/shop" icon={<ShoppingBag size={14} />} label={role === "ADMIN" ? "Inventario y Precios" : "Lista Precios"} isSubItem />
-                                    <NavLink href="/dashboard/map-prospecting" icon={<Map size={14} />} label="Prospección Mapa" isSubItem />
+                                    <NavLink href="/dashboard/map-prospecting" icon={<Map size={14} />} label="Prospección" isSubItem />
+                                    <NavLink href="/dashboard/admin/personal-management" icon={<ShieldCheck size={14} />} label="Administración Central" isSubItem />
+                                    <NavLink href="/dashboard/admin/personal-management" icon={<Code2 size={14} />} label="Tecnología" isSubItem />
+                                    <NavLink href="/dashboard/admin/personal-management" icon={<BrainCircuit size={14} />} label="Sistemas & IA" isSubItem />
+                                    <NavLink href="/dashboard/admin/personal-management" icon={<Smartphone size={14} />} label="Edición & Media" isSubItem />
                                 </CollapsibleSection>
 
                                 <CollapsibleSection

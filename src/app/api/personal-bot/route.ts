@@ -104,10 +104,30 @@ export async function POST(req: Request) {
         }
 
         // 3. If naming bot — save the name
-        if (isNamingBot && message.trim()) {
+        let isForcedNaming = false
+        let forcedName = ""
+        const nameMatch = message.match(/(?:quiero que te llames|llámate|cambia tu nombre a|te llamarás|bautízate como|bautizate como)\s+([A-Za-z0-9áéíóúÁÉÍÓÚñÑ\s]{2,20})/i)
+        if (nameMatch) {
+            forcedName = nameMatch[1].trim()
+            isForcedNaming = true
+            await prisma.personalBotMemory.update({
+                where: { userId: session.user.id },
+                data: { botName: forcedName, onboardingDone: true }
+            })
+        }
+
+        if (isNamingBot && message.trim() && !isForcedNaming) {
             await prisma.personalBotMemory.update({
                 where: { userId: session.user.id },
                 data: { botName: message.trim(), onboardingDone: false }
+            })
+        }
+
+        if (isForcedNaming) {
+            return NextResponse.json({
+                text: `¡Excelente elección! A partir de ahora me llamaré **${forcedName}** y recordaré este nombre siempre. ¿En qué te puedo asistir hoy?`,
+                suggestions: ["¿Qué tareas tengo para hoy?", "¿Cómo voy en el ranking?", "Enséñame un guión de ventas"],
+                botName: forcedName
             })
         }
 

@@ -128,7 +128,7 @@ export default function PersonalBotBubble() {
             })
             const data = await res.json()
 
-            if (isNamingBot) {
+            if (isNamingBot || data.botName) {
                 setBotName(data.botName || msgText)
                 setIsNamingBot(false)
                 setOnboardingDone(true)

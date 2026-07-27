@@ -5,7 +5,8 @@ import Link from "next/link"
 import { motion } from "framer-motion"
 import { 
   Building2, Users, ShoppingBag, ShieldCheck, FileText, 
-  MapPin, Sparkles, ArrowRight, Activity, Cpu, Key, UserCheck, Bot
+  MapPin, Sparkles, ArrowRight, Activity, Cpu, Key, UserCheck, Bot,
+  Send, ArrowLeft, Loader2
 } from "lucide-react"
 
 type OfficeZone = "ventas" | "inventario" | "coordinacion" | "prospeccion"
@@ -72,6 +73,15 @@ export default function VirtualOfficeWorkspace({ currentModule = "ventas" }: { c
   const [activeZone, setActiveZone] = useState<OfficeZone>("ventas")
   const [avatarPos, setAvatarPos] = useState({ x: 20, y: 25 })
   const [systemUsers, setSystemUsers] = useState<any[]>([])
+  const [showAIChat, setShowAIChat] = useState(false)
+  const [chatInput, setChatInput] = useState("")
+  const [isChatLoading, setIsChatLoading] = useState(false)
+  const [zoneChats, setZoneChats] = useState<Record<string, {sender: "user" | "bot", text: string}[]>>({
+    ventas: [{ sender: "bot", text: "¡Hola! Soy tu asistente de ventas. ¿Necesitas un guión para cerrar una venta de NFC, o ayuda estructurando una cotización?" }],
+    inventario: [{ sender: "bot", text: "Hola, estoy listo para ayudarte con el inventario, control de stock y fichas técnicas de nuestros productos." }],
+    coordinacion: [{ sender: "bot", text: "Saludos. Supervisemos juntos las metas semanales y organicemos las bitácoras diarias." }],
+    prospeccion: [{ sender: "bot", text: "Radar activo. Escríbeme qué buscar o cómo calificar los leads de Google Maps." }]
+  })
 
   useEffect(() => {
     fetch("/api/admin/manage-users")
@@ -81,6 +91,52 @@ export default function VirtualOfficeWorkspace({ currentModule = "ventas" }: { c
       })
       .catch(() => {})
   }, [])
+
+  const handleSendZoneMessage = async () => {
+    const text = chatInput.trim()
+    if (!text || isChatLoading) return
+
+    const updatedChats = { ...zoneChats }
+    updatedChats[activeZone] = [...(updatedChats[activeZone] || []), { sender: "user", text }]
+    setZoneChats(updatedChats)
+    setChatInput("")
+    setIsChatLoading(true)
+
+    let roleOverride = "SALESPERSON"
+    let botNameOverride = "Asesor Ventas"
+    if (activeZone === "inventario") {
+      roleOverride = "MANAGEMENT"
+      botNameOverride = "Logística Bot"
+    } else if (activeZone === "coordinacion") {
+      roleOverride = "COORDINATOR"
+      botNameOverride = "Coordinador Bot"
+    } else if (activeZone === "prospeccion") {
+      roleOverride = "PROSPECTION_BOT"
+      botNameOverride = "Radar Bot"
+    }
+
+    try {
+      const res = await fetch("/api/personal-bot", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: text,
+          isNamingBot: false,
+          currentPath: zones[activeZone].link,
+          roleOverride,
+          botNameOverride
+        })
+      })
+      const data = await res.json()
+      updatedChats[activeZone] = [...updatedChats[activeZone], { sender: "bot", text: data.text || "Sin respuesta." }]
+      setZoneChats({ ...updatedChats })
+    } catch (err) {
+      updatedChats[activeZone] = [...updatedChats[activeZone], { sender: "bot", text: "Error conectando con la IA de la estación." }]
+      setZoneChats({ ...updatedChats })
+    } finally {
+      setIsChatLoading(false)
+    }
+  }
 
   const zones = {
     ventas: {
@@ -152,6 +208,7 @@ export default function VirtualOfficeWorkspace({ currentModule = "ventas" }: { c
   const handleSelectZone = (zoneKey: OfficeZone) => {
     setActiveZone(zoneKey)
     setAvatarPos({ x: zones[zoneKey].x, y: zones[zoneKey].y })
+    setShowAIChat(false)
   }
 
   const current = zones[activeZone]
@@ -166,7 +223,7 @@ export default function VirtualOfficeWorkspace({ currentModule = "ventas" }: { c
       {/* SECTION 1: HEADER */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-800">
         <div>
-          <div className="inline-flex items-center space-x-2 px-3 py-1 bg-indigo-500/10 border border-indigo-500/30 rounded-full text-indigo-400 font-mono text-[10px] font-bold uppercase tracking-widest mb-2">
+          <div className="inline-flex items-center space-x-2 px-3 py-1 bg-indigo-500/10 border border-indigo-500/30 rounded-xl text-indigo-400 font-mono text-[10px] font-bold uppercase tracking-widest mb-2">
             <span className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse" />
             <span>Entorno Interactivo Virtual ATOMIC v4.0</span>
           </div>
@@ -281,44 +338,123 @@ export default function VirtualOfficeWorkspace({ currentModule = "ventas" }: { c
         </div>
 
         {/* Details Card (4 Cols) */}
-        <div className="lg:col-span-4 bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800 rounded-3xl p-6 flex flex-col justify-between shadow-xl relative overflow-hidden">
-          <div>
-            <div className="flex items-center justify-between mb-6">
-              <span className={`px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase border ${current.badgeColor}`}>
-                {current.code}
-              </span>
-              <span className="text-[10px] text-slate-500 font-mono">Estación Activa</span>
-            </div>
-
-            <div className="flex items-center space-x-4 mb-6 p-4 bg-slate-950/80 rounded-2xl border border-slate-800">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 flex items-center justify-center text-2xl shadow-md">
-                {current.avatarEmoji}
+        <div className="lg:col-span-4 bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800 rounded-3xl p-6 flex flex-col justify-between shadow-xl relative overflow-hidden min-h-[440px]">
+          {showAIChat ? (
+            <div className="flex flex-col h-full justify-between space-y-4">
+              {/* Chat Header */}
+              <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                <div className="flex items-center gap-2">
+                  <button 
+                    onClick={() => setShowAIChat(false)}
+                    className="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 transition-colors"
+                  >
+                    <ArrowLeft size={14} />
+                  </button>
+                  <div>
+                    <h4 className="text-xs font-bold text-white flex items-center gap-1.5">
+                      <span>{current.avatarEmoji}</span>
+                      <span>IA de {current.title.split('Módulo de ')[1] || current.title}</span>
+                    </h4>
+                    <p className="text-[9px] font-mono text-emerald-400">En Línea</p>
+                  </div>
+                </div>
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
               </div>
+
+              {/* Chat Messages scroll window */}
+              <div className="flex-1 overflow-y-auto space-y-3 pr-1 max-h-[260px] min-h-[240px] text-xs font-sans scrollbar-thin scrollbar-thumb-slate-800">
+                {(zoneChats[activeZone] || []).map((msg, i) => (
+                  <div key={i} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+                    <div className={`p-3 rounded-2xl max-w-[85%] leading-relaxed ${
+                      msg.sender === 'user' 
+                        ? 'bg-gradient-to-br from-emerald-600 to-teal-700 text-white rounded-br-none shadow-[0_0_10px_rgba(16,185,129,0.15)]'
+                        : 'bg-slate-950 border border-slate-800/80 text-slate-100 rounded-bl-none'
+                    }`}>
+                      {msg.text}
+                    </div>
+                  </div>
+                ))}
+                {isChatLoading && (
+                  <div className="flex justify-start">
+                    <div className="bg-slate-950 border border-slate-800/80 px-3 py-2 rounded-2xl rounded-bl-none flex gap-1 items-center">
+                      <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                      <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                      <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Chat Input */}
+              <div className="flex gap-2 items-center pt-2 border-t border-slate-800/60">
+                <input
+                  type="text"
+                  value={chatInput}
+                  onChange={e => setChatInput(e.target.value)}
+                  onKeyDown={e => e.key === "Enter" && handleSendZoneMessage()}
+                  placeholder={`Preguntar a ${current.avatarRole.split(' (')[0]}...`}
+                  className="flex-1 bg-slate-950 border border-slate-800 p-2.5 rounded-xl text-xs text-white placeholder-slate-500 outline-none focus:border-emerald-400"
+                />
+                <button
+                  onClick={handleSendZoneMessage}
+                  disabled={!chatInput.trim() || isChatLoading}
+                  className="bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white p-2.5 rounded-xl transition-all shadow-[0_0_10px_rgba(16,185,129,0.2)]"
+                >
+                  <Send size={14} />
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col h-full justify-between">
               <div>
-                <h4 className="text-sm font-black text-white">{current.avatarRole}</h4>
-                <p className="text-[11px] text-emerald-400 font-mono font-bold">{current.avatarStatus}</p>
+                <div className="flex items-center justify-between mb-6">
+                  <span className={`px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase border ${current.badgeColor}`}>
+                    {current.code}
+                  </span>
+                  <span className="text-[10px] text-slate-500 font-mono">Estación Activa</span>
+                </div>
+
+                <div className="flex items-center space-x-4 mb-6 p-4 bg-slate-950/80 rounded-2xl border border-slate-800">
+                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 flex items-center justify-center text-2xl shadow-md">
+                    {current.avatarEmoji}
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-black text-white">{current.avatarRole}</h4>
+                    <p className="text-[11px] text-emerald-400 font-mono font-bold">{current.avatarStatus}</p>
+                  </div>
+                </div>
+
+                <h3 className="text-xl font-black text-white mb-3 leading-tight">{current.title}</h3>
+                <p className="text-slate-400 text-xs font-light leading-relaxed mb-6">{current.desc}</p>
+
+                <div className="p-4 bg-slate-950/80 rounded-2xl border border-slate-800/80 mb-6 space-y-2">
+                  <span className="text-[10px] font-mono uppercase text-slate-500 block">Estadística de Operación</span>
+                  <p className="text-xs font-bold text-emerald-400 flex items-center gap-2">
+                    <Sparkles size={14} />
+                    <span>{current.stats}</span>
+                  </p>
+                </div>
+              </div>
+
+              {/* Redirection / AI Chat buttons */}
+              <div className="flex gap-2.5">
+                <button
+                  onClick={() => setShowAIChat(true)}
+                  className="flex-1 py-3.5 bg-slate-950 hover:bg-slate-800 border border-slate-800 rounded-2xl font-black text-[10px] uppercase tracking-wider text-slate-200 hover:text-white transition-all flex items-center justify-center gap-1.5 shadow-md"
+                >
+                  <Bot size={13} className="text-emerald-400" />
+                  <span>Hablar con IA</span>
+                </button>
+                <Link
+                  href={current.link}
+                  className={`flex-1 py-3.5 rounded-2xl font-black text-[10px] uppercase tracking-wider text-white bg-gradient-to-r ${current.color} shadow-lg hover:scale-[1.02] transition-all flex items-center justify-center gap-1.5 group`}
+                >
+                  <span>Ir a Área</span>
+                  <ArrowRight size={13} className="group-hover:translate-x-0.5 transition-transform" />
+                </Link>
               </div>
             </div>
-
-            <h3 className="text-xl font-black text-white mb-3 leading-tight">{current.title}</h3>
-            <p className="text-slate-400 text-xs font-light leading-relaxed mb-6">{current.desc}</p>
-
-            <div className="p-4 bg-slate-950/80 rounded-2xl border border-slate-800/80 mb-6 space-y-2">
-              <span className="text-[10px] font-mono uppercase text-slate-500 block">Estadística de Operación</span>
-              <p className="text-xs font-bold text-emerald-400 flex items-center gap-2">
-                <Sparkles size={14} />
-                <span>{current.stats}</span>
-              </p>
-            </div>
-          </div>
-
-          <Link
-            href={current.link}
-            className={`w-full py-4 rounded-2xl font-black text-xs uppercase tracking-widest text-white bg-gradient-to-r ${current.color} shadow-lg hover:scale-[1.02] transition-all flex items-center justify-center space-x-2 group`}
-          >
-            <span>Ingresar a {current.title.split('Módulo de ')[1] || 'Módulo'}</span>
-            <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-          </Link>
+          )}
         </div>
       </div>
 
