@@ -6,30 +6,36 @@ export const revalidate = 60;
 export default async function CalefactorCilindroBLACKPage() {
   const prisma = new PrismaClient();
 
-  // Producto estrella: Calefactor Tipo Cilindro BLACK
-  const hero = await prisma.product.findFirst({
+  // Producto estrella: Calefactor Tipo Cilindro Base Black (SKU: BPA0627)
+  // Fuente: https://bpecuador.com/producto/calefactor-de-ambientes-cilindro-base-black/
+  const heroProduct = await prisma.product.findFirst({
     where: {
-      AND: [
-        { name: { contains: 'calefactor', mode: 'insensitive' } },
+      OR: [
+        { sku: 'BPA0627' },
         {
-          OR: [
+          AND: [
             { name: { contains: 'cilindro', mode: 'insensitive' } },
+            { name: { contains: 'base', mode: 'insensitive' } },
             { name: { contains: 'black', mode: 'insensitive' } },
+            { isDeleted: false },
           ]
         },
-        { isDeleted: false },
-      ]
+        {
+          AND: [
+            { name: { contains: 'cilindro', mode: 'insensitive' } },
+            { name: { contains: 'black', mode: 'insensitive' } },
+            { isDeleted: false },
+          ]
+        },
+      ],
     },
-    orderBy: { price: 'desc' },
-  });
-
-  // Fallback: el más caro
-  const heroProduct = hero ?? await prisma.product.findFirst({
+    orderBy: { price: 'asc' },
+  }) ?? await prisma.product.findFirst({
     where: {
       name: { contains: 'calefactor', mode: 'insensitive' },
       isDeleted: false,
     },
-    orderBy: { price: 'desc' },
+    orderBy: { price: 'asc' },
   });
 
   // Resto de calefactores
@@ -103,9 +109,9 @@ export default async function CalefactorCilindroBLACKPage() {
             {/* Stats */}
             <div className="grid grid-cols-3 gap-4">
               {[
-                { val: '80m²', label: 'Cobertura' },
-                { val: '3', label: 'Velocidades' },
-                { val: '110V', label: 'Voltaje' },
+                { val: '5-10m²', label: 'Área de Calor' },
+                { val: 'Gas', label: 'Combustible' },
+                { val: 'Pulso', label: 'Encendido' },
               ].map((s) => (
                 <div key={s.label} className="bg-white/5 border border-white/10 rounded-2xl p-4 text-center">
                   <div className="text-2xl font-black text-orange-400">{s.val}</div>
@@ -190,12 +196,12 @@ export default async function CalefactorCilindroBLACKPage() {
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
-              { icon: '🔥', title: 'Calor Envolvente 360°', desc: 'Diseño cilíndrico que distribuye el calor de forma homogénea en toda la habitación, sin puntos fríos.' },
-              { icon: '⚡', title: 'Motor de Alta Potencia', desc: 'Motor eficiente con bajo consumo eléctrico. Funciona a 110V - 60Hz en cualquier toma estándar.' },
-              { icon: '🎛️', title: '3 Niveles de Temperatura', desc: 'Adapta la intensidad del calor según el clima y el tamaño del espacio con 3 velocidades de control.' },
-              { icon: '🏗️', title: 'Cuerpo Acero Negro Mate', desc: 'Construido con acero de alta resistencia acabado negro mate. Resistente, higiénico y duradero.' },
-              { icon: '🌿', title: 'Ecofriendly & Eficiente', desc: 'Maximiza el calor por BTU consumido. Menor impacto ambiental por temporada frente a soluciones convencionales.' },
-              { icon: '🛡️', title: 'Garantía de Fábrica', desc: '1 año de garantía en piezas. Respaldado por Banco del Perno, mayor distribuidor de electrodomésticos del Ecuador.' },
+              { icon: '🔥', title: 'Calor Cilíndrico 360°', desc: 'El diseño cilíndrico irradia calor uniformemente en todas las direcciones. Sin puntos fríos, máxima cobertura para tu espacio.' },
+              { icon: '⛽', title: 'Gas Doméstico', desc: 'Funciona con gas de uso doméstico (cilindro estándar). Cámara integrada con apertura de puerta para instalar el tanque fácilmente.' },
+              { icon: '🔆', title: 'Encendido de Pulso', desc: 'Sistema de encendido eléctrico de pulso confiable. Sin cerillas ni encendedores externos. Seguro y cómodo.' },
+              { icon: '🏗️', title: 'Acero Negro Martillado', desc: 'Quemadores de acero inoxidable con revestimiento de polvo negro martillado. Resistente a la corrosión y al calor intenso.' },
+              { icon: '🧯', title: 'Sistema de Seguridad', desc: 'Protección de punta integrada para apagado automático en caso de vuelco. Diseñado para uso seguro en exteriores y terrazas.' },
+              { icon: '🚶', title: 'Portátil y Flexible', desc: 'Se puede mover fácilmente al exterior, patio, jardín o terraza. No requiere instalación fija. Lleva el calor donde lo necesites.' },
             ].map((f) => (
               <div key={f.title} className="group bg-white/[0.03] border border-white/[0.07] rounded-3xl p-8 hover:bg-white/[0.06] hover:border-orange-500/30 transition-all duration-300">
                 <div className="text-4xl mb-5">{f.icon}</div>
@@ -211,9 +217,9 @@ export default async function CalefactorCilindroBLACKPage() {
       <section className="py-16 bg-white/[0.02] border-y border-white/[0.05]">
         <div className="max-w-6xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8">
           {[
-            { icon: '🌡️', label: 'Cobertura máxima', val: 'hasta 80 m²' },
-            { icon: '⚡', label: 'Voltaje', val: '110V · 60Hz' },
-            { icon: '🎛️', label: 'Velocidades', val: '3 niveles' },
+            { icon: '🌡️', label: 'Área de calentamiento', val: '5 – 10 m²' },
+            { icon: '⛽', label: 'Combustible', val: 'Gas doméstico' },
+            { icon: '🔆', label: 'Encendido', val: 'Pulso eléctrico' },
             { icon: '🏭', label: 'Marca', val: 'Banco del Perno' },
           ].map((s) => (
             <div key={s.label} className="text-center">
