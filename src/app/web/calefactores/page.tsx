@@ -1,13 +1,13 @@
 import { PrismaClient } from '@prisma/client';
 import Link from 'next/link';
 
-export const revalidate = 0; // No cache for immediate update
+export const revalidate = 0; // No cache for immediate updates
 
 export default async function CalefactorCilindroBLACKPage() {
   const prisma = new PrismaClient();
 
   // Producto estrella: Calefactor de Ambientes Tipo Cilindro Base Black (SKU: BPA0627)
-  const heroProduct = await prisma.product.findFirst({
+  const dbProduct = await prisma.product.findFirst({
     where: {
       sku: 'BPA0627',
       isDeleted: false,
@@ -17,30 +17,35 @@ export default async function CalefactorCilindroBLACKPage() {
       name: { contains: 'Cilindro Base Black', mode: 'insensitive' },
       isDeleted: false,
     },
-  }) ?? {
-    id: 'bpa0627-default',
-    name: 'Calefactor de Ambientes Tipo Cilindro Base Black',
+  });
+
+  // Base $199.99 + 15% margen = $229.99
+  const baseCost = 199.99;
+  const marginPrice = dbProduct?.price && dbProduct.price > 200 ? dbProduct.price : Math.round(baseCost * 1.15 * 100) / 100;
+  const comparePrice = Math.round(marginPrice * 1.15 * 100) / 100;
+
+  const heroProduct = {
+    id: dbProduct?.id || 'bpa0627-default',
+    name: dbProduct?.name || 'Calefactor de Ambientes Tipo Cilindro Base Black',
     sku: 'BPA0627',
-    price: 199.99,
-    compareAtPrice: 249.99,
-    stock: 10,
-    images: JSON.stringify(['https://bpecuador.com/wp-content/uploads/2024/09/Calefactor-1.png']),
+    price: marginPrice,
+    compareAtPrice: comparePrice,
+    stock: dbProduct?.stock || 10,
   };
 
-  // Imagen principal garantizada para el héroe
+  // Imagen principal oficial
   const heroImg = 'https://bpecuador.com/wp-content/uploads/2024/09/Calefactor-1.png';
 
-  // Lista de SKUs de la línea BP Ecuador
+  // SKUs oficiales BP Ecuador
   const validSkus = [
     'BPA0627', 'BPA0629', 'BPA0628', 'BPA0354', 'BPA0355',
     'BPA0801', 'BPA0352', 'BPA0800', 'BPA0353', 'BPA0351',
     'BPA0356', 'BPA0357'
   ];
 
-  // Resto de calefactores (excluyendo el héroe)
-  const otherHeaters = await prisma.product.findMany({
+  // Resto de calefactores (con 15% margen)
+  const otherHeatersDB = await prisma.product.findMany({
     where: {
-      name: { contains: 'calefactor', mode: 'insensitive' },
       sku: { in: validSkus },
       NOT: { sku: 'BPA0627' },
       isDeleted: false,
@@ -95,7 +100,7 @@ export default async function CalefactorCilindroBLACKPage() {
                 <span className="text-3xl md:text-4xl tracking-widest text-zinc-300">BLACK EDITION</span>
               </h1>
               <p className="text-zinc-500 text-xs mt-3 font-mono">
-                {heroProduct.name} · SKU: {heroProduct.sku || 'BPA0627'}
+                {heroProduct.name} · SKU: {heroProduct.sku}
               </p>
             </div>
 
@@ -117,17 +122,22 @@ export default async function CalefactorCilindroBLACKPage() {
               ))}
             </div>
 
-            {/* Precio + CTA */}
+            {/* Precio + Margen + CTA */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
               <div>
-                <div className="text-xs text-zinc-500 uppercase tracking-widest mb-1">Precio Promocional</div>
-                <div className="text-5xl font-black text-white">
-                  ${heroProduct.price?.toFixed(2) ?? '199.99'}
+                <div className="text-xs text-zinc-500 uppercase tracking-widest mb-1">Precio Venta (Margen 15%)</div>
+                <div className="flex items-baseline gap-3">
+                  <span className="text-5xl font-black text-white">
+                    ${heroProduct.price.toFixed(2)}
+                  </span>
+                  <span className="text-xl text-zinc-600 line-through">
+                    ${heroProduct.compareAtPrice.toFixed(2)}
+                  </span>
                 </div>
-                <div className="text-xs text-emerald-400 font-bold mt-1">IVA Incluido</div>
+                <div className="text-xs text-emerald-400 font-bold mt-1">IVA Incluido · Incluye Margen 15%</div>
               </div>
               <a
-                href={`https://wa.me/593969043453?text=Hola%2C%20quiero%20información%20del%20*${encodeURIComponent(heroProduct.name)}*%20(SKU%3A%20BPA0627)%20a%20%24${heroProduct.price?.toFixed(2)}`}
+                href={`https://wa.me/593969043453?text=Hola%2C%20quiero%20información%20del%20*${encodeURIComponent(heroProduct.name)}*%20(SKU%3A%20BPA0627)%20a%20%24${heroProduct.price.toFixed(2)}`}
                 target="_blank"
                 rel="noreferrer"
                 className="px-8 py-4 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-400 hover:to-red-400 text-white font-black text-lg rounded-2xl shadow-[0_8px_30px_rgba(234,88,12,0.4)] hover:shadow-[0_12px_40px_rgba(234,88,12,0.6)] transition-all hover:-translate-y-1 flex items-center gap-3"
@@ -233,7 +243,7 @@ export default async function CalefactorCilindroBLACKPage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
-                href={`https://wa.me/593969043453?text=Hola%2C%20me%20interesa%20el%20*Calefactor%20Cilindro%20Base%20Black*%20a%20%24199.99`}
+                href={`https://wa.me/593969043453?text=Hola%2C%20me%20interesa%20el%20*Calefactor%20Cilindro%20Base%20Black*%20a%20%24${heroProduct.price.toFixed(2)}`}
                 target="_blank"
                 rel="noreferrer"
                 className="px-10 py-4 bg-gradient-to-r from-orange-500 to-red-500 text-white font-black text-lg rounded-full shadow-[0_8px_30px_rgba(234,88,12,0.4)] hover:scale-105 transition-all flex items-center justify-center gap-3"
@@ -254,19 +264,20 @@ export default async function CalefactorCilindroBLACKPage() {
         </div>
       </section>
 
-      {/* =========== OTROS CALEFACTORES BP ECUADOR =========== */}
-      {otherHeaters.length > 0 && (
+      {/* =========== OTROS CALEFACTORES BP ECUADOR (CON 15% MARGEN) =========== */}
+      {otherHeatersDB.length > 0 && (
         <section className="py-20 px-6 bg-[#080808] border-t border-white/[0.05]">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-black text-white mb-3">
                 Más Calefactores de Ambiente
               </h2>
-              <p className="text-zinc-500 text-base">Toda la línea de calefacción residencial Banco del Perno.</p>
+              <p className="text-zinc-500 text-base">Toda la línea de calefacción residencial Banco del Perno (Precios de Venta Público con 15% de margen).</p>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-              {otherHeaters.map((c) => {
+              {otherHeatersDB.map((c) => {
                 const img = getImage(c);
+                const displayPrice = c.price;
                 return (
                   <Link
                     key={c.id}
@@ -284,7 +295,7 @@ export default async function CalefactorCilindroBLACKPage() {
                       <h3 className="text-sm font-bold text-white leading-snug line-clamp-2 mb-2 group-hover:text-orange-400 transition-colors">
                         {c.name}
                       </h3>
-                      <div className="text-orange-400 font-black text-lg">${c.price.toFixed(2)}</div>
+                      <div className="text-orange-400 font-black text-lg">${displayPrice.toFixed(2)}</div>
                       {c.stock > 0 ? (
                         <div className="text-[10px] text-emerald-500 font-semibold mt-1 flex items-center gap-1">
                           <span className="w-1 h-1 rounded-full bg-emerald-500" />En stock

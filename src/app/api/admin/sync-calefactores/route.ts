@@ -3,12 +3,14 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-// Catálogo COMPLETO de Calefactores BP Ecuador
-const BP_CALEFACTORES = [
+// Margen comercial asignado: 15% sobre precio base del proveedor BP Ecuador
+const MARGEN = 0.15; // 15%
+
+const BP_CALEFACTORES_RAW = [
   {
     name: 'Calefactor de Ambientes Tipo Cilindro Base Black',
     sku: 'BPA0627',
-    price: 199.99,
+    costPrice: 199.99,
     images: JSON.stringify([
       'https://bpecuador.com/wp-content/uploads/2024/09/Calefactor-1.png',
       'https://bpecuador.com/wp-content/uploads/2024/09/Calefactor-1-300x300.png'
@@ -57,12 +59,11 @@ const BP_CALEFACTORES = [
   {
     name: 'Calefactor de Ambientes Tipo Cilindro Alto Black',
     sku: 'BPA0629',
-    price: 259.99,
+    costPrice: 259.99,
     images: JSON.stringify([
       'https://bpecuador.com/wp-content/uploads/2025/05/BPA0629-300x300.webp'
     ]),
-    description: `<h2>Calefactor de Ambientes Tipo Cilindro Alto Black</h2>
-<p>Versión alta del calefactor cilíndrico Black. Mayor potencia y área de cobertura que el modelo base. Ideal para terrazas y jardines amplios.</p>`,
+    description: `<h2>Calefactor de Ambientes Tipo Cilindro Alto Black</h2><p>Versión alta del calefactor cilíndrico Black. Mayor potencia y área de cobertura que el modelo base. Ideal para terrazas y jardines amplios.</p>`,
     specs: JSON.stringify({
       tipo: 'Cilindro Alto',
       combustible: 'Gas doméstico',
@@ -78,12 +79,11 @@ const BP_CALEFACTORES = [
   {
     name: 'Calefactor de Ambientes Tipo Cuadrado Alto Black',
     sku: 'BPA0628',
-    price: 359.99,
+    costPrice: 359.99,
     images: JSON.stringify([
       'https://bpecuador.com/wp-content/uploads/2024/11/BP04211-a-300x300.png'
     ]),
-    description: `<h2>Calefactor de Ambientes Tipo Cuadrado Alto Black</h2>
-<p>Diseño cuadrado alto en acabado negro. Mayor capacidad de calefacción para espacios amplios.</p>`,
+    description: `<h2>Calefactor de Ambientes Tipo Cuadrado Alto Black</h2><p>Diseño cuadrado alto en acabado negro. Mayor capacidad de calefacción para espacios amplios.</p>`,
     specs: JSON.stringify({
       tipo: 'Cuadrado Alto',
       combustible: 'Gas doméstico',
@@ -98,12 +98,11 @@ const BP_CALEFACTORES = [
   {
     name: 'Calefactor de Ambientes Tipo Hongo',
     sku: 'BPA0354',
-    price: 199.99,
+    costPrice: 199.99,
     images: JSON.stringify([
       'https://bpecuador.com/wp-content/uploads/2024/09/CALENTADOR-HONGO2.png'
     ]),
-    description: `<h2>Calefactor de Ambientes Tipo Hongo</h2>
-<p>El clásico calefactor tipo hongo, diseñado para distribuir el calor de forma radial desde la cúpula superior.</p>`,
+    description: `<h2>Calefactor de Ambientes Tipo Hongo</h2><p>El clásico calefactor tipo hongo, diseñado para distribuir el calor de forma radial desde la cúpula superior.</p>`,
     specs: JSON.stringify({
       tipo: 'Hongo',
       combustible: 'Gas doméstico',
@@ -118,12 +117,11 @@ const BP_CALEFACTORES = [
   {
     name: 'Calefactor de Ambientes Tipo Hongo Ratan',
     sku: 'BPA0355',
-    price: 209.99,
+    costPrice: 209.99,
     images: JSON.stringify([
       'https://bpecuador.com/wp-content/uploads/2024/11/BPA0355-300x300.png'
     ]),
-    description: `<h2>Calefactor de Ambientes Tipo Hongo Ratan</h2>
-<p>Versión con cuerpo estilo Ratan (mimbre) del calefactor hongo.</p>`,
+    description: `<h2>Calefactor de Ambientes Tipo Hongo Ratan</h2><p>Versión con cuerpo estilo Ratan (mimbre) del calefactor hongo.</p>`,
     specs: JSON.stringify({
       tipo: 'Hongo Ratan',
       combustible: 'Gas doméstico',
@@ -138,12 +136,11 @@ const BP_CALEFACTORES = [
   {
     name: 'Calefactor de Ambientes Tipo Hongo Ratan Black',
     sku: 'BPA0801',
-    price: 239.99,
+    costPrice: 239.99,
     images: JSON.stringify([
       'https://bpecuador.com/wp-content/uploads/2025/10/BPA0801-300x300.webp'
     ]),
-    description: `<h2>Calefactor de Ambientes Tipo Hongo Ratan Black</h2>
-<p>El hongo Ratan en versión Black Edition. Combina mimbre con negro martillado.</p>`,
+    description: `<h2>Calefactor de Ambientes Tipo Hongo Ratan Black</h2><p>El hongo Ratan en versión Black Edition. Combina mimbre con negro martillado.</p>`,
     specs: JSON.stringify({
       tipo: 'Hongo Ratan Black',
       combustible: 'Gas doméstico',
@@ -158,12 +155,11 @@ const BP_CALEFACTORES = [
   {
     name: 'Calefactor de Ambientes Tipo Piramide Ratan',
     sku: 'BPA0352',
-    price: 359.99,
+    costPrice: 359.99,
     images: JSON.stringify([
       'https://bpecuador.com/wp-content/uploads/2024/11/BPA0352-a-300x300.png'
     ]),
-    description: `<h2>Calefactor de Ambientes Tipo Pirámide Ratan</h2>
-<p>Diseño piramidal con acabado Ratan. Estético y potente.</p>`,
+    description: `<h2>Calefactor de Ambientes Tipo Pirámide Ratan</h2><p>Diseño piramidal con acabado Ratan. Estético y potente.</p>`,
     specs: JSON.stringify({
       tipo: 'Pirámide Ratan',
       combustible: 'Gas doméstico',
@@ -178,12 +174,11 @@ const BP_CALEFACTORES = [
   {
     name: 'Calefactor de Ambientes Tipo Piramide Ratan Black',
     sku: 'BPA0800',
-    price: 369.99,
+    costPrice: 369.99,
     images: JSON.stringify([
       'https://bpecuador.com/wp-content/uploads/2026/03/BPA0800-300x300.webp'
     ]),
-    description: `<h2>Calefactor de Ambientes Tipo Pirámide Ratan Black</h2>
-<p>La versión Black Edition de la pirámide Ratan.</p>`,
+    description: `<h2>Calefactor de Ambientes Tipo Pirámide Ratan Black</h2><p>La versión Black Edition de la pirámide Ratan.</p>`,
     specs: JSON.stringify({
       tipo: 'Pirámide Ratan Black',
       combustible: 'Gas doméstico',
@@ -198,12 +193,11 @@ const BP_CALEFACTORES = [
   {
     name: 'Calefactor de Ambientes Tipo Piramide STAINLESS STEEL',
     sku: 'BPA0353',
-    price: 329.99,
+    costPrice: 329.99,
     images: JSON.stringify([
       'https://bpecuador.com/wp-content/uploads/2025/03/BP04213-1x1-1-300x300.png'
     ]),
-    description: `<h2>Calefactor de Ambientes Tipo Pirámide Stainless Steel</h2>
-<p>Diseño piramidal en acero inoxidable pulido.</p>`,
+    description: `<h2>Calefactor de Ambientes Tipo Pirámide Stainless Steel</h2><p>Diseño piramidal en acero inoxidable pulido.</p>`,
     specs: JSON.stringify({
       tipo: 'Pirámide Stainless Steel',
       combustible: 'Gas doméstico',
@@ -218,12 +212,11 @@ const BP_CALEFACTORES = [
   {
     name: 'Calefactor de Ambiente Tipo Pirámide',
     sku: 'BPA0351',
-    price: 299.99,
+    costPrice: 299.99,
     images: JSON.stringify([
       'https://bpecuador.com/wp-content/uploads/2025/03/BP04212-1x1-1-300x300.png'
     ]),
-    description: `<h2>Calefactor de Ambiente Tipo Pirámide</h2>
-<p>El clásico de la línea: calefactor piramidal en acabado estándar.</p>`,
+    description: `<h2>Calefactor de Ambiente Tipo Pirámide</h2><p>El clásico de la línea: calefactor piramidal en acabado estándar.</p>`,
     specs: JSON.stringify({
       tipo: 'Pirámide',
       combustible: 'Gas doméstico',
@@ -237,12 +230,11 @@ const BP_CALEFACTORES = [
   {
     name: 'Calefactor de Ambientes Cuadrado Ratan',
     sku: 'BPA0356',
-    price: 289.99,
+    costPrice: 289.99,
     images: JSON.stringify([
       'https://bpecuador.com/wp-content/uploads/2025/05/BPA0628-300x300.webp'
     ]),
-    description: `<h2>Calefactor de Ambientes Cuadrado Ratan</h2>
-<p>Diseño cuadrado compacto con acabado Ratan.</p>`,
+    description: `<h2>Calefactor de Ambientes Cuadrado Ratan</h2><p>Diseño cuadrado compacto con acabado Ratan.</p>`,
     specs: JSON.stringify({
       tipo: 'Cuadrado Ratan',
       combustible: 'Gas doméstico',
@@ -257,12 +249,11 @@ const BP_CALEFACTORES = [
   {
     name: 'Calefactor de Ambientes Rectangular Ratan',
     sku: 'BPA0357',
-    price: 349.99,
+    costPrice: 349.99,
     images: JSON.stringify([
       'https://bpecuador.com/wp-content/uploads/2025/05/BPA0629-300x300.webp'
     ]),
-    description: `<h2>Calefactor de Ambientes Rectangular Ratan</h2>
-<p>Formato rectangular con acabado Ratan de alta calidad.</p>`,
+    description: `<h2>Calefactor de Ambientes Rectangular Ratan</h2><p>Formato rectangular con acabado Ratan de alta calidad.</p>`,
     specs: JSON.stringify({
       tipo: 'Rectangular Ratan',
       combustible: 'Gas doméstico',
@@ -291,78 +282,49 @@ export async function GET() {
     let updated = 0;
     let inserted = 0;
 
-    for (const prod of BP_CALEFACTORES) {
-      // 1. Buscar prioritariamente por SKU exacto
+    for (const rawProd of BP_CALEFACTORES_RAW) {
+      // Precio Venta al Público con +15% de margen comercial
+      const salePrice = Math.round(rawProd.costPrice * (1 + MARGEN) * 100) / 100;
+      const compareAt = Math.round(salePrice * 1.15 * 100) / 100; // Precio tachado de referencia
+
       let existing = await prisma.product.findFirst({
-        where: { sku: prod.sku },
+        where: { sku: rawProd.sku },
+      }) ?? await prisma.product.findFirst({
+        where: { name: { equals: rawProd.name, mode: 'insensitive' } },
       });
 
-      // 2. Si no hay por SKU, buscar por nombre exacto
-      if (!existing) {
-        existing = await prisma.product.findFirst({
-          where: { name: { equals: prod.name, mode: 'insensitive' } },
-        });
-      }
+      const productData = {
+        name: rawProd.name,
+        sku: rawProd.sku,
+        price: salePrice,
+        compareAtPrice: compareAt,
+        costPrice: rawProd.costPrice,
+        images: rawProd.images,
+        description: rawProd.description,
+        specs: rawProd.specs,
+        stock: rawProd.stock,
+        categoryId: categoria.id,
+        isDeleted: false,
+      };
 
       if (existing) {
-        // Actualizar y asegurar reactivación
         await prisma.product.update({
           where: { id: existing.id },
-          data: {
-            name: prod.name,
-            sku: prod.sku,
-            price: prod.price,
-            images: prod.images,
-            description: prod.description,
-            specs: prod.specs,
-            stock: prod.stock,
-            categoryId: categoria.id,
-            isDeleted: false,
-          },
+          data: productData,
         });
-        log.push(`UPDATED: ${prod.name} (${prod.sku})`);
+        log.push(`UPDATED (Margen 15%): ${rawProd.name} (Costo: $${rawProd.costPrice} -> Venta: $${salePrice})`);
         updated++;
       } else {
-        // Crear solo si el SKU no está ocupado
-        const skuCheck = await prisma.product.findFirst({ where: { sku: prod.sku } });
-        if (skuCheck) {
-          await prisma.product.update({
-            where: { id: skuCheck.id },
-            data: {
-              name: prod.name,
-              price: prod.price,
-              images: prod.images,
-              description: prod.description,
-              specs: prod.specs,
-              stock: prod.stock,
-              categoryId: categoria.id,
-              isDeleted: false,
-            },
-          });
-          log.push(`UPDATED BY SKU FALLBACK: ${prod.name} (${prod.sku})`);
-          updated++;
-        } else {
-          await prisma.product.create({
-            data: {
-              name: prod.name,
-              sku: prod.sku,
-              price: prod.price,
-              images: prod.images,
-              description: prod.description,
-              specs: prod.specs,
-              stock: prod.stock,
-              categoryId: categoria.id,
-              isDeleted: false,
-            },
-          });
-          log.push(`INSERTED: ${prod.name} (${prod.sku})`);
-          inserted++;
-        }
+        await prisma.product.create({
+          data: productData,
+        });
+        log.push(`INSERTED (Margen 15%): ${rawProd.name} (Venta: $${salePrice})`);
+        inserted++;
       }
     }
 
-    // 3. Limpiar TecnoMega o cualquier otro calefactor que NO sea de los SKUs oficiales de BP
-    const validSkus = BP_CALEFACTORES.map((b) => b.sku);
+    // Limpiar viejos / ajenos
+    const validSkus = BP_CALEFACTORES_RAW.map((b) => b.sku);
     const nonBpCalefactores = await prisma.product.findMany({
       where: {
         OR: [
@@ -379,16 +341,17 @@ export async function GET() {
         where: { id: badProd.id },
         data: { isDeleted: true },
       });
-      log.push(`CLEANED: ${badProd.name} ($${badProd.price}) - SKU: ${badProd.sku || 'N/A'}`);
+      log.push(`CLEANED: ${badProd.name} ($${badProd.price})`);
       cleaned++;
     }
 
     return NextResponse.json({
       success: true,
+      margin_applied: '15%',
       inserted,
       updated,
       cleaned,
-      total_bp_catalog: BP_CALEFACTORES.length,
+      total_bp_catalog: BP_CALEFACTORES_RAW.length,
       log,
     });
   } catch (err: any) {
