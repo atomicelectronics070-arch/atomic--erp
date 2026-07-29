@@ -1,52 +1,51 @@
 import { PrismaClient } from '@prisma/client';
 import Link from 'next/link';
 
-export const revalidate = 60;
+export const revalidate = 0; // No cache for immediate update
 
 export default async function CalefactorCilindroBLACKPage() {
   const prisma = new PrismaClient();
 
-  // Producto estrella: Calefactor Tipo Cilindro Base Black (SKU: BPA0627)
-  // Fuente: https://bpecuador.com/producto/calefactor-de-ambientes-cilindro-base-black/
+  // Producto estrella: Calefactor de Ambientes Tipo Cilindro Base Black (SKU: BPA0627)
   const heroProduct = await prisma.product.findFirst({
     where: {
-      OR: [
-        { sku: 'BPA0627' },
-        {
-          AND: [
-            { name: { contains: 'cilindro', mode: 'insensitive' } },
-            { name: { contains: 'base', mode: 'insensitive' } },
-            { name: { contains: 'black', mode: 'insensitive' } },
-            { isDeleted: false },
-          ]
-        },
-        {
-          AND: [
-            { name: { contains: 'cilindro', mode: 'insensitive' } },
-            { name: { contains: 'black', mode: 'insensitive' } },
-            { isDeleted: false },
-          ]
-        },
-      ],
-    },
-    orderBy: { price: 'asc' },
-  }) ?? await prisma.product.findFirst({
-    where: {
-      name: { contains: 'calefactor', mode: 'insensitive' },
+      sku: 'BPA0627',
       isDeleted: false,
     },
-    orderBy: { price: 'asc' },
-  });
+  }) ?? await prisma.product.findFirst({
+    where: {
+      name: { contains: 'Cilindro Base Black', mode: 'insensitive' },
+      isDeleted: false,
+    },
+  }) ?? {
+    id: 'bpa0627-default',
+    name: 'Calefactor de Ambientes Tipo Cilindro Base Black',
+    sku: 'BPA0627',
+    price: 199.99,
+    compareAtPrice: 249.99,
+    stock: 10,
+    images: JSON.stringify(['https://bpecuador.com/wp-content/uploads/2024/09/Calefactor-1.png']),
+  };
 
-  // Resto de calefactores
+  // Imagen principal garantizada para el héroe
+  const heroImg = 'https://bpecuador.com/wp-content/uploads/2024/09/Calefactor-1.png';
+
+  // Lista de SKUs de la línea BP Ecuador
+  const validSkus = [
+    'BPA0627', 'BPA0629', 'BPA0628', 'BPA0354', 'BPA0355',
+    'BPA0801', 'BPA0352', 'BPA0800', 'BPA0353', 'BPA0351',
+    'BPA0356', 'BPA0357'
+  ];
+
+  // Resto de calefactores (excluyendo el héroe)
   const otherHeaters = await prisma.product.findMany({
     where: {
       name: { contains: 'calefactor', mode: 'insensitive' },
+      sku: { in: validSkus },
+      NOT: { sku: 'BPA0627' },
       isDeleted: false,
-      NOT: { id: heroProduct?.id ?? '__none__' },
     },
     orderBy: { price: 'desc' },
-    take: 20,
   });
 
   const getImage = (p: any): string => {
@@ -57,11 +56,9 @@ export default async function CalefactorCilindroBLACKPage() {
     } catch { return '/img/placeholder.png'; }
   };
 
-  const heroImg = getImage(heroProduct);
-
   return (
     // -mt-32 cancela el pt-32 del layout para que el hero sea full screen
-    <div className="-mt-32 overflow-x-hidden">
+    <div className="-mt-32 overflow-x-hidden font-sans">
 
       {/* =========== HERO SECTION =========== */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#080808]">
@@ -90,20 +87,20 @@ export default async function CalefactorCilindroBLACKPage() {
             </div>
 
             <div>
-              <h1 className="text-6xl md:text-7xl font-black leading-none tracking-tight text-white">
+              <h1 className="text-5xl md:text-7xl font-black leading-none tracking-tight text-white">
                 CALEFACTOR<br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-red-400 to-amber-400">
                   CILINDRO
                 </span><br />
-                <span className="text-4xl md:text-5xl tracking-widest">BLACK EDITION</span>
+                <span className="text-3xl md:text-4xl tracking-widest text-zinc-300">BLACK EDITION</span>
               </h1>
-              {heroProduct?.name && (
-                <p className="text-zinc-600 text-sm mt-2 font-mono">{heroProduct.name}</p>
-              )}
+              <p className="text-zinc-500 text-xs mt-3 font-mono">
+                {heroProduct.name} · SKU: {heroProduct.sku || 'BPA0627'}
+              </p>
             </div>
 
-            <p className="text-lg text-zinc-400 leading-relaxed max-w-lg">
-              El calefactor más potente de la línea Banco del Perno. Diseño cilíndrico de acero con acabado negro mate que genera calor intenso y envolvente para espacios de hasta <strong className="text-white">80 m²</strong>.
+            <p className="text-base md:text-lg text-zinc-400 leading-relaxed max-w-lg">
+              El calefactor perfecto para tu espacio. Diseño cilíndrico de base negra con acabado martillado de alta durabilidad que genera calor uniforme y potente en espacios de <strong className="text-white">5 a 10 m²</strong>.
             </p>
 
             {/* Stats */}
@@ -115,7 +112,7 @@ export default async function CalefactorCilindroBLACKPage() {
               ].map((s) => (
                 <div key={s.label} className="bg-white/5 border border-white/10 rounded-2xl p-4 text-center">
                   <div className="text-2xl font-black text-orange-400">{s.val}</div>
-                  <div className="text-xs text-zinc-600 uppercase tracking-wider mt-1">{s.label}</div>
+                  <div className="text-xs text-zinc-500 uppercase tracking-wider mt-1">{s.label}</div>
                 </div>
               ))}
             </div>
@@ -123,16 +120,14 @@ export default async function CalefactorCilindroBLACKPage() {
             {/* Precio + CTA */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
               <div>
-                <div className="text-xs text-zinc-600 uppercase tracking-widest mb-1">Precio</div>
+                <div className="text-xs text-zinc-500 uppercase tracking-widest mb-1">Precio Promocional</div>
                 <div className="text-5xl font-black text-white">
-                  ${heroProduct?.price?.toFixed(2) ?? '—'}
+                  ${heroProduct.price?.toFixed(2) ?? '199.99'}
                 </div>
-                {heroProduct?.compareAtPrice && (
-                  <div className="text-lg text-zinc-700 line-through">${heroProduct.compareAtPrice.toFixed(2)}</div>
-                )}
+                <div className="text-xs text-emerald-400 font-bold mt-1">IVA Incluido</div>
               </div>
               <a
-                href={`https://wa.me/593969043453?text=Hola%2C%20quiero%20información%20del%20*${encodeURIComponent(heroProduct?.name ?? 'Calefactor Cilindro Black')}*%20a%20%24${heroProduct?.price?.toFixed(2)}`}
+                href={`https://wa.me/593969043453?text=Hola%2C%20quiero%20información%20del%20*${encodeURIComponent(heroProduct.name)}*%20(SKU%3A%20BPA0627)%20a%20%24${heroProduct.price?.toFixed(2)}`}
                 target="_blank"
                 rel="noreferrer"
                 className="px-8 py-4 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-400 hover:to-red-400 text-white font-black text-lg rounded-2xl shadow-[0_8px_30px_rgba(234,88,12,0.4)] hover:shadow-[0_12px_40px_rgba(234,88,12,0.6)] transition-all hover:-translate-y-1 flex items-center gap-3"
@@ -146,38 +141,34 @@ export default async function CalefactorCilindroBLACKPage() {
 
             {/* Badges */}
             <div className="flex gap-3 flex-wrap">
-              {heroProduct?.sku && (
-                <span className="text-xs font-mono text-zinc-600 border border-zinc-800 px-3 py-1.5 rounded-full">
-                  SKU: {heroProduct.sku}
-                </span>
-              )}
-              {(heroProduct?.stock ?? 0) > 0 ? (
-                <span className="text-xs font-bold text-emerald-400 border border-emerald-800/50 bg-emerald-500/10 px-3 py-1.5 rounded-full flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  En Stock
-                </span>
-              ) : (
-                <span className="text-xs font-bold text-red-400 border border-red-800/50 bg-red-500/10 px-3 py-1.5 rounded-full">Sin Stock</span>
-              )}
-              <span className="text-xs font-bold text-amber-400 border border-amber-800/50 bg-amber-500/10 px-3 py-1.5 rounded-full">🚚 Envío Gratis</span>
+              <span className="text-xs font-mono text-zinc-400 border border-zinc-800 px-3 py-1.5 rounded-full">
+                SKU: BPA0627
+              </span>
+              <span className="text-xs font-bold text-emerald-400 border border-emerald-800/50 bg-emerald-500/10 px-3 py-1.5 rounded-full flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                En Stock
+              </span>
+              <span className="text-xs font-bold text-amber-400 border border-amber-800/50 bg-amber-500/10 px-3 py-1.5 rounded-full">
+                🚚 Envío Gratis a Nivel Nacional
+              </span>
             </div>
           </div>
 
-          {/* IMAGEN */}
+          {/* IMAGEN OFICIAL DEL PRODUCTO */}
           <div className="relative flex items-center justify-center">
             <div className="absolute w-80 h-80 bg-orange-500/15 rounded-full blur-[80px]" />
-            <div className="relative z-10">
+            <div className="relative z-10 p-6 bg-white/5 border border-white/10 rounded-3xl backdrop-blur-sm">
               <img
                 src={heroImg}
-                alt={heroProduct?.name ?? 'Calefactor Cilindro Black'}
-                className="w-full max-w-sm mx-auto drop-shadow-[0_40px_80px_rgba(234,88,12,0.25)] hover:scale-105 transition-transform duration-700"
+                alt="Calefactor de Ambientes Tipo Cilindro Base Black"
+                className="w-full max-w-sm mx-auto object-contain drop-shadow-[0_40px_80px_rgba(234,88,12,0.3)] hover:scale-105 transition-transform duration-700"
               />
             </div>
-            <div className="absolute top-8 right-4 bg-orange-500 text-white text-xs font-black px-4 py-2 rounded-full shadow-xl rotate-3">
+            <div className="absolute top-6 right-2 bg-orange-500 text-white text-xs font-black px-4 py-2 rounded-full shadow-xl rotate-3">
               🔥 Black Edition
             </div>
-            <div className="absolute bottom-8 left-4 bg-white/10 backdrop-blur-md border border-white/10 text-white text-xs font-bold px-4 py-2.5 rounded-2xl shadow-xl">
-              ✅ Alta Potencia
+            <div className="absolute bottom-6 left-2 bg-white/10 backdrop-blur-md border border-white/10 text-white text-xs font-bold px-4 py-2.5 rounded-2xl shadow-xl">
+              ✅ Gas Doméstico
             </div>
           </div>
         </div>
@@ -188,20 +179,20 @@ export default async function CalefactorCilindroBLACKPage() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-black text-white mb-4">
-              Por qué elegir el <span className="text-orange-400">Cilindro Black</span>
+              Por qué elegir el <span className="text-orange-400">Cilindro Base Black</span>
             </h2>
             <p className="text-zinc-500 text-lg max-w-2xl mx-auto">
-              Ingeniería de calefacción residencial de alto rendimiento. Potente, duradero y con diseño que domina cualquier espacio.
+              Ingeniería de calefacción residencial de alto rendimiento para terrazas, patios y exteriores.
             </p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
-              { icon: '🔥', title: 'Calor Cilíndrico 360°', desc: 'El diseño cilíndrico irradia calor uniformemente en todas las direcciones. Sin puntos fríos, máxima cobertura para tu espacio.' },
-              { icon: '⛽', title: 'Gas Doméstico', desc: 'Funciona con gas de uso doméstico (cilindro estándar). Cámara integrada con apertura de puerta para instalar el tanque fácilmente.' },
-              { icon: '🔆', title: 'Encendido de Pulso', desc: 'Sistema de encendido eléctrico de pulso confiable. Sin cerillas ni encendedores externos. Seguro y cómodo.' },
-              { icon: '🏗️', title: 'Acero Negro Martillado', desc: 'Quemadores de acero inoxidable con revestimiento de polvo negro martillado. Resistente a la corrosión y al calor intenso.' },
-              { icon: '🧯', title: 'Sistema de Seguridad', desc: 'Protección de punta integrada para apagado automático en caso de vuelco. Diseñado para uso seguro en exteriores y terrazas.' },
-              { icon: '🚶', title: 'Portátil y Flexible', desc: 'Se puede mover fácilmente al exterior, patio, jardín o terraza. No requiere instalación fija. Lleva el calor donde lo necesites.' },
+              { icon: '🔥', title: 'Calor Cilíndrico 360°', desc: 'El diseño cilíndrico irradia calor uniformemente en todas las direcciones. Sin puntos fríos.' },
+              { icon: '⛽', title: 'Gas Doméstico', desc: 'Funciona con cilindro estándar de gas de uso doméstico. Cámara integrada con apertura de puerta.' },
+              { icon: '🔆', title: 'Encendido de Pulso', desc: 'Sistema de encendido eléctrico de pulso confiable. Sin cerillas ni encendedores externos.' },
+              { icon: '🏗️', title: 'Acero Negro Martillado', desc: 'Quemadores de acero inoxidable con revestimiento de polvo negro martillado ultra duradero.' },
+              { icon: '🧯', title: 'Sistema de Seguridad', desc: 'Protección de punta integrada con apagado automático de llama en caso de inclinación.' },
+              { icon: '🚶', title: 'Portátil y Flexible', desc: 'Fácil de trasladar a terrazas, patios o jardines. Lleva el calor exactamente a donde estés.' },
             ].map((f) => (
               <div key={f.title} className="group bg-white/[0.03] border border-white/[0.07] rounded-3xl p-8 hover:bg-white/[0.06] hover:border-orange-500/30 transition-all duration-300">
                 <div className="text-4xl mb-5">{f.icon}</div>
@@ -225,7 +216,7 @@ export default async function CalefactorCilindroBLACKPage() {
             <div key={s.label} className="text-center">
               <div className="text-3xl mb-3">{s.icon}</div>
               <div className="text-2xl font-black text-orange-400 mb-1">{s.val}</div>
-              <div className="text-xs text-zinc-600 uppercase tracking-wider">{s.label}</div>
+              <div className="text-xs text-zinc-500 uppercase tracking-wider">{s.label}</div>
             </div>
           ))}
         </div>
@@ -238,11 +229,11 @@ export default async function CalefactorCilindroBLACKPage() {
           <div className="relative z-10">
             <h2 className="text-4xl md:text-5xl font-black text-white mb-4">¿Listo para calentar tu espacio?</h2>
             <p className="text-zinc-400 text-lg mb-8 max-w-xl mx-auto">
-              Nuestros asesores te ayudan con instalación, modelos disponibles y el mejor precio del mercado.
+              Nuestros asesores te ayudan con instalación, modelos disponibles y envío a todo el Ecuador.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
-                href={`https://wa.me/593969043453?text=Hola%2C%20me%20interesa%20el%20*Calefactor%20Cilindro%20Black*%20a%20%24${heroProduct?.price?.toFixed(2)}`}
+                href={`https://wa.me/593969043453?text=Hola%2C%20me%20interesa%20el%20*Calefactor%20Cilindro%20Base%20Black*%20a%20%24199.99`}
                 target="_blank"
                 rel="noreferrer"
                 className="px-10 py-4 bg-gradient-to-r from-orange-500 to-red-500 text-white font-black text-lg rounded-full shadow-[0_8px_30px_rgba(234,88,12,0.4)] hover:scale-105 transition-all flex items-center justify-center gap-3"
@@ -263,7 +254,7 @@ export default async function CalefactorCilindroBLACKPage() {
         </div>
       </section>
 
-      {/* =========== OTROS CALEFACTORES =========== */}
+      {/* =========== OTROS CALEFACTORES BP ECUADOR =========== */}
       {otherHeaters.length > 0 && (
         <section className="py-20 px-6 bg-[#080808] border-t border-white/[0.05]">
           <div className="max-w-7xl mx-auto">
