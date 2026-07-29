@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 
+// Force clean Vercel build v2
 const prisma = new PrismaClient();
 
 // Margen comercial asignado: 15% sobre precio base del proveedor BP Ecuador
