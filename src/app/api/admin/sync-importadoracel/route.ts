@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 const MARGEN = 0.15; // 15%
 
@@ -50,8 +48,7 @@ const IMPORTADORA_CELL_PRODUCTS = [
     images: JSON.stringify([
       'https://www.importadoracel.com/wp-content/uploads/2025/02/Importadora-Cel-Honor-Magic-7-Lite-2.jpg'
     ]),
-    description: `<h2>Honor Magic 8 Lite 5G</h2>
-<p>Edición avanzada de la serie Magic con procesador optimizado, mayor rendimiento multitarea y pantalla AMOLED antirreflectante de alta precisión de color.</p>`,
+    description: `<h2>Honor Magic 8 Lite 5G</h2><p>Edición avanzada con procesador optimizado y batería de 6600 mAh.</p>`,
     specs: JSON.stringify({
       pantalla: '6.78" AMOLED 120Hz',
       procesador: 'Snapdragon 6 Gen 1 (2.2 GHz)',
@@ -277,7 +274,5 @@ export async function GET() {
     });
   } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
-  } finally {
-    await prisma.$disconnect();
   }
 }

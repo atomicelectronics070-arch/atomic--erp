@@ -1,10 +1,9 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 
 export const revalidate = 0; // No cache for immediate updates
 
 export default async function HonorMagic7Page() {
-  const prisma = new PrismaClient();
 
   // Producto estrella: Honor Magic 7 Lite 5G
   const dbProduct = await prisma.product.findFirst({
@@ -218,7 +217,7 @@ export default async function HonorMagic7Page() {
             {[
               { icon: '🔋', title: 'Batería Masiva 6600 mAh', desc: 'Hasta 2 días de uso continuo. Disfruta juegos, streaming y redes sin preocuparte por el cargador.' },
               { icon: '📸', title: 'Sensor de 108 MP', desc: 'Captura detalles ultra nítidos en cualquier condición de luz. Fotos profesionales listas para redes.' },
-              { icon: '🛡️', title: 'Resistencia Ultra Anticaídas', desc: 'Estructura reforzada multidireccional con protección IP64 contra agua y polvo.' },
+              { icon: '🛡️', title: 'Resistencia Ultra Anticaídas', desc: 'Estructura reinforced multidireccional con protección IP64 contra agua y polvo.' },
               { icon: '⚡', title: 'Snapdragon 6 Gen 1 (4nm)', desc: 'Procesador de 4nm ultra eficiente con tecnología 5G para multitarea rápida y fluida.' },
               { icon: '🎨', title: 'Pantalla Curva AMOLED 120Hz', desc: '1.070 millones de colores con atenuación PWM a alta frecuencia para cuidar tu vista.' },
               { icon: '💾', title: '8GB RAM + 8GB Turbo / 256GB', desc: 'Tecnología RAM Turbo que amplía la memoria a 16GB de RAM efectiva para máxima fluidez.' },
