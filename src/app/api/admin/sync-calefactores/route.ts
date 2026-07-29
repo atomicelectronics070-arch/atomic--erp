@@ -3,8 +3,7 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-// Catálogo COMPLETO extraído de:
-// https://bpecuador.com/categoria-producto/hogar/calefactores-de-ambiente/
+// Catálogo COMPLETO de Calefactores BP Ecuador
 const BP_CALEFACTORES = [
   {
     name: 'Calefactor de Ambientes Tipo Cilindro Base Black',
@@ -54,7 +53,6 @@ const BP_CALEFACTORES = [
       valvula_sugerida: 'BP02417',
     }),
     stock: 10,
-    isHero: true,
   },
   {
     name: 'Calefactor de Ambientes Tipo Cilindro Alto Black',
@@ -290,22 +288,24 @@ export async function GET() {
     }
 
     const log: string[] = [];
-    let inserted = 0;
     let updated = 0;
+    let inserted = 0;
 
     for (const prod of BP_CALEFACTORES) {
-      // Buscar en TODA la tabla por SKU (incluso si isDeleted es true) o por nombre
-      const existing = await prisma.product.findFirst({
-        where: {
-          OR: [
-            { sku: prod.sku },
-            { name: { equals: prod.name, mode: 'insensitive' } },
-          ],
-        },
+      // 1. Buscar prioritariamente por SKU exacto
+      let existing = await prisma.product.findFirst({
+        where: { sku: prod.sku },
       });
 
+      // 2. Si no hay por SKU, buscar por nombre exacto
+      if (!existing) {
+        existing = await prisma.product.findFirst({
+          where: { name: { equals: prod.name, mode: 'insensitive' } },
+        });
+      }
+
       if (existing) {
-        // Actualizar y Reactivar (isDeleted: false)
+        // Actualizar y asegurar reactivación
         await prisma.product.update({
           where: { id: existing.id },
           data: {
@@ -320,34 +320,56 @@ export async function GET() {
             isDeleted: false,
           },
         });
-        log.push(`UPDATED & REACTIVATED: ${prod.name} (${prod.sku})`);
+        log.push(`UPDATED: ${prod.name} (${prod.sku})`);
         updated++;
       } else {
-        await prisma.product.create({
-          data: {
-            name: prod.name,
-            sku: prod.sku,
-            price: prod.price,
-            images: prod.images,
-            description: prod.description,
-            specs: prod.specs,
-            stock: prod.stock,
-            categoryId: categoria.id,
-            isDeleted: false,
-          },
-        });
-        log.push(`INSERTED: ${prod.name} (${prod.sku})`);
-        inserted++;
+        // Crear solo si el SKU no está ocupado
+        const skuCheck = await prisma.product.findFirst({ where: { sku: prod.sku } });
+        if (skuCheck) {
+          await prisma.product.update({
+            where: { id: skuCheck.id },
+            data: {
+              name: prod.name,
+              price: prod.price,
+              images: prod.images,
+              description: prod.description,
+              specs: prod.specs,
+              stock: prod.stock,
+              categoryId: categoria.id,
+              isDeleted: false,
+            },
+          });
+          log.push(`UPDATED BY SKU FALLBACK: ${prod.name} (${prod.sku})`);
+          updated++;
+        } else {
+          await prisma.product.create({
+            data: {
+              name: prod.name,
+              sku: prod.sku,
+              price: prod.price,
+              images: prod.images,
+              description: prod.description,
+              specs: prod.specs,
+              stock: prod.stock,
+              categoryId: categoria.id,
+              isDeleted: false,
+            },
+          });
+          log.push(`INSERTED: ${prod.name} (${prod.sku})`);
+          inserted++;
+        }
       }
     }
 
-    // Limpiar cualquier otro producto con "calefactor" que NO sea de nuestro catálogo oficial BP
+    // 3. Limpiar TecnoMega o cualquier otro calefactor que NO sea de los SKUs oficiales de BP
     const validSkus = BP_CALEFACTORES.map((b) => b.sku);
     const nonBpCalefactores = await prisma.product.findMany({
       where: {
-        name: { contains: 'calefact', mode: 'insensitive' },
+        OR: [
+          { name: { contains: 'calefact', mode: 'insensitive' } },
+          { categoryId: categoria.id },
+        ],
         NOT: { sku: { in: validSkus } },
-        isDeleted: false,
       },
     });
 
@@ -357,7 +379,7 @@ export async function GET() {
         where: { id: badProd.id },
         data: { isDeleted: true },
       });
-      log.push(`CLEANED OLD/OTHER PRODUCT: ${badProd.name} ($${badProd.price})`);
+      log.push(`CLEANED: ${badProd.name} ($${badProd.price}) - SKU: ${badProd.sku || 'N/A'}`);
       cleaned++;
     }
 
