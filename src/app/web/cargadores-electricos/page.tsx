@@ -1,37 +1,9 @@
-import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 
 export const revalidate = 0; // Sin caché para actualizaciones inmediatas
 
-export default async function CargadoresElectricosPage() {
-  let evProducts: any[] = [];
-  try {
-    evProducts = await prisma.product.findMany({
-      where: {
-        OR: [
-          { sku: { startsWith: 'EV-' } },
-          { name: { contains: 'cargador', mode: 'insensitive' } },
-          { name: { contains: 'wallbox', mode: 'insensitive' } },
-          { name: { contains: 'eléctrico', mode: 'insensitive' } },
-        ],
-        isDeleted: false,
-      },
-      orderBy: { price: 'asc' },
-    });
-  } catch (err) {
-    console.error('Error fetching EV products:', err);
-    evProducts = [];
-  }
-
-  const getImage = (p: any, fallback: string): string => {
-    if (!p?.images) return fallback;
-    try {
-      const arr = JSON.parse(p.images);
-      return (Array.isArray(arr) && arr[0]) ? arr[0] : fallback;
-    } catch { return fallback; }
-  };
-
-  // Lista detallada con especificaciones técnicas completas para cada modelo
+export default function CargadoresElectricosPage() {
+  // Lista detallada de cargadores con las FOTOS REALES de descarga del usuario
   const models = [
     {
       sku: 'EV-GO-7KW',
@@ -40,7 +12,7 @@ export default async function CargadoresElectricosPage() {
       idealFor: 'Residencias, Casas & Garajes',
       price: 448.50,
       comparePrice: 520.00,
-      img: '/img/cargadores/ev_wallbox_7kw.png',
+      img: '/img/cargadores/ev_real_1.jpeg',
       features: [
         'Corriente Ajustable 8A a 32A desde botón táctil',
         'Pantalla OLED en vivo con kWh, tiempo y temperatura',
@@ -62,7 +34,7 @@ export default async function CargadoresElectricosPage() {
       idealFor: 'Casas de Lujo, Conjuntos & Edificios',
       price: 782.00,
       comparePrice: 890.00,
-      img: '/img/cargadores/ev_pulsar_11kw.png',
+      img: '/img/cargadores/ev_real_3.jpeg',
       features: [
         'Control total por App Móvil iOS/Android vía WiFi y Bluetooth',
         'Lector de Tarjetas RFID para acceso exclusivo de propietarios',
@@ -84,7 +56,7 @@ export default async function CargadoresElectricosPage() {
       idealFor: 'Hoteles, Plazas, Parqueaderos & Flotas',
       price: 1437.50,
       comparePrice: 1650.00,
-      img: '/img/cargadores/ev_ultra_22kw.png',
+      img: '/img/cargadores/ev_real_5.jpeg',
       features: [
         'Protocolo Abierto OCPP 1.6J para monetización y cobranza automática',
         'Pantalla Táctil HD de 7 pulgadas con instrucciones paso a paso',
@@ -106,7 +78,7 @@ export default async function CargadoresElectricosPage() {
       idealFor: 'Viajes, Emergencias & Enchufe 110V/220V',
       price: 276.00,
       comparePrice: 320.00,
-      img: '/img/cargadores/ev_travel_3kw.png',
+      img: '/img/cargadores/ev_real_6.jpeg',
       features: [
         'Enchúfalo en cualquier tomacorriente doméstico NEMA o industrial CEE',
         'Cable TPU de 6 metros resistente al pisado involuntario de ruedas',
@@ -199,13 +171,13 @@ export default async function CargadoresElectricosPage() {
             </div>
           </div>
 
-          {/* FOTO HERO / IMAGE PREVIEW */}
+          {/* FOTO HERO / REAL IMAGE */}
           <div className="relative flex items-center justify-center">
             <div className="absolute w-80 h-80 bg-emerald-500/20 rounded-full blur-[100px]" />
-            <div className="relative z-10 p-6 bg-white/5 border border-emerald-500/30 rounded-3xl backdrop-blur-md shadow-2xl overflow-hidden">
+            <div className="relative z-10 p-4 bg-white/5 border border-emerald-500/30 rounded-3xl backdrop-blur-md shadow-2xl overflow-hidden">
               <img
-                src="/img/cargadores/ev_wallbox_7kw.png"
-                alt="Cargador para Auto Eléctrico EV Wallbox Europa"
+                src="/img/cargadores/ev_real_1.jpeg"
+                alt="Cargador para Auto Eléctrico EV Wallbox Europa Real"
                 className="w-full max-w-md mx-auto object-cover rounded-2xl drop-shadow-[0_30px_60px_rgba(16,185,129,0.3)] hover:scale-105 transition-transform duration-700"
               />
             </div>
@@ -242,7 +214,7 @@ export default async function CargadoresElectricosPage() {
                   idx % 2 === 1 ? 'lg:grid-flow-dense' : ''
                 }`}
               >
-                {/* Imagen del Modelo */}
+                {/* Imagen Real del Modelo */}
                 <div className={`relative flex justify-center ${idx % 2 === 1 ? 'lg:col-start-2' : ''}`}>
                   <div className="absolute inset-0 bg-emerald-500/10 rounded-3xl blur-3xl" />
                   <div className="relative z-10 w-full h-80 md:h-96 rounded-3xl overflow-hidden border border-white/10 bg-black/40">
@@ -418,7 +390,7 @@ export default async function CargadoresElectricosPage() {
       </section>
 
       {/* ================= APARTADO DEDICADO A LA GARANTÍA EUROPEA ================= */}
-      <section className="py-24 px-6 bg-gradient-to-r from-[#06241b] via-[#071d18] to-[#051814] border-y border-emerald-500/20 relative overflow-hidden">
+      <section className="py-24 px-6 bg-gradient-to-r from-[#06241b] via-[#071d18] to-[#051814] border-t border-emerald-500/20 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-[120px] pointer-events-none" />
         <div className="max-w-5xl mx-auto relative z-10 text-center">
           <div className="inline-flex items-center gap-2 bg-emerald-500/20 border border-emerald-500/40 rounded-full px-5 py-2 text-emerald-300 text-xs font-bold uppercase tracking-[0.2em] mb-6">
@@ -464,51 +436,6 @@ export default async function CargadoresElectricosPage() {
           </div>
         </div>
       </section>
-
-      {/* ================= CATÁLOGO INFERIOR EN DB ================= */}
-      {Array.isArray(evProducts) && evProducts.length > 0 && (
-        <section className="py-20 px-6 bg-[#080808]">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-black text-white mb-3">
-                Listado en Base de Datos de Cargadores EV
-              </h2>
-              <p className="text-zinc-500 text-base">Todos los modelos con 15% de margen comercial aplicado en tiempo real.</p>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
-              {evProducts.map((p) => {
-                const img = getImage(p, '/img/cargadores/ev_wallbox_7kw.png');
-                const priceNum = (typeof p?.price === 'number') ? p.price : 0;
-                const compareNum = (typeof p?.compareAtPrice === 'number') ? p.compareAtPrice : 0;
-
-                return (
-                  <Link
-                    key={p.id}
-                    href={`/web/product/${p.id}`}
-                    className="group bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-emerald-500/30 rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 p-4"
-                  >
-                    <div className="aspect-square bg-black/40 rounded-xl flex items-center justify-center p-3 overflow-hidden mb-3">
-                      <img
-                        src={img}
-                        alt={p.name || 'Cargador EV'}
-                        className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-500"
-                      />
-                    </div>
-                    <h3 className="text-sm font-bold text-white line-clamp-2 mb-2 group-hover:text-emerald-400 transition-colors">
-                      {p.name}
-                    </h3>
-                    <div className="text-xs font-mono text-zinc-500 mb-2">SKU: {p.sku || 'N/A'}</div>
-                    <div className="text-emerald-400 font-black text-xl">${priceNum.toFixed(2)}</div>
-                    {compareNum > 0 && (
-                      <div className="text-xs text-zinc-500 line-through">${compareNum.toFixed(2)}</div>
-                    )}
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-      )}
     </div>
   );
 }
