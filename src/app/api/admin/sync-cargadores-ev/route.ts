@@ -9,8 +9,7 @@ const EV_CHARGERS_CATALOG = [
     sku: 'EV-GO-7KW',
     costPrice: 390.00,
     images: JSON.stringify([
-      'https://images.unsplash.com/photo-1563720223185-11003d516935?q=80&w=1000&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1647891941746-fe1d53ddc7a6?q=80&w=1000&auto=format&fit=crop'
+      '/img/cargadores/ev_wallbox_7kw.png'
     ]),
     description: `<h2>Cargador Portátil EV Wallbox Go 7.4 kW</h2>
 <p>Cargador portátil de alto rendimiento para vehículos eléctricos e híbridos enchufables. Corriente regulable de 8A a 32A con pantalla LCD integrada en tiempo real y certificación de seguridad europea TÜV Rheinland.</p>
@@ -41,8 +40,7 @@ const EV_CHARGERS_CATALOG = [
     sku: 'EV-PULSAR-11KW',
     costPrice: 680.00,
     images: JSON.stringify([
-      'https://images.unsplash.com/photo-1593941707882-a5bba14938c7?q=80&w=1000&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1563720223185-11003d516935?q=80&w=1000&auto=format&fit=crop'
+      '/img/cargadores/ev_pulsar_11kw.png'
     ]),
     description: `<h2>Estación Smart EV Pulsar Pro 11 kW</h2>
 <p>Wallbox inteligente residencial y comercial con conectividad WiFi/Bluetooth, control vía App móvil iOS/Android y balanceo dinámico de carga Power Boost para evitar sobrecargas en la red doméstica.</p>
@@ -72,8 +70,7 @@ const EV_CHARGERS_CATALOG = [
     sku: 'EV-ULTRA-22KW',
     costPrice: 1250.00,
     images: JSON.stringify([
-      'https://images.unsplash.com/photo-1647891941746-fe1d53ddc7a6?q=80&w=1000&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1593941707882-a5bba14938c7?q=80&w=1000&auto=format&fit=crop'
+      '/img/cargadores/ev_ultra_22kw.png'
     ]),
     description: `<h2>Estación Comercial EV Ultra Fast 22 kW</h2>
 <p>Estación de carga pesada diseñada para hoteles, centros comerciales, flotas corporativas y parqueaderos públicos. Equipada con protocolo abierto OCPP 1.6J para monetización y cobranza automática de carga.</p>
@@ -103,7 +100,7 @@ const EV_CHARGERS_CATALOG = [
     sku: 'EV-TRAVEL-3.7KW',
     costPrice: 240.00,
     images: JSON.stringify([
-      'https://images.unsplash.com/photo-1563720223185-11003d516935?q=80&w=1000&auto=format&fit=crop'
+      '/img/cargadores/ev_travel_3kw.png'
     ]),
     description: `<h2>Cargador de Viaje Compact EV Travel 3.7 kW</h2>
 <p>El compañero de viaje indispensable. Conéctalo en cualquier tomacorriente doméstico de 110V o 220V para recargar tu vehículo en cualquier emergencia durante tus viajes.</p>

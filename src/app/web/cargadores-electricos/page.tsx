@@ -40,7 +40,7 @@ export default async function CargadoresElectricosPage() {
       idealFor: 'Residencias, Casas & Garajes',
       price: 448.50,
       comparePrice: 520.00,
-      img: 'https://images.unsplash.com/photo-1563720223185-11003d516935?q=80&w=1000&auto=format&fit=crop',
+      img: '/img/cargadores/ev_wallbox_7kw.png',
       features: [
         'Corriente Ajustable 8A a 32A desde botón táctil',
         'Pantalla OLED en vivo con kWh, tiempo y temperatura',
@@ -62,7 +62,7 @@ export default async function CargadoresElectricosPage() {
       idealFor: 'Casas de Lujo, Conjuntos & Edificios',
       price: 782.00,
       comparePrice: 890.00,
-      img: 'https://images.unsplash.com/photo-1593941707882-a5bba14938c7?q=80&w=1000&auto=format&fit=crop',
+      img: '/img/cargadores/ev_pulsar_11kw.png',
       features: [
         'Control total por App Móvil iOS/Android vía WiFi y Bluetooth',
         'Lector de Tarjetas RFID para acceso exclusivo de propietarios',
@@ -84,7 +84,7 @@ export default async function CargadoresElectricosPage() {
       idealFor: 'Hoteles, Plazas, Parqueaderos & Flotas',
       price: 1437.50,
       comparePrice: 1650.00,
-      img: 'https://images.unsplash.com/photo-1647891941746-fe1d53ddc7a6?q=80&w=1000&auto=format&fit=crop',
+      img: '/img/cargadores/ev_ultra_22kw.png',
       features: [
         'Protocolo Abierto OCPP 1.6J para monetización y cobranza automática',
         'Pantalla Táctil HD de 7 pulgadas con instrucciones paso a paso',
@@ -106,7 +106,7 @@ export default async function CargadoresElectricosPage() {
       idealFor: 'Viajes, Emergencias & Enchufe 110V/220V',
       price: 276.00,
       comparePrice: 320.00,
-      img: 'https://images.unsplash.com/photo-1563720223185-11003d516935?q=80&w=1000&auto=format&fit=crop',
+      img: '/img/cargadores/ev_travel_3kw.png',
       features: [
         'Enchúfalo en cualquier tomacorriente doméstico NEMA o industrial CEE',
         'Cable TPU de 6 metros resistente al pisado involuntario de ruedas',
@@ -204,7 +204,7 @@ export default async function CargadoresElectricosPage() {
             <div className="absolute w-80 h-80 bg-emerald-500/20 rounded-full blur-[100px]" />
             <div className="relative z-10 p-6 bg-white/5 border border-emerald-500/30 rounded-3xl backdrop-blur-md shadow-2xl overflow-hidden">
               <img
-                src="https://images.unsplash.com/photo-1593941707882-a5bba14938c7?q=80&w=1000&auto=format&fit=crop"
+                src="/img/cargadores/ev_wallbox_7kw.png"
                 alt="Cargador para Auto Eléctrico EV Wallbox Europa"
                 className="w-full max-w-md mx-auto object-cover rounded-2xl drop-shadow-[0_30px_60px_rgba(16,185,129,0.3)] hover:scale-105 transition-transform duration-700"
               />
@@ -477,7 +477,7 @@ export default async function CargadoresElectricosPage() {
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
               {evProducts.map((p) => {
-                const img = getImage(p, 'https://images.unsplash.com/photo-1593941707882-a5bba14938c7?q=80&w=1000&auto=format&fit=crop');
+                const img = getImage(p, '/img/cargadores/ev_wallbox_7kw.png');
                 const priceNum = (typeof p?.price === 'number') ? p.price : 0;
                 const compareNum = (typeof p?.compareAtPrice === 'number') ? p.compareAtPrice : 0;
 
