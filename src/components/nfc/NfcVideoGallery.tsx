@@ -4,22 +4,22 @@ import { motion } from 'framer-motion';
 export default function NfcVideoGallery() {
   const videos = [
     {
-      src: 'https://assets.mixkit.co/videos/preview/mixkit-woman-holding-a-smartphone-in-her-hands-41477-large.mp4',
-      poster: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=800',
-      title: 'Demostración NFC en Vivo (Chica Ejecutivo)',
-      desc: 'Transferencia instantánea de datos y catálogo digital con un solo toque.'
+      src: '/nfc/nfc-1.mp4',
+      poster: '/nfc/cards.jpg',
+      title: 'Networking Inteligente',
+      desc: 'Compartir contactos con estilo y de manera instantánea.'
     },
     {
-      src: 'https://assets.mixkit.co/videos/preview/mixkit-hands-holding-a-smart-card-or-tag-41198-large.mp4',
-      poster: 'https://images.unsplash.com/photo-1556742049-0a6756598c8c?q=80&w=800',
+      src: '/nfc/nfc-2.mp4',
+      poster: '/nfc/acrylics.jpg',
       title: 'Acrílicos Inteligentes & Displays',
-      desc: 'Cobros y reseñas de Google instantáneas en mostrador.'
+      desc: 'Cobros y reseñas de Google instantáneas directamente en mostrador.'
     },
     {
-      src: 'https://assets.mixkit.co/videos/preview/mixkit-woman-using-a-contactless-payment-system-41478-large.mp4',
-      poster: 'https://images.unsplash.com/photo-1556740738-b6a63e27c4df?q=80&w=800',
-      title: 'Experiencia VIP de Redes',
-      desc: 'Conexión social inmediata a Instagram, TikTok y WhatsApp.'
+      src: '/nfc/nfc-3.mp4',
+      poster: '/nfc/stickers.jpg',
+      title: 'Accesos y Membresías VIP',
+      desc: 'Acceso seguro y rápido sin fricción física ni tarjetas de plástico.'
     }
   ];
 

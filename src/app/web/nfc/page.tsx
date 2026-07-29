@@ -67,6 +67,49 @@ export default function NFCLandingPage() {
       {/* 2. Galería Cinemática de Videos */}
       <NfcVideoGallery />
 
+      {/* Explicación Técnica NFC */}
+      <section className="py-24 px-6 max-w-7xl mx-auto bg-white border-t border-slate-100">
+        <div className="grid md:grid-cols-2 gap-16 items-center">
+          <motion.div 
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            className="space-y-6"
+          >
+            <div className="inline-flex items-center space-x-2 px-4 py-1.5 bg-blue-50 border border-blue-100 rounded-full text-blue-600 font-mono text-xs font-bold uppercase tracking-wider">
+              <span>Tecnología de Radiofrecuencia</span>
+            </div>
+            <h2 className="text-4xl md:text-5xl font-black text-slate-900 leading-tight">
+              ¿Qué es el NFC y cómo lo lee el celular?
+            </h2>
+            <p className="text-lg text-slate-600 leading-relaxed">
+              NFC (Near Field Communication) es una tecnología de comunicación inalámbrica de corto alcance. Funciona mediante inducción electromagnética pasiva: tu smartphone genera un pequeño campo electromagnético que "despierta" al chip NFC cuando lo acercas a menos de 4 centímetros.
+            </p>
+            <p className="text-lg text-slate-600 leading-relaxed">
+              No requiere baterías en la tarjeta, no necesita emparejamiento por Bluetooth, ni descargar aplicaciones. Es literalmente inmediato: el cliente acerca el teléfono e instantáneamente la información se despliega en su pantalla de forma nativa.
+            </p>
+          </motion.div>
+          <motion.div 
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            className="relative rounded-[2.5rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.08)] border border-slate-100 bg-white p-3"
+          >
+            <video 
+              src="/nfc/nfc-long.mp4" 
+              autoPlay 
+              muted 
+              loop 
+              playsInline
+              className="w-full h-auto rounded-[2rem] shadow-inner object-cover"
+            />
+            <div className="absolute top-6 right-6 px-4 py-2 bg-slate-900/80 backdrop-blur-md rounded-full text-white font-mono text-[10px] uppercase tracking-wider font-bold">
+              Demostración Completa 🎬
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
       {/* 3. Catálogo de Productos PRO */}
       <div className="px-6 relative z-20 -mt-10">
         <NfcProShowcase />
@@ -104,6 +147,76 @@ export default function NFCLandingPage() {
 
       {/* 14. Preguntas Frecuentes FAQ */}
       <NfcFAQ />
+
+      {/* Galería Adicional de Demostración */}
+      <section id="demo" className="py-24 px-6 max-w-7xl mx-auto border-t border-slate-100">
+        <div className="text-center mb-16 space-y-4">
+          <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">
+            Más Ejemplos <span className="text-blue-600">en Acción</span>
+          </h2>
+          <p className="text-lg text-slate-500 max-w-2xl mx-auto font-light">
+            Explora más formas en las que la tecnología NFC optimiza interacciones físicas y digitales.
+          </p>
+        </div>
+        <div className="grid md:grid-cols-3 gap-8">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="rounded-[2.5rem] overflow-hidden shadow-xl border border-slate-200 bg-white p-3 hover:scale-[1.02] transition-transform duration-300"
+          >
+            <video 
+              onClick={(e) => { e.currentTarget.muted = !e.currentTarget.muted; }} 
+              style={{ cursor: "pointer" }} 
+              title="Click para activar/desactivar volumen" 
+              src="/nfc/nfc-4.mp4" 
+              autoPlay 
+              muted 
+              loop 
+              playsInline 
+              className="w-full h-auto rounded-[2rem]" 
+            />
+          </motion.div>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+            className="rounded-[2.5rem] overflow-hidden shadow-xl border border-slate-200 bg-white p-3 hover:scale-[1.02] transition-transform duration-300"
+          >
+            <video 
+              onClick={(e) => { e.currentTarget.muted = !e.currentTarget.muted; }} 
+              style={{ cursor: "pointer" }} 
+              title="Click para activar/desactivar volumen" 
+              src="/nfc/nfc-5.mp4" 
+              autoPlay 
+              muted 
+              loop 
+              playsInline 
+              className="w-full h-auto rounded-[2rem]" 
+            />
+          </motion.div>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.4 }}
+            className="rounded-[2.5rem] overflow-hidden shadow-xl border border-slate-200 bg-white p-3 hover:scale-[1.02] transition-transform duration-300"
+          >
+            <video 
+              onClick={(e) => { e.currentTarget.muted = !e.currentTarget.muted; }} 
+              style={{ cursor: "pointer" }} 
+              title="Click para activar/desactivar volumen" 
+              src="/nfc/nfc-6.mp4" 
+              autoPlay 
+              muted 
+              loop 
+              playsInline 
+              className="w-full h-auto rounded-[2rem]" 
+            />
+          </motion.div>
+        </div>
+      </section>
 
       {/* Recuadro Destacado de Acompañamiento (CTA Final) */}
       <section className="py-24 px-6 max-w-5xl mx-auto">
