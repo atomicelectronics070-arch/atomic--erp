@@ -12,8 +12,8 @@ const BP_CALEFACTORES_RAW = [
     sku: 'BPA0627',
     costPrice: 199.99,
     images: JSON.stringify([
-      'https://bpecuador.com/wp-content/uploads/2024/09/Calefactor-1.png',
-      'https://bpecuador.com/wp-content/uploads/2024/09/Calefactor-1-300x300.png'
+      'https://bpecuador.com/wp-content/uploads/2025/05/BPA0627-1.webp',
+      'https://bpecuador.com/wp-content/uploads/2025/05/BPA0627-1-600x600.webp'
     ]),
     description: `<h2>Calefactor de Ambientes Tipo Cilindro Base Black</h2>
 <p>Calefactor a gas de diseño cilíndrico con acabado negro martillado de alta durabilidad. Ideal para terrazas, patios, jardines y espacios semi-abiertos. Combina funcionalidad y estética industrial para ambientes modernos.</p>
@@ -285,7 +285,7 @@ export async function GET() {
     for (const rawProd of BP_CALEFACTORES_RAW) {
       // Precio Venta al Público con +15% de margen comercial
       const salePrice = Math.round(rawProd.costPrice * (1 + MARGEN) * 100) / 100;
-      const compareAt = Math.round(salePrice * 1.15 * 100) / 100; // Precio tachado de referencia
+      const compareAt = Math.round(salePrice * 1.15 * 100) / 100;
 
       let existing = await prisma.product.findFirst({
         where: { sku: rawProd.sku },

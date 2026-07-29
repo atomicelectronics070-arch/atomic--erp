@@ -20,21 +20,20 @@ export default async function CalefactorCilindroBLACKPage() {
   });
 
   // Base $199.99 + 15% margen = $229.99
-  const baseCost = 199.99;
-  const marginPrice = dbProduct?.price && dbProduct.price > 200 ? dbProduct.price : Math.round(baseCost * 1.15 * 100) / 100;
-  const comparePrice = Math.round(marginPrice * 1.15 * 100) / 100;
+  const salePrice = dbProduct?.price && dbProduct.price > 200 ? dbProduct.price : 229.99;
+  const comparePrice = dbProduct?.compareAtPrice || 269.99;
 
   const heroProduct = {
     id: dbProduct?.id || 'bpa0627-default',
-    name: dbProduct?.name || 'Calefactor de Ambientes Tipo Cilindro Base Black',
+    name: 'Calefactor de Ambientes Tipo Cilindro Base Black',
     sku: 'BPA0627',
-    price: marginPrice,
+    price: salePrice,
     compareAtPrice: comparePrice,
     stock: dbProduct?.stock || 10,
   };
 
-  // Imagen principal oficial
-  const heroImg = 'https://bpecuador.com/wp-content/uploads/2024/09/Calefactor-1.png';
+  // Imagen oficial exacta del Cilindro Base Black (BPA0627-1.webp)
+  const heroImg = 'https://bpecuador.com/wp-content/uploads/2025/05/BPA0627-1.webp';
 
   // SKUs oficiales BP Ecuador
   const validSkus = [
@@ -125,7 +124,7 @@ export default async function CalefactorCilindroBLACKPage() {
             {/* Precio + Margen + CTA */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
               <div>
-                <div className="text-xs text-zinc-500 uppercase tracking-widest mb-1">Precio Venta (Margen 15%)</div>
+                <div className="text-xs text-zinc-500 uppercase tracking-widest mb-1">Precio Promocional (15% Margen)</div>
                 <div className="flex items-baseline gap-3">
                   <span className="text-5xl font-black text-white">
                     ${heroProduct.price.toFixed(2)}
@@ -164,7 +163,7 @@ export default async function CalefactorCilindroBLACKPage() {
             </div>
           </div>
 
-          {/* IMAGEN OFICIAL DEL PRODUCTO */}
+          {/* IMAGEN OFICIAL EXACTA DEL PRODUCTO (BPA0627-1.webp) */}
           <div className="relative flex items-center justify-center">
             <div className="absolute w-80 h-80 bg-orange-500/15 rounded-full blur-[80px]" />
             <div className="relative z-10 p-6 bg-white/5 border border-white/10 rounded-3xl backdrop-blur-sm">
