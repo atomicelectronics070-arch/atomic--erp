@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 
-// Force clean Vercel build v2
 const prisma = new PrismaClient();
 
 // Margen comercial asignado: 15% sobre precio base del proveedor BP Ecuador
@@ -11,7 +10,7 @@ const BP_CALEFACTORES_RAW = [
   {
     name: 'Calefactor de Ambientes Tipo Cilindro Base Black',
     sku: 'BPA0627',
-    costPrice: 199.99,
+    bpCost: 199.99,
     images: JSON.stringify([
       'https://bpecuador.com/wp-content/uploads/2025/05/BPA0627-1.webp',
       'https://bpecuador.com/wp-content/uploads/2025/05/BPA0627-1-600x600.webp'
@@ -60,7 +59,7 @@ const BP_CALEFACTORES_RAW = [
   {
     name: 'Calefactor de Ambientes Tipo Cilindro Alto Black',
     sku: 'BPA0629',
-    costPrice: 259.99,
+    bpCost: 259.99,
     images: JSON.stringify([
       'https://bpecuador.com/wp-content/uploads/2025/05/BPA0629-300x300.webp'
     ]),
@@ -80,7 +79,7 @@ const BP_CALEFACTORES_RAW = [
   {
     name: 'Calefactor de Ambientes Tipo Cuadrado Alto Black',
     sku: 'BPA0628',
-    costPrice: 359.99,
+    bpCost: 359.99,
     images: JSON.stringify([
       'https://bpecuador.com/wp-content/uploads/2024/11/BP04211-a-300x300.png'
     ]),
@@ -99,7 +98,7 @@ const BP_CALEFACTORES_RAW = [
   {
     name: 'Calefactor de Ambientes Tipo Hongo',
     sku: 'BPA0354',
-    costPrice: 199.99,
+    bpCost: 199.99,
     images: JSON.stringify([
       'https://bpecuador.com/wp-content/uploads/2024/09/CALENTADOR-HONGO2.png'
     ]),
@@ -118,7 +117,7 @@ const BP_CALEFACTORES_RAW = [
   {
     name: 'Calefactor de Ambientes Tipo Hongo Ratan',
     sku: 'BPA0355',
-    costPrice: 209.99,
+    bpCost: 209.99,
     images: JSON.stringify([
       'https://bpecuador.com/wp-content/uploads/2024/11/BPA0355-300x300.png'
     ]),
@@ -137,7 +136,7 @@ const BP_CALEFACTORES_RAW = [
   {
     name: 'Calefactor de Ambientes Tipo Hongo Ratan Black',
     sku: 'BPA0801',
-    costPrice: 239.99,
+    bpCost: 239.99,
     images: JSON.stringify([
       'https://bpecuador.com/wp-content/uploads/2025/10/BPA0801-300x300.webp'
     ]),
@@ -156,7 +155,7 @@ const BP_CALEFACTORES_RAW = [
   {
     name: 'Calefactor de Ambientes Tipo Piramide Ratan',
     sku: 'BPA0352',
-    costPrice: 359.99,
+    bpCost: 359.99,
     images: JSON.stringify([
       'https://bpecuador.com/wp-content/uploads/2024/11/BPA0352-a-300x300.png'
     ]),
@@ -175,7 +174,7 @@ const BP_CALEFACTORES_RAW = [
   {
     name: 'Calefactor de Ambientes Tipo Piramide Ratan Black',
     sku: 'BPA0800',
-    costPrice: 369.99,
+    bpCost: 369.99,
     images: JSON.stringify([
       'https://bpecuador.com/wp-content/uploads/2026/03/BPA0800-300x300.webp'
     ]),
@@ -194,7 +193,7 @@ const BP_CALEFACTORES_RAW = [
   {
     name: 'Calefactor de Ambientes Tipo Piramide STAINLESS STEEL',
     sku: 'BPA0353',
-    costPrice: 329.99,
+    bpCost: 329.99,
     images: JSON.stringify([
       'https://bpecuador.com/wp-content/uploads/2025/03/BP04213-1x1-1-300x300.png'
     ]),
@@ -213,7 +212,7 @@ const BP_CALEFACTORES_RAW = [
   {
     name: 'Calefactor de Ambiente Tipo Pirámide',
     sku: 'BPA0351',
-    costPrice: 299.99,
+    bpCost: 299.99,
     images: JSON.stringify([
       'https://bpecuador.com/wp-content/uploads/2025/03/BP04212-1x1-1-300x300.png'
     ]),
@@ -231,7 +230,7 @@ const BP_CALEFACTORES_RAW = [
   {
     name: 'Calefactor de Ambientes Cuadrado Ratan',
     sku: 'BPA0356',
-    costPrice: 289.99,
+    bpCost: 289.99,
     images: JSON.stringify([
       'https://bpecuador.com/wp-content/uploads/2025/05/BPA0628-300x300.webp'
     ]),
@@ -250,7 +249,7 @@ const BP_CALEFACTORES_RAW = [
   {
     name: 'Calefactor de Ambientes Rectangular Ratan',
     sku: 'BPA0357',
-    costPrice: 349.99,
+    bpCost: 349.99,
     images: JSON.stringify([
       'https://bpecuador.com/wp-content/uploads/2025/05/BPA0629-300x300.webp'
     ]),
@@ -285,7 +284,7 @@ export async function GET() {
 
     for (const rawProd of BP_CALEFACTORES_RAW) {
       // Precio Venta al Público con +15% de margen comercial
-      const salePrice = Math.round(rawProd.costPrice * (1 + MARGEN) * 100) / 100;
+      const salePrice = Math.round(rawProd.bpCost * (1 + MARGEN) * 100) / 100;
       const compareAt = Math.round(salePrice * 1.15 * 100) / 100;
 
       let existing = await prisma.product.findFirst({
@@ -312,7 +311,7 @@ export async function GET() {
           where: { id: existing.id },
           data: productData,
         });
-        log.push(`UPDATED (Margen 15%): ${rawProd.name} (Costo: $${rawProd.costPrice} -> Venta: $${salePrice})`);
+        log.push(`UPDATED (Margen 15%): ${rawProd.name} (Costo: $${rawProd.bpCost} -> Venta: $${salePrice})`);
         updated++;
       } else {
         await prisma.product.create({
