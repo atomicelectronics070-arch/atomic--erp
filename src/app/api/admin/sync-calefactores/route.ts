@@ -298,7 +298,6 @@ export async function GET() {
         sku: rawProd.sku,
         price: salePrice,
         compareAtPrice: compareAt,
-        costPrice: rawProd.costPrice,
         images: rawProd.images,
         description: rawProd.description,
         specs: rawProd.specs,
