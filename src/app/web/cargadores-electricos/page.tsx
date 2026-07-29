@@ -4,19 +4,24 @@ import Link from 'next/link';
 export const revalidate = 0; // Sin caché para actualizaciones inmediatas
 
 export default async function CargadoresElectricosPage() {
-  // Consultar productos de la categoría Cargadores EV en la base de datos
-  const evProducts = await prisma.product.findMany({
-    where: {
-      OR: [
-        { sku: { startsWith: 'EV-' } },
-        { name: { contains: 'cargador', mode: 'insensitive' } },
-        { name: { contains: 'wallbox', mode: 'insensitive' } },
-        { name: { contains: 'eléctrico', mode: 'insensitive' } },
-      ],
-      isDeleted: false,
-    },
-    orderBy: { price: 'asc' },
-  });
+  let evProducts: any[] = [];
+  try {
+    evProducts = await prisma.product.findMany({
+      where: {
+        OR: [
+          { sku: { startsWith: 'EV-' } },
+          { name: { contains: 'cargador', mode: 'insensitive' } },
+          { name: { contains: 'wallbox', mode: 'insensitive' } },
+          { name: { contains: 'eléctrico', mode: 'insensitive' } },
+        ],
+        isDeleted: false,
+      },
+      orderBy: { price: 'asc' },
+    });
+  } catch (err) {
+    console.error('Error fetching EV products:', err);
+    evProducts = [];
+  }
 
   const getImage = (p: any, fallback: string): string => {
     if (!p?.images) return fallback;
@@ -379,7 +384,7 @@ export default async function CargadoresElectricosPage() {
               {
                 icon: '🛡️',
                 title: 'Protección IP65 / IP66 e IK10',
-                desc: 'Nuestros equipos soportan el clima extremo ecuatoriano: lluvias torrenciales, humedad de costa, frío de sierra y caídas accidentales con certificación anti-impacto IK10.'
+                desc: 'Nuestros equipos soportan el clima extremo ecuatoriano: lluvias torrenciales, humedad de costa, frío de sierra y caídas accidental con certificación anti-impacto IK10.'
               },
               {
                 icon: '⚖️',
