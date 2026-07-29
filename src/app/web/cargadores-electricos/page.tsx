@@ -27,7 +27,7 @@ export default async function CargadoresElectricosPage() {
     if (!p?.images) return fallback;
     try {
       const arr = JSON.parse(p.images);
-      return arr[0] || fallback;
+      return (Array.isArray(arr) && arr[0]) ? arr[0] : fallback;
     } catch { return fallback; }
   };
 
@@ -293,14 +293,14 @@ export default async function CargadoresElectricosPage() {
                     <div>
                       <div className="text-[10px] text-zinc-500 uppercase tracking-widest">Precio Venta (15% Margen)</div>
                       <div className="flex items-baseline gap-2">
-                        <span className="text-3xl font-black text-white">${m.price.toFixed(2)}</span>
-                        <span className="text-sm text-zinc-600 line-through">${m.comparePrice.toFixed(2)}</span>
+                        <span className="text-3xl font-black text-white">${(m.price ?? 0).toFixed(2)}</span>
+                        <span className="text-sm text-zinc-600 line-through">${(m.comparePrice ?? 0).toFixed(2)}</span>
                       </div>
                       <div className="text-[10px] text-emerald-400 font-semibold">IVA Incluido · Incluye Margen 15%</div>
                     </div>
 
                     <a
-                      href={`https://wa.me/593969043453?text=Hola%2C%20quiero%20cotizar%20el%20modelo%20*${encodeURIComponent(m.title)}*%20(SKU%3A%20${m.sku})%20al%20precio%20de%20%24${m.price.toFixed(2)}`}
+                      href={`https://wa.me/593969043453?text=Hola%2C%20quiero%20cotizar%20el%20modelo%20*${encodeURIComponent(m.title)}*%20(SKU%3A%20${m.sku})%20al%20precio%20de%20%24${(m.price ?? 0).toFixed(2)}`}
                       target="_blank"
                       rel="noreferrer"
                       className="px-6 py-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold text-sm rounded-xl shadow-lg hover:shadow-emerald-500/30 transition-all flex items-center gap-2"
@@ -384,7 +384,7 @@ export default async function CargadoresElectricosPage() {
               {
                 icon: '🛡️',
                 title: 'Protección IP65 / IP66 e IK10',
-                desc: 'Nuestros equipos soportan el clima extremo ecuatoriano: lluvias torrenciales, humedad de costa, frío de sierra y caídas accidental con certificación anti-impacto IK10.'
+                desc: 'Nuestros equipos soportan el clima extremo ecuatoriano: lluvias torrenciales, humedad de costa, frío de sierra y caídas accidentales con certificación anti-impacto IK10.'
               },
               {
                 icon: '⚖️',
@@ -466,7 +466,7 @@ export default async function CargadoresElectricosPage() {
       </section>
 
       {/* ================= CATÁLOGO INFERIOR EN DB ================= */}
-      {evProducts.length > 0 && (
+      {Array.isArray(evProducts) && evProducts.length > 0 && (
         <section className="py-20 px-6 bg-[#080808]">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-12">
@@ -478,6 +478,9 @@ export default async function CargadoresElectricosPage() {
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
               {evProducts.map((p) => {
                 const img = getImage(p, 'https://images.unsplash.com/photo-1593941707882-a5bba14938c7?q=80&w=1000&auto=format&fit=crop');
+                const priceNum = (typeof p?.price === 'number') ? p.price : 0;
+                const compareNum = (typeof p?.compareAtPrice === 'number') ? p.compareAtPrice : 0;
+
                 return (
                   <Link
                     key={p.id}
@@ -487,7 +490,7 @@ export default async function CargadoresElectricosPage() {
                     <div className="aspect-square bg-black/40 rounded-xl flex items-center justify-center p-3 overflow-hidden mb-3">
                       <img
                         src={img}
-                        alt={p.name}
+                        alt={p.name || 'Cargador EV'}
                         className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-500"
                       />
                     </div>
@@ -495,9 +498,9 @@ export default async function CargadoresElectricosPage() {
                       {p.name}
                     </h3>
                     <div className="text-xs font-mono text-zinc-500 mb-2">SKU: {p.sku || 'N/A'}</div>
-                    <div className="text-emerald-400 font-black text-xl">${p.price.toFixed(2)}</div>
-                    {p.compareAtPrice && (
-                      <div className="text-xs text-zinc-500 line-through">${p.compareAtPrice.toFixed(2)}</div>
+                    <div className="text-emerald-400 font-black text-xl">${priceNum.toFixed(2)}</div>
+                    {compareNum > 0 && (
+                      <div className="text-xs text-zinc-500 line-through">${compareNum.toFixed(2)}</div>
                     )}
                   </Link>
                 );
