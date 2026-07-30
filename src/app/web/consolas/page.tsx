@@ -154,7 +154,7 @@ export default function ConsolasPage() {
                                     <img src="/assets/consolas/consola2.jpeg" alt="PS4 Slim Open Box" className="w-full h-full object-cover" />
                                 </div>
                                 <div className="rounded-xl overflow-hidden border border-slate-800 bg-slate-950 aspect-video">
-                                    <img src="/assets/consolas/consola3.jpeg" alt="PS5 Slim Nueva" className="w-full h-full object-cover" />
+                                    <img src="/assets/consolas/ps5_slim.jpg" alt="PS5 Slim Nueva" className="w-full h-full object-cover" />
                                 </div>
                             </div>
                         </div>
@@ -265,7 +265,7 @@ export default function ConsolasPage() {
                             </div>
 
                             <div className="rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 h-56 relative">
-                                <img src="/assets/consolas/consola3.jpeg" alt="PS5 Slim Nueva Bajo Pedido" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                        <img src="/assets/consolas/ps5_slim.jpg" alt="PS5 Slim Nueva Bajo Pedido" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                                 <div className="absolute top-3 right-3 px-3 py-1 bg-indigo-500/90 text-white font-black text-[10px] font-mono uppercase rounded-full shadow-lg">
                                     🚀 PEDIDO EXPRESS 24H
                                 </div>
