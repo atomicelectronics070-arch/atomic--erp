@@ -7,46 +7,14 @@ export default function NFCLandingPage() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 font-sans pb-24">
       
-      {/* Hero Section */}
-      <section className="relative w-full h-[80vh] flex items-center justify-center overflow-hidden bg-white">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-100 to-indigo-50 opacity-70 z-0"></div>
-        <div className="z-10 text-center px-4 max-w-4xl mx-auto">
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-5xl md:text-7xl font-extrabold tracking-tight text-slate-900 mb-6"
-          >
-            El Futuro a un <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Toque</span> de Distancia
-          </motion.h1>
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="text-xl md:text-2xl text-slate-600 mb-10"
-          >
-            Revoluciona la interacción de tus clientes con tecnología NFC de última generación.
-          </motion.p>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-          >
-            <a href="#demo" className="px-8 py-4 bg-blue-600 text-white rounded-full font-semibold text-lg hover:bg-blue-700 hover:shadow-xl transition-all hover:scale-105 inline-block">
-              Descubre Cómo Funciona
-            </a>
-          </motion.div>
-        </div>
-        
-        {/* Decoraciones de fondo */}
-        <div className="absolute top-1/4 left-10 w-32 h-32 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
-        <div className="absolute top-1/3 right-10 w-48 h-48 bg-indigo-400 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
-      </section>
-
-      {/* Qué es NFC */}
-      <section className="py-20 px-6 max-w-7xl mx-auto">
+      {/* Qué es NFC (Sección de la Señorita - al Inicio de la Página) */}
+      <section className="pt-28 pb-20 px-6 max-w-7xl mx-auto">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div>
-            <h2 className="text-4xl font-bold text-slate-900 mb-6">¿Qué es el NFC y cómo lo lee el celular?</h2>
+            <div className="inline-flex items-center space-x-2 px-4 py-1.5 bg-blue-50 border border-blue-100 rounded-full text-blue-600 font-mono text-xs font-bold uppercase tracking-wider mb-6">
+              <span>Tecnología de Radiofrecuencia</span>
+            </div>
+            <h1 className="text-4xl md:text-5xl font-black text-slate-900 mb-6 leading-tight">¿Qué es el NFC y cómo lo lee el celular?</h1>
             <p className="text-lg text-slate-600 mb-6 leading-relaxed">
               NFC (Near Field Communication) es una tecnología de comunicación inalámbrica de corto alcance. Funciona mediante inducción magnética: tu smartphone genera un pequeño campo electromagnético que "despierta" al chip NFC cuando lo acercas a menos de 4 centímetros. 
             </p>
@@ -65,6 +33,41 @@ export default function NFCLandingPage() {
             />
           </div>
         </div>
+      </section>
+
+      {/* Hero Section (Sección Secundaria de Conversión) */}
+      <section className="relative w-full h-[60vh] flex items-center justify-center overflow-hidden bg-white border-y border-slate-100">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-100 to-indigo-50 opacity-70 z-0"></div>
+        <div className="z-10 text-center px-4 max-w-4xl mx-auto">
+          <motion.h2 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-4xl md:text-6xl font-extrabold tracking-tight text-slate-900 mb-6"
+          >
+            El Futuro a un <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Toque</span> de Distancia
+          </motion.h2>
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="text-lg md:text-xl text-slate-600 mb-10"
+          >
+            Revoluciona la interacción de tus clientes con tecnología NFC de última generación.
+          </motion.p>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+          >
+            <a href="#demo" className="px-8 py-4 bg-blue-600 text-white rounded-full font-semibold text-base hover:bg-blue-700 hover:shadow-xl transition-all hover:scale-105 inline-block">
+              Descubre Cómo Funciona
+            </a>
+          </motion.div>
+        </div>
+        
+        {/* Decoraciones de fondo */}
+        <div className="absolute top-1/4 left-10 w-32 h-32 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
+        <div className="absolute top-1/3 right-10 w-48 h-48 bg-indigo-400 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
       </section>
 
       {/* Beneficios Económicos */}
