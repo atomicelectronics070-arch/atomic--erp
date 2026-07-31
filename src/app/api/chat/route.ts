@@ -131,51 +131,106 @@ ${quoteContext || 'Sin cotizaciones generadas recientemente.'}
 ${basePrompt}
 `.trim()
 
-        // To use Gemini REST API directly without installing extra SDKs
-        const GOOGLE_API_KEY = process.env.GOOGLE_GEMINI_API_KEY || process.env.GEMINI_API_KEY
-
-        if (!GOOGLE_API_KEY) {
-            return NextResponse.json({
-                text: "El sistema de IA está configurado, pero falta la clave de API (GOOGLE_GEMINI_API_KEY) en el entorno. Por favor, solicite a soporte que la agregue para habilitar las respuestas reales."
-            })
-        }
+        const GOOGLE_API_KEY = process.env.GOOGLE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
 
         interface ChatMessage { role: 'user' | 'model' | 'assistant'; content: string; }
 
-        const payload = {
-            system_instruction: {
-                parts: [{ text: systemPrompt }]
-            },
-            contents: (messages as ChatMessage[]).map((msg) => ({
-                role: msg.role === 'user' ? 'user' : 'model',
-                parts: [{ text: msg.content }]
-            })),
-            generationConfig: {
-                temperature: 0.7,
-                maxOutputTokens: 1000,
+        let replyText = "";
+        let success = false;
+
+        // Try Gemini first if key exists
+        if (GOOGLE_API_KEY) {
+            try {
+                const payload = {
+                    system_instruction: {
+                        parts: [{ text: systemPrompt }]
+                    },
+                    contents: (messages as ChatMessage[]).map((msg) => ({
+                        role: msg.role === 'user' ? 'user' : 'model',
+                        parts: [{ text: msg.content }]
+                    })),
+                    generationConfig: {
+                        temperature: 0.7,
+                        maxOutputTokens: 1000,
+                    }
+                };
+
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GOOGLE_API_KEY}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    replyText = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+                    if (replyText) success = true;
+                } else {
+                    const errData = await response.json();
+                    console.error("Gemini API returned error code:", response.status, errData);
+                }
+            } catch (geminiError) {
+                console.error("Gemini call caught exception:", geminiError);
             }
         }
 
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GOOGLE_API_KEY}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        })
+        // Fallback to NVIDIA NIM if Gemini failed or key wasn't present
+        if (!success) {
+            console.log("Attempting fallback to NVIDIA NIM...");
+            const nvidiaKey = process.env.NVIDIA_API_KEY;
+            if (nvidiaKey) {
+                try {
+                    const nvidiaBaseUrl = process.env.NVIDIA_BASE_URL || "https://integrate.api.nvidia.com/v1";
+                    const nvidiaModel = process.env.WORKER_MODEL || "nvidia/llama-3.3-nemotron-super-49b-v1.5";
 
-        const data = await response.json()
+                    const payload = {
+                        model: nvidiaModel,
+                        messages: [
+                            { role: 'system', content: systemPrompt },
+                            ...(messages as ChatMessage[]).map((msg) => ({
+                                role: msg.role === 'user' ? 'user' : 'assistant',
+                                content: msg.content
+                            }))
+                        ],
+                        temperature: 0.7,
+                        max_tokens: 1000
+                    };
 
-        if (!response.ok) {
-            console.error("Gemini API Error:", data)
-            return NextResponse.json({ error: "Error from AI Service" }, { status: 500 })
+                    const response = await fetch(`${nvidiaBaseUrl}/chat/completions`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${nvidiaKey}`
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        replyText = data.choices?.[0]?.message?.content || "";
+                        if (replyText) success = true;
+                    } else {
+                        const errData = await response.json().catch(() => ({}));
+                        console.error("NVIDIA NIM API returned error:", response.status, errData);
+                    }
+                } catch (nvidiaError) {
+                    console.error("NVIDIA NIM call caught exception:", nvidiaError);
+                }
+            } else {
+                console.error("NVIDIA_API_KEY is not defined in the environment.");
+            }
         }
 
-        const replyText = data.candidates?.[0]?.content?.parts?.[0]?.text || "No response generated."
+        if (!success) {
+            // Last-resort mock fallback to ensure the chatbot NEVER crashes
+            replyText = "Hola, en este momento tengo un retraso de sincronización en mi red de asistencia. Por favor, comunícate directamente con un asesor por WhatsApp al 0969043453 para ayudarte inmediatamente con tu solicitud.";
+        }
 
-        return NextResponse.json({ text: replyText })
+        return NextResponse.json({ text: replyText });
 
     } catch (error) {
-        console.error("Chat API error:", error)
-        return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+        console.error("Chat API error:", error);
+        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
 }
 
