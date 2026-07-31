@@ -23,12 +23,20 @@ export async function GET() {
             });
 
             results.geminiStatus = response.status;
+            const data = await response.json();
+            results.geminiRaw = data;
             if (response.ok) {
-                const data = await response.json();
                 results.geminiText = data.candidates?.[0]?.content?.parts?.[0]?.text || "No text candidates";
-            } else {
-                results.geminiError = await response.text();
             }
+
+            // Test Gemini 2.5 Flash as well
+            const response25 = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GOOGLE_API_KEY}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            results.gemini25Status = response25.status;
+            results.gemini25Raw = await response25.json();
         } catch (e: any) {
             results.geminiException = e.message;
         }
@@ -59,11 +67,10 @@ export async function GET() {
             });
 
             results.nvidiaStatus = response.status;
+            const data = await response.json();
+            results.nvidiaRaw = data;
             if (response.ok) {
-                const data = await response.json();
                 results.nvidiaText = data.choices?.[0]?.message?.content || "No choices";
-            } else {
-                results.nvidiaError = await response.text();
             }
         } catch (e: any) {
             results.nvidiaException = e.message;
