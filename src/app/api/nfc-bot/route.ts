@@ -38,27 +38,80 @@ export async function POST(req: Request) {
   try {
     const { messages } = await req.json();
 
-    if (!nvidiaApiKey) {
-      return NextResponse.json({ error: 'NVIDIA API key no configurada' }, { status: 500 });
+    const GOOGLE_API_KEY = process.env.GOOGLE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+    let replyText = "";
+    let success = false;
+
+    // 1. Try Gemini 2.5 Flash first
+    if (GOOGLE_API_KEY) {
+      try {
+        const payload = {
+          system_instruction: {
+            parts: [{ text: SYSTEM_PROMPT }]
+          },
+          contents: (messages || []).map((msg: any) => ({
+            role: msg.role === 'user' ? 'user' : 'model',
+            parts: [{ text: msg.content }]
+          })),
+          generationConfig: {
+            temperature: 0.7,
+            maxOutputTokens: 1000,
+          }
+        };
+
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GOOGLE_API_KEY}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          replyText = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+          if (replyText) success = true;
+        } else {
+          const errData = await response.text();
+          console.error("NFC Gemini API returned error:", response.status, errData);
+        }
+      } catch (geminiError) {
+        console.error("NFC Gemini call caught exception:", geminiError);
+      }
     }
 
-    // Configurar mensajes incluyendo el system prompt
-    const formattedMessages = [
-      { role: 'system', content: SYSTEM_PROMPT },
-      ...(messages || []),
-    ];
+    // 2. Fallback to NVIDIA NIM
+    if (!success) {
+      console.log("NFC Bot falling back to NVIDIA NIM...");
+      if (nvidiaApiKey) {
+        try {
+          const formattedMessages = [
+            { role: 'system', content: SYSTEM_PROMPT },
+            ...(messages || []),
+          ];
+          const modelName = process.env.WORKER_MODEL || 'meta/llama-3.1-70b-instruct';
 
-    const modelName = process.env.WORKER_MODEL || 'meta/llama-3.1-70b-instruct';
+          const completion = await openai.chat.completions.create({
+            model: modelName,
+            messages: formattedMessages,
+            temperature: 0.7,
+            max_tokens: 1024,
+          });
 
-    const completion = await openai.chat.completions.create({
-      model: modelName,
-      messages: formattedMessages,
-      temperature: 0.7,
-      max_tokens: 1024,
-    });
+          replyText = completion.choices[0]?.message?.content || "";
+          if (replyText) success = true;
+        } catch (nvidiaError) {
+          console.error("NFC NVIDIA NIM call caught exception:", nvidiaError);
+        }
+      } else {
+        console.error("NFC Bot NVIDIA API key is not configured.");
+      }
+    }
+
+    if (!success) {
+      replyText = "Hola, en este momento tengo un retraso de sincronización en mi red de asistencia. Por favor, comunícate directamente con un asesor por WhatsApp al 0969043453 para ayudarte inmediatamente con tu solicitud.";
+    }
 
     return NextResponse.json({
-      reply: completion.choices[0]?.message?.content || 'Hubo un error de conexión con mi cerebro. Intenta de nuevo.',
+      reply: replyText,
     });
 
   } catch (error: any) {
