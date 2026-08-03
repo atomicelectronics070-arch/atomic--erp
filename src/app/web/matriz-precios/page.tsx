@@ -39,7 +39,7 @@ export default function MatrizPreciosPage() {
         page: page.toString(),
         limit: limit.toString(),
       });
-      const res = await fetch(`/api/matriz-precios?${query.toString()}`);
+      const res = await fetch(`/api/public/matriz-precios?${query.toString()}`);
       const data = await res.json();
       if (data.success) {
         setProducts(data.products || []);
