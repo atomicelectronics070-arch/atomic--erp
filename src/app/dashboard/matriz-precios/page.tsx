@@ -1,5 +1,9 @@
-import MatrizPreciosPage from '@/app/web/matriz-precios/page';
+import MatrizPreciosComponent from '@/components/MatrizPreciosComponent';
 
-export default function DashboardMatrizPrecios() {
-  return <MatrizPreciosPage />;
+export const metadata = {
+  title: 'Matriz de Precios ERP | ATOMIC System',
+};
+
+export default function DashboardMatrizPreciosPage() {
+  return <MatrizPreciosComponent />;
 }
