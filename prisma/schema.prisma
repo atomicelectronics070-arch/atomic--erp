@@ -545,7 +545,7 @@ model SocialAccount {
 }
 
 model SocialSettings {
-  id                  String   @id @default(cuid())
+  id                  String    @id @default(cuid())
   metaPageId          String?
   metaPageToken       String?
   metaInstagramActId  String?
@@ -553,10 +553,11 @@ model SocialSettings {
   youtubeRefreshToken String?
   tiktokAccessToken   String?
   tiktokOpenId        String?
-  updatedAt           DateTime @updatedAt
-  createdAt           DateTime @default(now())
-  userId              String?  @unique
-  user                User?    @relation(fields: [userId], references: [id])
+  campaignStartDate   DateTime? // Start date for the 30-day NFC auto-post campaign
+  updatedAt           DateTime  @updatedAt
+  createdAt           DateTime  @default(now())
+  userId              String?   @unique
+  user                User?     @relation(fields: [userId], references: [id])
 }
 
 model SocialPost {
@@ -907,4 +908,16 @@ model PersonalBotMessage {
   memory    PersonalBotMemory @relation(fields: [memoryId], references: [id])
 
   @@index([memoryId])
+}
+
+// Tracks each automated post made by the NFC 30-day campaign cron job
+model NfcCampaignPost {
+  id             String   @id @default(cuid())
+  dayNumber      Int      // Which day of the campaign (1-30)
+  platform       String   @default("facebook") // facebook, instagram, etc.
+  status         String   @default("PUBLISHED") // PUBLISHED, FAILED
+  content        String?  @db.Text
+  externalPostId String?  // The post ID returned by the platform API
+  errorMessage   String?  // Error message if posting failed
+  createdAt      DateTime @default(now())
 }

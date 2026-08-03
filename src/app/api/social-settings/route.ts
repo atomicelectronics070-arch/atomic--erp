@@ -46,6 +46,7 @@ export async function POST(req: Request) {
         if (body.youtubeRefreshToken && !body.youtubeRefreshToken.startsWith('••••')) cleanBody.youtubeRefreshToken = body.youtubeRefreshToken
         if (body.tiktokOpenId !== undefined) cleanBody.tiktokOpenId = body.tiktokOpenId
         if (body.tiktokAccessToken && !body.tiktokAccessToken.startsWith('••••')) cleanBody.tiktokAccessToken = body.tiktokAccessToken
+        if (body.campaignStartDate !== undefined) cleanBody.campaignStartDate = body.campaignStartDate ? new Date(body.campaignStartDate) : null
 
         if (existing) {
             await (prisma as any).socialSettings.update({ where: { id: existing.id }, data: cleanBody })

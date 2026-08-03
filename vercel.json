@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/post-nfc-content",
+      "schedule": "0 14 * * *"
+    }
+  ]
+}
