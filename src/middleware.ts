@@ -1,37 +1,26 @@
-import { withAuth } from "next-auth/middleware"
+import { getToken } from "next-auth/jwt"
 import { NextResponse } from "next/server"
+import type { NextRequest } from "next/server"
 
-export default withAuth(
-  function middleware(req) {
-    const token = req.nextauth.token
-    const path = req.nextUrl.pathname
+export async function middleware(req: NextRequest) {
+  const path = req.nextUrl.pathname
 
-    // Public academy — allow
-    if (path.startsWith("/academy")) {
-      return NextResponse.next()
-    }
-    
-    // Role-based protection
-    if (path.startsWith("/admin") && token?.role !== "ADMIN") {
-      return NextResponse.redirect(new URL("/login?error=Unauthorized", req.url))
-    }
-
-    if (path.startsWith("/dashboard") && !token) {
-      return NextResponse.redirect(new URL("/login", req.url))
-    }
-  },
-  {
-    callbacks: {
-      authorized: ({ token, req }) => {
-        const path = req.nextUrl.pathname
-        if (path.startsWith("/academy")) {
-          return true
-        }
-        return !!token
-      },
-    },
+  if (path.startsWith("/academy")) {
+    return NextResponse.next()
   }
-)
+
+  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
+
+  if (path.startsWith("/admin") && token?.role !== "ADMIN") {
+    return NextResponse.redirect(new URL("/login?error=Unauthorized", req.url))
+  }
+
+  if (path.startsWith("/dashboard") && !token) {
+    return NextResponse.redirect(new URL("/login", req.url))
+  }
+
+  return NextResponse.next()
+}
 
 export const config = {
   matcher: [
