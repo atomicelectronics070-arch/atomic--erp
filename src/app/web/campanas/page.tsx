@@ -1,10 +1,9 @@
-import { PrismaClient } from '@prisma/client';
-import Link from 'next/link';
+import { prisma } from '@/lib/prisma'
+import Link from 'next/link'
 
-export const revalidate = 60;
+export const dynamic = 'force-dynamic'
 
 export default async function CampanasPremiumPage() {
-  const prisma = new PrismaClient();
   
   const campanas = await prisma.product.findMany({
     where: {
