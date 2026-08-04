@@ -2,9 +2,11 @@ node_modules
 .next
 .git
 *.log
-tsc_output*
-search_db_output*
-unicode_matches*
-steren-parlante-search.html
-tecnomega-category-p2.html
+*.js
+*.ts
+*.html
+*.txt
 scratch
+!next.config.js
+!next.config.mjs
+!next.config.ts
