@@ -1,15 +1,10 @@
 import type { NextConfig } from "next";
-import path from "path";
 
 const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  output: "standalone",
-  reactStrictMode: false,
-  turbopack: {
-    root: path.resolve(process.cwd()),
-  },
+  reactStrictMode: true,
   async headers() {
     return [
       {
