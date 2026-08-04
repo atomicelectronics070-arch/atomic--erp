@@ -1,0 +1,10 @@
+node_modules
+.next
+.git
+*.log
+tsc_output*
+search_db_output*
+unicode_matches*
+steren-parlante-search.html
+tecnomega-category-p2.html
+scratch
