@@ -2,15 +2,12 @@
   "name": "atomic-erp",
   "version": "0.1.0",
   "private": true,
-  "engines": {
-    "node": ">=20.0.0"
-  },
   "scripts": {
     "dev": "next dev --webpack",
-    "build": "prisma generate || true && next build --no-lint",
+    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
-    "postinstall": "prisma generate || true"
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@capacitor/app": "^8.1.0",
