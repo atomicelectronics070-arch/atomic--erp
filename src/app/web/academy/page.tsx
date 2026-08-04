@@ -1,4 +1,6 @@
 import { prisma } from "@/lib/prisma"
+
+export const dynamic = "force-dynamic"
 import Link from "next/link"
 import { BookOpen, PlayCircle, Clock, ChevronRight, GraduationCap, ArrowRight, LayoutDashboard, Sparkles, Zap } from "lucide-react"
 import { getServerSession } from "next-auth"

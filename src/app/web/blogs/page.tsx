@@ -1,8 +1,8 @@
 import Link from "next/link"
 import { prisma } from "@/lib/prisma"
-import { ArrowLeft, Clock, User, ChevronRight } from "lucide-react"
 
-export const dynamic = 'force-dynamic'
+export const dynamic = "force-dynamic"
+import { ArrowLeft, Clock, User, ChevronRight } from "lucide-react"
 
 export default async function BlogsGallery() {
   const blogs = await prisma.blog.findMany({

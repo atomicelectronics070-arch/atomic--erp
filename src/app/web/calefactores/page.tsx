@@ -1,6 +1,8 @@
 import { PrismaClient } from '@prisma/client';
 import Link from 'next/link';
+import { prisma } from "@/lib/prisma"
 
+export const dynamic = "force-dynamic";
 export const revalidate = 0; // No cache for immediate updates
 
 export default async function CalefactorCilindroBLACKPage() {

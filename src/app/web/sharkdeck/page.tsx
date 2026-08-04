@@ -2,6 +2,8 @@ import Link from "next/link"
 import { Shield, Zap, Radio, CheckCircle, Download, ArrowRight, ArrowDown, ChevronRight, Cpu, MonitorSmartphone, BatteryCharging, Box } from "lucide-react"
 import { prisma } from "@/lib/prisma"
 
+export const dynamic = "force-dynamic"
+
 export default async function SharkdeckLandingPage() {
     // Buscar el producto en la DB por SKU
     const product = await prisma.product.findFirst({

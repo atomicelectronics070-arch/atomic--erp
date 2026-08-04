@@ -5,16 +5,9 @@ import Link from 'next/link';
 import LaptopsLongFormTemplate from '@/components/marketing/LaptopsLongFormTemplate';
 
 export async function generateStaticParams() {
-  const dataPath = path.join(process.cwd(), 'src', 'data', 'enrichedLaptops.json');
-  try {
-    const laptops = JSON.parse(fs.readFileSync(dataPath, 'utf-8'));
-    return laptops.map((l: any) => ({
-      id: l.slug,
-    }));
-  } catch (err) {
-    return [];
-  }
+  return [];
 }
+export const dynamicParams = true;
 
 export default async function LaptopsDynamicLandingPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
