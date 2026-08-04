@@ -56,7 +56,8 @@ const CATEGORY_ICONS: Record<string, string> = {
 
 export default function AcademyPage() {
     const { data: session } = useSession()
-    const isAdmin = session?.user?.role === "ADMIN" || session?.user?.role === "MANAGEMENT"
+    const userRole = (session?.user as any)?.role
+    const isAdmin = userRole === "ADMIN" || userRole === "MANAGEMENT"
     
     const [categories, setCategories] = useState<Category[]>([])
     const [loading, setLoading] = useState(true)

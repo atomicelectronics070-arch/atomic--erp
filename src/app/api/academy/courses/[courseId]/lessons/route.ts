@@ -5,7 +5,8 @@ import { NextRequest, NextResponse } from "next/server"
 
 async function requireAdmin() {
     const session = await getServerSession(authOptions)
-    if (!session || (session.user.role !== "ADMIN" && session.user.role !== "MANAGEMENT")) return null
+    const userRole = (session?.user as any)?.role
+    if (!session?.user || (userRole !== "ADMIN" && userRole !== "MANAGEMENT")) return null
     return session
 }
 
