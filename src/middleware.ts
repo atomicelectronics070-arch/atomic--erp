@@ -6,8 +6,8 @@ export default withAuth(
     const token = req.nextauth.token
     const path = req.nextUrl.pathname
 
-    // Public academy and api/public — always allow
-    if (path.startsWith("/academy") || path.startsWith("/api/public")) {
+    // Public academy — allow
+    if (path.startsWith("/academy")) {
       return NextResponse.next()
     }
     
@@ -17,15 +17,14 @@ export default withAuth(
     }
 
     if (path.startsWith("/dashboard") && !token) {
-        return NextResponse.redirect(new URL("/login", req.url))
+      return NextResponse.redirect(new URL("/login", req.url))
     }
   },
   {
     callbacks: {
-      // Allow public paths without token, require token for protected ones
       authorized: ({ token, req }) => {
         const path = req.nextUrl.pathname
-        if (path.startsWith("/academy") || path.startsWith("/api/public")) {
+        if (path.startsWith("/academy")) {
           return true
         }
         return !!token
@@ -39,7 +38,6 @@ export const config = {
     "/dashboard/:path*",
     "/admin/:path*",
     "/academy/:path*",
-    "/api/public/:path*",
     "/api/products/:path*",
     "/api/users/:path*",
     "/api/whatsapp/:path*",
