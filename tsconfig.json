@@ -30,6 +30,7 @@
   },
   "include": [
     "next-env.d.ts",
+    "next.config.ts",
     "types/**/*.ts",
     "src/**/*.ts",
     "src/**/*.tsx",
