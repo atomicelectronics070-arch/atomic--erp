@@ -1,0 +1,27 @@
+{
+  "name": "Atomic Inventory System",
+  "short_name": "AIC Retro",
+  "description": "Sistema de inventario y precios internos de Atomic Industries Corp.",
+  "start_url": "/web/retro-inventory",
+  "scope": "/web/retro-inventory",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#33ff33",
+  "orientation": "landscape",
+  "icons": [
+    {
+      "src": "/icons-retro/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons-retro/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "productivity"],
+  "lang": "es-EC"
+}
