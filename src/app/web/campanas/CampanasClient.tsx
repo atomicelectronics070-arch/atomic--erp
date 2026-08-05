@@ -13,6 +13,31 @@ interface ProductItem {
   category?: { name: string } | null;
 }
 
+function getDerivedType(item: ProductItem): 'Isla' | 'Pared' | 'Retráctil' {
+  let specsTipo = '';
+  if (item.specs) {
+    try {
+      const parsed = typeof item.specs === 'string' ? JSON.parse(item.specs) : item.specs;
+      if (parsed.tipo) specsTipo = parsed.tipo.toString().toLowerCase();
+    } catch {}
+  }
+  const nameLower = (item.name || '').toLowerCase();
+
+  if (specsTipo.includes('isla') || nameLower.includes('isla')) return 'Isla';
+  if (
+    specsTipo.includes('retractil') ||
+    specsTipo.includes('retráctil') ||
+    nameLower.includes('retractil') ||
+    nameLower.includes('retráctil') ||
+    nameLower.includes('telescop') ||
+    nameLower.includes('baja') ||
+    nameLower.includes('slim')
+  ) {
+    return 'Retráctil';
+  }
+  return 'Pared';
+}
+
 export default function CampanasClient({ initialProducts }: { initialProducts: ProductItem[] }) {
   const [selectedFilter, setSelectedFilter] = useState<'Todos' | 'Isla' | 'Pared' | 'Retráctil'>('Todos');
   const [search, setSearch] = useState('');
@@ -30,27 +55,8 @@ export default function CampanasClient({ initialProducts }: { initialProducts: P
       // 2. Type Filter ('Todos' | 'Isla' | 'Pared' | 'Retráctil')
       if (selectedFilter === 'Todos') return true;
 
-      let itemTipo = '';
-      if (item.specs) {
-        try {
-          const parsed = JSON.parse(item.specs);
-          if (parsed.tipo) itemTipo = parsed.tipo.toString();
-        } catch {}
-      }
-
-      const nameLower = item.name.toLowerCase();
-
-      if (selectedFilter === 'Isla') {
-        return itemTipo.toLowerCase().includes('isla') || nameLower.includes('isla');
-      }
-      if (selectedFilter === 'Pared') {
-        return itemTipo.toLowerCase().includes('pared') || nameLower.includes('pared') || nameLower.includes('adollar') || nameLower.includes('mural');
-      }
-      if (selectedFilter === 'Retráctil') {
-        return itemTipo.toLowerCase().includes('retractil') || itemTipo.toLowerCase().includes('retráctil') || nameLower.includes('retractil') || nameLower.includes('retráctil') || nameLower.includes('telescopica');
-      }
-
-      return true;
+      const derivedType = getDerivedType(item);
+      return derivedType === selectedFilter;
     });
   }, [initialProducts, selectedFilter, search]);
 
@@ -98,7 +104,7 @@ export default function CampanasClient({ initialProducts }: { initialProducts: P
                 <button
                   key={filterName}
                   onClick={() => setSelectedFilter(filterName)}
-                  className={`text-xs font-bold px-5 py-2.5 rounded-full border transition-all duration-200 ${
+                  className={`text-xs font-bold px-5 py-2.5 rounded-full border transition-all duration-200 cursor-pointer ${
                     isActive
                       ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-500/20 scale-105'
                       : 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200 hover:border-slate-300'
@@ -154,7 +160,7 @@ export default function CampanasClient({ initialProducts }: { initialProducts: P
                 } catch {}
               }
 
-              const tipo = specs.tipo || (campana.name.toLowerCase().includes('isla') ? 'Isla' : campana.name.toLowerCase().includes('retractil') || campana.name.toLowerCase().includes('retráctil') ? 'Retráctil' : 'Pared');
+              const tipo = getDerivedType(campana);
               const caudal = specs.caudal_extraccion || null;
               const motor = specs.motor || null;
 
