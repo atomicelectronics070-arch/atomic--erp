@@ -90,7 +90,7 @@ export default function DashboardAcademyClient() {
             showToast("ok", "Curso creado — ahora añade lecciones")
         } catch {
             showToast("err", "Error creando el curso")
-        } fontally {
+        } finally {
             setSaving(false)
         }
     }
@@ -120,7 +120,7 @@ export default function DashboardAcademyClient() {
             showToast("ok", "Curso eliminado")
         } catch {
             showToast("err", "Error al eliminar")
-        } fontally {
+        } finally {
             setDeletingId(null)
         }
     }
