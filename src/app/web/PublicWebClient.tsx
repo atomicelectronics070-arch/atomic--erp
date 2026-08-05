@@ -1,8 +1,12 @@
 "use client"
 
-// Version: 1.0.2 - Fixed Broken Images System
+// Version: 2.0.0 - Rediseño Profesional UI (Inspirado en el mock-up limpio de catálogo)
 import { useState, useRef, useEffect, useCallback, useMemo } from "react"
-import { ShoppingBag, ChevronRight, ArrowRight, Shield, Zap, Truck, ChevronLeft, Hexagon, Star, X, Smartphone, Database, Sparkles, Code, Bot, Download, Search, ImageOff, AlertCircle, Home, Building, Factory, Cpu } from "lucide-react"
+import { 
+  ShoppingBag, ChevronRight, ArrowRight, Shield, Zap, Truck, ChevronLeft, Hexagon, 
+  Star, X, Smartphone, Database, Sparkles, Code, Bot, Download, Search, ImageOff, 
+  AlertCircle, Home, Building, Factory, Cpu, Layers, Tag, ChevronDown, Check
+} from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
@@ -19,18 +23,15 @@ const safeParseArray = (str: any, fallback: any = []) => {
     if (Array.isArray(str)) return str.length > 0 ? str : fallback;
     if (typeof str === 'string') {
         const trimmed = str.trim();
-        // Check if it's a direct URL
         if (trimmed.startsWith('http') || trimmed.startsWith('/') || trimmed.startsWith('data:image')) return [trimmed];
         try {
             let cleaned = trimmed;
-            // Clean quoted strings
             if (cleaned.startsWith('"') && cleaned.endsWith('"')) cleaned = cleaned.substring(1, cleaned.length - 1).replace(/\\"/g, '"');
             let parsed = JSON.parse(cleaned);
             if (typeof parsed === 'string') { try { parsed = JSON.parse(parsed); } catch(e) {} }
             if (Array.isArray(parsed)) return parsed.length > 0 ? parsed : fallback;
             if (typeof parsed === 'string' && parsed.length > 0) return [parsed];
         } catch (e) {
-            // Regex to extract URLs from damaged strings (e.g. text containing URLs without valid JSON structure)
             const urlRegex = /(https?:\/\/[^\s"\]]+)/g;
             const matches = trimmed.match(urlRegex);
             if (matches && matches.length > 0) return matches;
@@ -39,23 +40,19 @@ const safeParseArray = (str: any, fallback: any = []) => {
     return fallback;
 };
 
-/* ─── Robust Image Component with Fallback ─── */
+/* ─── Robust Image Component ─── */
 function SafeImage({ src, alt, className, fill = false, width, height, ...props }: any) {
     const [error, setError] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
     const imgRef = useRef<HTMLImageElement>(null)
 
     useEffect(() => {
-        // If image is already in cache, it might be complete before React mounts
         if (imgRef.current?.complete) {
             setIsLoading(false)
         }
     }, [src])
 
-    const handleLoad = () => {
-        setIsLoading(false)
-    }
-
+    const handleLoad = () => setIsLoading(false)
     const handleError = () => {
         setIsLoading(false)
         setError(true)
@@ -63,1098 +60,312 @@ function SafeImage({ src, alt, className, fill = false, width, height, ...props 
 
     if (!src || error) {
         return (
-            <div className={`flex flex-col items-center justify-center bg-slate-100 border border-slate-200 p-4 ${className} ${fill ? 'absolute inset-0' : ''}`}>
+            <div className={`flex flex-col items-center justify-center bg-slate-50 border border-slate-100 p-4 ${className} ${fill ? 'absolute inset-0' : ''}`}>
                 <div className="relative">
-                    <Hexagon className="text-slate-200 w-12 h-12 animate-[spin_20s_linear_infinite]" strokeWidth={1} />
-                    <ImageOff className="absolute inset-0 m-auto text-slate-300" size={18} />
+                    <PackageIcon className="text-slate-300 w-10 h-10 animate-pulse" />
                 </div>
-                <span className="text-[7px] font-bold text-slate-400 uppercase tracking-widest mt-2">No disponible</span>
+                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-2">Imagen no disponible</span>
             </div>
         )
     }
 
     return (
-        <div className={`relative overflow-hidden bg-slate-50 ${fill ? 'absolute inset-0 w-full h-full' : ''} ${className}`}>
+        <div className={`relative overflow-hidden bg-slate-50/50 ${fill ? 'absolute inset-0 w-full h-full' : ''} ${className}`}>
             <img
                 ref={imgRef}
                 src={src}
                 alt={alt}
                 onLoad={handleLoad}
                 onError={handleError}
-                className={`transition-all duration-700 ${isLoading ? 'scale-110 blur-xl opacity-0' : 'scale-100 blur-0 opacity-100'} ${fill ? 'w-full h-full object-contain' : ''}`}
+                className={`transition-all duration-500 ${isLoading ? 'scale-105 blur-sm opacity-0' : 'scale-100 blur-0 opacity-100'} ${fill ? 'w-full h-full object-contain' : ''}`}
                 style={{ width: fill ? '100%' : width, height: fill ? '100%' : height }}
                 referrerPolicy="no-referrer"
                 {...props}
             />
             {isLoading && (
-                <div className="absolute inset-0 flex items-center justify-center bg-slate-50/50 backdrop-blur-sm">
-                    <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                <div className="absolute inset-0 flex items-center justify-center bg-slate-50/60 backdrop-blur-xs">
+                    <div className="w-5 h-5 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
                 </div>
             )}
         </div>
     )
 }
 
-/* ─── Phone Catalog Horizontal Strip ─── */
-function PhoneCatalogStrip({ products, userRole }: { products: any[], userRole?: string }) {
-    const scrollRef = useRef<HTMLDivElement>(null)
-    const PHONE_BRANDS = ['samsung', 'iphone', 'xiaomi', 'oppo', 'motorola', 'redmi', 'realme', 'honor', 'infinix', 'tecno', 'ipad', 'apple']
-    const DEVICE_INDICATORS = ['gb', 'ram', 'inch', 'display', 'pantalla', 'sim', 'dual', 'android', 'ios', '4g', '5g', 'lte', 'snapdragon', 'helio', 'dimensity']
-    const PURE_ACCESSORY_KEYWORDS = [
-        'funda para', 'estuche para', 'case for', 'mica de', 'protector de', 
-        'cargador para', 'cable usb', 'repuesto', 'bateria para', 'batería para',
-        'teclado', 'keyboard', 'mouse', 'raton', 'ratón', 'banco de poder', 
-        'power bank', 'powerbank', 'audifonos', 'audífono', 'cargador original'
-    ]
-
-    const phones = products.filter(p => {
-        const name = p.name.toLowerCase()
-        const category = (p.category?.name || '').toLowerCase()
-        
-        // 1. Si es explícitamente un accesorio o periférico, excluir
-        if (PURE_ACCESSORY_KEYWORDS.some(kw => name.includes(kw))) return false
-        
-        // 2. Heurística de dispositivo móvil
-        const hasBrand = PHONE_BRANDS.some(brand => name.includes(brand))
-        const hasSpecs = DEVICE_INDICATORS.some(spec => name.includes(spec))
-        const isPhoneCategory = category.includes('celular') || category.includes('tablet') || category.includes('telef')
-
-        if (hasBrand && hasSpecs) return true
-        if (isPhoneCategory && hasBrand) return true
-
-        if (name.includes('iphone') || name.includes('ipad')) {
-            if (name.includes('cable') || name.includes('cargador') || name.includes('adapter')) return false
-            return true
-        }
-
-        return false
-    })
-
-    if (phones.length === 0) return null
-
-    const scroll = (dir: 'left' | 'right') => {
-        if (!scrollRef.current) return
-        scrollRef.current.scrollBy({ left: dir === 'left' ? -320 : 320, behavior: 'smooth' })
-    }
-
-    return (
-        <section className="py-10 border-t border-slate-100" id="celulares">
-            <div className="max-w-7xl mx-auto px-6">
-                {/* Header */}
-                <div className="mb-5 flex items-center justify-between">
-                    <div>
-                        <h2 className="text-xl font-semibold text-[black] uppercase tracking-widest">
-                            CATÁLOGO DE <span className="font-bold text-slate-100">CELULARES Y TABLETS</span>
-                        </h2>
-                        <p className="text-slate-400 text-[10px] mt-1 uppercase tracking-[0.3em] font-medium">Samsung · iPhone · Xiaomi · OPPO y más</p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                        <button onClick={() => scroll('left')} className="w-8 h-8 flex items-center justify-center border border-slate-200 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 hover:border-blue-600 hover:text-slate-100 text-slate-400 rounded-lg transition-all shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
-                            <ChevronLeft size={15} />
-                        </button>
-                        <button onClick={() => scroll('right')} className="w-8 h-8 flex items-center justify-center border border-slate-200 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 hover:border-blue-600 hover:text-slate-100 text-slate-400 rounded-lg transition-all shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
-                            <ChevronRight size={15} />
-                        </button>
-                        <Link href="/web/phones" className="text-[10px] font-semibold text-slate-500 hover:text-slate-100 transition-colors flex items-center gap-1 uppercase tracking-widest">
-                            Ver todos <ArrowRight size={12} />
-                        </Link>
-                    </div>
-                </div>
-
-                {/* Horizontal Scroll Strip */}
-                <div
-                    ref={scrollRef}
-                    className="flex gap-3 overflow-x-auto pb-3 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent"
-                    style={{ scrollbarWidth: 'thin' }}
-                >
-                    {phones.map((p: any) => {
-                        const imgs = safeParseArray(p.images)
-                        const price = calculateDiscountedPrice(p.price, userRole)
-                        return (
-                            <Link
-                                key={p.id}
-                                href={`/web/product/${p.id}`}
-                                className="flex-none w-[120px] flex flex-col bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-100 hover:border-blue-400 hover:shadow-[0_8px_32px_rgba(0,0,0,0.5)] transition-all duration-200 rounded-xl overflow-hidden group"
-                            >
-                                <div className="w-full h-[100px] relative bg-slate-50 overflow-hidden">
-                                    {imgs.length > 0 ? (
-                                        <SafeImage src={imgs[0]} alt={p.name} fill className="object-contain p-2 group-hover:scale-105 transition-transform duration-300" />
-                                    ) : (
-                                        <div className="w-full h-full flex items-center justify-center">
-                                            <Smartphone className="text-slate-200 w-8 h-8" />
-                                        </div>
-                                    )}
-                                </div>
-                                <div className="p-2 flex flex-col flex-1">
-                                    <p className="text-[9px] font-medium text-slate-500 line-clamp-2 leading-snug group-hover:text-slate-100 transition-colors flex-1 mb-1">{p.name}</p>
-                                    <p className="text-[10px] font-bold text-slate-900">${price.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
-                                </div>
-                            </Link>
-                        )
-                    })}
-                </div>
-            </div>
-        </section>
-    )
+function PackageIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path d="M21 8L12 3L3 8V16L12 21L21 16V8Z" />
+      <path d="M12 3V21" />
+      <path d="M3 8L12 13L21 8" />
+    </svg>
+  );
 }
 
-interface PublicWebClientProps {
-    initialProducts: any[]
-    metadata: { categories: any[], collections: any[] }
-    userRole?: string
-    storeSettings?: any
-}
-
-// Normalize text: remove accents and lowercase for fuzzy matching
-const normalizeText = (s: string) =>
-    s.toLowerCase()
-     .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-     .replace(/[^a-z0-9\s]/g, ' ')
-     .replace(/\s+/g, ' ').trim()
-
-// Check if all words in the query appear in the target text (order-independent, partial match)
-const fuzzyMatch = (query: string, target: string): boolean => {
-    const q = normalizeText(query)
-    const t = normalizeText(target)
-    const words = q.split(' ').filter(Boolean)
-    return words.every(w => t.includes(w))
-}
-
-export default function PublicWebClient({ initialProducts, metadata, userRole, storeSettings }: PublicWebClientProps) {
+/* ─── MAIN CLIENT APPLICATION ─── */
+export default function PublicWebClient({ initialProducts, metadata, userRole, storeSettings }: any) {
     const [searchQuery, setSearchQuery] = useState("")
-    const [activeMainCategoryId, setActiveMainCategoryId] = useState<string | null>(null)
-    const [activeSubcategoryId, setActiveSubcategoryId] = useState<string | null>(null)
-
-    const [dynamicProducts, setDynamicProducts] = useState<any[]>([])
-    const [isLoadingCategory, setIsLoadingCategory] = useState(false)
-    
-    // Smart search: hits the API for full-DB search with debounce
     const [searchResults, setSearchResults] = useState<any[] | null>(null)
     const [isSearching, setIsSearching] = useState(false)
-    const searchDebounce = useRef<ReturnType<typeof setTimeout> | null>(null)
+    const [activeMainCategoryId, setActiveMainCategoryId] = useState<string | null>(null)
+    const [activeSubcategoryId, setActiveSubcategoryId] = useState<string | null>(null)
+    const [isLoadingCategory, setIsLoadingCategory] = useState(false)
 
-    useEffect(() => {
-        const handleSearchUpdate = (e: any) => {
-            setSearchQuery(e.detail)
-            setActiveMainCategoryId(null)
-            setActiveSubcategoryId(null)
-            document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' })
-        }
-        window.addEventListener('atomic-search-update', handleSearchUpdate)
-        return () => window.removeEventListener('atomic-search-update', handleSearchUpdate)
-    }, [])
-
-    // API-backed search with 350ms debounce
-    useEffect(() => {
-        if (searchDebounce.current) clearTimeout(searchDebounce.current)
-        if (!searchQuery.trim()) {
+    // Sync search
+    const debounceTimer = useRef<any>(null)
+    const handleSearchChange = (query: string) => {
+        setSearchQuery(query)
+        if (debounceTimer.current) clearTimeout(debounceTimer.current)
+        if (!query.trim()) {
             setSearchResults(null)
             setIsSearching(false)
             return
         }
         setIsSearching(true)
-        searchDebounce.current = setTimeout(async () => {
+        debounceTimer.current = setTimeout(async () => {
             try {
-                const res = await fetch(`/api/web/products?search=${encodeURIComponent(searchQuery.trim())}&pageSize=120`)
-                const data = await res.json()
-                setSearchResults(data.products || [])
-            } catch {
-                // Fallback to local filter if API fails
-                setSearchResults(null)
+                const res = await fetch(`/api/products?search=${encodeURIComponent(query)}&limit=100`)
+                if (res.ok) {
+                    const data = await res.json()
+                    setSearchResults(data.products || data || [])
+                }
+            } catch (err) {
+                console.error("Error en búsqueda:", err)
             } finally {
                 setIsSearching(false)
             }
-        }, 350)
-        return () => { if (searchDebounce.current) clearTimeout(searchDebounce.current) }
-    }, [searchQuery])
+        }, 300)
+    }
 
-    useEffect(() => {
-        if (!activeMainCategoryId && !activeSubcategoryId) {
-            setDynamicProducts([])
-            return
-        }
-        const fetchCategoryProducts = async () => {
-            setIsLoadingCategory(true)
-            try {
-                const targetCat = activeSubcategoryId || activeMainCategoryId
-                const res = await fetch(`/api/web/products?categoryId=${targetCat}&pageSize=100`)
-                const data = await res.json()
-                if (data && data.products) setDynamicProducts(data.products)
-            } catch (error) {
-                console.error("Error fetching category products:", error)
-            } finally {
-                setIsLoadingCategory(false)
-            }
-        }
-        fetchCategoryProducts()
-    }, [activeMainCategoryId, activeSubcategoryId])
+    const dynamicProducts = searchResults || []
 
-    // Determine which product list to show
     const filteredProducts = useMemo(() => {
-        // 1. Active search: use API results, or fallback to local fuzzy match
         if (searchQuery.trim()) {
             if (searchResults !== null) return searchResults
-            // Local fallback: fuzzy match across initialProducts
-            return initialProducts.filter(p => {
+            const fuzzyMatch = (str: string, target: string) => {
+                const s = str.toLowerCase().replace(/[\s\-_]/g, '')
+                const t = target.toLowerCase().replace(/[\s\-_]/g, '')
+                return t.includes(s) || s.includes(t)
+            }
+            return initialProducts.filter((p: any) => {
                 const target = `${p.name} ${p.description || ''} ${p.category?.name || ''} ${p.provider || ''}`
                 return fuzzyMatch(searchQuery, target)
             })
         }
-        // 2. Category filter
         const base = dynamicProducts.length > 0 ? dynamicProducts : initialProducts
         if (activeSubcategoryId) {
-            return base.filter(p => p.category?.id === activeSubcategoryId)
+            return base.filter((p: any) => p.category?.id === activeSubcategoryId)
         } else if (activeMainCategoryId) {
-            const subCatIds = metadata.categories.filter(c => c.parentId === activeMainCategoryId).map(c => c.id)
-            return base.filter(p => p.category?.id === activeMainCategoryId || subCatIds.includes(p.category?.id))
+            const subCatIds = metadata.categories.filter((c: any) => c.parentId === activeMainCategoryId).map((c: any) => c.id)
+            return base.filter((p: any) => p.category?.id === activeMainCategoryId || subCatIds.includes(p.category?.id))
         }
         return base
     }, [searchQuery, searchResults, dynamicProducts, initialProducts, activeMainCategoryId, activeSubcategoryId, metadata.categories])
 
-    // ─── ATOMIC REORGANIZATION LOGIC ───
-    const curatedCategories = useMemo(() => {
-        const EXCLUDE = ['domotica', 'automatizacion', 'tienda en linea a medida', 'tecnologia residencial', 'soft3 logustucs'];
-        let base = metadata.categories.filter(c => {
-            const n = (c.name || '').toLowerCase();
-            return !EXCLUDE.some(ex => n.includes(ex));
-        });
-        return base.map(c => {
-            let nc = { ...c };
-            if (nc.name.toLowerCase().includes('electronica para negocios movilidad a deportes')) nc.name = "Movilidad y Deportes";
-            return nc;
-        }).sort((a, b) => {
-            if (a.name.toLowerCase().includes('accesorios y varios')) return 1;
-            if (b.name.toLowerCase().includes('accesorios y varios')) return -1;
-            return 0;
-        });
-    }, [metadata.categories]);
-
-    const curatedCollections = useMemo(() => {
-        const EXCLUDE = ['domotica', 'tienda-en-linea-a-medida', 'tecnologia-residencial', 'soft3-logustucs'];
-        let base = metadata.collections.filter(c => {
-            const s = (c.slug || '').toLowerCase();
-            const n = (c.name || '').toLowerCase();
-            return !EXCLUDE.some(ex => s.includes(ex) || n.includes(ex));
-        });
-        return base.map(c => {
-            let nc = { ...c };
-            const lowName = nc.name.toLowerCase();
-            if (lowName.includes('automatizacion')) nc.name = "Barreras Vehiculares";
-            if (lowName.includes('electronica para negocios movilidad a deportes')) nc.name = "Movilidad y Deportes";
-            return nc;
-        }).sort((a, b) => {
-            if (a.name.toLowerCase().includes('accesorios y varios')) return 1;
-            if (b.name.toLowerCase().includes('accesorios y varios')) return -1;
-            return 0;
-        });
-    }, [metadata.collections]);
-
-    const getCuratedProducts = (col: any) => {
-        const slug = col.slug.toLowerCase();
-        const colName = col.name.toLowerCase();
-        
-        // Determinar si es una sección "especial" que requiere búsqueda global
-        const isSpecialSection = 
-            colName.includes('barreras') || colName.includes('celulares') || 
-            colName.includes('computacion') || colName.includes('cerraduras') || 
-            colName.includes('consolas') || colName.includes('energia') || 
-            colName.includes('iluminacion') || colName.includes('movilidad') || 
-            colName.includes('deportes') || colName.includes('repuestos') || 
-            colName.includes('porteria') || colName.includes('desarrollo') || 
-            colName.includes('branding') || colName.includes('servicios') ||
-            colName.includes('ambientes');
-
-        // Si es especial, buscamos en TODO el set de productos iniciales. Si no, solo en su colección.
-        let products = isSpecialSection ? [...initialProducts] : initialProducts.filter(p => p.collectionId === col.id);
-
-        if (colName.includes('acabados tipo marmol')) {
-            products = products.filter(p => {
-                const n = p.name.toLowerCase();
-                return !n.includes('papel aluminio') && !n.includes('sierra de marmol industrial');
-            });
-        }
-        else if (colName.includes('ambientes') || colName.includes('hambientes')) {
-            const extra = initialProducts.filter(p => {
-                const n = p.name.toLowerCase();
-                const prov = (p.provider || '').toLowerCase();
-                return n.includes('calefactor') && (prov.includes('bp') || prov.includes('banco del perno'));
-            });
-            products = [...new Set([...products, ...extra])];
-        }
-        else if (colName.includes('barreras vehiculares')) {
-            const extra = initialProducts.filter(p => {
-                const n = p.name.toLowerCase();
-                return n.includes('motor de garaje') || n.includes('motor batiente') || n.includes('barrera vehicular') || n.includes('barrera');
-            });
-            products = [...new Set([...products, ...extra])];
-        }
-        else if (slug.includes('utp') || colName.includes('utp')) {
-            products = initialProducts.filter(p => (p.provider || '').toLowerCase().includes('fabricable'));
-        }
-        else if (colName.includes('celulares') || colName.includes('computacion')) {
-            const isDevice = (n: string) => {
-                const ln = n.toLowerCase();
-                return ln.includes('samsung') || ln.includes('iphone') || ln.includes('tablet') || 
-                       ln.includes('ipad') || ln.includes('laptop') || ln.includes('computadora') ||
-                       ln.includes('portatil') || ln.includes('portátil');
-            };
-            products = initialProducts.filter(p => {
-                const n = p.name.toLowerCase();
-                if (['funda', 'case', 'cargador', 'cable', 'mouse', 'teclado'].some(x => n.includes(x))) return false;
-                return isDevice(n);
-            });
-        }
-        else if (colName.includes('cerraduras') || colName.includes('chapa')) {
-            products = initialProducts.filter(p => {
-                const n = p.name.toLowerCase();
-                const hasGenericImage = p.images && (p.images.includes('blank.png') || p.images.includes('image_512'));
-                return !hasGenericImage && (n.includes('cerradura') || n.includes('acceso smart') || n.includes('chapa') || n.includes('cerradura smart'));
-            });
-        }
-        else if (colName.includes('consolas') || colName.includes('video juegos')) {
-            products = initialProducts.filter(p => {
-                const n = p.name.toLowerCase();
-                return n.includes('playstation') || n.includes('play station') || n.includes('video juego') || 
-                       n.includes('videojuego') || n.includes('consola') || n.includes('control') || n.includes('joistick') || n.includes('joystick');
-            });
-        }
-        else if (colName.includes('energia') || colName.includes('energía')) {
-            products = initialProducts.filter(p => p.name.toLowerCase().includes('generador'));
-        }
-        else if (colName.includes('iluminacion') || colName.includes('iluminación')) {
-            products = initialProducts.filter(p => {
-                const n = p.name.toLowerCase();
-                const prov = (p.provider || '').toLowerCase();
-                const isLuminaria = n.includes('luminaria') || n.includes('lampara') || n.includes('lámpara');
-                return isLuminaria && (prov.includes('bp') || prov.includes('banco del perno'));
-            });
-        }
-        else if (colName.includes('movilidad') || colName.includes('deportes')) {
-            products = initialProducts.filter(p => {
-                const n = p.name.toLowerCase();
-                return n.includes('drone') || n.includes('bicicleta') || n.includes('dron');
-            });
-        }
-        else if (colName.includes('repuestos') || colName.includes('laptop')) {
-            products = initialProducts.filter(p => {
-                const n = p.name.toLowerCase();
-                return n.includes('cargador') || n.includes('bateria') || n.includes('batería') || 
-                       n.includes('teclado') || n.includes('ventilador') || n.includes('cable');
-            });
-        }
-        else if (colName.includes('porteria') || colName.includes('portería')) {
-            products = initialProducts.filter(p => {
-                const n = p.name.toLowerCase();
-                return n.includes('portero') || n.includes('video portero') || n.includes('videoportero');
-            });
-        }
-        else if (colName.includes('desarrollo web')) {
-            products = [
-                { id: 'v-web-1', name: 'GESTOR: DESARROLLO BÁSICO', description: 'Tienda con hasta 50 productos, WhatsApp, Responsive.', price: 199, images: '["/assets/ecommerce/img1.jpeg"]', featured: true },
-                { id: 'v-web-2', name: 'GESTOR: ESTÁNDAR', description: 'Hasta 500 productos, Pagos en línea, Gestor Avanzado, SEO.', price: 299, images: '["/assets/ecommerce/img2.jpeg"]', featured: true },
-                { id: 'v-web-3', name: 'GESTOR: PRO', description: 'Productos Ilimitados, ERP, CRM WhatsApp, Cuentas Multiples.', price: 599, images: '["/assets/ecommerce/img1.jpeg"]', featured: true },
-                { id: 'v-web-4', name: 'GESTOR: PERSONALIZADO', description: 'Arquitectura a medida, Apps Móviles, integraciones API.', price: 999, images: '["/assets/ecommerce/img2.jpeg"]', featured: false }
-            ];
-        }
-        else if (colName.includes('diseño') || colName.includes('branding')) {
-            products = [
-                { id: 'v-d-1', name: 'ESTRATEGIA DE MARKETING', price: 150, description: 'Planes: Trimestral, Semestral, Anual.', images: '[]' },
-                { id: 'v-d-2', name: 'ELABORACIÓN DE CONTENIDOS', price: 80, description: 'Planes: Trimestral, Semestral, Anual.', images: '[]' },
-                { id: 'v-d-3', name: 'DISEÑO GRÁFICO', price: 60, description: 'Planes: Trimestral, Semestral, Anual.', images: '[]' },
-                { id: 'v-d-4', name: 'DISEÑO DE MARCA', price: 200, description: 'Planes: Trimestral, Semestral, Anual.', images: '[]' }
-            ];
-        }
-        else if (colName.includes('servicios')) {
-            products = [
-                { id: 'v-s-1', name: 'VISITA TÉCNICA', price: 25, description: 'Soporte presencial.', images: '[]' },
-                { id: 'v-s-2', name: 'DIAGNÓSTICO TÉCNICO', price: 45, description: 'Evaluación técnica.', images: '[]' },
-                { id: 'v-s-3', name: 'INSTALACIÓN POR PUNTO', price: 10, description: 'Desde $10 a $35.', images: '[]' }
-            ];
-        }
-
-        return products.slice(0, 10);
-    };
-
-    const featuredProducts = (() => {
-        let consolasCount = 0;
-        const sorted = [...initialProducts].sort((a, b) => {
-            const aIsSpy = a.name.toLowerCase().includes('espia') || a.name.toLowerCase().includes('espía') || a.name.startsWith('CE-');
-            const bIsSpy = b.name.toLowerCase().includes('espia') || b.name.toLowerCase().includes('espía') || b.name.startsWith('CE-');
-            if (aIsSpy && !bIsSpy) return -1;
-            if (!aIsSpy && bIsSpy) return 1;
-            if (a.featured && !b.featured) return -1;
-            if (!a.featured && b.featured) return 1;
-            return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-        });
-
-        return sorted.filter(p => {
-            const text = `${p.name} ${p.description || ''} ${p.category?.name || ''}`.toLowerCase();
-            const isComputer = text.includes('computadora') || text.includes('laptop') || text.includes('mini pc');
-            if (isComputer) return false;
-            const isConsole = text.includes('playstation') || text.includes('ps5');
-            const isTech = text.includes('espia') || text.includes('espía') || p.name.startsWith('CE-');
-            if (isConsole) { if (consolasCount < 1) { consolasCount++; return true; } return false; }
-            return p.featured || isTech;
-        }).slice(0, 32);
-    })();
-
     return (
-        <div className="w-full pb-20">
-            <div className="fixed inset-0 z-0 pointer-events-none opacity-[0.05]"
-                style={{
-                    backgroundImage: "none",
-                    backgroundSize: `80px 80px`
-                }}
-            />
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6 }} className="relative z-10">
+        <div className="w-full bg-[#F3F4F6] min-h-screen text-slate-800 font-sans pb-20">
+            {/* HERO SECTION ESTILO MOCKUP PIZZO */}
+            <header className="w-full bg-gradient-to-r from-indigo-600 via-indigo-700 to-blue-600 pt-8 pb-24 px-4 sm:px-8 rounded-b-[2.5rem] shadow-xl relative overflow-hidden">
+                <div className="max-w-7xl mx-auto">
+                    {/* Top Navigation */}
+                    <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/10 text-white">
+                        <div className="flex items-center gap-3">
+                            <span className="w-8 h-8 rounded-xl bg-white text-indigo-700 font-black flex items-center justify-center text-lg shadow-md">
+                                A
+                            </span>
+                            <span className="text-xl font-black uppercase tracking-wider">ATOMIC</span>
+                        </div>
+                        
+                        <div className="hidden md:flex items-center gap-6 text-xs font-bold uppercase tracking-wider text-indigo-100">
+                            <a href="#productos" className="hover:text-white transition-colors">Inicio</a>
+                            <a href="#categorias" className="hover:text-white transition-colors">Categorías</a>
+                            <a href="#destacados" className="hover:text-white transition-colors">Destacados</a>
+                            <a href="#contacto" className="hover:text-white transition-colors">Contacto</a>
+                        </div>
 
-                <MinimalStoreHero 
-                    searchQuery={searchQuery} 
-                    setSearchQuery={setSearchQuery}
-                    activeMainCategoryId={activeMainCategoryId}
-                    setActiveMainCategoryId={setActiveMainCategoryId}
-                    activeSubcategoryId={activeSubcategoryId}
-                    setActiveSubcategoryId={setActiveSubcategoryId}
-                    categories={metadata.categories}
-                    isSearching={isSearching}
-                    searchResults={searchResults}
-                />
+                        <Link href="/web/cart" className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-full text-xs font-bold transition-all border border-white/10">
+                            <ShoppingBag size={16} />
+                            <span>Carrito</span>
+                        </Link>
+                    </div>
 
-                <HomeCategoryBanner 
-                    activeMainCategoryId={activeMainCategoryId} 
-                    categories={metadata.categories} 
-                />
-
-                <ElectronicsCategoryBanner 
-                    activeMainCategoryId={activeMainCategoryId} 
-                    categories={metadata.categories} 
-                />
-
-                <PhonesCategoryBanner 
-                    activeMainCategoryId={activeMainCategoryId} 
-                    categories={metadata.categories} 
-                />
-
-                {/* PRODUCTOS */}
-                <section className="w-full max-w-7xl mx-auto px-6 py-8" id="productos">
-                    {searchQuery ? (
-                        filteredProducts.length === 0 ? (
-                            <div className="py-20 text-center border border-dashed border-slate-200 rounded-none">
-                                <p className="text-slate-400 text-[10px] uppercase tracking-[0.3em] font-black">No se encontraron productos</p>
-                                <button onClick={() => { setSearchQuery(""); setActiveMainCategoryId(null); setActiveSubcategoryId(null); }} className="mt-4 text-[black] text-[10px] font-black uppercase tracking-widest hover:underline">Limpiar Búsqueda</button>
+                    {/* Banner Tarjeta Hero Estilo Pizzo */}
+                    <div className="bg-white rounded-3xl p-6 sm:p-10 shadow-2xl grid md:grid-cols-2 gap-8 items-center text-slate-800">
+                        <div className="aspect-4/3 bg-slate-50 rounded-2xl p-6 flex items-center justify-center overflow-hidden border border-slate-100">
+                            <SafeImage 
+                                src="/assets/ecommerce/intro_banner.jpg" 
+                                alt="Colección Destacada ATOMIC" 
+                                className="w-full h-full object-contain hover:scale-105 transition-transform duration-500" 
+                            />
+                        </div>
+                        <div className="flex flex-col justify-center space-y-4">
+                            <span className="text-xs font-bold uppercase text-indigo-600 tracking-widest bg-indigo-50 px-3 py-1 rounded-full w-fit">
+                                Colección Principal 2026
+                            </span>
+                            <h1 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight uppercase leading-tight">
+                                Tecnología & Prefabricados ATOMIC
+                            </h1>
+                            <p className="text-slate-500 text-sm leading-relaxed">
+                                Explora nuestro catálogo certificado con precios actualizados en tiempo real y soporte técnico garantizado.
+                            </p>
+                            <div className="pt-2">
+                                <a 
+                                    href="#productos" 
+                                    className="inline-flex items-center justify-center px-8 py-3.5 bg-slate-900 hover:bg-indigo-600 text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all shadow-lg hover:shadow-indigo-500/25 hover:-translate-y-0.5"
+                                >
+                                    Explorar Catálogo
+                                </a>
                             </div>
-                        ) : (
-                                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                                    {filteredProducts.map((p: any, i: number) => (
-                                        <MiniProductCard key={p.id} product={p} userRole={userRole} delay={i * 0.02} />
-                                    ))}
-                                </div>
-                        )
-                    ) : (
-                        <div className="mt-6 border-t border-black/10 pt-8" id="productos">
-                        {isLoadingCategory ? (
-                            <div className="py-20 flex flex-col items-center justify-center">
-                                <div className="w-8 h-8 border-2 border-black border-t-transparent rounded-full animate-spin mb-4" />
-                                <p className="text-slate-400 text-[10px] uppercase tracking-[0.3em] font-black">Cargando catálogo...</p>
-                            </div>
-                        ) : filteredProducts.length === 0 ? (
-                            <div className="py-20 text-center border border-dashed border-slate-200 rounded-none">
-                                <p className="text-slate-400 text-[10px] uppercase tracking-[0.3em] font-black">No hay productos en esta categoría</p>
-                                <button onClick={() => { setActiveMainCategoryId(null); setActiveSubcategoryId(null); }} className="mt-4 text-[black] text-[10px] font-black uppercase tracking-widest hover:underline">Quitar Filtro</button>
-                            </div>
-                        ) : (
-                            <InfiniteProductScroll products={filteredProducts} userRole={userRole} />
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            {/* SECCIÓN DE BÚSQUEDA Y CATEGORÍAS */}
+            <main className="max-w-7xl mx-auto px-4 sm:px-8 -mt-10 relative z-20 space-y-12">
+
+                {/* BARRA DE BÚSQUEDA FLOTANTE */}
+                <div className="bg-white rounded-2xl p-4 shadow-xl border border-slate-100 flex items-center gap-4">
+                    <div className="relative flex-1">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                        <input
+                            type="text"
+                            value={searchQuery}
+                            onChange={(e) => handleSearchChange(e.target.value)}
+                            placeholder="Buscar por producto, marca o especificación..."
+                            className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-indigo-600 focus:bg-white transition-all"
+                        />
+                        {searchQuery && (
+                            <button onClick={() => handleSearchChange("")} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700">
+                                <X size={16} />
+                            </button>
                         )}
                     </div>
+                    {isSearching && (
+                        <div className="w-5 h-5 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+                    )}
+                </div>
+
+                {/* TARJETAS DE CATEGORÍAS ESTILO MOCKUP (ICONOS AZULES EN CONTENEDORES PASTEL) */}
+                <section id="categorias" className="space-y-4">
+                    <div className="flex items-center justify-between">
+                        <h2 className="text-xl font-extrabold text-slate-900 uppercase tracking-tight">Categorías</h2>
+                        <button 
+                            onClick={() => { setActiveMainCategoryId(null); setActiveSubcategoryId(null); setSearchQuery(""); }} 
+                            className="text-xs font-bold text-indigo-600 hover:bg-indigo-50 px-4 py-1.5 rounded-lg transition-colors border border-transparent hover:border-indigo-100"
+                        >
+                            Ver todo
+                        </button>
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+                        {metadata.categories.slice(0, 5).map((cat: any) => {
+                            const isSelected = activeMainCategoryId === cat.id;
+                            return (
+                                <button
+                                    key={cat.id}
+                                    onClick={() => {
+                                        setSearchQuery("");
+                                        if (isSelected) {
+                                            setActiveMainCategoryId(null);
+                                            setActiveSubcategoryId(null);
+                                        } else {
+                                            setActiveMainCategoryId(cat.id);
+                                            setActiveSubcategoryId(null);
+                                        }
+                                    }}
+                                    className={`p-6 rounded-2xl border transition-all duration-300 flex flex-col items-center justify-center gap-3 text-center ${
+                                        isSelected 
+                                            ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-500/25 scale-[1.02]' 
+                                            : 'bg-indigo-50/60 hover:bg-indigo-100/80 border-indigo-100/80 text-slate-800 hover:shadow-md'
+                                    }`}
+                                >
+                                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${isSelected ? 'bg-white text-indigo-600' : 'bg-white text-indigo-600 shadow-sm'}`}>
+                                        <Layers size={22} />
+                                    </div>
+                                    <span className="text-xs font-bold uppercase tracking-tight line-clamp-1">{cat.name}</span>
+                                </button>
+                            );
+                        })}
+                    </div>
+                </section>
+
+                {/* SECCIÓN DE PRODUCTOS DESTACADOS (TARJETAS BLANCAS CON PRECIO ÚNICO) */}
+                <section id="productos" className="space-y-6 pt-4">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h2 className="text-xl font-extrabold text-slate-900 uppercase tracking-tight">Catálogo de Productos</h2>
+                            <p className="text-xs text-slate-500 mt-0.5">{filteredProducts.length} artículos disponibles</p>
+                        </div>
+                    </div>
+
+                    {filteredProducts.length === 0 ? (
+                        <div className="bg-white rounded-2xl p-12 text-center border border-slate-200">
+                            <p className="text-sm font-bold text-slate-600 mb-2">No se encontraron productos con el filtro aplicado</p>
+                            <button
+                                onClick={() => { setSearchQuery(""); setActiveMainCategoryId(null); setActiveSubcategoryId(null); }}
+                                className="px-6 py-2.5 bg-indigo-600 text-white rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-indigo-700 transition-colors"
+                            >
+                                Limpiar Filtros
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                            {filteredProducts.map((p: any) => {
+                                const imgs = safeParseArray(p.images);
+                                const primaryImg = imgs.length > 0 ? imgs[0] : '/img/placeholder.png';
+                                const finalPrice = calculateDiscountedPrice(p.price, userRole);
+
+                                return (
+                                    <Link
+                                        key={p.id}
+                                        href={`/web/product/${p.id}`}
+                                        className="group bg-white rounded-2xl p-4 border border-slate-100 hover:border-indigo-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
+                                    >
+                                        {/* Imagen del producto */}
+                                        <div className="aspect-square bg-slate-50 rounded-xl p-4 flex items-center justify-center overflow-hidden mb-4 relative">
+                                            <SafeImage 
+                                                src={primaryImg} 
+                                                alt={p.name} 
+                                                className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500" 
+                                            />
+                                        </div>
+
+                                        {/* Titulo y Precio Limpio (Único, Sin Tachados) */}
+                                        <div className="flex items-end justify-between gap-3 pt-2 border-t border-slate-50">
+                                            <div className="flex-1">
+                                                <h3 className="text-xs font-bold text-slate-900 group-hover:text-indigo-600 transition-colors line-clamp-2 leading-snug">
+                                                    {p.name}
+                                                </h3>
+                                                <span className="text-[10px] text-slate-400 font-medium block mt-1">
+                                                    {p.category?.name || 'General'}
+                                                </span>
+                                            </div>
+
+                                            <div className="text-right">
+                                                <span className="text-lg font-black text-slate-900 font-mono">
+                                                    ${finalPrice.toFixed(0)}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </Link>
+                                );
+                            })}
+                        </div>
                     )}
                 </section>
 
-                {/* BANNER DE PRESENTACIÓN (AL FINAL) */}
-                {!searchQuery && !activeMainCategoryId && (
-                    <IntroductionBanner />
-                )}
-            </motion.div>
+                {/* BANNERS COMPLEMENTARIOS */}
+                <SpyCameraBanner />
+                <SmartIntercomBanner />
+                <HomeCategoryBanner activeMainCategoryId={activeMainCategoryId} categories={metadata.categories} />
+                <ElectronicsCategoryBanner activeMainCategoryId={activeMainCategoryId} categories={metadata.categories} />
+                <PhonesCategoryBanner activeMainCategoryId={activeMainCategoryId} categories={metadata.categories} />
+            </main>
+
+            {/* FOOTER LIMPIO */}
+            <footer id="contacto" className="max-w-7xl mx-auto px-6 mt-20 pt-8 border-t border-slate-200 text-center text-xs text-slate-400 font-mono">
+                ATOMIC HEAVY MACHINERY & ELECTRONICS — CATÁLOGO COMERCIAL OFICIAL
+            </footer>
         </div>
-    )
-}
-
-function MinimalStoreHero({ 
-    searchQuery, setSearchQuery,
-    activeMainCategoryId, setActiveMainCategoryId,
-    activeSubcategoryId, setActiveSubcategoryId,
-    categories,
-    isSearching,
-    searchResults
-}: { 
-    searchQuery: string, setSearchQuery: (val: string) => void,
-    activeMainCategoryId: string | null, setActiveMainCategoryId: (val: string | null) => void,
-    activeSubcategoryId: string | null, setActiveSubcategoryId: (val: string | null) => void,
-    categories: any[],
-    isSearching: boolean,
-    searchResults: any[] | null
-}) {
-    const cards = [
-        { id: categories.find(c => c.slug === 'electronica')?.id || 'electronica', label: 'Electrónica', icon: <Cpu size={24} /> },
-        { id: categories.find(c => c.slug === 'hogar')?.id || 'hogar', label: 'Hogar', icon: <Home size={24} /> },
-        { id: categories.find(c => c.slug === 'residencial')?.id || 'residencial', label: 'Residencial', icon: <Building size={24} /> },
-        { id: categories.find(c => c.slug === 'industrial')?.id || 'industrial', label: 'Industrial', icon: <Factory size={24} /> },
-        { id: categories.find(c => c.slug === 'software')?.id || 'software', label: 'Software', icon: <Code size={24} /> }
-    ];
-
-    const subcategories = activeMainCategoryId ? categories.filter(c => c.parentId === activeMainCategoryId) : [];
-
-    const scrollDown = () => {
-        document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' });
-    };
-
-    return (
-        <section className="pt-12 pb-16 flex flex-col items-center justify-center text-center px-6">
-            {/* ATOM LOGO & TITLE */}
-            <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, ease: "easeOut" }}
-                className="mb-6 flex flex-col items-center"
-            >
-                <AtomLogo />
-            </motion.div>
-
-            <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2, duration: 0.5 }}
-                className="mb-2"
-            >
-                <h1 className="text-[10vw] md:text-[6vw] font-black tracking-tighter uppercase text-slate-100 leading-[0.85] mb-6">
-                    ATOMIC
-                </h1>
-            </motion.div>
-
-            <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.35 }}
-                className="text-xs font-bold tracking-[0.4em] uppercase text-[#0055fe] mb-12"
-            >
-                Tienda en Línea
-            </motion.p>
-
-            {/* SEARCH BAR */}
-            <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4, duration: 0.5 }}
-                className="w-full max-w-2xl mx-auto mb-12 relative group"
-            >
-                {isSearching ? (
-                    <div className="absolute left-4 top-1/2 -translate-y-1/2">
-                        <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
-                    </div>
-                ) : (
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-hover:text-slate-100 transition-colors" size={18} />
-                )}
-                <input 
-                    type="text" 
-                    value={searchQuery}
-                    onChange={(e) => {
-                        setSearchQuery(e.target.value);
-                        setActiveMainCategoryId(null);
-                        setActiveSubcategoryId(null);
-                    }}
-                    placeholder="Buscar producto, marca, categoría, proveedor..."
-                    className="w-full bg-black/5 border border-black/10 rounded-full p-6 pl-14 pr-12 text-sm font-bold uppercase tracking-widest placeholder:text-slate-100/30 text-slate-100 focus:border-[#0055fe] focus:bg-slate-900/50 backdrop-blur-xl border-slate-700/50 transition-all outline-none shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)]"
-                />
-                {searchQuery && (
-                    <button 
-                        onClick={() => setSearchQuery("")}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-100/40 hover:text-slate-100 transition-colors"
-                    >
-                        <X size={16} />
-                    </button>
-                )}
-                {searchQuery && !isSearching && searchResults !== null && (
-                    <div className="absolute -bottom-7 left-0 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                        {searchResults.length} resultado{searchResults.length !== 1 ? 's' : ''} encontrado{searchResults.length !== 1 ? 's' : ''}
-                    </div>
-                )}
-            </motion.div>
-
-            {/* HORIZONTAL CARDS */}
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5, duration: 0.5 }}
-                className="w-full max-w-5xl overflow-x-auto pb-4 scrollbar-hide"
-            >
-                <div className="flex items-center justify-center gap-4 min-w-max mx-auto px-4">
-                    {cards.map((card, i) => (
-                        <button
-                            key={card.id}
-                            onClick={() => {
-                                setSearchQuery("");
-                                if (activeMainCategoryId === card.id) {
-                                    setActiveMainCategoryId(null);
-                                    setActiveSubcategoryId(null);
-                                } else {
-                                    setActiveMainCategoryId(card.id);
-                                    setActiveSubcategoryId(null);
-                                }
-                            }}
-                            className={`group flex flex-col items-center justify-center gap-4 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-slate-100 rounded-3xl w-36 h-36 border ${activeMainCategoryId === card.id ? 'border-[#0055fe] shadow-[0_10px_40px_rgba(0,85,254,0.15)] scale-[1.05]' : 'border-black/5 shadow-[0_4px_20px_rgba(0,0,0,0.03)]'}
-                                       hover:scale-[1.05] hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] hover:border-black/20 transition-all duration-500
-                                       active:scale-[0.98] transition-all duration-300 ease-out`}
-                        >
-                            <div className={`w-12 h-12 rounded-xl border flex items-center justify-center transition-all duration-300 ${activeMainCategoryId === card.id ? 'bg-[#0055fe] text-white' : 'bg-black/5 group-hover:bg-black group-hover:text-white'}`}>
-                                {card.icon}
-                            </div>
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-100">
-                                {card.label}
-                            </span>
-                        </button>
-                    ))}
-                </div>
-            </motion.div>
-
-            {/* SUBCATEGORIES STRIP */}
-            <AnimatePresence>
-                {activeMainCategoryId && subcategories.length > 0 && (
-                    <motion.div
-                        initial={{ opacity: 0, height: 0, marginTop: 0 }}
-                        animate={{ opacity: 1, height: 'auto', marginTop: 24 }}
-                        exit={{ opacity: 0, height: 0, marginTop: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="w-full max-w-4xl overflow-x-auto scrollbar-hide flex items-center justify-center gap-3 px-4"
-                    >
-                        {subcategories.map((sub: any) => (
-                            <button
-                                key={sub.id}
-                                onClick={() => {
-                                    setActiveSubcategoryId(sub.id === activeSubcategoryId ? null : sub.id);
-                                    scrollDown();
-                                }}
-                                className={`group flex flex-col items-center justify-center gap-2 bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 backdrop-blur-xl text-white rounded-2xl w-32 h-32 border ${activeSubcategoryId === sub.id ? 'border-[#0055fe] bg-[#0055fe]/20 scale-[1.05] shadow-2xl shadow-[#0055fe]/20' : 'border-white/10'}
-                                           hover:scale-[1.05] hover:shadow-2xl hover:shadow-[#0055fe]/20 hover:border-[#0055fe] hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50/10
-                                           active:scale-[0.98] transition-all duration-300 ease-out flex-shrink-0`}
-                            >
-                                <span className="text-[10px] font-black uppercase tracking-[0.15em] text-center px-4 leading-relaxed">
-                                    {sub.name}
-                                </span>
-                            </button>
-                        ))}
-                    </motion.div>
-                )}
-            </AnimatePresence>
-        </section>
-    );
-}
-
-function AtomLogo() {
-    return (
-        <svg width="64" height="64" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="36" cy="36" r="5" fill="#0055fe" className="animate-pulse" />
-            <ellipse cx="36" cy="36" rx="30" ry="10" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" fill="none" />
-            <ellipse cx="36" cy="36" rx="30" ry="10" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" fill="none" transform="rotate(60 36 36)" />
-            <ellipse cx="36" cy="36" rx="30" ry="10" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" fill="none" transform="rotate(120 36 36)" />
-            <circle cx="66" cy="36" r="3" fill="#fff" />
-            <circle cx="21" cy="10.5" r="3" fill="#fff" />
-            <circle cx="21" cy="61.5" r="3" fill="#fff" />
-        </svg>
-    )
-}
-
-
-function MiniProductCard({ product: p, userRole, delay }: { product: any, userRole?: string, delay: number }) {
-    const imgs = safeParseArray(p.images)
-    return (
-        <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay }}
-        >
-            <Link
-                href={`/web/product/${p.id}`}
-                className="group flex flex-col bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-black/5 hover:border-black/20 hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] transition-all duration-500 rounded-2xl overflow-hidden"
-            >
-                <div className="aspect-square relative bg-black/5 flex items-center justify-center overflow-hidden">
-                    <SafeImage src={imgs[0]} alt={p.name} fill className="p-2 group-hover:scale-110 transition-transform duration-300" />
-                </div>
-                <div className="p-2">
-                    <p className="text-[9px] font-medium text-slate-500 tracking-wide line-clamp-2 leading-tight group-hover:text-slate-100 transition-colors text-slate-100/80 mb-1">{p.name}</p>
-                    <p className="text-[10px] font-bold text-[#0055fe]">
-                        ${calculateDiscountedPrice(p.price, userRole).toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                    </p>
-                </div>
-            </Link>
-        </motion.div>
-    );
-}
-
-/* ─── Infinite horizontal scroll for Nuestros Productos ─── */
-function InfiniteProductScroll({ products, userRole }: { products: any[], userRole?: string }) {
-    const trackRef = useRef<HTMLDivElement>(null)
-    const isDragging = useRef(false)
-    const startX = useRef(0)
-    const scrollLeft = useRef(0)
-
-    const onMouseDown = (e: React.MouseEvent) => {
-        isDragging.current = true
-        startX.current = e.pageX - (trackRef.current?.offsetLeft ?? 0)
-        scrollLeft.current = trackRef.current?.scrollLeft ?? 0
-    }
-    const onMouseMove = (e: React.MouseEvent) => {
-        if (!isDragging.current || !trackRef.current) return
-        e.preventDefault()
-        const x = e.pageX - trackRef.current.offsetLeft
-        trackRef.current.scrollLeft = scrollLeft.current - (x - startX.current)
-    }
-    const onMouseUp = () => { isDragging.current = false }
-
-    const scroll = (dir: 'left' | 'right') => {
-        trackRef.current?.scrollBy({ left: dir === 'right' ? 320 : -320, behavior: 'smooth' })
-    }
-
-    return (
-        <div className="relative">
-            <div className="absolute left-0 top-0 bottom-4 w-16 bg-gradient-to-r from-[#F8FAFC] to-transparent z-10 pointer-events-none" />
-            <div className="absolute right-0 top-0 bottom-4 w-16 bg-gradient-to-l from-[#F8FAFC] to-transparent z-10 pointer-events-none" />
-
-            <button onClick={() => scroll('left')} className="absolute left-2 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-slate-500 shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
-                <ChevronLeft size={16} />
-            </button>
-            <button onClick={() => scroll('right')} className="absolute right-2 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-slate-500 shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
-                <ChevronRight size={16} />
-            </button>
-
-            <div
-                ref={trackRef}
-                className="flex gap-3 overflow-x-auto pb-4 px-12 cursor-grab active:cursor-grabbing select-none custom-scrollbar"
-                onMouseDown={onMouseDown}
-                onMouseMove={onMouseMove}
-                onMouseUp={onMouseUp}
-                onMouseLeave={onMouseUp}
-            >
-                {products.map((p: any) => (
-                    <Link
-                        key={p.id}
-                        href={`/web/product/${p.id}`}
-                        className="shrink-0 w-44 group bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 hover:border-[black]/50 hover:shadow-[0_12px_40px_rgba(0,0,0,0.5)] transition-all duration-300 rounded-xl overflow-hidden"
-                        draggable={false}
-                    >
-                        <div className="h-32 relative bg-slate-50 flex items-center justify-center overflow-hidden border-b border-slate-100">
-                             <SafeImage src={safeParseArray(p.images)[0]} alt={p.name} fill className="p-3 group-hover:scale-105 transition-transform duration-300" />
-                        </div>
-                        <div className="p-3">
-                            <p className="text-[10px] font-medium text-slate-500 line-clamp-2 leading-snug mb-2 group-hover:text-slate-100 transition-colors text-slate-100/80">{p.name}</p>
-                            <p className="text-xs font-bold text-[black]">${calculateDiscountedPrice(p.price, userRole).toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
-                        </div>
-                    </Link>
-                ))}
-                <div className="shrink-0 w-8" />
-            </div>
-        </div>
-    )
-}
-
-/* ─── Collection Banner ─── */
-function CollectionBanner({ collection, products, reverse, userRole }: { collection: any, products: any[], reverse: boolean, userRole?: string }) {
-    const galleryRef = useRef<HTMLDivElement>(null)
-    const scrollGallery = (dir: 'left' | 'right') => {
-        galleryRef.current?.scrollBy({ left: dir === 'right' ? 300 : -300, behavior: 'smooth' })
-    }
-
-    const textAccent = "text-[black]"
-    const bgAccent = "from-zinc-200/10"
-    const btnHover = "hover:bg-[black] hover:border-[black]"
-    const badgeColor = "bg-zinc-50 text-[black] border-zinc-200"
-
-    return (
-        <motion.section 
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.7 }}
-            className="group relative bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 hover:border-zinc-300 rounded-3xl overflow-hidden shadow-xl transition-all duration-500"
-        >
-            <div className={`absolute top-0 ${reverse ? 'right-0' : 'left-0'} w-[500px] h-[500px] bg-gradient-to-br ${bgAccent} to-transparent opacity-20 blur-[100px] pointer-events-none`} />
-            
-            <div className={`flex flex-col lg:flex-row ${reverse ? 'lg:flex-row-reverse' : ''} items-stretch relative z-10`}>
-                
-                <div className={`w-full lg:w-[45%] p-10 md:p-14 flex flex-col justify-center relative border-b lg:border-b-0 ${reverse ? 'lg:border-l border-slate-200' : 'lg:border-r border-slate-200'} overflow-hidden`}>
-                    <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.03] pointer-events-none mix-blend-overlay"></div>
-                    
-                    <div className="relative z-10">
-                        <div className="flex items-center gap-3 mb-6">
-                            <span className={`px-3 py-1 text-[9px] font-black uppercase tracking-[0.4em] rounded-full border ${badgeColor} backdrop-blur-sm flex items-center gap-2`}>
-                                <Sparkles size={10} />
-                                Colección Premium
-                            </span>
-                        </div>
-
-                        <h2 className="text-4xl md:text-5xl font-black text-[black] tracking-tighter leading-none mb-6 uppercase">
-                            {collection.name}
-                        </h2>
-                        
-                        <p className="text-slate-500 text-[13px] leading-relaxed mb-10 font-medium max-w-md">
-                            {collection.description || `Equipamiento especializado y soluciones avanzadas para ${collection.name}. Eleva tu infraestructura tecnológica al siguiente nivel con calidad certificada.`}
-                        </p>
-
-                        <div className="flex flex-wrap gap-4 items-center">
-                            <Link
-                                href={`/web/collection/${collection.slug}`}
-                                className={`inline-flex items-center gap-3 text-white text-[11px] font-black uppercase tracking-widest px-8 py-4 rounded-xl transition-all duration-300 bg-[black] border border-[black] ${btnHover} shadow-xl`}
-                            >
-                                Explororar Catálogo <ArrowRight size={16} />
-                            </Link>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="w-full lg:w-[55%] p-6 md:p-10 relative bg-slate-50">
-                    {products.length > 0 ? (
-                        <div className="h-full flex flex-col">
-                            <div className="flex justify-between items-center mb-6 px-2">
-                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Productos Destacados</span>
-                                <div className="flex gap-2">
-                                    <button onClick={() => scrollGallery('left')} className="w-10 h-10 rounded-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 flex items-center justify-center hover:bg-[black] hover:text-white transition-all text-slate-400 shadow-[0_8px_32px_rgba(0,0,0,0.5)]"><ChevronLeft size={16} /></button>
-                                    <button onClick={() => scrollGallery('right')} className="w-10 h-10 rounded-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 flex items-center justify-center hover:bg-[black] hover:text-white transition-all text-slate-400 shadow-[0_8px_32px_rgba(0,0,0,0.5)]"><ChevronRight size={16} /></button>
-                                </div>
-                            </div>
-
-                            <div ref={galleryRef} className="flex gap-4 overflow-x-auto pb-6 pt-2 px-2 hide-scrollbar snap-x flex-1 items-center">
-                                {products.map((p: any, idx: number) => (
-                                    <div 
-                                        key={p.id}
-                                        className="snap-center shrink-0"
-                                    >
-                                        <Link 
-                                            href={`/web/product/${p.id}`} 
-                                            className="block w-48 lg:w-56 group bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 rounded-2xl hover:border-zinc-400 transition-all duration-300 p-3 shadow-[0_12px_40px_rgba(0,0,0,0.5)] hover:shadow-xl relative overflow-hidden"
-                                        >
-                                            <div className="h-36 lg:h-44 bg-slate-50 flex items-center justify-center relative mb-4 rounded-xl overflow-hidden border border-slate-100">
-                                                <SafeImage src={safeParseArray(p.images)[0]} alt={p.name} fill className="p-4 group-hover:scale-110 transition-transform duration-500" />
-                                            </div>
-                                            
-                                            <div className="px-1">
-                                                <p className="text-slate-500 text-[11px] font-semibold line-clamp-2 mb-2 group-hover:text-slate-100 transition-colors text-slate-100/80 leading-relaxed h-8">{p.name}</p>
-                                                <p className="text-sm font-black text-[black] bg-zinc-50 inline-block px-3 py-1.5 rounded-lg border border-zinc-200">${calculateDiscountedPrice(p.price, userRole).toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
-                                            </div>
-                                        </Link>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="h-full min-h-[300px] flex items-center justify-center">
-                            <div className="text-center bg-slate-900/50 backdrop-blur-xl border-slate-700/50 p-10 rounded-3xl border border-slate-100 shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
-                                <Hexagon className="w-12 h-12 text-slate-200 mx-auto mb-4 animate-[spin_10s_linear_infinite]" strokeWidth={1} />
-                                <p className="text-slate-300 text-[11px] uppercase tracking-[0.4em] font-black">Catálogo en Sincronización</p>
-                            </div>
-                        </div>
-                    )}
-                </div>
-            </div>
-        </motion.section>
-    )
-}
-
-/* ─── Categories Banner ─── */
-function CategoriesBanner({ categories }: { categories: any[] }) {
-    const scrollRef = useRef<HTMLDivElement>(null)
-    const scroll = (dir: 'left' | 'right') => {
-        scrollRef.current?.scrollBy({ left: dir === 'right' ? 240 : -240, behavior: 'smooth' })
-    }
-
-    return (
-        <section id="categorias" className="w-full py-10">
-            <div className="max-w-7xl mx-auto px-6">
-                <div className="flex items-end justify-between mb-6">
-                    <div>
-                        <h2 className="text-xl font-semibold text-[black] uppercase tracking-widest">
-                            NUESTRAS <span className="font-bold text-slate-100">CATEGORÍAS</span>
-                        </h2>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <button onClick={() => scroll('left')} className="w-8 h-8 rounded-full border border-slate-200 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-slate-400 flex items-center justify-center hover:bg-[black] hover:text-white transition-all shadow-[0_4px_15px_rgba(0,0,0,0.3)]"><ChevronLeft size={15} /></button>
-                        <button onClick={() => scroll('right')} className="w-8 h-8 rounded-full border border-slate-200 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-slate-400 flex items-center justify-center hover:bg-[black] hover:text-white transition-all shadow-[0_4px_15px_rgba(0,0,0,0.3)]"><ChevronRight size={15} /></button>
-                    </div>
-                </div>
-
-                <div ref={scrollRef} className="flex gap-3 overflow-x-auto hide-scrollbar pb-4 snap-x">
-                    {categories.filter(c => c.isVisible).map((cat: any, i: number) => (
-                        <motion.div
-                            key={cat.id}
-                            initial={{ opacity: 0, y: 12 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: i * 0.04 }}
-                            className="snap-start shrink-0"
-                        >
-                            <Link
-                                href={cat.slug === 'desarrollo' || cat.slug === 'software-desarrollo' || cat.slug.includes('diseno') || cat.name.toLowerCase().includes('diseño') ? '/web/demos' : `/web/category/${cat.slug}`}
-                                className="group block relative overflow-hidden w-48 h-60 rounded-xl border border-slate-200 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 hover:border-zinc-400 hover:shadow-[0_12px_40px_rgba(0,0,0,0.5)] transition-all duration-300"
-                            >
-                                <div className="absolute inset-0 flex items-center justify-center p-6">
-                                    <SafeImage src={cat.image} alt={cat.name} fill className="p-8 opacity-10 group-hover:opacity-30 transition-all duration-500 saturate-0" />
-                                </div>
-                                <div className="absolute inset-0 bg-gradient-to-t from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                                <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-white via-white/95 to-transparent">
-                                    <h3 className="text-[black] text-[11px] font-semibold uppercase tracking-tight mb-0.5 group-hover:text-slate-100 transition-colors line-clamp-2">{cat.name}</h3>
-                                    <p className="text-slate-400 text-[9px] font-medium uppercase tracking-widest flex items-center gap-1 group-hover:text-slate-100 transition-colors">
-                                        Ver <ArrowRight size={10} className="group-hover:translate-x-0.5 transition-transform" />
-                                    </p>
-                                </div>
-                            </Link>
-                        </motion.div>
-                    ))}
-                </div>
-            </div>
-        </section>
-    )
-}
-
-/* ─── Web Demo Showcase ─── */
-const PORTFOLIO_ITEMS = [
-    { id: 1, title: "Instituto Sucre", category: "Plataforma EduTech", description: "Gestión académica integral.", accent: "#6366f1", previewUrl: "/instituto_sucre.html" },
-    { id: 2, title: "Bodegas Logistics", category: "Logística Corporativo", description: "Control de inventario QR.", accent: "#10b981", previewUrl: "/bodegas.html" },
-    { id: 3, title: "Scraper Pro", category: "Inteligencia Competitiva", description: "Motor automatizado de datos.", accent: "#a855f7", previewUrl: "/scraper/index.html" },
-    { id: 4, title: "Couple Games", category: "Entretenimiento B2C", description: "App interactiva engagement.", accent: "#ec4899", previewUrl: "/couples-game/index.html" },
-    { id: 5, title: "SOFT3 Logistics", category: "ERP de Logística", description: "Sistema de gestión Laravel.", accent: "#3b82f6", previewUrl: "/soft3.html" }
-]
-
-function WebShowcase() {
-    const [activePreview, setActivePreview] = useState<{url: string, title: string, accent: string} | null>(null)
-    const scrollRef = useRef<HTMLDivElement>(null)
-    const scroll = (dir: 'left' | 'right') => { scrollRef.current?.scrollBy({ left: dir === 'right' ? 350 : -350, behavior: 'smooth' }) }
-
-    return (
-        <div className="bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 rounded-2xl p-8 relative overflow-hidden shadow-xl">
-            <div className="relative z-10 flex flex-col md:flex-row justify-between items-end mb-10 gap-4">
-                <div>
-                    <div className="flex items-center gap-2 text-slate-100 mb-2">
-                        <Sparkles size={14} />
-                        <span className="text-[10px] font-bold uppercase tracking-[0.3em]">Software & Web Demos</span>
-                    </div>
-                    <h3 className="text-2xl font-black text-[black] uppercase tracking-tight">Showcase de <span className="text-slate-100">Desarrollo</span></h3>
-                </div>
-                <div className="flex gap-2">
-                    <button onClick={() => scroll('left')} className="w-10 h-10 rounded-full border border-slate-200 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-slate-400 hover:text-slate-100 flex items-center justify-center transition-colors shadow-[0_4px_15px_rgba(0,0,0,0.3)]"><ChevronLeft size={20} /></button>
-                    <button onClick={() => scroll('right')} className="w-10 h-10 rounded-full border border-slate-200 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-slate-400 hover:text-slate-100 flex items-center justify-center transition-colors shadow-[0_4px_15px_rgba(0,0,0,0.3)]"><ChevronRight size={20} /></button>
-                </div>
-            </div>
-
-            <div ref={scrollRef} className="flex gap-6 overflow-x-auto hide-scrollbar pb-4 snap-x">
-                {PORTFOLIO_ITEMS.map((item) => (
-                    <motion.div 
-                        key={item.id}
-                        whileHover={{ y: -5 }}
-                        className="snap-start shrink-0 w-72 bg-slate-50 border border-slate-200 rounded-xl overflow-hidden group cursor-pointer shadow-[0_8px_32px_rgba(0,0,0,0.5)] hover:shadow-xl transition-all"
-                        onClick={() => setActivePreview({ url: item.previewUrl, title: item.title, accent: item.accent })}
-                    >
-                        <div className="h-40 relative bg-slate-900/50 backdrop-blur-xl border-slate-700/50 flex items-center justify-center overflow-hidden">
-                             <iframe src={item.previewUrl} title={item.title} className="w-[400%] h-[400%] origin-top-left scale-[0.25] pointer-events-none opacity-40 group-hover:opacity-80 transition-opacity" />
-                             <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/10 opacity-100 group-hover:opacity-0 transition-opacity"><span className="text-[10px] font-bold text-slate-100/40 uppercase tracking-widest">Ver Demo</span></div>
-                        </div>
-                        <div className="p-4 border-t border-slate-100 bg-slate-900/50 backdrop-blur-xl border-slate-700/50">
-                            <span className="text-[9px] font-bold uppercase tracking-widest mb-1 block" style={{ color: item.accent }}>{item.category}</span>
-                            <h4 className="text-sm font-bold text-slate-800 mb-2">{item.title}</h4>
-                            <p className="text-[10px] text-slate-500 leading-relaxed line-clamp-2">{item.description}</p>
-                        </div>
-                    </motion.div>
-                ))}
-            </div>
-
-            <AnimatePresence>
-                {activePreview && (
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 md:p-10" onClick={() => setActivePreview(null)}>
-                        <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="relative w-full h-full max-w-6xl bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 shadow-2xl rounded-xl overflow-hidden flex flex-col" onClick={(e) => e.stopPropagation()}>
-                            <div className="h-14 bg-slate-50 border-b border-slate-200 flex items-center justify-between px-6">
-                                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Demo: <span className="text-slate-900">{activePreview.title}</span></span>
-                                <button onClick={() => setActivePreview(null)} className="text-slate-400 hover:text-slate-900 transition-colors"><X size={20} /></button>
-                            </div>
-                            <div className="flex-1 bg-slate-900/50 backdrop-blur-xl border-slate-700/50"><iframe src={activePreview.url} title="Active Demo" className="w-full h-full border-0" /></div>
-                        </motion.div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-        </div>
-    )
-}
-
-function HeroBanner({ settings }: { settings: any }) {
-    const banners = [
-        { 
-            url: "/banners/espia.jpeg", 
-            pdf: "/pdfs/catalogo_espia.pdf",
-        },
-        { 
-            url: "/banners/smart.jpeg", 
-            pdf: "/pdfs/catalogo_smart.pdf",
-        }
-    ]
-
-    return (
-        <section className="w-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50">
-            <div className="flex flex-col">
-                {banners.map((b, i) => (
-                    <div 
-                        key={i}
-                        className="relative w-full overflow-hidden"
-                    >
-                        <img src={b.url} alt="Banner" className="w-full h-auto block" />
-                        <a 
-                            href={b.pdf} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="absolute inset-0 z-10"
-                            aria-label="Ver más"
-                        />
-                    </div>
-                ))}
-            </div>
-        </section>
-    )
-}
-
-
-/* ─── Minimal Store Hero ─── */
-
-function IntroductionBanner() {
-    return (
-        <section className="w-full max-w-7xl mx-auto px-6 pt-4 pb-20 flex flex-col items-center justify-center text-center">
-            <motion.h2 
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="text-[6vw] md:text-[4vw] font-black tracking-tighter uppercase text-slate-100 leading-[0.9] mb-8"
-            >
-                TECNOLOGÍA QUE <br/> <span className="text-[#0055fe]">TRANSFORMA</span>
-            </motion.h2>
-
-            <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.2 }}
-                className="max-w-3xl text-sm md:text-base font-medium text-slate-100/60 leading-relaxed mb-16"
-            >
-                En <strong className="text-slate-100 font-black">ATOMIC</strong>, no solo vendemos equipos; construimos infraestructuras. Desde electrónica de consumo hasta soluciones industriales completas. Desarrollamos software a medida para requerimientos específicos y respaldamos cada proyecto con un <strong className="text-[#0055fe] font-black">servicio técnico altamente especializado</strong>.
-            </motion.p>
-
-            <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.4, duration: 0.8 }}
-                className="w-full max-w-5xl mx-auto aspect-[16/7] md:aspect-[21/9] relative rounded-3xl overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.1)] border border-black/5"
-            >
-                <Image 
-                    src="/assets/ecommerce/intro_banner.jpg" 
-                    alt="Atomic Industrial Equipment"
-                    fill
-                    className="object-cover"
-                />
-            </motion.div>
-        </section>
     )
 }
