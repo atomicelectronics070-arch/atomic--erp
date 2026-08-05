@@ -186,10 +186,19 @@ export default function BlockMachineLanding({ products }: { products: any[] }) {
                 <span className="text-base">→</span>
               </a>
               <a 
-                href="#comparativas" 
-                className="w-full sm:w-auto px-10 py-5 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-black text-xs uppercase tracking-[0.25em] rounded-full transition-all duration-300 backdrop-blur-md hover:border-amber-500/40"
+                href="/catalogo-maquinas-de-bloques.pdf" 
+                download="Catálogo_Maquinas_Bloques_ATOMIC.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full sm:w-auto px-8 py-5 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/40 text-amber-400 font-black text-xs uppercase tracking-[0.25em] rounded-full transition-all duration-300 backdrop-blur-md flex items-center justify-center space-x-2 shadow-[0_0_20px_rgba(245,158,11,0.2)]"
               >
-                ⚔️ Comparativa de Modelos 2x2
+                <span>📥 Descargar Catálogo PDF</span>
+              </a>
+              <a 
+                href="#comparativas" 
+                className="w-full sm:w-auto px-8 py-5 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-black text-xs uppercase tracking-[0.25em] rounded-full transition-all duration-300 backdrop-blur-md hover:border-amber-500/40"
+              >
+                ⚔️ Comparativa 2x2
               </a>
             </div>
           </motion.div>
