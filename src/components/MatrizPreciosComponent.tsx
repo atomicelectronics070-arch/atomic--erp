@@ -423,20 +423,24 @@ export default function MatrizPreciosComponent() {
 
                     {/* EDITABLE CATEGORY */}
                     <td className="py-1.5 px-2 border-r border-zinc-900 font-mono text-[11px] uppercase">
-                      {isEditMode ? (
-                        <select
-                          value={p.categoryId || ''}
-                          onChange={(e) => handleUpdateProduct(p.id, 'categoryId', e.target.value)}
-                          className={`w-full px-2 py-1 text-[11px] uppercase border ${themeClasses.cellInput} cursor-pointer font-mono outline-none`}
-                        >
-                          <option value="">-- Sin categoría --</option>
-                          {categories.map((c) => (
-                            <option key={c.id} value={c.id}>
-                              {c.name}
-                            </option>
-                          ))}
-                        </select>
-                      ) : (
+                      {isEditMode ? (() => {
+                        const matched = categories.find(c => c.id === p.categoryId || c.name.toLowerCase() === (p.category || '').toLowerCase());
+                        const selVal = matched ? matched.id : (p.categoryId || '');
+                        return (
+                          <select
+                            value={selVal}
+                            onChange={(e) => handleUpdateProduct(p.id, 'categoryId', e.target.value)}
+                            className={`w-full px-2 py-1 text-[11px] uppercase border ${themeClasses.cellInput} cursor-pointer font-mono outline-none`}
+                          >
+                            <option value="">-- Sin categoría --</option>
+                            {categories.map((c) => (
+                              <option key={c.id} value={c.id}>
+                                {c.name}
+                              </option>
+                            ))}
+                          </select>
+                        );
+                      })() : (
                         <span>{p.category}</span>
                       )}
                     </td>

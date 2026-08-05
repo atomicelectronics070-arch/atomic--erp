@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
@@ -73,6 +74,7 @@ export async function GET(req: NextRequest) {
         name: p.name,
         provider: p.provider || 'Atomic',
         category: p.category?.name || 'General',
+        categoryId: p.category?.id || '',
         stock: p.stock ?? 0,
         costPrice,
         salePrice,
