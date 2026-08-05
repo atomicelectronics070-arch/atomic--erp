@@ -13,6 +13,9 @@ export default function BlockMachineLanding({ products }: { products: any[] }) {
   const monthlyProfit = blocksPerDay * profitPerBlock * 26; // 26 working days
   const annualProfit = monthlyProfit * 12;
 
+  // State for Capacitación / Masterclass Tabs
+  const [activeTab, setActiveTab] = useState<'proceso' | 'modelos' | 'moldes' | 'repuestos'>('proceso');
+
   // State for FAQ Accordion
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
 
@@ -87,10 +90,10 @@ export default function BlockMachineLanding({ products }: { products: any[] }) {
                 <span className="text-base">→</span>
               </a>
               <a 
-                href="#catalogo" 
+                href="#capacitacion" 
                 className="w-full sm:w-auto px-10 py-5 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-black text-xs uppercase tracking-[0.25em] rounded-full transition-all duration-300 backdrop-blur-md hover:border-amber-500/40"
               >
-                Ver Catálogo de Plantas
+                🎓 Guía Técnica & Capacitación
               </a>
             </div>
           </motion.div>
@@ -118,7 +121,197 @@ export default function BlockMachineLanding({ products }: { products: any[] }) {
         </div>
       </section>
 
-      {/* 2. CATÁLOGO INTEGRADO DE PRODUCTOS DE BBDD */}
+      {/* 2. MASTERCLASS / CAPACITACIÓN TÉCNICA COMPLETA */}
+      <section className="py-28 px-6 relative z-10 border-b border-white/[0.05] bg-gradient-to-b from-neutral-950 via-black to-neutral-950" id="capacitacion">
+        <div className="max-w-7xl mx-auto">
+          
+          <div className="text-center max-w-4xl mx-auto mb-16">
+            <div className="inline-flex items-center space-x-2 px-4 py-1.5 bg-amber-500/10 border border-amber-500/30 rounded-full mb-4">
+              <span className="text-amber-400 font-mono text-[11px] font-bold uppercase tracking-widest">
+                🎓 CAPACITACIÓN MAESTRA DE OPERACIÓN & INGENIERÍA
+              </span>
+            </div>
+            <h2 className="text-4xl md:text-6xl font-black text-white uppercase tracking-tight">
+              Todo lo que Debes Saber sobre las <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-400 to-yellow-500 italic">
+                Plantas de Concreto y Bloques
+              </span>
+            </h2>
+            <p className="text-neutral-400 text-sm font-light mt-4 leading-relaxed">
+              Aprende el funcionamiento técnico, dosificación perfecta, comparativa de modelos, mantenimiento y accesorios indispensables para operar tu bloquera con máxima rentabilidad.
+            </p>
+          </div>
+
+          {/* TAB NAVIGATION */}
+          <div className="flex flex-wrap items-center justify-center gap-3 mb-12">
+            {[
+              { id: 'proceso', label: '1. Proceso & Dosificación' },
+              { id: 'modelos', label: '2. Comparativa de Modelos' },
+              { id: 'moldes', label: '3. Moldes & Productos' },
+              { id: 'repuestos', label: '4. Repuestos & Opcionales' }
+            ].map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as any)}
+                className={`px-6 py-3.5 rounded-full font-mono text-xs font-bold uppercase tracking-wider transition-all duration-300 ${
+                  activeTab === tab.id
+                    ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-black shadow-[0_0_25px_rgba(245,158,11,0.4)] scale-105'
+                    : 'bg-white/5 border border-white/10 text-neutral-400 hover:text-white hover:border-amber-500/40'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {/* TAB CONTENT */}
+          <div className="bg-neutral-900/60 border border-white/10 rounded-3xl p-8 md:p-12 shadow-2xl backdrop-blur-xl">
+            {activeTab === 'proceso' && (
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+                <h3 className="text-2xl font-black text-amber-400 uppercase tracking-wide mb-6">
+                  ⚙️ El Proceso de Vibro-Compresión Hidráulica
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  <div className="p-6 bg-black/40 border border-white/10 rounded-2xl">
+                    <span className="text-3xl font-mono font-black text-amber-400 block mb-3">PASO 01</span>
+                    <h4 className="text-lg font-bold text-white mb-2">Dosificación Seca (Baja Agua)</h4>
+                    <p className="text-xs text-neutral-400 leading-relaxed font-light">
+                      La mezcla de bloquera utiliza agua mínima (relación agua/cemento 0.35-0.40). La mezcladora obligatoria JS500 homogeneiza arena, cemento y gravilla en 2-3 minutos.
+                    </p>
+                  </div>
+                  <div className="p-6 bg-black/40 border border-white/10 rounded-2xl">
+                    <span className="text-3xl font-mono font-black text-amber-400 block mb-3">PASO 02</span>
+                    <h4 className="text-lg font-bold text-white mb-2">Vibro-Prensado (100 KN)</h4>
+                    <p className="text-xs text-neutral-400 leading-relaxed font-light">
+                      El material cae en la caja del molde. La mesa vibratoria oscila a 4500 RPM impulsando el aire fuera, mientras el pistón hidráulico desciende aplicando 10 a 45 MPa.
+                    </p>
+                  </div>
+                  <div className="p-6 bg-black/40 border border-white/10 rounded-2xl">
+                    <span className="text-3xl font-mono font-black text-amber-400 block mb-3">PASO 03</span>
+                    <h4 className="text-lg font-bold text-white mb-2">Desmolde en Caliente & Curado</h4>
+                    <p className="text-xs text-neutral-400 leading-relaxed font-light">
+                      El bloque sale firme y compacto sobre la paleta de madera/PVC. Pasa al apilador (Stacker) y requiere 24h de curado húmedo antes del acopio final.
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {activeTab === 'modelos' && (
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+                <h3 className="text-2xl font-black text-amber-400 uppercase tracking-wide mb-6">
+                  📊 Diferencias de Modelos Ofrecidos
+                </h3>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs font-mono border-collapse">
+                    <thead>
+                      <tr className="border-b border-white/10 text-amber-400 uppercase font-bold">
+                        <th className="py-3 px-4">Modelo</th>
+                        <th className="py-3 px-4">Producción/Turno (Bloque 20)</th>
+                        <th className="py-3 px-4">Fuerza de Presión</th>
+                        <th className="py-3 px-4">Potencia Total</th>
+                        <th className="py-3 px-4">Nivel Automatización</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-white/5 text-neutral-300">
+                      <tr>
+                        <td className="py-3.5 px-4 font-bold text-white">QTJ4-40 (Semi-Automática)</td>
+                        <td className="py-3.5 px-4">3,500 – 4,800 und</td>
+                        <td className="py-3.5 px-4">40 KN</td>
+                        <td className="py-3.5 px-4">18 kW</td>
+                        <td className="py-3.5 px-4 text-amber-400">Semi-Automática (Palanca)</td>
+                      </tr>
+                      <tr>
+                        <td className="py-3.5 px-4 font-bold text-white">QT4-15 (Línea Estándar PLC)</td>
+                        <td className="py-3.5 px-4">6,000 – 8,000 und</td>
+                        <td className="py-3.5 px-4">70 KN</td>
+                        <td className="py-3.5 px-4">32 kW</td>
+                        <td className="py-3.5 px-4 text-amber-400">Total PLC Siemens + Stacker</td>
+                      </tr>
+                      <tr>
+                        <td className="py-3.5 px-4 font-bold text-white">QT6-15 (Línea Pesada)</td>
+                        <td className="py-3.5 px-4">9,000 – 12,000 und</td>
+                        <td className="py-3.5 px-4">100 KN</td>
+                        <td className="py-3.5 px-4">45 kW</td>
+                        <td className="py-3.5 px-4 text-amber-400">Total PLC Pantalla Táctil HMI</td>
+                      </tr>
+                      <tr>
+                        <td className="py-3.5 px-4 font-bold text-white">QT10-15 (Macro Planta Industrial)</td>
+                        <td className="py-3.5 px-4">15,000 – 18,000 und</td>
+                        <td className="py-3.5 px-4">120 KN</td>
+                        <td className="py-3.5 px-4">75 kW</td>
+                        <td className="py-3.5 px-4 text-amber-400">Línea Robótica Completa</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </motion.div>
+            )}
+
+            {activeTab === 'moldes' && (
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+                <h3 className="text-2xl font-black text-amber-400 uppercase tracking-wide mb-6">
+                  🧩 Matrices Interchangeables & Productos Fabricables
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-xs">
+                  <div className="p-5 bg-black/40 border border-white/10 rounded-2xl">
+                    <h4 className="font-bold text-white mb-2 text-sm">Bloques Huecos</h4>
+                    <p className="text-neutral-400 font-light leading-relaxed mb-3">400x200x200mm, 400x150x200mm y 400x100x200mm. Estructurales sismo-resistentes.</p>
+                    <span className="text-amber-400 font-mono font-bold block">1 Molde estándar incluido</span>
+                  </div>
+                  <div className="p-5 bg-black/40 border border-white/10 rounded-2xl">
+                    <h4 className="font-bold text-white mb-2 text-sm">Adoquines Pavers</h4>
+                    <p className="text-neutral-400 font-light leading-relaxed mb-3">Holandés 200x100mm, Hexagonal 200x80mm, Unidecor Zig-Zag y Hueso.</p>
+                    <span className="text-amber-400 font-mono font-bold block">Resistencia &gt; 45 MPa</span>
+                  </div>
+                  <div className="p-5 bg-black/40 border border-white/10 rounded-2xl">
+                    <h4 className="font-bold text-white mb-2 text-sm">Interlocking Lego</h4>
+                    <p className="text-neutral-400 font-light leading-relaxed mb-3">Bloques ecológicos de auto-encaje sin mortero. Ahorro de 80% en pegante.</p>
+                    <span className="text-amber-400 font-mono font-bold block">Traba Macho-Hembra</span>
+                  </div>
+                  <div className="p-5 bg-black/40 border border-white/10 rounded-2xl">
+                    <h4 className="font-bold text-white mb-2 text-sm">Bordillos Viales</h4>
+                    <p className="text-neutral-400 font-light leading-relaxed mb-3">Bordillos de retención urbana hasta 1 metro de longitud y canales de agua.</p>
+                    <span className="text-amber-400 font-mono font-bold block">Alta Densidad Vial</span>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {activeTab === 'repuestos' && (
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+                <h3 className="text-2xl font-black text-amber-400 uppercase tracking-wide mb-6">
+                  📦 Repuestos Críticos & Accesorios Opcionales
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="p-6 bg-black/40 border border-white/10 rounded-2xl">
+                    <h4 className="text-lg font-bold text-white mb-3">Kit de Repuestos Críticos Incluido</h4>
+                    <ul className="text-xs text-neutral-300 space-y-2 font-mono">
+                      <li className="flex items-center space-x-2"><span className="text-amber-400">✔</span><span>Juego completo de sellos hidráulicos de nitrilo alto impacto.</span></li>
+                      <li className="flex items-center space-x-2"><span className="text-amber-400">✔</span><span>Electroválvulas proporcionales mecánicas y relés auxiliares.</span></li>
+                      <li className="flex items-center space-x-2"><span className="text-amber-400">✔</span><span>Sensores de proximidad inductivos para posición de desmolde.</span></li>
+                      <li className="flex items-center space-x-2"><span className="text-amber-400">✔</span><span>2 Carritos manuales reforzados para retiro de paletas de madera/PVC.</span></li>
+                    </ul>
+                  </div>
+
+                  <div className="p-6 bg-black/40 border border-white/10 rounded-2xl">
+                    <h4 className="text-lg font-bold text-white mb-3">Accesorios Opcionales de Expansión</h4>
+                    <ul className="text-xs text-neutral-300 space-y-2 font-mono">
+                      <li className="flex items-center space-x-2"><span className="text-amber-400">+</span><span>Silo de Cemento a Granel de 50 a 100 Toneladas con rosca transportadora.</span></li>
+                      <li className="flex items-center space-x-2"><span className="text-amber-400">+</span><span>Dispositivo secundario de alimentación de colorante (Adoquines Bicapa).</span></li>
+                      <li className="flex items-center space-x-2"><span className="text-amber-400">+</span><span>Moldes adicionales personalizados con tu logo corporativo grabado en relieve.</span></li>
+                      <li className="flex items-center space-x-2"><span className="text-amber-400">+</span><span>Paletas sintéticas de PVC industrial de larga duración (+10 años).</span></li>
+                    </ul>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </div>
+
+        </div>
+      </section>
+
+      {/* 3. CATÁLOGO INTEGRADO DE PRODUCTOS DE BBDD */}
       <section className="py-28 px-6 relative z-10 border-b border-white/[0.05]" id="catalogo">
         <div className="max-w-7xl mx-auto">
           
@@ -211,92 +404,6 @@ export default function BlockMachineLanding({ products }: { products: any[] }) {
               })}
             </div>
           )}
-
-        </div>
-      </section>
-
-      {/* 3. ANÁLISIS DETALLADO DE PRODUCTOS & ESTILOS DE BLOQUES */}
-      <section className="py-28 px-6 relative z-10 border-b border-white/[0.05] bg-neutral-950/50">
-        <div className="max-w-7xl mx-auto">
-          
-          <div className="text-center max-w-3xl mx-auto mb-20">
-            <span className="text-amber-400 font-mono text-xs uppercase tracking-[0.3em] block mb-3">● Versatilidad de Moldeado</span>
-            <h2 className="text-4xl md:text-6xl font-black text-white tracking-tight uppercase mb-6">
-              ¿Qué Tipos y Tamaños de Bloques <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-yellow-500 italic">Puedes Producir?</span>
-            </h2>
-            <p className="text-neutral-400 text-base font-light">
-              Nuestras máquinas emplean matrices intercambiables de acero aleado tratado térmicamente con carbonitruración, aumentando la vida útil a más de 120,000 ciclos de moldeo.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            
-            {/* ITEM 1 */}
-            <div className="bg-neutral-900/60 border border-white/10 rounded-3xl p-8 hover:border-amber-500/40 transition-all duration-300">
-              <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 font-mono text-2xl font-black mb-6">
-                01
-              </div>
-              <h3 className="text-xl font-bold text-white mb-3">Bloques Huecos Estándar</h3>
-              <p className="text-neutral-400 text-xs font-light leading-relaxed mb-6">
-                El elemento fundamental de construcción estructural sismo-resistente. Ofrece cámaras de aire ideales para aislamiento térmico y alojar varillas de refuerzo.
-              </p>
-              <div className="space-y-2 border-t border-white/10 pt-4 text-[11px] font-mono text-neutral-300">
-                <div className="flex justify-between"><span>400 x 200 x 200 mm</span><span className="text-amber-400">(Estándar 20)</span></div>
-                <div className="flex justify-between"><span>400 x 150 x 200 mm</span><span className="text-amber-400">(Estándar 15)</span></div>
-                <div className="flex justify-between"><span>400 x 100 x 200 mm</span><span className="text-amber-400">(Tabique 10)</span></div>
-              </div>
-            </div>
-
-            {/* ITEM 2 */}
-            <div className="bg-neutral-900/60 border border-white/10 rounded-3xl p-8 hover:border-amber-500/40 transition-all duration-300">
-              <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 font-mono text-2xl font-black mb-6">
-                02
-              </div>
-              <h3 className="text-xl font-bold text-white mb-3">Adoquines Viales (Pavers)</h3>
-              <p className="text-neutral-400 text-xs font-light leading-relaxed mb-6">
-                Resistencia a la compresión superior a 45 MPa. Ideal para tráfico pesado, áreas portuarias, aceras urbanas y estacionamientos industriales.
-              </p>
-              <div className="space-y-2 border-t border-white/10 pt-4 text-[11px] font-mono text-neutral-300">
-                <div className="flex justify-between"><span>Holandés 200x100x60mm</span><span className="text-amber-400">Tráfico Mediano</span></div>
-                <div className="flex justify-between"><span>Hexagonal 200x80mm</span><span className="text-amber-400">Tráfico Pesado</span></div>
-                <div className="flex justify-between"><span>Zig-Zag / Unidecor</span><span className="text-amber-400">Traba Alta</span></div>
-              </div>
-            </div>
-
-            {/* ITEM 3 */}
-            <div className="bg-neutral-900/60 border border-white/10 rounded-3xl p-8 hover:border-amber-500/40 transition-all duration-300">
-              <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 font-mono text-2xl font-black mb-6">
-                03
-              </div>
-              <h3 className="text-xl font-bold text-white mb-3">Bloques Ecológicos Interlocking</h3>
-              <p className="text-neutral-400 text-xs font-light leading-relaxed mb-6">
-                Bloques de auto-encaje estilo Lego producidos a partir de suelo-cemento con prensado hidráulico extremo. No requieren mortero para su ensamble.
-              </p>
-              <div className="space-y-2 border-t border-white/10 pt-4 text-[11px] font-mono text-neutral-300">
-                <div className="flex justify-between"><span>300 x 150 x 100 mm</span><span className="text-amber-400">2 Cavidades</span></div>
-                <div className="flex justify-between"><span>250 x 125 x 100 mm</span><span className="text-amber-400">Manual / Auto</span></div>
-                <div className="flex justify-between"><span>Ahorro Mortero</span><span className="text-amber-400">Hasta 80%</span></div>
-              </div>
-            </div>
-
-            {/* ITEM 4 */}
-            <div className="bg-neutral-900/60 border border-white/10 rounded-3xl p-8 hover:border-amber-500/40 transition-all duration-300">
-              <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 font-mono text-2xl font-black mb-6">
-                04
-              </div>
-              <h3 className="text-xl font-bold text-white mb-3">Paneles de Pared EPS & Bordillos</h3>
-              <p className="text-neutral-400 text-xs font-light leading-relaxed mb-6">
-                Líneas avanzadas para paneles sándwich de poliestireno expandido y bordillos de contención vial de gran escala.
-              </p>
-              <div className="space-y-2 border-t border-white/10 pt-4 text-[11px] font-mono text-neutral-300">
-                <div className="flex justify-between"><span>Paneles EPS 2270x610mm</span><span className="text-amber-400">Livianos</span></div>
-                <div className="flex justify-between"><span>Bordillo 500x300x150mm</span><span className="text-amber-400">Vialidad</span></div>
-                <div className="flex justify-between"><span>Canales de Drenaje</span><span className="text-amber-400">Urbano</span></div>
-              </div>
-            </div>
-
-          </div>
 
         </div>
       </section>
@@ -398,7 +505,7 @@ export default function BlockMachineLanding({ products }: { products: any[] }) {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <span className="text-amber-400 font-mono text-xs uppercase tracking-[0.3em] block mb-3">● Respaldo Corporativo ATOMIC</span>
-              <h2 className="text-4xl md:text-6xl font-black text-white tracking-tight uppercase mb-6 leading-none">
+              <h2 className="text-4xl md:text-6xl font-black text-white uppercase tracking-tight mb-6 leading-none">
                 Soporte Técnico <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-yellow-500 italic">Especializado 24/7</span>
               </h2>
