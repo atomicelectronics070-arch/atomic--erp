@@ -2,11 +2,6 @@ node_modules
 .next
 .git
 *.log
-*.js
-*.ts
-*.html
-*.txt
-scratch
-!next.config.js
-!next.config.mjs
-!next.config.ts
+scratch/
+android/
+tmp/

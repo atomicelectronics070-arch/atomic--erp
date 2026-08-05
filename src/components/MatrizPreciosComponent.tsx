@@ -8,6 +8,7 @@ interface ProductMatrixItem {
   name: string;
   provider: string;
   category: string;
+  categoryId?: string;
   stock: number;
   costPrice: number;
   salePrice: number;
@@ -28,6 +29,11 @@ export default function MatrizPreciosComponent() {
   const [totalProducts, setTotalProducts] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [themeMode, setThemeMode] = useState<'bw' | 'green' | 'amber'>('bw');
+
+  // Edit Mode state
+  const [isEditMode, setIsEditMode] = useState(true);
+  const [savingId, setSavingId] = useState<string | null>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const fetchMatrixData = async () => {
     setLoading(true);
@@ -58,6 +64,63 @@ export default function MatrizPreciosComponent() {
   useEffect(() => {
     fetchMatrixData();
   }, [search, selectedProvider, selectedCategory, page, limit]);
+
+  const showNotification = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 3000);
+  };
+
+  // Update handler for inline edits
+  const handleUpdateProduct = async (id: string, field: 'salePrice' | 'costPrice' | 'categoryId', value: any) => {
+    setSavingId(id);
+    try {
+      const currentProduct = products.find(p => p.id === id);
+      if (!currentProduct) return;
+
+      const payload: any = {};
+      if (field === 'salePrice') payload.price = parseFloat(value) || 0;
+      if (field === 'costPrice') payload.compareAtPrice = value === '' || value === null ? null : parseFloat(value);
+      if (field === 'categoryId') payload.categoryId = value;
+
+      const res = await fetch(`/api/products/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) throw new Error('Falló actualización');
+
+      // Local optimistic update
+      setProducts(prev => prev.map(p => {
+        if (p.id !== id) return p;
+
+        const newSale = field === 'salePrice' ? (parseFloat(value) || 0) : p.salePrice;
+        const newCost = field === 'costPrice' ? (value === '' || value === null ? 0 : parseFloat(value)) : p.costPrice;
+        const newCatObj = field === 'categoryId' ? categories.find(c => c.id === value) : null;
+        const newCatName = newCatObj ? newCatObj.name : (field === 'categoryId' && !value ? 'Sin categoría' : p.category);
+
+        const newMarginUsd = newSale - newCost;
+        const newMarginPercent = newCost > 0 ? (newMarginUsd / newCost) * 100 : 0;
+
+        return {
+          ...p,
+          salePrice: newSale,
+          costPrice: newCost,
+          category: newCatName,
+          categoryId: field === 'categoryId' ? value : p.categoryId,
+          marginUsd: newMarginUsd,
+          marginPercent: newMarginPercent
+        };
+      }));
+
+      showNotification('✅ Registro actualizado correctamente');
+    } catch (err) {
+      console.error(err);
+      showNotification('❌ Error al guardar cambios');
+    } finally {
+      setSavingId(null);
+    }
+  };
 
   const stats = useMemo(() => {
     let totalCostSum = 0;
@@ -116,6 +179,7 @@ export default function MatrizPreciosComponent() {
       highlight: 'bg-zinc-900/60',
       inputBg: 'bg-black text-white border-zinc-700 focus:border-white',
       badge: 'border border-zinc-700 text-zinc-300 bg-zinc-900',
+      cellInput: 'bg-zinc-900 text-white border-zinc-700 focus:border-white',
     },
     green: {
       bg: 'bg-[#030d04]',
@@ -127,6 +191,7 @@ export default function MatrizPreciosComponent() {
       highlight: 'bg-emerald-950/40',
       inputBg: 'bg-black text-emerald-300 border-emerald-800 focus:border-emerald-400',
       badge: 'border border-emerald-800 text-emerald-400 bg-emerald-950',
+      cellInput: 'bg-emerald-950 text-emerald-300 border-emerald-800 focus:border-emerald-400',
     },
     amber: {
       bg: 'bg-[#0f0a02]',
@@ -138,12 +203,20 @@ export default function MatrizPreciosComponent() {
       highlight: 'bg-amber-950/40',
       inputBg: 'bg-black text-amber-300 border-amber-800 focus:border-amber-400',
       badge: 'border border-amber-800 text-amber-400 bg-amber-950',
+      cellInput: 'bg-amber-950 text-amber-300 border-amber-800 focus:border-amber-400',
     },
   }[themeMode];
 
   return (
-    <div className={`min-h-screen ${themeClasses.bg} ${themeClasses.text} font-mono p-4 md:p-8 selection:bg-zinc-700 selection:text-white`}>
+    <div className={`min-h-screen ${themeClasses.bg} ${themeClasses.text} font-mono p-4 md:p-8 selection:bg-zinc-700 selection:text-white relative`}>
       
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="fixed top-6 right-6 z-[100] px-4 py-2 bg-zinc-900 border border-emerald-500 text-emerald-400 text-xs font-bold uppercase tracking-wider shadow-2xl animate-bounce">
+          {toastMessage}
+        </div>
+      )}
+
       {/* ================= RETRO TERMINAL HEADER ================= */}
       <div className={`border-2 ${themeClasses.border} p-6 rounded-none shadow-2xl mb-6 bg-black/40`}>
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
@@ -151,15 +224,24 @@ export default function MatrizPreciosComponent() {
             <div className="flex items-center gap-3">
               <span className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse" />
               <h1 className="text-xl md:text-2xl font-black uppercase tracking-widest">
-                [ATOMIC_SYSTEM] DATABASE PRICING MATRIX v1.0
+                [ATOMIC_SYSTEM] DATABASE PRICING & CATEGORY MATRIX v2.0
               </h1>
             </div>
             <p className="text-xs opacity-70 mt-1 uppercase tracking-wider">
-              MATRIZ GENERAL DE PRODUCTOS · COSTO DE COMPRA · PRECIO VENTA · MARGEN DE GANANCIA EN TIEMPO REAL
+              MATRIZ GENERAL DE PRODUCTOS · EDICIÓN DIRECTA DE CATEGORÍAS, COSTOS Y PRECIOS VENTA EN TIEMPO REAL
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
+            <button
+              onClick={() => setIsEditMode(!isEditMode)}
+              className={`px-4 py-2 border font-bold text-xs uppercase transition-all ${
+                isEditMode ? 'bg-amber-500 text-black border-amber-400' : 'border-zinc-700 hover:bg-zinc-800'
+              }`}
+            >
+              {isEditMode ? '⚡ MODO EDICIÓN ACTIVO' : '✏️ HABILITAR EDICIÓN'}
+            </button>
+
             <div className="flex items-center border border-zinc-800 p-1 text-xs">
               <span className="px-2 uppercase opacity-60 text-[10px]">TEMA:</span>
               <button
@@ -225,7 +307,7 @@ export default function MatrizPreciosComponent() {
 
           <div className="space-y-1">
             <label className="text-[10px] uppercase tracking-widest opacity-70">
-              🏢 Proveedor
+              🏢 Filtro por Proveedor
             </label>
             <select
               value={selectedProvider}
@@ -246,7 +328,7 @@ export default function MatrizPreciosComponent() {
 
           <div className="space-y-1">
             <label className="text-[10px] uppercase tracking-widest opacity-70">
-              📂 Categoría
+              📂 Filtro por Categoría
             </label>
             <select
               value={selectedCategory}
@@ -287,7 +369,7 @@ export default function MatrizPreciosComponent() {
         </div>
       </div>
 
-      {/* ================= TABLA TIPO BASE DE DATOS RETRO B/N ================= */}
+      {/* ================= TABLA TIPO BASE DE DATOS RETRO CON EDICIÓN ================= */}
       <div className={`border-2 ${themeClasses.border} bg-black/60 overflow-x-auto shadow-2xl`}>
         <table className="w-full text-left text-xs border-collapse">
           <thead>
@@ -296,10 +378,10 @@ export default function MatrizPreciosComponent() {
               <th className="py-3 px-4 border-r border-zinc-800 w-36">SKU / CÓDIGO</th>
               <th className="py-3 px-4 border-r border-zinc-800">DESCRIPCIÓN DEL PRODUCTO</th>
               <th className="py-3 px-4 border-r border-zinc-800 w-36">PROVEEDOR</th>
-              <th className="py-3 px-4 border-r border-zinc-800 w-36">CATEGORÍA</th>
+              <th className="py-3 px-4 border-r border-zinc-800 w-44">CATEGORÍA (EDITABLE)</th>
               <th className="py-3 px-4 border-r border-zinc-800 text-center w-20">STOCK</th>
-              <th className="py-3 px-4 border-r border-zinc-800 text-right w-28">COSTO ($)</th>
-              <th className="py-3 px-4 border-r border-zinc-800 text-right w-28">P. VENTA ($)</th>
+              <th className="py-3 px-4 border-r border-zinc-800 text-right w-32">COSTO ($) EDITABLE</th>
+              <th className="py-3 px-4 border-r border-zinc-800 text-right w-36">P. VENTA ($) EDITABLE</th>
               <th className="py-3 px-4 border-r border-zinc-800 text-right w-28">MARGEN ($)</th>
               <th className="py-3 px-4 text-right w-28">MARGEN (%)</th>
             </tr>
@@ -320,10 +402,11 @@ export default function MatrizPreciosComponent() {
             ) : (
               products.map((p, idx) => {
                 const globalIndex = (page - 1) * limit + idx + 1;
+                const isSaving = savingId === p.id;
                 return (
                   <tr
                     key={p.id}
-                    className={`hover:${themeClasses.highlight} transition-colors border-b ${themeClasses.border}`}
+                    className={`hover:${themeClasses.highlight} transition-colors border-b ${themeClasses.border} ${isSaving ? 'opacity-50 bg-amber-950/20' : ''}`}
                   >
                     <td className="py-2.5 px-4 border-r border-zinc-900 text-center font-mono opacity-50">
                       {globalIndex}
@@ -337,23 +420,95 @@ export default function MatrizPreciosComponent() {
                     <td className="py-2.5 px-4 border-r border-zinc-900 font-mono text-[11px] opacity-80 uppercase">
                       {p.provider}
                     </td>
-                    <td className="py-2.5 px-4 border-r border-zinc-900 font-mono text-[11px] opacity-80 uppercase">
-                      {p.category}
+
+                    {/* EDITABLE CATEGORY */}
+                    <td className="py-1.5 px-2 border-r border-zinc-900 font-mono text-[11px] uppercase">
+                      {isEditMode ? (
+                        <select
+                          value={p.categoryId || ''}
+                          onChange={(e) => handleUpdateProduct(p.id, 'categoryId', e.target.value)}
+                          className={`w-full px-2 py-1 text-[11px] uppercase border ${themeClasses.cellInput} cursor-pointer font-mono outline-none`}
+                        >
+                          <option value="">-- Sin categoría --</option>
+                          {categories.map((c) => (
+                            <option key={c.id} value={c.id}>
+                              {c.name}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        <span>{p.category}</span>
+                      )}
                     </td>
+
                     <td className="py-2.5 px-4 border-r border-zinc-900 text-center font-mono font-bold">
                       <span className={p.stock > 0 ? 'text-emerald-400' : 'text-rose-500'}>
                         {p.stock}
                       </span>
                     </td>
-                    <td className="py-2.5 px-4 border-r border-zinc-900 text-right font-mono opacity-80">
-                      ${p.costPrice.toFixed(2)}
+
+                    {/* EDITABLE COST PRICE */}
+                    <td className="py-1.5 px-2 border-r border-zinc-900 text-right font-mono">
+                      {isEditMode ? (
+                        <div className="flex items-center justify-end gap-1">
+                          <span className="opacity-50 text-[10px]">$</span>
+                          <input
+                            type="number"
+                            step="0.01"
+                            defaultValue={p.costPrice ? p.costPrice.toFixed(2) : '0.00'}
+                            onBlur={(e) => {
+                              const val = parseFloat(e.target.value);
+                              if (!isNaN(val) && val !== p.costPrice) {
+                                handleUpdateProduct(p.id, 'costPrice', val);
+                              }
+                            }}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                (e.target as HTMLInputElement).blur();
+                              }
+                            }}
+                            className={`w-20 px-2 py-1 text-right text-xs font-mono font-bold border ${themeClasses.cellInput} outline-none`}
+                          />
+                        </div>
+                      ) : (
+                        <span className="opacity-80">${p.costPrice.toFixed(2)}</span>
+                      )}
                     </td>
-                    <td className="py-2.5 px-4 border-r border-zinc-900 text-right font-mono font-black text-sm">
-                      ${p.salePrice.toFixed(2)}
+
+                    {/* EDITABLE SALE PRICE (PVP) */}
+                    <td className="py-1.5 px-2 border-r border-zinc-900 text-right font-mono">
+                      {isEditMode ? (
+                        <div className="flex items-center justify-end gap-1">
+                          <span className="opacity-50 text-[10px]">$</span>
+                          <input
+                            type="number"
+                            step="0.01"
+                            defaultValue={p.salePrice ? p.salePrice.toFixed(2) : '0.00'}
+                            onBlur={(e) => {
+                              const val = parseFloat(e.target.value);
+                              if (!isNaN(val) && val !== p.salePrice) {
+                                handleUpdateProduct(p.id, 'salePrice', val);
+                              }
+                            }}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                (e.target as HTMLInputElement).blur();
+                              }
+                            }}
+                            className={`w-24 px-2 py-1 text-right text-xs font-mono font-black border ${themeClasses.cellInput} text-amber-400 outline-none`}
+                          />
+                        </div>
+                      ) : (
+                        <span className="font-black text-sm">${p.salePrice.toFixed(2)}</span>
+                      )}
                     </td>
+
+                    {/* MARGEN USD */}
                     <td className="py-2.5 px-4 border-r border-zinc-900 text-right font-mono font-bold text-emerald-400">
                       +${p.marginUsd.toFixed(2)}
                     </td>
+
+                    {/* MARGEN PERCENT */}
                     <td className="py-2.5 px-4 text-right font-mono font-bold text-emerald-400">
                       +{p.marginPercent.toFixed(1)}%
                     </td>
