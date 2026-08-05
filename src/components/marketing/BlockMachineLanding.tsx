@@ -19,6 +19,102 @@ export default function BlockMachineLanding({ products }: { products: any[] }) {
   // State for FAQ Accordion
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
 
+  // State for Head-to-Head Comparison Selector
+  const [selectedComparison, setSelectedComparison] = useState<number>(0);
+
+  const comparisons = [
+    {
+      title: "QTJ4-40 vs. QT4-15",
+      subtitle: "Emprendimiento Regional vs. Planta Comercial Mediana",
+      modelA: {
+        name: "QTJ4-40 (Semi-Automática)",
+        tag: "Inversión Inicial Rápida",
+        capacity: "3,500 - 4,800 bloques/día",
+        power: "18 kW",
+        pressure: "40 KN",
+        cycle: "25 - 30 segundos",
+        price: "$12,500 - $18,000 USD",
+        recommendedFor: "Proyectos en desarrollo, municipios pequeños, constructoras locales iniciando producción propia.",
+        includes: "Máquina Host, Mezcladora JQ350, Cinta Transportadora 6m, 1 Molde Estándar, Carritos manuales.",
+        pros: ["Bajo consumo eléctrico", "Operación sencilla sin electrónica compleja", "Inversión accesible"],
+        cons: ["Requiere más operarios manuales", "Sin apilador automático de paletas"]
+      },
+      modelB: {
+        name: "QT4-15 (Línea Estándar PLC)",
+        tag: "Máxima Eficiencia Comercial",
+        capacity: "6,000 - 8,000 bloques/día",
+        power: "32 kW",
+        pressure: "70 KN",
+        cycle: "15 - 20 segundos",
+        price: "$28,000 - $38,000 USD",
+        recommendedFor: "Bloqueras comerciales en expansión que abastecen distribuidores, ferreterías y contratos de vivienda masiva.",
+        includes: "Máquina Host Vibratoria Hidráulica, Mezcladora JS500 Doble Eje, Cinta 8m, Pantalla Táctil PLC Siemens, Apilador Stacker Automático, 1 Molde Manganeso.",
+        pros: ["Alta velocidad con ciclo de 15s", "Control PLC 100% automático", "Requiere solo 3-4 operarios"],
+        cons: ["Requiere acometida eléctrica trifásica 35 kW"]
+      }
+    },
+    {
+      title: "QT4-15 vs. QT6-15",
+      subtitle: "Planta Comercial Mediana vs. Alta Escala Vial y Mampostería",
+      modelA: {
+        name: "QT4-15 (Línea Estándar PLC)",
+        tag: "Versatilidad Urbana",
+        capacity: "6,000 - 8,000 bloques/día",
+        power: "32 kW",
+        pressure: "70 KN",
+        cycle: "15 - 20 segundos",
+        price: "$28,000 - $38,000 USD",
+        recommendedFor: "Operaciones con demanda constante de bloque estándar 15 y 20 en ciudades medianas.",
+        includes: "Línea completa con PLC Siemens, Stacker de paletas, Mezcladora doble eje.",
+        pros: ["Equilibrio perfecto costo/producción", "Mantenimiento económico", "Fácil instalación"],
+        cons: ["Limitada si necesitas más de 10,000 bloques/día"]
+      },
+      modelB: {
+        name: "QT6-15 (Línea Pesada Industrial)",
+        tag: "Producción Vial & Adoquines Pavers",
+        capacity: "9,000 - 12,000 bloques/día",
+        power: "45 kW",
+        pressure: "100 KN",
+        cycle: "15 segundos",
+        price: "$45,000 - $58,000 USD",
+        recommendedFor: "Proveedores de infraestructura pública, adoquines viales pesados (+45 MPa) y contratos gubernamentales.",
+        includes: "Máquina Host Reforzada 6 moldes/ciclo, Mezcladora JS750, Tolva de Agregados Automatizada, Stacker Electroneumático, Muestreo de datos IP.",
+        pros: ["Fabrica 6 bloques de 20cm por cada bajada", "Compresión hidráulica extrema para adoquines portuarios", "Tolva inteligente de pesaje"],
+        cons: ["Requiere nave industrial de al menos 1,000 m²"]
+      }
+    },
+    {
+      title: "QT6-15 vs. QT10-15",
+      subtitle: "Línea Pesada vs. Macro Complejo Industrial Robótico",
+      modelA: {
+        name: "QT6-15 (Línea Pesada Industrial)",
+        tag: "Alto Rendimiento Continuo",
+        capacity: "9,000 - 12,000 bloques/día",
+        power: "45 kW",
+        pressure: "100 KN",
+        cycle: "15 segundos",
+        price: "$45,000 - $58,000 USD",
+        recommendedFor: "Empresas consolidadas con flota propia de camiones de distribución regional.",
+        includes: "Línea completa automatizada con mezcladora JS750 y mesa de vibración alemana síncrona.",
+        pros: ["Operación continua 24/7 sin sobrecalentamiento", "Resistencia de bloque superior a normas internacionales"],
+        cons: ["Inversión mayor en pallets y área de curado"]
+      },
+      modelB: {
+        name: "QT10-15 (Macro Complejo Robótico)",
+        tag: "Gigante de la Industria",
+        capacity: "15,000 - 18,000 bloques/día",
+        power: "75 kW",
+        pressure: "120 KN",
+        cycle: "12 - 15 segundos",
+        price: "$75,000 - $110,000 USD",
+        recommendedFor: "Megaproyectos de desarrollo urbano, puertos secos, producción masiva para exportación o franquicias de prefabricados.",
+        includes: "Línea de dosificación batching plant automática de 3 tolvas, Silo de cemento 100T, Robot de empaquetado final, Sistema de curado automático en túnel.",
+        pros: ["Mapeo robótico completo", "Cero manipulación humana del bloque fresco", "Máximo volumen de mercado"],
+        cons: ["Inversión de capital industrial alta"]
+      }
+    }
+  ];
+
   const faqs = [
     {
       q: "¿De qué tamaño y estilos vienen los bloques que puede producir la máquina?",
@@ -90,10 +186,10 @@ export default function BlockMachineLanding({ products }: { products: any[] }) {
                 <span className="text-base">→</span>
               </a>
               <a 
-                href="#capacitacion" 
+                href="#comparativas" 
                 className="w-full sm:w-auto px-10 py-5 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-black text-xs uppercase tracking-[0.25em] rounded-full transition-all duration-300 backdrop-blur-md hover:border-amber-500/40"
               >
-                🎓 Guía Técnica & Capacitación
+                ⚔️ Comparativa de Modelos 2x2
               </a>
             </div>
           </motion.div>
@@ -121,24 +217,323 @@ export default function BlockMachineLanding({ products }: { products: any[] }) {
         </div>
       </section>
 
-      {/* 2. MASTERCLASS / CAPACITACIÓN TÉCNICA COMPLETA */}
-      <section className="py-28 px-6 relative z-10 border-b border-white/[0.05] bg-gradient-to-b from-neutral-950 via-black to-neutral-950" id="capacitacion">
+      {/* 2. CUADRO ESTADÍSTICO DE PRODUCCIÓN Y CAPACIDAD (BAR CHART VISUAL) */}
+      <section className="py-24 px-6 relative z-10 border-b border-white/[0.05] bg-neutral-950/70">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <span className="text-amber-400 font-mono text-xs uppercase tracking-[0.3em] block mb-3">📊 Métricas Comparativas de Producción</span>
+            <h2 className="text-4xl md:text-5xl font-black text-white uppercase tracking-tight">
+              Capacidad Nominal por Turno de 8 Horas
+            </h2>
+            <p className="text-neutral-400 text-sm font-light mt-3">
+              Volumen real estimado en unidades producidas operando con mezcla estandarizada de agregado de 0 a 8mm.
+            </p>
+          </div>
+
+          <div className="bg-neutral-900/60 border border-white/10 p-8 md:p-12 rounded-3xl backdrop-blur-xl shadow-2xl space-y-8">
+            
+            {/* Model 1 */}
+            <div>
+              <div className="flex justify-between items-center mb-2 text-xs font-mono">
+                <span className="font-bold text-white uppercase">QTJ4-40 (Semi-Automática) — 4,000 Bloques/Día</span>
+                <span className="text-amber-400 font-bold">33% Capacidad Máxima</span>
+              </div>
+              <div className="w-full h-5 bg-neutral-950 rounded-full overflow-hidden border border-white/5 p-1">
+                <div className="h-full bg-gradient-to-r from-amber-600 to-amber-400 rounded-full" style={{ width: '33%' }}></div>
+              </div>
+            </div>
+
+            {/* Model 2 */}
+            <div>
+              <div className="flex justify-between items-center mb-2 text-xs font-mono">
+                <span className="font-bold text-white uppercase">QT4-15 (Línea Comercial PLC) — 7,000 Bloques/Día</span>
+                <span className="text-amber-400 font-bold">58% Capacidad Máxima</span>
+              </div>
+              <div className="w-full h-5 bg-neutral-950 rounded-full overflow-hidden border border-white/5 p-1">
+                <div className="h-full bg-gradient-to-r from-amber-500 to-yellow-400 rounded-full" style={{ width: '58%' }}></div>
+              </div>
+            </div>
+
+            {/* Model 3 */}
+            <div>
+              <div className="flex justify-between items-center mb-2 text-xs font-mono">
+                <span className="font-bold text-white uppercase">QT6-15 (Línea Pesada Industrial) — 11,000 Bloques/Día</span>
+                <span className="text-amber-400 font-bold">85% Capacidad Máxima</span>
+              </div>
+              <div className="w-full h-5 bg-neutral-950 rounded-full overflow-hidden border border-white/5 p-1">
+                <div className="h-full bg-gradient-to-r from-amber-400 via-yellow-400 to-orange-500 rounded-full" style={{ width: '85%' }}></div>
+              </div>
+            </div>
+
+            {/* Model 4 */}
+            <div>
+              <div className="flex justify-between items-center mb-2 text-xs font-mono">
+                <span className="font-bold text-white uppercase">QT10-15 (Macro Complejo Robótico) — 18,000 Bloques/Día</span>
+                <span className="text-amber-400 font-bold">100% Capacidad Máxima</span>
+              </div>
+              <div className="w-full h-5 bg-neutral-950 rounded-full overflow-hidden border border-white/5 p-1">
+                <div className="h-full bg-gradient-to-r from-orange-500 via-amber-400 to-amber-200 rounded-full" style={{ width: '100%' }}></div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-6 border-t border-white/10 text-center font-mono text-[11px]">
+              <div className="p-3 bg-black/40 rounded-xl border border-white/5">
+                <span className="text-neutral-500 block text-[9px] uppercase">Rendimiento Adoquín</span>
+                <span className="text-amber-400 font-bold">Hasta 900 m²/día</span>
+              </div>
+              <div className="p-3 bg-black/40 rounded-xl border border-white/5">
+                <span className="text-neutral-500 block text-[9px] uppercase">Consumo Eléctrico</span>
+                <span className="text-amber-400 font-bold">18 - 75 kW/h</span>
+              </div>
+              <div className="p-3 bg-black/40 rounded-xl border border-white/5">
+                <span className="text-neutral-500 block text-[9px] uppercase">Personal Operario</span>
+                <span className="text-amber-400 font-bold">3 a 5 personas</span>
+              </div>
+              <div className="p-3 bg-black/40 rounded-xl border border-white/5">
+                <span className="text-neutral-500 block text-[9px] uppercase">Vida Útil Molde</span>
+                <span className="text-amber-400 font-bold">+120,000 ciclos</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* 3. COMPARATIVAS FRENTE A FRENTE DIRECTAS (2 EN 2) */}
+      <section className="py-28 px-6 relative z-10 border-b border-white/[0.05]" id="comparativas">
+        <div className="max-w-7xl mx-auto">
+          
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <div className="inline-flex items-center space-x-2 px-4 py-1.5 bg-amber-500/10 border border-amber-500/30 rounded-full mb-4">
+              <span className="text-amber-400 font-mono text-[11px] font-bold uppercase tracking-widest">
+                ⚔️ ANÁLISIS DE SELECCIÓN DE PLANTA
+              </span>
+            </div>
+            <h2 className="text-4xl md:text-6xl font-black text-white uppercase tracking-tight">
+              Comparativas Directas Modelo a Modelo
+            </h2>
+            <p className="text-neutral-400 text-sm font-light mt-4">
+              Te ayudamos a elegir exactamente el equipo óptimo comparando pares directos de capacidad, inversión y mercado objetivo.
+            </p>
+          </div>
+
+          {/* COMPARISON SELECTOR BUTTONS */}
+          <div className="flex flex-wrap items-center justify-center gap-4 mb-12">
+            {comparisons.map((comp, idx) => (
+              <button
+                key={idx}
+                onClick={() => setSelectedComparison(idx)}
+                className={`px-6 py-3.5 rounded-2xl font-mono text-xs font-bold uppercase tracking-wider transition-all duration-300 ${
+                  selectedComparison === idx
+                    ? 'bg-amber-500 text-black font-black shadow-[0_0_25px_rgba(245,158,11,0.4)] scale-105'
+                    : 'bg-neutral-900 border border-white/10 text-neutral-400 hover:text-white hover:border-amber-500/40'
+                }`}
+              >
+                {comp.title}
+              </button>
+            ))}
+          </div>
+
+          {/* ACTIVE COMPARISON DISPLAY (HEAD TO HEAD CARDS) */}
+          <div className="bg-neutral-950 border border-white/10 rounded-3xl p-8 md:p-12 shadow-2xl">
+            
+            <div className="text-center mb-10">
+              <span className="text-amber-400 font-mono text-xs uppercase tracking-widest font-bold">
+                {comparisons[selectedComparison].subtitle}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              
+              {/* MODEL A CARD */}
+              <div className="bg-neutral-900/80 border border-white/10 rounded-3xl p-8 flex flex-col justify-between hover:border-amber-500/50 transition-all">
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-xs font-mono font-bold text-amber-400 bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/30">
+                      {comparisons[selectedComparison].modelA.tag}
+                    </span>
+                    <span className="text-xs font-mono font-bold text-neutral-500">OPCIÓN A</span>
+                  </div>
+                  <h3 className="text-2xl font-black text-white uppercase mb-6">
+                    {comparisons[selectedComparison].modelA.name}
+                  </h3>
+
+                  <div className="space-y-3 font-mono text-xs mb-8 border-t border-b border-white/10 py-6">
+                    <div className="flex justify-between"><span className="text-neutral-400">Capacidad Diaria:</span><span className="text-amber-400 font-bold">{comparisons[selectedComparison].modelA.capacity}</span></div>
+                    <div className="flex justify-between"><span className="text-neutral-400">Potencia Eléctrica:</span><span className="text-white">{comparisons[selectedComparison].modelA.power}</span></div>
+                    <div className="flex justify-between"><span className="text-neutral-400">Fuerza de Presión:</span><span className="text-white">{comparisons[selectedComparison].modelA.pressure}</span></div>
+                    <div className="flex justify-between"><span className="text-neutral-400">Tiempo de Ciclo:</span><span className="text-white">{comparisons[selectedComparison].modelA.cycle}</span></div>
+                    <div className="flex justify-between"><span className="text-neutral-400">Inversión Estimada:</span><span className="text-amber-400 font-bold">{comparisons[selectedComparison].modelA.price}</span></div>
+                  </div>
+
+                  <div className="mb-6">
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 block mb-2">¿Para quién se recomienda?</span>
+                    <p className="text-xs text-neutral-300 font-light leading-relaxed bg-black/40 p-4 rounded-xl border border-white/5">
+                      {comparisons[selectedComparison].modelA.recommendedFor}
+                    </p>
+                  </div>
+
+                  <div className="space-y-2 text-xs">
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-400 block mb-1">Ventajas Clave:</span>
+                    {comparisons[selectedComparison].modelA.pros.map((pro, pidx) => (
+                      <div key={pidx} className="flex items-center space-x-2 text-neutral-300">
+                        <span className="text-emerald-400">✓</span><span>{pro}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <a 
+                  href={whatsappLink} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="mt-8 w-full py-4 bg-white/5 hover:bg-amber-500 hover:text-black text-white font-bold text-xs uppercase tracking-widest rounded-2xl transition-all duration-300 flex items-center justify-center space-x-2 border border-white/10 hover:border-amber-500"
+                >
+                  <span>Cotizar {comparisons[selectedComparison].modelA.name}</span>
+                  <span>→</span>
+                </a>
+              </div>
+
+              {/* MODEL B CARD */}
+              <div className="bg-neutral-900/80 border border-white/10 rounded-3xl p-8 flex flex-col justify-between hover:border-amber-500/50 transition-all">
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-xs font-mono font-bold text-amber-400 bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/30">
+                      {comparisons[selectedComparison].modelB.tag}
+                    </span>
+                    <span className="text-xs font-mono font-bold text-neutral-500">OPCIÓN B</span>
+                  </div>
+                  <h3 className="text-2xl font-black text-white uppercase mb-6">
+                    {comparisons[selectedComparison].modelB.name}
+                  </h3>
+
+                  <div className="space-y-3 font-mono text-xs mb-8 border-t border-b border-white/10 py-6">
+                    <div className="flex justify-between"><span className="text-neutral-400">Capacidad Diaria:</span><span className="text-amber-400 font-bold">{comparisons[selectedComparison].modelB.capacity}</span></div>
+                    <div className="flex justify-between"><span className="text-neutral-400">Potencia Eléctrica:</span><span className="text-white">{comparisons[selectedComparison].modelB.power}</span></div>
+                    <div className="flex justify-between"><span className="text-neutral-400">Fuerza de Presión:</span><span className="text-white">{comparisons[selectedComparison].modelB.pressure}</span></div>
+                    <div className="flex justify-between"><span className="text-neutral-400">Tiempo de Ciclo:</span><span className="text-white">{comparisons[selectedComparison].modelB.cycle}</span></div>
+                    <div className="flex justify-between"><span className="text-neutral-400">Inversión Estimada:</span><span className="text-amber-400 font-bold">{comparisons[selectedComparison].modelB.price}</span></div>
+                  </div>
+
+                  <div className="mb-6">
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 block mb-2">¿Para quién se recomienda?</span>
+                    <p className="text-xs text-neutral-300 font-light leading-relaxed bg-black/40 p-4 rounded-xl border border-white/5">
+                      {comparisons[selectedComparison].modelB.recommendedFor}
+                    </p>
+                  </div>
+
+                  <div className="space-y-2 text-xs">
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-400 block mb-1">Ventajas Clave:</span>
+                    {comparisons[selectedComparison].modelB.pros.map((pro, pidx) => (
+                      <div key={pidx} className="flex items-center space-x-2 text-neutral-300">
+                        <span className="text-emerald-400">✓</span><span>{pro}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <a 
+                  href={whatsappLink} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="mt-8 w-full py-4 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-black font-bold text-xs uppercase tracking-widest rounded-2xl transition-all duration-300 flex items-center justify-center space-x-2 shadow-[0_0_20px_rgba(245,158,11,0.3)]"
+                >
+                  <span>Cotizar {comparisons[selectedComparison].modelB.name}</span>
+                  <span>→</span>
+                </a>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      {/* 4. GUÍA "UNA VEZ EN TUS MANOS": ACOMPAÑAMIENTO OPERATIVO PASO A PASO */}
+      <section className="py-28 px-6 relative z-10 border-b border-white/[0.05] bg-gradient-to-b from-neutral-950 via-black to-neutral-950">
+        <div className="max-w-7xl mx-auto">
+          
+          <div className="text-center max-w-3xl mx-auto mb-20">
+            <span className="text-amber-400 font-mono text-xs uppercase tracking-[0.3em] block mb-3">🤝 Te Acompañamos en Todo Momento</span>
+            <h2 className="text-4xl md:text-6xl font-black text-white uppercase tracking-tight">
+              ¿Cómo se Opera Una Vez que Llega a tus Manos?
+            </h2>
+            <p className="text-neutral-400 text-base font-light mt-4">
+              No estás solo. Desde la cimentación del terreno hasta la primera colada y la capacitación de tu personal, ATOMIC realiza el acompañamiento integral.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            
+            {/* STEP 1 */}
+            <div className="bg-neutral-900/60 border border-white/10 rounded-3xl p-8 relative overflow-hidden group hover:border-amber-500/40 transition-all">
+              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 font-mono font-black text-xl mb-6">
+                01
+              </div>
+              <h3 className="text-xl font-bold text-white mb-3 uppercase">Adecuación de Terreno</h3>
+              <p className="text-neutral-400 text-xs font-light leading-relaxed mb-4">
+                Te entregamos los planos CAD exactos de la loza de hormigón armado (15-20cm) y la canaleta de acometida trifásica para que tu terreno esté listo antes del arribo.
+              </p>
+              <span className="text-[10px] font-mono font-bold text-amber-400 uppercase">Supervisión Remota Previa</span>
+            </div>
+
+            {/* STEP 2 */}
+            <div className="bg-neutral-900/60 border border-white/10 rounded-3xl p-8 relative overflow-hidden group hover:border-amber-500/40 transition-all">
+              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 font-mono font-black text-xl mb-6">
+                02
+              </div>
+              <h3 className="text-xl font-bold text-white mb-3 uppercase">Instalación On-Site</h3>
+              <p className="text-neutral-400 text-xs font-light leading-relaxed mb-4">
+                Nuestros ingenieros mecánicos viajan a tu planta para anclar el chasis host, nivelar la mesa vibratoria, conectar bombas hidráulicas y calibrar sensores PLC.
+              </p>
+              <span className="text-[10px] font-mono font-bold text-amber-400 uppercase">Ingenieros en Sitio</span>
+            </div>
+
+            {/* STEP 3 */}
+            <div className="bg-neutral-900/60 border border-white/10 rounded-3xl p-8 relative overflow-hidden group hover:border-amber-500/40 transition-all">
+              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 font-mono font-black text-xl mb-6">
+                03
+              </div>
+              <h3 className="text-xl font-bold text-white mb-3 uppercase">Capacitación a Operarios</h3>
+              <p className="text-neutral-400 text-xs font-light leading-relaxed mb-4">
+                Entrenamos a tu tripulación en la dosificación exacta de mezcla seca, manejo de la pantalla táctil Siemens y rutinas diarias de engrase y limpieza preventiva.
+              </p>
+              <span className="text-[10px] font-mono font-bold text-amber-400 uppercase">Entrenamiento Completo</span>
+            </div>
+
+            {/* STEP 4 */}
+            <div className="bg-neutral-900/60 border border-white/10 rounded-3xl p-8 relative overflow-hidden group hover:border-amber-500/40 transition-all">
+              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 font-mono font-black text-xl mb-6">
+                04
+              </div>
+              <h3 className="text-xl font-bold text-white mb-3 uppercase">Asistencia Continua 24/7</h3>
+              <p className="text-neutral-400 text-xs font-light leading-relaxed mb-4">
+                Monitoreo continuo mediante módem industrial IP en el tablero PLC para diagnósticos en vivo, ajustes de ciclo de vibración y envío exprés de repuestos.
+              </p>
+              <span className="text-[10px] font-mono font-bold text-amber-400 uppercase">Módem Tele-Diagnóstico</span>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      {/* 5. CAPACITACIÓN MAESTRA (TABS DE DOSIFICACIÓN, MODELOS, MOLDES Y REPUESTOS) */}
+      <section className="py-28 px-6 relative z-10 border-b border-white/[0.05] bg-neutral-950/50" id="capacitacion">
         <div className="max-w-7xl mx-auto">
           
           <div className="text-center max-w-4xl mx-auto mb-16">
             <div className="inline-flex items-center space-x-2 px-4 py-1.5 bg-amber-500/10 border border-amber-500/30 rounded-full mb-4">
               <span className="text-amber-400 font-mono text-[11px] font-bold uppercase tracking-widest">
-                🎓 CAPACITACIÓN MAESTRA DE OPERACIÓN & INGENIERÍA
+                🎓 MANUAL TÉCNICO DE MEZCLA Y PRODUCCIÓN
               </span>
             </div>
             <h2 className="text-4xl md:text-6xl font-black text-white uppercase tracking-tight">
-              Todo lo que Debes Saber sobre las <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-400 to-yellow-500 italic">
-                Plantas de Concreto y Bloques
-              </span>
+              Ingeniería del Concreto Seco para Bloques
             </h2>
             <p className="text-neutral-400 text-sm font-light mt-4 leading-relaxed">
-              Aprende el funcionamiento técnico, dosificación perfecta, comparativa de modelos, mantenimiento y accesorios indispensables para operar tu bloquera con máxima rentabilidad.
+              La calidad del bloque sismo-resistente depende de la granulometría del agregado y la relación agua/cemento.
             </p>
           </div>
 
@@ -146,7 +541,7 @@ export default function BlockMachineLanding({ products }: { products: any[] }) {
           <div className="flex flex-wrap items-center justify-center gap-3 mb-12">
             {[
               { id: 'proceso', label: '1. Proceso & Dosificación' },
-              { id: 'modelos', label: '2. Comparativa de Modelos' },
+              { id: 'modelos', label: '2. Especificaciones por Modelo' },
               { id: 'moldes', label: '3. Moldes & Productos' },
               { id: 'repuestos', label: '4. Repuestos & Opcionales' }
             ].map(tab => (
@@ -200,7 +595,7 @@ export default function BlockMachineLanding({ products }: { products: any[] }) {
             {activeTab === 'modelos' && (
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
                 <h3 className="text-2xl font-black text-amber-400 uppercase tracking-wide mb-6">
-                  📊 Diferencias de Modelos Ofrecidos
+                  📊 Especificaciones por Modelo
                 </h3>
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs font-mono border-collapse">
@@ -311,7 +706,7 @@ export default function BlockMachineLanding({ products }: { products: any[] }) {
         </div>
       </section>
 
-      {/* 3. CATÁLOGO INTEGRADO DE PRODUCTOS DE BBDD */}
+      {/* 6. CATÁLOGO INTEGRADO DE PRODUCTOS DE BBDD */}
       <section className="py-28 px-6 relative z-10 border-b border-white/[0.05]" id="catalogo">
         <div className="max-w-7xl mx-auto">
           
@@ -408,7 +803,7 @@ export default function BlockMachineLanding({ products }: { products: any[] }) {
         </div>
       </section>
 
-      {/* 4. ¿QUÉ INCLUYE LA PLANTA COMPLETA? (COMPONENTES DE SERIE) */}
+      {/* 7. ¿QUÉ INCLUYE LA PLANTA COMPLETA? (COMPONENTES DE SERIE) */}
       <section className="py-28 px-6 relative z-10 border-b border-white/[0.05]">
         <div className="max-w-7xl mx-auto">
           
@@ -498,7 +893,7 @@ export default function BlockMachineLanding({ products }: { products: any[] }) {
         </div>
       </section>
 
-      {/* 5. COBERTURA DE SOPORTE TÉCNICO & GARANTÍA */}
+      {/* 8. COBERTURA DE SOPORTE TÉCNICO & GARANTÍA */}
       <section className="py-28 px-6 relative z-10 border-b border-white/[0.05] bg-neutral-950/40">
         <div className="max-w-7xl mx-auto">
           
@@ -576,7 +971,7 @@ export default function BlockMachineLanding({ products }: { products: any[] }) {
         </div>
       </section>
 
-      {/* 6. CALCULADORA INTERACTIVA DE PROYECCIÓN FINANCIERA (ROI) */}
+      {/* 9. CALCULADORA INTERACTIVA DE PROYECCIÓN FINANCIERA (ROI) */}
       <section className="py-28 px-6 relative z-10 border-b border-white/[0.05]">
         <div className="max-w-5xl mx-auto">
           
@@ -648,7 +1043,7 @@ export default function BlockMachineLanding({ products }: { products: any[] }) {
         </div>
       </section>
 
-      {/* 7. FAQ ACCORDION SECTION */}
+      {/* 10. FAQ ACCORDION SECTION */}
       <section className="py-28 px-6 relative z-10 border-b border-white/[0.05] bg-neutral-950/60">
         <div className="max-w-4xl mx-auto">
           
@@ -693,7 +1088,7 @@ export default function BlockMachineLanding({ products }: { products: any[] }) {
         </div>
       </section>
 
-      {/* 8. FOOTER CTA PREMIUM */}
+      {/* 11. FOOTER CTA PREMIUM */}
       <section className="py-24 px-6 text-center relative z-10 bg-gradient-to-b from-neutral-950 to-black">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-4xl md:text-6xl font-black text-white uppercase tracking-tight mb-6">
