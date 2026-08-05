@@ -35,9 +35,16 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
         const resolvedParams = await params
-        await prisma.product.delete({
-            where: { id: resolvedParams.id }
-        })
+        try {
+            await prisma.product.update({
+                where: { id: resolvedParams.id },
+                data: { isDeleted: true }
+            })
+        } catch {
+            await prisma.product.delete({
+                where: { id: resolvedParams.id }
+            })
+        }
         return NextResponse.json({ message: "Product deleted" })
     } catch (error) {
         return NextResponse.json({ error: "Failed to delete product" }, { status: 500 })

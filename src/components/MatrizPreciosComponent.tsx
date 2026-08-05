@@ -70,8 +70,8 @@ export default function MatrizPreciosComponent() {
     setTimeout(() => setToastMessage(null), 3000);
   };
 
-  // Update handler for inline edits
-  const handleUpdateProduct = async (id: string, field: 'salePrice' | 'costPrice' | 'categoryId', value: any) => {
+  // Update handler for inline edits (salePrice, costPrice, categoryId, stock)
+  const handleUpdateProduct = async (id: string, field: 'salePrice' | 'costPrice' | 'categoryId' | 'stock', value: any) => {
     setSavingId(id);
     try {
       const currentProduct = products.find(p => p.id === id);
@@ -81,6 +81,7 @@ export default function MatrizPreciosComponent() {
       if (field === 'salePrice') payload.price = parseFloat(value) || 0;
       if (field === 'costPrice') payload.compareAtPrice = value === '' || value === null ? null : parseFloat(value);
       if (field === 'categoryId') payload.categoryId = value;
+      if (field === 'stock') payload.stock = parseInt(value) || 0;
 
       const res = await fetch(`/api/products/${id}`, {
         method: 'PUT',
@@ -96,6 +97,7 @@ export default function MatrizPreciosComponent() {
 
         const newSale = field === 'salePrice' ? (parseFloat(value) || 0) : p.salePrice;
         const newCost = field === 'costPrice' ? (value === '' || value === null ? 0 : parseFloat(value)) : p.costPrice;
+        const newStock = field === 'stock' ? (parseInt(value) || 0) : p.stock;
         const newCatObj = field === 'categoryId' ? categories.find(c => c.id === value) : null;
         const newCatName = newCatObj ? newCatObj.name : (field === 'categoryId' && !value ? 'Sin categoría' : p.category);
 
@@ -106,6 +108,7 @@ export default function MatrizPreciosComponent() {
           ...p,
           salePrice: newSale,
           costPrice: newCost,
+          stock: newStock,
           category: newCatName,
           categoryId: field === 'categoryId' ? value : p.categoryId,
           marginUsd: newMarginUsd,
@@ -117,6 +120,27 @@ export default function MatrizPreciosComponent() {
     } catch (err) {
       console.error(err);
       showNotification('❌ Error al guardar cambios');
+    } finally {
+      setSavingId(null);
+    }
+  };
+
+  // Delete product handler
+  const handleDeleteProduct = async (id: string, name: string) => {
+    if (!window.confirm(`¿Estás seguro de que deseas eliminar permanentemente de la matriz el producto:\n\n"${name}"?`)) {
+      return;
+    }
+    setSavingId(id);
+    try {
+      const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Error al eliminar');
+
+      setProducts(prev => prev.filter(p => p.id !== id));
+      setTotalProducts(prev => Math.max(0, prev - 1));
+      showNotification('🗑️ Producto eliminado de la base de datos');
+    } catch (err) {
+      console.error(err);
+      showNotification('❌ Error al eliminar producto');
     } finally {
       setSavingId(null);
     }
@@ -228,7 +252,7 @@ export default function MatrizPreciosComponent() {
               </h1>
             </div>
             <p className="text-xs opacity-70 mt-1 uppercase tracking-wider">
-              MATRIZ GENERAL DE PRODUCTOS · EDICIÓN DIRECTA DE CATEGORÍAS, COSTOS Y PRECIOS VENTA EN TIEMPO REAL
+              MATRIZ GENERAL DE PRODUCTOS · EDICIÓN DIRECTA DE CATEGORÍAS, STOCK, COSTOS Y PRECIOS EN TIEMPO REAL
             </p>
           </div>
 
@@ -379,23 +403,24 @@ export default function MatrizPreciosComponent() {
               <th className="py-3 px-4 border-r border-zinc-800">DESCRIPCIÓN DEL PRODUCTO</th>
               <th className="py-3 px-4 border-r border-zinc-800 w-36">PROVEEDOR</th>
               <th className="py-3 px-4 border-r border-zinc-800 w-44">CATEGORÍA (EDITABLE)</th>
-              <th className="py-3 px-4 border-r border-zinc-800 text-center w-20">STOCK</th>
+              <th className="py-3 px-4 border-r border-zinc-800 text-center w-24">STOCK (EDITABLE)</th>
               <th className="py-3 px-4 border-r border-zinc-800 text-right w-32">COSTO ($) EDITABLE</th>
               <th className="py-3 px-4 border-r border-zinc-800 text-right w-36">P. VENTA ($) EDITABLE</th>
               <th className="py-3 px-4 border-r border-zinc-800 text-right w-28">MARGEN ($)</th>
-              <th className="py-3 px-4 text-right w-28">MARGEN (%)</th>
+              <th className="py-3 px-4 border-r border-zinc-800 text-right w-28">MARGEN (%)</th>
+              <th className="py-3 px-4 text-center w-28">ACCIONES</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-900">
             {loading ? (
               <tr>
-                <td colSpan={10} className="py-16 text-center text-sm tracking-widest animate-pulse">
+                <td colSpan={11} className="py-16 text-center text-sm tracking-widest animate-pulse">
                   [ PROCESANDO CONSULTA DE BASE DE DATOS... CARGANDO REGISTROS ]
                 </td>
               </tr>
             ) : products.length === 0 ? (
               <tr>
-                <td colSpan={10} className="py-16 text-center text-sm opacity-70 tracking-widest">
+                <td colSpan={11} className="py-16 text-center text-sm opacity-70 tracking-widest">
                   NO SE ENCONTRARON REGISTROS QUE COINCIDAN CON LOS CRITERIOS DE BÚSQUEDA.
                 </td>
               </tr>
@@ -445,10 +470,30 @@ export default function MatrizPreciosComponent() {
                       )}
                     </td>
 
-                    <td className="py-2.5 px-4 border-r border-zinc-900 text-center font-mono font-bold">
-                      <span className={p.stock > 0 ? 'text-emerald-400' : 'text-rose-500'}>
-                        {p.stock}
-                      </span>
+                    {/* EDITABLE STOCK */}
+                    <td className="py-1.5 px-2 border-r border-zinc-900 text-center font-mono font-bold">
+                      {isEditMode ? (
+                        <input
+                          type="number"
+                          defaultValue={p.stock}
+                          onBlur={(e) => {
+                            const val = parseInt(e.target.value);
+                            if (!isNaN(val) && val !== p.stock) {
+                              handleUpdateProduct(p.id, 'stock', val);
+                            }
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              (e.target as HTMLInputElement).blur();
+                            }
+                          }}
+                          className={`w-16 px-2 py-1 text-center text-xs font-mono font-bold border ${themeClasses.cellInput} ${p.stock > 0 ? 'text-emerald-400' : 'text-rose-500'} outline-none`}
+                        />
+                      ) : (
+                        <span className={p.stock > 0 ? 'text-emerald-400' : 'text-rose-500'}>
+                          {p.stock}
+                        </span>
+                      )}
                     </td>
 
                     {/* EDITABLE COST PRICE */}
@@ -513,8 +558,19 @@ export default function MatrizPreciosComponent() {
                     </td>
 
                     {/* MARGEN PERCENT */}
-                    <td className="py-2.5 px-4 text-right font-mono font-bold text-emerald-400">
+                    <td className="py-2.5 px-4 border-r border-zinc-900 text-right font-mono font-bold text-emerald-400">
                       +{p.marginPercent.toFixed(1)}%
+                    </td>
+
+                    {/* ACTION BUTTON (ELIMINAR) */}
+                    <td className="py-1.5 px-2 text-center font-mono">
+                      <button
+                        onClick={() => handleDeleteProduct(p.id, p.name)}
+                        title="Eliminar producto de la matriz"
+                        className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider bg-rose-950/60 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-800 transition-colors"
+                      >
+                        🗑️ ELIMINAR
+                      </button>
                     </td>
                   </tr>
                 );
