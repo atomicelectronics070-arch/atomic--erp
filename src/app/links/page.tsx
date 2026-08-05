@@ -71,6 +71,11 @@ export default function DirectoryLinksPage() {
       category: '🚀 LANDINGS DE PRODUCTOS ESPECIALES & PRESENTACIONES',
       items: [
         {
+          title: 'Campanas Extractoras de Cocina (Todos los Modelos)',
+          url: '/web/campanas',
+          desc: 'Página de presentación de campanas extractoras de cocina (Isla, Pared y Retráctil).',
+        },
+        {
           title: 'Honor Magic 7 - Landing Especial',
           url: '/web/honor-magic-7',
           desc: 'Página de presentación de smartphones Honor Magic 7.',
@@ -136,9 +141,9 @@ export default function DirectoryLinksPage() {
           desc: 'Inventario de repuestos y accesorios.',
         },
         {
-          title: 'Lanzamientos & Campañas de Marketing',
+          title: 'Campanas Extractoras de Cocina de Alta Gama (Isla, Pared, Retráctil)',
           url: '/web/campanas',
-          desc: 'Visualización de campañas publicitarias de la tienda.',
+          desc: 'Catálogo especializado de campanas extractoras de cocina potentes y silenciosas con todos los modelos.',
         },
         {
           title: 'Demostraciones de Software & Demos',
