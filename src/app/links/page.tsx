@@ -126,6 +126,11 @@ export default function DirectoryLinksPage() {
       category: '📱 CATÁLOGOS WEB Y SECCIONES PRINCIPALES',
       items: [
         {
+          title: '🎮 Consolas de Videojuegos (PlayStation 5, PS4 Slim, Pandora Arcade & Accesorios)',
+          url: '/web/consolas',
+          desc: 'Catálogo de consolas PlayStation 5 Slim, PS4 Slim Open Box, Pandora Arcade y accesorios de simulación con precios PVP.',
+        },
+        {
           title: 'Catálogo de Teléfonos & Smartwatches',
           url: '/web/phones',
           desc: 'Listado completo de smartphones y gadgets.',
