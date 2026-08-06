@@ -3,6 +3,143 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 
+function ProductCardCarousel({ product: p }: { product: any }) {
+  const [currentImgIndex, setCurrentImgIndex] = useState(0);
+
+  let imageList: string[] = [];
+  try {
+    if (p.images) {
+      const parsed = typeof p.images === 'string' ? JSON.parse(p.images) : p.images;
+      if (Array.isArray(parsed) && parsed.length > 0) imageList = parsed;
+      else if (typeof parsed === 'string') imageList = [parsed];
+    }
+  } catch(e) {}
+  
+  if (imageList.length === 0) {
+    imageList = ["https://images.unsplash.com/photo-1541888081622-15cb3a5d898a?q=80&w=2070"];
+  }
+
+  const handlePrev = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setCurrentImgIndex((prev) => (prev === 0 ? imageList.length - 1 : prev - 1));
+  };
+
+  const handleNext = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setCurrentImgIndex((prev) => (prev === imageList.length - 1 ? 0 : prev + 1));
+  };
+
+  const cleanDesc = p.description ? p.description.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim() : '';
+
+  return (
+    <div className="bg-neutral-950 border border-white/10 rounded-3xl overflow-hidden hover:border-amber-500/50 transition-all duration-500 flex flex-col shadow-2xl group">
+      {/* WIDE HORIZONTAL IMAGE SLIDER BANNER (NOT SQUARE) */}
+      <div className="w-full h-80 sm:h-[420px] relative overflow-hidden bg-neutral-900 group/slider border-b border-white/10">
+        <img
+          src={imageList[currentImgIndex]}
+          alt={p.name}
+          onError={(e) => {
+            const target = e.target as HTMLImageElement;
+            target.src = "https://images.unsplash.com/photo-1541888081622-15cb3a5d898a?q=80&w=2070";
+          }}
+          className="w-full h-full object-contain p-4 bg-neutral-900/90 transition-all duration-500"
+        />
+
+        {/* Industrial Grade Badge */}
+        <div className="absolute top-4 left-4 bg-black/80 backdrop-blur-md border border-amber-500/30 text-amber-400 px-3.5 py-1.5 rounded-full text-[11px] font-mono font-bold uppercase tracking-wider z-10 shadow-lg">
+          Industrial Grade
+        </div>
+
+        {/* Counter Badge */}
+        {imageList.length > 1 && (
+          <div className="absolute top-4 right-4 bg-black/80 backdrop-blur-md border border-white/15 text-white px-3.5 py-1.5 rounded-full text-[11px] font-mono font-bold z-10 shadow-lg">
+            📷 {currentImgIndex + 1} / {imageList.length}
+          </div>
+        )}
+
+        {/* Interactive Left & Right Navigation Arrows */}
+        {imageList.length > 1 && (
+          <>
+            <button
+              onClick={handlePrev}
+              aria-label="Anterior imagen"
+              className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/80 border border-white/20 text-white text-xl flex items-center justify-center hover:bg-amber-500 hover:text-black hover:border-amber-500 transition-all duration-200 backdrop-blur-md opacity-90 sm:opacity-0 group-hover/slider:opacity-100 z-20 shadow-2xl"
+            >
+              ‹
+            </button>
+
+            <button
+              onClick={handleNext}
+              aria-label="Siguiente imagen"
+              className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/80 border border-white/20 text-white text-xl flex items-center justify-center hover:bg-amber-500 hover:text-black hover:border-amber-500 transition-all duration-200 backdrop-blur-md opacity-90 sm:opacity-0 group-hover/slider:opacity-100 z-20 shadow-2xl"
+            >
+              ›
+            </button>
+
+            {/* Dots Indicator Overlay */}
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center space-x-2.5 bg-black/70 px-4 py-2 rounded-full backdrop-blur-md border border-white/10 z-20">
+              {imageList.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setCurrentImgIndex(idx);
+                  }}
+                  className={`h-2.5 rounded-full transition-all duration-300 ${
+                    currentImgIndex === idx
+                      ? 'bg-amber-400 w-7'
+                      : 'bg-white/40 hover:bg-white/80 w-2.5'
+                  }`}
+                />
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* CARD INFO CONTENT */}
+      <div className="p-8 md:p-10 flex flex-col justify-between flex-1 bg-neutral-950">
+        <div>
+          <h3 className="text-2xl md:text-3xl font-black text-white mb-3 uppercase tracking-tight leading-snug group-hover:text-amber-400 transition-colors">
+            {p.name}
+          </h3>
+          <p className="text-neutral-400 text-xs md:text-sm font-light line-clamp-3 mb-6 leading-relaxed">
+            {cleanDesc || "Planta industrial automatizada para la fabricación en masa de bloques de concreto, adoquines viales y prefabricados con sistema de alta presión vibratoria."}
+          </p>
+        </div>
+
+        <div>
+          <div className="flex items-center justify-between pt-6 border-t border-white/10 mb-6">
+            <div>
+              <span className="text-[10px] uppercase font-bold text-neutral-500 block">Inversión Estimada</span>
+              <span className="text-2xl md:text-3xl font-black text-amber-400 font-mono">
+                ${p.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              </span>
+            </div>
+            <div className="text-right">
+              <span className="text-[10px] uppercase font-bold text-neutral-500 block">Soporte Técnico</span>
+              <span className="text-xs font-bold text-amber-400 bg-amber-500/10 px-3.5 py-1.5 rounded-full border border-amber-500/30">
+                Incluido 24/7
+              </span>
+            </div>
+          </div>
+
+          <Link
+            href={`/web/product/${p.id}`}
+            className="w-full py-4 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-black font-black text-xs uppercase tracking-widest rounded-xl transition-all duration-300 flex items-center justify-center space-x-2 shadow-[0_0_20px_rgba(245,158,11,0.2)]"
+          >
+            <span>Ver Ficha Técnica Completa</span>
+            <span>→</span>
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function BlockMachineLanding({ products }: { products: any[] }) {
   const whatsappNumber = "593969043453";
   const whatsappLink = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Hola Atomic, deseo asesoría técnica especializada y cotización completa sobre las Plantas Industriales de Bloques y Adoquines.')}`;
@@ -772,81 +909,15 @@ export default function BlockMachineLanding({ products }: { products: any[] }) {
             </p>
           </div>
 
-          {products.length === 0 ? (
+          {products.filter(p => !p.isDeleted && p.isActive !== false).length === 0 ? (
             <div className="p-16 border border-white/10 rounded-3xl bg-white/[0.02] text-center">
               <p className="text-neutral-400">Cargando inventario de maquinaria...</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {products.map((p) => {
-                let firstImage = "https://images.unsplash.com/photo-1541888081622-15cb3a5d898a?q=80&w=2070";
-                try {
-                  if (p.images) {
-                    const parsed = typeof p.images === 'string' ? JSON.parse(p.images) : p.images;
-                    if (Array.isArray(parsed) && parsed.length > 0) firstImage = parsed[0];
-                  }
-                } catch(e) {}
-
-                // Strip HTML tags for clean card description preview
-                const cleanDesc = p.description ? p.description.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim() : '';
-
-                return (
-                  <div key={p.id} className="bg-neutral-950 border border-white/10 rounded-3xl overflow-hidden hover:border-amber-500/50 transition-all duration-500 group flex flex-col sm:flex-row shadow-2xl">
-                    <div className="sm:w-2/5 h-64 sm:h-auto relative overflow-hidden bg-neutral-900">
-                      <img 
-                        src={firstImage} 
-                        alt={p.name} 
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          if (target.src.includes('maxresdefault.jpg')) {
-                            target.src = target.src.replace('maxresdefault.jpg', 'hqdefault.jpg');
-                          } else {
-                            target.src = "https://images.unsplash.com/photo-1541888081622-15cb3a5d898a?q=80&w=2070";
-                          }
-                        }}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-90 group-hover:opacity-100"
-                      />
-                      <div className="absolute top-4 left-4 bg-black/80 backdrop-blur-md border border-amber-500/30 text-amber-400 px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider">
-                        Industrial Grade
-                      </div>
-                    </div>
-
-                    <div className="sm:w-3/5 p-8 flex flex-col justify-between">
-                      <div>
-                        <h3 className="text-xl md:text-2xl font-black text-white mb-3 uppercase tracking-tight leading-snug group-hover:text-amber-400 transition-colors">
-                          {p.name}
-                        </h3>
-                        <p className="text-neutral-400 text-xs font-light line-clamp-3 mb-6 leading-relaxed">
-                          {cleanDesc || "Planta industrial automatizada para la fabricación en masa de bloques de concreto, adoquines viales y prefabricados con sistema de alta presión vibratoria."}
-                        </p>
-                      </div>
-
-                      <div>
-                        <div className="flex items-center justify-between pt-6 border-t border-white/10 mb-6">
-                          <div>
-                            <span className="text-[10px] uppercase font-bold text-neutral-500 block">Inversión Estimada</span>
-                            <span className="text-2xl font-black text-amber-400 font-mono">
-                              ${p.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                            </span>
-                          </div>
-                          <div className="text-right">
-                            <span className="text-[10px] uppercase font-bold text-neutral-500 block">Soporte</span>
-                            <span className="text-xs font-bold text-white">Incluido 24/7</span>
-                          </div>
-                        </div>
-
-                        <Link 
-                          href={`/web/product/${p.id}`} 
-                          className="w-full py-3.5 bg-white/5 hover:bg-amber-500 hover:text-black text-white font-bold text-xs uppercase tracking-widest rounded-xl transition-all duration-300 flex items-center justify-center space-x-2 border border-white/10 hover:border-amber-500"
-                        >
-                          <span>Ver Ficha Técnica Completa</span>
-                          <span>→</span>
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+            <div className="grid grid-cols-1 gap-12">
+              {products.filter(p => !p.isDeleted && p.isActive !== false).map((p) => (
+                <ProductCardCarousel key={p.id} product={p} />
+              ))}
             </div>
           )}
 
