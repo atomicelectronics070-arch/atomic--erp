@@ -24,8 +24,38 @@ export default function BlockMachineLanding({ products }: { products: any[] }) {
 
   const comparisons = [
     {
-      title: "QTJ4-40 vs. QT4-15",
-      subtitle: "Emprendimiento Regional vs. Planta Comercial Mediana",
+      title: "QT4-24 vs. QT4-15",
+      subtitle: "Línea Semi-Automática (QT4-24) vs. Línea Comercial PLC (QT4-15)",
+      modelA: {
+        name: "QT4-24 (Línea Semi-Automática Completa)",
+        tag: "Máximo Rendimiento Semi-Automático",
+        capacity: "4,000 - 6,000 bloques/día",
+        power: "18.5 kW",
+        pressure: "50 KN",
+        cycle: "24 - 28 segundos",
+        price: "$8,450 - $14,000 USD",
+        recommendedFor: "Bloqueras en expansión y contratistas regionales que buscan alta producción con consumo de solo 18.5 kW.",
+        includes: "Tolva de alimentación, Cinta transportadora 6m, Host QT4-24, Mezcladora Pan JQ500, Panel Eléctrico, Motores vibradores de alta frecuencia y carritos de acarreo.",
+        pros: ["Incluye los 8 componentes del kit técnico industrial", "Bajo consumo de energía eléctrica (18.5 kW)", "Retorno de inversión rápida en 5 meses"],
+        cons: ["Requiere 4 operarios manuales para paletas"]
+      },
+      modelB: {
+        name: "QT4-15 (Línea Estándar PLC)",
+        tag: "Máxima Eficiencia Comercial PLC",
+        capacity: "6,000 - 8,000 bloques/día",
+        power: "32 kW",
+        pressure: "70 KN",
+        cycle: "15 - 20 segundos",
+        price: "$28,000 - $38,000 USD",
+        recommendedFor: "Bloqueras comerciales que requieren control 100% automático por PLC Siemens y apilador Stacker.",
+        includes: "Máquina Host Vibratoria Hidráulica, Mezcladora JS500 Doble Eje, Cinta 8m, Pantalla Táctil PLC Siemens, Apilador Stacker Automático, 1 Molde Manganeso.",
+        pros: ["Alta velocidad con ciclo de 15s", "Control PLC 100% automático", "Requiere solo 3-4 operarios"],
+        cons: ["Requiere acometida eléctrica trifásica 35 kW"]
+      }
+    },
+    {
+      title: "QTJ4-40 vs. QT4-24",
+      subtitle: "Emprendimiento Regional vs. Línea Industrial Semi-Automática",
       modelA: {
         name: "QTJ4-40 (Semi-Automática)",
         tag: "Inversión Inicial Rápida",
@@ -40,17 +70,17 @@ export default function BlockMachineLanding({ products }: { products: any[] }) {
         cons: ["Requiere más operarios manuales", "Sin apilador automático de paletas"]
       },
       modelB: {
-        name: "QT4-15 (Línea Estándar PLC)",
-        tag: "Máxima Eficiencia Comercial",
-        capacity: "6,000 - 8,000 bloques/día",
-        power: "32 kW",
-        pressure: "70 KN",
-        cycle: "15 - 20 segundos",
-        price: "$28,000 - $38,000 USD",
-        recommendedFor: "Bloqueras comerciales en expansión que abastecen distribuidores, ferreterías y contratos de vivienda masiva.",
-        includes: "Máquina Host Vibratoria Hidráulica, Mezcladora JS500 Doble Eje, Cinta 8m, Pantalla Táctil PLC Siemens, Apilador Stacker Automático, 1 Molde Manganeso.",
-        pros: ["Alta velocidad con ciclo de 15s", "Control PLC 100% automático", "Requiere solo 3-4 operarios"],
-        cons: ["Requiere acometida eléctrica trifásica 35 kW"]
+        name: "QT4-24 (Línea Semi-Automática Completa)",
+        tag: "Compresión Hidráulica Reforzada",
+        capacity: "4,000 - 6,000 bloques/día",
+        power: "18.5 kW",
+        pressure: "50 KN",
+        cycle: "24 - 28 segundos",
+        price: "$8,450 - $14,000 USD",
+        recommendedFor: "Medianas bloqueras que requieren producir bloques de alta densidad y adoquines viales.",
+        includes: "Línea completa con los 8 componentes de catálogo técnico industrial ATOMIC.",
+        pros: ["50 KN de presión hidráulica", "Resistencia de bloque sismo-resistente superior"],
+        cons: ["Acometida trifásica recomendada"]
       }
     },
     {
@@ -249,6 +279,17 @@ export default function BlockMachineLanding({ products }: { products: any[] }) {
               </div>
               <div className="w-full h-5 bg-neutral-950 rounded-full overflow-hidden border border-white/5 p-1">
                 <div className="h-full bg-gradient-to-r from-amber-600 to-amber-400 rounded-full" style={{ width: '33%' }}></div>
+              </div>
+            </div>
+
+            {/* Model QT4-24 */}
+            <div>
+              <div className="flex justify-between items-center mb-2 text-xs font-mono">
+                <span className="font-bold text-amber-400 uppercase">QT4-24 (Línea Semi-Automática Completa) — 5,500 Bloques/Día</span>
+                <span className="text-amber-400 font-bold">45% Capacidad Máxima</span>
+              </div>
+              <div className="w-full h-5 bg-neutral-950 rounded-full overflow-hidden border border-amber-500/30 p-1">
+                <div className="h-full bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500 rounded-full" style={{ width: '45%' }}></div>
               </div>
             </div>
 
