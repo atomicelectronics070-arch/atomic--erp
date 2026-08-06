@@ -1,12 +1,12 @@
 "use client"
 
-// Version: 3.0.0 - Design Redesign Inspired by Minimalist Catalog Layout (Bershka / Clean E-Commerce)
+// Version: 3.1.0 - Bershka-Style Catalog with Complete Product Display & Infinite Pagination
 import { useState, useRef, useEffect, useCallback, useMemo } from "react"
 import { 
     ShoppingBag, ChevronRight, ArrowRight, Shield, Zap, Truck, ChevronLeft, Hexagon, 
     Star, X, Smartphone, Database, Sparkles, Code, Bot, Download, Search, ImageOff, 
     AlertCircle, Home, Building, Factory, Cpu, SlidersHorizontal, ChevronDown, Check,
-    Filter, ArrowUpDown
+    Filter, ArrowUpDown, RefreshCw
 } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
@@ -14,9 +14,6 @@ import { motion, AnimatePresence } from "framer-motion"
 import { calculateDiscountedPrice } from "@/lib/utils/pricing"
 import SpyCameraBanner from "@/components/web/SpyCameraBanner"
 import SmartIntercomBanner from "@/components/web/SmartIntercomBanner"
-import HomeCategoryBanner from "@/components/web/HomeCategoryBanner"
-import ElectronicsCategoryBanner from "@/components/web/ElectronicsCategoryBanner"
-import PhonesCategoryBanner from "@/components/web/PhonesCategoryBanner"
 
 // Enhanced cleaning for damaged image data
 const safeParseArray = (str: any, fallback: any = []) => {
@@ -41,7 +38,7 @@ const safeParseArray = (str: any, fallback: any = []) => {
     return fallback;
 };
 
-/* ─── Robust Image Component with Fallback ─── */
+/* ─── Robust Image Component ─── */
 function SafeImage({ src, alt, className, fill = false, width, height, ...props }: any) {
     const [error, setError] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
@@ -53,10 +50,7 @@ function SafeImage({ src, alt, className, fill = false, width, height, ...props 
         }
     }, [src])
 
-    const handleLoad = () => {
-        setIsLoading(false)
-    }
-
+    const handleLoad = () => setIsLoading(false)
     const handleError = () => {
         setIsLoading(false)
         setError(true)
@@ -105,6 +99,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole, s
     const [showFilters, setShowFilters] = useState(true)
     const [sortBy, setSortBy] = useState<"popularity" | "price-asc" | "price-desc" | "newest">("popularity")
     const [activeTab, setActiveTab] = useState<"COLECCIÓN" | "NOVEDADES" | "CONSOLAS" | "DIRECTORIO">("COLECCIÓN")
+    const [displayCount, setDisplayCount] = useState(48)
 
     // Debouncing search requests to server
     const searchDebounceRef = useRef<NodeJS.Timeout | null>(null)
@@ -119,7 +114,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole, s
 
         searchDebounceRef.current = setTimeout(async () => {
             try {
-                const res = await fetch(`/api/products?search=${encodeURIComponent(query)}&limit=160`)
+                const res = await fetch(`/api/products?search=${encodeURIComponent(query)}&limit=250`)
                 if (res.ok) {
                     const data = await res.json()
                     const items = Array.isArray(data) ? data : data.products || []
@@ -135,6 +130,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole, s
 
     const handleSearchInput = (val: string) => {
         setSearchQuery(val)
+        setDisplayCount(48)
         performSearch(val)
     }
 
@@ -181,8 +177,17 @@ export default function PublicWebClient({ initialProducts, metadata, userRole, s
         return sorted
     }, [searchQuery, searchResults, dynamicProducts, initialProducts, activeMainCategoryId, activeSubcategoryId, metadata.categories, sortBy])
 
+    const displayedProducts = useMemo(() => {
+        return filteredProducts.slice(0, displayCount)
+    }, [filteredProducts, displayCount])
+
     const subcategories = activeMainCategoryId ? metadata.categories.filter((c: any) => c.parentId === activeMainCategoryId) : []
     const activeCatObj = metadata.categories.find((c: any) => c.id === activeMainCategoryId)
+
+    // All categories list for sidebar
+    const sidebarCategories = useMemo(() => {
+        return metadata.categories.filter((c: any) => c.isVisible !== false).sort((a: any, b: any) => a.name.localeCompare(b.name))
+    }, [metadata.categories])
 
     return (
         <div className="min-h-screen bg-white text-neutral-900 font-sans selection:bg-neutral-900 selection:text-white">
@@ -194,7 +199,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole, s
                     {/* LOGO */}
                     <Link 
                         href="/web"
-                        onClick={() => { setSearchQuery(""); setActiveMainCategoryId(null); setActiveSubcategoryId(null); }}
+                        onClick={() => { setSearchQuery(""); setActiveMainCategoryId(null); setActiveSubcategoryId(null); setDisplayCount(48); }}
                         className="flex items-center gap-2 group"
                     >
                         <span className="w-7 h-7 rounded-sm bg-neutral-900 text-white font-black flex items-center justify-center text-xs tracking-tighter">
@@ -208,13 +213,13 @@ export default function PublicWebClient({ initialProducts, metadata, userRole, s
                     {/* TOP NAVIGATION TABS */}
                     <nav className="hidden md:flex items-center gap-8 text-xs font-semibold uppercase tracking-wider text-neutral-600">
                         <button
-                            onClick={() => { setActiveTab("COLECCIÓN"); setActiveMainCategoryId(null); setActiveSubcategoryId(null); setSearchQuery(""); }}
+                            onClick={() => { setActiveTab("COLECCIÓN"); setActiveMainCategoryId(null); setActiveSubcategoryId(null); setSearchQuery(""); setDisplayCount(48); }}
                             className={`pb-1 border-b-2 transition-all ${activeTab === "COLECCIÓN" && !activeMainCategoryId && !searchQuery ? 'border-neutral-900 text-neutral-900 font-bold' : 'border-transparent hover:text-neutral-900'}`}
                         >
                             COLECCIÓN
                         </button>
                         <button
-                            onClick={() => { setActiveTab("NOVEDADES"); setSortBy("newest"); setActiveMainCategoryId(null); setActiveSubcategoryId(null); }}
+                            onClick={() => { setActiveTab("NOVEDADES"); setSortBy("newest"); setActiveMainCategoryId(null); setActiveSubcategoryId(null); setDisplayCount(48); }}
                             className={`pb-1 border-b-2 transition-all ${activeTab === "NOVEDADES" ? 'border-neutral-900 text-neutral-900 font-bold' : 'border-transparent hover:text-neutral-900'}`}
                         >
                             NOVEDADES
@@ -298,7 +303,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole, s
 
                     <div className="flex items-center gap-4 justify-between md:justify-end">
                         <span className="font-semibold text-neutral-400 uppercase tracking-widest text-[11px]">
-                            {filteredProducts.length} ARTÍCULOS
+                            MOSTRANDO {displayedProducts.length} DE {filteredProducts.length} ARTÍCULOS
                         </span>
 
                         {/* SORT DROPDOWN */}
@@ -337,12 +342,12 @@ export default function PublicWebClient({ initialProducts, metadata, userRole, s
                                         Tipología
                                     </h3>
 
-                                    <div className="space-y-2">
+                                    <div className="space-y-2 max-h-[70vh] overflow-y-auto pr-2 scrollbar-thin">
                                         <label 
-                                            onClick={() => { setActiveMainCategoryId(null); setActiveSubcategoryId(null); setSearchQuery(""); }}
-                                            className="flex items-center gap-3 cursor-pointer hover:text-neutral-900 transition-colors group"
+                                            onClick={() => { setActiveMainCategoryId(null); setActiveSubcategoryId(null); setSearchQuery(""); setDisplayCount(48); }}
+                                            className="flex items-center gap-3 cursor-pointer hover:text-neutral-900 transition-colors group py-0.5"
                                         >
-                                            <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center ${!activeMainCategoryId ? 'border-neutral-900 bg-neutral-900' : 'border-neutral-300 group-hover:border-neutral-500'}`}>
+                                            <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center shrink-0 ${!activeMainCategoryId ? 'border-neutral-900 bg-neutral-900' : 'border-neutral-300 group-hover:border-neutral-500'}`}>
                                                 {!activeMainCategoryId && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
                                             </div>
                                             <span className={!activeMainCategoryId ? 'font-bold text-neutral-900' : 'text-neutral-600'}>
@@ -350,7 +355,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole, s
                                             </span>
                                         </label>
 
-                                        {metadata.categories.filter((c: any) => !c.parentId).map((cat: any) => {
+                                        {sidebarCategories.map((cat: any) => {
                                             const isSelected = activeMainCategoryId === cat.id
                                             return (
                                                 <label 
@@ -364,13 +369,14 @@ export default function PublicWebClient({ initialProducts, metadata, userRole, s
                                                             setActiveSubcategoryId(null)
                                                         }
                                                         setSearchQuery("")
+                                                        setDisplayCount(48)
                                                     }}
-                                                    className="flex items-center gap-3 cursor-pointer hover:text-neutral-900 transition-colors group"
+                                                    className="flex items-center gap-3 cursor-pointer hover:text-neutral-900 transition-colors group py-0.5"
                                                 >
-                                                    <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center ${isSelected ? 'border-neutral-900 bg-neutral-900' : 'border-neutral-300 group-hover:border-neutral-500'}`}>
+                                                    <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center shrink-0 ${isSelected ? 'border-neutral-900 bg-neutral-900' : 'border-neutral-300 group-hover:border-neutral-500'}`}>
                                                         {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
                                                     </div>
-                                                    <span className={isSelected ? 'font-bold text-neutral-900' : 'text-neutral-600'}>
+                                                    <span className={`line-clamp-1 ${isSelected ? 'font-bold text-neutral-900' : 'text-neutral-600'}`}>
                                                         {cat.name}
                                                     </span>
                                                 </label>
@@ -392,13 +398,13 @@ export default function PublicWebClient({ initialProducts, metadata, userRole, s
                                                 return (
                                                     <label 
                                                         key={sub.id}
-                                                        onClick={() => setActiveSubcategoryId(isSubSelected ? null : sub.id)}
-                                                        className="flex items-center gap-3 cursor-pointer hover:text-neutral-900 transition-colors group"
+                                                        onClick={() => { setActiveSubcategoryId(isSubSelected ? null : sub.id); setDisplayCount(48); }}
+                                                        className="flex items-center gap-3 cursor-pointer hover:text-neutral-900 transition-colors group py-0.5"
                                                     >
-                                                        <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center ${isSubSelected ? 'border-neutral-900 bg-neutral-900' : 'border-neutral-300 group-hover:border-neutral-500'}`}>
+                                                        <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center shrink-0 ${isSubSelected ? 'border-neutral-900 bg-neutral-900' : 'border-neutral-300 group-hover:border-neutral-500'}`}>
                                                             {isSubSelected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
                                                         </div>
-                                                        <span className={isSubSelected ? 'font-bold text-neutral-900' : 'text-neutral-600'}>
+                                                        <span className={`line-clamp-1 ${isSubSelected ? 'font-bold text-neutral-900' : 'text-neutral-600'}`}>
                                                             {sub.name}
                                                         </span>
                                                     </label>
@@ -413,52 +419,70 @@ export default function PublicWebClient({ initialProducts, metadata, userRole, s
                     </AnimatePresence>
 
                     {/* RIGHT PRODUCT GRID (FORMATO CATÁLOGO BERSHKA) */}
-                    <main className="flex-1">
+                    <main className="flex-1 space-y-12">
                         {filteredProducts.length === 0 ? (
                             <div className="py-24 text-center border border-dashed border-neutral-200 rounded-lg">
                                 <p className="text-neutral-400 text-xs font-semibold uppercase tracking-widest mb-3">No hay productos en esta selección</p>
                                 <button
-                                    onClick={() => { setSearchQuery(""); setActiveMainCategoryId(null); setActiveSubcategoryId(null); }}
+                                    onClick={() => { setSearchQuery(""); setActiveMainCategoryId(null); setActiveSubcategoryId(null); setDisplayCount(48); }}
                                     className="px-6 py-2 bg-neutral-900 text-white rounded-sm text-xs font-bold uppercase tracking-wider hover:bg-neutral-800 transition-colors"
                                 >
                                     Ver Todo el Catálogo
                                 </button>
                             </div>
                         ) : (
-                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-10">
-                                {filteredProducts.map((p: any) => {
-                                    const imgs = safeParseArray(p.images)
-                                    const primaryImg = imgs.length > 0 ? imgs[0] : ''
-                                    const finalPrice = calculateDiscountedPrice(p.price, userRole)
+                            <>
+                                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-10">
+                                    {displayedProducts.map((p: any) => {
+                                        const imgs = safeParseArray(p.images)
+                                        const primaryImg = imgs.length > 0 ? imgs[0] : ''
+                                        const finalPrice = calculateDiscountedPrice(p.price, userRole)
 
-                                    return (
-                                        <Link
-                                            key={p.id}
-                                            href={`/web/product/${p.id}`}
-                                            className="group flex flex-col space-y-2 cursor-pointer"
+                                        return (
+                                            <Link
+                                                key={p.id}
+                                                href={`/web/product/${p.id}`}
+                                                className="group flex flex-col space-y-2 cursor-pointer"
+                                            >
+                                                {/* IMAGE CONTAINER (TALL RATIO ASP-3/4) */}
+                                                <div className="aspect-[3/4] bg-[#F6F6F6] rounded-xs relative overflow-hidden flex items-center justify-center p-6 border border-neutral-100 group-hover:border-neutral-300 transition-colors">
+                                                    <SafeImage 
+                                                        src={primaryImg} 
+                                                        alt={p.name} 
+                                                        className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500" 
+                                                    />
+                                                </div>
+
+                                                {/* TITLE & UNIFIED PVP PRICE (SINGLE PRICE, ZERO STRIKETHROUGH) */}
+                                                <div className="pt-1">
+                                                    <h4 className="text-[12px] font-medium text-neutral-800 line-clamp-1 group-hover:text-black transition-colors leading-tight">
+                                                        {p.name}
+                                                    </h4>
+                                                    <p className="text-[13px] font-black text-neutral-950 mt-1 font-sans">
+                                                        {finalPrice.toFixed(2).replace('.', ',')} $
+                                                    </p>
+                                                </div>
+                                            </Link>
+                                        )
+                                    })}
+                                </div>
+
+                                {/* CARGAR MÁS PRODUCTOS (PAGINACIÓN CONTINUA) */}
+                                {displayedProducts.length < filteredProducts.length && (
+                                    <div className="text-center pt-8 border-t border-neutral-100">
+                                        <button
+                                            onClick={() => setDisplayCount(prev => prev + 48)}
+                                            className="px-10 py-3 bg-neutral-900 hover:bg-neutral-800 text-white rounded-sm text-xs font-bold uppercase tracking-widest transition-all shadow-md inline-flex items-center gap-2"
                                         >
-                                            {/* IMAGE CONTAINER (TALL RATIO ASP-3/4) */}
-                                            <div className="aspect-[3/4] bg-[#F6F6F6] rounded-xs relative overflow-hidden flex items-center justify-center p-6 border border-neutral-100 group-hover:border-neutral-300 transition-colors">
-                                                <SafeImage 
-                                                    src={primaryImg} 
-                                                    alt={p.name} 
-                                                    className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500" 
-                                                />
-                                            </div>
-
-                                            {/* TITLE & UNIFIED PVP PRICE (SINGLE PRICE, ZERO STRIKETHROUGH) */}
-                                            <div className="pt-1">
-                                                <h4 className="text-[12px] font-medium text-neutral-800 line-clamp-1 group-hover:text-black transition-colors leading-tight">
-                                                    {p.name}
-                                                </h4>
-                                                <p className="text-[13px] font-black text-neutral-950 mt-1 font-sans">
-                                                    {finalPrice.toFixed(2).replace('.', ',')} $
-                                                </p>
-                                            </div>
-                                        </Link>
-                                    )
-                                })}
-                            </div>
+                                            <RefreshCw size={14} />
+                                            <span>Cargar Más Productos (+48)</span>
+                                        </button>
+                                        <p className="text-[11px] text-neutral-400 font-medium mt-2">
+                                            Viendo {displayedProducts.length} de {filteredProducts.length} productos
+                                        </p>
+                                    </div>
+                                )}
+                            </>
                         )}
                     </main>
 
