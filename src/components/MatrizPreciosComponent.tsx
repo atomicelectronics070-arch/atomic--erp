@@ -408,19 +408,20 @@ export default function MatrizPreciosComponent() {
               <th className="py-3 px-4 border-r border-zinc-800 text-right w-36">P. VENTA ($) EDITABLE</th>
               <th className="py-3 px-4 border-r border-zinc-800 text-right w-28">MARGEN ($)</th>
               <th className="py-3 px-4 border-r border-zinc-800 text-right w-28">MARGEN (%)</th>
+              <th className="py-3 px-4 border-r border-zinc-800 text-center w-32">TIENDA EN LÍNEA</th>
               <th className="py-3 px-4 text-center w-28">ACCIONES</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-900">
             {loading ? (
               <tr>
-                <td colSpan={11} className="py-16 text-center text-sm tracking-widest animate-pulse">
+                <td colSpan={12} className="py-16 text-center text-sm tracking-widest animate-pulse">
                   [ PROCESANDO CONSULTA DE BASE DE DATOS... CARGANDO REGISTROS ]
                 </td>
               </tr>
             ) : products.length === 0 ? (
               <tr>
-                <td colSpan={11} className="py-16 text-center text-sm opacity-70 tracking-widest">
+                <td colSpan={12} className="py-16 text-center text-sm opacity-70 tracking-widest">
                   NO SE ENCONTRARON REGISTROS QUE COINCIDAN CON LOS CRITERIOS DE BÚSQUEDA.
                 </td>
               </tr>
@@ -560,6 +561,20 @@ export default function MatrizPreciosComponent() {
                     {/* MARGEN PERCENT */}
                     <td className="py-2.5 px-4 border-r border-zinc-900 text-right font-mono font-bold text-emerald-400">
                       +{p.marginPercent.toFixed(1)}%
+                    </td>
+
+                    {/* BOTÓN VER EN TIENDA EN LÍNEA */}
+                    <td className="py-1.5 px-2 border-r border-zinc-900 text-center font-mono">
+                      <a
+                        href={`/web/product/${p.id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="Ver producto en la tienda online"
+                        className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-[10px] font-black uppercase tracking-wider bg-emerald-500/10 hover:bg-emerald-500 text-emerald-400 hover:text-black border border-emerald-500/40 rounded transition-all shadow-[0_0_12px_rgba(16,185,129,0.25)] hover:scale-105"
+                      >
+                        <span>👁️</span>
+                        <span>VER</span>
+                      </a>
                     </td>
 
                     {/* ACTION BUTTON (ELIMINAR) */}
