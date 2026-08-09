@@ -35,6 +35,16 @@ export default function MatrizPreciosComponent() {
   const [savingId, setSavingId] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
+  // Table container ref for intelligent scroll control
+  const tableContainerRef = useRef<HTMLDivElement>(null);
+
+  // Convert vertical mouse wheel into horizontal scroll when mouse is over table header
+  const handleHeaderWheel = (e: React.WheelEvent<HTMLTableSectionElement>) => {
+    if (tableContainerRef.current && e.deltaY !== 0) {
+      tableContainerRef.current.scrollLeft += e.deltaY * 1.5;
+    }
+  };
+
   const fetchMatrixData = async () => {
     setLoading(true);
     try {
@@ -399,11 +409,30 @@ export default function MatrizPreciosComponent() {
         </div>
       </div>
 
+      {/* SCROLL GESTURE NAVIGATION BADGE */}
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-2 px-1 text-[11px] font-mono text-zinc-400">
+        <div className="flex items-center gap-2 bg-zinc-900/80 px-3 py-1.5 rounded border border-zinc-800 shadow-sm">
+          <span className="text-amber-400 font-bold">↔️ Encabezado:</span>
+          <span>Desplaza el mouse por el encabezado y usa la rueda para Scroll Horizontal</span>
+        </div>
+        <div className="flex items-center gap-2 bg-zinc-900/80 px-3 py-1.5 rounded border border-zinc-800 shadow-sm">
+          <span className="text-emerald-400 font-bold">↕️ Filas:</span>
+          <span>Desplaza el mouse por la tabla para Scroll Vertical continuo</span>
+        </div>
+      </div>
+
       {/* ================= TABLA TIPO BASE DE DATOS RETRO CON EDICIÓN ================= */}
-      <div className={`border-2 ${themeClasses.border} bg-black/60 overflow-x-auto shadow-2xl`}>
+      <div 
+        ref={tableContainerRef} 
+        className={`border-2 ${themeClasses.border} bg-black/60 overflow-x-auto overflow-y-auto max-h-[75vh] shadow-2xl relative scroll-smooth`}
+      >
         <table className="w-full text-left text-xs border-collapse">
-          <thead>
-            <tr className={`${themeClasses.headerBg} ${themeClasses.headerText} border-b-2 ${themeClasses.border} uppercase font-bold tracking-wider`}>
+          <thead 
+            onWheel={handleHeaderWheel} 
+            className="sticky top-0 z-30 shadow-2xl backdrop-blur-xl border-b-2 border-zinc-700 cursor-ew-resize select-none"
+            title="Pasa el mouse sobre el encabezado y gira la rueda para Scroll Horizontal ↔"
+          >
+            <tr className={`${themeClasses.headerBg} ${themeClasses.headerText} uppercase font-bold tracking-wider`}>
               <th className="py-3 px-4 border-r border-zinc-800 w-12 text-center">#</th>
               <th className="py-3 px-4 border-r border-zinc-800 w-36">SKU / CÓDIGO (EDITABLE)</th>
               <th className="py-3 px-4 border-r border-zinc-800">DESCRIPCIÓN PRODUCTO (EDITABLE)</th>
