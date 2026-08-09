@@ -70,14 +70,16 @@ export default function MatrizPreciosComponent() {
     setTimeout(() => setToastMessage(null), 3000);
   };
 
-  // Update handler for inline edits (salePrice, costPrice, categoryId, stock)
-  const handleUpdateProduct = async (id: string, field: 'salePrice' | 'costPrice' | 'categoryId' | 'stock', value: any) => {
+  // Update handler for inline edits (sku, name, salePrice, costPrice, categoryId, stock)
+  const handleUpdateProduct = async (id: string, field: 'sku' | 'name' | 'salePrice' | 'costPrice' | 'categoryId' | 'stock', value: any) => {
     setSavingId(id);
     try {
       const currentProduct = products.find(p => p.id === id);
       if (!currentProduct) return;
 
       const payload: any = {};
+      if (field === 'sku') payload.sku = value;
+      if (field === 'name') payload.name = value;
       if (field === 'salePrice') payload.price = parseFloat(value) || 0;
       if (field === 'costPrice') payload.compareAtPrice = value === '' || value === null ? null : parseFloat(value);
       if (field === 'categoryId') payload.categoryId = value;
@@ -95,6 +97,8 @@ export default function MatrizPreciosComponent() {
       setProducts(prev => prev.map(p => {
         if (p.id !== id) return p;
 
+        const newSku = field === 'sku' ? value : p.sku;
+        const newName = field === 'name' ? value : p.name;
         const newSale = field === 'salePrice' ? (parseFloat(value) || 0) : p.salePrice;
         const newCost = field === 'costPrice' ? (value === '' || value === null ? 0 : parseFloat(value)) : p.costPrice;
         const newStock = field === 'stock' ? (parseInt(value) || 0) : p.stock;
@@ -106,6 +110,8 @@ export default function MatrizPreciosComponent() {
 
         return {
           ...p,
+          sku: newSku,
+          name: newName,
           salePrice: newSale,
           costPrice: newCost,
           stock: newStock,
@@ -399,8 +405,8 @@ export default function MatrizPreciosComponent() {
           <thead>
             <tr className={`${themeClasses.headerBg} ${themeClasses.headerText} border-b-2 ${themeClasses.border} uppercase font-bold tracking-wider`}>
               <th className="py-3 px-4 border-r border-zinc-800 w-12 text-center">#</th>
-              <th className="py-3 px-4 border-r border-zinc-800 w-36">SKU / CÓDIGO</th>
-              <th className="py-3 px-4 border-r border-zinc-800">DESCRIPCIÓN DEL PRODUCTO</th>
+              <th className="py-3 px-4 border-r border-zinc-800 w-36">SKU / CÓDIGO (EDITABLE)</th>
+              <th className="py-3 px-4 border-r border-zinc-800">DESCRIPCIÓN PRODUCTO (EDITABLE)</th>
               <th className="py-3 px-4 border-r border-zinc-800 w-36">PROVEEDOR</th>
               <th className="py-3 px-4 border-r border-zinc-800 w-44">CATEGORÍA (EDITABLE)</th>
               <th className="py-3 px-4 border-r border-zinc-800 text-center w-24">STOCK (EDITABLE)</th>
@@ -408,6 +414,8 @@ export default function MatrizPreciosComponent() {
               <th className="py-3 px-4 border-r border-zinc-800 text-right w-36">P. VENTA ($) EDITABLE</th>
               <th className="py-3 px-4 border-r border-zinc-800 text-right w-28">MARGEN ($)</th>
               <th className="py-3 px-4 border-r border-zinc-800 text-right w-28">MARGEN (%)</th>
+              <th className="py-3 px-4 border-r border-zinc-800 text-right w-32 bg-amber-950/40 text-amber-300">DESC. MÁX ($)</th>
+              <th className="py-3 px-4 border-r border-zinc-800 text-right w-32 bg-amber-950/40 text-amber-300">DESC. MÁX (%)</th>
               <th className="py-3 px-4 border-r border-zinc-800 text-center w-32">TIENDA EN LÍNEA</th>
               <th className="py-3 px-4 text-center w-28">ACCIONES</th>
             </tr>
@@ -415,13 +423,13 @@ export default function MatrizPreciosComponent() {
           <tbody className="divide-y divide-zinc-900">
             {loading ? (
               <tr>
-                <td colSpan={12} className="py-16 text-center text-sm tracking-widest animate-pulse">
+                <td colSpan={14} className="py-16 text-center text-sm tracking-widest animate-pulse">
                   [ PROCESANDO CONSULTA DE BASE DE DATOS... CARGANDO REGISTROS ]
                 </td>
               </tr>
             ) : products.length === 0 ? (
               <tr>
-                <td colSpan={12} className="py-16 text-center text-sm opacity-70 tracking-widest">
+                <td colSpan={14} className="py-16 text-center text-sm opacity-70 tracking-widest">
                   NO SE ENCONTRARON REGISTROS QUE COINCIDAN CON LOS CRITERIOS DE BÚSQUEDA.
                 </td>
               </tr>
@@ -429,6 +437,13 @@ export default function MatrizPreciosComponent() {
               products.map((p, idx) => {
                 const globalIndex = (page - 1) * limit + idx + 1;
                 const isSaving = savingId === p.id;
+
+                // Descuento máximo en USD = 50% del margen de ganancia USD (si margen > 0)
+                const maxDiscountUsd = p.marginUsd > 0 ? p.marginUsd / 2 : 0;
+
+                // Porcentaje que representa ese descuento sobre el PVP (salePrice)
+                const maxDiscountPercent = p.salePrice > 0 && maxDiscountUsd > 0 ? (maxDiscountUsd / p.salePrice) * 100 : 0;
+
                 return (
                   <tr
                     key={p.id}
@@ -437,12 +452,55 @@ export default function MatrizPreciosComponent() {
                     <td className="py-2.5 px-4 border-r border-zinc-900 text-center font-mono opacity-50">
                       {globalIndex}
                     </td>
-                    <td className="py-2.5 px-4 border-r border-zinc-900 font-mono font-bold tracking-wider uppercase">
-                      {p.sku}
+
+                    {/* EDITABLE SKU / CÓDIGO */}
+                    <td className="py-1.5 px-2 border-r border-zinc-900 font-mono text-xs font-bold uppercase">
+                      {isEditMode ? (
+                        <input
+                          type="text"
+                          defaultValue={p.sku || ''}
+                          onBlur={(e) => {
+                            const val = e.target.value.trim();
+                            if (val !== p.sku) {
+                              handleUpdateProduct(p.id, 'sku', val);
+                            }
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              (e.target as HTMLInputElement).blur();
+                            }
+                          }}
+                          className={`w-32 px-2 py-1 text-xs font-mono font-bold border ${themeClasses.cellInput} uppercase outline-none`}
+                        />
+                      ) : (
+                        <span>{p.sku}</span>
+                      )}
                     </td>
-                    <td className="py-2.5 px-4 border-r border-zinc-900 font-sans text-xs font-medium uppercase tracking-wide">
-                      {p.name}
+
+                    {/* EDITABLE DESCRIPCIÓN DEL PRODUCTO (NOMBRE) */}
+                    <td className="py-1.5 px-2 border-r border-zinc-900 font-sans text-xs">
+                      {isEditMode ? (
+                        <input
+                          type="text"
+                          defaultValue={p.name || ''}
+                          onBlur={(e) => {
+                            const val = e.target.value.trim();
+                            if (val && val !== p.name) {
+                              handleUpdateProduct(p.id, 'name', val);
+                            }
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              (e.target as HTMLInputElement).blur();
+                            }
+                          }}
+                          className={`w-full min-w-[240px] px-2 py-1 text-xs font-medium border ${themeClasses.cellInput} outline-none`}
+                        />
+                      ) : (
+                        <span className="font-medium uppercase tracking-wide">{p.name}</span>
+                      )}
                     </td>
+
                     <td className="py-2.5 px-4 border-r border-zinc-900 font-mono text-[11px] opacity-80 uppercase">
                       {p.provider}
                     </td>
@@ -561,6 +619,16 @@ export default function MatrizPreciosComponent() {
                     {/* MARGEN PERCENT */}
                     <td className="py-2.5 px-4 border-r border-zinc-900 text-right font-mono font-bold text-emerald-400">
                       +{p.marginPercent.toFixed(1)}%
+                    </td>
+
+                    {/* VALOR DESCUENTO MÁXIMO ($) (MITAD DEL MARGEN) */}
+                    <td className="py-2.5 px-4 border-r border-zinc-900 text-right font-mono font-bold text-amber-300 bg-amber-950/10">
+                      -${maxDiscountUsd.toFixed(2)}
+                    </td>
+
+                    {/* PORCENTAJE DESCUENTO MÁXIMO (%) SOBRE PVP */}
+                    <td className="py-2.5 px-4 border-r border-zinc-900 text-right font-mono font-bold text-amber-300 bg-amber-950/10">
+                      {maxDiscountPercent.toFixed(2)}%
                     </td>
 
                     {/* BOTÓN VER EN TIENDA EN LÍNEA */}
