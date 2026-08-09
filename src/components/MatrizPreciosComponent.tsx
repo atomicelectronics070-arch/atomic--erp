@@ -35,15 +35,28 @@ export default function MatrizPreciosComponent() {
   const [savingId, setSavingId] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  // Table container ref for intelligent scroll control
+  // Table refs for intelligent scroll control
   const tableContainerRef = useRef<HTMLDivElement>(null);
+  const tableHeaderRef = useRef<HTMLTableSectionElement>(null);
 
-  // Convert vertical mouse wheel into horizontal scroll when mouse is over table header
-  const handleHeaderWheel = (e: React.WheelEvent<HTMLTableSectionElement>) => {
-    if (tableContainerRef.current && e.deltaY !== 0) {
-      tableContainerRef.current.scrollLeft += e.deltaY * 1.5;
-    }
-  };
+  // Non-passive wheel event listener on table header for 100% reliable horizontal scroll
+  useEffect(() => {
+    const headerEl = tableHeaderRef.current;
+    const containerEl = tableContainerRef.current;
+    if (!headerEl || !containerEl) return;
+
+    const onWheel = (e: WheelEvent) => {
+      if (e.deltaY !== 0) {
+        e.preventDefault();
+        containerEl.scrollLeft += e.deltaY * 2;
+      }
+    };
+
+    headerEl.addEventListener('wheel', onWheel, { passive: false });
+    return () => {
+      headerEl.removeEventListener('wheel', onWheel);
+    };
+  }, []);
 
   const fetchMatrixData = async () => {
     setLoading(true);
@@ -424,12 +437,12 @@ export default function MatrizPreciosComponent() {
       {/* ================= TABLA TIPO BASE DE DATOS RETRO CON EDICIÓN ================= */}
       <div 
         ref={tableContainerRef} 
-        className={`border-2 ${themeClasses.border} bg-black/60 overflow-x-auto overflow-y-auto max-h-[75vh] shadow-2xl relative scroll-smooth`}
+        className={`border-2 ${themeClasses.border} bg-black/90 overflow-x-auto overflow-y-auto max-h-[75vh] shadow-2xl relative scroll-smooth`}
       >
-        <table className="w-full text-left text-xs border-collapse">
+        <table className="w-full min-w-[1950px] text-left text-xs border-collapse">
           <thead 
-            onWheel={handleHeaderWheel} 
-            className="sticky top-0 z-30 shadow-2xl backdrop-blur-xl border-b-2 border-zinc-700 cursor-ew-resize select-none"
+            ref={tableHeaderRef}
+            className="sticky top-0 z-30 shadow-2xl bg-zinc-950 border-b-2 border-zinc-700 cursor-ew-resize select-none"
             title="Pasa el mouse sobre el encabezado y gira la rueda para Scroll Horizontal ↔"
           >
             <tr className={`${themeClasses.headerBg} ${themeClasses.headerText} uppercase font-bold tracking-wider`}>
