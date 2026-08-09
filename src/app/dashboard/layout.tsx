@@ -30,12 +30,21 @@ export default function DashboardLayout({
     const router = useRouter()
     const pathname = usePathname()
     const isDashboard = pathname.startsWith("/dashboard")
+    const isStandalonePage = pathname === "/dashboard/matriz-precios" || pathname === "/dashboard/precios-vendedor" || pathname === "/web/matriz-precios"
 
     useEffect(() => {
         if (status === "unauthenticated" && isDashboard) {
             router.push("/login")
         }
     }, [status, router, isDashboard])
+
+    if (isStandalonePage) {
+        return (
+            <main className="min-h-screen bg-black text-slate-100 font-mono p-2 lg:p-6 overflow-x-auto">
+                {children}
+            </main>
+        )
+    }
 
     useEffect(() => {
         if (session?.user?.id && isDashboard) {

@@ -16,7 +16,11 @@ interface ProductMatrixItem {
   marginPercent: number;
 }
 
-export default function MatrizPreciosComponent() {
+interface MatrizPreciosProps {
+  isVendedorMode?: boolean;
+}
+
+export default function MatrizPreciosComponent({ isVendedorMode = false }: MatrizPreciosProps) {
   const [products, setProducts] = useState<ProductMatrixItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -30,8 +34,8 @@ export default function MatrizPreciosComponent() {
   const [totalPages, setTotalPages] = useState(1);
   const [themeMode, setThemeMode] = useState<'bw' | 'green' | 'amber'>('bw');
 
-  // Edit Mode state
-  const [isEditMode, setIsEditMode] = useState(true);
+  // Edit Mode state (Always false if isVendedorMode is true)
+  const [isEditMode, setIsEditMode] = useState(!isVendedorMode);
   const [savingId, setSavingId] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -277,23 +281,29 @@ export default function MatrizPreciosComponent() {
             <div className="flex items-center gap-3">
               <span className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse" />
               <h1 className="text-xl md:text-2xl font-black uppercase tracking-widest">
-                [ATOMIC_SYSTEM] DATABASE PRICING & CATEGORY MATRIX v2.0
+                {isVendedorMode 
+                  ? '[ATOMIC_SYSTEM] CATÁLOGO Y MATRIZ DE PRECIOS VENDEDORES V2.0' 
+                  : '[ATOMIC_SYSTEM] DATABASE PRICING & CATEGORY MATRIX v2.0'}
               </h1>
             </div>
             <p className="text-xs opacity-70 mt-1 uppercase tracking-wider">
-              MATRIZ GENERAL DE PRODUCTOS · EDICIÓN DIRECTA DE CATEGORÍAS, STOCK, COSTOS Y PRECIOS EN TIEMPO REAL
+              {isVendedorMode 
+                ? 'CATÁLOGO GENERAL DE PRODUCTOS · CONSULTA PÚBLICA DE PRECIOS PVP Y DESCUENTOS MÁXIMOS PERMITIDOS' 
+                : 'MATRIZ GENERAL DE PRODUCTOS · EDICIÓN DIRECTA DE CATEGORÍAS, STOCK, COSTOS Y PRECIOS EN TIEMPO REAL'}
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            <button
-              onClick={() => setIsEditMode(!isEditMode)}
-              className={`px-4 py-2 border font-bold text-xs uppercase transition-all ${
-                isEditMode ? 'bg-amber-500 text-black border-amber-400' : 'border-zinc-700 hover:bg-zinc-800'
-              }`}
-            >
-              {isEditMode ? '⚡ MODO EDICIÓN ACTIVO' : '✏️ HABILITAR EDICIÓN'}
-            </button>
+            {!isVendedorMode && (
+              <button
+                onClick={() => setIsEditMode(!isEditMode)}
+                className={`px-4 py-2 border font-bold text-xs uppercase transition-all ${
+                  isEditMode ? 'bg-amber-500 text-black border-amber-400' : 'border-zinc-700 hover:bg-zinc-800'
+                }`}
+              >
+                {isEditMode ? '⚡ MODO EDICIÓN ACTIVO' : '✏️ HABILITAR EDICIÓN'}
+              </button>
+            )}
 
             <div className="flex items-center border border-zinc-800 p-1 text-xs">
               <span className="px-2 uppercase opacity-60 text-[10px]">TEMA:</span>
@@ -402,23 +412,27 @@ export default function MatrizPreciosComponent() {
         </div>
 
         {/* SUMMARY STATS BAR */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-4 border-t border-zinc-800 text-xs">
+        <div className={`grid grid-cols-2 ${isVendedorMode ? 'md:grid-cols-2' : 'md:grid-cols-4'} gap-4 mt-6 pt-4 border-t border-zinc-800 text-xs`}>
           <div>
             <span className="opacity-60 block text-[10px] uppercase">REGISTROS MOSTRADOS:</span>
             <span className={themeClasses.accent}>{products.length} de {totalProducts} productos</span>
           </div>
-          <div>
-            <span className="opacity-60 block text-[10px] uppercase">VALOR AL COSTO (VISTA):</span>
-            <span className={themeClasses.accent}>${stats.totalCostSum.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
-          </div>
+          {!isVendedorMode && (
+            <div>
+              <span className="opacity-60 block text-[10px] uppercase">VALOR AL COSTO (VISTA):</span>
+              <span className={themeClasses.accent}>${stats.totalCostSum.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+            </div>
+          )}
           <div>
             <span className="opacity-60 block text-[10px] uppercase">VALOR A LA VENTA (VISTA):</span>
             <span className={themeClasses.accent}>${stats.totalSaleSum.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
           </div>
-          <div>
-            <span className="opacity-60 block text-[10px] uppercase">MARGEN PROMEDIO:</span>
-            <span className="text-emerald-400 font-black">+{stats.avgMarginPercent.toFixed(2)}% (${stats.totalProfitSum.toLocaleString('en-US', { minimumFractionDigits: 2 })})</span>
-          </div>
+          {!isVendedorMode && (
+            <div>
+              <span className="opacity-60 block text-[10px] uppercase">MARGEN PROMEDIO:</span>
+              <span className="text-emerald-400 font-black">+{stats.avgMarginPercent.toFixed(2)}% (${stats.totalProfitSum.toLocaleString('en-US', { minimumFractionDigits: 2 })})</span>
+            </div>
+          )}
         </div>
       </div>
 
@@ -439,7 +453,7 @@ export default function MatrizPreciosComponent() {
         ref={tableContainerRef} 
         className={`border-2 ${themeClasses.border} bg-black/90 overflow-x-auto overflow-y-auto max-h-[75vh] shadow-2xl relative scroll-smooth`}
       >
-        <table className="w-full min-w-[1950px] text-left text-xs border-collapse">
+        <table className={`w-full ${isVendedorMode ? 'min-w-[1400px]' : 'min-w-[1950px]'} text-left text-xs border-collapse`}>
           <thead 
             ref={tableHeaderRef}
             className="sticky top-0 z-30 shadow-2xl bg-zinc-950 border-b-2 border-zinc-700 cursor-ew-resize select-none"
@@ -447,31 +461,49 @@ export default function MatrizPreciosComponent() {
           >
             <tr className={`${themeClasses.headerBg} ${themeClasses.headerText} uppercase font-bold tracking-wider`}>
               <th className="py-3 px-4 border-r border-zinc-800 w-12 text-center">#</th>
-              <th className="py-3 px-4 border-r border-zinc-800 w-36">SKU / CÓDIGO (EDITABLE)</th>
-              <th className="py-3 px-4 border-r border-zinc-800">DESCRIPCIÓN PRODUCTO (EDITABLE)</th>
+              <th className="py-3 px-4 border-r border-zinc-800 w-36">
+                {isVendedorMode ? 'SKU / CÓDIGO' : 'SKU / CÓDIGO (EDITABLE)'}
+              </th>
+              <th className="py-3 px-4 border-r border-zinc-800">
+                {isVendedorMode ? 'DESCRIPCIÓN PRODUCTO' : 'DESCRIPCIÓN PRODUCTO (EDITABLE)'}
+              </th>
               <th className="py-3 px-4 border-r border-zinc-800 w-36">PROVEEDOR</th>
-              <th className="py-3 px-4 border-r border-zinc-800 w-44">CATEGORÍA (EDITABLE)</th>
-              <th className="py-3 px-4 border-r border-zinc-800 text-center w-24">STOCK (EDITABLE)</th>
-              <th className="py-3 px-4 border-r border-zinc-800 text-right w-32">COSTO ($) EDITABLE</th>
-              <th className="py-3 px-4 border-r border-zinc-800 text-right w-36">P. VENTA ($) EDITABLE</th>
-              <th className="py-3 px-4 border-r border-zinc-800 text-right w-28">MARGEN ($)</th>
-              <th className="py-3 px-4 border-r border-zinc-800 text-right w-28">MARGEN (%)</th>
+              <th className="py-3 px-4 border-r border-zinc-800 w-44">
+                {isVendedorMode ? 'CATEGORÍA' : 'CATEGORÍA (EDITABLE)'}
+              </th>
+              <th className="py-3 px-4 border-r border-zinc-800 text-center w-24">
+                {isVendedorMode ? 'STOCK' : 'STOCK (EDITABLE)'}
+              </th>
+              {!isVendedorMode && (
+                <th className="py-3 px-4 border-r border-zinc-800 text-right w-32">COSTO ($) EDITABLE</th>
+              )}
+              <th className="py-3 px-4 border-r border-zinc-800 text-right w-36">
+                {isVendedorMode ? 'P. VENTA ($)' : 'P. VENTA ($) EDITABLE'}
+              </th>
+              {!isVendedorMode && (
+                <>
+                  <th className="py-3 px-4 border-r border-zinc-800 text-right w-28">MARGEN ($)</th>
+                  <th className="py-3 px-4 border-r border-zinc-800 text-right w-28">MARGEN (%)</th>
+                </>
+              )}
               <th className="py-3 px-4 border-r border-zinc-800 text-right w-32 bg-amber-950/40 text-amber-300">DESC. MÁX ($)</th>
               <th className="py-3 px-4 border-r border-zinc-800 text-right w-32 bg-amber-950/40 text-amber-300">DESC. MÁX (%)</th>
               <th className="py-3 px-4 border-r border-zinc-800 text-center w-32">TIENDA EN LÍNEA</th>
-              <th className="py-3 px-4 text-center w-28">ACCIONES</th>
+              {!isVendedorMode && (
+                <th className="py-3 px-4 text-center w-28">ACCIONES</th>
+              )}
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-900">
             {loading ? (
               <tr>
-                <td colSpan={14} className="py-16 text-center text-sm tracking-widest animate-pulse">
+                <td colSpan={isVendedorMode ? 10 : 14} className="py-16 text-center text-sm tracking-widest animate-pulse">
                   [ PROCESANDO CONSULTA DE BASE DE DATOS... CARGANDO REGISTROS ]
                 </td>
               </tr>
             ) : products.length === 0 ? (
               <tr>
-                <td colSpan={14} className="py-16 text-center text-sm opacity-70 tracking-widest">
+                <td colSpan={isVendedorMode ? 10 : 14} className="py-16 text-center text-sm opacity-70 tracking-widest">
                   NO SE ENCONTRARON REGISTROS QUE COINCIDAN CON LOS CRITERIOS DE BÚSQUEDA.
                 </td>
               </tr>
@@ -495,9 +527,9 @@ export default function MatrizPreciosComponent() {
                       {globalIndex}
                     </td>
 
-                    {/* EDITABLE SKU / CÓDIGO */}
+                    {/* SKU / CÓDIGO */}
                     <td className="py-1.5 px-2 border-r border-zinc-900 font-mono text-xs font-bold uppercase">
-                      {isEditMode ? (
+                      {!isVendedorMode && isEditMode ? (
                         <input
                           type="text"
                           defaultValue={p.sku || ''}
@@ -519,9 +551,9 @@ export default function MatrizPreciosComponent() {
                       )}
                     </td>
 
-                    {/* EDITABLE DESCRIPCIÓN DEL PRODUCTO (NOMBRE) */}
+                    {/* DESCRIPCIÓN DEL PRODUCTO (NOMBRE) */}
                     <td className="py-1.5 px-2 border-r border-zinc-900 font-sans text-xs">
-                      {isEditMode ? (
+                      {!isVendedorMode && isEditMode ? (
                         <input
                           type="text"
                           defaultValue={p.name || ''}
@@ -547,9 +579,9 @@ export default function MatrizPreciosComponent() {
                       {p.provider}
                     </td>
 
-                    {/* EDITABLE CATEGORY */}
+                    {/* CATEGORY */}
                     <td className="py-1.5 px-2 border-r border-zinc-900 font-mono text-[11px] uppercase">
-                      {isEditMode ? (() => {
+                      {!isVendedorMode && isEditMode ? (() => {
                         const matched = categories.find(c => c.id === p.categoryId || c.name.toLowerCase() === (p.category || '').toLowerCase());
                         const selVal = matched ? matched.id : (p.categoryId || '');
                         return (
@@ -571,9 +603,9 @@ export default function MatrizPreciosComponent() {
                       )}
                     </td>
 
-                    {/* EDITABLE STOCK */}
+                    {/* STOCK */}
                     <td className="py-1.5 px-2 border-r border-zinc-900 text-center font-mono font-bold">
-                      {isEditMode ? (
+                      {!isVendedorMode && isEditMode ? (
                         <input
                           type="number"
                           defaultValue={p.stock}
@@ -597,37 +629,39 @@ export default function MatrizPreciosComponent() {
                       )}
                     </td>
 
-                    {/* EDITABLE COST PRICE */}
-                    <td className="py-1.5 px-2 border-r border-zinc-900 text-right font-mono">
-                      {isEditMode ? (
-                        <div className="flex items-center justify-end gap-1">
-                          <span className="opacity-50 text-[10px]">$</span>
-                          <input
-                            type="number"
-                            step="0.01"
-                            defaultValue={p.costPrice ? p.costPrice.toFixed(2) : '0.00'}
-                            onBlur={(e) => {
-                              const val = parseFloat(e.target.value);
-                              if (!isNaN(val) && val !== p.costPrice) {
-                                handleUpdateProduct(p.id, 'costPrice', val);
-                              }
-                            }}
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter') {
-                                (e.target as HTMLInputElement).blur();
-                              }
-                            }}
-                            className={`w-20 px-2 py-1 text-right text-xs font-mono font-bold border ${themeClasses.cellInput} outline-none`}
-                          />
-                        </div>
-                      ) : (
-                        <span className="opacity-80">${p.costPrice.toFixed(2)}</span>
-                      )}
-                    </td>
+                    {/* COST PRICE (Solo para Admin / Jefe) */}
+                    {!isVendedorMode && (
+                      <td className="py-1.5 px-2 border-r border-zinc-900 text-right font-mono">
+                        {isEditMode ? (
+                          <div className="flex items-center justify-end gap-1">
+                            <span className="opacity-50 text-[10px]">$</span>
+                            <input
+                              type="number"
+                              step="0.01"
+                              defaultValue={p.costPrice ? p.costPrice.toFixed(2) : '0.00'}
+                              onBlur={(e) => {
+                                const val = parseFloat(e.target.value);
+                                if (!isNaN(val) && val !== p.costPrice) {
+                                  handleUpdateProduct(p.id, 'costPrice', val);
+                                }
+                              }}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  (e.target as HTMLInputElement).blur();
+                                }
+                              }}
+                              className={`w-20 px-2 py-1 text-right text-xs font-mono font-bold border ${themeClasses.cellInput} outline-none`}
+                            />
+                          </div>
+                        ) : (
+                          <span className="opacity-80">${p.costPrice.toFixed(2)}</span>
+                        )}
+                      </td>
+                    )}
 
-                    {/* EDITABLE SALE PRICE (PVP) */}
+                    {/* SALE PRICE (PVP) */}
                     <td className="py-1.5 px-2 border-r border-zinc-900 text-right font-mono">
-                      {isEditMode ? (
+                      {!isVendedorMode && isEditMode ? (
                         <div className="flex items-center justify-end gap-1">
                           <span className="opacity-50 text-[10px]">$</span>
                           <input
@@ -653,15 +687,17 @@ export default function MatrizPreciosComponent() {
                       )}
                     </td>
 
-                    {/* MARGEN USD */}
-                    <td className="py-2.5 px-4 border-r border-zinc-900 text-right font-mono font-bold text-emerald-400">
-                      +${p.marginUsd.toFixed(2)}
-                    </td>
-
-                    {/* MARGEN PERCENT */}
-                    <td className="py-2.5 px-4 border-r border-zinc-900 text-right font-mono font-bold text-emerald-400">
-                      +{p.marginPercent.toFixed(1)}%
-                    </td>
+                    {/* MARGEN USD & MARGEN % (Solo para Admin / Jefe) */}
+                    {!isVendedorMode && (
+                      <>
+                        <td className="py-2.5 px-4 border-r border-zinc-900 text-right font-mono font-bold text-emerald-400">
+                          +${p.marginUsd.toFixed(2)}
+                        </td>
+                        <td className="py-2.5 px-4 border-r border-zinc-900 text-right font-mono font-bold text-emerald-400">
+                          +{p.marginPercent.toFixed(1)}%
+                        </td>
+                      </>
+                    )}
 
                     {/* VALOR DESCUENTO MÁXIMO ($) (MITAD DEL MARGEN) */}
                     <td className="py-2.5 px-4 border-r border-zinc-900 text-right font-mono font-bold text-amber-300 bg-amber-950/10">
@@ -687,16 +723,18 @@ export default function MatrizPreciosComponent() {
                       </a>
                     </td>
 
-                    {/* ACTION BUTTON (ELIMINAR) */}
-                    <td className="py-1.5 px-2 text-center font-mono">
-                      <button
-                        onClick={() => handleDeleteProduct(p.id, p.name)}
-                        title="Eliminar producto de la matriz"
-                        className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider bg-rose-950/60 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-800 transition-colors"
-                      >
-                        🗑️ ELIMINAR
-                      </button>
-                    </td>
+                    {/* ACTION BUTTON (ELIMINAR - Solo para Admin / Jefe) */}
+                    {!isVendedorMode && (
+                      <td className="py-1.5 px-2 text-center font-mono">
+                        <button
+                          onClick={() => handleDeleteProduct(p.id, p.name)}
+                          title="Eliminar producto de la matriz"
+                          className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider bg-rose-950/60 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-800 transition-colors"
+                        >
+                          🗑️ ELIMINAR
+                        </button>
+                      </td>
+                    )}
                   </tr>
                 );
               })

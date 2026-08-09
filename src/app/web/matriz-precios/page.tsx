@@ -3,10 +3,10 @@ import MatrizPreciosComponent from '@/components/MatrizPreciosComponent';
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
-  title: 'Matriz de Precios & Productos | ATOMIC Database',
-  description: 'Interfaz ultra rápida tipo base de datos retro para visualización masiva de productos, costos, precios de venta y margen de ganancia.',
+  title: 'Matriz de Precios Vendedores & Catálogo | ATOMIC Database',
+  description: 'Interfaz retro para consulta de catálogo masivo de productos, precios PVP y descuentos máximos para vendedores.',
 };
 
 export default function WebMatrizPreciosPage() {
-  return <MatrizPreciosComponent />;
+  return <MatrizPreciosComponent isVendedorMode={true} />;
 }
