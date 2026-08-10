@@ -17,14 +17,15 @@ interface Node3D {
   category: string;
   color: string;
   glowColor: string;
-  x: number; // 3D local coordinates
+  x: number;
   y: number;
   z: number;
   baseRadius: number;
   isCore?: boolean;
+  parentId?: string; // ID of the node it connects to (Core or parent satellite)
 }
 
-/* ───────────────────────── 3D MANIPULABLE NEURAL GRAPH ───────────────────────── */
+/* ───────────────────────── 3D HIERARCHICAL NEURAL GRAPH ───────────────────────── */
 
 function NeuralGraph3DCanvas({ onSelectNode }: { onSelectNode: (nodeName: string) => void }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -43,8 +44,8 @@ function NeuralGraph3DCanvas({ onSelectNode }: { onSelectNode: (nodeName: string
     let rotY = -0.4;
     let targetRotX = 0.35;
     let targetRotY = -0.4;
-    let zoom = 1.0;
-    let targetZoom = 1.0;
+    let zoom = 0.85; // Slightly wider zoom to fit sub-nodes nicely
+    let targetZoom = 0.85;
 
     // Interaction State
     let isDragging = false;
@@ -61,8 +62,9 @@ function NeuralGraph3DCanvas({ onSelectNode }: { onSelectNode: (nodeName: string
     updateSize();
     window.addEventListener("resize", updateSize);
 
-    // 3D Nodes Definition (Core + 4 Satellites: Afiliados, Vendedor, Miembros Oficiales, Estudiante)
+    // 3D Nodes Hierarchy (Core -> 4 Primary Satellites -> 4 Secondary Sub-Nodes)
     const nodes: Node3D[] = [
+      // 1. CORE
       {
         id: "core",
         name: "ECOSISTEMA ATOMIC",
@@ -75,16 +77,18 @@ function NeuralGraph3DCanvas({ onSelectNode }: { onSelectNode: (nodeName: string
         baseRadius: 38,
         isCore: true,
       },
+      // 2. PRIMARY SATELLITES
       {
         id: "afiliados",
         name: "Afiliados",
         category: "RED DE AFILIACIÓN",
         color: "#10b981",
         glowColor: "rgba(16, 185, 129, 0.6)",
-        x: -220,
-        y: -50,
-        z: 110,
+        x: -200,
+        y: -40,
+        z: 100,
         baseRadius: 20,
+        parentId: "core",
       },
       {
         id: "vendedor",
@@ -92,10 +96,11 @@ function NeuralGraph3DCanvas({ onSelectNode }: { onSelectNode: (nodeName: string
         category: "COMERCIAL & VENTAS",
         color: "#f59e0b",
         glowColor: "rgba(245, 158, 11, 0.6)",
-        x: 230,
-        y: -60,
-        z: -90,
+        x: 210,
+        y: -50,
+        z: -80,
         baseRadius: 20,
+        parentId: "core",
       },
       {
         id: "miembros",
@@ -103,70 +108,120 @@ function NeuralGraph3DCanvas({ onSelectNode }: { onSelectNode: (nodeName: string
         category: "COMUNIDAD VIP",
         color: "#a855f7",
         glowColor: "rgba(168, 85, 247, 0.6)",
-        x: -80,
-        y: 190,
-        z: -110,
+        x: -70,
+        y: 170,
+        z: -100,
         baseRadius: 20,
+        parentId: "core",
       },
       {
         id: "estudiante",
         name: "Estudiante",
-        category: "ACADEMIA & FORMACIÓN",
+        category: "ESTUDIANTES & CURSOS",
         color: "#38bdf8",
         glowColor: "rgba(56, 189, 248, 0.6)",
-        x: 180,
-        y: 160,
-        z: 100,
+        x: 170,
+        y: 150,
+        z: 90,
         baseRadius: 20,
+        parentId: "core",
+      },
+
+      // 3. SECONDARY SUB-NODES (BRANCHING OUT FROM SATELLITES)
+      {
+        id: "panel_afiliados",
+        name: "Panel de Afiliados",
+        category: "GESTIÓN DE RED",
+        color: "#34d399",
+        glowColor: "rgba(52, 211, 153, 0.6)",
+        x: -340,
+        y: -80,
+        z: 160,
+        baseRadius: 14,
+        parentId: "afiliados",
+      },
+      {
+        id: "plataforma_empresarial",
+        name: "Plataforma Empresarial",
+        category: "ERP & NEGOCIOS",
+        color: "#fbbf24",
+        glowColor: "rgba(251, 191, 36, 0.6)",
+        x: 350,
+        y: -90,
+        z: -140,
+        baseRadius: 14,
+        parentId: "vendedor",
+      },
+      {
+        id: "panel_unico",
+        name: "Panel Único",
+        category: "ACCESO VIP MAESTRO",
+        color: "#c084fc",
+        glowColor: "rgba(192, 132, 252, 0.6)",
+        x: -120,
+        y: 280,
+        z: -160,
+        baseRadius: 14,
+        parentId: "miembros",
+      },
+      {
+        id: "academia",
+        name: "Academia",
+        category: "CAMPUS & CURSOS",
+        color: "#7dd3fc",
+        glowColor: "rgba(125, 211, 252, 0.6)",
+        x: 280,
+        y: 240,
+        z: 150,
+        baseRadius: 14,
+        parentId: "estudiante",
       },
     ];
 
-    // Starfield in 3D
+    // Starfield background
     const stars: { x: number; y: number; z: number; r: number }[] = [];
     for (let i = 0; i < 350; i++) {
       stars.push({
-        x: (Math.random() - 0.5) * 3000,
-        y: (Math.random() - 0.5) * 3000,
-        z: (Math.random() - 0.5) * 3000,
+        x: (Math.random() - 0.5) * 3200,
+        y: (Math.random() - 0.5) * 3200,
+        z: (Math.random() - 0.5) * 3200,
         r: Math.random() * 1.5 + 0.3,
       });
     }
 
-    // Energy particles connecting Core to all 4 satellites
+    // Energy particles flowing along all connections (parent -> child)
     const connectionParticles: {
-      nodeId: string;
+      sourceId: string;
+      targetId: string;
       progress: number;
       speed: number;
     }[] = [
-      { nodeId: "afiliados", progress: 0.1, speed: 0.005 },
-      { nodeId: "afiliados", progress: 0.6, speed: 0.006 },
-      { nodeId: "vendedor", progress: 0.3, speed: 0.004 },
-      { nodeId: "vendedor", progress: 0.8, speed: 0.005 },
-      { nodeId: "miembros", progress: 0.2, speed: 0.006 },
-      { nodeId: "miembros", progress: 0.7, speed: 0.004 },
-      { nodeId: "estudiante", progress: 0.15, speed: 0.005 },
-      { nodeId: "estudiante", progress: 0.65, speed: 0.006 },
+      { sourceId: "core", targetId: "afiliados", progress: 0.1, speed: 0.005 },
+      { sourceId: "afiliados", targetId: "panel_afiliados", progress: 0.4, speed: 0.006 },
+      { sourceId: "core", targetId: "vendedor", progress: 0.3, speed: 0.004 },
+      { sourceId: "vendedor", targetId: "plataforma_empresarial", progress: 0.7, speed: 0.005 },
+      { sourceId: "core", targetId: "miembros", progress: 0.2, speed: 0.006 },
+      { sourceId: "miembros", targetId: "panel_unico", progress: 0.5, speed: 0.005 },
+      { sourceId: "core", targetId: "estudiante", progress: 0.15, speed: 0.005 },
+      { sourceId: "estudiante", targetId: "academia", progress: 0.65, speed: 0.006 },
     ];
 
     let timeAngle = 0;
 
-    // 3D Projection Engine
+    // 3D Projection Matrix
     const project3D = (x: number, y: number, z: number, cx: number, cy: number) => {
-      // Rotate Y
       const cosY = Math.cos(rotY);
       const sinY = Math.sin(rotY);
       const x1 = x * cosY + z * sinY;
       const z1 = -x * sinY + z * cosY;
 
-      // Rotate X
       const cosX = Math.cos(rotX);
       const sinX = Math.sin(rotX);
       const y2 = y * cosX - z1 * sinX;
       const z2 = y * sinX + z1 * cosX;
 
-      // Perspective projection
       const fov = 700 * zoom;
-      const distance = 900;
+      const distance = 950;
       const scale = fov / (distance + z2);
 
       return {
@@ -185,21 +240,20 @@ function NeuralGraph3DCanvas({ onSelectNode }: { onSelectNode: (nodeName: string
 
       timeAngle += 0.01;
 
-      // Inertia interpolation
+      // Smooth camera interpolation
       rotX += (targetRotX - rotX) * 0.08;
       rotY += (targetRotY - rotY) * 0.08;
       zoom += (targetZoom - zoom) * 0.08;
 
-      // Subtle auto-rotation when idle
       if (!isDragging) {
         targetRotY += 0.0015;
       }
 
-      // Deep space background
+      // Background
       ctx.fillStyle = "#030712";
       ctx.fillRect(0, 0, w, h);
 
-      // Radial energy background
+      // Radial gradient background
       const bgGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(w, h) * 0.7);
       bgGrad.addColorStop(0, "rgba(6, 182, 212, 0.08)");
       bgGrad.addColorStop(0.4, "rgba(99, 102, 241, 0.03)");
@@ -219,16 +273,16 @@ function NeuralGraph3DCanvas({ onSelectNode }: { onSelectNode: (nodeName: string
         }
       });
 
-      // Calculate projected positions for nodes with light 3D orbit sway
+      // Calculate 3D projections with gentle organic orbital sway
       const projectedNodes = nodes.map((node) => {
         let nx = node.x;
         let ny = node.y;
         let nz = node.z;
 
         if (!node.isCore) {
-          const orbitAngle = timeAngle * 0.5 + (node.id === "afiliados" ? 0 : node.id === "vendedor" ? 1.5 : node.id === "miembros" ? 3.0 : 4.5);
-          nx += Math.sin(orbitAngle) * 12;
-          ny += Math.cos(orbitAngle) * 12;
+          const orbitAngle = timeAngle * 0.4 + (node.id.length * 0.7);
+          nx += Math.sin(orbitAngle) * 10;
+          ny += Math.cos(orbitAngle) * 10;
         }
 
         const proj = project3D(nx, ny, nz, cx, cy);
@@ -242,11 +296,8 @@ function NeuralGraph3DCanvas({ onSelectNode }: { onSelectNode: (nodeName: string
         };
       });
 
-      // Sort nodes by Z-depth (back to front rendering)
+      // Sort nodes by Z-depth for correct back-to-front rendering
       projectedNodes.sort((a, b) => b.zDepth - a.zDepth);
-
-      // Core node projection reference
-      const coreProj = projectedNodes.find((n) => n.isCore)!;
 
       // Mouse Hover Detection
       currentHoveredId = null;
@@ -260,32 +311,37 @@ function NeuralGraph3DCanvas({ onSelectNode }: { onSelectNode: (nodeName: string
       }
       setActiveHover(currentHoveredId);
 
-      // Render Connection Lines from Core to 4 Satellites
+      // Render Connection Lines (Parent -> Child)
       projectedNodes.forEach((n) => {
-        if (!n.isCore) {
-          const isHovered = currentHoveredId === n.id || currentHoveredId === "core";
+        if (n.parentId) {
+          const parentNode = projectedNodes.find((p) => p.id === n.parentId);
+          if (parentNode) {
+            const isHovered = currentHoveredId === n.id || currentHoveredId === parentNode.id || currentHoveredId === "core";
 
-          ctx.beginPath();
-          ctx.moveTo(coreProj.projX, coreProj.projY);
-          ctx.lineTo(n.projX, n.projY);
-          ctx.strokeStyle = isHovered ? n.color : "rgba(14, 165, 233, 0.3)";
-          ctx.lineWidth = (isHovered ? 2.5 : 1.2) * n.projScale;
-          ctx.setLineDash([6, 6]);
-          ctx.stroke();
-          ctx.setLineDash([]);
+            ctx.beginPath();
+            ctx.moveTo(parentNode.projX, parentNode.projY);
+            ctx.lineTo(n.projX, n.projY);
+            ctx.strokeStyle = isHovered ? n.color : "rgba(14, 165, 233, 0.25)";
+            ctx.lineWidth = (isHovered ? 2.5 : 1.2) * n.projScale;
+            ctx.setLineDash([6, 6]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+          }
         }
       });
 
-      // Render Energy Particles travelling along connection lines
+      // Render Energy Particles travelling along connections
       connectionParticles.forEach((cp) => {
         cp.progress += cp.speed;
         if (cp.progress > 1) cp.progress = 0;
 
-        const targetNode = projectedNodes.find((n) => n.id === cp.nodeId);
-        if (targetNode) {
-          const px = coreProj.projX + (targetNode.projX - coreProj.projX) * cp.progress;
-          const py = coreProj.projY + (targetNode.projY - coreProj.projY) * cp.progress;
-          const pScale = coreProj.projScale + (targetNode.projScale - coreProj.projScale) * cp.progress;
+        const sourceNode = projectedNodes.find((n) => n.id === cp.sourceId);
+        const targetNode = projectedNodes.find((n) => n.id === cp.targetId);
+
+        if (sourceNode && targetNode) {
+          const px = sourceNode.projX + (targetNode.projX - sourceNode.projX) * cp.progress;
+          const py = sourceNode.projY + (targetNode.projY - sourceNode.projY) * cp.progress;
+          const pScale = sourceNode.projScale + (targetNode.projScale - sourceNode.projScale) * cp.progress;
 
           ctx.beginPath();
           ctx.arc(px, py, 3.5 * pScale, 0, Math.PI * 2);
@@ -297,7 +353,8 @@ function NeuralGraph3DCanvas({ onSelectNode }: { onSelectNode: (nodeName: string
         }
       });
 
-      // Render 3D Rotating Orbital Rings for Core Node
+      // Render 3D Rotating Rings for Core Node
+      const coreProj = projectedNodes.find((n) => n.isCore)!;
       ctx.save();
       ctx.translate(coreProj.projX, coreProj.projY);
       const ringScale = coreProj.projScale;
@@ -332,7 +389,7 @@ function NeuralGraph3DCanvas({ onSelectNode }: { onSelectNode: (nodeName: string
         ctx.arc(n.projX, n.projY, r * 2.2, 0, Math.PI * 2);
         ctx.fill();
 
-        // Node sphere gradient
+        // Node sphere body
         ctx.beginPath();
         ctx.arc(n.projX, n.projY, r, 0, Math.PI * 2);
         const nodeGrad = ctx.createRadialGradient(
@@ -386,10 +443,10 @@ function NeuralGraph3DCanvas({ onSelectNode }: { onSelectNode: (nodeName: string
       ctx.font = "bold 10px 'Courier New', monospace";
       ctx.fillStyle = "rgba(0, 240, 255, 0.7)";
       ctx.textAlign = "left";
-      ctx.fillText("◉ GRAFO NEURONAL 3D INTERACTIVO · ECOSISTEMA ATOMIC", 24, 32);
+      ctx.fillText("◉ GRAFO NEURONAL 3D ARBOLADO · ECOSISTEMA ATOMIC", 24, 32);
       ctx.font = "9px 'Courier New', monospace";
       ctx.fillStyle = "rgba(148, 163, 184, 0.5)";
-      ctx.fillText("NODOS ACTIVOS: 5 (NÚCLEO + 4 SEGMENTOS)  ·  MODO: 3D MANIPULABLE", 24, 48);
+      ctx.fillText("NODOS TOTALES: 9 (NÚCLEO + 4 SEGMENTOS + 4 SUB-NODOS)  ·  ESTADO: ONLINE", 24, 48);
 
       ctx.textAlign = "center";
       ctx.font = "9px 'Courier New', monospace";
@@ -537,7 +594,7 @@ export default function DashboardEcosistemaTomcPage() {
     {
       id: "init-1",
       sender: "nucleus",
-      text: "### 🧠 ECOSISTEMA ATOMIC · NÚCLEO 3D MANIPULABLE\n\nBienvenido al **Núcleo ECOSISTEMA ATOMIC**.\n\nPuedes arrastrar el mouse para rotar el espacio 3D. Nodos disponibles: **Afiliados**, **Vendedor**, **Miembros Oficiales** y **Estudiante**.",
+      text: "### 🧠 ECOSISTEMA ATOMIC · ARQUITECTURA NEURONAL 3D\n\nBienvenido al **Núcleo ECOSISTEMA ATOMIC**.\n\nEstructura activa:\n- **Afiliados** ➔ *Panel de Afiliados*\n- **Vendedor** ➔ *Plataforma Empresarial*\n- **Miembros Oficiales** ➔ *Panel Único*\n- **Estudiante** ➔ *Academia*\n\nHaz clic en cualquier nodo o arrastra para explorar en 3D.",
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       provider: "Núcleo ECOSISTEMA ATOMIC",
     },
@@ -636,7 +693,7 @@ export default function DashboardEcosistemaTomcPage() {
       {/* ── 3D MANIPULABLE NEURAL GRAPH ── */}
       <NeuralGraph3DCanvas
         onSelectNode={(nodeName) => {
-          handleSend(`Dame un informe detallado sobre el segmento: ${nodeName}`);
+          handleSend(`Dame un informe detallado sobre el módulo/sección: ${nodeName}`);
         }}
       />
 
