@@ -117,24 +117,31 @@ const DEMO_CPUS: Product[] = [
   }
 ];
 
-// ── Safe Image Component – identical pattern to working campanas/consolas pages ──
-function SafeImage({ src, alt, isIntel, isAmd, isApple }: { src?: string | null; alt: string; isIntel: boolean; isAmd: boolean; isApple: boolean }) {
-  const [imgError, setImgError] = useState(false);
+// ── Safe Image Component ──────────────────────────────────────────────────────
+// Parses DB JSON array images, loads directly, retries via img-proxy on failure.
+function SafeImage({ src, alt, isIntel, isAmd, isApple }: {
+  src?: string | null;
+  alt: string;
+  isIntel: boolean;
+  isAmd: boolean;
+  isApple: boolean;
+}) {
+  const [stage, setStage] = useState<"direct" | "proxy" | "fallback">("direct");
 
-  // Parse DB image field: stored as JSON array string e.g. '["https://...","https://..."]'
+  // Parse DB image field: stored as JSON array e.g. '["https://...","https://..."]'
   let primaryImage = "";
   if (src) {
     try {
       const parsed = JSON.parse(src);
       if (Array.isArray(parsed) && parsed.length > 0) primaryImage = parsed[0];
     } catch {
-      // If not JSON, treat as plain URL
-      primaryImage = src;
+      primaryImage = src; // plain URL
     }
   }
 
-  if (!primaryImage || imgError) {
-    // Branded chip fallback – only shown when truly no image exists
+  const proxyUrl = primaryImage ? `/api/img-proxy?url=${encodeURIComponent(primaryImage)}` : "";
+
+  if (!primaryImage || stage === "fallback") {
     const brandColor = isIntel ? "#3b82f6" : isAmd ? "#f59e0b" : isApple ? "#a855f7" : "#00f0ff";
     const brandLabel = isIntel ? "INTEL CORE" : isAmd ? "AMD RYZEN" : isApple ? "APPLE SILICON" : "ENTERPRISE";
     return (
@@ -151,13 +158,17 @@ function SafeImage({ src, alt, isIntel, isAmd, isApple }: { src?: string | null;
 
   return (
     <img
-      src={primaryImage}
+      src={stage === "direct" ? primaryImage : proxyUrl}
       alt={alt}
-      onError={() => setImgError(true)}
+      onError={() => {
+        if (stage === "direct") setStage("proxy");
+        else setStage("fallback");
+      }}
       className="w-full h-full object-contain rounded-xl bg-slate-900 p-3"
     />
   );
 }
+
 
 export default function CPUsClient({ dbProducts }: { dbProducts: Product[] }) {
   const allProducts = useMemo(() => {
