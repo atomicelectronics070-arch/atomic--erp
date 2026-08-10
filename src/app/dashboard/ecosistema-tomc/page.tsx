@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { Send, MessageCircle, X, Cpu, RefreshCw, User, Shield, Minimize2 } from "lucide-react";
+import { Send, MessageCircle, Cpu, RefreshCw, User, Shield, Minimize2 } from "lucide-react";
 
 interface Message {
   id: string;
@@ -11,7 +11,7 @@ interface Message {
   provider?: string;
 }
 
-/* ───────────────────────── FULLSCREEN NEURAL GRAPH ───────────────────────── */
+/* ───────────────────────── FULLSCREEN NEURAL GRAPH (SINGLE CORE ONLY) ───────────────────────── */
 
 function NeuralGraphCanvas({ onSelectNode }: { onSelectNode: (nodeName: string) => void }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -25,7 +25,7 @@ function NeuralGraphCanvas({ onSelectNode }: { onSelectNode: (nodeName: string) 
     let animationFrameId: number;
     let mouseX = -1;
     let mouseY = -1;
-    let hoveredId: string | null = null;
+    let isHovered = false;
 
     const updateSize = () => {
       canvas.width = window.innerWidth;
@@ -36,13 +36,13 @@ function NeuralGraphCanvas({ onSelectNode }: { onSelectNode: (nodeName: string) 
 
     /* ---- starfield background ---- */
     const stars: { x: number; y: number; r: number; a: number; speed: number }[] = [];
-    for (let i = 0; i < 200; i++) {
+    for (let i = 0; i < 250; i++) {
       stars.push({
         x: Math.random() * 3000,
         y: Math.random() * 2000,
         r: Math.random() * 1.5 + 0.3,
-        a: Math.random(),
-        speed: Math.random() * 0.005 + 0.001,
+        a: Math.random() * Math.PI * 2,
+        speed: Math.random() * 0.008 + 0.002,
       });
     }
 
@@ -50,21 +50,20 @@ function NeuralGraphCanvas({ onSelectNode }: { onSelectNode: (nodeName: string) 
     const energyParticles: { x: number; y: number; vx: number; vy: number; life: number; maxLife: number; color: string }[] = [];
     const spawnEnergyParticle = (cx: number, cy: number) => {
       const angle = Math.random() * Math.PI * 2;
-      const speed = Math.random() * 0.8 + 0.2;
+      const speed = Math.random() * 0.9 + 0.3;
       energyParticles.push({
-        x: cx + (Math.random() - 0.5) * 200,
-        y: cy + (Math.random() - 0.5) * 200,
+        x: cx + (Math.random() - 0.5) * 160,
+        y: cy + (Math.random() - 0.5) * 160,
         vx: Math.cos(angle) * speed,
         vy: Math.sin(angle) * speed,
         life: 0,
-        maxLife: 200 + Math.random() * 300,
+        maxLife: 150 + Math.random() * 250,
         color: Math.random() > 0.5 ? "#00f0ff" : "#a855f7",
       });
     };
 
     let angle = 0;
     let pulsePhase = 0;
-    let atomicOrbitAngle = 0;
 
     const render = () => {
       const w = canvas.width;
@@ -73,35 +72,34 @@ function NeuralGraphCanvas({ onSelectNode }: { onSelectNode: (nodeName: string) 
       const cy = h / 2;
 
       angle += 0.008;
-      pulsePhase += 0.03;
-      atomicOrbitAngle += 0.012;
+      pulsePhase += 0.025;
 
-      // background
+      // Deep space background
       ctx.fillStyle = "#030712";
       ctx.fillRect(0, 0, w, h);
 
-      // radial gradient background
-      const bgGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(w, h) * 0.7);
-      bgGrad.addColorStop(0, "rgba(6, 182, 212, 0.06)");
-      bgGrad.addColorStop(0.3, "rgba(99, 102, 241, 0.03)");
+      // Radial energy background from nucleus
+      const bgGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(w, h) * 0.65);
+      bgGrad.addColorStop(0, "rgba(6, 182, 212, 0.08)");
+      bgGrad.addColorStop(0.35, "rgba(99, 102, 241, 0.04)");
       bgGrad.addColorStop(1, "transparent");
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, w, h);
 
-      // stars
+      // Stars
       stars.forEach((s) => {
         s.a += s.speed;
-        const alpha = 0.3 + Math.sin(s.a) * 0.3;
+        const alpha = 0.25 + Math.sin(s.a) * 0.35;
         ctx.beginPath();
         ctx.arc(s.x % w, s.y % h, s.r, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(148, 163, 184, ${alpha})`;
         ctx.fill();
       });
 
-      // spawn energy particles occasionally
-      if (Math.random() < 0.15) spawnEnergyParticle(cx, cy);
+      // Spawn particles
+      if (Math.random() < 0.2) spawnEnergyParticle(cx, cy);
 
-      // update and draw energy particles
+      // Render energy particles
       for (let i = energyParticles.length - 1; i >= 0; i--) {
         const p = energyParticles[i];
         p.x += p.vx;
@@ -113,187 +111,120 @@ function NeuralGraphCanvas({ onSelectNode }: { onSelectNode: (nodeName: string) 
         }
         const alpha = 1 - p.life / p.maxLife;
         ctx.beginPath();
-        ctx.arc(p.x, p.y, 1.5, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, 1.8, 0, Math.PI * 2);
         ctx.fillStyle = p.color + Math.floor(alpha * 99).toString(16).padStart(2, "0");
         ctx.fill();
       }
 
-      // ── CORE NODE: ECOSISTEMA TOMC ──
-      const coreRadius = Math.min(w, h) * 0.07;
-      const pulse = Math.sin(pulsePhase) * 0.15 + 1;
+      // ── SINGLE NUCLEUS: ECOSISTEMA ATOMIC ──
+      const coreRadius = Math.min(w, h) * 0.085;
+      const pulse = Math.sin(pulsePhase) * 0.12 + 1;
 
-      // outer glow rings
-      for (let ring = 3; ring >= 0; ring--) {
-        const r = coreRadius * (1.8 + ring * 0.5) * pulse;
+      // Mouse hover check
+      const distToCenter = Math.hypot(mouseX - cx, mouseY - cy);
+      isHovered = distToCenter <= coreRadius + 20;
+
+      // Outer wave rings
+      for (let ring = 4; ring >= 0; ring--) {
+        const r = coreRadius * (1.6 + ring * 0.45) * pulse;
         ctx.beginPath();
         ctx.arc(cx, cy, r, 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(0, 240, 255, ${0.04 + ring * 0.02})`;
+        ctx.strokeStyle = `rgba(0, 240, 255, ${0.03 + ring * 0.02})`;
         ctx.lineWidth = 1;
         ctx.stroke();
       }
 
-      // orbital rings
+      // Rotating 3D orbital rings
       ctx.save();
       ctx.translate(cx, cy);
 
       ctx.rotate(angle);
       ctx.beginPath();
-      ctx.ellipse(0, 0, coreRadius * 2.2, coreRadius * 0.7, 0, 0, Math.PI * 2);
-      ctx.strokeStyle = "rgba(0, 240, 255, 0.35)";
+      ctx.ellipse(0, 0, coreRadius * 2.3, coreRadius * 0.75, 0, 0, Math.PI * 2);
+      ctx.strokeStyle = isHovered ? "rgba(0, 240, 255, 0.7)" : "rgba(0, 240, 255, 0.35)";
       ctx.lineWidth = 1.5;
       ctx.stroke();
 
-      ctx.rotate(-angle * 2.5);
+      ctx.rotate(-angle * 2.2);
       ctx.beginPath();
-      ctx.ellipse(0, 0, coreRadius * 2.5, coreRadius * 0.8, Math.PI / 3, 0, Math.PI * 2);
-      ctx.strokeStyle = "rgba(168, 85, 247, 0.3)";
+      ctx.ellipse(0, 0, coreRadius * 2.5, coreRadius * 0.85, Math.PI / 3, 0, Math.PI * 2);
+      ctx.strokeStyle = isHovered ? "rgba(168, 85, 247, 0.6)" : "rgba(168, 85, 247, 0.3)";
       ctx.lineWidth = 1.5;
       ctx.stroke();
 
-      ctx.rotate(angle * 1.2);
+      ctx.rotate(angle * 1.4);
       ctx.beginPath();
-      ctx.ellipse(0, 0, coreRadius * 1.9, coreRadius * 0.6, -Math.PI / 4, 0, Math.PI * 2);
-      ctx.strokeStyle = "rgba(59, 130, 246, 0.25)";
-      ctx.lineWidth = 1;
+      ctx.ellipse(0, 0, coreRadius * 2.0, coreRadius * 0.65, -Math.PI / 4, 0, Math.PI * 2);
+      ctx.strokeStyle = isHovered ? "rgba(59, 130, 246, 0.6)" : "rgba(59, 130, 246, 0.25)";
+      ctx.lineWidth = 1.2;
       ctx.stroke();
 
       ctx.restore();
 
-      // core node body
-      const coreGlow = ctx.createRadialGradient(cx, cy, 0, cx, cy, coreRadius * 1.5);
-      coreGlow.addColorStop(0, "rgba(0, 240, 255, 0.3)");
-      coreGlow.addColorStop(0.5, "rgba(0, 240, 255, 0.08)");
+      // Nucleus ambient radial glow
+      const coreGlow = ctx.createRadialGradient(cx, cy, 0, cx, cy, coreRadius * 1.8);
+      coreGlow.addColorStop(0, isHovered ? "rgba(0, 240, 255, 0.4)" : "rgba(0, 240, 255, 0.22)");
+      coreGlow.addColorStop(0.6, "rgba(0, 240, 255, 0.05)");
       coreGlow.addColorStop(1, "transparent");
       ctx.fillStyle = coreGlow;
       ctx.beginPath();
-      ctx.arc(cx, cy, coreRadius * 1.5, 0, Math.PI * 2);
+      ctx.arc(cx, cy, coreRadius * 1.8, 0, Math.PI * 2);
       ctx.fill();
 
+      // Main core body
       ctx.beginPath();
-      ctx.arc(cx, cy, coreRadius, 0, Math.PI * 2);
+      ctx.arc(cx, cy, coreRadius * (isHovered ? 1.05 : 1.0), 0, Math.PI * 2);
       const coreGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, coreRadius);
       coreGrad.addColorStop(0, "#0c1a2e");
       coreGrad.addColorStop(1, "#030712");
       ctx.fillStyle = coreGrad;
       ctx.strokeStyle = "#00f0ff";
-      ctx.lineWidth = 3;
+      ctx.lineWidth = isHovered ? 4 : 3;
       ctx.shadowColor = "#00f0ff";
-      ctx.shadowBlur = 25;
+      ctx.shadowBlur = isHovered ? 35 : 22;
       ctx.fill();
       ctx.stroke();
       ctx.shadowBlur = 0;
 
-      // core inner glow dot
+      // Glowing center core dot
       ctx.beginPath();
-      ctx.arc(cx, cy, coreRadius * 0.25, 0, Math.PI * 2);
+      ctx.arc(cx, cy, coreRadius * 0.22, 0, Math.PI * 2);
       ctx.fillStyle = "#00f0ff";
       ctx.shadowColor = "#00f0ff";
       ctx.shadowBlur = 20;
       ctx.fill();
       ctx.shadowBlur = 0;
 
-      // core label
-      const coreFontSize = Math.max(11, Math.min(16, w * 0.012));
+      // Nucleus Labels
+      const coreFontSize = Math.max(12, Math.min(18, w * 0.013));
       ctx.font = `bold ${coreFontSize}px 'Courier New', monospace`;
       ctx.fillStyle = "#ffffff";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.fillText("ECOSISTEMA", cx, cy - coreFontSize * 0.7);
-      ctx.fillText("TOMC", cx, cy + coreFontSize * 0.7);
+      ctx.fillText("ATOMIC", cx, cy + coreFontSize * 0.7);
 
-      // sub-label
-      ctx.font = `bold ${Math.max(8, coreFontSize * 0.55)}px 'Courier New', monospace`;
+      // Sub-label
+      ctx.font = `bold ${Math.max(9, coreFontSize * 0.55)}px 'Courier New', monospace`;
       ctx.fillStyle = "#00f0ff";
-      ctx.fillText("NÚCLEO MAESTRO", cx, cy + coreRadius + coreFontSize * 1.2);
+      ctx.fillText("NÚCLEO ÚNICO", cx, cy + coreRadius + coreFontSize * 1.3);
 
-      // ── ATOMIC NODE ──
-      const orbitDistance = Math.min(w, h) * 0.28;
-      const atomicRadius = coreRadius * 0.55;
-      const atomicX = cx + Math.cos(atomicOrbitAngle) * orbitDistance;
-      const atomicY = cy + Math.sin(atomicOrbitAngle) * orbitDistance * 0.6;
+      // Cursor
+      canvas.style.cursor = isHovered ? "pointer" : "default";
 
-      // check hover
-      const distToAtomic = Math.hypot(mouseX - atomicX, mouseY - atomicY);
-      const distToCore = Math.hypot(mouseX - cx, mouseY - cy);
-      hoveredId = null;
-      if (distToAtomic < atomicRadius + 10) hoveredId = "atomic";
-      else if (distToCore < coreRadius + 10) hoveredId = "core";
-
-      // connection line core -> atomic
-      ctx.beginPath();
-      ctx.moveTo(cx, cy);
-      ctx.lineTo(atomicX, atomicY);
-      ctx.strokeStyle = hoveredId ? "rgba(16, 185, 129, 0.7)" : "rgba(16, 185, 129, 0.3)";
-      ctx.lineWidth = hoveredId ? 2.5 : 1.5;
-      ctx.setLineDash([6, 6]);
-      ctx.stroke();
-      ctx.setLineDash([]);
-
-      // energy pulse along connection
-      const pulseCount = 3;
-      for (let i = 0; i < pulseCount; i++) {
-        const t = ((pulsePhase * 0.5 + i / pulseCount) % 1);
-        const px = cx + (atomicX - cx) * t;
-        const py = cy + (atomicY - cy) * t;
-        ctx.beginPath();
-        ctx.arc(px, py, 3, 0, Math.PI * 2);
-        ctx.fillStyle = "#10b981";
-        ctx.shadowColor = "#10b981";
-        ctx.shadowBlur = 12;
-        ctx.fill();
-        ctx.shadowBlur = 0;
-      }
-
-      // atomic node glow
-      const atomicGlow = ctx.createRadialGradient(atomicX, atomicY, 0, atomicX, atomicY, atomicRadius * 2);
-      atomicGlow.addColorStop(0, hoveredId === "atomic" ? "rgba(16, 185, 129, 0.25)" : "rgba(16, 185, 129, 0.12)");
-      atomicGlow.addColorStop(1, "transparent");
-      ctx.fillStyle = atomicGlow;
-      ctx.beginPath();
-      ctx.arc(atomicX, atomicY, atomicRadius * 2, 0, Math.PI * 2);
-      ctx.fill();
-
-      // atomic node body
-      ctx.beginPath();
-      ctx.arc(atomicX, atomicY, atomicRadius, 0, Math.PI * 2);
-      ctx.fillStyle = "#0f172a";
-      ctx.strokeStyle = hoveredId === "atomic" ? "#34d399" : "#10b981";
-      ctx.lineWidth = hoveredId === "atomic" ? 3 : 2;
-      ctx.shadowColor = "#10b981";
-      ctx.shadowBlur = hoveredId === "atomic" ? 20 : 8;
-      ctx.fill();
-      ctx.stroke();
-      ctx.shadowBlur = 0;
-
-      // atomic label
-      const atomicFontSize = Math.max(9, Math.min(13, w * 0.009));
-      ctx.font = `bold ${atomicFontSize}px 'Courier New', monospace`;
-      ctx.fillStyle = "#ffffff";
-      ctx.textAlign = "center";
-      ctx.fillText("ATOMIC", atomicX, atomicY + 2);
-
-      ctx.font = `bold ${Math.max(7, atomicFontSize * 0.6)}px 'Courier New', monospace`;
-      ctx.fillStyle = "#10b981";
-      ctx.fillText("ERP PLATFORM", atomicX, atomicY + atomicRadius + atomicFontSize);
-
-      // cursor
-      canvas.style.cursor = hoveredId ? "pointer" : "default";
-
-      // ── HUD overlays ──
-      // top-left status
+      // ── HUD Overlays ──
       ctx.font = "bold 10px 'Courier New', monospace";
-      ctx.fillStyle = "rgba(0, 240, 255, 0.6)";
+      ctx.fillStyle = "rgba(0, 240, 255, 0.7)";
       ctx.textAlign = "left";
-      ctx.fillText("◉ GRAFO NEURONAL · ECOSISTEMA TOMC", 20, 30);
+      ctx.fillText("◉ NÚCLEO AUTÓNOMO · ECOSISTEMA ATOMIC", 24, 32);
       ctx.font = "9px 'Courier New', monospace";
       ctx.fillStyle = "rgba(148, 163, 184, 0.5)";
-      ctx.fillText("NODOS ACTIVOS: 2  ·  CONEXIONES: 1  ·  ESTADO: ONLINE", 20, 45);
+      ctx.fillText("NÚCLEO PRINCIPAL: OPERATIVO  ·  ESTADO: ONLINE", 24, 48);
 
-      // bottom status
       ctx.textAlign = "center";
       ctx.font = "9px 'Courier New', monospace";
       ctx.fillStyle = "rgba(148, 163, 184, 0.4)";
-      ctx.fillText("Haz clic en cualquier nodo para consultarle al Núcleo", w / 2, h - 20);
+      ctx.fillText("Haz clic en el Núcleo para abrir el chat de comandos", w / 2, h - 22);
 
       animationFrameId = requestAnimationFrame(render);
     };
@@ -307,8 +238,7 @@ function NeuralGraphCanvas({ onSelectNode }: { onSelectNode: (nodeName: string) 
     };
 
     const handleClick = () => {
-      if (hoveredId === "atomic") onSelectNode("Atomic");
-      else if (hoveredId === "core") onSelectNode("ECOSISTEMA TOMC");
+      if (isHovered) onSelectNode("ECOSISTEMA ATOMIC");
     };
 
     canvas.addEventListener("mousemove", handleMouseMove);
@@ -370,9 +300,9 @@ export default function DashboardEcosistemaTomcPage() {
     {
       id: "init-1",
       sender: "nucleus",
-      text: "### 🧠 ECOSISTEMA TOMC · NÚCLEO CONECTADO\n\nBienvenido al **Núcleo ECOSISTEMA TOMC**, la inteligencia central de ATOMIC.\n\nEscribe tu consulta o haz clic en un nodo del grafo.",
+      text: "### 🧠 ECOSISTEMA ATOMIC · NÚCLEO CONECTADO\n\nBienvenido al **Núcleo ECOSISTEMA ATOMIC**, la inteligencia única central.\n\nEscribe tu consulta o haz clic en el núcleo.",
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-      provider: "Núcleo ECOSISTEMA TOMC",
+      provider: "Núcleo ECOSISTEMA ATOMIC",
     },
   ]);
   const [input, setInput] = useState("");
@@ -394,8 +324,6 @@ export default function DashboardEcosistemaTomcPage() {
       if (!queryText || isLoading) return;
 
       if (!customText) setInput("");
-
-      // auto-open chat on send
       setChatOpen(true);
 
       const userMessage: Message = {
@@ -430,7 +358,7 @@ export default function DashboardEcosistemaTomcPage() {
               sender: "nucleus",
               text: data.response,
               timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-              provider: data.provider || "Núcleo ECOSISTEMA TOMC",
+              provider: data.provider || "Núcleo ECOSISTEMA ATOMIC",
             },
           ]);
         } else {
@@ -459,9 +387,9 @@ export default function DashboardEcosistemaTomcPage() {
       {
         id: Date.now().toString(),
         sender: "nucleus",
-        text: "### 🧠 NÚCLEO REINICIALIZADO\n\nMemoria despejada. ¿En qué te ayudo?",
+        text: "### 🧠 NÚCLEO ECOSISTEMA ATOMIC REINICIALIZADO\n\nMemoria despejada. ¿En qué te ayudo?",
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-        provider: "Núcleo ECOSISTEMA TOMC",
+        provider: "Núcleo ECOSISTEMA ATOMIC",
       },
     ]);
   };
@@ -471,7 +399,7 @@ export default function DashboardEcosistemaTomcPage() {
       {/* ── FULLSCREEN NEURAL GRAPH ── */}
       <NeuralGraphCanvas
         onSelectNode={(nodeName) => {
-          handleSend(`Dame un informe detallado sobre: ${nodeName}`);
+          handleSend(`Dame un informe de estado del núcleo ${nodeName}`);
         }}
       />
 
@@ -484,7 +412,7 @@ export default function DashboardEcosistemaTomcPage() {
             background: "linear-gradient(135deg, #06b6d4, #3b82f6)",
             boxShadow: "0 0 30px rgba(6, 182, 212, 0.5), 0 0 60px rgba(6, 182, 212, 0.2)",
           }}
-          title="Abrir chat con Ecosistema TOMC"
+          title="Abrir chat con Ecosistema ATOMIC"
         >
           <MessageCircle size={24} className="text-white" />
           <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-emerald-400 animate-ping" />
@@ -521,10 +449,10 @@ export default function DashboardEcosistemaTomcPage() {
               <div>
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-black text-white uppercase tracking-wider">
-                    ECOSISTEMA <span className="text-cyan-400">TOMC</span>
+                    ECOSISTEMA <span className="text-cyan-400">ATOMIC</span>
                   </span>
                   <span className="px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-widest bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
-                    BRAIN
+                    NÚCLEO
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5 mt-0.5">
@@ -561,7 +489,7 @@ export default function DashboardEcosistemaTomcPage() {
                       <span className="w-4 h-4 rounded bg-cyan-950 border border-cyan-500/40 flex items-center justify-center text-cyan-400 text-[8px] font-black">
                         ⚡
                       </span>
-                      <span className="text-[9px] font-bold text-cyan-400 tracking-wider uppercase">TOMC</span>
+                      <span className="text-[9px] font-bold text-cyan-400 tracking-wider uppercase">ATOMIC</span>
                     </>
                   ) : (
                     <>
@@ -607,7 +535,7 @@ export default function DashboardEcosistemaTomcPage() {
               <input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Escribe tu consulta..."
+                placeholder="Escribe tu consulta al Núcleo..."
                 className="flex-1 bg-transparent text-xs text-slate-100 placeholder-slate-500 focus:outline-none px-2 py-1.5"
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && !e.shiftKey) {
