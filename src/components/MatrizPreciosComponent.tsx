@@ -34,8 +34,9 @@ export default function MatrizPreciosComponent({ isVendedorMode = false }: Matri
   const [totalPages, setTotalPages] = useState(1);
   const [themeMode, setThemeMode] = useState<'bw' | 'green' | 'amber'>('bw');
 
-  // Edit Mode state (Always false if isVendedorMode is true)
+  // Edit Mode & Trash Bin state
   const [isEditMode, setIsEditMode] = useState(!isVendedorMode);
+  const [viewTrash, setViewTrash] = useState(false);
   const [savingId, setSavingId] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -71,6 +72,7 @@ export default function MatrizPreciosComponent({ isVendedorMode = false }: Matri
         categoryId: selectedCategory,
         page: page.toString(),
         limit: limit.toString(),
+        showDeleted: viewTrash ? 'true' : 'false',
       });
       const res = await fetch(`/api/public/matriz-precios?${query.toString()}`);
       const data = await res.json();
@@ -90,7 +92,7 @@ export default function MatrizPreciosComponent({ isVendedorMode = false }: Matri
 
   useEffect(() => {
     fetchMatrixData();
-  }, [search, selectedProvider, selectedCategory, page, limit]);
+  }, [search, selectedProvider, selectedCategory, page, limit, viewTrash]);
 
   const showNotification = (msg: string) => {
     setToastMessage(msg);
@@ -158,22 +160,65 @@ export default function MatrizPreciosComponent({ isVendedorMode = false }: Matri
     }
   };
 
-  // Delete product handler
+  // Move product to Trash handler (Soft delete)
   const handleDeleteProduct = async (id: string, name: string) => {
-    if (!window.confirm(`¿Estás seguro de que deseas eliminar permanentemente de la matriz el producto:\n\n"${name}"?`)) {
+    if (!window.confirm(`¿Deseas mover a la Papelera de Reciclaje el producto:\n\n"${name}"?`)) {
       return;
     }
     setSavingId(id);
     try {
       const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
-      if (!res.ok) throw new Error('Error al eliminar');
+      if (!res.ok) throw new Error('Error al enviar a papelera');
 
       setProducts(prev => prev.filter(p => p.id !== id));
       setTotalProducts(prev => Math.max(0, prev - 1));
-      showNotification('🗑️ Producto eliminado de la base de datos');
+      showNotification('🗑️ Producto movido a la Papelera de Reciclaje');
     } catch (err) {
       console.error(err);
-      showNotification('❌ Error al eliminar producto');
+      showNotification('❌ Error al mover producto a papelera');
+    } finally {
+      setSavingId(null);
+    }
+  };
+
+  // Restore product from Trash handler
+  const handleRestoreProduct = async (id: string, name: string) => {
+    setSavingId(id);
+    try {
+      const res = await fetch(`/api/products/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isDeleted: false })
+      });
+      if (!res.ok) throw new Error('Error al restaurar');
+
+      setProducts(prev => prev.filter(p => p.id !== id));
+      setTotalProducts(prev => Math.max(0, prev - 1));
+      showNotification('♻️ Producto restaurado a la matriz activa: ' + name);
+    } catch (err) {
+      console.error(err);
+      showNotification('❌ Error al restaurar producto');
+    } finally {
+      setSavingId(null);
+    }
+  };
+
+  // Permanently delete product from DB handler
+  const handlePermanentDeleteProduct = async (id: string, name: string) => {
+    if (!window.confirm(`⚠️ ¡ATENCIÓN!\n\n¿Estás completamente seguro de ELIMINAR DEFINITIVAMENTE de la base de datos el producto:\n\n"${name}"?\n\nEsta acción NO se puede deshacer.`)) {
+      return;
+    }
+    setSavingId(id);
+    try {
+      const res = await fetch(`/api/products/${id}?permanent=true`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Error al borrar definitivamente');
+
+      setProducts(prev => prev.filter(p => p.id !== id));
+      setTotalProducts(prev => Math.max(0, prev - 1));
+      showNotification('💥 Producto eliminado definitivamente de la Base de Datos');
+    } catch (err) {
+      console.error(err);
+      showNotification('❌ Error al eliminar definitivamente');
     } finally {
       setSavingId(null);
     }
@@ -295,14 +340,30 @@ export default function MatrizPreciosComponent({ isVendedorMode = false }: Matri
 
           <div className="flex flex-wrap items-center gap-3">
             {!isVendedorMode && (
-              <button
-                onClick={() => setIsEditMode(!isEditMode)}
-                className={`px-4 py-2 border font-bold text-xs uppercase transition-all ${
-                  isEditMode ? 'bg-amber-500 text-black border-amber-400' : 'border-zinc-700 hover:bg-zinc-800'
-                }`}
-              >
-                {isEditMode ? '⚡ MODO EDICIÓN ACTIVO' : '✏️ HABILITAR EDICIÓN'}
-              </button>
+              <>
+                <button
+                  onClick={() => setIsEditMode(!isEditMode)}
+                  className={`px-4 py-2 border font-bold text-xs uppercase transition-all ${
+                    isEditMode ? 'bg-amber-500 text-black border-amber-400' : 'border-zinc-700 hover:bg-zinc-800'
+                  }`}
+                >
+                  {isEditMode ? '⚡ MODO EDICIÓN ACTIVO' : '✏️ HABILITAR EDICIÓN'}
+                </button>
+
+                <button
+                  onClick={() => {
+                    setViewTrash(!viewTrash);
+                    setPage(1);
+                  }}
+                  className={`px-4 py-2 border font-bold text-xs uppercase transition-all flex items-center gap-2 ${
+                    viewTrash
+                      ? 'bg-rose-600 text-white border-rose-400 shadow-[0_0_15px_rgba(225,29,72,0.4)]'
+                      : 'border-zinc-700 hover:bg-zinc-800 text-rose-300'
+                  }`}
+                >
+                  <span>{viewTrash ? '📋 MATRIZ ACTIVA' : '🗑️ PAPELERA'}</span>
+                </button>
+              </>
             )}
 
             <div className="flex items-center border border-zinc-800 p-1 text-xs">
@@ -723,16 +784,35 @@ export default function MatrizPreciosComponent({ isVendedorMode = false }: Matri
                       </a>
                     </td>
 
-                    {/* ACTION BUTTON (ELIMINAR - Solo para Admin / Jefe) */}
+                    {/* ACTION BUTTON (ELIMINAR / RESTAURAR - Solo para Admin / Jefe) */}
                     {!isVendedorMode && (
                       <td className="py-1.5 px-2 text-center font-mono">
-                        <button
-                          onClick={() => handleDeleteProduct(p.id, p.name)}
-                          title="Eliminar producto de la matriz"
-                          className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider bg-rose-950/60 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-800 transition-colors"
-                        >
-                          🗑️ ELIMINAR
-                        </button>
+                        {viewTrash ? (
+                          <div className="flex items-center justify-center gap-1">
+                            <button
+                              onClick={() => handleRestoreProduct(p.id, p.name)}
+                              title="Restaurar producto a la matriz activa"
+                              className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider bg-emerald-950/80 hover:bg-emerald-600 text-emerald-300 hover:text-white border border-emerald-700 transition-colors"
+                            >
+                              ↩️ RESTAURAR
+                            </button>
+                            <button
+                              onClick={() => handlePermanentDeleteProduct(p.id, p.name)}
+                              title="Eliminar definitivamente de la base de datos"
+                              className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider bg-rose-950/90 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-800 transition-colors"
+                            >
+                              💥 DEFINITIVO
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => handleDeleteProduct(p.id, p.name)}
+                            title="Mover producto a la papelera"
+                            className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider bg-rose-950/60 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-800 transition-colors"
+                          >
+                            🗑️ ELIMINAR
+                          </button>
+                        )}
                       </td>
                     )}
                   </tr>

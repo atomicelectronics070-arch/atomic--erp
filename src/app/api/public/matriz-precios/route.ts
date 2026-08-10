@@ -8,11 +8,12 @@ export async function GET(req: NextRequest) {
     const search = searchParams.get('search')?.trim() || '';
     const provider = searchParams.get('provider')?.trim() || '';
     const categoryId = searchParams.get('categoryId')?.trim() || '';
+    const showDeleted = searchParams.get('showDeleted') === 'true';
     const page = parseInt(searchParams.get('page') || '1', 10);
     const limit = parseInt(searchParams.get('limit') || '150', 10);
 
     const where: any = {
-      isDeleted: false,
+      isDeleted: showDeleted ? true : false,
     };
 
     if (search) {
@@ -84,7 +85,7 @@ export async function GET(req: NextRequest) {
     });
 
     const providersRaw = await prisma.product.findMany({
-      where: { isDeleted: false },
+      where: { isDeleted: showDeleted ? true : false },
       select: { provider: true },
       distinct: ['provider'],
     });

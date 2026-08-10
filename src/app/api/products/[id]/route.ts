@@ -15,6 +15,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
         if (data.sku !== undefined) updateData.sku = data.sku
         if (data.images !== undefined) updateData.images = data.images
         if (data.isActive !== undefined) updateData.isActive = data.isActive
+        if (data.isDeleted !== undefined) updateData.isDeleted = data.isDeleted
         if (data.featured !== undefined) updateData.featured = data.featured
         if (data.stock !== undefined) updateData.stock = parseInt(data.stock)
         if (data.keywords !== undefined) updateData.keywords = data.keywords
@@ -35,6 +36,16 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
         const resolvedParams = await params
+        const { searchParams } = new URL(req.url)
+        const permanent = searchParams.get('permanent') === 'true'
+
+        if (permanent) {
+            await prisma.product.delete({
+                where: { id: resolvedParams.id }
+            })
+            return NextResponse.json({ message: "Product permanently deleted" })
+        }
+
         try {
             await prisma.product.update({
                 where: { id: resolvedParams.id },
@@ -45,7 +56,7 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
                 where: { id: resolvedParams.id }
             })
         }
-        return NextResponse.json({ message: "Product deleted" })
+        return NextResponse.json({ message: "Product moved to trash" })
     } catch (error) {
         return NextResponse.json({ error: "Failed to delete product" }, { status: 500 })
     }
