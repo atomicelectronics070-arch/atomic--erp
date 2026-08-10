@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
-import { Send, Cpu, RefreshCw, User, Shield, Activity } from "lucide-react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import { Send, MessageCircle, X, Cpu, RefreshCw, User, Shield, Minimize2 } from "lucide-react";
 
 interface Message {
   id: string;
@@ -11,22 +11,10 @@ interface Message {
   provider?: string;
 }
 
-interface NodeItem {
-  id: string;
-  name: string;
-  category: string;
-  color: string;
-  x: number;
-  y: number;
-  vx: number;
-  vy: number;
-  radius: number;
-  isCore?: boolean;
-}
+/* ───────────────────────── FULLSCREEN NEURAL GRAPH ───────────────────────── */
 
 function NeuralGraphCanvas({ onSelectNode }: { onSelectNode: (nodeName: string) => void }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [hoveredNode, setHoveredNode] = useState<string | null>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -35,154 +23,277 @@ function NeuralGraphCanvas({ onSelectNode }: { onSelectNode: (nodeName: string) 
     if (!ctx) return;
 
     let animationFrameId: number;
+    let mouseX = -1;
+    let mouseY = -1;
+    let hoveredId: string | null = null;
 
     const updateSize = () => {
-      if (!canvas.parentElement) return;
-      canvas.width = canvas.parentElement.clientWidth;
-      canvas.height = canvas.parentElement.clientHeight;
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
     };
-
     updateSize();
     window.addEventListener("resize", updateSize);
 
-    const width = canvas.width || 600;
-    const height = canvas.height || 500;
-    const centerX = width / 2;
-    const centerY = height / 2;
+    /* ---- starfield background ---- */
+    const stars: { x: number; y: number; r: number; a: number; speed: number }[] = [];
+    for (let i = 0; i < 200; i++) {
+      stars.push({
+        x: Math.random() * 3000,
+        y: Math.random() * 2000,
+        r: Math.random() * 1.5 + 0.3,
+        a: Math.random(),
+        speed: Math.random() * 0.005 + 0.001,
+      });
+    }
 
-    const nodes: NodeItem[] = [
-      { id: "core", name: "ECOSISTEMA TOMC", category: "NÚCLEO MAESTRO", color: "#00f0ff", x: centerX, y: centerY, vx: 0, vy: 0, radius: 26, isCore: true },
-      { id: "matriz", name: "Matriz de Precios", category: "ERP & Costos", color: "#10b981", x: centerX - 180, y: centerY - 100, vx: 0.3, vy: -0.2, radius: 14 },
-      { id: "db", name: "DB Postgres & Prisma", category: "Base de Datos", color: "#3b82f6", x: centerX + 180, y: centerY - 110, vx: -0.2, vy: 0.3, radius: 14 },
-      { id: "crm", name: "CRM WhatsApp", category: "Atención & Leads", color: "#a855f7", x: centerX + 200, y: centerY + 90, vx: 0.25, vy: -0.25, radius: 14 },
-      { id: "scraper", name: "Scraper Competitivo", category: "Inteligencia AI", color: "#ec4899", x: centerX - 190, y: centerY + 100, vx: -0.3, vy: 0.2, radius: 14 },
-      { id: "vendedores", name: "Matriz Vendedores", category: "Público Vendedor", color: "#f59e0b", x: centerX - 230, y: centerY + 20, vx: 0.2, vy: 0.3, radius: 13 },
-      { id: "contratos", name: "Módulo Contratos", category: "Legal & Admin", color: "#06b6d4", x: centerX + 220, y: centerY - 10, vx: -0.2, vy: -0.3, radius: 13 },
-      { id: "academy", name: "Atomic Academy", category: "Formación", color: "#8b5cf6", x: centerX, y: centerY - 170, vx: 0.1, vy: 0.2, radius: 13 },
-      { id: "obsidian", name: "Memoria Obsidian", category: "Cerebro Secundario", color: "#6366f1", x: centerX, y: centerY + 180, vx: -0.1, vy: -0.2, radius: 13 },
-    ];
-
-    const particles = nodes.filter(n => !n.isCore).map((node, i) => ({
-      nodeId: node.id,
-      progress: (i * 0.15) % 1,
-      speed: 0.004 + (i % 3) * 0.002
-    }));
+    /* ---- floating energy particles ---- */
+    const energyParticles: { x: number; y: number; vx: number; vy: number; life: number; maxLife: number; color: string }[] = [];
+    const spawnEnergyParticle = (cx: number, cy: number) => {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = Math.random() * 0.8 + 0.2;
+      energyParticles.push({
+        x: cx + (Math.random() - 0.5) * 200,
+        y: cy + (Math.random() - 0.5) * 200,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        life: 0,
+        maxLife: 200 + Math.random() * 300,
+        color: Math.random() > 0.5 ? "#00f0ff" : "#a855f7",
+      });
+    };
 
     let angle = 0;
+    let pulsePhase = 0;
+    let atomicOrbitAngle = 0;
 
     const render = () => {
-      angle += 0.015;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const w = canvas.width;
+      const h = canvas.height;
+      const cx = w / 2;
+      const cy = h / 2;
 
-      nodes[0].x = canvas.width / 2;
-      nodes[0].y = canvas.height / 2;
+      angle += 0.008;
+      pulsePhase += 0.03;
+      atomicOrbitAngle += 0.012;
 
-      for (let i = 1; i < nodes.length; i++) {
-        const n = nodes[i];
-        n.x += n.vx;
-        n.y += n.vy;
+      // background
+      ctx.fillStyle = "#030712";
+      ctx.fillRect(0, 0, w, h);
 
-        const distFromCenter = Math.hypot(n.x - nodes[0].x, n.y - nodes[0].y);
-        if (distFromCenter > 240 || distFromCenter < 100) {
-          n.vx *= -1;
-          n.vy *= -1;
-        }
-      }
+      // radial gradient background
+      const bgGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(w, h) * 0.7);
+      bgGrad.addColorStop(0, "rgba(6, 182, 212, 0.06)");
+      bgGrad.addColorStop(0.3, "rgba(99, 102, 241, 0.03)");
+      bgGrad.addColorStop(1, "transparent");
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, w, h);
 
-      const coreNode = nodes[0];
-
-      for (let i = 1; i < nodes.length; i++) {
-        const n = nodes[i];
-        const isHovered = hoveredNode === n.id || hoveredNode === coreNode.id;
-
+      // stars
+      stars.forEach((s) => {
+        s.a += s.speed;
+        const alpha = 0.3 + Math.sin(s.a) * 0.3;
         ctx.beginPath();
-        ctx.moveTo(coreNode.x, coreNode.y);
-        ctx.lineTo(n.x, n.y);
-        ctx.strokeStyle = isHovered ? n.color : "rgba(14, 165, 233, 0.25)";
-        ctx.lineWidth = isHovered ? 2.5 : 1;
-        ctx.setLineDash([4, 4]);
-        ctx.stroke();
-        ctx.setLineDash([]);
-      }
-
-      particles.forEach(p => {
-        p.progress += p.speed;
-        if (p.progress > 1) p.progress = 0;
-
-        const targetNode = nodes.find(n => n.id === p.nodeId);
-        if (targetNode) {
-          const px = coreNode.x + (targetNode.x - coreNode.x) * p.progress;
-          const py = coreNode.y + (targetNode.y - coreNode.y) * p.progress;
-
-          ctx.beginPath();
-          ctx.arc(px, py, 3, 0, Math.PI * 2);
-          ctx.fillStyle = targetNode.color;
-          ctx.shadowColor = targetNode.color;
-          ctx.shadowBlur = 10;
-          ctx.fill();
-          ctx.shadowBlur = 0;
-        }
+        ctx.arc(s.x % w, s.y % h, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(148, 163, 184, ${alpha})`;
+        ctx.fill();
       });
 
+      // spawn energy particles occasionally
+      if (Math.random() < 0.15) spawnEnergyParticle(cx, cy);
+
+      // update and draw energy particles
+      for (let i = energyParticles.length - 1; i >= 0; i--) {
+        const p = energyParticles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.life++;
+        if (p.life > p.maxLife) {
+          energyParticles.splice(i, 1);
+          continue;
+        }
+        const alpha = 1 - p.life / p.maxLife;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 1.5, 0, Math.PI * 2);
+        ctx.fillStyle = p.color + Math.floor(alpha * 99).toString(16).padStart(2, "0");
+        ctx.fill();
+      }
+
+      // ── CORE NODE: ECOSISTEMA TOMC ──
+      const coreRadius = Math.min(w, h) * 0.07;
+      const pulse = Math.sin(pulsePhase) * 0.15 + 1;
+
+      // outer glow rings
+      for (let ring = 3; ring >= 0; ring--) {
+        const r = coreRadius * (1.8 + ring * 0.5) * pulse;
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(0, 240, 255, ${0.04 + ring * 0.02})`;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+
+      // orbital rings
       ctx.save();
-      ctx.translate(coreNode.x, coreNode.y);
+      ctx.translate(cx, cy);
 
       ctx.rotate(angle);
       ctx.beginPath();
-      ctx.ellipse(0, 0, 42, 16, Math.PI / 4, 0, Math.PI * 2);
-      ctx.strokeStyle = "rgba(0, 240, 255, 0.6)";
+      ctx.ellipse(0, 0, coreRadius * 2.2, coreRadius * 0.7, 0, 0, Math.PI * 2);
+      ctx.strokeStyle = "rgba(0, 240, 255, 0.35)";
       ctx.lineWidth = 1.5;
       ctx.stroke();
 
-      ctx.rotate(-angle * 1.8);
+      ctx.rotate(-angle * 2.5);
       ctx.beginPath();
-      ctx.ellipse(0, 0, 48, 18, -Math.PI / 3, 0, Math.PI * 2);
-      ctx.strokeStyle = "rgba(168, 85, 247, 0.5)";
+      ctx.ellipse(0, 0, coreRadius * 2.5, coreRadius * 0.8, Math.PI / 3, 0, Math.PI * 2);
+      ctx.strokeStyle = "rgba(168, 85, 247, 0.3)";
       ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      ctx.rotate(angle * 1.2);
+      ctx.beginPath();
+      ctx.ellipse(0, 0, coreRadius * 1.9, coreRadius * 0.6, -Math.PI / 4, 0, Math.PI * 2);
+      ctx.strokeStyle = "rgba(59, 130, 246, 0.25)";
+      ctx.lineWidth = 1;
       ctx.stroke();
 
       ctx.restore();
 
-      nodes.forEach((n) => {
-        const isHovered = hoveredNode === n.id;
+      // core node body
+      const coreGlow = ctx.createRadialGradient(cx, cy, 0, cx, cy, coreRadius * 1.5);
+      coreGlow.addColorStop(0, "rgba(0, 240, 255, 0.3)");
+      coreGlow.addColorStop(0.5, "rgba(0, 240, 255, 0.08)");
+      coreGlow.addColorStop(1, "transparent");
+      ctx.fillStyle = coreGlow;
+      ctx.beginPath();
+      ctx.arc(cx, cy, coreRadius * 1.5, 0, Math.PI * 2);
+      ctx.fill();
 
+      ctx.beginPath();
+      ctx.arc(cx, cy, coreRadius, 0, Math.PI * 2);
+      const coreGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, coreRadius);
+      coreGrad.addColorStop(0, "#0c1a2e");
+      coreGrad.addColorStop(1, "#030712");
+      ctx.fillStyle = coreGrad;
+      ctx.strokeStyle = "#00f0ff";
+      ctx.lineWidth = 3;
+      ctx.shadowColor = "#00f0ff";
+      ctx.shadowBlur = 25;
+      ctx.fill();
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+
+      // core inner glow dot
+      ctx.beginPath();
+      ctx.arc(cx, cy, coreRadius * 0.25, 0, Math.PI * 2);
+      ctx.fillStyle = "#00f0ff";
+      ctx.shadowColor = "#00f0ff";
+      ctx.shadowBlur = 20;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+
+      // core label
+      const coreFontSize = Math.max(11, Math.min(16, w * 0.012));
+      ctx.font = `bold ${coreFontSize}px 'Courier New', monospace`;
+      ctx.fillStyle = "#ffffff";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("ECOSISTEMA", cx, cy - coreFontSize * 0.7);
+      ctx.fillText("TOMC", cx, cy + coreFontSize * 0.7);
+
+      // sub-label
+      ctx.font = `bold ${Math.max(8, coreFontSize * 0.55)}px 'Courier New', monospace`;
+      ctx.fillStyle = "#00f0ff";
+      ctx.fillText("NÚCLEO MAESTRO", cx, cy + coreRadius + coreFontSize * 1.2);
+
+      // ── ATOMIC NODE ──
+      const orbitDistance = Math.min(w, h) * 0.28;
+      const atomicRadius = coreRadius * 0.55;
+      const atomicX = cx + Math.cos(atomicOrbitAngle) * orbitDistance;
+      const atomicY = cy + Math.sin(atomicOrbitAngle) * orbitDistance * 0.6;
+
+      // check hover
+      const distToAtomic = Math.hypot(mouseX - atomicX, mouseY - atomicY);
+      const distToCore = Math.hypot(mouseX - cx, mouseY - cy);
+      hoveredId = null;
+      if (distToAtomic < atomicRadius + 10) hoveredId = "atomic";
+      else if (distToCore < coreRadius + 10) hoveredId = "core";
+
+      // connection line core -> atomic
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(atomicX, atomicY);
+      ctx.strokeStyle = hoveredId ? "rgba(16, 185, 129, 0.7)" : "rgba(16, 185, 129, 0.3)";
+      ctx.lineWidth = hoveredId ? 2.5 : 1.5;
+      ctx.setLineDash([6, 6]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // energy pulse along connection
+      const pulseCount = 3;
+      for (let i = 0; i < pulseCount; i++) {
+        const t = ((pulsePhase * 0.5 + i / pulseCount) % 1);
+        const px = cx + (atomicX - cx) * t;
+        const py = cy + (atomicY - cy) * t;
         ctx.beginPath();
-        ctx.arc(n.x, n.y, n.radius + (isHovered ? 12 : 6), 0, Math.PI * 2);
-        const glowGradient = ctx.createRadialGradient(n.x, n.y, n.radius, n.x, n.y, n.radius + (isHovered ? 14 : 8));
-        glowGradient.addColorStop(0, n.color + "66");
-        glowGradient.addColorStop(1, "transparent");
-        ctx.fillStyle = glowGradient;
+        ctx.arc(px, py, 3, 0, Math.PI * 2);
+        ctx.fillStyle = "#10b981";
+        ctx.shadowColor = "#10b981";
+        ctx.shadowBlur = 12;
         ctx.fill();
+        ctx.shadowBlur = 0;
+      }
 
-        ctx.beginPath();
-        ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
-        ctx.fillStyle = n.isCore ? "#030712" : "#0f172a";
-        ctx.strokeStyle = n.color;
-        ctx.lineWidth = n.isCore ? 3 : 2;
-        ctx.fill();
-        ctx.stroke();
+      // atomic node glow
+      const atomicGlow = ctx.createRadialGradient(atomicX, atomicY, 0, atomicX, atomicY, atomicRadius * 2);
+      atomicGlow.addColorStop(0, hoveredId === "atomic" ? "rgba(16, 185, 129, 0.25)" : "rgba(16, 185, 129, 0.12)");
+      atomicGlow.addColorStop(1, "transparent");
+      ctx.fillStyle = atomicGlow;
+      ctx.beginPath();
+      ctx.arc(atomicX, atomicY, atomicRadius * 2, 0, Math.PI * 2);
+      ctx.fill();
 
-        if (n.isCore) {
-          ctx.beginPath();
-          ctx.arc(n.x, n.y, 8, 0, Math.PI * 2);
-          ctx.fillStyle = "#00f0ff";
-          ctx.shadowColor = "#00f0ff";
-          ctx.shadowBlur = 15;
-          ctx.fill();
-          ctx.shadowBlur = 0;
-        }
+      // atomic node body
+      ctx.beginPath();
+      ctx.arc(atomicX, atomicY, atomicRadius, 0, Math.PI * 2);
+      ctx.fillStyle = "#0f172a";
+      ctx.strokeStyle = hoveredId === "atomic" ? "#34d399" : "#10b981";
+      ctx.lineWidth = hoveredId === "atomic" ? 3 : 2;
+      ctx.shadowColor = "#10b981";
+      ctx.shadowBlur = hoveredId === "atomic" ? 20 : 8;
+      ctx.fill();
+      ctx.stroke();
+      ctx.shadowBlur = 0;
 
-        ctx.font = n.isCore ? "bold 11px monospace" : "10px monospace";
-        ctx.fillStyle = n.isCore ? "#ffffff" : (isHovered ? "#ffffff" : "#cbd5e1");
-        ctx.textAlign = "center";
-        ctx.fillText(n.name, n.x, n.y + n.radius + 14);
+      // atomic label
+      const atomicFontSize = Math.max(9, Math.min(13, w * 0.009));
+      ctx.font = `bold ${atomicFontSize}px 'Courier New', monospace`;
+      ctx.fillStyle = "#ffffff";
+      ctx.textAlign = "center";
+      ctx.fillText("ATOMIC", atomicX, atomicY + 2);
 
-        if (n.category && !n.isCore) {
-          ctx.font = "8px monospace";
-          ctx.fillStyle = n.color;
-          ctx.fillText(n.category.toUpperCase(), n.x, n.y + n.radius + 24);
-        }
-      });
+      ctx.font = `bold ${Math.max(7, atomicFontSize * 0.6)}px 'Courier New', monospace`;
+      ctx.fillStyle = "#10b981";
+      ctx.fillText("ERP PLATFORM", atomicX, atomicY + atomicRadius + atomicFontSize);
+
+      // cursor
+      canvas.style.cursor = hoveredId ? "pointer" : "default";
+
+      // ── HUD overlays ──
+      // top-left status
+      ctx.font = "bold 10px 'Courier New', monospace";
+      ctx.fillStyle = "rgba(0, 240, 255, 0.6)";
+      ctx.textAlign = "left";
+      ctx.fillText("◉ GRAFO NEURONAL · ECOSISTEMA TOMC", 20, 30);
+      ctx.font = "9px 'Courier New', monospace";
+      ctx.fillStyle = "rgba(148, 163, 184, 0.5)";
+      ctx.fillText("NODOS ACTIVOS: 2  ·  CONEXIONES: 1  ·  ESTADO: ONLINE", 20, 45);
+
+      // bottom status
+      ctx.textAlign = "center";
+      ctx.font = "9px 'Courier New', monospace";
+      ctx.fillStyle = "rgba(148, 163, 184, 0.4)";
+      ctx.fillText("Haz clic en cualquier nodo para consultarle al Núcleo", w / 2, h - 20);
 
       animationFrameId = requestAnimationFrame(render);
     };
@@ -191,33 +302,13 @@ function NeuralGraphCanvas({ onSelectNode }: { onSelectNode: (nodeName: string) 
 
     const handleMouseMove = (e: MouseEvent) => {
       const rect = canvas.getBoundingClientRect();
-      const mx = e.clientX - rect.left;
-      const my = e.clientY - rect.top;
-
-      let found: string | null = null;
-      for (const n of nodes) {
-        const dist = Math.hypot(n.x - mx, n.y - my);
-        if (dist <= n.radius + 6) {
-          found = n.id;
-          break;
-        }
-      }
-      setHoveredNode(found);
-      canvas.style.cursor = found ? "pointer" : "default";
+      mouseX = e.clientX - rect.left;
+      mouseY = e.clientY - rect.top;
     };
 
-    const handleClick = (e: MouseEvent) => {
-      const rect = canvas.getBoundingClientRect();
-      const mx = e.clientX - rect.left;
-      const my = e.clientY - rect.top;
-
-      for (const n of nodes) {
-        const dist = Math.hypot(n.x - mx, n.y - my);
-        if (dist <= n.radius + 6) {
-          onSelectNode(n.name);
-          break;
-        }
-      }
+    const handleClick = () => {
+      if (hoveredId === "atomic") onSelectNode("Atomic");
+      else if (hoveredId === "core") onSelectNode("ECOSISTEMA TOMC");
     };
 
     canvas.addEventListener("mousemove", handleMouseMove);
@@ -231,80 +322,32 @@ function NeuralGraphCanvas({ onSelectNode }: { onSelectNode: (nodeName: string) 
     };
   }, [onSelectNode]);
 
-  return (
-    <div className="relative w-full h-full min-h-[380px] md:min-h-[500px] bg-slate-950/80 rounded-2xl border border-cyan-900/40 overflow-hidden flex flex-col shadow-2xl">
-      <div className="absolute top-4 left-4 z-20 flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-900/90 border border-cyan-500/40 backdrop-blur-md shadow-lg">
-        <Activity size={14} className="text-cyan-400 animate-pulse" />
-        <span className="text-[10px] font-mono font-bold text-cyan-300 uppercase tracking-widest">
-          GRAFO NEURONAL · ECOSISTEMA TOMC
-        </span>
-      </div>
-
-      <div className="absolute top-4 right-4 z-20 flex items-center gap-2 px-2.5 py-1 rounded-md bg-slate-900/80 border border-slate-800 text-[9px] font-mono text-slate-400">
-        <span>NODOS ACTIVOS: 9</span>
-      </div>
-
-      <canvas ref={canvasRef} className="w-full h-full flex-1 block" />
-
-      <div className="absolute bottom-3 left-3 right-3 z-20 px-3 py-2 rounded-xl bg-slate-900/90 border border-slate-800 backdrop-blur-md flex flex-wrap items-center justify-between gap-2 text-[10px] font-mono text-slate-400">
-        <span className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
-          NÚCLEO CENTRAL: <strong className="text-cyan-300">ECOSISTEMA TOMC</strong>
-        </span>
-        <span className="hidden sm:inline text-slate-500">Haz clic en cualquier nodo para consultarle al Núcleo</span>
-      </div>
-    </div>
-  );
+  return <canvas ref={canvasRef} className="fixed inset-0 w-full h-full" style={{ zIndex: 0 }} />;
 }
 
+/* ───────────────────────── SIMPLE MARKDOWN ───────────────────────── */
+
 function SimpleMarkdown({ content }: { content: string }) {
-  const lines = content.split('\n');
-
+  const lines = content.split("\n");
   return (
-    <div className="space-y-2">
+    <div className="space-y-1.5">
       {lines.map((line, idx) => {
-        let trimmed = line.trim();
-
-        if (trimmed.startsWith('### ')) {
-          return (
-            <h3 key={idx} className="text-base font-black text-cyan-300 tracking-wide mt-2 mb-1">
-              {trimmed.replace(/^###\s+/, '')}
-            </h3>
-          );
-        }
-        if (trimmed.startsWith('## ')) {
-          return (
-            <h2 key={idx} className="text-lg font-black text-cyan-400 tracking-wider mt-3 mb-1">
-              {trimmed.replace(/^##\s+/, '')}
-            </h2>
-          );
-        }
-        if (trimmed.startsWith('# ')) {
-          return (
-            <h1 key={idx} className="text-xl font-black text-white tracking-widest mt-4 mb-2">
-              {trimmed.replace(/^#\s+/, '')}
-            </h1>
-          );
-        }
-        if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
-          const itemContent = trimmed.substring(2);
+        const trimmed = line.trim();
+        if (trimmed.startsWith("### "))
+          return <h3 key={idx} className="text-sm font-black text-cyan-300 tracking-wide mt-2 mb-1">{trimmed.replace(/^###\s+/, "")}</h3>;
+        if (trimmed.startsWith("## "))
+          return <h2 key={idx} className="text-base font-black text-cyan-400 tracking-wider mt-2 mb-1">{trimmed.replace(/^##\s+/, "")}</h2>;
+        if (trimmed.startsWith("# "))
+          return <h1 key={idx} className="text-lg font-black text-white tracking-widest mt-3 mb-1">{trimmed.replace(/^#\s+/, "")}</h1>;
+        if (trimmed.startsWith("- ") || trimmed.startsWith("* "))
           return (
             <div key={idx} className="flex items-start gap-2 ml-2 my-0.5">
               <span className="text-cyan-400 font-bold text-xs mt-0.5">•</span>
-              <span className="text-slate-200 text-xs md:text-sm">
-                {renderBold(itemContent)}
-              </span>
+              <span className="text-slate-200 text-xs">{renderBold(trimmed.substring(2))}</span>
             </div>
           );
-        }
-        if (!trimmed) {
-          return <div key={idx} className="h-1.5" />;
-        }
-        return (
-          <p key={idx} className="text-xs md:text-sm text-slate-200 leading-relaxed">
-            {renderBold(trimmed)}
-          </p>
-        );
+        if (!trimmed) return <div key={idx} className="h-1" />;
+        return <p key={idx} className="text-xs text-slate-200 leading-relaxed">{renderBold(trimmed)}</p>;
       })}
     </div>
   );
@@ -313,26 +356,24 @@ function SimpleMarkdown({ content }: { content: string }) {
 function renderBold(text: string) {
   const parts = text.split(/(\*\*.*?\*\*)/g);
   return parts.map((part, i) => {
-    if (part.startsWith('**') && part.endsWith('**')) {
-      return (
-        <strong key={i} className="font-bold text-cyan-300">
-          {part.slice(2, -2)}
-        </strong>
-      );
-    }
+    if (part.startsWith("**") && part.endsWith("**"))
+      return <strong key={i} className="font-bold text-cyan-300">{part.slice(2, -2)}</strong>;
     return part;
   });
 }
 
+/* ───────────────────────── MAIN PAGE ───────────────────────── */
+
 export default function DashboardEcosistemaTomcPage() {
+  const [chatOpen, setChatOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "init-1",
       sender: "nucleus",
-      text: "### 🧠 ECOSISTEMA TOMC · NÚCLEO CENTRAL CONECTADO\n\nBienvenido al **Núcleo ECOSISTEMA TOMC**, la inteligencia central y matriz neuronal de ATOMIC.\n\nEl Grafo Neuronal interactivo está activo a la izquierda. Puedes hacer clic en cualquiera de los nodos conectores o escribir tu consulta directa abajo. ¿Qué instrucción deseas ejecutar?",
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      provider: "Núcleo ECOSISTEMA TOMC"
-    }
+      text: "### 🧠 ECOSISTEMA TOMC · NÚCLEO CONECTADO\n\nBienvenido al **Núcleo ECOSISTEMA TOMC**, la inteligencia central de ATOMIC.\n\nEscribe tu consulta o haz clic en un nodo del grafo.",
+      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      provider: "Núcleo ECOSISTEMA TOMC",
+    },
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -346,206 +387,207 @@ export default function DashboardEcosistemaTomcPage() {
     scrollToBottom();
   }, [messages, isLoading]);
 
-  const handleSend = async (customText?: string, e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    const queryText = (customText || input).trim();
-    if (!queryText || isLoading) return;
+  const handleSend = useCallback(
+    async (customText?: string, e?: React.FormEvent) => {
+      if (e) e.preventDefault();
+      const queryText = (customText || input).trim();
+      if (!queryText || isLoading) return;
 
-    if (!customText) setInput("");
+      if (!customText) setInput("");
 
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      sender: "user",
-      text: queryText,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    };
+      // auto-open chat on send
+      setChatOpen(true);
 
-    setMessages((prev) => [...prev, userMessage]);
-    setIsLoading(true);
-
-    try {
-      const historyPayload = messages.map((m) => ({
-        role: m.sender === "user" ? "user" : "assistant",
-        content: m.text
-      }));
-
-      const res = await fetch("/api/ecosistema-tomc/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          message: queryText,
-          history: historyPayload
-        })
-      });
-
-      const data = await res.json();
-
-      if (data.success) {
-        const nucleusMessage: Message = {
-          id: (Date.now() + 1).toString(),
-          sender: "nucleus",
-          text: data.response,
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          provider: data.provider || "Núcleo ECOSISTEMA TOMC"
-        };
-        setMessages((prev) => [...prev, nucleusMessage]);
-      } else {
-        throw new Error(data.error || "Falló respuesta del Núcleo");
-      }
-    } catch (err: any) {
-      console.error(err);
-      const errorMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        sender: "nucleus",
-        text: `⚠️ **Error de Comunicación:** No se pudo establecer conexión directa con el Núcleo ECOSISTEMA TOMC. Detalle: ${err.message || 'Error desconocido'}.`,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        provider: "Sistema de Emergencia"
+      const userMessage: Message = {
+        id: Date.now().toString(),
+        sender: "user",
+        text: queryText,
+        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       };
-      setMessages((prev) => [...prev, errorMessage]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+
+      setMessages((prev) => [...prev, userMessage]);
+      setIsLoading(true);
+
+      try {
+        const historyPayload = messages.map((m) => ({
+          role: m.sender === "user" ? "user" : "assistant",
+          content: m.text,
+        }));
+
+        const res = await fetch("/api/ecosistema-tomc/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: queryText, history: historyPayload }),
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          setMessages((prev) => [
+            ...prev,
+            {
+              id: (Date.now() + 1).toString(),
+              sender: "nucleus",
+              text: data.response,
+              timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+              provider: data.provider || "Núcleo ECOSISTEMA TOMC",
+            },
+          ]);
+        } else {
+          throw new Error(data.error || "Falló respuesta del Núcleo");
+        }
+      } catch (err: any) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: (Date.now() + 1).toString(),
+            sender: "nucleus",
+            text: `⚠️ **Error:** ${err.message || "Error desconocido"}.`,
+            timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+            provider: "Sistema",
+          },
+        ]);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [input, isLoading, messages]
+  );
 
   const handleClearChat = () => {
     setMessages([
       {
         id: Date.now().toString(),
         sender: "nucleus",
-        text: "### 🧠 NÚCLEO ECOSISTEMA TOMC REINICIALIZADO\n\nMemoria de chat despejada. Núcleo operando al 100% de capacidad. ¿En qué te ayudo?",
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        provider: "Núcleo ECOSISTEMA TOMC"
-      }
+        text: "### 🧠 NÚCLEO REINICIALIZADO\n\nMemoria despejada. ¿En qué te ayudo?",
+        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        provider: "Núcleo ECOSISTEMA TOMC",
+      },
     ]);
   };
 
-  const quickPrompts = [
-    "Estado del Ecosistema TOMC",
-    "Resumen de productos y matriz de precios",
-    "Arquitectura del sistema multi-tenant",
-    "Estrategia de ventas y automatización"
-  ];
-
   return (
-    <div className="min-h-screen bg-[#05070f] text-slate-100 font-sans selection:bg-cyan-500/30 flex flex-col relative overflow-hidden">
-      
-      <div className="absolute inset-0 pointer-events-none z-0">
-        <div className="absolute -top-40 -left-40 w-96 h-96 bg-cyan-600/10 rounded-full blur-[140px]" />
-        <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-blue-700/10 rounded-full blur-[160px]" />
-      </div>
+    <div className="fixed inset-0 bg-[#030712] overflow-hidden" style={{ fontFamily: "'Courier New', monospace" }}>
+      {/* ── FULLSCREEN NEURAL GRAPH ── */}
+      <NeuralGraphCanvas
+        onSelectNode={(nodeName) => {
+          handleSend(`Dame un informe detallado sobre: ${nodeName}`);
+        }}
+      />
 
-      <header className="relative z-10 border-b border-cyan-900/40 bg-slate-950/80 backdrop-blur-xl px-6 py-4 flex items-center justify-between shadow-2xl">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 p-[1px] shadow-[0_0_20px_rgba(6,182,212,0.4)] flex items-center justify-center">
-            <div className="w-full h-full bg-slate-950 rounded-[11px] flex items-center justify-center text-cyan-400 font-black">
-              <Cpu size={20} className="animate-pulse" />
-            </div>
-          </div>
-          <div>
+      {/* ── FLOATING CHAT BUTTON ── */}
+      {!chatOpen && (
+        <button
+          onClick={() => setChatOpen(true)}
+          className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-2xl"
+          style={{
+            background: "linear-gradient(135deg, #06b6d4, #3b82f6)",
+            boxShadow: "0 0 30px rgba(6, 182, 212, 0.5), 0 0 60px rgba(6, 182, 212, 0.2)",
+          }}
+          title="Abrir chat con Ecosistema TOMC"
+        >
+          <MessageCircle size={24} className="text-white" />
+          <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-emerald-400 animate-ping" />
+          <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-emerald-400" />
+        </button>
+      )}
+
+      {/* ── MINIMIZABLE CHAT PANEL ── */}
+      {chatOpen && (
+        <div
+          className="fixed bottom-6 right-6 z-50 flex flex-col overflow-hidden"
+          style={{
+            width: "min(420px, calc(100vw - 48px))",
+            height: "min(600px, calc(100vh - 48px))",
+            borderRadius: "20px",
+            background: "rgba(3, 7, 18, 0.95)",
+            border: "1px solid rgba(6, 182, 212, 0.3)",
+            backdropFilter: "blur(20px)",
+            boxShadow: "0 0 40px rgba(6, 182, 212, 0.15), 0 25px 50px rgba(0,0,0,0.5)",
+          }}
+        >
+          {/* chat header */}
+          <div className="flex items-center justify-between px-4 py-3 border-b border-cyan-900/40 bg-slate-950/90 shrink-0">
             <div className="flex items-center gap-2">
-              <h1 className="text-base md:text-lg font-black uppercase tracking-wider text-white">
-                ECOSISTEMA <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">TOMC</span>
-              </h1>
-              <span className="px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-widest bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
-                BRAIN V1.0
-              </span>
-            </div>
-            <p className="text-[11px] text-slate-400 font-mono flex items-center gap-1.5 mt-0.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping inline-block" />
-              <span>NÚCLEO CENTRAL & GRAFO NEURONAL OPERATIVO</span>
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <button
-            onClick={handleClearChat}
-            className="px-3 py-1.5 rounded-lg border border-slate-800 hover:border-slate-700 bg-slate-900/60 text-slate-300 hover:text-white text-xs font-mono font-semibold transition-all flex items-center gap-1.5"
-            title="Reiniciar chat"
-          >
-            <RefreshCw size={13} />
-            <span>LIMPIAR</span>
-          </button>
-        </div>
-      </header>
-
-      <main className="relative z-10 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 p-4 md:p-6 overflow-hidden max-w-[1600px] w-full mx-auto">
-        
-        <div className="lg:col-span-5 flex flex-col h-full min-h-[380px] lg:min-h-[600px]">
-          <NeuralGraphCanvas
-            onSelectNode={(nodeName) => {
-              handleSend(`Dame un informe detallado sobre el nodo: ${nodeName}`);
-            }}
-          />
-        </div>
-
-        <div className="lg:col-span-7 flex flex-col h-full bg-slate-950/80 rounded-2xl border border-cyan-900/40 p-4 md:p-6 shadow-2xl backdrop-blur-xl overflow-hidden min-h-[500px]">
-          
-          <div className="flex-1 overflow-y-auto space-y-4 pr-2 custom-scrollbar">
-            {messages.map((m) => (
               <div
-                key={m.id}
-                className={`flex flex-col ${m.sender === "user" ? "items-end" : "items-start"} animate-in fade-in duration-300`}
+                className="w-8 h-8 rounded-lg flex items-center justify-center"
+                style={{
+                  background: "linear-gradient(135deg, #06b6d4, #3b82f6)",
+                  boxShadow: "0 0 15px rgba(6, 182, 212, 0.4)",
+                }}
               >
-                <div className="flex items-center gap-2 mb-1 px-1">
+                <Cpu size={16} className="text-white" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-black text-white uppercase tracking-wider">
+                    ECOSISTEMA <span className="text-cyan-400">TOMC</span>
+                  </span>
+                  <span className="px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-widest bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
+                    BRAIN
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="text-[9px] text-slate-400">NÚCLEO ONLINE</span>
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={handleClearChat}
+                className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors"
+                title="Limpiar chat"
+              >
+                <RefreshCw size={14} />
+              </button>
+              <button
+                onClick={() => setChatOpen(false)}
+                className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors"
+                title="Minimizar"
+              >
+                <Minimize2 size={14} />
+              </button>
+            </div>
+          </div>
+
+          {/* messages */}
+          <div className="flex-1 overflow-y-auto p-3 space-y-3" style={{ scrollbarWidth: "thin", scrollbarColor: "#1e293b transparent" }}>
+            {messages.map((m) => (
+              <div key={m.id} className={`flex flex-col ${m.sender === "user" ? "items-end" : "items-start"}`}>
+                <div className="flex items-center gap-1.5 mb-0.5 px-0.5">
                   {m.sender === "nucleus" ? (
                     <>
-                      <span className="w-5 h-5 rounded-md bg-cyan-950 border border-cyan-500/40 flex items-center justify-center text-cyan-400 text-[10px] font-black">
+                      <span className="w-4 h-4 rounded bg-cyan-950 border border-cyan-500/40 flex items-center justify-center text-cyan-400 text-[8px] font-black">
                         ⚡
                       </span>
-                      <span className="text-[11px] font-mono font-bold text-cyan-400 tracking-wider uppercase">
-                        ECOSISTEMA TOMC
-                      </span>
-                      {m.provider && (
-                        <span className="text-[9px] font-mono text-slate-500 border border-slate-800 rounded px-1.5 py-0.2 bg-slate-900">
-                          {m.provider}
-                        </span>
-                      )}
+                      <span className="text-[9px] font-bold text-cyan-400 tracking-wider uppercase">TOMC</span>
                     </>
                   ) : (
                     <>
-                      <span className="text-[11px] font-mono font-bold text-slate-400 tracking-wider uppercase">
-                        USUARIO
-                      </span>
-                      <span className="w-5 h-5 rounded-md bg-slate-800 flex items-center justify-center text-slate-300 text-[10px] font-black">
-                        <User size={12} />
-                      </span>
+                      <span className="text-[9px] font-bold text-slate-500 tracking-wider uppercase">TÚ</span>
+                      <User size={10} className="text-slate-500" />
                     </>
                   )}
-                  <span className="text-[10px] font-mono text-slate-600">{m.timestamp}</span>
+                  <span className="text-[8px] text-slate-600">{m.timestamp}</span>
                 </div>
-
                 <div
-                  className={`max-w-[92%] rounded-2xl px-5 py-4 text-sm leading-relaxed shadow-xl ${
+                  className={`max-w-[90%] rounded-2xl px-3.5 py-2.5 text-xs leading-relaxed shadow-lg ${
                     m.sender === "user"
-                      ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-tr-none font-medium"
-                      : "bg-slate-900/90 border border-cyan-900/40 text-slate-200 rounded-tl-none backdrop-blur-md"
+                      ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-tr-sm"
+                      : "bg-slate-900/90 border border-cyan-900/30 text-slate-200 rounded-tl-sm"
                   }`}
                 >
-                  {m.sender === "nucleus" ? (
-                    <SimpleMarkdown content={m.text} />
-                  ) : (
-                    <p className="whitespace-pre-wrap">{m.text}</p>
-                  )}
+                  {m.sender === "nucleus" ? <SimpleMarkdown content={m.text} /> : <p className="whitespace-pre-wrap">{m.text}</p>}
                 </div>
               </div>
             ))}
 
             {isLoading && (
-              <div className="flex flex-col items-start animate-in fade-in duration-300">
-                <div className="flex items-center gap-2 mb-1 px-1">
-                  <span className="w-5 h-5 rounded-md bg-cyan-950 border border-cyan-500/40 flex items-center justify-center text-cyan-400 text-[10px] font-black">
-                    ⚡
-                  </span>
-                  <span className="text-[11px] font-mono font-bold text-cyan-400 tracking-wider uppercase">
-                    ECOSISTEMA TOMC
-                  </span>
-                </div>
-                <div className="bg-slate-900/90 border border-cyan-900/40 rounded-2xl rounded-tl-none px-5 py-4 backdrop-blur-md flex items-center gap-3">
-                  <div className="w-4 h-4 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
-                  <span className="text-xs font-mono text-cyan-300 animate-pulse tracking-wider">
-                    PROCESANDO EN NÚCLEO TOMC...
-                  </span>
+              <div className="flex flex-col items-start">
+                <div className="bg-slate-900/90 border border-cyan-900/30 rounded-2xl rounded-tl-sm px-3.5 py-2.5 flex items-center gap-2">
+                  <div className="w-3 h-3 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
+                  <span className="text-[10px] text-cyan-300 animate-pulse tracking-wider">PROCESANDO...</span>
                 </div>
               </div>
             )}
@@ -553,58 +595,48 @@ export default function DashboardEcosistemaTomcPage() {
             <div ref={messagesEndRef} />
           </div>
 
-          <div className="pt-3 pb-2 flex flex-wrap gap-2 overflow-x-auto hide-scrollbar">
-            {quickPrompts.map((prompt, idx) => (
-              <button
-                key={idx}
-                onClick={() => {
-                  handleSend(prompt);
-                }}
-                className="text-[11px] font-mono px-3 py-1.5 rounded-lg bg-slate-900/70 border border-cyan-900/30 text-cyan-300/80 hover:text-cyan-200 hover:border-cyan-500/50 hover:bg-slate-800 transition-all text-left truncate max-w-[240px]"
-              >
-                ⚡ {prompt}
-              </button>
-            ))}
-          </div>
-
-          <form onSubmit={(e) => handleSend(undefined, e)} className="relative mt-2">
-            <div className="relative flex items-center rounded-2xl border border-cyan-900/50 bg-slate-950/90 shadow-2xl backdrop-blur-xl focus-within:border-cyan-400 transition-all p-2">
-              <textarea
+          {/* input */}
+          <form onSubmit={(e) => handleSend(undefined, e)} className="p-3 pt-0 shrink-0">
+            <div
+              className="flex items-center gap-2 rounded-xl p-2"
+              style={{
+                background: "rgba(15, 23, 42, 0.9)",
+                border: "1px solid rgba(6, 182, 212, 0.25)",
+              }}
+            >
+              <input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
+                placeholder="Escribe tu consulta..."
+                className="flex-1 bg-transparent text-xs text-slate-100 placeholder-slate-500 focus:outline-none px-2 py-1.5"
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && !e.shiftKey) {
                     e.preventDefault();
                     handleSend();
                   }
                 }}
-                placeholder="Escribe una orden o consulta para el Núcleo Ecosistema TOMC..."
-                className="w-full bg-transparent text-sm text-slate-100 placeholder-slate-500 focus:outline-none resize-none px-3 py-2 max-h-32 min-h-[44px] custom-scrollbar"
-                rows={1}
               />
               <button
                 type="submit"
                 disabled={!input.trim() || isLoading}
-                className={`shrink-0 p-3 rounded-xl font-bold transition-all flex items-center justify-center ${
+                className={`p-2 rounded-lg transition-all ${
                   input.trim() && !isLoading
-                    ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 shadow-[0_0_15px_rgba(6,182,212,0.4)] hover:scale-105"
-                    : "bg-slate-900 text-slate-600 cursor-not-allowed border border-slate-800"
+                    ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg hover:scale-105"
+                    : "bg-slate-800 text-slate-600 cursor-not-allowed"
                 }`}
               >
-                <Send size={16} />
+                <Send size={14} />
               </button>
             </div>
-            <div className="flex items-center justify-between text-[10px] font-mono text-slate-500 px-3 mt-1.5">
-              <span>Presiona [Enter] para enviar, [Shift + Enter] para salto de línea</span>
+            <div className="flex items-center justify-between text-[8px] text-slate-600 px-2 mt-1">
+              <span>[Enter] enviar</span>
               <span className="flex items-center gap-1">
-                <Shield size={10} className="text-emerald-400" /> NÚCLEO SEGURO
+                <Shield size={8} className="text-emerald-500" /> SEGURO
               </span>
             </div>
           </form>
-
         </div>
-
-      </main>
+      )}
     </div>
   );
 }
