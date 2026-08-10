@@ -94,7 +94,7 @@ const CATALOG: Product[] = [
     name: "PC AMD Ryzen 5 8500G | 16GB DDR5 | SSD 500GB | Radeon 740M | A620",
     specs: "AMD Ryzen 5 8500G · 16GB DDR5 · SSD 500GB · Gráficos Radeon 740M integrados · Board A620",
     basePrice: 671.74,
-    image: "https://cemco.com.ec/wp-content/uploads/pc-ryzen5-8500g.jpg",
+    image: "https://i0.wp.com/cemco.com.ec/wp-content/uploads/2025/10/pc-ryzen-5-8500g-frente-teclado-mouse-sello-amd-8000.webp?resize=300%2C300&ssl=1",
     brand: "AMD", type: "CPU-OFICINA", source: "CEMCO",
   },
   {
@@ -102,7 +102,7 @@ const CATALOG: Product[] = [
     name: "CPU de Escritorio Intel Core i5-14400 | 14va Gen | ASUS H610 | 16GB DDR5",
     specs: "Intel Core i5-14400 · 14va Generación · 16GB DDR5 · SSD 500GB · Board ASUS H610 · Gráficos integrados UHD 730",
     basePrice: 766.17,
-    image: "https://cemco.com.ec/wp-content/uploads/cpu-i5-14400.jpg",
+    image: "https://i0.wp.com/cemco.com.ec/wp-content/uploads/2025/04/pc-intel-core-i5-14400-16gb-ddr4-ssd-500gb-h610-frente-case-infinytek-5200.webp?resize=300%2C300&ssl=1",
     brand: "INTEL", type: "CPU-OFICINA", source: "CEMCO",
   },
   {
@@ -110,7 +110,7 @@ const CATALOG: Product[] = [
     name: "PC AMD Ryzen 5 8600G | 16GB DDR5 | SSD 500GB | Radeon 760M | A620",
     specs: "AMD Ryzen 5 8600G · 16GB DDR5 · SSD 500GB · Gráficos Radeon 760M integrados · Board A620",
     basePrice: 766.95,
-    image: "https://cemco.com.ec/wp-content/uploads/pc-ryzen5-8600g.jpg",
+    image: "https://i0.wp.com/cemco.com.ec/wp-content/uploads/2025/10/pc-ryzen-5-8600g-16gb-ddr5-ssd-500gb-a620-radeon-740m-frente-case-infinytek-5200.webp?resize=300%2C300&ssl=1",
     brand: "AMD", type: "CPU-OFICINA", source: "CEMCO",
   },
   {
@@ -118,7 +118,7 @@ const CATALOG: Product[] = [
     name: "CPU Intel Core Ultra 5 225 | 16GB DDR5 | 500GB SSD | H810 | Teclado + Mouse + Parlantes",
     specs: "Intel Core Ultra 5 225 · 16GB DDR5 · 500GB SSD · Board H810 · Gráficos Arc integrados · Kit periféricos incluido",
     basePrice: 820.41,
-    image: "https://cemco.com.ec/wp-content/uploads/cpu-ultra5-225.jpg",
+    image: "https://i0.wp.com/cemco.com.ec/wp-content/uploads/2025/06/pc-intel-core-ultra-5-225-16gb-ddr5-ssd-500gb-h810-frente-case-infinytek-5200.webp?resize=300%2C300&ssl=1",
     brand: "INTEL", type: "CPU-OFICINA", source: "CEMCO",
   },
   {
@@ -126,7 +126,7 @@ const CATALOG: Product[] = [
     name: "CPU Intel Core Ultra 7-265 | H810 | Gráficos Intel Arc | 16GB DDR5",
     specs: "Intel Core Ultra 7-265 · 20 Núcleos · 16GB DDR5 · 500GB SSD · Board H810 · Gráficos Intel Arc integrados",
     basePrice: 1025.04,
-    image: "https://cemco.com.ec/wp-content/uploads/cpu-ultra7-265.jpg",
+    image: "https://i0.wp.com/cemco.com.ec/wp-content/uploads/2025/10/pc-intel-ultra-7-265-frente-teclado-mouse-sello-usb-c-negro.webp?resize=300%2C300&ssl=1",
     brand: "INTEL", type: "CPU-OFICINA", source: "CEMCO",
   },
 ];
