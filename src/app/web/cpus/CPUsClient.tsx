@@ -117,56 +117,44 @@ const DEMO_CPUS: Product[] = [
   }
 ];
 
-// ── Safe Image Component – parses DB JSON image arrays correctly ──
-function SafeImage({ src, alt, isIntel, isAmd, isApple }: { src?: string; alt: string; isIntel: boolean; isAmd: boolean; isApple: boolean }) {
-  const [error, setError] = useState(false);
+// ── Safe Image Component – identical pattern to working campanas/consolas pages ──
+function SafeImage({ src, alt, isIntel, isAmd, isApple }: { src?: string | null; alt: string; isIntel: boolean; isAmd: boolean; isApple: boolean }) {
+  const [imgError, setImgError] = useState(false);
 
-  // Parse image URL from DB: can be a JSON array string like '["url1","url2"]' or a plain URL
-  let resolvedSrc = "";
+  // Parse DB image field: stored as JSON array string e.g. '["https://...","https://..."]'
+  let primaryImage = "";
   if (src) {
-    const trimmed = src.trim();
-    if (trimmed.startsWith("[")) {
-      try {
-        const arr = JSON.parse(trimmed);
-        if (Array.isArray(arr) && arr.length > 0) resolvedSrc = arr[0];
-      } catch {}
-    } else if (trimmed.startsWith("{")) {
-      // Sometimes it's a single JSON object
-      try {
-        const obj = JSON.parse(trimmed);
-        if (obj.url) resolvedSrc = obj.url;
-      } catch {}
-    } else {
-      resolvedSrc = trimmed;
+    try {
+      const parsed = JSON.parse(src);
+      if (Array.isArray(parsed) && parsed.length > 0) primaryImage = parsed[0];
+    } catch {
+      // If not JSON, treat as plain URL
+      primaryImage = src;
     }
   }
 
-  if (!resolvedSrc || error) {
-    // Elegant chip fallback only when image is truly unavailable
+  if (!primaryImage || imgError) {
+    // Branded chip fallback – only shown when truly no image exists
     const brandColor = isIntel ? "#3b82f6" : isAmd ? "#f59e0b" : isApple ? "#a855f7" : "#00f0ff";
     const brandLabel = isIntel ? "INTEL CORE" : isAmd ? "AMD RYZEN" : isApple ? "APPLE SILICON" : "ENTERPRISE";
     return (
       <div className="w-full h-full flex flex-col items-center justify-center bg-slate-900 rounded-xl relative overflow-hidden">
         <div className="absolute inset-0 opacity-10" style={{ backgroundImage: `radial-gradient(${brandColor} 1px, transparent 1px)`, backgroundSize: "14px 14px" }} />
-        <div className="relative w-20 h-20 rounded-2xl flex flex-col items-center justify-center shadow-2xl border-2 transition-transform duration-300 hover:scale-110" style={{ background: "linear-gradient(135deg,#0f172a,#030712)", borderColor: brandColor, boxShadow: `0 0 20px ${brandColor}40` }}>
-          <div className="absolute top-1 left-1 w-1.5 h-1.5 rounded-full bg-amber-400/80" />
-          <div className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-amber-400/80" />
-          <div className="absolute bottom-1 left-1 w-1.5 h-1.5 rounded-full bg-amber-400/80" />
-          <div className="absolute bottom-1 right-1 w-1.5 h-1.5 rounded-full bg-amber-400/80" />
+        <div className="w-20 h-20 rounded-2xl flex flex-col items-center justify-center shadow-2xl border-2" style={{ background: "linear-gradient(135deg,#0f172a,#030712)", borderColor: brandColor, boxShadow: `0 0 20px ${brandColor}40` }}>
           <Cpu size={32} style={{ color: brandColor }} className="animate-pulse" />
           <span className="text-[7px] font-mono font-black uppercase mt-1 tracking-widest text-slate-300 text-center">{brandLabel}</span>
         </div>
-        <span className="mt-2 text-[8px] font-mono text-slate-500 uppercase tracking-widest">ATOMIC CERTIFIED</span>
+        <span className="mt-2 text-[8px] font-mono text-slate-500 uppercase tracking-widest">SIN IMAGEN</span>
       </div>
     );
   }
 
   return (
     <img
-      src={resolvedSrc}
+      src={primaryImage}
       alt={alt}
-      onError={() => setError(true)}
-      className="w-full h-full object-contain rounded-xl bg-slate-900 p-2"
+      onError={() => setImgError(true)}
+      className="w-full h-full object-contain rounded-xl bg-slate-900 p-3"
     />
   );
 }
