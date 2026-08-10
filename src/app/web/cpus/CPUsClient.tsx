@@ -1,455 +1,389 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
-import { Cpu, Search, Zap, ShieldCheck, Flame, ArrowUpDown, ChevronRight, MessageSquare, BarChart3, Radio } from "lucide-react";
+import { Cpu, Search, ShieldCheck, Flame, ArrowUpDown, MessageSquare, Monitor, Zap } from "lucide-react";
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CATALOG — scraped from BestCell.com.ec & CEMCO.com.ec · +25% margen ATOMIC
+// Base price × 1.25 = ATOMIC price
+// ─────────────────────────────────────────────────────────────────────────────
+const MARGIN = 1.25;
 
 interface Product {
   id: string;
   name: string;
-  description?: string;
-  price: number;
-  compareAtPrice?: number;
-  images?: string;
-  stock: number;
-  sku?: string;
-  specs?: string;
-  category?: { id: string; name: string; slug: string };
+  specs: string;
+  basePrice: number;   // precio del proveedor
+  image: string;
+  brand: "INTEL" | "AMD" | "OTRO";
+  type: "CPU-GAMER" | "CPU-OFICINA" | "PROCESADOR";
+  source: "BestCell" | "CEMCO";
 }
 
-// Curated high-performance CPUs catalog (shown when DB has no matching products)
-const DEMO_CPUS: Product[] = [
+const CATALOG: Product[] = [
+  // ── BESTCELL · CPUs Gamer (equipos completos) ──────────────────────────────
   {
-    id: "cpu-intel-i9-14900k",
-    name: "Intel Core i9-14900K Flagship Processor",
-    description: "24 Núcleos (8P + 16E), 32 Hilos, Frecuencia Turbo hasta 6.0 GHz, LGA1700, 36MB Cache, Soporte DDR5/DDR4.",
-    price: 689.0,
-    compareAtPrice: 749.0,
-    images: undefined,
-    stock: 8,
-    sku: "CPU-INT-14900K",
-    specs: "Cores: 24 (8P+16E) | Hilos: 32 | Frecuencia: 6.0 GHz Max | Cache: 36MB | TDP: 125W-253W | Socket: LGA1700",
-    category: { id: "cat-cpu", name: "Procesadores Intel", slug: "intel" }
+    id: "bc-gamer-1",
+    name: "CPU Gamer Intel Core Ultra 7 265K | 16GB DDR5 | 1TB NVMe | RTX 5060 Ti 16GB",
+    specs: "Intel Core Ultra 7 265K · 16GB DDR5 · 1TB SSD NVMe 4.0 · RTX 5060 Ti 16GB · LGA1851",
+    basePrice: 1950.00,
+    image: "https://www.bestcell.com.ec/imgadmin/storage/imagenes_articulos/1990/14278.jpg.280.webp",
+    brand: "INTEL", type: "CPU-GAMER", source: "BestCell",
   },
   {
-    id: "cpu-amd-ryzen9-7950x3d",
-    name: "AMD Ryzen 9 7950X3D 16-Core 3D V-Cache",
-    description: "El procesador definitivo para Gaming y Render 3D. 16 Núcleos, 32 Hilos, 144MB Cache L2+L3, AM5, 5.7 GHz Boost.",
-    price: 729.0,
-    compareAtPrice: 799.0,
-    images: undefined,
-    stock: 5,
-    sku: "CPU-AMD-7950X3D",
-    specs: "Cores: 16 | Hilos: 32 | Frecuencia: 5.7 GHz Boost | Cache: 144MB 3D V-Cache | TDP: 120W | Socket: AM5",
-    category: { id: "cat-cpu", name: "Procesadores AMD", slug: "amd" }
+    id: "bc-gamer-2",
+    name: "CPU Gamer Intel Core Ultra 7 265K | 32GB DDR5 | 1TB NVMe 5.0 | RTX 5070 Ti",
+    specs: "Intel Core Ultra 7 265K · 32GB DDR5 · 1TB SSD NVMe 5.0 · RTX 5070 Ti · LGA1851",
+    basePrice: 3100.00,
+    image: "https://www.bestcell.com.ec/imgadmin/storage/imagenes_articulos/2089/14327.jpg.280.webp",
+    brand: "INTEL", type: "CPU-GAMER", source: "BestCell",
   },
   {
-    id: "cpu-intel-i7-14700k",
-    name: "Intel Core i7-14700K High Performance CPU",
-    description: "20 Núcleos (8P + 12E), 28 Hilos, Frecuencia Turbo hasta 5.6 GHz, LGA1700, 33MB Cache Inteligente.",
-    price: 449.0,
-    compareAtPrice: 489.0,
-    images: undefined,
-    stock: 12,
-    sku: "CPU-INT-14700K",
-    specs: "Cores: 20 (8P+12E) | Hilos: 28 | Frecuencia: 5.6 GHz Max | Cache: 33MB | TDP: 125W | Socket: LGA1700",
-    category: { id: "cat-cpu", name: "Procesadores Intel", slug: "intel" }
+    id: "bc-gamer-3",
+    name: "CPU Gamer Intel Core Ultra 9 285K | 32GB DDR5 | 2TB NVMe 4.0 | RTX 5070 Ti",
+    specs: "Intel Core Ultra 9 285K · 32GB DDR5 · 2TB SSD NVMe 4.0 · RTX 5070 Ti · LGA1851",
+    basePrice: 3570.00,
+    image: "https://www.bestcell.com.ec/imgadmin/storage/imagenes_articulos/2096/14968.jpg.280.webp",
+    brand: "INTEL", type: "CPU-GAMER", source: "BestCell",
   },
   {
-    id: "cpu-amd-ryzen7-7800x3d",
-    name: "AMD Ryzen 7 7800X3D #1 Gaming Processor",
-    description: "8 Núcleos, 16 Hilos, 104MB Cache, Socket AM5, 5.0 GHz Boost. Reconocido mundialmente como el mejor CPU Gamer.",
-    price: 429.0,
-    compareAtPrice: 469.0,
-    images: undefined,
-    stock: 15,
-    sku: "CPU-AMD-7800X3D",
-    specs: "Cores: 8 | Hilos: 16 | Frecuencia: 5.0 GHz Boost | Cache: 104MB 3D V-Cache | TDP: 120W | Socket: AM5",
-    category: { id: "cat-cpu", name: "Procesadores AMD", slug: "amd" }
+    id: "bc-gamer-4",
+    name: "CPU Gamer Intel Core Ultra 9 285K | 32GB DDR5 | 2TB NVMe 4.0/5.0 | RTX 5080",
+    specs: "Intel Core Ultra 9 285K · 32GB DDR5 · 2TB SSD NVMe 4.0/5.0 · RTX 5080 · LGA1851",
+    basePrice: 4200.00,
+    image: "https://www.bestcell.com.ec/imgadmin/storage/imagenes_articulos/2422/13240.jpg.280.webp",
+    brand: "INTEL", type: "CPU-GAMER", source: "BestCell",
+  },
+  // ── BESTCELL · Procesadores standalone ─────────────────────────────────────
+  {
+    id: "bc-proc-1",
+    name: "Procesador Intel Core Ultra 5 225F | 2.7/4.9GHz | 10 Núcleos | LGA1851",
+    specs: "Intel Core Ultra 5 225F · 10 Núcleos / 12 Hilos · Boost 4.9GHz · LGA1851 · Sin gráficos integrados",
+    basePrice: 214.99,
+    image: "https://www.bestcell.com.ec/imgadmin/storage/imagenes_articulos/2381/13053.jpg.280.webp",
+    brand: "INTEL", type: "PROCESADOR", source: "BestCell",
   },
   {
-    id: "cpu-intel-i5-14600k",
-    name: "Intel Core i5-14600K Unlocked Desktop CPU",
-    description: "14 Núcleos (6P + 8E), 20 Hilos, Frecuencia Turbo hasta 5.3 GHz, LGA1700, 24MB Cache Intel Smart.",
-    price: 319.0,
-    compareAtPrice: 349.0,
-    images: undefined,
-    stock: 18,
-    sku: "CPU-INT-14600K",
-    specs: "Cores: 14 (6P+8E) | Hilos: 20 | Frecuencia: 5.3 GHz Max | Cache: 24MB | TDP: 125W | Socket: LGA1700",
-    category: { id: "cat-cpu", name: "Procesadores Intel", slug: "intel" }
+    id: "bc-proc-2",
+    name: "Procesador Intel Core Ultra 5 250K PLUS | 4.2/5.3GHz | 18 Núcleos | LGA1851",
+    specs: "Intel Core Ultra 5 250K PLUS · 18 Núcleos · Boost 5.3GHz · LGA1851 · Gráficos Intel Arc integrados",
+    basePrice: 294.99,
+    image: "https://www.bestcell.com.ec/imgadmin/storage/imagenes_articulos/2737/14769.jpg.280.webp",
+    brand: "INTEL", type: "PROCESADOR", source: "BestCell",
   },
   {
-    id: "cpu-amd-ryzen5-7600x",
-    name: "AMD Ryzen 5 7600X Next-Gen 6-Core Processor",
-    description: "6 Núcleos, 12 Hilos, Frecuencia Turbo 5.3 GHz, Socket AM5, Arquitectura Zen 4 en 5nm.",
-    price: 229.0,
-    compareAtPrice: 269.0,
-    images: undefined,
-    stock: 22,
-    sku: "CPU-AMD-7600X",
-    specs: "Cores: 6 | Hilos: 12 | Frecuencia: 5.3 GHz Boost | Cache: 38MB | TDP: 105W | Socket: AM5",
-    category: { id: "cat-cpu", name: "Procesadores AMD", slug: "amd" }
+    id: "bc-proc-3",
+    name: "Procesador Intel Core Ultra 7 265K | 3.3/5.5GHz | 20 Núcleos | LGA1851",
+    specs: "Intel Core Ultra 7 265K · 20 Núcleos (8P+12E+4LPE) · Boost 5.5GHz · LGA1851 · Gráficos Intel Arc",
+    basePrice: 430.00,
+    image: "https://www.bestcell.com.ec/imgadmin/storage/imagenes_articulos/1940/10670.jpg.280.webp",
+    brand: "INTEL", type: "PROCESADOR", source: "BestCell",
   },
   {
-    id: "cpu-amd-threadripper-7980x",
-    name: "AMD Ryzen Threadripper 7980X 64-Core Monster",
-    description: "Procesador Enterprise para Estaciones de Trabajo Pesadas. 64 Núcleos, 128 Hilos, 320MB Cache, 350W TDP.",
-    price: 4999.0,
-    compareAtPrice: 5399.0,
-    images: undefined,
-    stock: 2,
-    sku: "CPU-TR-7980X",
-    specs: "Cores: 64 | Hilos: 128 | Frecuencia: 5.1 GHz Boost | Cache: 320MB | TDP: 350W | Socket: sTR5",
-    category: { id: "cat-cpu", name: "Servidores & Workstation", slug: "enterprise" }
+    id: "bc-proc-4",
+    name: "Procesador Intel Core Ultra 9 285K | 3.2/5.7GHz | 24 Núcleos | LGA1851",
+    specs: "Intel Core Ultra 9 285K · 24 Núcleos (8P+16E) · Boost 5.7GHz · LGA1851 · Gráficos Intel Arc Xe",
+    basePrice: 519.99,
+    image: "https://www.bestcell.com.ec/imgadmin/storage/imagenes_articulos/2068/11318.jpg.280.webp",
+    brand: "INTEL", type: "PROCESADOR", source: "BestCell",
+  },
+  // ── CEMCO · CPUs Hogar & Oficina (equipos completos) ───────────────────────
+  {
+    id: "cemco-1",
+    name: "PC AMD Ryzen 5 8500G | 16GB DDR5 | SSD 500GB | Radeon 740M | A620",
+    specs: "AMD Ryzen 5 8500G · 16GB DDR5 · SSD 500GB · Gráficos Radeon 740M integrados · Board A620",
+    basePrice: 671.74,
+    image: "https://cemco.com.ec/wp-content/uploads/pc-ryzen5-8500g.jpg",
+    brand: "AMD", type: "CPU-OFICINA", source: "CEMCO",
   },
   {
-    id: "cpu-apple-m3-max",
-    name: "Apple Silicon M3 Max Workstation Chip",
-    description: "16-Core CPU (12 Performance + 4 Efficiency), GPU de 40 Núcleos, 128GB Memoria Unificada, 400 GB/s ancho de banda.",
-    price: 3499.0,
-    compareAtPrice: 3799.0,
-    images: undefined,
-    stock: 4,
-    sku: "CPU-APL-M3MAX",
-    specs: "Cores: 16 (12P+4E) | Hilos: 16 | GPU: 40 Cores | Ancho de Banda: 400 GB/s | Arquitectura: 3nm",
-    category: { id: "cat-cpu", name: "Apple Silicon", slug: "apple" }
-  }
+    id: "cemco-2",
+    name: "CPU de Escritorio Intel Core i5-14400 | 14va Gen | ASUS H610 | 16GB DDR5",
+    specs: "Intel Core i5-14400 · 14va Generación · 16GB DDR5 · SSD 500GB · Board ASUS H610 · Gráficos integrados UHD 730",
+    basePrice: 766.17,
+    image: "https://cemco.com.ec/wp-content/uploads/cpu-i5-14400.jpg",
+    brand: "INTEL", type: "CPU-OFICINA", source: "CEMCO",
+  },
+  {
+    id: "cemco-3",
+    name: "PC AMD Ryzen 5 8600G | 16GB DDR5 | SSD 500GB | Radeon 760M | A620",
+    specs: "AMD Ryzen 5 8600G · 16GB DDR5 · SSD 500GB · Gráficos Radeon 760M integrados · Board A620",
+    basePrice: 766.95,
+    image: "https://cemco.com.ec/wp-content/uploads/pc-ryzen5-8600g.jpg",
+    brand: "AMD", type: "CPU-OFICINA", source: "CEMCO",
+  },
+  {
+    id: "cemco-4",
+    name: "CPU Intel Core Ultra 5 225 | 16GB DDR5 | 500GB SSD | H810 | Teclado + Mouse + Parlantes",
+    specs: "Intel Core Ultra 5 225 · 16GB DDR5 · 500GB SSD · Board H810 · Gráficos Arc integrados · Kit periféricos incluido",
+    basePrice: 820.41,
+    image: "https://cemco.com.ec/wp-content/uploads/cpu-ultra5-225.jpg",
+    brand: "INTEL", type: "CPU-OFICINA", source: "CEMCO",
+  },
+  {
+    id: "cemco-5",
+    name: "CPU Intel Core Ultra 7-265 | H810 | Gráficos Intel Arc | 16GB DDR5",
+    specs: "Intel Core Ultra 7-265 · 20 Núcleos · 16GB DDR5 · 500GB SSD · Board H810 · Gráficos Intel Arc integrados",
+    basePrice: 1025.04,
+    image: "https://cemco.com.ec/wp-content/uploads/cpu-ultra7-265.jpg",
+    brand: "INTEL", type: "CPU-OFICINA", source: "CEMCO",
+  },
 ];
 
-// ── Safe Image Component ──────────────────────────────────────────────────────
-// Parses DB JSON array images, loads directly, retries via img-proxy on failure.
-function SafeImage({ src, alt, isIntel, isAmd, isApple }: {
-  src?: string | null;
-  alt: string;
-  isIntel: boolean;
-  isAmd: boolean;
-  isApple: boolean;
-}) {
+// ── Safe Image with proxy fallback ────────────────────────────────────────────
+function SafeImage({ src, alt, brand }: { src: string; alt: string; brand: string }) {
   const [stage, setStage] = useState<"direct" | "proxy" | "fallback">("direct");
+  const proxyUrl = `/api/img-proxy?url=${encodeURIComponent(src)}`;
+  const brandColor = brand === "INTEL" ? "#3b82f6" : brand === "AMD" ? "#f59e0b" : "#00f0ff";
 
-  // Parse DB image field: stored as JSON array e.g. '["https://...","https://..."]'
-  let primaryImage = "";
-  if (src) {
-    try {
-      const parsed = JSON.parse(src);
-      if (Array.isArray(parsed) && parsed.length > 0) primaryImage = parsed[0];
-    } catch {
-      primaryImage = src; // plain URL
-    }
-  }
-
-  const proxyUrl = primaryImage ? `/api/img-proxy?url=${encodeURIComponent(primaryImage)}` : "";
-
-  if (!primaryImage || stage === "fallback") {
-    const brandColor = isIntel ? "#3b82f6" : isAmd ? "#f59e0b" : isApple ? "#a855f7" : "#00f0ff";
-    const brandLabel = isIntel ? "INTEL CORE" : isAmd ? "AMD RYZEN" : isApple ? "APPLE SILICON" : "ENTERPRISE";
+  if (stage === "fallback") {
     return (
-      <div className="w-full h-full flex flex-col items-center justify-center bg-slate-900 rounded-xl relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10" style={{ backgroundImage: `radial-gradient(${brandColor} 1px, transparent 1px)`, backgroundSize: "14px 14px" }} />
-        <div className="w-20 h-20 rounded-2xl flex flex-col items-center justify-center shadow-2xl border-2" style={{ background: "linear-gradient(135deg,#0f172a,#030712)", borderColor: brandColor, boxShadow: `0 0 20px ${brandColor}40` }}>
-          <Cpu size={32} style={{ color: brandColor }} className="animate-pulse" />
-          <span className="text-[7px] font-mono font-black uppercase mt-1 tracking-widest text-slate-300 text-center">{brandLabel}</span>
-        </div>
-        <span className="mt-2 text-[8px] font-mono text-slate-500 uppercase tracking-widest">SIN IMAGEN</span>
+      <div className="w-full h-full flex flex-col items-center justify-center bg-slate-900 rounded-xl">
+        <Cpu size={36} style={{ color: brandColor }} className="animate-pulse" />
+        <span className="text-[9px] font-mono mt-2 text-slate-500 uppercase tracking-widest">{brand}</span>
       </div>
     );
   }
 
   return (
     <img
-      src={stage === "direct" ? primaryImage : proxyUrl}
+      src={stage === "direct" ? src : proxyUrl}
       alt={alt}
-      onError={() => {
-        if (stage === "direct") setStage("proxy");
-        else setStage("fallback");
-      }}
+      onError={() => stage === "direct" ? setStage("proxy") : setStage("fallback")}
       className="w-full h-full object-contain rounded-xl bg-slate-900 p-3"
     />
   );
 }
 
+// ── Type badge label ──────────────────────────────────────────────────────────
+const TYPE_LABEL: Record<string, string> = {
+  "CPU-GAMER": "🎮 CPU GAMER",
+  "CPU-OFICINA": "🖥️ CPU HOGAR/OFICINA",
+  "PROCESADOR": "⚡ PROCESADOR",
+};
+const TYPE_COLOR: Record<string, string> = {
+  "CPU-GAMER": "bg-purple-500/10 text-purple-300 border-purple-500/30",
+  "CPU-OFICINA": "bg-emerald-500/10 text-emerald-300 border-emerald-500/30",
+  "PROCESADOR": "bg-cyan-500/10 text-cyan-300 border-cyan-500/30",
+};
+const BRAND_COLOR: Record<string, string> = {
+  INTEL: "bg-blue-500/10 text-blue-400 border-blue-500/30",
+  AMD: "bg-amber-500/10 text-amber-400 border-amber-500/30",
+  OTRO: "bg-slate-500/10 text-slate-400 border-slate-500/30",
+};
 
-export default function CPUsClient({ dbProducts }: { dbProducts: Product[] }) {
-  // Only fall back to demo catalog if the DB returns nothing at all
-  const allProducts = useMemo(() => {
-    if (!dbProducts || dbProducts.length === 0) return DEMO_CPUS;
-    return dbProducts; // use real DB products exclusively
-  }, [dbProducts]);
+// ─────────────────────────────────────────────────────────────────────────────
+export default function CPUsClient() {
+  const [brandFilter, setBrandFilter] = useState("ALL");
+  const [typeFilter, setTypeFilter] = useState("ALL");
+  const [search, setSearch] = useState("");
+  const [sortBy, setSortBy] = useState<"price-asc" | "price-desc">("price-asc");
 
-
-  const [selectedBrand, setSelectedBrand] = useState<string>("ALL");
-  const [searchQuery, setSearchQuery] = useState<string>("");
-  const [sortBy, setSortBy] = useState<"price-desc" | "price-asc" | "cores">("price-desc");
-
-  // Filtering
-  const filteredProducts = useMemo(() => {
-    return allProducts
+  const filtered = useMemo(() => {
+    return CATALOG
       .filter((p) => {
-        const text = `${p.name} ${p.description || ""} ${p.specs || ""}`.toLowerCase();
-        if (selectedBrand === "INTEL" && !text.includes("intel") && !text.includes("i9") && !text.includes("i7") && !text.includes("i5")) return false;
-        if (selectedBrand === "AMD" && !text.includes("amd") && !text.includes("ryzen") && !text.includes("threadripper")) return false;
-        if (selectedBrand === "APPLE" && !text.includes("apple") && !text.includes("m3") && !text.includes("m2") && !text.includes("m1")) return false;
-        if (selectedBrand === "WORKSTATION" && !text.includes("threadripper") && !text.includes("xeon") && !text.includes("epyc")) return false;
-
-        if (searchQuery.trim()) {
-          const q = searchQuery.toLowerCase();
-          return text.includes(q);
-        }
-
+        const text = `${p.name} ${p.specs}`.toLowerCase();
+        if (brandFilter !== "ALL" && p.brand !== brandFilter) return false;
+        if (typeFilter !== "ALL" && p.type !== typeFilter) return false;
+        if (search.trim() && !text.includes(search.toLowerCase())) return false;
         return true;
       })
-      .sort((a, b) => {
-        if (sortBy === "price-desc") return b.price - a.price;
-        if (sortBy === "price-asc") return a.price - b.price;
-        if (sortBy === "cores") {
-          const getCores = (specsStr?: string) => {
-            const match = specsStr?.match(/Cores:\s*(\d+)/i) || specsStr?.match(/(\d+)\s*Núcleos/i);
-            return match ? parseInt(match[1]) : 0;
-          };
-          return getCores(b.specs) - getCores(a.specs);
-        }
-        return 0;
-      });
-  }, [allProducts, selectedBrand, searchQuery, sortBy]);
+      .sort((a, b) =>
+        sortBy === "price-asc"
+          ? a.basePrice * MARGIN - b.basePrice * MARGIN
+          : b.basePrice * MARGIN - a.basePrice * MARGIN
+      );
+  }, [brandFilter, typeFilter, search, sortBy]);
 
-  const getWhatsAppLink = (product: Product) => {
-    const text = `Hola ATOMIC, deseo solicitar información o cotizar el procesador: ${product.name} (SKU: ${product.sku || product.id}) - Precio: $${product.price}`;
-    return `https://wa.me/593992823615?text=${encodeURIComponent(text)}`;
-  };
+  const waLink = (p: Product) =>
+    `https://wa.me/593992823615?text=${encodeURIComponent(
+      `Hola ATOMIC, quisiera cotizar: ${p.name} — Precio referencial: $${(p.basePrice * MARGIN).toFixed(2)}`
+    )}`;
 
   return (
-    <div className="min-h-screen bg-[#030712] text-slate-100 font-sans selection:bg-cyan-500/30 selection:text-white">
-      {/* ── BACKGROUND NEON GLOW ── */}
+    <div className="min-h-screen bg-[#030712] text-slate-100 font-sans">
+      {/* BG glow */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         <div className="absolute -top-40 -left-40 w-[600px] h-[600px] bg-cyan-600/10 rounded-full blur-[160px]" />
         <div className="absolute top-1/3 -right-40 w-[600px] h-[600px] bg-indigo-600/10 rounded-full blur-[180px]" />
         <div className="absolute -bottom-40 left-1/4 w-[700px] h-[700px] bg-purple-700/10 rounded-full blur-[200px]" />
       </div>
 
-      {/* ── HEADER NAVIGATION ── */}
+      {/* HEADER */}
       <header className="relative z-20 border-b border-cyan-900/40 bg-slate-950/80 backdrop-blur-xl px-6 py-4 flex items-center justify-between">
-        <Link href="/web" className="flex items-center gap-3 group">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 p-[1px] shadow-[0_0_20px_rgba(6,182,212,0.4)] flex items-center justify-center">
-            <div className="w-full h-full bg-slate-950 rounded-[11px] flex items-center justify-center text-cyan-400 font-black">
-              <Cpu size={20} className="animate-pulse" />
-            </div>
+        <Link href="/web" className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-[0_0_20px_rgba(6,182,212,0.4)]">
+            <Monitor size={20} className="text-slate-950" />
           </div>
           <div>
             <span className="text-lg font-black tracking-widest text-white uppercase font-mono">
               ATOMIC <span className="text-cyan-400">CPUs</span>
             </span>
-            <p className="text-[10px] text-slate-400 font-mono tracking-wider">MATRIZ DE PROCESADORES MAESTROS</p>
+            <p className="text-[10px] text-slate-400 font-mono tracking-wider">COMPUTADORAS & PROCESADORES</p>
           </div>
         </Link>
-
-        <div className="flex items-center gap-4">
-          <Link
-            href="/dashboard/ecosistema-tomc"
-            className="px-4 py-2 rounded-xl bg-cyan-500/10 border border-cyan-500/40 text-cyan-300 hover:text-white hover:bg-cyan-500/20 transition-all font-mono text-xs font-bold flex items-center gap-2"
-          >
-            <Radio size={14} className="animate-pulse text-emerald-400" />
-            <span>NÚCLEO ECOSISTEMA</span>
-          </Link>
-          <Link
-            href="/web"
-            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-800 text-slate-400 hover:text-slate-200 text-xs font-mono"
-          >
-            <span>INICIO</span>
-            <ChevronRight size={14} />
-          </Link>
-        </div>
+        <Link href="/web" className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-800 text-slate-400 hover:text-slate-200 text-xs font-mono">
+          ← INICIO
+        </Link>
       </header>
 
-      {/* ── HERO BANNER ── */}
-      <section className="relative z-10 max-w-7xl mx-auto px-6 pt-12 pb-10 text-center">
+      {/* HERO */}
+      <section className="relative z-10 max-w-7xl mx-auto px-6 pt-12 pb-8 text-center">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-mono font-bold mb-6">
           <Flame size={14} className="text-amber-400 animate-bounce" />
-          <span>POTENCIA DE CÓMPUTO INDUSTRIAL Y GAMING</span>
+          <span>CATÁLOGO OFICIAL ATOMIC · PROCESADORES & EQUIPOS COMPLETOS</span>
         </div>
-
         <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tight text-white max-w-4xl mx-auto leading-tight font-mono">
-          PROCESADORES <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500">DE ÚLTIMA GENERACIÓN</span>
+          CPUs, COMPUTADORAS<br />
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500">& PROCESADORES</span>
         </h1>
-
-        <p className="mt-4 text-slate-400 text-sm md:text-base max-w-2xl mx-auto font-sans leading-relaxed">
-          Explora la matriz completa de CPUs Intel Core i9/i7/i5, AMD Ryzen 3D V-Cache, Apple Silicon M3/M4 y Procesadores Enterprise. Cotiza directo con envío garantizado a nivel nacional.
+        <p className="mt-4 text-slate-400 text-sm max-w-2xl mx-auto leading-relaxed">
+          Equipos completos para oficina y gaming · Procesadores Intel Core Ultra & AMD Ryzen · 
+          Stock disponible · Envío a todo Ecuador
         </p>
 
-        {/* Quick specs pill stats */}
-        <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto font-mono text-xs">
-          <div className="p-3 rounded-xl bg-slate-900/60 border border-cyan-900/30 backdrop-blur-md">
-            <span className="block text-cyan-400 font-bold text-lg">HASTA 6.0 GHz</span>
-            <span className="text-slate-500 text-[10px]">FRECUENCIA TURBO MAX</span>
-          </div>
-          <div className="p-3 rounded-xl bg-slate-900/60 border border-cyan-900/30 backdrop-blur-md">
-            <span className="block text-emerald-400 font-bold text-lg">64 HILOS</span>
-            <span className="text-slate-500 text-[10px]">ARQUITECTURA MULTI-CORE</span>
-          </div>
-          <div className="p-3 rounded-xl bg-slate-900/60 border border-cyan-900/30 backdrop-blur-md">
-            <span className="block text-amber-400 font-bold text-lg">144MB CACHE</span>
-            <span className="text-slate-500 text-[10px]">TECNOLOGÍA 3D V-CACHE</span>
-          </div>
-          <div className="p-3 rounded-xl bg-slate-900/60 border border-cyan-900/30 backdrop-blur-md">
-            <span className="block text-purple-400 font-bold text-lg">STOCK LOCAL</span>
-            <span className="text-slate-500 text-[10px]">ENTREGA INMEDIATA</span>
-          </div>
+        {/* Source badges */}
+        <div className="mt-6 flex items-center justify-center gap-3 flex-wrap">
+          <span className="px-3 py-1.5 rounded-full bg-slate-900 border border-slate-700 text-[11px] font-mono text-slate-300 font-bold">
+            📦 Fuente: <span className="text-cyan-400">BestCell.com.ec</span>
+          </span>
+          <span className="px-3 py-1.5 rounded-full bg-slate-900 border border-slate-700 text-[11px] font-mono text-slate-300 font-bold">
+            📦 Fuente: <span className="text-emerald-400">CEMCO.com.ec</span>
+          </span>
+          <span className="px-3 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-[11px] font-mono text-cyan-300 font-bold">
+            ✅ Margen ATOMIC +25% incluido
+          </span>
         </div>
       </section>
 
-      {/* ── FILTER & SEARCH BAR ── */}
-      <section className="relative z-10 max-w-7xl mx-auto px-6 mb-10">
+      {/* FILTERS */}
+      <section className="relative z-10 max-w-7xl mx-auto px-6 mb-8">
         <div className="p-4 rounded-2xl bg-slate-950/80 border border-cyan-900/40 backdrop-blur-xl shadow-2xl space-y-4">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            
-            {/* Brand Category Filter Tabs */}
-            <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0 scrollbar-hide font-mono text-xs">
+          {/* Row 1: Type + Sort */}
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            {/* Type filter */}
+            <div className="flex flex-wrap gap-2 font-mono text-xs">
               {[
-                { id: "ALL", label: "TODOS LOS CPUs" },
-                { id: "INTEL", label: "INTEL CORE" },
-                { id: "AMD", label: "AMD RYZEN" },
-                { id: "APPLE", label: "APPLE SILICON" },
-                { id: "WORKSTATION", label: "WORKSTATION / SERVIDOR" },
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setSelectedBrand(tab.id)}
-                  className={`px-4 py-2.5 rounded-xl font-bold whitespace-nowrap transition-all ${
-                    selectedBrand === tab.id
+                { id: "ALL", label: "TODO" },
+                { id: "CPU-GAMER", label: "🎮 CPU GAMER" },
+                { id: "CPU-OFICINA", label: "🖥️ HOGAR/OFICINA" },
+                { id: "PROCESADOR", label: "⚡ PROCESADORES" },
+              ].map((t) => (
+                <button key={t.id} onClick={() => setTypeFilter(t.id)}
+                  className={`px-3 py-2 rounded-xl font-bold whitespace-nowrap transition-all ${
+                    typeFilter === t.id
                       ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-[0_0_15px_rgba(6,182,212,0.4)]"
-                      : "bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-800 border border-slate-800"
+                      : "bg-slate-900 text-slate-400 hover:text-white border border-slate-800"
                   }`}
-                >
-                  {tab.label}
-                </button>
+                >{t.label}</button>
               ))}
             </div>
-
-            {/* Sort selection */}
-            <div className="flex items-center gap-3 w-full md:w-auto justify-end font-mono text-xs">
-              <span className="text-slate-400 flex items-center gap-1 shrink-0">
-                <ArrowUpDown size={14} /> ORDENAR:
-              </span>
-              <select
-                value={sortBy}
-                onChange={(e: any) => setSortBy(e.target.value)}
-                className="bg-slate-900 border border-cyan-900/40 text-cyan-300 rounded-xl px-3 py-2 focus:outline-none font-bold"
-              >
-                <option value="price-desc">Precio: Mayor a Menor</option>
+            {/* Sort */}
+            <div className="flex items-center gap-2 font-mono text-xs">
+              <ArrowUpDown size={14} className="text-slate-400" />
+              <select value={sortBy} onChange={(e: any) => setSortBy(e.target.value)}
+                className="bg-slate-900 border border-cyan-900/40 text-cyan-300 rounded-xl px-3 py-2 focus:outline-none font-bold">
                 <option value="price-asc">Precio: Menor a Mayor</option>
-                <option value="cores">Mayor Número de Núcleos</option>
+                <option value="price-desc">Precio: Mayor a Menor</option>
               </select>
             </div>
-
           </div>
 
-          {/* Search Input */}
-          <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-cyan-400" size={18} />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Buscar por modelo (ej: i9-14900K, Ryzen 7 7800X3D, M3 Max, Threadripper)..."
-              className="w-full bg-slate-900/90 border border-cyan-900/40 rounded-xl pl-12 pr-4 py-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition-all font-mono"
-            />
+          {/* Row 2: Brand + Search */}
+          <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex gap-2 font-mono text-xs">
+              {["ALL","INTEL","AMD"].map((b) => (
+                <button key={b} onClick={() => setBrandFilter(b)}
+                  className={`px-3 py-2 rounded-xl font-bold transition-all ${
+                    brandFilter === b
+                      ? b === "INTEL" ? "bg-blue-600 text-white" : b === "AMD" ? "bg-amber-600 text-white" : "bg-slate-600 text-white"
+                      : "bg-slate-900 text-slate-400 hover:text-white border border-slate-800"
+                  }`}
+                >{b === "ALL" ? "TODAS LAS MARCAS" : b}</button>
+              ))}
+            </div>
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-cyan-400" size={16} />
+              <input type="text" value={search} onChange={(e) => setSearch(e.target.value)}
+                placeholder="Buscar por modelo, especificación..."
+                className="w-full bg-slate-900/90 border border-cyan-900/40 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-400 font-mono"
+              />
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ── PRODUCTS GRID ── */}
+      {/* PRODUCTS GRID */}
       <section className="relative z-10 max-w-7xl mx-auto px-6 pb-20">
-        <div className="flex items-center justify-between mb-6 font-mono text-xs">
+        <div className="flex items-center justify-between mb-5 font-mono text-xs">
           <span className="text-slate-400">
-            PROCESADORES ENCONTRADOS: <strong className="text-cyan-400 font-bold">{filteredProducts.length}</strong>
+            MOSTRANDO <strong className="text-cyan-400">{filtered.length}</strong> DE {CATALOG.length} PRODUCTOS
           </span>
           <span className="text-emerald-400 flex items-center gap-1">
-            <ShieldCheck size={14} /> PRECIOS ATOMIC INCLUYEN IVA & GARANTÍA DIRECTA
+            <ShieldCheck size={13} /> PRECIOS CON IVA INCLUIDO · MARGEN +25%
           </span>
         </div>
 
-        {filteredProducts.length === 0 ? (
+        {filtered.length === 0 ? (
           <div className="text-center py-20 rounded-3xl bg-slate-950/60 border border-slate-800">
             <Cpu size={48} className="mx-auto text-slate-600 mb-4 animate-pulse" />
-            <h3 className="text-lg font-bold font-mono text-slate-300 uppercase">No se encontraron procesadores con esos filtros</h3>
-            <p className="text-xs text-slate-500 mt-1">Prueba cambiando la búsqueda o seleccionando "TODOS LOS CPUs"</p>
+            <p className="text-slate-400 font-mono uppercase">No hay productos con esos filtros</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredProducts.map((product) => {
-              const isIntel = product.name.toLowerCase().includes("intel") || product.name.toLowerCase().includes("core i");
-              const isAmd = product.name.toLowerCase().includes("amd") || product.name.toLowerCase().includes("ryzen");
-              const isApple = product.name.toLowerCase().includes("apple") || product.name.toLowerCase().includes("m3") || product.name.toLowerCase().includes("m2");
-
+            {filtered.map((p) => {
+              const atomicPrice = p.basePrice * MARGIN;
               return (
-                <div
-                  key={product.id}
-                  className="group rounded-2xl bg-slate-950/80 border border-cyan-900/30 hover:border-cyan-400/80 p-5 transition-all duration-300 hover:-translate-y-1.5 shadow-xl hover:shadow-[0_0_30px_rgba(6,182,212,0.2)] flex flex-col justify-between relative overflow-hidden"
+                <div key={p.id}
+                  className="group rounded-2xl bg-slate-950/80 border border-cyan-900/30 hover:border-cyan-400/80 p-5 transition-all duration-300 hover:-translate-y-1.5 shadow-xl hover:shadow-[0_0_30px_rgba(6,182,212,0.2)] flex flex-col justify-between"
                 >
-                  {/* Top Badge */}
-                  <div className="flex items-center justify-between mb-3 z-10">
-                    <span
-                      className={`px-2.5 py-1 rounded-md text-[10px] font-mono font-bold uppercase tracking-wider border ${
-                        isIntel
-                          ? "bg-blue-500/10 text-blue-400 border-blue-500/30"
-                          : isAmd
-                          ? "bg-amber-500/10 text-amber-400 border-amber-500/30"
-                          : isApple
-                          ? "bg-purple-500/10 text-purple-400 border-purple-500/30"
-                          : "bg-cyan-500/10 text-cyan-400 border-cyan-500/30"
-                      }`}
-                    >
-                      {isIntel ? "INTEL" : isAmd ? "AMD" : isApple ? "APPLE" : "ENTERPRISE"}
+                  {/* Badges */}
+                  <div className="flex items-start justify-between mb-3 gap-2 flex-wrap">
+                    <span className={`px-2 py-0.5 rounded-md text-[10px] font-mono font-bold border ${BRAND_COLOR[p.brand]}`}>
+                      {p.brand}
                     </span>
-
-                    <span className="text-[10px] font-mono font-bold text-emerald-400 flex items-center gap-1">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping inline-block" />
-                      STOCK DISPONIBLE
+                    <span className={`px-2 py-0.5 rounded-md text-[10px] font-mono font-bold border ${TYPE_COLOR[p.type]}`}>
+                      {TYPE_LABEL[p.type]}
                     </span>
                   </div>
 
-                  {/* Product Image – uses real DB image, falls back to chip visual */}
+                  {/* Image */}
                   <div className="w-full h-44 mb-4 overflow-hidden rounded-xl">
-                    <SafeImage src={product.images} alt={product.name} isIntel={isIntel} isAmd={isAmd} isApple={isApple} />
+                    <SafeImage src={p.image} alt={p.name} brand={p.brand} />
                   </div>
 
-                  {/* Title & Description */}
-                  <div>
-                    <h3 className="text-sm font-bold text-white font-mono line-clamp-2 mb-2 group-hover:text-cyan-300 transition-colors">
-                      {product.name}
-                    </h3>
+                  {/* Name */}
+                  <h3 className="text-sm font-bold text-white font-mono line-clamp-2 mb-2 group-hover:text-cyan-300 transition-colors leading-snug">
+                    {p.name}
+                  </h3>
 
-                    {product.specs && (
-                      <div className="mb-3 p-2 rounded-lg bg-slate-900/60 border border-slate-800 text-[10px] font-mono text-cyan-300/90 leading-relaxed">
-                        ⚡ {product.specs}
-                      </div>
-                    )}
+                  {/* Specs */}
+                  <div className="mb-3 p-2 rounded-lg bg-slate-900/60 border border-slate-800 text-[10px] font-mono text-cyan-300/90 leading-relaxed">
+                    <Zap size={10} className="inline mr-1 text-amber-400" />
+                    {p.specs}
                   </div>
 
-                  {/* Pricing & CTA */}
-                  <div className="pt-4 border-t border-slate-900 flex flex-col gap-3">
+                  {/* Source badge */}
+                  <div className="text-[10px] font-mono text-slate-500 mb-3">
+                    📦 Fuente: <span className="text-slate-400">{p.source}</span>
+                    <span className="ml-2 text-slate-600">· Base: ${p.basePrice.toFixed(2)} +25%</span>
+                  </div>
+
+                  {/* Price + CTA */}
+                  <div className="pt-3 border-t border-slate-900 flex flex-col gap-3">
                     <div className="flex items-baseline justify-between">
                       <div>
-                        <span className="text-xs text-slate-500 font-mono block">PVP ATOMIC</span>
-                        <span className="text-xl font-black text-white font-mono tracking-tight">
-                          ${product.price.toFixed(2)}
-                        </span>
+                        <span className="text-[10px] text-slate-500 font-mono block">PRECIO ATOMIC</span>
+                        <span className="text-xl font-black text-white font-mono">${atomicPrice.toFixed(2)}</span>
                       </div>
-                      {product.compareAtPrice && product.compareAtPrice > product.price && (
-                        <span className="text-xs text-slate-500 line-through font-mono">
-                          ${product.compareAtPrice.toFixed(2)}
-                        </span>
-                      )}
+                      <span className="text-xs text-slate-600 font-mono line-through">${p.basePrice.toFixed(2)}</span>
                     </div>
-
-                    <a
-                      href={getWhatsAppLink(product)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-full py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-mono font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 hover:scale-[1.02] transition-all shadow-[0_0_15px_rgba(6,182,212,0.4)]"
+                    <a href={waLink(p)} target="_blank" rel="noopener noreferrer"
+                      className="w-full py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-mono font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 hover:scale-[1.02] transition-all shadow-[0_0_15px_rgba(6,182,212,0.3)]"
                     >
                       <MessageSquare size={14} />
-                      <span>COTIZAR AHORA</span>
+                      COTIZAR POR WHATSAPP
                     </a>
                   </div>
                 </div>
@@ -459,42 +393,8 @@ export default function CPUsClient({ dbProducts }: { dbProducts: Product[] }) {
         )}
       </section>
 
-      {/* ── BENCHMARK COMPARISON SECTION ── */}
-      <section className="relative z-10 max-w-7xl mx-auto px-6 pb-24">
-        <div className="p-8 rounded-3xl bg-slate-950/90 border border-cyan-900/50 backdrop-blur-xl shadow-2xl">
-          <div className="flex items-center gap-3 mb-6">
-            <BarChart3 className="text-cyan-400 animate-pulse" size={24} />
-            <h2 className="text-xl md:text-2xl font-black font-mono text-white uppercase tracking-wider">
-              BENCHMARK DE RENDIMIENTO MULTI-CORE (CINEBENCH R23)
-            </h2>
-          </div>
-
-          <div className="space-y-4 font-mono text-xs">
-            {[
-              { name: "AMD Ryzen Threadripper 7980X (64 Cores)", score: 100, color: "bg-purple-500", pts: "100,000+ pts" },
-              { name: "Intel Core i9-14900K (24 Cores)", score: 40, color: "bg-blue-500", pts: "40,000 pts" },
-              { name: "AMD Ryzen 9 7950X3D (16 Cores)", score: 38, color: "bg-amber-500", pts: "38,500 pts" },
-              { name: "Apple Silicon M3 Max (16 Cores)", score: 35, color: "bg-cyan-500", pts: "34,200 pts" },
-              { name: "Intel Core i7-14700K (20 Cores)", score: 34, color: "bg-blue-400", pts: "34,000 pts" },
-              { name: "AMD Ryzen 7 7800X3D (8 Cores)", score: 20, color: "bg-emerald-500", pts: "19,500 pts" },
-            ].map((bm, i) => (
-              <div key={i} className="space-y-1">
-                <div className="flex justify-between text-slate-300 font-bold">
-                  <span>{bm.name}</span>
-                  <span className="text-cyan-300">{bm.pts}</span>
-                </div>
-                <div className="w-full h-3 rounded-full bg-slate-900 overflow-hidden border border-slate-800">
-                  <div className={`h-full ${bm.color} rounded-full transition-all duration-1000`} style={{ width: `${bm.score}%` }} />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── FOOTER ── */}
-      <footer className="relative z-20 border-t border-slate-900 bg-slate-950 py-8 text-center text-xs font-mono text-slate-500">
-        <p>© 2026 ATOMIC SOLUTIONS · CATÁLOGO DE CPUs & PROCESADORES MAESTROS</p>
+      <footer className="relative z-20 border-t border-slate-900 bg-slate-950 py-6 text-center text-xs font-mono text-slate-500">
+        © 2026 ATOMIC SOLUTIONS · COMPUTADORAS, CPUs & PROCESADORES
       </footer>
     </div>
   );
