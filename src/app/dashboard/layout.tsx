@@ -30,7 +30,7 @@ export default function DashboardLayout({
     const router = useRouter()
     const pathname = usePathname()
     const isDashboard = pathname.startsWith("/dashboard")
-    const isStandalonePage = pathname === "/dashboard/matriz-precios" || pathname === "/dashboard/precios-vendedor" || pathname === "/web/matriz-precios"
+    const isStandalonePage = pathname === "/dashboard/matriz-precios" || pathname === "/dashboard/precios-vendedor" || pathname === "/web/matriz-precios" || pathname === "/dashboard/ecosistema-tomc"
 
     useEffect(() => {
         if (status === "unauthenticated" && isDashboard) {
