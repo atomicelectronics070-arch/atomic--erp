@@ -171,12 +171,12 @@ function SafeImage({ src, alt, isIntel, isAmd, isApple }: {
 
 
 export default function CPUsClient({ dbProducts }: { dbProducts: Product[] }) {
+  // Only fall back to demo catalog if the DB returns nothing at all
   const allProducts = useMemo(() => {
     if (!dbProducts || dbProducts.length === 0) return DEMO_CPUS;
-    const existingIds = new Set(dbProducts.map((p) => p.id));
-    const uniqueDemo = DEMO_CPUS.filter((d) => !existingIds.has(d.id));
-    return [...dbProducts, ...uniqueDemo];
+    return dbProducts; // use real DB products exclusively
   }, [dbProducts]);
+
 
   const [selectedBrand, setSelectedBrand] = useState<string>("ALL");
   const [searchQuery, setSearchQuery] = useState<string>("");
