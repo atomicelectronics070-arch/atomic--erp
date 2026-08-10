@@ -40,7 +40,7 @@ export default function DashboardLayout({
 
     if (isStandalonePage) {
         return (
-            <main className="min-h-screen bg-black text-slate-100 font-mono p-2 lg:p-6 overflow-x-auto">
+            <main className="min-h-screen bg-black text-slate-100 font-mono overflow-hidden">
                 {children}
             </main>
         )
