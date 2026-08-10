@@ -1,8 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { Send, Cpu, Sparkles, Terminal, RefreshCw, Bot, User, Zap, Shield, ChevronRight, CornerDownLeft } from "lucide-react";
-import ReactMarkdown from "react-markdown";
+import { Send, Cpu, Sparkles, Terminal, RefreshCw, Bot, User, Zap, Shield, ChevronRight } from "lucide-react";
 
 interface Message {
   id: string;
@@ -10,6 +9,73 @@ interface Message {
   text: string;
   timestamp: string;
   provider?: string;
+}
+
+function SimpleMarkdown({ content }: { content: string }) {
+  const lines = content.split('\n');
+  
+  return (
+    <div className="space-y-2">
+      {lines.map((line, idx) => {
+        let trimmed = line.trim();
+
+        if (trimmed.startsWith('### ')) {
+          return (
+            <h3 key={idx} className="text-base font-black text-cyan-300 tracking-wide mt-2 mb-1">
+              {trimmed.replace(/^###\s+/, '')}
+            </h3>
+          );
+        }
+        if (trimmed.startsWith('## ')) {
+          return (
+            <h2 key={idx} className="text-lg font-black text-cyan-400 tracking-wider mt-3 mb-1">
+              {trimmed.replace(/^##\s+/, '')}
+            </h2>
+          );
+        }
+        if (trimmed.startsWith('# ')) {
+          return (
+            <h1 key={idx} className="text-xl font-black text-white tracking-widest mt-4 mb-2">
+              {trimmed.replace(/^#\s+/, '')}
+            </h1>
+          );
+        }
+        if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          const itemContent = trimmed.substring(2);
+          return (
+            <div key={idx} className="flex items-start gap-2 ml-2 my-0.5">
+              <span className="text-cyan-400 font-bold text-xs mt-0.5">•</span>
+              <span className="text-slate-200 text-xs md:text-sm">
+                {renderBold(itemContent)}
+              </span>
+            </div>
+          );
+        }
+        if (!trimmed) {
+          return <div key={idx} className="h-1.5" />;
+        }
+        return (
+          <p key={idx} className="text-xs md:text-sm text-slate-200 leading-relaxed">
+            {renderBold(trimmed)}
+          </p>
+        );
+      })}
+    </div>
+  );
+}
+
+function renderBold(text: string) {
+  const parts = text.split(/(\*\*.*?\*\*)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return (
+        <strong key={i} className="font-bold text-cyan-300">
+          {part.slice(2, -2)}
+        </strong>
+      );
+    }
+    return part;
+  });
 }
 
 export default function EcosistemaTomcPage() {
@@ -212,9 +278,7 @@ export default function EcosistemaTomcPage() {
                 }`}
               >
                 {m.sender === "nucleus" ? (
-                  <div className="prose prose-invert prose-sm max-w-none prose-p:leading-relaxed prose-pre:bg-slate-950 prose-pre:border prose-pre:border-cyan-900/50">
-                    <ReactMarkdown>{m.text}</ReactMarkdown>
-                  </div>
+                  <SimpleMarkdown content={m.text} />
                 ) : (
                   <p className="whitespace-pre-wrap">{m.text}</p>
                 )}
