@@ -32,7 +32,7 @@ export default function MatrizPreciosComponent({ isVendedorMode = false }: Matri
   const [limit, setLimit] = useState(150);
   const [totalProducts, setTotalProducts] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
-  const [themeMode, setThemeMode] = useState<'bw' | 'green' | 'amber'>('bw');
+  const [themeMode, setThemeMode] = useState<'bw' | 'bw-inv' | 'green' | 'amber'>('bw');
 
   // Edit Mode & Trash Bin state
   const [isEditMode, setIsEditMode] = useState(!isVendedorMode);
@@ -283,6 +283,18 @@ export default function MatrizPreciosComponent({ isVendedorMode = false }: Matri
       badge: 'border border-zinc-700 text-zinc-300 bg-zinc-900',
       cellInput: 'bg-zinc-900 text-white border-zinc-700 focus:border-white',
     },
+    'bw-inv': {
+      bg: 'bg-slate-100',
+      text: 'text-zinc-950',
+      border: 'border-zinc-300',
+      headerBg: 'bg-zinc-200',
+      headerText: 'text-zinc-950 font-bold',
+      accent: 'text-zinc-950 font-black',
+      highlight: 'bg-zinc-200/90',
+      inputBg: 'bg-white text-zinc-950 border-zinc-300 focus:border-zinc-900',
+      badge: 'border border-zinc-300 text-zinc-800 bg-white',
+      cellInput: 'bg-white text-zinc-950 border-zinc-400 focus:border-zinc-900',
+    },
     green: {
       bg: 'bg-[#030d04]',
       text: 'text-emerald-400',
@@ -320,7 +332,7 @@ export default function MatrizPreciosComponent({ isVendedorMode = false }: Matri
       )}
 
       {/* ================= RETRO TERMINAL HEADER ================= */}
-      <div className={`border-2 ${themeClasses.border} p-6 rounded-none shadow-2xl mb-6 bg-black/40`}>
+      <div className={`border-2 ${themeClasses.border} p-6 rounded-none shadow-2xl mb-6 ${themeMode === 'bw-inv' ? 'bg-white/80' : 'bg-black/40'}`}>
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
           <div>
             <div className="flex items-center gap-3">
@@ -374,7 +386,15 @@ export default function MatrizPreciosComponent({ isVendedorMode = false }: Matri
                   themeMode === 'bw' ? 'bg-white text-black' : 'hover:bg-zinc-800'
                 }`}
               >
-                B/N Clásico
+                B/N Oscuro
+              </button>
+              <button
+                onClick={() => setThemeMode('bw-inv')}
+                className={`px-3 py-1 text-xs uppercase font-bold transition-colors ${
+                  themeMode === 'bw-inv' ? 'bg-black text-white' : 'hover:bg-zinc-200 text-zinc-900'
+                }`}
+              >
+                Invertido B/N
               </button>
               <button
                 onClick={() => setThemeMode('green')}
