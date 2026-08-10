@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 
@@ -6,8 +7,10 @@ export async function POST(req: Request) {
         const body = await req.json()
         const email: string = body.email || ""
         const name: string = body.name || ""
+        const phone: string = body.phone || ""
+        const city: string = body.city || ""
         const source: string = body.source || "LANDING_PROVEEDORES"
-        const requirement: string = body.requirement || "Descargó recurso desde landing page."
+        const requirement: string = body.requirement || "Solicitud de Guía de Proveedores Estratégicos."
 
         if (!email || !email.includes("@")) {
             return NextResponse.json({ error: "Email inválido" }, { status: 400 })
@@ -22,7 +25,9 @@ export async function POST(req: Request) {
             await prisma.client.update({
                 where: { id: existingClient.id },
                 data: {
-                    requirement: (existingClient.requirement || "") + ` | Volvió a registrarse en ${source}`
+                    phone: phone.trim() || existingClient.phone,
+                    city: city.trim() || existingClient.city,
+                    requirement: (existingClient.requirement || "") + ` | Guía Proveedores (${new Date().toLocaleDateString('es-EC')})`
                 }
             })
             return NextResponse.json({ success: true, message: "Lead actualizado" })
@@ -45,6 +50,8 @@ export async function POST(req: Request) {
             data: {
                 name: clientName,
                 email: email.toLowerCase().trim(),
+                phone: phone.trim(),
+                city: city.trim(),
                 source: source as any,
                 requirement,
                 status: "PROSPECTO",
@@ -58,4 +65,3 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
     }
 }
-
