@@ -17,7 +17,7 @@ interface Product {
   category?: { id: string; name: string; slug: string };
 }
 
-// Curated high-performance CPUs catalog
+// Curated high-performance CPUs catalog (shown when DB has no matching products)
 const DEMO_CPUS: Product[] = [
   {
     id: "cpu-intel-i9-14900k",
@@ -25,7 +25,7 @@ const DEMO_CPUS: Product[] = [
     description: "24 Núcleos (8P + 16E), 32 Hilos, Frecuencia Turbo hasta 6.0 GHz, LGA1700, 36MB Cache, Soporte DDR5/DDR4.",
     price: 689.0,
     compareAtPrice: 749.0,
-    images: "https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?w=800&auto=format&fit=crop&q=80",
+    images: undefined,
     stock: 8,
     sku: "CPU-INT-14900K",
     specs: "Cores: 24 (8P+16E) | Hilos: 32 | Frecuencia: 6.0 GHz Max | Cache: 36MB | TDP: 125W-253W | Socket: LGA1700",
@@ -37,7 +37,7 @@ const DEMO_CPUS: Product[] = [
     description: "El procesador definitivo para Gaming y Render 3D. 16 Núcleos, 32 Hilos, 144MB Cache L2+L3, AM5, 5.7 GHz Boost.",
     price: 729.0,
     compareAtPrice: 799.0,
-    images: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&auto=format&fit=crop&q=80",
+    images: undefined,
     stock: 5,
     sku: "CPU-AMD-7950X3D",
     specs: "Cores: 16 | Hilos: 32 | Frecuencia: 5.7 GHz Boost | Cache: 144MB 3D V-Cache | TDP: 120W | Socket: AM5",
@@ -49,7 +49,7 @@ const DEMO_CPUS: Product[] = [
     description: "20 Núcleos (8P + 12E), 28 Hilos, Frecuencia Turbo hasta 5.6 GHz, LGA1700, 33MB Cache Inteligente.",
     price: 449.0,
     compareAtPrice: 489.0,
-    images: "https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?w=800&auto=format&fit=crop&q=80",
+    images: undefined,
     stock: 12,
     sku: "CPU-INT-14700K",
     specs: "Cores: 20 (8P+12E) | Hilos: 28 | Frecuencia: 5.6 GHz Max | Cache: 33MB | TDP: 125W | Socket: LGA1700",
@@ -61,7 +61,7 @@ const DEMO_CPUS: Product[] = [
     description: "8 Núcleos, 16 Hilos, 104MB Cache, Socket AM5, 5.0 GHz Boost. Reconocido mundialmente como el mejor CPU Gamer.",
     price: 429.0,
     compareAtPrice: 469.0,
-    images: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&auto=format&fit=crop&q=80",
+    images: undefined,
     stock: 15,
     sku: "CPU-AMD-7800X3D",
     specs: "Cores: 8 | Hilos: 16 | Frecuencia: 5.0 GHz Boost | Cache: 104MB 3D V-Cache | TDP: 120W | Socket: AM5",
@@ -73,7 +73,7 @@ const DEMO_CPUS: Product[] = [
     description: "14 Núcleos (6P + 8E), 20 Hilos, Frecuencia Turbo hasta 5.3 GHz, LGA1700, 24MB Cache Intel Smart.",
     price: 319.0,
     compareAtPrice: 349.0,
-    images: "https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?w=800&auto=format&fit=crop&q=80",
+    images: undefined,
     stock: 18,
     sku: "CPU-INT-14600K",
     specs: "Cores: 14 (6P+8E) | Hilos: 20 | Frecuencia: 5.3 GHz Max | Cache: 24MB | TDP: 125W | Socket: LGA1700",
@@ -85,7 +85,7 @@ const DEMO_CPUS: Product[] = [
     description: "6 Núcleos, 12 Hilos, Frecuencia Turbo 5.3 GHz, Socket AM5, Arquitectura Zen 4 en 5nm.",
     price: 229.0,
     compareAtPrice: 269.0,
-    images: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&auto=format&fit=crop&q=80",
+    images: undefined,
     stock: 22,
     sku: "CPU-AMD-7600X",
     specs: "Cores: 6 | Hilos: 12 | Frecuencia: 5.3 GHz Boost | Cache: 38MB | TDP: 105W | Socket: AM5",
@@ -97,7 +97,7 @@ const DEMO_CPUS: Product[] = [
     description: "Procesador Enterprise para Estaciones de Trabajo Pesadas. 64 Núcleos, 128 Hilos, 320MB Cache, 350W TDP.",
     price: 4999.0,
     compareAtPrice: 5399.0,
-    images: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&auto=format&fit=crop&q=80",
+    images: undefined,
     stock: 2,
     sku: "CPU-TR-7980X",
     specs: "Cores: 64 | Hilos: 128 | Frecuencia: 5.1 GHz Boost | Cache: 320MB | TDP: 350W | Socket: sTR5",
@@ -109,7 +109,7 @@ const DEMO_CPUS: Product[] = [
     description: "16-Core CPU (12 Performance + 4 Efficiency), GPU de 40 Núcleos, 128GB Memoria Unificada, 400 GB/s ancho de banda.",
     price: 3499.0,
     compareAtPrice: 3799.0,
-    images: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800&auto=format&fit=crop&q=80",
+    images: undefined,
     stock: 4,
     sku: "CPU-APL-M3MAX",
     specs: "Cores: 16 (12P+4E) | Hilos: 16 | GPU: 40 Cores | Ancho de Banda: 400 GB/s | Arquitectura: 3nm",
@@ -117,45 +117,57 @@ const DEMO_CPUS: Product[] = [
   }
 ];
 
-// High-tech CPU Chip Visual Badge Component
-function CpuChipVisual({ isIntel, isAmd, isApple, name }: { isIntel: boolean; isAmd: boolean; isApple: boolean; name: string }) {
-  const brandColor = isIntel ? "#3b82f6" : isAmd ? "#f59e0b" : isApple ? "#a855f7" : "#00f0ff";
-  const brandText = isIntel ? "INTEL CORE" : isAmd ? "AMD RYZEN" : isApple ? "APPLE SILICON" : "ENTERPRISE CPU";
+// ── Safe Image Component – parses DB JSON image arrays correctly ──
+function SafeImage({ src, alt, isIntel, isAmd, isApple }: { src?: string; alt: string; isIntel: boolean; isAmd: boolean; isApple: boolean }) {
+  const [error, setError] = useState(false);
+
+  // Parse image URL from DB: can be a JSON array string like '["url1","url2"]' or a plain URL
+  let resolvedSrc = "";
+  if (src) {
+    const trimmed = src.trim();
+    if (trimmed.startsWith("[")) {
+      try {
+        const arr = JSON.parse(trimmed);
+        if (Array.isArray(arr) && arr.length > 0) resolvedSrc = arr[0];
+      } catch {}
+    } else if (trimmed.startsWith("{")) {
+      // Sometimes it's a single JSON object
+      try {
+        const obj = JSON.parse(trimmed);
+        if (obj.url) resolvedSrc = obj.url;
+      } catch {}
+    } else {
+      resolvedSrc = trimmed;
+    }
+  }
+
+  if (!resolvedSrc || error) {
+    // Elegant chip fallback only when image is truly unavailable
+    const brandColor = isIntel ? "#3b82f6" : isAmd ? "#f59e0b" : isApple ? "#a855f7" : "#00f0ff";
+    const brandLabel = isIntel ? "INTEL CORE" : isAmd ? "AMD RYZEN" : isApple ? "APPLE SILICON" : "ENTERPRISE";
+    return (
+      <div className="w-full h-full flex flex-col items-center justify-center bg-slate-900 rounded-xl relative overflow-hidden">
+        <div className="absolute inset-0 opacity-10" style={{ backgroundImage: `radial-gradient(${brandColor} 1px, transparent 1px)`, backgroundSize: "14px 14px" }} />
+        <div className="relative w-20 h-20 rounded-2xl flex flex-col items-center justify-center shadow-2xl border-2 transition-transform duration-300 hover:scale-110" style={{ background: "linear-gradient(135deg,#0f172a,#030712)", borderColor: brandColor, boxShadow: `0 0 20px ${brandColor}40` }}>
+          <div className="absolute top-1 left-1 w-1.5 h-1.5 rounded-full bg-amber-400/80" />
+          <div className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-amber-400/80" />
+          <div className="absolute bottom-1 left-1 w-1.5 h-1.5 rounded-full bg-amber-400/80" />
+          <div className="absolute bottom-1 right-1 w-1.5 h-1.5 rounded-full bg-amber-400/80" />
+          <Cpu size={32} style={{ color: brandColor }} className="animate-pulse" />
+          <span className="text-[7px] font-mono font-black uppercase mt-1 tracking-widest text-slate-300 text-center">{brandLabel}</span>
+        </div>
+        <span className="mt-2 text-[8px] font-mono text-slate-500 uppercase tracking-widest">ATOMIC CERTIFIED</span>
+      </div>
+    );
+  }
 
   return (
-    <div className="w-full h-full rounded-xl bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 border border-slate-800 flex flex-col items-center justify-center p-4 relative overflow-hidden group-hover:border-cyan-500/50 transition-all">
-      {/* Background circuit lines pattern */}
-      <div className="absolute inset-0 opacity-20 pointer-events-none">
-        <div className="w-full h-full" style={{ backgroundImage: `radial-gradient(${brandColor} 1px, transparent 1px)`, backgroundSize: '16px 16px' }} />
-      </div>
-
-      {/* Outer Chip Frame */}
-      <div
-        className="w-24 h-24 rounded-2xl flex flex-col items-center justify-center p-3 relative shadow-2xl transition-transform duration-500 group-hover:scale-110"
-        style={{
-          background: "linear-gradient(135deg, #0f172a, #030712)",
-          border: `2px solid ${brandColor}`,
-          boxShadow: `0 0 25px ${brandColor}40`,
-        }}
-      >
-        {/* Corner metallic gold pins */}
-        <div className="absolute top-1 left-1 w-2 h-2 rounded-full bg-amber-400/80" />
-        <div className="absolute top-1 right-1 w-2 h-2 rounded-full bg-amber-400/80" />
-        <div className="absolute bottom-1 left-1 w-2 h-2 rounded-full bg-amber-400/80" />
-        <div className="absolute bottom-1 right-1 w-2 h-2 rounded-full bg-amber-400/80" />
-
-        {/* CPU Icon & Glow */}
-        <Cpu size={36} style={{ color: brandColor }} className="animate-pulse" />
-        
-        <span className="text-[8px] font-mono font-black uppercase mt-1 tracking-widest text-slate-300 text-center truncate max-w-[80px]">
-          {brandText}
-        </span>
-      </div>
-
-      <span className="mt-3 text-[9px] font-mono text-slate-400 uppercase tracking-widest font-bold">
-        SOCKET & DIE ATOMIC CERTIFIED
-      </span>
-    </div>
+    <img
+      src={resolvedSrc}
+      alt={alt}
+      onError={() => setError(true)}
+      className="w-full h-full object-contain rounded-xl bg-slate-900 p-2"
+    />
   );
 }
 
@@ -397,9 +409,9 @@ export default function CPUsClient({ dbProducts }: { dbProducts: Product[] }) {
                     </span>
                   </div>
 
-                  {/* High-Tech CPU Visual Card Header */}
-                  <div className="w-full h-44 mb-4">
-                    <CpuChipVisual isIntel={isIntel} isAmd={isAmd} isApple={isApple} name={product.name} />
+                  {/* Product Image – uses real DB image, falls back to chip visual */}
+                  <div className="w-full h-44 mb-4 overflow-hidden rounded-xl">
+                    <SafeImage src={product.images} alt={product.name} isIntel={isIntel} isAmd={isAmd} isApple={isApple} />
                   </div>
 
                   {/* Title & Description */}
