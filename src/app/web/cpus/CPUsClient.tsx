@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
-import { Cpu, Search, Zap, ShieldCheck, Flame, SlidersHorizontal, ArrowUpDown, ChevronRight, CheckCircle2, MessageSquare, ExternalLink, BarChart3, Radio } from "lucide-react";
+import { Cpu, Search, Zap, ShieldCheck, Flame, ArrowUpDown, ChevronRight, MessageSquare, BarChart3, Radio } from "lucide-react";
 
 interface Product {
   id: string;
@@ -17,7 +17,7 @@ interface Product {
   category?: { id: string; name: string; slug: string };
 }
 
-// Curated high-performance CPUs catalog to enrich demonstration if DB items are limited
+// Curated high-performance CPUs catalog
 const DEMO_CPUS: Product[] = [
   {
     id: "cpu-intel-i9-14900k",
@@ -105,7 +105,7 @@ const DEMO_CPUS: Product[] = [
   },
   {
     id: "cpu-apple-m3-max",
-    name: "Apple Silicon M3 Max Workstation Chip (MacBook Pro Config)",
+    name: "Apple Silicon M3 Max Workstation Chip",
     description: "16-Core CPU (12 Performance + 4 Efficiency), GPU de 40 Núcleos, 128GB Memoria Unificada, 400 GB/s ancho de banda.",
     price: 3499.0,
     compareAtPrice: 3799.0,
@@ -117,11 +117,51 @@ const DEMO_CPUS: Product[] = [
   }
 ];
 
+// High-tech CPU Chip Visual Badge Component
+function CpuChipVisual({ isIntel, isAmd, isApple, name }: { isIntel: boolean; isAmd: boolean; isApple: boolean; name: string }) {
+  const brandColor = isIntel ? "#3b82f6" : isAmd ? "#f59e0b" : isApple ? "#a855f7" : "#00f0ff";
+  const brandText = isIntel ? "INTEL CORE" : isAmd ? "AMD RYZEN" : isApple ? "APPLE SILICON" : "ENTERPRISE CPU";
+
+  return (
+    <div className="w-full h-full rounded-xl bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 border border-slate-800 flex flex-col items-center justify-center p-4 relative overflow-hidden group-hover:border-cyan-500/50 transition-all">
+      {/* Background circuit lines pattern */}
+      <div className="absolute inset-0 opacity-20 pointer-events-none">
+        <div className="w-full h-full" style={{ backgroundImage: `radial-gradient(${brandColor} 1px, transparent 1px)`, backgroundSize: '16px 16px' }} />
+      </div>
+
+      {/* Outer Chip Frame */}
+      <div
+        className="w-24 h-24 rounded-2xl flex flex-col items-center justify-center p-3 relative shadow-2xl transition-transform duration-500 group-hover:scale-110"
+        style={{
+          background: "linear-gradient(135deg, #0f172a, #030712)",
+          border: `2px solid ${brandColor}`,
+          boxShadow: `0 0 25px ${brandColor}40`,
+        }}
+      >
+        {/* Corner metallic gold pins */}
+        <div className="absolute top-1 left-1 w-2 h-2 rounded-full bg-amber-400/80" />
+        <div className="absolute top-1 right-1 w-2 h-2 rounded-full bg-amber-400/80" />
+        <div className="absolute bottom-1 left-1 w-2 h-2 rounded-full bg-amber-400/80" />
+        <div className="absolute bottom-1 right-1 w-2 h-2 rounded-full bg-amber-400/80" />
+
+        {/* CPU Icon & Glow */}
+        <Cpu size={36} style={{ color: brandColor }} className="animate-pulse" />
+        
+        <span className="text-[8px] font-mono font-black uppercase mt-1 tracking-widest text-slate-300 text-center truncate max-w-[80px]">
+          {brandText}
+        </span>
+      </div>
+
+      <span className="mt-3 text-[9px] font-mono text-slate-400 uppercase tracking-widest font-bold">
+        SOCKET & DIE ATOMIC CERTIFIED
+      </span>
+    </div>
+  );
+}
+
 export default function CPUsClient({ dbProducts }: { dbProducts: Product[] }) {
-  // Combine DB products + DEMO products to ensure a complete landing experience
   const allProducts = useMemo(() => {
     if (!dbProducts || dbProducts.length === 0) return DEMO_CPUS;
-    // Append demo products if DB has fewer than 4 items to ensure rich showcase
     const existingIds = new Set(dbProducts.map((p) => p.id));
     const uniqueDemo = DEMO_CPUS.filter((d) => !existingIds.has(d.id));
     return [...dbProducts, ...uniqueDemo];
@@ -130,20 +170,17 @@ export default function CPUsClient({ dbProducts }: { dbProducts: Product[] }) {
   const [selectedBrand, setSelectedBrand] = useState<string>("ALL");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [sortBy, setSortBy] = useState<"price-desc" | "price-asc" | "cores">("price-desc");
-  const [selectedProductModal, setSelectedProductModal] = useState<Product | null>(null);
 
   // Filtering
   const filteredProducts = useMemo(() => {
     return allProducts
       .filter((p) => {
         const text = `${p.name} ${p.description || ""} ${p.specs || ""}`.toLowerCase();
-        // Brand filter
         if (selectedBrand === "INTEL" && !text.includes("intel") && !text.includes("i9") && !text.includes("i7") && !text.includes("i5")) return false;
         if (selectedBrand === "AMD" && !text.includes("amd") && !text.includes("ryzen") && !text.includes("threadripper")) return false;
         if (selectedBrand === "APPLE" && !text.includes("apple") && !text.includes("m3") && !text.includes("m2") && !text.includes("m1")) return false;
         if (selectedBrand === "WORKSTATION" && !text.includes("threadripper") && !text.includes("xeon") && !text.includes("epyc")) return false;
 
-        // Search query
         if (searchQuery.trim()) {
           const q = searchQuery.toLowerCase();
           return text.includes(q);
@@ -339,7 +376,7 @@ export default function CPUsClient({ dbProducts }: { dbProducts: Product[] }) {
                   className="group rounded-2xl bg-slate-950/80 border border-cyan-900/30 hover:border-cyan-400/80 p-5 transition-all duration-300 hover:-translate-y-1.5 shadow-xl hover:shadow-[0_0_30px_rgba(6,182,212,0.2)] flex flex-col justify-between relative overflow-hidden"
                 >
                   {/* Top Badge */}
-                  <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center justify-between mb-3 z-10">
                     <span
                       className={`px-2.5 py-1 rounded-md text-[10px] font-mono font-bold uppercase tracking-wider border ${
                         isIntel
@@ -360,20 +397,9 @@ export default function CPUsClient({ dbProducts }: { dbProducts: Product[] }) {
                     </span>
                   </div>
 
-                  {/* Product Image */}
-                  <div className="w-full h-44 rounded-xl bg-slate-900/80 mb-4 overflow-hidden relative group-hover:scale-105 transition-transform duration-500 flex items-center justify-center p-4">
-                    {product.images ? (
-                      <img
-                        src={product.images.split(",")[0]}
-                        alt={product.name}
-                        className="w-full h-full object-contain filter drop-shadow-[0_0_15px_rgba(6,182,212,0.3)]"
-                        onError={(e: any) => {
-                          e.target.style.display = "none";
-                        }}
-                      />
-                    ) : (
-                      <Cpu size={64} className="text-cyan-400/40" />
-                    )}
+                  {/* High-Tech CPU Visual Card Header */}
+                  <div className="w-full h-44 mb-4">
+                    <CpuChipVisual isIntel={isIntel} isAmd={isAmd} isApple={isApple} name={product.name} />
                   </div>
 
                   {/* Title & Description */}
