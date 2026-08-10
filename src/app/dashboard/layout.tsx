@@ -3,7 +3,7 @@
 import { useSession } from "next-auth/react"
 import { useRouter, usePathname } from "next/navigation"
 import Link from "next/link"
-import { Home, Users, FileText, Settings, LogOut, CheckSquare, Sun, Moon, LayoutDashboard, Tag, Database, MessageSquare, ExternalLink, ShoppingBag, Menu, X, Calendar, Edit3, Mail, BrainCircuit, Bot, Globe, BarChart3, GraduationCap, Code2, User, Smartphone, Share2, Map, Layers, DollarSign, ShieldCheck } from "lucide-react"
+import { Home, Users, FileText, Settings, LogOut, CheckSquare, Sun, Moon, LayoutDashboard, Tag, Database, MessageSquare, ExternalLink, ShoppingBag, Menu, X, Calendar, Edit3, Mail, BrainCircuit, Bot, Globe, BarChart3, GraduationCap, Code2, User, Smartphone, Share2, Map, Layers, DollarSign, ShieldCheck, FileSpreadsheet } from "lucide-react"
 import { useState, useEffect } from "react"
 import { ChevronDown, ChevronRight } from "lucide-react"
 import NotificationBell from "@/components/NotificationBell"
@@ -168,6 +168,14 @@ export default function DashboardLayout({
                                 >
                                     <NavLink href="/dashboard/storage" icon={<Database size={14} />} label="Nube" isSubItem />
                                     <NavLink href="/dashboard/documents" icon={<FileText size={14} />} label="Documentos" isSubItem />
+                                </CollapsibleSection>
+
+                                <CollapsibleSection
+                                    label="Formularios Web"
+                                    isOpen={openSections.formularios ?? true}
+                                    onToggle={() => toggleSection('formularios')}
+                                >
+                                    <NavLink href="/dashboard/formularios" icon={<FileSpreadsheet size={14} />} label="Tratos con Proveedores" isSubItem />
                                 </CollapsibleSection>
 
                                 <CollapsibleSection
