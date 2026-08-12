@@ -159,6 +159,9 @@ export default function BlockMachineLanding({ products }: { products: any[] }) {
   // State for Head-to-Head Comparison Selector
   const [selectedComparison, setSelectedComparison] = useState<number>(0);
 
+  // State for Video Showcase Selector
+  const [selectedVideoModel, setSelectedVideoModel] = useState<number>(0);
+
   const comparisons = [
     {
       title: "QT4-24 vs. QT4-15",
@@ -282,6 +285,64 @@ export default function BlockMachineLanding({ products }: { products: any[] }) {
     }
   ];
 
+  const machineVideos = [
+    {
+      model: "QT4-24",
+      title: "Línea Semi-Automática Completa QT4-24",
+      subtitle: "Demostración de operación en planta: dosificación, vibración síncrona y desmolde de bloques 400x150x200mm y adoquines viales.",
+      youtubeId: "xm2R1flsOy4",
+      altYoutubeId: "vUIqEcVo2s4",
+      assemblyYoutubeId: "HrQmM3ewpTo",
+      capacity: "4,500 - 6,000 bloques/día",
+      features: [
+        "Vibración vertical síncrona a 4500 RPM",
+        "Compresión hidráulica de 50 KN",
+        "Mezcladora Pan-Mixer JQ500 de eje vertical",
+        "Cinta transportadora vulcanizada de 6 metros"
+      ]
+    },
+    {
+      model: "QT4-15",
+      title: "Línea Automática PLC Siemens QT4-15",
+      subtitle: "Producción continua automatizada con ciclo de moldeo de 15 segundos y apilador Stacker automático.",
+      youtubeId: "LWztHN4lM2A",
+      altYoutubeId: "n-WJp91t4E4",
+      capacity: "6,000 - 8,000 bloques/día",
+      features: [
+        "Control 100% automático por PLC Siemens HMI con pantalla táctil",
+        "Apilador Stacker automático de paletas cargadas de bloque fresco",
+        "Mezcladora obligatoria JS500 de doble eje horizontal",
+        "Cámara de compresión hidráulica de 70 KN"
+      ]
+    },
+    {
+      model: "QTJ4-35 / QTJ4-40",
+      title: "Línea Semi-Automática Inicial QTJ4-35 / QTJ4-40",
+      subtitle: "Equipo compacto de alta versatilidad y bajo consumo eléctrico (18 kW) para pequeños y medianos productores.",
+      youtubeId: "yJtCybs9IfA",
+      capacity: "3,500 - 4,800 bloques/día",
+      features: [
+        "Operación asistida con cilindros hidráulicos de prensa superior",
+        "Motorización industrial de 18 kW (operación económica)",
+        "Moldes intercambiables de acero templado al manganeso",
+        "Estructura portátil y fácil mantenimiento en campo"
+      ]
+    },
+    {
+      model: "QT6-15 / QT10-15",
+      title: "Macro Complejo Industrial Hidráulico QT6-15 / QT10-15",
+      subtitle: "Demostración de producción pesada para adoquines viales (+45 MPa) y proyectos de infraestructura estatal.",
+      youtubeId: "evwb4vWRpN8",
+      capacity: "12,000 - 18,000 bloques/día",
+      features: [
+        "Sistema de vibro-compresión masiva a 100 - 120 KN",
+        "Tolva inteligente de batching plant con pesaje automatizado de agregados",
+        "Fabricación de 6 a 10 bloques de 20cm por bajada",
+        "Diseñado para megaproyectos viales, puertos secos y licitaciones"
+      ]
+    }
+  ];
+
   const faqs = [
     {
       q: "¿De qué tamaño y estilos vienen los bloques que puede producir la máquina?",
@@ -362,6 +423,12 @@ export default function BlockMachineLanding({ products }: { products: any[] }) {
                 <span>📥 Descargar Catálogo PDF</span>
               </a>
               <a 
+                href="#videos-operacion" 
+                className="w-full sm:w-auto px-8 py-5 bg-gradient-to-r from-amber-500/20 to-orange-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 font-black text-xs uppercase tracking-[0.25em] rounded-full transition-all duration-300 backdrop-blur-md flex items-center justify-center space-x-2 shadow-[0_0_20px_rgba(245,158,11,0.2)]"
+              >
+                <span>🎬 Ver Videos en Vivo</span>
+              </a>
+              <a 
                 href="#comparativas" 
                 className="w-full sm:w-auto px-8 py-5 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-black text-xs uppercase tracking-[0.25em] rounded-full transition-all duration-300 backdrop-blur-md hover:border-amber-500/40"
               >
@@ -390,6 +457,121 @@ export default function BlockMachineLanding({ products }: { products: any[] }) {
             </div>
           </div>
 
+        </div>
+      </section>
+
+      {/* VIDEO SHOWCASE SECTION - DEMOSTRACIÓN DE FABRICANTES EN VIVO */}
+      <section className="py-24 px-6 relative z-10 border-b border-white/[0.05] bg-gradient-to-b from-black via-neutral-950 to-black" id="videos-operacion">
+        <div className="max-w-7xl mx-auto">
+          
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <div className="inline-flex items-center space-x-2 px-4 py-1.5 bg-amber-500/10 border border-amber-500/30 rounded-full mb-4">
+              <span className="text-amber-400 font-mono text-[11px] font-bold uppercase tracking-widest">
+                🎬 DEMOSTRACIÓN DE FABRICANTES EN VIVO
+              </span>
+            </div>
+            <h2 className="text-4xl md:text-6xl font-black text-white uppercase tracking-tight">
+              Videos de Operación Real en Planta
+            </h2>
+            <p className="text-neutral-400 text-sm font-light mt-4 leading-relaxed">
+              Mira cómo funcionan nuestras bloqueras industriales en tiempo real: desde el mezclado del agregado hasta la vibro-compresión hidráulica y el desmolde.
+            </p>
+          </div>
+
+          {/* MODEL SELECTOR BUTTONS */}
+          <div className="flex flex-wrap items-center justify-center gap-3 mb-12">
+            {machineVideos.map((vid, idx) => (
+              <button
+                key={idx}
+                onClick={() => setSelectedVideoModel(idx)}
+                className={`px-6 py-3.5 rounded-full font-mono text-xs font-bold uppercase tracking-wider transition-all duration-300 ${
+                  selectedVideoModel === idx
+                    ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-black font-black shadow-[0_0_25px_rgba(245,158,11,0.4)] scale-105'
+                    : 'bg-neutral-900 border border-white/10 text-neutral-400 hover:text-white hover:border-amber-500/40'
+                }`}
+              >
+                📹 {vid.model}
+              </button>
+            ))}
+          </div>
+
+          {/* VIDEO PLAYER & DETAILS BOX */}
+          <div className="bg-neutral-950 border border-white/10 rounded-3xl p-6 md:p-10 shadow-2xl">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+              
+              {/* VIDEO PLAYER (YOUTUBE IFRAME EMBED) */}
+              <div className="lg:col-span-7">
+                <div className="relative w-full aspect-video rounded-2xl overflow-hidden border border-white/10 bg-black shadow-2xl">
+                  <iframe
+                    src={`https://www.youtube-nocookie.com/embed/${machineVideos[selectedVideoModel].youtubeId}?autoplay=0&rel=0`}
+                    title={machineVideos[selectedVideoModel].title}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="w-full h-full"
+                  />
+                </div>
+                {machineVideos[selectedVideoModel].assemblyYoutubeId && (
+                  <div className="mt-3 flex items-center justify-between px-2 text-xs font-mono">
+                    <span className="text-neutral-500">Manual en Video:</span>
+                    <a
+                      href={`https://www.youtube.com/watch?v=${machineVideos[selectedVideoModel].assemblyYoutubeId}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-amber-400 hover:underline font-bold flex items-center gap-1"
+                    >
+                      <span>🛠️ Ver Video de Montaje & Ensamblaje</span>
+                      <span>↗</span>
+                    </a>
+                  </div>
+                )}
+              </div>
+
+              {/* DETAILS & SPECIFICATIONS */}
+              <div className="lg:col-span-5 space-y-6">
+                <div>
+                  <span className="text-xs font-mono font-bold text-amber-400 bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/30">
+                    {machineVideos[selectedVideoModel].model} · VIDEO DEMO
+                  </span>
+                  <h3 className="text-2xl md:text-3xl font-black text-white uppercase mt-4 mb-2">
+                    {machineVideos[selectedVideoModel].title}
+                  </h3>
+                  <p className="text-xs text-neutral-400 font-light leading-relaxed">
+                    {machineVideos[selectedVideoModel].subtitle}
+                  </p>
+                </div>
+
+                <div className="p-4 bg-neutral-900/80 border border-white/10 rounded-2xl space-y-2 font-mono text-xs">
+                  <div className="flex justify-between">
+                    <span className="text-neutral-400">Capacidad estimada:</span>
+                    <span className="text-amber-400 font-bold">{machineVideos[selectedVideoModel].capacity}</span>
+                  </div>
+                </div>
+
+                <div className="space-y-2 text-xs">
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-amber-400 block font-mono">
+                    Aspectos Destacados en el Video:
+                  </span>
+                  {machineVideos[selectedVideoModel].features.map((ft, fidx) => (
+                    <div key={fidx} className="flex items-center space-x-2 text-neutral-300 font-sans">
+                      <span className="text-amber-400 font-mono">▸</span>
+                      <span>{ft}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <a
+                  href={`https://wa.me/593969043453?text=${encodeURIComponent(`Hola Atomic, estuve viendo el video de demostración de la bloquera ${machineVideos[selectedVideoModel].model} y requiero asesoría técnica y cotización.`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full py-4 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-black font-black text-xs uppercase tracking-widest rounded-2xl transition-all duration-300 flex items-center justify-center space-x-2 shadow-[0_0_20px_rgba(245,158,11,0.3)]"
+                >
+                  <span>Cotizar Modelo {machineVideos[selectedVideoModel].model}</span>
+                  <span>→</span>
+                </a>
+              </div>
+
+            </div>
+          </div>
         </div>
       </section>
 
