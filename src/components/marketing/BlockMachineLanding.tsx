@@ -305,7 +305,7 @@ export default function BlockMachineLanding({ products }: { products: any[] }) {
       model: "QT4-15",
       title: "Línea Automática PLC Siemens QT4-15",
       subtitle: "Producción continua automatizada con ciclo de moldeo de 15 segundos y apilador Stacker automático.",
-      youtubeId: "LWztHN4lM2A",
+      youtubeId: "HaNyLf74lkY",
       altYoutubeId: "n-WJp91t4E4",
       capacity: "6,000 - 8,000 bloques/día",
       features: [
