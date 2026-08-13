@@ -5,7 +5,8 @@ import { authOptions } from "@/lib/auth"
 import PublicWebClient from "./PublicWebClient"
 import { getStoreSettings } from "@/lib/actions/shop"
 
-export const revalidate = 60 // Cache for 60s - much faster repeated loads
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 // Lightweight skeleton shown immediately while products load
 function StoreSkeleton() {
