@@ -34,11 +34,22 @@ export async function POST(req: Request) {
 
         const data = await req.json()
         
-        // Soporte para creación masiva (Bulk)
+        // Soporte para creación masiva (Bulk) con prevención de duplicados por nombre
         if (Array.isArray(data)) {
+            const existingNames = new Set(
+                (await prisma.product.findMany({ select: { name: true } }))
+                    .map(p => p.name.trim().toLowerCase())
+            );
+
+            const filteredData = data.filter(p => p.name && !existingNames.has(p.name.trim().toLowerCase()));
+
+            if (filteredData.length === 0) {
+                return NextResponse.json({ success: true, count: 0, message: "Todos los productos ya existían (Duplicados omitidos)" })
+            }
+
             const products = await (prisma as any).product.createMany({
-                data: data.map(p => ({
-                    name: p.name,
+                data: filteredData.map(p => ({
+                    name: p.name.trim(),
                     description: p.description || '',
                     price: parseFloat(p.price) || 0,
                     sku: p.sku || null,
@@ -55,10 +66,30 @@ export async function POST(req: Request) {
             return NextResponse.json({ success: true, count: products.count })
         }
 
-        // Creación individual original
+        // Creación individual con prevención de duplicados
+        const cleanName = data.name.trim();
+        const existing = await prisma.product.findFirst({
+            where: { name: { equals: cleanName, mode: 'insensitive' } }
+        });
+
+        if (existing) {
+            // Actualizar producto existente conservando proveedor y margen
+            const updated = await prisma.product.update({
+                where: { id: existing.id },
+                data: {
+                    price: parseFloat(data.price) || existing.price,
+                    provider: data.provider || existing.provider,
+                    images: data.images || existing.images,
+                    description: data.description || existing.description,
+                    stock: data.stock !== undefined ? data.stock : existing.stock
+                }
+            });
+            return NextResponse.json(updated);
+        }
+
         const product = await prisma.product.create({
             data: {
-                name: data.name,
+                name: cleanName,
                 description: data.description || '',
                 price: parseFloat(data.price) || 0,
                 sku: data.sku || null,
@@ -77,5 +108,3 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: "Failed to create product" }, { status: 500 })
     }
 }
-
-
