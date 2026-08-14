@@ -32,7 +32,7 @@ export default function MatrizPreciosComponent({ isVendedorMode = false }: Matri
   const [limit, setLimit] = useState(150);
   const [totalProducts, setTotalProducts] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
-  const [themeMode, setThemeMode] = useState<'bw' | 'bw-inv' | 'green' | 'amber'>('bw');
+  const [themeMode, setThemeMode] = useState<'bw' | 'bw-inv' | 'green' | 'amber'>('bw-inv');
 
   // Edit Mode & Trash Bin state
   const [isEditMode, setIsEditMode] = useState(!isVendedorMode);
@@ -274,50 +274,54 @@ export default function MatrizPreciosComponent({ isVendedorMode = false }: Matri
     bw: {
       bg: 'bg-black',
       text: 'text-zinc-100',
-      border: 'border-zinc-800',
+      border: 'border-2 border-zinc-800',
+      cardBg: 'bg-zinc-950',
       headerBg: 'bg-zinc-900',
       headerText: 'text-zinc-300',
       accent: 'text-white font-bold',
-      highlight: 'bg-zinc-900/60',
-      inputBg: 'bg-black text-white border-zinc-700 focus:border-white',
-      badge: 'border border-zinc-700 text-zinc-300 bg-zinc-900',
-      cellInput: 'bg-zinc-900 text-white border-zinc-700 focus:border-white',
+      highlight: 'bg-zinc-900/80',
+      inputBg: 'bg-black text-white border-2 border-zinc-700 focus:border-white',
+      badge: 'border-2 border-zinc-700 text-zinc-300 bg-zinc-900',
+      cellInput: 'bg-zinc-900 text-white border border-zinc-700 focus:border-white',
     },
     'bw-inv': {
-      bg: 'bg-slate-100',
+      bg: 'bg-slate-200',
       text: 'text-zinc-950',
-      border: 'border-zinc-300',
-      headerBg: 'bg-zinc-200',
-      headerText: 'text-zinc-950 font-bold',
+      border: 'border-2 border-zinc-950',
+      cardBg: 'bg-white',
+      headerBg: 'bg-zinc-300',
+      headerText: 'text-zinc-950 font-black',
       accent: 'text-zinc-950 font-black',
       highlight: 'bg-zinc-200/90',
-      inputBg: 'bg-white text-zinc-950 border-zinc-300 focus:border-zinc-900',
-      badge: 'border border-zinc-300 text-zinc-800 bg-white',
-      cellInput: 'bg-white text-zinc-950 border-zinc-400 focus:border-zinc-900',
+      inputBg: 'bg-white text-zinc-950 border-2 border-zinc-950 focus:border-black font-bold',
+      badge: 'border-2 border-zinc-950 text-zinc-950 bg-white font-bold',
+      cellInput: 'bg-white text-zinc-950 border-2 border-zinc-800 focus:border-black font-bold',
     },
     green: {
       bg: 'bg-[#030d04]',
       text: 'text-emerald-400',
-      border: 'border-emerald-900/60',
-      headerBg: 'bg-emerald-950/80',
+      border: 'border-2 border-emerald-800',
+      cardBg: 'bg-[#061508]',
+      headerBg: 'bg-emerald-950',
       headerText: 'text-emerald-300',
       accent: 'text-emerald-200 font-bold',
-      highlight: 'bg-emerald-950/40',
-      inputBg: 'bg-black text-emerald-300 border-emerald-800 focus:border-emerald-400',
-      badge: 'border border-emerald-800 text-emerald-400 bg-emerald-950',
-      cellInput: 'bg-emerald-950 text-emerald-300 border-emerald-800 focus:border-emerald-400',
+      highlight: 'bg-emerald-950/60',
+      inputBg: 'bg-black text-emerald-300 border-2 border-emerald-800 focus:border-emerald-400',
+      badge: 'border-2 border-emerald-800 text-emerald-400 bg-emerald-950',
+      cellInput: 'bg-emerald-950 text-emerald-300 border border-emerald-800 focus:border-emerald-400',
     },
     amber: {
       bg: 'bg-[#0f0a02]',
       text: 'text-amber-400',
-      border: 'border-amber-900/60',
-      headerBg: 'bg-amber-950/80',
+      border: 'border-2 border-amber-800',
+      cardBg: 'bg-[#181104]',
+      headerBg: 'bg-amber-950',
       headerText: 'text-amber-300',
       accent: 'text-amber-200 font-bold',
-      highlight: 'bg-amber-950/40',
-      inputBg: 'bg-black text-amber-300 border-amber-800 focus:border-amber-400',
-      badge: 'border border-amber-800 text-amber-400 bg-amber-950',
-      cellInput: 'bg-amber-950 text-amber-300 border-amber-800 focus:border-amber-400',
+      highlight: 'bg-amber-950/60',
+      inputBg: 'bg-black text-amber-300 border-2 border-amber-800 focus:border-amber-400',
+      badge: 'border-2 border-amber-800 text-amber-400 bg-amber-950',
+      cellInput: 'bg-amber-950 text-amber-300 border border-amber-800 focus:border-amber-400',
     },
   }[themeMode];
 
@@ -326,24 +330,24 @@ export default function MatrizPreciosComponent({ isVendedorMode = false }: Matri
       
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-6 right-6 z-[100] px-4 py-2 bg-zinc-900 border border-emerald-500 text-emerald-400 text-xs font-bold uppercase tracking-wider shadow-2xl animate-bounce">
+        <div className="fixed top-6 right-6 z-[100] px-4 py-2 bg-white border-2 border-zinc-950 text-zinc-950 text-xs font-black uppercase tracking-wider shadow-2xl animate-bounce">
           {toastMessage}
         </div>
       )}
 
       {/* ================= RETRO TERMINAL HEADER ================= */}
-      <div className={`border-2 ${themeClasses.border} p-6 rounded-none shadow-2xl mb-6 ${themeMode === 'bw-inv' ? 'bg-white/80' : 'bg-black/40'}`}>
+      <div className={`border-2 ${themeClasses.border} p-6 shadow-xl mb-6 ${themeClasses.cardBg} rounded-xl`}>
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
           <div>
             <div className="flex items-center gap-3">
-              <span className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="w-3.5 h-3.5 rounded-full bg-emerald-500 animate-pulse border-2 border-zinc-950" />
               <h1 className="text-xl md:text-2xl font-black uppercase tracking-widest">
                 {isVendedorMode 
                   ? '[ATOMIC_SYSTEM] CATÁLOGO Y MATRIZ DE PRECIOS VENDEDORES V2.0' 
                   : '[ATOMIC_SYSTEM] DATABASE PRICING & CATEGORY MATRIX v2.0'}
               </h1>
             </div>
-            <p className="text-xs opacity-70 mt-1 uppercase tracking-wider">
+            <p className="text-xs font-bold opacity-80 mt-1 uppercase tracking-wider">
               {isVendedorMode 
                 ? 'CATÁLOGO GENERAL DE PRODUCTOS · CONSULTA PÚBLICA DE PRECIOS PVP Y DESCUENTOS MÁXIMOS PERMITIDOS' 
                 : 'MATRIZ GENERAL DE PRODUCTOS · EDICIÓN DIRECTA DE CATEGORÍAS, STOCK, COSTOS Y PRECIOS EN TIEMPO REAL'}
@@ -355,8 +359,8 @@ export default function MatrizPreciosComponent({ isVendedorMode = false }: Matri
               <>
                 <button
                   onClick={() => setIsEditMode(!isEditMode)}
-                  className={`px-4 py-2 border font-bold text-xs uppercase transition-all ${
-                    isEditMode ? 'bg-amber-500 text-black border-amber-400' : 'border-zinc-700 hover:bg-zinc-800'
+                  className={`px-4 py-2.5 border-2 font-black text-xs uppercase transition-all rounded-lg shadow-sm ${
+                    isEditMode ? 'bg-amber-400 text-zinc-950 border-zinc-950 shadow-[2px_2px_0px_rgba(0,0,0,1)]' : 'border-zinc-950 hover:bg-zinc-950 hover:text-white'
                   }`}
                 >
                   {isEditMode ? '⚡ MODO EDICIÓN ACTIVO' : '✏️ HABILITAR EDICIÓN'}
@@ -367,10 +371,10 @@ export default function MatrizPreciosComponent({ isVendedorMode = false }: Matri
                     setViewTrash(!viewTrash);
                     setPage(1);
                   }}
-                  className={`px-4 py-2 border font-bold text-xs uppercase transition-all flex items-center gap-2 ${
+                  className={`px-4 py-2.5 border-2 font-black text-xs uppercase transition-all flex items-center gap-2 rounded-lg shadow-sm ${
                     viewTrash
-                      ? 'bg-rose-600 text-white border-rose-400 shadow-[0_0_15px_rgba(225,29,72,0.4)]'
-                      : 'border-zinc-700 hover:bg-zinc-800 text-rose-300'
+                      ? 'bg-rose-600 text-white border-zinc-950 shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                      : 'border-zinc-950 hover:bg-rose-600 hover:text-white text-rose-700'
                   }`}
                 >
                   <span>{viewTrash ? '📋 MATRIZ ACTIVA' : '🗑️ PAPELERA'}</span>
@@ -378,36 +382,36 @@ export default function MatrizPreciosComponent({ isVendedorMode = false }: Matri
               </>
             )}
 
-            <div className="flex items-center border border-zinc-800 p-1 text-xs">
-              <span className="px-2 uppercase opacity-60 text-[10px]">TEMA:</span>
+            <div className="flex items-center border-2 border-zinc-950 p-1 text-xs bg-white rounded-lg shadow-sm">
+              <span className="px-2 uppercase opacity-80 text-[10px] font-black">TEMA:</span>
               <button
                 onClick={() => setThemeMode('bw')}
-                className={`px-3 py-1 text-xs uppercase font-bold transition-colors ${
-                  themeMode === 'bw' ? 'bg-white text-black' : 'hover:bg-zinc-800'
+                className={`px-3 py-1 text-xs uppercase font-black transition-colors rounded ${
+                  themeMode === 'bw' ? 'bg-zinc-950 text-white' : 'hover:bg-zinc-200'
                 }`}
               >
                 B/N Oscuro
               </button>
               <button
                 onClick={() => setThemeMode('bw-inv')}
-                className={`px-3 py-1 text-xs uppercase font-bold transition-colors ${
-                  themeMode === 'bw-inv' ? 'bg-black text-white' : 'hover:bg-zinc-200 text-zinc-900'
+                className={`px-3 py-1 text-xs uppercase font-black transition-colors rounded ${
+                  themeMode === 'bw-inv' ? 'bg-zinc-950 text-white' : 'hover:bg-zinc-200 text-zinc-950'
                 }`}
               >
                 Invertido B/N
               </button>
               <button
                 onClick={() => setThemeMode('green')}
-                className={`px-3 py-1 text-xs uppercase font-bold transition-colors ${
-                  themeMode === 'green' ? 'bg-emerald-500 text-black' : 'hover:bg-zinc-800'
+                className={`px-3 py-1 text-xs uppercase font-black transition-colors rounded ${
+                  themeMode === 'green' ? 'bg-emerald-600 text-white' : 'hover:bg-zinc-200'
                 }`}
               >
                 Verde VT100
               </button>
               <button
                 onClick={() => setThemeMode('amber')}
-                className={`px-3 py-1 text-xs uppercase font-bold transition-colors ${
-                  themeMode === 'amber' ? 'bg-amber-500 text-black' : 'hover:bg-zinc-800'
+                className={`px-3 py-1 text-xs uppercase font-black transition-colors rounded ${
+                  themeMode === 'amber' ? 'bg-amber-500 text-zinc-950' : 'hover:bg-zinc-200'
                 }`}
               >
                 Ámbar CRT
@@ -416,25 +420,25 @@ export default function MatrizPreciosComponent({ isVendedorMode = false }: Matri
 
             <button
               onClick={exportToCSV}
-              className={`px-4 py-2 border ${themeClasses.border} hover:bg-white hover:text-black transition-all font-bold text-xs uppercase flex items-center gap-2`}
+              className={`px-4 py-2.5 border-2 border-zinc-950 hover:bg-zinc-950 hover:text-white transition-all font-black text-xs uppercase flex items-center gap-2 bg-white rounded-lg shadow-sm`}
             >
               <span>💾 EXPORTAR CSV</span>
             </button>
 
             <button
               onClick={() => window.print()}
-              className={`px-4 py-2 border ${themeClasses.border} hover:bg-white hover:text-black transition-all font-bold text-xs uppercase`}
+              className={`px-4 py-2.5 border-2 border-zinc-950 hover:bg-zinc-950 hover:text-white transition-all font-black text-xs uppercase bg-white rounded-lg shadow-sm`}
             >
               🖨️ IMPRIMIR
             </button>
           </div>
         </div>
 
-        {/* CONTROLES DE BÚSQUEDA Y FILTROS */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6 pt-6 border-t border-zinc-800/80">
+        {/* CONTROLES DE BÚSQUEDA Y FILTROS EN RECUADROS INDEPENDIENTES */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6 pt-6 border-t-2 border-zinc-950">
           
-          <div className="md:col-span-2 space-y-1">
-            <label className="text-[10px] uppercase tracking-widest opacity-70">
+          <div className="md:col-span-2 space-y-1.5 p-3 border-2 border-zinc-950 bg-white/90 rounded-lg shadow-sm">
+            <label className="text-[10px] uppercase font-black tracking-widest text-zinc-900 block">
               🔍 Búsqueda Rápida (SKU, Nombre, Marca, Specs)
             </label>
             <input
@@ -445,12 +449,12 @@ export default function MatrizPreciosComponent({ isVendedorMode = false }: Matri
                 setPage(1);
               }}
               placeholder="Escribe para buscar instantáneamente..."
-              className={`w-full px-4 py-2.5 text-sm uppercase ${themeClasses.inputBg} outline-none font-mono tracking-wider`}
+              className={`w-full px-4 py-2 text-sm uppercase ${themeClasses.inputBg} outline-none font-mono tracking-wider rounded-md`}
             />
           </div>
 
-          <div className="space-y-1">
-            <label className="text-[10px] uppercase tracking-widest opacity-70">
+          <div className="space-y-1.5 p-3 border-2 border-zinc-950 bg-white/90 rounded-lg shadow-sm">
+            <label className="text-[10px] uppercase font-black tracking-widest text-zinc-900 block">
               🏢 Filtro por Proveedor
             </label>
             <select
@@ -459,7 +463,7 @@ export default function MatrizPreciosComponent({ isVendedorMode = false }: Matri
                 setSelectedProvider(e.target.value);
                 setPage(1);
               }}
-              className={`w-full px-3 py-2.5 text-xs uppercase ${themeClasses.inputBg} outline-none font-mono cursor-pointer`}
+              className={`w-full px-3 py-2 text-xs uppercase ${themeClasses.inputBg} outline-none font-mono cursor-pointer rounded-md`}
             >
               <option value="ALL">-- TODOS LOS PROVEEDORES --</option>
               {providers.map((pr) => (
@@ -470,8 +474,8 @@ export default function MatrizPreciosComponent({ isVendedorMode = false }: Matri
             </select>
           </div>
 
-          <div className="space-y-1">
-            <label className="text-[10px] uppercase tracking-widest opacity-70">
+          <div className="space-y-1.5 p-3 border-2 border-zinc-950 bg-white/90 rounded-lg shadow-sm">
+            <label className="text-[10px] uppercase font-black tracking-widest text-zinc-900 block">
               📂 Filtro por Categoría
             </label>
             <select
@@ -480,7 +484,7 @@ export default function MatrizPreciosComponent({ isVendedorMode = false }: Matri
                 setSelectedCategory(e.target.value);
                 setPage(1);
               }}
-              className={`w-full px-3 py-2.5 text-xs uppercase ${themeClasses.inputBg} outline-none font-mono cursor-pointer`}
+              className={`w-full px-3 py-2 text-xs uppercase ${themeClasses.inputBg} outline-none font-mono cursor-pointer rounded-md`}
             >
               <option value="ALL">-- TODAS LAS CATEGORÍAS --</option>
               {categories.map((cat) => (
@@ -492,39 +496,39 @@ export default function MatrizPreciosComponent({ isVendedorMode = false }: Matri
           </div>
         </div>
 
-        {/* SUMMARY STATS BAR */}
-        <div className={`grid grid-cols-2 ${isVendedorMode ? 'md:grid-cols-2' : 'md:grid-cols-4'} gap-4 mt-6 pt-4 border-t border-zinc-800 text-xs`}>
-          <div>
-            <span className="opacity-60 block text-[10px] uppercase">REGISTROS MOSTRADOS:</span>
+        {/* SUMMARY STATS BAR EN RECUADROS INDEPENDIENTES */}
+        <div className={`grid grid-cols-2 ${isVendedorMode ? 'md:grid-cols-2' : 'md:grid-cols-4'} gap-4 mt-6 pt-4 border-t-2 border-zinc-950 text-xs`}>
+          <div className="p-3 border-2 border-zinc-950 bg-white rounded-lg shadow-sm">
+            <span className="text-zinc-700 font-bold block text-[10px] uppercase">REGISTROS MOSTRADOS:</span>
             <span className={themeClasses.accent}>{products.length} de {totalProducts} productos</span>
           </div>
           {!isVendedorMode && (
-            <div>
-              <span className="opacity-60 block text-[10px] uppercase">VALOR AL COSTO (VISTA):</span>
+            <div className="p-3 border-2 border-zinc-950 bg-white rounded-lg shadow-sm">
+              <span className="text-zinc-700 font-bold block text-[10px] uppercase">VALOR AL COSTO (VISTA):</span>
               <span className={themeClasses.accent}>${stats.totalCostSum.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
             </div>
           )}
-          <div>
-            <span className="opacity-60 block text-[10px] uppercase">VALOR A LA VENTA (VISTA):</span>
+          <div className="p-3 border-2 border-zinc-950 bg-white rounded-lg shadow-sm">
+            <span className="text-zinc-700 font-bold block text-[10px] uppercase">VALOR A LA VENTA (VISTA):</span>
             <span className={themeClasses.accent}>${stats.totalSaleSum.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
           </div>
           {!isVendedorMode && (
-            <div>
-              <span className="opacity-60 block text-[10px] uppercase">MARGEN PROMEDIO:</span>
-              <span className="text-emerald-400 font-black">+{stats.avgMarginPercent.toFixed(2)}% (${stats.totalProfitSum.toLocaleString('en-US', { minimumFractionDigits: 2 })})</span>
+            <div className="p-3 border-2 border-zinc-950 bg-white rounded-lg shadow-sm">
+              <span className="text-zinc-700 font-bold block text-[10px] uppercase">MARGEN PROMEDIO:</span>
+              <span className="text-emerald-700 font-black">+{stats.avgMarginPercent.toFixed(2)}% (${stats.totalProfitSum.toLocaleString('en-US', { minimumFractionDigits: 2 })})</span>
             </div>
           )}
         </div>
       </div>
 
       {/* SCROLL GESTURE NAVIGATION BADGE */}
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-2 px-1 text-[11px] font-mono text-zinc-400">
-        <div className="flex items-center gap-2 bg-zinc-900/80 px-3 py-1.5 rounded border border-zinc-800 shadow-sm">
-          <span className="text-amber-400 font-bold">↔️ Encabezado:</span>
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-4 px-1 text-[11px] font-mono">
+        <div className="flex items-center gap-2 bg-white px-3.5 py-2 rounded-lg border-2 border-zinc-950 shadow-sm text-zinc-950 font-bold">
+          <span className="text-amber-600 font-black">↔️ Encabezado:</span>
           <span>Desplaza el mouse por el encabezado y usa la rueda para Scroll Horizontal</span>
         </div>
-        <div className="flex items-center gap-2 bg-zinc-900/80 px-3 py-1.5 rounded border border-zinc-800 shadow-sm">
-          <span className="text-emerald-400 font-bold">↕️ Filas:</span>
+        <div className="flex items-center gap-2 bg-white px-3.5 py-2 rounded-lg border-2 border-zinc-950 shadow-sm text-zinc-950 font-bold">
+          <span className="text-emerald-700 font-black">↕️ Filas:</span>
           <span>Desplaza el mouse por la tabla para Scroll Vertical continuo</span>
         </div>
       </div>
@@ -532,59 +536,59 @@ export default function MatrizPreciosComponent({ isVendedorMode = false }: Matri
       {/* ================= TABLA TIPO BASE DE DATOS RETRO CON EDICIÓN ================= */}
       <div 
         ref={tableContainerRef} 
-        className={`border-2 ${themeClasses.border} bg-black/90 overflow-x-auto overflow-y-auto max-h-[75vh] shadow-2xl relative scroll-smooth`}
+        className={`border-2 ${themeClasses.border} ${themeClasses.cardBg} overflow-x-auto overflow-y-auto max-h-[75vh] shadow-2xl relative scroll-smooth rounded-xl`}
       >
         <table className={`w-full ${isVendedorMode ? 'min-w-[1400px]' : 'min-w-[1950px]'} text-left text-xs border-collapse`}>
           <thead 
             ref={tableHeaderRef}
-            className="sticky top-0 z-30 shadow-2xl bg-zinc-950 border-b-2 border-zinc-700 cursor-ew-resize select-none"
+            className="sticky top-0 z-30 shadow-2xl bg-zinc-300 border-b-2 border-zinc-950 cursor-ew-resize select-none"
             title="Pasa el mouse sobre el encabezado y gira la rueda para Scroll Horizontal ↔"
           >
-            <tr className={`${themeClasses.headerBg} ${themeClasses.headerText} uppercase font-bold tracking-wider`}>
-              <th className="py-3 px-4 border-r border-zinc-800 w-12 text-center">#</th>
-              <th className="py-3 px-4 border-r border-zinc-800 w-36">
+            <tr className={`${themeClasses.headerBg} ${themeClasses.headerText} uppercase font-black tracking-wider`}>
+              <th className="py-3.5 px-4 border-r-2 border-zinc-950 w-12 text-center">#</th>
+              <th className="py-3.5 px-4 border-r-2 border-zinc-950 w-36">
                 {isVendedorMode ? 'SKU / CÓDIGO' : 'SKU / CÓDIGO (EDITABLE)'}
               </th>
-              <th className="py-3 px-4 border-r border-zinc-800">
+              <th className="py-3.5 px-4 border-r-2 border-zinc-950">
                 {isVendedorMode ? 'DESCRIPCIÓN PRODUCTO' : 'DESCRIPCIÓN PRODUCTO (EDITABLE)'}
               </th>
-              <th className="py-3 px-4 border-r border-zinc-800 w-36">PROVEEDOR</th>
-              <th className="py-3 px-4 border-r border-zinc-800 w-44">
+              <th className="py-3.5 px-4 border-r-2 border-zinc-950 w-36">PROVEEDOR</th>
+              <th className="py-3.5 px-4 border-r-2 border-zinc-950 w-44">
                 {isVendedorMode ? 'CATEGORÍA' : 'CATEGORÍA (EDITABLE)'}
               </th>
-              <th className="py-3 px-4 border-r border-zinc-800 text-center w-24">
+              <th className="py-3.5 px-4 border-r-2 border-zinc-950 text-center w-24">
                 {isVendedorMode ? 'STOCK' : 'STOCK (EDITABLE)'}
               </th>
               {!isVendedorMode && (
-                <th className="py-3 px-4 border-r border-zinc-800 text-right w-32">COSTO ($) EDITABLE</th>
+                <th className="py-3.5 px-4 border-r-2 border-zinc-950 text-right w-32">COSTO ($) EDITABLE</th>
               )}
-              <th className="py-3 px-4 border-r border-zinc-800 text-right w-36">
+              <th className="py-3.5 px-4 border-r-2 border-zinc-950 text-right w-36">
                 {isVendedorMode ? 'P. VENTA ($)' : 'P. VENTA ($) EDITABLE'}
               </th>
               {!isVendedorMode && (
                 <>
-                  <th className="py-3 px-4 border-r border-zinc-800 text-right w-28">MARGEN ($)</th>
-                  <th className="py-3 px-4 border-r border-zinc-800 text-right w-28">MARGEN (%)</th>
+                  <th className="py-3.5 px-4 border-r-2 border-zinc-950 text-right w-28">MARGEN ($)</th>
+                  <th className="py-3.5 px-4 border-r-2 border-zinc-950 text-right w-28">MARGEN (%)</th>
                 </>
               )}
-              <th className="py-3 px-4 border-r border-zinc-800 text-right w-32 bg-amber-950/40 text-amber-300">DESC. MÁX ($)</th>
-              <th className="py-3 px-4 border-r border-zinc-800 text-right w-32 bg-amber-950/40 text-amber-300">DESC. MÁX (%)</th>
-              <th className="py-3 px-4 border-r border-zinc-800 text-center w-32">TIENDA EN LÍNEA</th>
+              <th className="py-3.5 px-4 border-r-2 border-zinc-950 text-right w-32 bg-amber-300 text-zinc-950 font-black">DESC. MÁX ($)</th>
+              <th className="py-3.5 px-4 border-r-2 border-zinc-950 text-right w-32 bg-amber-300 text-zinc-950 font-black">DESC. MÁX (%)</th>
+              <th className="py-3.5 px-4 border-r-2 border-zinc-950 text-center w-32">TIENDA EN LÍNEA</th>
               {!isVendedorMode && (
-                <th className="py-3 px-4 text-center w-28">ACCIONES</th>
+                <th className="py-3.5 px-4 text-center w-28">ACCIONES</th>
               )}
             </tr>
           </thead>
-          <tbody className="divide-y divide-zinc-900">
+          <tbody className="divide-y divide-zinc-400">
             {loading ? (
               <tr>
-                <td colSpan={isVendedorMode ? 10 : 14} className="py-16 text-center text-sm tracking-widest animate-pulse">
+                <td colSpan={isVendedorMode ? 10 : 14} className="py-16 text-center text-sm font-black tracking-widest animate-pulse">
                   [ PROCESANDO CONSULTA DE BASE DE DATOS... CARGANDO REGISTROS ]
                 </td>
               </tr>
             ) : products.length === 0 ? (
               <tr>
-                <td colSpan={isVendedorMode ? 10 : 14} className="py-16 text-center text-sm opacity-70 tracking-widest">
+                <td colSpan={isVendedorMode ? 10 : 14} className="py-16 text-center text-sm font-bold opacity-70 tracking-widest">
                   NO SE ENCONTRARON REGISTROS QUE COINCIDAN CON LOS CRITERIOS DE BÚSQUEDA.
                 </td>
               </tr>
@@ -602,14 +606,14 @@ export default function MatrizPreciosComponent({ isVendedorMode = false }: Matri
                 return (
                   <tr
                     key={p.id}
-                    className={`hover:${themeClasses.highlight} transition-colors border-b ${themeClasses.border} ${isSaving ? 'opacity-50 bg-amber-950/20' : ''}`}
+                    className={`hover:${themeClasses.highlight} transition-colors border-b border-zinc-400 ${isSaving ? 'opacity-50 bg-amber-200' : ''}`}
                   >
-                    <td className="py-2.5 px-4 border-r border-zinc-900 text-center font-mono opacity-50">
+                    <td className="py-2.5 px-4 border-r border-zinc-400 text-center font-mono font-bold opacity-70">
                       {globalIndex}
                     </td>
 
                     {/* SKU / CÓDIGO */}
-                    <td className="py-1.5 px-2 border-r border-zinc-900 font-mono text-xs font-bold uppercase">
+                    <td className="py-1.5 px-2 border-r border-zinc-400 font-mono text-xs font-bold uppercase">
                       {!isVendedorMode && isEditMode ? (
                         <input
                           type="text"
@@ -625,7 +629,7 @@ export default function MatrizPreciosComponent({ isVendedorMode = false }: Matri
                               (e.target as HTMLInputElement).blur();
                             }
                           }}
-                          className={`w-32 px-2 py-1 text-xs font-mono font-bold border ${themeClasses.cellInput} uppercase outline-none`}
+                          className={`w-32 px-2 py-1 text-xs font-mono font-bold border-2 ${themeClasses.cellInput} uppercase outline-none rounded`}
                         />
                       ) : (
                         <span>{p.sku}</span>
@@ -633,7 +637,7 @@ export default function MatrizPreciosComponent({ isVendedorMode = false }: Matri
                     </td>
 
                     {/* DESCRIPCIÓN DEL PRODUCTO (NOMBRE) */}
-                    <td className="py-1.5 px-2 border-r border-zinc-900 font-sans text-xs">
+                    <td className="py-1.5 px-2 border-r border-zinc-400 font-sans text-xs">
                       {!isVendedorMode && isEditMode ? (
                         <input
                           type="text"
@@ -649,19 +653,19 @@ export default function MatrizPreciosComponent({ isVendedorMode = false }: Matri
                               (e.target as HTMLInputElement).blur();
                             }
                           }}
-                          className={`w-full min-w-[240px] px-2 py-1 text-xs font-medium border ${themeClasses.cellInput} outline-none`}
+                          className={`w-full min-w-[240px] px-2 py-1 text-xs font-bold border-2 ${themeClasses.cellInput} outline-none rounded`}
                         />
                       ) : (
-                        <span className="font-medium uppercase tracking-wide">{p.name}</span>
+                        <span className="font-bold uppercase tracking-wide">{p.name}</span>
                       )}
                     </td>
 
-                    <td className="py-2.5 px-4 border-r border-zinc-900 font-mono text-[11px] opacity-80 uppercase">
+                    <td className="py-2.5 px-4 border-r border-zinc-400 font-mono text-[11px] font-bold uppercase text-zinc-800">
                       {p.provider}
                     </td>
 
                     {/* CATEGORY */}
-                    <td className="py-1.5 px-2 border-r border-zinc-900 font-mono text-[11px] uppercase">
+                    <td className="py-1.5 px-2 border-r border-zinc-400 font-mono text-[11px] uppercase">
                       {!isVendedorMode && isEditMode ? (() => {
                         const matched = categories.find(c => c.id === p.categoryId || c.name.toLowerCase() === (p.category || '').toLowerCase());
                         const selVal = matched ? matched.id : (p.categoryId || '');
@@ -669,7 +673,7 @@ export default function MatrizPreciosComponent({ isVendedorMode = false }: Matri
                           <select
                             value={selVal}
                             onChange={(e) => handleUpdateProduct(p.id, 'categoryId', e.target.value)}
-                            className={`w-full px-2 py-1 text-[11px] uppercase border ${themeClasses.cellInput} cursor-pointer font-mono outline-none`}
+                            className={`w-full px-2 py-1 text-[11px] uppercase border-2 ${themeClasses.cellInput} cursor-pointer font-mono outline-none rounded`}
                           >
                             <option value="">-- Sin categoría --</option>
                             {categories.map((c) => (
@@ -680,12 +684,12 @@ export default function MatrizPreciosComponent({ isVendedorMode = false }: Matri
                           </select>
                         );
                       })() : (
-                        <span>{p.category}</span>
+                        <span className="font-bold">{p.category}</span>
                       )}
                     </td>
 
                     {/* STOCK */}
-                    <td className="py-1.5 px-2 border-r border-zinc-900 text-center font-mono font-bold">
+                    <td className="py-1.5 px-2 border-r border-zinc-400 text-center font-mono font-black">
                       {!isVendedorMode && isEditMode ? (
                         <input
                           type="number"
@@ -701,10 +705,10 @@ export default function MatrizPreciosComponent({ isVendedorMode = false }: Matri
                               (e.target as HTMLInputElement).blur();
                             }
                           }}
-                          className={`w-16 px-2 py-1 text-center text-xs font-mono font-bold border ${themeClasses.cellInput} ${p.stock > 0 ? 'text-emerald-400' : 'text-rose-500'} outline-none`}
+                          className={`w-16 px-2 py-1 text-center text-xs font-mono font-black border-2 ${themeClasses.cellInput} ${p.stock > 0 ? 'text-emerald-700' : 'text-rose-700'} outline-none rounded`}
                         />
                       ) : (
-                        <span className={p.stock > 0 ? 'text-emerald-400' : 'text-rose-500'}>
+                        <span className={p.stock > 0 ? 'text-emerald-700 font-black' : 'text-rose-700 font-black'}>
                           {p.stock}
                         </span>
                       )}
@@ -712,10 +716,10 @@ export default function MatrizPreciosComponent({ isVendedorMode = false }: Matri
 
                     {/* COST PRICE (Solo para Admin / Jefe) */}
                     {!isVendedorMode && (
-                      <td className="py-1.5 px-2 border-r border-zinc-900 text-right font-mono">
+                      <td className="py-1.5 px-2 border-r border-zinc-400 text-right font-mono font-bold">
                         {isEditMode ? (
                           <div className="flex items-center justify-end gap-1">
-                            <span className="opacity-50 text-[10px]">$</span>
+                            <span className="opacity-70 text-[10px] font-black">$</span>
                             <input
                               type="number"
                               step="0.01"
@@ -731,24 +735,24 @@ export default function MatrizPreciosComponent({ isVendedorMode = false }: Matri
                                   (e.target as HTMLInputElement).blur();
                                 }
                               }}
-                              className={`w-20 px-2 py-1 text-right text-xs font-mono font-bold border ${themeClasses.cellInput} outline-none`}
+                              className={`w-20 px-2 py-1 text-right text-xs font-mono font-black border-2 ${themeClasses.cellInput} outline-none rounded`}
                             />
                           </div>
                         ) : (
-                          <span className="opacity-80">${p.costPrice.toFixed(2)}</span>
+                          <span className="font-bold">${p.costPrice.toFixed(2)}</span>
                         )}
                       </td>
                     )}
 
                     {/* SALE PRICE (PVP) */}
-                    <td className="py-1.5 px-2 border-r border-zinc-900 text-right font-mono">
+                    <td className="py-1.5 px-2 border-r border-zinc-400 text-right font-mono font-black">
                       {!isVendedorMode && isEditMode ? (
                         <div className="flex items-center justify-end gap-1">
-                          <span className="opacity-50 text-[10px]">$</span>
+                          <span className="opacity-70 text-[10px] font-black">$</span>
                           <input
                             type="number"
                             step="0.01"
-                            defaultValue={p.salePrice ? p.salePrice.toFixed(2) : '0.00'}
+                            defaultValue={p.salePrice.toFixed(2)}
                             onBlur={(e) => {
                               const val = parseFloat(e.target.value);
                               if (!isNaN(val) && val !== p.salePrice) {
@@ -760,77 +764,79 @@ export default function MatrizPreciosComponent({ isVendedorMode = false }: Matri
                                 (e.target as HTMLInputElement).blur();
                               }
                             }}
-                            className={`w-24 px-2 py-1 text-right text-xs font-mono font-black border ${themeClasses.cellInput} text-amber-400 outline-none`}
+                            className={`w-20 px-2 py-1 text-right text-xs font-mono font-black border-2 ${themeClasses.cellInput} outline-none rounded`}
                           />
                         </div>
                       ) : (
-                        <span className="font-black text-sm">${p.salePrice.toFixed(2)}</span>
+                        <span className="font-black text-sm text-zinc-950">${p.salePrice.toFixed(2)}</span>
                       )}
                     </td>
 
-                    {/* MARGEN USD & MARGEN % (Solo para Admin / Jefe) */}
+                    {/* MARGIN USD */}
                     {!isVendedorMode && (
                       <>
-                        <td className="py-2.5 px-4 border-r border-zinc-900 text-right font-mono font-bold text-emerald-400">
-                          +${p.marginUsd.toFixed(2)}
+                        <td className="py-2.5 px-4 border-r border-zinc-400 text-right font-mono font-black">
+                          <span className={p.marginUsd >= 0 ? 'text-emerald-700' : 'text-rose-700'}>
+                            {p.marginUsd >= 0 ? `+$${p.marginUsd.toFixed(2)}` : `-$${Math.abs(p.marginUsd).toFixed(2)}`}
+                          </span>
                         </td>
-                        <td className="py-2.5 px-4 border-r border-zinc-900 text-right font-mono font-bold text-emerald-400">
-                          +{p.marginPercent.toFixed(1)}%
+                        <td className="py-2.5 px-4 border-r border-zinc-400 text-right font-mono font-black">
+                          <span className={p.marginPercent >= 0 ? 'text-emerald-700' : 'text-rose-700'}>
+                            {p.marginPercent >= 0 ? `+${p.marginPercent.toFixed(1)}%` : `${p.marginPercent.toFixed(1)}%`}
+                          </span>
                         </td>
                       </>
                     )}
 
-                    {/* VALOR DESCUENTO MÁXIMO ($) (MITAD DEL MARGEN) */}
-                    <td className="py-2.5 px-4 border-r border-zinc-900 text-right font-mono font-bold text-amber-300 bg-amber-950/10">
-                      -${maxDiscountUsd.toFixed(2)}
+                    {/* MAX DISCOUNT USD */}
+                    <td className="py-2.5 px-4 border-r border-zinc-400 text-right font-mono font-black text-amber-900 bg-amber-100/80">
+                      {maxDiscountUsd > 0 ? `-$${maxDiscountUsd.toFixed(2)}` : '$0.00'}
                     </td>
 
-                    {/* PORCENTAJE DESCUENTO MÁXIMO (%) SOBRE PVP */}
-                    <td className="py-2.5 px-4 border-r border-zinc-900 text-right font-mono font-bold text-amber-300 bg-amber-950/10">
-                      {maxDiscountPercent.toFixed(2)}%
+                    {/* MAX DISCOUNT PERCENT */}
+                    <td className="py-2.5 px-4 border-r border-zinc-400 text-right font-mono font-black text-amber-900 bg-amber-100/80">
+                      {maxDiscountPercent > 0 ? `${maxDiscountPercent.toFixed(2)}%` : '0.00%'}
                     </td>
 
-                    {/* BOTÓN VER EN TIENDA EN LÍNEA */}
-                    <td className="py-1.5 px-2 border-r border-zinc-900 text-center font-mono">
+                    {/* ONLINE STORE DIRECT LINK */}
+                    <td className="py-2.5 px-4 border-r border-zinc-400 text-center font-mono">
                       <a
-                        href={`/web/product/${p.id}`}
+                        href={`/web?search=${encodeURIComponent(p.sku || p.name)}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        title="Ver producto en la tienda online"
-                        className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-[10px] font-black uppercase tracking-wider bg-emerald-500/10 hover:bg-emerald-500 text-emerald-400 hover:text-black border border-emerald-500/40 rounded transition-all shadow-[0_0_12px_rgba(16,185,129,0.25)] hover:scale-105"
+                        className="inline-block border-2 border-zinc-950 bg-white px-2.5 py-1 text-[10px] font-black uppercase hover:bg-zinc-950 hover:text-white transition-all rounded shadow-sm"
                       >
-                        <span>👁️</span>
-                        <span>VER</span>
+                        🔗 VER EN WEB
                       </a>
                     </td>
 
-                    {/* ACTION BUTTON (ELIMINAR / RESTAURAR - Solo para Admin / Jefe) */}
+                    {/* ACTIONS (EDIT / TRASH / RESTORE / PERMANENT DELETE) */}
                     {!isVendedorMode && (
-                      <td className="py-1.5 px-2 text-center font-mono">
+                      <td className="py-2.5 px-2 text-center font-mono">
                         {viewTrash ? (
                           <div className="flex items-center justify-center gap-1">
                             <button
                               onClick={() => handleRestoreProduct(p.id, p.name)}
-                              title="Restaurar producto a la matriz activa"
-                              className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider bg-emerald-950/80 hover:bg-emerald-600 text-emerald-300 hover:text-white border border-emerald-700 transition-colors"
+                              title="Restaurar a matriz activa"
+                              className="px-2 py-1 border-2 border-zinc-950 bg-emerald-600 text-white font-black text-[10px] hover:bg-emerald-700 rounded shadow-sm"
                             >
-                              ↩️ RESTAURAR
+                              ♻️ RESTAURAR
                             </button>
                             <button
                               onClick={() => handlePermanentDeleteProduct(p.id, p.name)}
-                              title="Eliminar definitivamente de la base de datos"
-                              className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider bg-rose-950/90 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-800 transition-colors"
+                              title="Eliminar definitivamente de BD"
+                              className="px-2 py-1 border-2 border-zinc-950 bg-rose-600 text-white font-black text-[10px] hover:bg-rose-700 rounded shadow-sm"
                             >
-                              💥 DEFINITIVO
+                              💥 ELIMINAR
                             </button>
                           </div>
                         ) : (
                           <button
                             onClick={() => handleDeleteProduct(p.id, p.name)}
-                            title="Mover producto a la papelera"
-                            className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider bg-rose-950/60 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-800 transition-colors"
+                            title="Mover a Papelera"
+                            className="px-2 py-1 border-2 border-zinc-950 bg-white hover:bg-rose-600 hover:text-white font-black text-[10px] transition-all rounded shadow-sm"
                           >
-                            🗑️ ELIMINAR
+                            🗑️
                           </button>
                         )}
                       </td>
@@ -843,49 +849,48 @@ export default function MatrizPreciosComponent({ isVendedorMode = false }: Matri
         </table>
       </div>
 
-      {/* ================= PAGINACIÓN Y CONTROL DE VISTA ================= */}
-      <div className={`mt-6 p-4 border-2 ${themeClasses.border} bg-black/80 flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-mono`}>
-        <div className="flex items-center gap-3">
-          <span className="opacity-70">REGISTROS POR PÁGINA:</span>
-          {[50, 100, 250, 500].map((l) => (
-            <button
-              key={l}
-              onClick={() => {
-                setLimit(l);
-                setPage(1);
-              }}
-              className={`px-2.5 py-1 border border-zinc-800 ${
-                limit === l ? 'bg-white text-black font-bold' : 'hover:bg-zinc-800'
-              }`}
-            >
-              {l}
-            </button>
-          ))}
+      {/* ================= CONTROLES DE PAGINACIÓN RETRO EN RECUADRO INDEPENDIENTE ================= */}
+      <div className={`border-2 ${themeClasses.border} p-4 mt-6 ${themeClasses.cardBg} flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl rounded-xl`}>
+        <div className="flex items-center gap-3 text-xs font-bold">
+          <span>MOSTRAR POR PÁGINA:</span>
+          <select
+            value={limit}
+            onChange={(e) => {
+              setLimit(parseInt(e.target.value));
+              setPage(1);
+            }}
+            className={`px-3 py-1.5 border-2 ${themeClasses.cellInput} outline-none cursor-pointer rounded-md font-black`}
+          >
+            <option value={50}>50 REGISTROS</option>
+            <option value={100}>100 REGISTROS</option>
+            <option value={150}>150 REGISTROS</option>
+            <option value={300}>300 REGISTROS</option>
+            <option value={500}>500 REGISTROS</option>
+          </select>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 text-xs font-black">
           <button
-            disabled={page <= 1}
             onClick={() => setPage((p) => Math.max(1, p - 1))}
-            className="px-4 py-2 border border-zinc-800 disabled:opacity-30 disabled:pointer-events-none hover:bg-white hover:text-black font-bold uppercase"
+            disabled={page === 1}
+            className={`px-4 py-2 border-2 border-zinc-950 font-black rounded-md ${page === 1 ? 'opacity-40 cursor-not-allowed bg-zinc-200' : 'bg-white hover:bg-zinc-950 hover:text-white transition-all shadow-sm'}`}
           >
-            ◄ ANTERIOR
+            ◀ ANTERIOR
           </button>
 
-          <span className="px-3">
-            PÁGINA <strong className="text-white">{page}</strong> DE <strong className="text-white">{totalPages}</strong>
+          <span className="px-4 py-2 border-2 border-zinc-950 bg-white rounded-md shadow-sm">
+            PÁGINA {page} DE {totalPages}
           </span>
 
           <button
-            disabled={page >= totalPages}
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-            className="px-4 py-2 border border-zinc-800 disabled:opacity-30 disabled:pointer-events-none hover:bg-white hover:text-black font-bold uppercase"
+            disabled={page === totalPages}
+            className={`px-4 py-2 border-2 border-zinc-950 font-black rounded-md ${page === totalPages ? 'opacity-40 cursor-not-allowed bg-zinc-200' : 'bg-white hover:bg-zinc-950 hover:text-white transition-all shadow-sm'}`}
           >
-            SIGUIENTE ►
+            SIGUIENTE ▶
           </button>
         </div>
       </div>
-
     </div>
   );
 }
