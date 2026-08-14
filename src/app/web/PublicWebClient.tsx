@@ -10,15 +10,17 @@ import {
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import { useCart } from "@/context/CartContext"
+import CategoryBadge3D from "@/components/ui/CategoryBadge3D"
+import HeroCanvas3D from "@/components/ui/HeroCanvas3D"
 
 /* ── ATOMIC ATOM LOGO SVG (COMPACT & METALLIC) ── */
 function AtomicLogoSVG() {
   return (
-    <svg width="32" height="32" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0 drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]">
+    <svg width="34" height="34" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0 drop-shadow-[0_0_10px_rgba(255,255,255,0.9)]">
       <circle cx="36" cy="36" r="6" fill="#FFFFFF" className="animate-pulse" />
-      <ellipse cx="36" cy="36" rx="30" ry="10" stroke="#FFFFFF" strokeWidth="2.4" fill="none" />
-      <ellipse cx="36" cy="36" rx="30" ry="10" stroke="#FFFFFF" strokeWidth="2.4" fill="none" transform="rotate(60 36 36)" />
-      <ellipse cx="36" cy="36" rx="30" ry="10" stroke="#FFFFFF" strokeWidth="2.4" fill="none" transform="rotate(120 36 36)" />
+      <ellipse cx="36" cy="36" rx="30" ry="10" stroke="#FFFFFF" strokeWidth="2.5" fill="none" />
+      <ellipse cx="36" cy="36" rx="30" ry="10" stroke="#FFFFFF" strokeWidth="2.5" fill="none" transform="rotate(60 36 36)" />
+      <ellipse cx="36" cy="36" rx="30" ry="10" stroke="#FFFFFF" strokeWidth="2.5" fill="none" transform="rotate(120 36 36)" />
     </svg>
   )
 }
@@ -68,128 +70,20 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
     return result
   }, [initialProducts, searchQuery, selectedCategoryFilter])
 
-  // 12 Top Category Grid Items with Metallic 3D Badges & Electric Cobalt Blue Accents
+  // 12 Top Category Grid Items with Real-Time WebGL 3D Badges
   const categoryGridItems = [
-    { 
-      id: 'industrial', 
-      title: 'INDUSTRIAL', 
-      sub: 'Automatización', 
-      icon: Factory, 
-      metallicBg: 'bg-gradient-to-b from-blue-200 via-sky-300 to-blue-600', 
-      metallicBorder: 'border-2 border-cyan-300 shadow-[inset_0_2px_4px_rgba(255,255,255,0.9),0_4px_12px_rgba(0,102,255,0.25)]', 
-      textColor: 'text-blue-950',
-      href: '#industrial' 
-    },
-    { 
-      id: 'servicios', 
-      title: 'SERVICIOS', 
-      sub: 'Asesoría', 
-      icon: Award, 
-      metallicBg: 'bg-gradient-to-b from-cyan-100 via-blue-300 to-indigo-600', 
-      metallicBorder: 'border-2 border-blue-300 shadow-[inset_0_2px_4px_rgba(255,255,255,0.9),0_4px_12px_rgba(0,102,255,0.25)]', 
-      textColor: 'text-blue-950',
-      href: '#servicios' 
-    },
-    { 
-      id: 'computacion', 
-      title: 'COMPUTACIÓN', 
-      sub: 'Laptops', 
-      icon: Laptop, 
-      metallicBg: 'bg-gradient-to-b from-purple-200 via-indigo-300 to-blue-700', 
-      metallicBorder: 'border-2 border-blue-300 shadow-[inset_0_2px_4px_rgba(255,255,255,0.9),0_4px_12px_rgba(0,102,255,0.25)]', 
-      textColor: 'text-blue-950',
-      href: '/web/cpus' 
-    },
-    { 
-      id: 'telefonia', 
-      title: 'TELEFONÍA', 
-      sub: 'Celulares', 
-      icon: Smartphone, 
-      metallicBg: 'bg-gradient-to-b from-sky-100 via-cyan-300 to-blue-600', 
-      metallicBorder: 'border-2 border-sky-300 shadow-[inset_0_2px_4px_rgba(255,255,255,0.9),0_4px_12px_rgba(0,102,255,0.25)]', 
-      textColor: 'text-blue-950',
-      href: '/web/phones' 
-    },
-    { 
-      id: 'minipc', 
-      title: 'MINI PC', 
-      sub: 'Compactos', 
-      icon: Cpu, 
-      metallicBg: 'bg-gradient-to-b from-slate-100 via-blue-200 to-zinc-600', 
-      metallicBorder: 'border-2 border-blue-300 shadow-[inset_0_2px_4px_rgba(255,255,255,0.9),0_4px_12px_rgba(0,102,255,0.25)]', 
-      textColor: 'text-blue-950',
-      href: '/web/cpus' 
-    },
-    { 
-      id: 'monitores', 
-      title: 'MONITORES', 
-      sub: 'Gaming HD', 
-      icon: Laptop, 
-      metallicBg: 'bg-gradient-to-b from-blue-100 via-cyan-300 to-blue-700', 
-      metallicBorder: 'border-2 border-cyan-300 shadow-[inset_0_2px_4px_rgba(255,255,255,0.9),0_4px_12px_rgba(0,102,255,0.25)]', 
-      textColor: 'text-blue-950',
-      href: '/web/cpus' 
-    },
-    { 
-      id: 'tablets-infantiles', 
-      title: 'TABLETS NIÑOS', 
-      sub: 'Edición Kids', 
-      icon: Smartphone, 
-      metallicBg: 'bg-gradient-to-b from-sky-200 via-indigo-300 to-blue-600', 
-      metallicBorder: 'border-2 border-blue-300 shadow-[inset_0_2px_4px_rgba(255,255,255,0.9),0_4px_12px_rgba(0,102,255,0.25)]', 
-      textColor: 'text-blue-950',
-      href: '/web/phones' 
-    },
-    { 
-      id: 'portones-automaticos', 
-      title: 'PORTONES', 
-      sub: 'Control Acceso', 
-      icon: Lock, 
-      metallicBg: 'bg-gradient-to-b from-slate-100 via-blue-300 to-slate-800', 
-      metallicBorder: 'border-2 border-blue-400 shadow-[inset_0_2px_4px_rgba(255,255,255,0.9),0_4px_12px_rgba(0,102,255,0.25)]', 
-      textColor: 'text-slate-950',
-      href: '/web/intercomunicacion' 
-    },
-    { 
-      id: 'hogar', 
-      title: 'HOGAR', 
-      sub: 'Cocina & Luz', 
-      icon: Utensils, 
-      metallicBg: 'bg-gradient-to-b from-amber-100 via-orange-300 to-blue-600', 
-      metallicBorder: 'border-2 border-amber-300 shadow-[inset_0_2px_4px_rgba(255,255,255,0.9),0_4px_12px_rgba(0,102,255,0.25)]', 
-      textColor: 'text-blue-950',
-      href: '/web/cocinas' 
-    },
-    { 
-      id: 'software', 
-      title: 'SOFTWARE', 
-      sub: 'Systems & Web', 
-      icon: Code, 
-      metallicBg: 'bg-gradient-to-b from-cyan-100 via-blue-300 to-indigo-700', 
-      metallicBorder: 'border-2 border-cyan-300 shadow-[inset_0_2px_4px_rgba(255,255,255,0.9),0_4px_12px_rgba(0,102,255,0.25)]', 
-      textColor: 'text-blue-950',
-      href: '/web/software' 
-    },
-    { 
-      id: 'tecnologia-residencial', 
-      title: 'TECNOLOGÍA RES.', 
-      sub: 'Alarmas', 
-      icon: Shield, 
-      metallicBg: 'bg-gradient-to-b from-blue-100 via-emerald-300 to-blue-700', 
-      metallicBorder: 'border-2 border-blue-300 shadow-[inset_0_2px_4px_rgba(255,255,255,0.9),0_4px_12px_rgba(0,102,255,0.25)]', 
-      textColor: 'text-blue-950',
-      href: '/web/conjuntos-smart' 
-    },
-    { 
-      id: 'electronica', 
-      title: 'ELECTRÓNICA', 
-      sub: 'Cables & Micro', 
-      icon: Zap, 
-      metallicBg: 'bg-gradient-to-b from-sky-100 via-blue-300 to-indigo-800', 
-      metallicBorder: 'border-2 border-blue-300 shadow-[inset_0_2px_4px_rgba(255,255,255,0.9),0_4px_12px_rgba(0,102,255,0.25)]', 
-      textColor: 'text-blue-950',
-      href: '#electronica' 
-    },
+    { id: 'industrial', title: 'INDUSTRIAL', sub: 'Automatización', href: '#industrial' },
+    { id: 'servicios', title: 'SERVICIOS', sub: 'Asesoría', href: '#servicios' },
+    { id: 'computacion', title: 'COMPUTACIÓN', sub: 'Laptops', href: '/web/cpus' },
+    { id: 'telefonia', title: 'TELEFONÍA', sub: 'Celulares', href: '/web/phones' },
+    { id: 'minipc', title: 'MINI PC', sub: 'Compactos', href: '/web/cpus' },
+    { id: 'monitores', title: 'MONITORES', sub: 'Gaming HD', href: '/web/cpus' },
+    { id: 'tablets-infantiles', title: 'TABLETS NIÑOS', sub: 'Edición Kids', href: '/web/phones' },
+    { id: 'portones-automaticos', title: 'PORTONES', sub: 'Control Acceso', href: '/web/intercomunicacion' },
+    { id: 'hogar', title: 'HOGAR', sub: 'Cocina & Luz', href: '/web/cocinas' },
+    { id: 'software', title: 'SOFTWARE', sub: 'Systems & Web', href: '/web/software' },
+    { id: 'tecnologia-residencial', title: 'TECNOLOGÍA RES.', sub: 'Alarmas', href: '/web/conjuntos-smart' },
+    { id: 'electronica', title: 'ELECTRÓNICA', sub: 'Cables & Micro', href: '#electronica' },
   ]
 
   // Landing Pages Data (Created over last 3-4 months)
@@ -213,23 +107,26 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
   ]
 
   return (
-    <div className="w-full bg-[#080b13] min-h-screen text-slate-100 font-sans selection:bg-blue-600 selection:text-white pb-20">
+    <div className="w-full bg-[#06080e] min-h-screen text-slate-100 font-sans selection:bg-blue-600 selection:text-white pb-20 relative overflow-x-hidden">
+
+      {/* 🔮 REAL-TIME 3D WEBGL PARTICLE FIELD BACKGROUND */}
+      <HeroCanvas3D />
 
       {/* ═════════════════════════════════════════════════════════════ */}
-      {/* 👑 TOP STANDALONE SLOGAN HEADER BAR (DEEP OBSIDIAN & SAPPHIRE) */}
+      {/* 👑 TOP STANDALONE SLOGAN HEADER BAR (OBSIDIAN & NEON SAPPHIRE) */}
       {/* ═════════════════════════════════════════════════════════════ */}
-      <div className="w-full bg-gradient-to-r from-[#060911] via-[#0b162c] to-[#060911] text-cyan-300 text-[11px] md:text-xs font-black uppercase tracking-[0.3em] text-center py-2 px-4 border-b border-blue-500/30 shadow-[0_4px_15px_rgba(0,102,255,0.2)] font-mono flex items-center justify-center gap-2">
-        <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_8px_#38bdf8]" />
-        <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-200 to-sky-400">
+      <div className="relative z-10 w-full bg-gradient-to-r from-[#04060b] via-[#091428] to-[#04060b] text-cyan-300 text-[11px] md:text-xs font-black uppercase tracking-[0.35em] text-center py-2 px-4 border-b border-blue-500/40 shadow-[0_4px_20px_rgba(0,102,255,0.25)] font-mono flex items-center justify-center gap-2">
+        <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_10px_#38bdf8]" />
+        <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-sky-100 to-blue-400 drop-shadow-[0_0_12px_rgba(56,189,248,0.5)]">
           TECNOLOGÍA, INDUSTRIA Y HOGAR
         </span>
-        <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_8px_#38bdf8]" />
+        <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_10px_#38bdf8]" />
       </div>
 
       {/* ═════════════════════════════════════════════════════════════ */}
       {/* 🍅 HEADER BAR: LIGHT CORAL TOMATO BRANDED NAV (#FF5733 / #FF4D4D) */}
       {/* ═════════════════════════════════════════════════════════════ */}
-      <header className="sticky top-0 z-50 bg-gradient-to-r from-[#ff6b4a] via-[#ff5733] to-[#ff4136] text-white shadow-xl border-b border-[#e04322] px-3 md:px-5 py-1.5 md:py-2">
+      <header className="relative z-10 sticky top-0 z-50 bg-gradient-to-r from-[#ff6b4a] via-[#ff5733] to-[#ff4136] text-white shadow-xl border-b border-[#e04322] px-3 md:px-5 py-1.5 md:py-2">
         <div className="max-w-6xl mx-auto flex items-center justify-between gap-2.5">
 
           {/* LEFT: HAMBURGER & LOGO */}
@@ -245,7 +142,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
             <Link href="/web" className="flex items-center gap-1.5 group">
               <AtomicLogoSVG />
               <div className="flex flex-col">
-                <span className="text-base md:text-xl font-black tracking-tight leading-none uppercase font-mono text-white drop-shadow-sm">
+                <span className="text-base md:text-xl font-black tracking-tight leading-none uppercase font-mono text-white drop-shadow-md">
                   ATOMIC
                 </span>
                 <span className="text-[8px] md:text-[10px] font-bold tracking-tight leading-tight text-amber-100 hidden sm:block">
@@ -313,7 +210,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
       {/* ═════════════════════════════════════════════════════════════ */}
       {/* 📌 MINI TABS NAVIGATION BAR: CATEGORIAS | LANDING PAGES | OFERTAS */}
       {/* ═════════════════════════════════════════════════════════════ */}
-      <nav className="bg-[#0b101c] border-b border-blue-500/20 shadow-md sticky top-[45px] md:top-[51px] z-40 px-3 py-1.5">
+      <nav className="relative z-10 bg-[#090e1a]/90 backdrop-blur-md border-b border-blue-500/25 shadow-md sticky top-[45px] md:top-[51px] z-40 px-3 py-1.5">
         <div className="max-w-6xl mx-auto flex items-center justify-center md:justify-start gap-4 md:gap-10">
 
           <button
@@ -353,13 +250,13 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
       </nav>
 
       {/* ═════════════════════════════════════════════════════════════ */}
-      {/* MAIN CONTAINER AREA (DARK OBSIDIAN & COBALT BLUE THEME)       */}
+      {/* MAIN CONTAINER AREA WITH 3D GLASS TILT CARDS                  */}
       {/* ═════════════════════════════════════════════════════════════ */}
-      <main className="max-w-6xl mx-auto px-3 md:px-5 pt-3">
+      <main className="relative z-10 max-w-6xl mx-auto px-3 md:px-5 pt-3">
 
         {/* SEARCH OVERRIDE RESULTS VIEW */}
         {searchQuery.trim() ? (
-          <div className="bg-[#0f172a] p-4 rounded-xl shadow-lg border border-blue-500/30 mb-6">
+          <div className="bg-[#0f172a]/90 backdrop-blur-md p-4 rounded-xl shadow-xl border border-blue-500/30 mb-6">
             <div className="flex items-center justify-between mb-3 pb-2 border-b border-blue-500/20">
               <h2 className="text-sm font-black text-white uppercase">
                 Resultados para: &quot;<span className="text-cyan-400">{searchQuery}</span>&quot;
@@ -389,7 +286,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                         href={`https://wa.me/593969043453?text=${encodeURIComponent(`Hola ATOMIC! Deseo cotizar: ${p.name} ($${(p.price || 0).toFixed(2)})`)}`}
                         target="_blank"
                         rel="noreferrer"
-                        className="w-full py-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-[9px] uppercase rounded transition-all text-center flex items-center justify-center gap-1 shadow-sm"
+                        className="w-full py-1 bg-gradient-to-r from-[#0066ff] to-[#1d4ed8] hover:from-[#0052cc] hover:to-[#1e40af] text-white font-bold text-[9px] uppercase rounded transition-all text-center flex items-center justify-center gap-1 shadow-md shadow-blue-500/20"
                       >
                         <MessageCircle size={10} /> Cotizar
                       </a>
@@ -402,49 +299,52 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
         ) : null}
 
         {/* ═════════════════════════════════════════════════════════════ */}
-        {/* TAB 1: CATEGORIAS VIEW (DARK OBSIDIAN & COBALT BLUE THEME)   */}
+        {/* TAB 1: CATEGORIAS VIEW WITH 3D WEBGL INTERACTIVE BADGES       */}
         {/* ═════════════════════════════════════════════════════════════ */}
         {!searchQuery.trim() && activeTab === 'categorias' && (
           <div className="space-y-4">
 
-            {/* TOP 12 CATEGORY RIBBON/GRID */}
+            {/* TOP 12 CATEGORY RIBBON/GRID WITH REAL-TIME 3D WEBGL BADGES */}
             <div className="flex sm:grid sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-6 gap-2 overflow-x-auto snap-x snap-mandatory pb-1 px-0.5 scrollbar-none">
               {categoryGridItems.map(item => {
-                const Icon = item.icon
                 return (
-                  <Link
+                  <motion.div
                     key={item.id}
-                    href={item.href}
-                    onClick={() => {
-                      if (item.href.startsWith('#')) {
-                        setSelectedCategoryFilter(item.title)
-                      }
-                    }}
-                    className="min-w-[105px] w-[105px] sm:w-auto shrink-0 snap-start bg-[#0e1424] border border-blue-500/20 p-2 md:p-2.5 rounded-xl shadow-md hover:shadow-blue-500/10 hover:border-blue-400 hover:-translate-y-0.5 transition-all flex flex-col items-center justify-center text-center group cursor-pointer"
+                    whileHover={{ scale: 1.03, rotateX: 3, rotateY: 3 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
                   >
-                    {/* REALISTIC 3D METALLIC ICON CONTAINER */}
-                    <div className={`w-8 h-8 md:w-9 md:h-9 rounded-xl ${item.metallicBg} ${item.metallicBorder} flex items-center justify-center ${item.textColor} mb-1 group-hover:scale-105 transition-transform`}>
-                      <Icon size={16} className="drop-shadow-2xs" />
-                    </div>
-                    <h3 className="font-black text-[10px] text-white uppercase tracking-tight group-hover:text-cyan-400 transition-colors line-clamp-1">
-                      {item.title}
-                    </h3>
-                    <span className="text-[8px] text-blue-300/80 font-medium mt-0.5 line-clamp-1">
-                      {item.sub}
-                    </span>
-                  </Link>
+                    <Link
+                      href={item.href}
+                      onClick={() => {
+                        if (item.href.startsWith('#')) {
+                          setSelectedCategoryFilter(item.title)
+                        }
+                      }}
+                      className="w-full min-w-[110px] sm:w-auto shrink-0 snap-start bg-[#0e1424]/90 backdrop-blur-md border border-blue-500/25 p-2 md:p-2.5 rounded-xl shadow-lg hover:shadow-blue-500/20 hover:border-blue-400 transition-all flex flex-col items-center justify-center text-center group cursor-pointer"
+                    >
+                      {/* REAL-TIME 3D THREE.JS / WEBGL INTERACTIVE BADGE */}
+                      <CategoryBadge3D categoryId={item.id} />
+
+                      <h3 className="font-black text-[10px] text-white uppercase tracking-tight group-hover:text-cyan-400 transition-colors line-clamp-1 mt-1">
+                        {item.title}
+                      </h3>
+                      <span className="text-[8px] text-blue-300/80 font-medium line-clamp-1">
+                        {item.sub}
+                      </span>
+                    </Link>
+                  </motion.div>
                 )
               })}
             </div>
 
-            {/* MAIN 3-COLUMN CONTENT BREAKDOWN */}
+            {/* MAIN 3-COLUMN CONTENT BREAKDOWN (3D OBSIDIAN GLASS TILT CARDS) */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 pt-0.5">
 
               {/* COLUMN 1 */}
               <div className="space-y-3.5">
                 
                 {/* INDUSTRIAL CARD */}
-                <div className="bg-[#0f172a] p-3.5 md:p-4 rounded-xl border border-blue-500/20 shadow-md space-y-1.5">
+                <div className="bg-[#0f172a]/90 backdrop-blur-md p-3.5 md:p-4 rounded-xl border border-blue-500/25 shadow-lg space-y-1.5 hover:border-blue-400 transition-all">
                   <h3 className="font-black text-xs md:text-sm text-cyan-400 uppercase tracking-tight flex items-center gap-1.5">
                     <Factory size={15} /> INDUSTRIAL
                   </h3>
@@ -462,7 +362,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                 </div>
 
                 {/* SERVICIOS CARD */}
-                <div className="bg-[#0f172a] p-3.5 md:p-4 rounded-xl border border-blue-500/20 shadow-md space-y-1.5">
+                <div className="bg-[#0f172a]/90 backdrop-blur-md p-3.5 md:p-4 rounded-xl border border-blue-500/25 shadow-lg space-y-1.5 hover:border-blue-400 transition-all">
                   <h3 className="font-black text-xs md:text-sm text-cyan-400 uppercase tracking-tight flex items-center gap-1.5">
                     <Award size={15} /> SERVICIOS
                   </h3>
@@ -480,7 +380,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                 </div>
 
                 {/* TELEFONÍA CARD */}
-                <div className="bg-[#0f172a] p-3.5 md:p-4 rounded-xl border border-blue-500/20 shadow-md space-y-1.5">
+                <div className="bg-[#0f172a]/90 backdrop-blur-md p-3.5 md:p-4 rounded-xl border border-blue-500/25 shadow-lg space-y-1.5 hover:border-blue-400 transition-all">
                   <h3 className="font-black text-xs md:text-sm text-cyan-400 uppercase tracking-tight flex items-center gap-1.5">
                     <Smartphone size={15} /> TELEFONÍA
                   </h3>
@@ -503,7 +403,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
               <div className="space-y-3.5">
                 
                 {/* HOGAR CARD */}
-                <div className="bg-[#0f172a] p-3.5 md:p-4 rounded-xl border border-blue-500/20 shadow-md space-y-1.5">
+                <div className="bg-[#0f172a]/90 backdrop-blur-md p-3.5 md:p-4 rounded-xl border border-blue-500/25 shadow-lg space-y-1.5 hover:border-blue-400 transition-all">
                   <h3 className="font-black text-xs md:text-sm text-cyan-400 uppercase tracking-tight flex items-center gap-1.5">
                     <Utensils size={15} /> HOGAR
                   </h3>
@@ -524,7 +424,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                 </div>
 
                 {/* SOFTWARE CARD */}
-                <div className="bg-[#0f172a] p-3.5 md:p-4 rounded-xl border border-blue-500/20 shadow-md space-y-1.5">
+                <div className="bg-[#0f172a]/90 backdrop-blur-md p-3.5 md:p-4 rounded-xl border border-blue-500/25 shadow-lg space-y-1.5 hover:border-blue-400 transition-all">
                   <h3 className="font-black text-xs md:text-sm text-cyan-400 uppercase tracking-tight flex items-center gap-1.5">
                     <Code size={15} /> SOFTWARE
                   </h3>
@@ -542,7 +442,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                 </div>
 
                 {/* COMPUTACIÓN CARD */}
-                <div className="bg-[#0f172a] p-3.5 md:p-4 rounded-xl border border-blue-500/20 shadow-md space-y-1.5">
+                <div className="bg-[#0f172a]/90 backdrop-blur-md p-3.5 md:p-4 rounded-xl border border-blue-500/25 shadow-lg space-y-1.5 hover:border-blue-400 transition-all">
                   <h3 className="font-black text-xs md:text-sm text-cyan-400 uppercase tracking-tight flex items-center gap-1.5">
                     <Laptop size={15} /> COMPUTACIÓN
                   </h3>
@@ -571,7 +471,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
               <div className="space-y-3.5">
                 
                 {/* TECNOLOGÍA RESIDENCIAL CARD */}
-                <div className="bg-[#0f172a] p-3.5 md:p-4 rounded-xl border border-blue-500/20 shadow-md space-y-1.5">
+                <div className="bg-[#0f172a]/90 backdrop-blur-md p-3.5 md:p-4 rounded-xl border border-blue-500/25 shadow-lg space-y-1.5 hover:border-blue-400 transition-all">
                   <h3 className="font-black text-xs md:text-sm text-cyan-400 uppercase tracking-tight flex items-center gap-1.5">
                     <Shield size={15} /> TECNOLOGÍA RESIDENCIAL
                   </h3>
@@ -589,7 +489,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                 </div>
 
                 {/* ELECTRÓNICA CARD */}
-                <div className="bg-[#0f172a] p-3.5 md:p-4 rounded-xl border border-blue-500/20 shadow-md space-y-1.5">
+                <div className="bg-[#0f172a]/90 backdrop-blur-md p-3.5 md:p-4 rounded-xl border border-blue-500/25 shadow-lg space-y-1.5 hover:border-blue-400 transition-all">
                   <h3 className="font-black text-xs md:text-sm text-cyan-400 uppercase tracking-tight flex items-center gap-1.5">
                     <Zap size={15} /> ELECTRÓNICA
                   </h3>
@@ -610,7 +510,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                 </div>
 
                 {/* TODOS LOS ARTÍCULOS BOX */}
-                <div className="bg-[#0f172a] border border-blue-500/20 rounded-xl p-3.5 md:p-4 shadow-md space-y-2">
+                <div className="bg-[#0f172a]/90 backdrop-blur-md border border-blue-500/25 rounded-xl p-3.5 md:p-4 shadow-lg space-y-2">
                   <button
                     onClick={() => setIsTodosArticulosOpen(!isTodosArticulosOpen)}
                     className="w-full flex items-center justify-between text-left font-black text-xs md:text-sm text-cyan-400 uppercase tracking-tight"
@@ -693,7 +593,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
         {/* ═════════════════════════════════════════════════════════════ */}
         {!searchQuery.trim() && activeTab === 'landings' && (
           <div className="space-y-4">
-            <div className="bg-[#0f172a] p-4 rounded-xl border border-blue-500/20 shadow-md">
+            <div className="bg-[#0f172a]/90 backdrop-blur-md p-4 rounded-xl border border-blue-500/25 shadow-lg">
               <h2 className="text-base md:text-lg font-black text-white uppercase tracking-tight mb-0.5">
                 Catálogo de Landing Pages Especializadas
               </h2>
@@ -707,12 +607,12 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                 <Link
                   key={idx}
                   href={lp.url}
-                  className="bg-[#0e1424] border border-blue-500/20 p-3.5 rounded-xl shadow-md hover:shadow-blue-500/10 hover:border-blue-400 transition-all flex flex-col justify-between group"
+                  className="bg-[#0e1424]/90 backdrop-blur-md border border-blue-500/25 p-3.5 rounded-xl shadow-lg hover:shadow-blue-500/20 hover:border-blue-400 transition-all flex flex-col justify-between group"
                 >
                   <div>
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-xl">{lp.image}</span>
-                      <span className="text-[8px] font-black font-mono bg-blue-900/60 text-cyan-300 px-2 py-0.5 rounded-full border border-blue-400/40">
+                      <span className="text-[8px] font-black font-mono bg-blue-900/80 text-cyan-300 px-2 py-0.5 rounded-full border border-blue-400/40">
                         {lp.tag}
                       </span>
                     </div>
@@ -750,7 +650,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
               
               {/* Promo Kit 1 */}
-              <div className="bg-[#0f172a] border border-blue-500/30 p-4 rounded-xl shadow-md space-y-3">
+              <div className="bg-[#0f172a]/90 backdrop-blur-md border border-blue-500/30 p-4 rounded-xl shadow-lg space-y-3">
                 <div className="inline-block bg-blue-950 text-cyan-300 font-mono text-[9px] font-black px-2 py-0.5 rounded-full uppercase border border-blue-400/30">
                   KIT OFERTA #1 GAMING
                 </div>
@@ -774,7 +674,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
               </div>
 
               {/* Promo Kit 2 */}
-              <div className="bg-[#0f172a] border border-blue-500/30 p-4 rounded-xl shadow-md space-y-3">
+              <div className="bg-[#0f172a]/90 backdrop-blur-md border border-blue-500/30 p-4 rounded-xl shadow-lg space-y-3">
                 <div className="inline-block bg-blue-950 text-cyan-300 font-mono text-[9px] font-black px-2 py-0.5 rounded-full uppercase border border-blue-400/30">
                   KIT OFERTA #2 SEGURIDAD
                 </div>
@@ -798,7 +698,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
               </div>
 
               {/* Promo Kit 3 */}
-              <div className="bg-[#0f172a] border border-blue-500/30 p-4 rounded-xl shadow-md space-y-3">
+              <div className="bg-[#0f172a]/90 backdrop-blur-md border border-blue-500/30 p-4 rounded-xl shadow-lg space-y-3">
                 <div className="inline-block bg-blue-950 text-cyan-300 font-mono text-[9px] font-black px-2 py-0.5 rounded-full uppercase border border-blue-400/30">
                   KIT OFERTA #3 COCINA
                 </div>
@@ -1214,7 +1114,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                   <div className="w-10 h-10 rounded-xl bg-blue-900/60 text-cyan-400 border border-blue-500/30 flex items-center justify-center">
                     <Truck size={20} />
                   </div>
-                  <h3 className="text-lg font-black uppercase text-slate-900 text-white">Seguimiento & Envíos</h3>
+                  <h3 className="text-lg font-black uppercase text-white">Seguimiento & Envíos</h3>
                   <p className="text-xs text-slate-300 font-medium leading-relaxed">
                     Realizamos envíos a todo Ecuador con número de guía en tiempo real para rastrear tu paquete.
                   </p>
