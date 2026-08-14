@@ -11,6 +11,8 @@ import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import { useCart } from "@/context/CartContext"
 
+import { BANNER_IMAGES } from "@/lib/banner-data"
+
 /* ── ATOMIC ATOM LOGO SVG (LUXURY HIGH-CONTRAST) ── */
 function AtomicLogoSVG() {
   return (
@@ -51,16 +53,16 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
-  // 24 Real Promotional Banners (Fail-Proof API Route)
+  // 24 Real Promotional Banners (100% Fail-Proof Inlined Data URIs)
   const volkswagenAdBanners = [
-    { title: 'CAMARAS ESPIAS & SEGURIDAD', sub: 'Protección Residencial & Industrial en Tiempo Real', img: '/api/web-banners/banner-13.jpg', tag: 'SEGURIDAD' },
-    { title: 'CONTROLES DE ACCESO BIOMETRICOS', sub: 'Sistemas Inteligentes ZKTECO con Reconocimiento Facial', img: '/api/web-banners/banner-14.jpg', tag: 'ACCESO' },
-    { title: 'MONITORES & PANTALLAS AHD 7"', sub: 'Visualización de Alta Definición con Grabación Continua', img: '/api/web-banners/banner-15.jpg', tag: 'GAMING' },
-    { title: 'MICROCOMPUTADORES & MINI PC', sub: 'Potencia Industrial en Chasis Ultra-Compactos', img: '/api/web-banners/banner-16.jpg', tag: 'HARDWARE' },
-    { title: 'BOTONERAS & PUERTAS AUTOMÁTICAS', sub: 'Control de Portones Industriales de Alta Resistencia', img: '/api/web-banners/banner-17.jpg', tag: 'AUTOMATIZACION' },
-    { title: 'SOLUCIONES EN DOMÓTICA & HOGAR', sub: 'Tecnología Inteligente para Tu Estilo de Vida', img: '/api/web-banners/banner-18.jpg', tag: 'HOGAR' },
-    { title: 'EQUIPAMIENTO DE COCINA A GAS', sub: 'Línea de Lujo en Acero Inoxidable en Centímetros', img: '/api/web-banners/banner-19.jpg', tag: 'COCINA' },
-    { title: 'CONSOLAS GAMING & DUALSENSE', sub: 'PlayStation 5 Slim, PS4, Xbox & Mandos Originales', img: '/api/web-banners/banner-20.jpg', tag: 'GAMING' },
+    { title: 'CAMARAS ESPIAS & SEGURIDAD', sub: 'Protección Residencial & Industrial en Tiempo Real', img: BANNER_IMAGES['banner-13.jpg'] || '/web-banners/banner-13.jpg', tag: 'SEGURIDAD' },
+    { title: 'CONTROLES DE ACCESO BIOMETRICOS', sub: 'Sistemas Inteligentes ZKTECO con Reconocimiento Facial', img: BANNER_IMAGES['banner-14.jpg'] || '/web-banners/banner-14.jpg', tag: 'ACCESO' },
+    { title: 'MONITORES & PANTALLAS AHD 7"', sub: 'Visualización de Alta Definición con Grabación Continua', img: BANNER_IMAGES['banner-15.jpg'] || '/web-banners/banner-15.jpg', tag: 'GAMING' },
+    { title: 'MICROCOMPUTADORES & MINI PC', sub: 'Potencia Industrial en Chasis Ultra-Compactos', img: BANNER_IMAGES['banner-16.jpg'] || '/web-banners/banner-16.jpg', tag: 'HARDWARE' },
+    { title: 'BOTONERAS & PUERTAS AUTOMÁTICAS', sub: 'Control de Portones Industriales de Alta Resistencia', img: BANNER_IMAGES['banner-17.jpg'] || '/web-banners/banner-17.jpg', tag: 'AUTOMATIZACION' },
+    { title: 'SOLUCIONES EN DOMÓTICA & HOGAR', sub: 'Tecnología Inteligente para Tu Estilo de Vida', img: BANNER_IMAGES['banner-18.jpg'] || '/web-banners/banner-18.jpg', tag: 'HOGAR' },
+    { title: 'EQUIPAMIENTO DE COCINA A GAS', sub: 'Línea de Lujo en Acero Inoxidable en Centímetros', img: BANNER_IMAGES['banner-19.jpg'] || '/web-banners/banner-19.jpg', tag: 'COCINA' },
+    { title: 'CONSOLAS GAMING & DUALSENSE', sub: 'PlayStation 5 Slim, PS4, Xbox & Mandos Originales', img: BANNER_IMAGES['banner-20.jpg'] || '/web-banners/banner-20.jpg', tag: 'GAMING' },
   ]
 
   // Auto Slider for Volkswagen Style Scroll Hero
