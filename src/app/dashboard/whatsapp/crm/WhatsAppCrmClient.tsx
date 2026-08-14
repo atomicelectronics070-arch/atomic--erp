@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react"
 import { 
     MessageSquare, Send, Search, User, Phone, CheckCheck, 
-    Sparkles, Plus, ExternalLink, ShieldCheck, Tag, RefreshCw
+    Sparkles, Plus, ExternalLink, ShieldCheck, Tag, RefreshCw, ChevronLeft
 } from "lucide-react"
 
 interface Chat {
@@ -49,7 +49,7 @@ export default function WhatsAppCrmClient() {
                         }
                     })
                     setChats(formattedChats)
-                    if (formattedChats.length > 0 && !activeChatId) {
+                    if (formattedChats.length > 0 && !activeChatId && window.innerWidth >= 768) {
                         setActiveChatId(formattedChats[0].id)
                     }
                 }
@@ -97,45 +97,45 @@ export default function WhatsAppCrmClient() {
         <div className="w-full h-[calc(100vh-4rem)] bg-[#050505] text-white flex flex-col font-sans">
             
             {/* Header */}
-            <div className="px-6 py-4 border-b border-slate-800 bg-slate-950 flex justify-between items-center shrink-0">
+            <div className="px-4 md:px-6 py-3 md:py-4 border-b border-slate-800 bg-slate-950 flex justify-between items-center shrink-0">
                 <div className="flex items-center gap-3">
                     <div className="w-3 h-3 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_10px_rgba(52,211,153,0.8)]" />
                     <div>
-                        <h1 className="text-xl font-black text-white flex items-center gap-2 tracking-tight">
-                            WhatsApp CRM Cloud Pro <span className="text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2.5 py-0.5 rounded-full">CONECTADO</span>
+                        <h1 className="text-base md:text-xl font-black text-white flex items-center gap-2 tracking-tight">
+                            WhatsApp CRM <span className="text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full">CONECTADO</span>
                         </h1>
-                        <p className="text-xs text-slate-300 font-medium">Gestión unificada de clientes y mensajería multicanal en vivo</p>
+                        <p className="text-[11px] md:text-xs text-slate-300 hidden sm:block font-medium">Gestión unificada de clientes y mensajería multicanal en vivo</p>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 md:gap-3">
                     <button
                         onClick={fetchConversations}
                         className="p-2 rounded-xl bg-slate-900 border border-slate-800 hover:border-emerald-500 text-slate-300 hover:text-white transition-all text-xs flex items-center gap-1 font-mono"
                     >
-                        <RefreshCw size={14} className={loading ? 'animate-spin' : ''} /> Actualizar
+                        <RefreshCw size={14} className={loading ? 'animate-spin' : ''} /> <span className="hidden sm:inline">Actualizar</span>
                     </button>
                     {activeChat && (
                         <a
                             href={`https://wa.me/${activeChat.phone.replace(/\D/g, '')}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-4 py-2 rounded-xl transition-all flex items-center gap-2 shadow-[0_0_15px_rgba(16,185,129,0.3)]"
+                            className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-3 py-2 md:px-4 rounded-xl transition-all flex items-center gap-1.5 shadow-[0_0_15px_rgba(16,185,129,0.3)]"
                         >
-                            <ExternalLink size={14} /> Abrir en WhatsApp Web
+                            <ExternalLink size={14} /> <span className="hidden md:inline">Abrir en WhatsApp Web</span>
                         </a>
                     )}
                 </div>
             </div>
 
-            {/* Split Screen Chat Interface */}
-            <div className="flex-1 flex overflow-hidden">
+            {/* Split Screen / Mobile View Chat Interface */}
+            <div className="flex-1 flex overflow-hidden relative">
                 
                 {/* Left Sidebar: Chat List */}
-                <div className="w-80 lg:w-96 border-r border-slate-800 bg-slate-900/90 flex flex-col shrink-0">
+                <div className={`w-full md:w-80 lg:w-96 border-r border-slate-800 bg-slate-900/90 flex-col shrink-0 ${activeChatId ? 'hidden md:flex' : 'flex'}`}>
                     
                     {/* Search Bar */}
-                    <div className="p-4 border-b border-slate-800 bg-slate-950">
+                    <div className="p-3 md:p-4 border-b border-slate-800 bg-slate-950">
                         <div className="relative">
                             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                             <input
@@ -179,30 +179,37 @@ export default function WhatsAppCrmClient() {
 
                 {/* Main Chat Area */}
                 {activeChat ? (
-                    <div className="flex-1 flex flex-col bg-[#080c10]">
+                    <div className={`flex-1 flex flex-col bg-[#080c10] ${activeChatId ? 'flex' : 'hidden md:flex'}`}>
                         
                         {/* Active Chat Header */}
-                        <div className="px-6 py-3 border-b border-slate-800 bg-slate-950 flex items-center justify-between">
+                        <div className="px-4 md:px-6 py-3 border-b border-slate-800 bg-slate-950 flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                                <div className="w-9 h-9 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-bold text-sm">
+                                {/* Mobile Back Button */}
+                                <button
+                                    onClick={() => setActiveChatId("")}
+                                    className="md:hidden p-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:text-white"
+                                >
+                                    <ChevronLeft size={18} />
+                                </button>
+                                <div className="w-9 h-9 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-bold text-sm shrink-0">
                                     <User size={18} />
                                 </div>
-                                <div>
-                                    <h3 className="font-bold text-sm text-white">{activeChat.name}</h3>
-                                    <p className="text-xs text-slate-400 font-mono">{activeChat.phone}</p>
+                                <div className="min-w-0">
+                                    <h3 className="font-bold text-xs md:text-sm text-white truncate">{activeChat.name}</h3>
+                                    <p className="text-[11px] text-slate-400 font-mono">{activeChat.phone}</p>
                                 </div>
                             </div>
                         </div>
 
                         {/* Messages Area */}
-                        <div className="flex-1 p-6 overflow-y-auto space-y-4">
+                        <div className="flex-1 p-4 md:p-6 overflow-y-auto space-y-4">
                             {activeChat.messages.map(msg => (
                                 <div
                                     key={msg.id}
                                     className={`flex flex-col ${msg.sender === "me" ? "items-end" : "items-start"}`}
                                 >
                                     <div
-                                        className={`max-w-md p-3.5 rounded-2xl text-xs leading-relaxed ${
+                                        className={`max-w-[85%] sm:max-w-md p-3.5 rounded-2xl text-xs leading-relaxed ${
                                             msg.sender === "me"
                                                 ? "bg-emerald-600 text-white rounded-br-none shadow-[0_4px_15px_rgba(16,185,129,0.2)]"
                                                 : "bg-slate-900 border border-slate-800 text-slate-200 rounded-bl-none"
@@ -216,32 +223,32 @@ export default function WhatsAppCrmClient() {
                         </div>
 
                         {/* Input Footer */}
-                        <div className="p-4 border-t border-slate-800 bg-slate-950 flex items-center gap-3">
+                        <div className="p-3 md:p-4 border-t border-slate-800 bg-slate-950 flex items-center gap-2 md:gap-3">
                             <input
                                 type="text"
                                 value={inputText}
                                 onChange={e => setInputText(e.target.value)}
                                 onKeyDown={e => e.key === "Enter" && handleSendMessage()}
                                 placeholder="Escribe un mensaje..."
-                                className="flex-1 bg-slate-900 border border-slate-800 p-3 rounded-xl text-xs text-white placeholder-slate-500 outline-none focus:border-emerald-400 font-mono"
+                                className="flex-1 bg-slate-900 border border-slate-800 p-2.5 md:p-3 rounded-xl text-xs text-white placeholder-slate-500 outline-none focus:border-emerald-400 font-mono"
                             />
                             <button
                                 onClick={handleSendMessage}
-                                className="bg-emerald-600 hover:bg-emerald-500 text-white p-3 rounded-xl transition-all shadow-[0_0_15px_rgba(16,185,129,0.3)] shrink-0"
+                                className="bg-emerald-600 hover:bg-emerald-500 text-white p-2.5 md:p-3 rounded-xl transition-all shadow-[0_0_15px_rgba(16,185,129,0.3)] shrink-0"
                             >
                                 <Send size={16} />
                             </button>
                         </div>
                     </div>
                 ) : (
-                    <div className="flex-1 flex flex-col items-center justify-center text-center p-8 bg-[#080c10]">
+                    <div className="hidden md:flex flex-1 flex-col items-center justify-center text-center p-8 bg-[#080c10]">
                         <MessageSquare className="w-16 h-16 text-slate-700 mb-4 animate-bounce" />
-                        <h3 className="text-lg font-bold text-slate-300 mb-2">Sin conversaciones activas</h3>
+                        <h3 className="text-lg font-bold text-slate-300 mb-2">Sin conversación seleccionada</h3>
                         <p className="text-xs text-slate-500 max-w-sm leading-relaxed mb-4">
-                            Los mensajes que envíen tus clientes a tu número de WhatsApp Business aparecerán aquí en vivo en tiempo real.
+                            Selecciona una conversación de la lista para ver los mensajes y chatear con tus clientes.
                         </p>
                         <div className="bg-slate-900 border border-slate-800 text-emerald-400 text-[11px] font-mono px-4 py-2 rounded-xl">
-                            Estado: CONECTADO · Webhook escuchando en /api/whatsapp/webhook
+                            Estado: CONECTADO · Webhook activo
                         </div>
                     </div>
                 )}
