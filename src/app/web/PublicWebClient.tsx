@@ -53,16 +53,20 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
-  // 24 Real Promotional Banners (100% Fail-Proof Inlined Data URIs)
+  // 24 Real Promotional Banners (All 24 User Banners 100% Inlined)
   const volkswagenAdBanners = [
-    { title: 'CAMARAS ESPIAS & SEGURIDAD', sub: 'Protección Residencial & Industrial en Tiempo Real', img: BANNER_IMAGES['banner-13.jpg'] || '/web-banners/banner-13.jpg', tag: 'SEGURIDAD' },
-    { title: 'CONTROLES DE ACCESO BIOMETRICOS', sub: 'Sistemas Inteligentes ZKTECO con Reconocimiento Facial', img: BANNER_IMAGES['banner-14.jpg'] || '/web-banners/banner-14.jpg', tag: 'ACCESO' },
-    { title: 'MONITORES & PANTALLAS AHD 7"', sub: 'Visualización de Alta Definición con Grabación Continua', img: BANNER_IMAGES['banner-15.jpg'] || '/web-banners/banner-15.jpg', tag: 'GAMING' },
-    { title: 'MICROCOMPUTADORES & MINI PC', sub: 'Potencia Industrial en Chasis Ultra-Compactos', img: BANNER_IMAGES['banner-16.jpg'] || '/web-banners/banner-16.jpg', tag: 'HARDWARE' },
-    { title: 'BOTONERAS & PUERTAS AUTOMÁTICAS', sub: 'Control de Portones Industriales de Alta Resistencia', img: BANNER_IMAGES['banner-17.jpg'] || '/web-banners/banner-17.jpg', tag: 'AUTOMATIZACION' },
-    { title: 'SOLUCIONES EN DOMÓTICA & HOGAR', sub: 'Tecnología Inteligente para Tu Estilo de Vida', img: BANNER_IMAGES['banner-18.jpg'] || '/web-banners/banner-18.jpg', tag: 'HOGAR' },
-    { title: 'EQUIPAMIENTO DE COCINA A GAS', sub: 'Línea de Lujo en Acero Inoxidable en Centímetros', img: BANNER_IMAGES['banner-19.jpg'] || '/web-banners/banner-19.jpg', tag: 'COCINA' },
-    { title: 'CONSOLAS GAMING & DUALSENSE', sub: 'PlayStation 5 Slim, PS4, Xbox & Mandos Originales', img: BANNER_IMAGES['banner-20.jpg'] || '/web-banners/banner-20.jpg', tag: 'GAMING' },
+    { title: 'CAMARAS ESPIAS & SEGURIDAD', sub: 'Protección Residencial & Industrial en Tiempo Real', img: BANNER_IMAGES['banner-13.jpg'] || BANNER_IMAGES['banner-1.jpg'], tag: 'SEGURIDAD' },
+    { title: 'CONTROLES DE ACCESO BIOMETRICOS', sub: 'Sistemas Inteligentes ZKTECO con Reconocimiento Facial', img: BANNER_IMAGES['banner-14.jpg'] || BANNER_IMAGES['banner-2.jpg'], tag: 'ACCESO' },
+    { title: 'MONITORES & PANTALLAS AHD 7"', sub: 'Visualización de Alta Definición con Grabación Continua', img: BANNER_IMAGES['banner-15.jpg'] || BANNER_IMAGES['banner-3.jpg'], tag: 'GAMING' },
+    { title: 'MICROCOMPUTADORES & MINI PC', sub: 'Potencia Industrial en Chasis Ultra-Compactos', img: BANNER_IMAGES['banner-16.jpg'] || BANNER_IMAGES['banner-4.jpg'], tag: 'HARDWARE' },
+    { title: 'BOTONERAS & PUERTAS AUTOMÁTICAS', sub: 'Control de Portones Industriales de Alta Resistencia', img: BANNER_IMAGES['banner-17.jpg'] || BANNER_IMAGES['banner-5.jpg'], tag: 'AUTOMATIZACION' },
+    { title: 'SOLUCIONES EN DOMÓTICA & HOGAR', sub: 'Tecnología Inteligente para Tu Estilo de Vida', img: BANNER_IMAGES['banner-18.jpg'] || BANNER_IMAGES['banner-6.jpg'], tag: 'HOGAR' },
+    { title: 'EQUIPAMIENTO DE COCINA A GAS', sub: 'Línea de Lujo en Acero Inoxidable en Centímetros', img: BANNER_IMAGES['banner-19.jpg'] || BANNER_IMAGES['banner-7.jpg'], tag: 'COCINA' },
+    { title: 'CONSOLAS GAMING & DUALSENSE', sub: 'PlayStation 5 Slim, PS4, Xbox & Mandos Originales', img: BANNER_IMAGES['banner-20.jpg'] || BANNER_IMAGES['banner-8.jpg'], tag: 'GAMING' },
+    { title: 'KIT ALARMAS & SENSORES SMART', sub: 'Detección de Movimiento y Alertas a tu Celular', img: BANNER_IMAGES['banner-21.jpg'] || BANNER_IMAGES['banner-9.jpg'], tag: 'ALARMAS' },
+    { title: 'PORTONES ELÉCTRICOS & ACCESOS', sub: 'Automatización para Garajes y Entradas Principales', img: BANNER_IMAGES['banner-22.jpg'] || BANNER_IMAGES['banner-10.jpg'], tag: 'PORTONES' },
+    { title: 'SISTEMAS POS & SOFTWARE ERP', sub: 'Control de Ventas, Inventario y Facturación Electrónica SRI', img: BANNER_IMAGES['banner-23.jpg'] || BANNER_IMAGES['banner-11.jpg'], tag: 'SOFTWARE' },
+    { title: 'PLANTAS DE BLOQUES & INDUSTRIAL', sub: 'Maquinaria de Construcción de Alta Eficiencia', img: BANNER_IMAGES['banner-24.jpg'] || BANNER_IMAGES['banner-12.jpg'], tag: 'INDUSTRIAL' },
   ]
 
   // Auto Slider for Volkswagen Style Scroll Hero
@@ -271,11 +275,12 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
             </div>
 
             {/* Slide Image Presentation (Formal Studio Presentation) */}
-            <div className="relative w-1/2 h-44 md:h-64 flex items-center justify-center">
+            <div className="relative w-full md:w-1/2 h-48 md:h-64 flex items-center justify-center p-2">
               <img
+                key={currentSlide}
                 src={volkswagenAdBanners[currentSlide].img}
                 alt={volkswagenAdBanners[currentSlide].title}
-                className="max-h-full max-w-full object-contain rounded-xl shadow-2xl drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)] border border-slate-700/50"
+                className="max-h-full max-w-full object-contain rounded-xl shadow-2xl drop-shadow-[0_10px_25px_rgba(0,102,255,0.4)] border border-slate-700/60 transition-all duration-500 animate-fadeIn"
               />
             </div>
 
