@@ -275,12 +275,20 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
             </div>
 
             {/* Slide Image Presentation (Formal Studio Presentation) */}
-            <div className="relative w-full md:w-1/2 h-48 md:h-64 flex items-center justify-center p-2">
+            <div className="relative w-full md:w-1/2 min-h-[180px] md:min-h-[240px] flex items-center justify-center p-3 rounded-xl border border-[#d4af37]/40 bg-slate-900/60 shadow-[0_0_20px_rgba(0,102,255,0.4)]">
               <img
                 key={currentSlide}
                 src={volkswagenAdBanners[currentSlide].img}
                 alt={volkswagenAdBanners[currentSlide].title}
-                className="max-h-full max-w-full object-contain rounded-xl shadow-2xl drop-shadow-[0_10px_25px_rgba(0,102,255,0.4)] border border-slate-700/60 transition-all duration-500 animate-fadeIn"
+                style={{
+                  maxHeight: '220px',
+                  maxWidth: '100%',
+                  objectFit: 'contain',
+                  borderRadius: '12px',
+                  border: '1.5px solid #d4af37',
+                  boxShadow: '0 0 25px rgba(0, 102, 255, 0.6)',
+                  backgroundColor: '#ffffff'
+                }}
               />
             </div>
 
@@ -317,11 +325,25 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                       <div className="flex items-center justify-between mb-2.5">
                         {/* ULTRA-THIN GOLD BORDER WHITE BOX WITH LUMINOUS ELECTRIC BLUE 3D SHADOW & SILHOUETTE ICON */}
                         <div className="relative group/icon">
-                          <div className="w-10 h-10 rounded-xl bg-white border border-[#d4af37] shadow-[0_0_18px_rgba(0,102,255,0.55)] flex items-center justify-center text-[#0f172a] group-hover:scale-110 transition-all duration-300 relative z-10">
-                            <Icon size={20} className="text-[#0f172a] stroke-[2.5]" />
+                          <div
+                            style={{
+                              backgroundColor: '#ffffff',
+                              border: '2px solid #d4af37',
+                              boxShadow: '0 0 22px rgba(0, 102, 255, 0.75)',
+                              borderRadius: '12px'
+                            }}
+                            className="w-10 h-10 flex items-center justify-center relative z-10 group-hover:scale-110 transition-transform duration-300"
+                          >
+                            <Icon size={20} style={{ color: '#0f172a', strokeWidth: 2.5 }} />
                           </div>
                           {/* SERRATED LIGHTNING BLUE BACKDROP SHADOW ACCENT */}
-                          <div className="absolute -inset-0.5 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-400 opacity-60 blur-[6px] group-hover:opacity-100 transition-opacity" />
+                          <div
+                            style={{
+                              background: 'linear-gradient(to right, #3b82f6, #06b6d4)',
+                              boxShadow: '0 0 25px rgba(0, 102, 255, 0.85)'
+                            }}
+                            className="absolute -inset-1 rounded-xl opacity-70 blur-[8px] group-hover:opacity-100 transition-opacity" 
+                          />
                         </div>
                         <span className="text-[10px] font-mono font-black text-white bg-gradient-to-r from-[#ff5733] to-[#ff4136] px-2.5 py-0.5 rounded-full border border-[#ff6b4a] shadow-sm">
                           Desde {cat.fromPrice}
