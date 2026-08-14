@@ -4,11 +4,21 @@ import { prisma } from '@/lib/prisma';
 const REAL_PHONE_NUMBER_ID_FALLBACK = '1215685301622222'; // Real Production Number ID (+593 96 322 6319)
 const API_VERSION = 'v21.0';
 
+export function sanitizeToE164(phone: string): string {
+    let digits = phone.replace(/\D/g, '');
+    // Ecuador phone formatting: if number starts with '09' (10 digits total), transform to '5939...'
+    if (digits.startsWith('09') && digits.length === 10) {
+        digits = '593' + digits.substring(1);
+    } else if (digits.length === 9 && digits.startsWith('9')) {
+        digits = '593' + digits;
+    }
+    return digits;
+}
+
 async function getWhatsAppCredentials() {
     let token = process.env.WHATSAPP_TOKEN;
     let phoneId = process.env.WHATSAPP_PHONE_NUMBER_ID || REAL_PHONE_NUMBER_ID_FALLBACK;
 
-    // Check DB overrides if available
     try {
         const dbPhoneId = await prisma.systemSetting.findUnique({ where: { key: 'WHATSAPP_PHONE_NUMBER_ID' } });
         if (dbPhoneId?.value) phoneId = dbPhoneId.value;
@@ -30,8 +40,10 @@ export async function sendWhatsAppMessage(to: string, message: string) {
             throw new Error('Falta la variable WHATSAPP_TOKEN en Railway o Base de Datos.');
         }
 
-        // Clean phone number to digits only
-        const cleanTo = to.replace(/\D/g, '');
+        // Clean and format phone number to strict international E.164 (e.g. 593969043453)
+        const cleanTo = sanitizeToE164(to);
+
+        console.log(`[WhatsApp Service] Sending message to clean recipient: ${cleanTo} using Phone ID: ${phoneId}`);
 
         const response = await axios.post(
             `https://graph.facebook.com/${API_VERSION}/${phoneId}/messages`,
@@ -65,7 +77,7 @@ export async function sendWhatsAppTemplate(to: string, templateName: string, lan
             throw new Error('Falta la variable WHATSAPP_TOKEN en Railway o Base de Datos.');
         }
 
-        const cleanTo = to.replace(/\D/g, '');
+        const cleanTo = sanitizeToE164(to);
 
         const response = await axios.post(
             `https://graph.facebook.com/${API_VERSION}/${phoneId}/messages`,

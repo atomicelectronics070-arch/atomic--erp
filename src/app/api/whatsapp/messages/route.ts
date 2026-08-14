@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { sendWhatsAppMessage } from '@/lib/whatsapp/service';
+import { sendWhatsAppMessage, sanitizeToE164 } from '@/lib/whatsapp/service';
 
 export async function POST(req: Request) {
     try {
@@ -18,11 +18,29 @@ export async function POST(req: Request) {
 
         if (!conversation) return NextResponse.json({ error: 'Conversación no encontrada' }, { status: 404 });
 
+        // Ensure recipient phone is sanitized to E.164 (593...)
+        const rawPhone = conversation.contact.whatsappId;
+        const e164Phone = sanitizeToE164(rawPhone);
+
+        // Update contact in DB if raw phone was not in E.164
+        if (rawPhone !== e164Phone) {
+            try {
+                await prisma.wAContact.update({
+                    where: { id: conversation.contact.id },
+                    data: { whatsappId: e164Phone }
+                });
+            } catch (e) {
+                // Ignore if unique constraint collision occurs
+            }
+        }
+
         // 1. Send via Meta API
         let waMsgId = `out-${Date.now()}`;
+        let metaResponsePayload: any = null;
+
         try {
-            const waResult = await sendWhatsAppMessage(conversation.contact.whatsappId, text);
-            if (waResult?.messages?.[0]?.id) waMsgId = waResult.messages[0].id;
+            metaResponsePayload = await sendWhatsAppMessage(e164Phone, text);
+            if (metaResponsePayload?.messages?.[0]?.id) waMsgId = metaResponsePayload.messages[0].id;
         } catch (err: any) {
             console.error('Failed to send via Meta Cloud API:', err.message);
             return NextResponse.json({ error: `Error Meta WhatsApp: ${err.message}` }, { status: 400 });
@@ -44,10 +62,13 @@ export async function POST(req: Request) {
         // 3. Update conversation
         await prisma.wAConversation.update({
             where: { id: conversationId },
-            data: { status: 'OPEN', updatedAt: new Date() }
+            data: { status: 'OPEN', updatedAt: new Date(), lastMessageAt: new Date() }
         });
 
-        return NextResponse.json(message);
+        return NextResponse.json({
+            ...message,
+            metaResponse: metaResponsePayload
+        });
     } catch (error: any) {
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
