@@ -119,9 +119,13 @@ export default function WhatsAppCrmClient() {
             })
             if (res.ok) {
                 fetchConversations()
+            } else {
+                const errorData = await res.json()
+                alert(`⚠️ Error de entrega de Meta WhatsApp API:\n\n${errorData.error || 'No se pudo despachar el mensaje.'}`)
             }
-        } catch (e) {
+        } catch (e: any) {
             console.error('Error sending message:', e)
+            alert(`⚠️ Error de red al enviar mensaje: ${e.message}`)
         }
     }
 
