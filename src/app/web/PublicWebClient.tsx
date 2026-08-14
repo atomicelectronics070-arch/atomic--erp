@@ -68,16 +68,16 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
     return result
   }, [initialProducts, searchQuery, selectedCategoryFilter])
 
-  // 12 Top Category Grid Items with Realistic Metallic Badges (Compact)
+  // 12 Top Category Grid Items with Realistic Metallic Badges & Blue Injections
   const categoryGridItems = [
     { 
       id: 'industrial', 
       title: 'INDUSTRIAL', 
       sub: 'Automatización', 
       icon: Factory, 
-      metallicBg: 'bg-gradient-to-b from-amber-100 via-amber-200 to-amber-500', 
-      metallicBorder: 'border border-amber-300 shadow-[inset_0_1px_2px_rgba(255,255,255,0.9),0_2px_6px_rgba(0,0,0,0.1)]', 
-      textColor: 'text-amber-950',
+      metallicBg: 'bg-gradient-to-b from-blue-100 via-slate-200 to-blue-600', 
+      metallicBorder: 'border border-blue-300 shadow-[inset_0_1px_2px_rgba(255,255,255,0.9),0_2px_6px_rgba(0,0,0,0.1)]', 
+      textColor: 'text-blue-950',
       href: '#industrial' 
     },
     { 
@@ -85,7 +85,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
       title: 'SERVICIOS', 
       sub: 'Asesoría', 
       icon: Award, 
-      metallicBg: 'bg-gradient-to-b from-sky-100 via-slate-200 to-blue-600', 
+      metallicBg: 'bg-gradient-to-b from-cyan-100 via-blue-200 to-indigo-600', 
       metallicBorder: 'border border-blue-300 shadow-[inset_0_1px_2px_rgba(255,255,255,0.9),0_2px_6px_rgba(0,0,0,0.1)]', 
       textColor: 'text-blue-950',
       href: '#servicios' 
@@ -95,7 +95,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
       title: 'COMPUTACIÓN', 
       sub: 'Laptops', 
       icon: Laptop, 
-      metallicBg: 'bg-gradient-to-b from-purple-100 via-slate-200 to-indigo-600', 
+      metallicBg: 'bg-gradient-to-b from-purple-100 via-slate-200 to-blue-700', 
       metallicBorder: 'border border-purple-300 shadow-[inset_0_1px_2px_rgba(255,255,255,0.9),0_2px_6px_rgba(0,0,0,0.1)]', 
       textColor: 'text-purple-950',
       href: '/web/cpus' 
@@ -105,9 +105,9 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
       title: 'TELEFONÍA', 
       sub: 'Celulares', 
       icon: Smartphone, 
-      metallicBg: 'bg-gradient-to-b from-emerald-100 via-slate-200 to-teal-600', 
-      metallicBorder: 'border border-emerald-300 shadow-[inset_0_1px_2px_rgba(255,255,255,0.9),0_2px_6px_rgba(0,0,0,0.1)]', 
-      textColor: 'text-emerald-950',
+      metallicBg: 'bg-gradient-to-b from-blue-100 via-teal-200 to-sky-600', 
+      metallicBorder: 'border border-sky-300 shadow-[inset_0_1px_2px_rgba(255,255,255,0.9),0_2px_6px_rgba(0,0,0,0.1)]', 
+      textColor: 'text-sky-950',
       href: '/web/phones' 
     },
     { 
@@ -115,9 +115,9 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
       title: 'MINI PC', 
       sub: 'Compactos', 
       icon: Cpu, 
-      metallicBg: 'bg-gradient-to-b from-slate-100 via-slate-300 to-zinc-500', 
-      metallicBorder: 'border border-slate-300 shadow-[inset_0_1px_2px_rgba(255,255,255,0.9),0_2px_6px_rgba(0,0,0,0.1)]', 
-      textColor: 'text-zinc-950',
+      metallicBg: 'bg-gradient-to-b from-slate-100 via-slate-300 to-blue-600', 
+      metallicBorder: 'border border-blue-300 shadow-[inset_0_1px_2px_rgba(255,255,255,0.9),0_2px_6px_rgba(0,0,0,0.1)]', 
+      textColor: 'text-blue-950',
       href: '/web/cpus' 
     },
     { 
@@ -125,7 +125,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
       title: 'MONITORES', 
       sub: 'Gaming HD', 
       icon: Laptop, 
-      metallicBg: 'bg-gradient-to-b from-cyan-100 via-slate-200 to-blue-600', 
+      metallicBg: 'bg-gradient-to-b from-cyan-100 via-slate-200 to-blue-700', 
       metallicBorder: 'border border-cyan-300 shadow-[inset_0_1px_2px_rgba(255,255,255,0.9),0_2px_6px_rgba(0,0,0,0.1)]', 
       textColor: 'text-blue-950',
       href: '/web/cpus' 
@@ -135,9 +135,9 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
       title: 'TABLETS NIÑOS', 
       sub: 'Edición Kids', 
       icon: Smartphone, 
-      metallicBg: 'bg-gradient-to-b from-pink-100 via-rose-200 to-rose-500', 
-      metallicBorder: 'border border-pink-300 shadow-[inset_0_1px_2px_rgba(255,255,255,0.9),0_2px_6px_rgba(0,0,0,0.1)]', 
-      textColor: 'text-rose-950',
+      metallicBg: 'bg-gradient-to-b from-sky-100 via-indigo-200 to-blue-600', 
+      metallicBorder: 'border border-blue-300 shadow-[inset_0_1px_2px_rgba(255,255,255,0.9),0_2px_6px_rgba(0,0,0,0.1)]', 
+      textColor: 'text-blue-950',
       href: '/web/phones' 
     },
     { 
@@ -145,9 +145,9 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
       title: 'PORTONES', 
       sub: 'Control Acceso', 
       icon: Lock, 
-      metallicBg: 'bg-gradient-to-b from-zinc-100 via-zinc-300 to-zinc-600', 
-      metallicBorder: 'border border-zinc-400 shadow-[inset_0_1px_2px_rgba(255,255,255,0.9),0_2px_6px_rgba(0,0,0,0.1)]', 
-      textColor: 'text-zinc-950',
+      metallicBg: 'bg-gradient-to-b from-blue-100 via-zinc-300 to-slate-700', 
+      metallicBorder: 'border border-blue-400 shadow-[inset_0_1px_2px_rgba(255,255,255,0.9),0_2px_6px_rgba(0,0,0,0.1)]', 
+      textColor: 'text-slate-950',
       href: '/web/intercomunicacion' 
     },
     { 
@@ -155,9 +155,9 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
       title: 'HOGAR', 
       sub: 'Cocina & Luz', 
       icon: Utensils, 
-      metallicBg: 'bg-gradient-to-b from-amber-100 via-orange-200 to-amber-600', 
+      metallicBg: 'bg-gradient-to-b from-amber-100 via-orange-200 to-blue-600', 
       metallicBorder: 'border border-amber-300 shadow-[inset_0_1px_2px_rgba(255,255,255,0.9),0_2px_6px_rgba(0,0,0,0.1)]', 
-      textColor: 'text-amber-950',
+      textColor: 'text-blue-950',
       href: '/web/cocinas' 
     },
     { 
@@ -165,9 +165,9 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
       title: 'SOFTWARE', 
       sub: 'Systems & Web', 
       icon: Code, 
-      metallicBg: 'bg-gradient-to-b from-cyan-100 via-slate-200 to-teal-600', 
+      metallicBg: 'bg-gradient-to-b from-blue-100 via-cyan-200 to-indigo-700', 
       metallicBorder: 'border border-cyan-300 shadow-[inset_0_1px_2px_rgba(255,255,255,0.9),0_2px_6px_rgba(0,0,0,0.1)]', 
-      textColor: 'text-teal-950',
+      textColor: 'text-blue-950',
       href: '/web/software' 
     },
     { 
@@ -175,9 +175,9 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
       title: 'TECNOLOGÍA RES.', 
       sub: 'Alarmas', 
       icon: Shield, 
-      metallicBg: 'bg-gradient-to-b from-emerald-100 via-slate-200 to-emerald-600', 
-      metallicBorder: 'border border-emerald-300 shadow-[inset_0_1px_2px_rgba(255,255,255,0.9),0_2px_6px_rgba(0,0,0,0.1)]', 
-      textColor: 'text-emerald-950',
+      metallicBg: 'bg-gradient-to-b from-emerald-100 via-slate-200 to-blue-600', 
+      metallicBorder: 'border border-blue-300 shadow-[inset_0_1px_2px_rgba(255,255,255,0.9),0_2px_6px_rgba(0,0,0,0.1)]', 
+      textColor: 'text-blue-950',
       href: '/web/conjuntos-smart' 
     },
     { 
@@ -185,9 +185,9 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
       title: 'ELECTRÓNICA', 
       sub: 'Cables & Micro', 
       icon: Zap, 
-      metallicBg: 'bg-gradient-to-b from-red-100 via-rose-200 to-red-600', 
-      metallicBorder: 'border border-red-300 shadow-[inset_0_1px_2px_rgba(255,255,255,0.9),0_2px_6px_rgba(0,0,0,0.1)]', 
-      textColor: 'text-red-950',
+      metallicBg: 'bg-gradient-to-b from-blue-100 via-sky-200 to-indigo-700', 
+      metallicBorder: 'border border-blue-300 shadow-[inset_0_1px_2px_rgba(255,255,255,0.9),0_2px_6px_rgba(0,0,0,0.1)]', 
+      textColor: 'text-blue-950',
       href: '#electronica' 
     },
   ]
@@ -213,7 +213,16 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
   ]
 
   return (
-    <div className="w-full bg-[#f4f5f8] min-h-screen text-slate-900 font-sans selection:bg-red-500 selection:text-white pb-20">
+    <div className="w-full bg-[#f4f5f8] min-h-screen text-slate-900 font-sans selection:bg-blue-500 selection:text-white pb-20">
+
+      {/* ═════════════════════════════════════════════════════════════ */}
+      {/* 👑 TOP STANDALONE SLOGAN HEADER BAR (CENTERED AND ALONE)      */}
+      {/* ═════════════════════════════════════════════════════════════ */}
+      <div className="w-full bg-gradient-to-r from-blue-950 via-blue-700 to-indigo-950 text-white text-[11px] md:text-xs font-black uppercase tracking-[0.25em] text-center py-2 px-4 border-b border-blue-400/30 shadow-md font-mono flex items-center justify-center gap-2">
+        <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+        <span>TECNOLOGÍA, INDUSTRIA Y HOGAR</span>
+        <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+      </div>
 
       {/* ═════════════════════════════════════════════════════════════ */}
       {/* 🔴 HEADER BAR: ATOMIC BRANDED CRIMSON RED NAV (#DC2626) - SLIM */}
@@ -237,8 +246,8 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                 <span className="text-base md:text-xl font-black tracking-tight leading-none uppercase font-mono">
                   ATOMIC
                 </span>
-                <span className="text-[8px] md:text-[10px] font-semibold opacity-90 tracking-tight leading-tight hidden sm:block">
-                  Tecnología, industria y Hogar
+                <span className="text-[8px] md:text-[10px] font-semibold opacity-90 tracking-tight leading-tight text-blue-100 hidden sm:block">
+                  Hardware & Software
                 </span>
               </div>
             </Link>
@@ -250,8 +259,8 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Buscar..."
-              className="w-full bg-white text-slate-900 border border-red-200 rounded-full py-1 md:py-1.5 pl-8 pr-8 text-xs font-medium shadow-inner outline-none focus:ring-2 focus:ring-red-300 transition-all"
+              placeholder="Buscar producto..."
+              className="w-full bg-white text-slate-900 border border-blue-200 rounded-full py-1 md:py-1.5 pl-8 pr-8 text-xs font-medium shadow-inner outline-none focus:ring-2 focus:ring-blue-400 transition-all"
             />
             <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
             {searchQuery && (
@@ -268,7 +277,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
           <div className="flex items-center gap-1 md:gap-2 shrink-0">
             <button
               onClick={() => setModalType('profile')}
-              className="p-1.5 md:p-2 rounded-full bg-red-700/90 hover:bg-red-800 transition-all text-white shadow-sm hover:scale-105 active:scale-95"
+              className="p-1.5 md:p-2 rounded-full bg-blue-700 hover:bg-blue-800 transition-all text-white shadow-sm hover:scale-105 active:scale-95"
               title="Perfil de Usuario"
             >
               <User size={16} />
@@ -276,12 +285,12 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
 
             <button
               onClick={() => setModalType('cart')}
-              className="p-1.5 md:p-2 rounded-full bg-red-700/90 hover:bg-red-800 transition-all text-white shadow-sm relative hover:scale-105 active:scale-95"
+              className="p-1.5 md:p-2 rounded-full bg-blue-700 hover:bg-blue-800 transition-all text-white shadow-sm relative hover:scale-105 active:scale-95"
               title="Carrito de Compras"
             >
               <ShoppingCart size={16} />
               {totalItems > 0 && (
-                <span className="absolute -top-1 -right-1 bg-yellow-400 text-red-950 font-black text-[8px] w-4 h-4 rounded-full flex items-center justify-center border-2 border-red-600 shadow-sm">
+                <span className="absolute -top-1 -right-1 bg-yellow-400 text-red-950 font-black text-[8px] w-4 h-4 rounded-full flex items-center justify-center border-2 border-blue-700 shadow-sm">
                   {totalItems}
                 </span>
               )}
@@ -289,7 +298,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
 
             <button
               onClick={() => setModalType('envios')}
-              className="p-1.5 md:p-2 rounded-full bg-red-700/90 hover:bg-red-800 transition-all text-white shadow-sm hover:scale-105 active:scale-95"
+              className="p-1.5 md:p-2 rounded-full bg-blue-700 hover:bg-blue-800 transition-all text-white shadow-sm hover:scale-105 active:scale-95"
               title="Seguimiento de Envíos"
             >
               <Truck size={16} />
@@ -309,7 +318,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
             onClick={() => setActiveTab('categorias')}
             className={`font-black text-xs tracking-wider uppercase transition-all pb-0.5 border-b-2 ${
               activeTab === 'categorias'
-                ? 'border-red-600 text-red-600'
+                ? 'border-blue-600 text-blue-600'
                 : 'border-transparent text-slate-700 hover:text-slate-900'
             }`}
           >
@@ -320,7 +329,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
             onClick={() => setActiveTab('landings')}
             className={`font-black text-xs tracking-wider uppercase transition-all pb-0.5 border-b-2 ${
               activeTab === 'landings'
-                ? 'border-red-600 text-red-600'
+                ? 'border-blue-600 text-blue-600'
                 : 'border-transparent text-slate-700 hover:text-slate-900'
             }`}
           >
@@ -331,7 +340,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
             onClick={() => setActiveTab('ofertas')}
             className={`font-black text-xs tracking-wider uppercase transition-all pb-0.5 border-b-2 ${
               activeTab === 'ofertas'
-                ? 'border-red-600 text-red-600'
+                ? 'border-blue-600 text-blue-600'
                 : 'border-transparent text-slate-700 hover:text-slate-900'
             }`}
           >
@@ -351,7 +360,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
           <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 mb-6">
             <div className="flex items-center justify-between mb-3 pb-2 border-b border-slate-100">
               <h2 className="text-sm font-black text-slate-900 uppercase">
-                Resultados para: &quot;<span className="text-red-600">{searchQuery}</span>&quot;
+                Resultados para: &quot;<span className="text-blue-600">{searchQuery}</span>&quot;
               </h2>
               <span className="text-[10px] font-bold text-slate-500 font-mono">
                 {filteredProducts.length} productos
@@ -365,9 +374,9 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
                 {filteredProducts.slice(0, 36).map(p => (
-                  <div key={p.id} className="bg-slate-50 border border-slate-200 p-2.5 rounded-lg flex flex-col justify-between hover:border-red-500 transition-all">
+                  <div key={p.id} className="bg-slate-50 border border-slate-200 p-2.5 rounded-lg flex flex-col justify-between hover:border-blue-500 transition-all">
                     <div>
-                      <span className="text-[8px] font-mono text-red-600 uppercase font-bold block mb-1">
+                      <span className="text-[8px] font-mono text-blue-600 uppercase font-bold block mb-1">
                         {p.category?.name || 'General'}
                       </span>
                       <h4 className="font-bold text-[11px] text-slate-900 line-clamp-2 mb-1">{p.name}</h4>
@@ -378,7 +387,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                         href={`https://wa.me/593969043453?text=${encodeURIComponent(`Hola ATOMIC! Deseo cotizar: ${p.name} ($${(p.price || 0).toFixed(2)})`)}`}
                         target="_blank"
                         rel="noreferrer"
-                        className="w-full py-1 bg-red-600 hover:bg-red-700 text-white font-bold text-[9px] uppercase rounded transition-all text-center flex items-center justify-center gap-1 shadow-sm"
+                        className="w-full py-1 bg-blue-600 hover:bg-blue-700 text-white font-bold text-[9px] uppercase rounded transition-all text-center flex items-center justify-center gap-1 shadow-sm"
                       >
                         <MessageCircle size={10} /> Cotizar
                       </a>
@@ -409,13 +418,13 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                         setSelectedCategoryFilter(item.title)
                       }
                     }}
-                    className="min-w-[105px] w-[105px] sm:w-auto shrink-0 snap-start bg-white border border-slate-200 p-2 md:p-2.5 rounded-xl shadow-2xs hover:shadow-sm hover:-translate-y-0.5 transition-all flex flex-col items-center justify-center text-center group cursor-pointer"
+                    className="min-w-[105px] w-[105px] sm:w-auto shrink-0 snap-start bg-white border border-slate-200 p-2 md:p-2.5 rounded-xl shadow-2xs hover:shadow-sm hover:border-blue-400 hover:-translate-y-0.5 transition-all flex flex-col items-center justify-center text-center group cursor-pointer"
                   >
                     {/* REALISTIC 3D METALLIC ICON CONTAINER (COMPACT) */}
                     <div className={`w-8 h-8 md:w-9 md:h-9 rounded-xl ${item.metallicBg} ${item.metallicBorder} flex items-center justify-center ${item.textColor} mb-1 group-hover:scale-105 transition-transform`}>
                       <Icon size={16} className="drop-shadow-2xs" />
                     </div>
-                    <h3 className="font-black text-[10px] text-slate-900 uppercase tracking-tight group-hover:text-red-600 transition-colors line-clamp-1">
+                    <h3 className="font-black text-[10px] text-slate-900 uppercase tracking-tight group-hover:text-blue-600 transition-colors line-clamp-1">
                       {item.title}
                     </h3>
                     <span className="text-[8px] text-slate-500 font-medium mt-0.5 line-clamp-1">
@@ -434,54 +443,54 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                 
                 {/* INDUSTRIAL CARD */}
                 <div className="bg-white p-3.5 md:p-4 rounded-xl border border-slate-200 shadow-2xs space-y-1.5">
-                  <h3 className="font-black text-xs md:text-sm text-red-700 uppercase tracking-tight flex items-center gap-1.5">
+                  <h3 className="font-black text-xs md:text-sm text-blue-700 uppercase tracking-tight flex items-center gap-1.5">
                     <Factory size={15} /> INDUSTRIAL
                   </h3>
                   <ul className="space-y-1 text-[11px] text-slate-800 font-semibold">
-                    <li className="flex items-center gap-1.5 hover:text-red-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Automatización')}>
-                      <span className="text-red-500">•</span> Automatización
+                    <li className="flex items-center gap-1.5 hover:text-blue-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Automatización')}>
+                      <span className="text-blue-500">•</span> Automatización
                     </li>
-                    <li className="flex items-center gap-1.5 hover:text-red-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Lubricación')}>
-                      <span className="text-red-500">•</span> Lubricación
+                    <li className="flex items-center gap-1.5 hover:text-blue-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Lubricación')}>
+                      <span className="text-blue-500">•</span> Lubricación
                     </li>
-                    <li className="flex items-center gap-1.5 hover:text-red-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Generadores')}>
-                      <span className="text-red-500">•</span> Generadores
+                    <li className="flex items-center gap-1.5 hover:text-blue-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Generadores')}>
+                      <span className="text-blue-500">•</span> Generadores
                     </li>
                   </ul>
                 </div>
 
                 {/* SERVICIOS CARD */}
                 <div className="bg-white p-3.5 md:p-4 rounded-xl border border-slate-200 shadow-2xs space-y-1.5">
-                  <h3 className="font-black text-xs md:text-sm text-red-700 uppercase tracking-tight flex items-center gap-1.5">
+                  <h3 className="font-black text-xs md:text-sm text-blue-700 uppercase tracking-tight flex items-center gap-1.5">
                     <Award size={15} /> SERVICIOS
                   </h3>
                   <ul className="space-y-1 text-[11px] text-slate-800 font-semibold">
-                    <li className="flex items-center gap-1.5 hover:text-red-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Asesoría')}>
-                      <span className="text-red-500">•</span> Asesoría
+                    <li className="flex items-center gap-1.5 hover:text-blue-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Asesoría')}>
+                      <span className="text-blue-500">•</span> Asesoría
                     </li>
-                    <li className="flex items-center gap-1.5 hover:text-red-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Especialización')}>
-                      <span className="text-red-500">•</span> Especialización
+                    <li className="flex items-center gap-1.5 hover:text-blue-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Especialización')}>
+                      <span className="text-blue-500">•</span> Especialización
                     </li>
-                    <li className="flex items-center gap-1.5 hover:text-red-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Peritaciones')}>
-                      <span className="text-red-500">•</span> Peritaciones
+                    <li className="flex items-center gap-1.5 hover:text-blue-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Peritaciones')}>
+                      <span className="text-blue-500">•</span> Peritaciones
                     </li>
                   </ul>
                 </div>
 
                 {/* TELEFONÍA CARD */}
                 <div className="bg-white p-3.5 md:p-4 rounded-xl border border-slate-200 shadow-2xs space-y-1.5">
-                  <h3 className="font-black text-xs md:text-sm text-red-700 uppercase tracking-tight flex items-center gap-1.5">
+                  <h3 className="font-black text-xs md:text-sm text-blue-700 uppercase tracking-tight flex items-center gap-1.5">
                     <Smartphone size={15} /> TELEFONÍA
                   </h3>
                   <ul className="space-y-1 text-[11px] text-slate-800 font-semibold">
-                    <li className="flex items-center gap-1.5 hover:text-red-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Celulares')}>
-                      <span className="text-red-500">•</span> Celulares
+                    <li className="flex items-center gap-1.5 hover:text-blue-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Celulares')}>
+                      <span className="text-blue-500">•</span> Celulares
                     </li>
-                    <li className="flex items-center gap-1.5 hover:text-red-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Tablets')}>
-                      <span className="text-red-500">•</span> Tablets
+                    <li className="flex items-center gap-1.5 hover:text-blue-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Tablets')}>
+                      <span className="text-blue-500">•</span> Tablets
                     </li>
-                    <li className="flex items-center gap-1.5 hover:text-red-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Tablets infantiles')}>
-                      <span className="text-red-500">•</span> Tablets infantiles
+                    <li className="flex items-center gap-1.5 hover:text-blue-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Tablets infantiles')}>
+                      <span className="text-blue-500">•</span> Tablets infantiles
                     </li>
                   </ul>
                 </div>
@@ -493,20 +502,20 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                 
                 {/* HOGAR CARD */}
                 <div className="bg-white p-3.5 md:p-4 rounded-xl border border-slate-200 shadow-2xs space-y-1.5">
-                  <h3 className="font-black text-xs md:text-sm text-red-700 uppercase tracking-tight flex items-center gap-1.5">
+                  <h3 className="font-black text-xs md:text-sm text-blue-700 uppercase tracking-tight flex items-center gap-1.5">
                     <Utensils size={15} /> HOGAR
                   </h3>
                   <ul className="space-y-1 text-[11px] text-slate-800 font-semibold">
-                    <li className="flex items-center gap-1.5 hover:text-red-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Iluminación')}>
+                    <li className="flex items-center gap-1.5 hover:text-blue-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Iluminación')}>
                       <span>💡</span> Iluminación
                     </li>
-                    <li className="flex items-center gap-1.5 hover:text-red-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Cocina')}>
+                    <li className="flex items-center gap-1.5 hover:text-blue-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Cocina')}>
                       <span>🍳</span> Cocina
                     </li>
-                    <li className="flex items-center gap-1.5 hover:text-red-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Domotica')}>
+                    <li className="flex items-center gap-1.5 hover:text-blue-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Domotica')}>
                       <span>🏠</span> Domotica
                     </li>
-                    <li className="flex items-center gap-1.5 hover:text-red-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Entretenimiento')}>
+                    <li className="flex items-center gap-1.5 hover:text-blue-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Entretenimiento')}>
                       <span>🎮</span> Entretenimiento
                     </li>
                   </ul>
@@ -514,42 +523,42 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
 
                 {/* SOFTWARE CARD */}
                 <div className="bg-white p-3.5 md:p-4 rounded-xl border border-slate-200 shadow-2xs space-y-1.5">
-                  <h3 className="font-black text-xs md:text-sm text-red-700 uppercase tracking-tight flex items-center gap-1.5">
+                  <h3 className="font-black text-xs md:text-sm text-blue-700 uppercase tracking-tight flex items-center gap-1.5">
                     <Code size={15} /> SOFTWARE
                   </h3>
                   <ul className="space-y-1 text-[11px] text-slate-800 font-semibold">
-                    <li className="flex items-center gap-1.5 hover:text-red-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Automatización')}>
-                      <span className="text-red-500">•</span> Automatización
+                    <li className="flex items-center gap-1.5 hover:text-blue-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Automatización')}>
+                      <span className="text-blue-500">•</span> Automatización
                     </li>
-                    <li className="flex items-center gap-1.5 hover:text-red-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Tienda en línea')}>
-                      <span className="text-red-500">•</span> Tienda en línea
+                    <li className="flex items-center gap-1.5 hover:text-blue-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Tienda en línea')}>
+                      <span className="text-blue-500">•</span> Tienda en línea
                     </li>
-                    <li className="flex items-center gap-1.5 hover:text-red-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Systems')}>
-                      <span className="text-red-500">•</span> Systems
+                    <li className="flex items-center gap-1.5 hover:text-blue-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Systems')}>
+                      <span className="text-blue-500">•</span> Systems
                     </li>
                   </ul>
                 </div>
 
                 {/* COMPUTACIÓN CARD */}
                 <div className="bg-white p-3.5 md:p-4 rounded-xl border border-slate-200 shadow-2xs space-y-1.5">
-                  <h3 className="font-black text-xs md:text-sm text-red-700 uppercase tracking-tight flex items-center gap-1.5">
+                  <h3 className="font-black text-xs md:text-sm text-blue-700 uppercase tracking-tight flex items-center gap-1.5">
                     <Laptop size={15} /> COMPUTACIÓN
                   </h3>
                   <ul className="space-y-1 text-[11px] text-slate-800 font-semibold">
-                    <li className="flex items-center gap-1.5 hover:text-red-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Laptops')}>
-                      <span className="text-red-500">•</span> Laptops
+                    <li className="flex items-center gap-1.5 hover:text-blue-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Laptops')}>
+                      <span className="text-blue-500">•</span> Laptops
                     </li>
-                    <li className="flex items-center gap-1.5 hover:text-red-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Portátiles PC')}>
-                      <span className="text-red-500">•</span> Portátiles PC
+                    <li className="flex items-center gap-1.5 hover:text-blue-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Portátiles PC')}>
+                      <span className="text-blue-500">•</span> Portátiles PC
                     </li>
-                    <li className="flex items-center gap-1.5 hover:text-red-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Monitores')}>
-                      <span className="text-red-500">•</span> Monitores
+                    <li className="flex items-center gap-1.5 hover:text-blue-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Monitores')}>
+                      <span className="text-blue-500">•</span> Monitores
                     </li>
-                    <li className="flex items-center gap-1.5 hover:text-red-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Impresoras')}>
-                      <span className="text-red-500">•</span> Impresoras
+                    <li className="flex items-center gap-1.5 hover:text-blue-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Impresoras')}>
+                      <span className="text-blue-500">•</span> Impresoras
                     </li>
-                    <li className="flex items-center gap-1.5 hover:text-red-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Mini PC')}>
-                      <span className="text-red-500">•</span> Mini PC
+                    <li className="flex items-center gap-1.5 hover:text-blue-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Mini PC')}>
+                      <span className="text-blue-500">•</span> Mini PC
                     </li>
                   </ul>
                 </div>
@@ -561,39 +570,39 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                 
                 {/* TECNOLOGÍA RESIDENCIAL CARD */}
                 <div className="bg-white p-3.5 md:p-4 rounded-xl border border-slate-200 shadow-2xs space-y-1.5">
-                  <h3 className="font-black text-xs md:text-sm text-red-700 uppercase tracking-tight flex items-center gap-1.5">
+                  <h3 className="font-black text-xs md:text-sm text-blue-700 uppercase tracking-tight flex items-center gap-1.5">
                     <Shield size={15} /> TECNOLOGÍA RESIDENCIAL
                   </h3>
                   <ul className="space-y-1 text-[11px] text-slate-800 font-semibold">
-                    <li className="flex items-center gap-1.5 hover:text-red-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Portones')}>
-                      <span className="text-red-500">•</span> Portones
+                    <li className="flex items-center gap-1.5 hover:text-blue-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Portones')}>
+                      <span className="text-blue-500">•</span> Portones
                     </li>
-                    <li className="flex items-center gap-1.5 hover:text-red-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Alarmas')}>
-                      <span className="text-red-500">•</span> Alarmas
+                    <li className="flex items-center gap-1.5 hover:text-blue-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Alarmas')}>
+                      <span className="text-blue-500">•</span> Alarmas
                     </li>
-                    <li className="flex items-center gap-1.5 hover:text-red-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Perimetrales')}>
-                      <span className="text-red-500">•</span> Perimetrales
+                    <li className="flex items-center gap-1.5 hover:text-blue-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Perimetrales')}>
+                      <span className="text-blue-500">•</span> Perimetrales
                     </li>
                   </ul>
                 </div>
 
                 {/* ELECTRÓNICA CARD */}
                 <div className="bg-white p-3.5 md:p-4 rounded-xl border border-slate-200 shadow-2xs space-y-1.5">
-                  <h3 className="font-black text-xs md:text-sm text-red-700 uppercase tracking-tight flex items-center gap-1.5">
+                  <h3 className="font-black text-xs md:text-sm text-blue-700 uppercase tracking-tight flex items-center gap-1.5">
                     <Zap size={15} /> ELECTRÓNICA
                   </h3>
                   <ul className="space-y-1 text-[11px] text-slate-800 font-semibold">
-                    <li className="flex items-center gap-1.5 hover:text-red-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Microcomputadores')}>
-                      <span className="text-red-500">•</span> Microcomputadores
+                    <li className="flex items-center gap-1.5 hover:text-blue-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Microcomputadores')}>
+                      <span className="text-blue-500">•</span> Microcomputadores
                     </li>
-                    <li className="flex items-center gap-1.5 hover:text-red-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Cables')}>
-                      <span className="text-red-500">•</span> Cables
+                    <li className="flex items-center gap-1.5 hover:text-blue-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Cables')}>
+                      <span className="text-blue-500">•</span> Cables
                     </li>
-                    <li className="flex items-center gap-1.5 hover:text-red-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Adaptadores')}>
-                      <span className="text-red-500">•</span> Adaptadores
+                    <li className="flex items-center gap-1.5 hover:text-blue-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Adaptadores')}>
+                      <span className="text-blue-500">•</span> Adaptadores
                     </li>
-                    <li className="flex items-center gap-1.5 hover:text-red-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Cargadores')}>
-                      <span className="text-red-500">•</span> Cargadores
+                    <li className="flex items-center gap-1.5 hover:text-blue-600 cursor-pointer" onClick={() => setSelectedCategoryFilter('Cargadores')}>
+                      <span className="text-blue-500">•</span> Cargadores
                     </li>
                   </ul>
                 </div>
@@ -602,7 +611,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                 <div className="bg-white border border-slate-200 rounded-xl p-3.5 md:p-4 shadow-2xs space-y-2">
                   <button
                     onClick={() => setIsTodosArticulosOpen(!isTodosArticulosOpen)}
-                    className="w-full flex items-center justify-between text-left font-black text-xs md:text-sm text-red-700 uppercase tracking-tight"
+                    className="w-full flex items-center justify-between text-left font-black text-xs md:text-sm text-blue-700 uppercase tracking-tight"
                   >
                     <span>TODOS LOS ARTÍCULOS</span>
                     <ChevronDown size={16} className={`transition-transform ${isTodosArticulosOpen ? 'rotate-180' : ''}`} />
@@ -615,7 +624,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                           <li
                             key={idx}
                             onClick={() => setSelectedCategoryFilter(item)}
-                            className="hover:text-red-600 cursor-pointer flex items-center gap-1"
+                            className="hover:text-blue-600 cursor-pointer flex items-center gap-1"
                           >
                             <span className="text-slate-400">-</span> {item}
                           </li>
@@ -625,12 +634,12 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                   )}
                 </div>
 
-                {/* 🟣 BOTTOM PURPLE PILL BUTTONS (COMPACT) */}
+                {/* 🔵 BOTTOM COBALT BLUE PILL BUTTONS (INFUSED WITH VIBRANT BLUE GRADIENTS) */}
                 <div className="space-y-1.5 pt-0.5">
 
                   <button
                     onClick={() => setModalType('nosotros')}
-                    className="w-full py-2 px-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-[11px] uppercase tracking-wider flex items-center justify-between transition-all shadow-sm active:scale-98"
+                    className="w-full py-2 px-3.5 rounded-xl bg-gradient-to-r from-blue-700 to-indigo-700 hover:from-blue-600 hover:to-indigo-600 text-white font-bold text-[11px] uppercase tracking-wider flex items-center justify-between transition-all shadow-sm active:scale-98"
                   >
                     <span>Sobre nosotros</span>
                     <ChevronDown size={14} />
@@ -638,7 +647,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
 
                   <button
                     onClick={() => setModalType('ubicacion')}
-                    className="w-full py-2 px-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-[11px] uppercase tracking-wider flex items-center justify-between transition-all shadow-sm active:scale-98"
+                    className="w-full py-2 px-3.5 rounded-xl bg-gradient-to-r from-blue-700 to-indigo-700 hover:from-blue-600 hover:to-indigo-600 text-white font-bold text-[11px] uppercase tracking-wider flex items-center justify-between transition-all shadow-sm active:scale-98"
                   >
                     <span>Ubicación</span>
                     <ChevronDown size={14} />
@@ -646,7 +655,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
 
                   <button
                     onClick={() => setModalType('referencias')}
-                    className="w-full py-2 px-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-[11px] uppercase tracking-wider flex items-center justify-between transition-all shadow-sm active:scale-98"
+                    className="w-full py-2 px-3.5 rounded-xl bg-gradient-to-r from-blue-700 to-indigo-700 hover:from-blue-600 hover:to-indigo-600 text-white font-bold text-[11px] uppercase tracking-wider flex items-center justify-between transition-all shadow-sm active:scale-98"
                   >
                     <span>Referencias</span>
                     <ChevronDown size={14} />
@@ -654,7 +663,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
 
                   <button
                     onClick={() => setModalType('contacto')}
-                    className="w-full py-2 px-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-[11px] uppercase tracking-wider flex items-center justify-between transition-all shadow-sm active:scale-98"
+                    className="w-full py-2 px-3.5 rounded-xl bg-gradient-to-r from-blue-700 to-indigo-700 hover:from-blue-600 hover:to-indigo-600 text-white font-bold text-[11px] uppercase tracking-wider flex items-center justify-between transition-all shadow-sm active:scale-98"
                   >
                     <span>Contacto</span>
                     <ChevronDown size={14} />
@@ -662,7 +671,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
 
                   <button
                     onClick={() => setIsTodosArticulosOpen(!isTodosArticulosOpen)}
-                    className="w-full py-2 px-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-[11px] uppercase tracking-wider flex items-center justify-between transition-all shadow-sm active:scale-98"
+                    className="w-full py-2 px-3.5 rounded-xl bg-gradient-to-r from-blue-700 to-indigo-700 hover:from-blue-600 hover:to-indigo-600 text-white font-bold text-[11px] uppercase tracking-wider flex items-center justify-between transition-all shadow-sm active:scale-98"
                   >
                     <span>Todos los Artículos</span>
                     <ChevronDown size={14} />
@@ -696,23 +705,23 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                 <Link
                   key={idx}
                   href={lp.url}
-                  className="bg-white border border-slate-200 p-3.5 rounded-xl shadow-2xs hover:shadow-xs hover:border-red-500 transition-all flex flex-col justify-between group"
+                  className="bg-white border border-slate-200 p-3.5 rounded-xl shadow-2xs hover:shadow-xs hover:border-blue-500 transition-all flex flex-col justify-between group"
                 >
                   <div>
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-xl">{lp.image}</span>
-                      <span className="text-[8px] font-black font-mono bg-red-100 text-red-700 px-2 py-0.5 rounded-full border border-red-200">
+                      <span className="text-[8px] font-black font-mono bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full border border-blue-200">
                         {lp.tag}
                       </span>
                     </div>
-                    <h3 className="font-black text-xs text-slate-900 uppercase tracking-tight group-hover:text-red-600 transition-colors mb-0.5">
+                    <h3 className="font-black text-xs text-slate-900 uppercase tracking-tight group-hover:text-blue-600 transition-colors mb-0.5">
                       {lp.title}
                     </h3>
                     <p className="text-[11px] text-slate-500 leading-snug font-medium mb-2.5">
                       {lp.sub}
                     </p>
                   </div>
-                  <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-[11px] font-bold text-red-600">
+                  <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-[11px] font-bold text-blue-600">
                     <span>Ver Landing Page</span>
                     <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
                   </div>
@@ -727,11 +736,11 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
         {/* ═════════════════════════════════════════════════════════════ */}
         {!searchQuery.trim() && activeTab === 'ofertas' && (
           <div className="space-y-4">
-            <div className="bg-gradient-to-r from-red-600 to-amber-600 text-white p-4 rounded-xl shadow-md">
+            <div className="bg-gradient-to-r from-blue-700 via-indigo-700 to-red-600 text-white p-4 rounded-xl shadow-md">
               <h2 className="text-base md:text-lg font-black uppercase tracking-tight mb-0.5">
                 🔥 Promociones & Kits de Oferta Especial
               </h2>
-              <p className="text-[11px] text-red-100 font-medium">
+              <p className="text-[11px] text-blue-100 font-medium">
                 Descuentos directos en equipos seleccionados con asesoría e instalación en todo Ecuador
               </p>
             </div>
@@ -739,8 +748,8 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
               
               {/* Promo Kit 1 */}
-              <div className="bg-white border-2 border-red-200 p-4 rounded-xl shadow-2xs space-y-3">
-                <div className="inline-block bg-red-100 text-red-700 font-mono text-[9px] font-black px-2 py-0.5 rounded-full uppercase">
+              <div className="bg-white border-2 border-blue-200 p-4 rounded-xl shadow-2xs space-y-3">
+                <div className="inline-block bg-blue-100 text-blue-800 font-mono text-[9px] font-black px-2 py-0.5 rounded-full uppercase">
                   KIT OFERTA #1 GAMING
                 </div>
                 <h3 className="font-black text-sm md:text-base text-slate-900 uppercase">
@@ -750,7 +759,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                   Incluye consola original sellada de paquete + 2 mandos DualSense originales + cable HDMI 2.1 de alta velocidad.
                 </p>
                 <div className="flex items-center justify-between pt-2.5 border-t border-slate-100">
-                  <span className="text-lg md:text-xl font-black text-red-600">$755.00</span>
+                  <span className="text-lg md:text-xl font-black text-blue-700">$755.00</span>
                   <a
                     href="https://wa.me/593969043453?text=Hola%20ATOMIC!%20Deseo%20cotizar%20el%20KIT%20OFERTA%20PS5%20Slim%20+%20Mando"
                     target="_blank"
@@ -763,8 +772,8 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
               </div>
 
               {/* Promo Kit 2 */}
-              <div className="bg-white border-2 border-amber-200 p-4 rounded-xl shadow-2xs space-y-3">
-                <div className="inline-block bg-amber-100 text-amber-800 font-mono text-[9px] font-black px-2 py-0.5 rounded-full uppercase">
+              <div className="bg-white border-2 border-indigo-200 p-4 rounded-xl shadow-2xs space-y-3">
+                <div className="inline-block bg-indigo-100 text-indigo-800 font-mono text-[9px] font-black px-2 py-0.5 rounded-full uppercase">
                   KIT OFERTA #2 SEGURIDAD
                 </div>
                 <h3 className="font-black text-sm md:text-base text-slate-900 uppercase">
@@ -774,7 +783,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                   Lectura facial, huella dactilar, tarjetas RFID y apertura desde la App para puertas de vidrio o madera.
                 </p>
                 <div className="flex items-center justify-between pt-2.5 border-t border-slate-100">
-                  <span className="text-lg md:text-xl font-black text-amber-600">$185.00</span>
+                  <span className="text-lg md:text-xl font-black text-indigo-700">$185.00</span>
                   <a
                     href="https://wa.me/593969043453?text=Hola%20ATOMIC!%20Deseo%20cotizar%20el%20Kit%20ZKTECO%20Biometrico"
                     target="_blank"
@@ -787,8 +796,8 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
               </div>
 
               {/* Promo Kit 3 */}
-              <div className="bg-white border-2 border-blue-200 p-4 rounded-xl shadow-2xs space-y-3">
-                <div className="inline-block bg-blue-100 text-blue-800 font-mono text-[9px] font-black px-2 py-0.5 rounded-full uppercase">
+              <div className="bg-white border-2 border-sky-200 p-4 rounded-xl shadow-2xs space-y-3">
+                <div className="inline-block bg-sky-100 text-sky-800 font-mono text-[9px] font-black px-2 py-0.5 rounded-full uppercase">
                   KIT OFERTA #3 COCINA
                 </div>
                 <h3 className="font-black text-sm md:text-base text-slate-900 uppercase">
@@ -844,12 +853,12 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                 {/* Drawer Header */}
                 <div className="flex items-center justify-between pb-2.5 border-b border-slate-200">
                   <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-full bg-red-600 flex items-center justify-center text-white font-black text-[11px]">
+                    <div className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center text-white font-black text-[11px]">
                       A
                     </div>
                     <div>
                       <h3 className="font-black text-xs text-slate-900 leading-none">ATOMIC</h3>
-                      <p className="text-[9px] text-slate-500">Menú Principal</p>
+                      <p className="text-[9px] text-blue-600 font-bold">Tecnología, Industria y Hogar</p>
                     </div>
                   </div>
                   <button
@@ -867,7 +876,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                   <div className="border border-slate-200 rounded-lg p-2.5 bg-slate-50">
                     <button
                       onClick={() => setIsTodosArticulosOpen(!isTodosArticulosOpen)}
-                      className="w-full flex items-center justify-between font-black text-[11px] text-red-600 uppercase"
+                      className="w-full flex items-center justify-between font-black text-[11px] text-blue-700 uppercase"
                     >
                       <span>Todos los artículos</span>
                       <ChevronDown size={14} className={`transition-transform ${isTodosArticulosOpen ? 'rotate-180' : ''}`} />
@@ -881,7 +890,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                               setSelectedCategoryFilter(item);
                               setIsHamburgerOpen(false);
                             }}
-                            className="text-[11px] text-slate-700 hover:text-red-600 font-medium cursor-pointer py-0.5 px-1.5 rounded hover:bg-white"
+                            className="text-[11px] text-slate-700 hover:text-blue-600 font-medium cursor-pointer py-0.5 px-1.5 rounded hover:bg-white"
                           >
                             • {item}
                           </div>
@@ -893,7 +902,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                   {/* Section 2: Sobre Nosotros */}
                   <button
                     onClick={() => { setModalType('nosotros'); setIsHamburgerOpen(false); }}
-                    className="w-full text-left p-2.5 rounded-lg bg-slate-100 hover:bg-indigo-50 text-indigo-950 font-bold text-[11px] uppercase flex items-center justify-between border border-slate-200"
+                    className="w-full text-left p-2.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-950 font-bold text-[11px] uppercase flex items-center justify-between border border-blue-200"
                   >
                     <span>Sobre nosotros</span>
                     <ChevronRight size={14} />
@@ -902,7 +911,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                   {/* Section 3: Ubicación */}
                   <button
                     onClick={() => { setModalType('ubicacion'); setIsHamburgerOpen(false); }}
-                    className="w-full text-left p-2.5 rounded-lg bg-slate-100 hover:bg-indigo-50 text-indigo-950 font-bold text-[11px] uppercase flex items-center justify-between border border-slate-200"
+                    className="w-full text-left p-2.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-950 font-bold text-[11px] uppercase flex items-center justify-between border border-blue-200"
                   >
                     <span>Ubicación</span>
                     <ChevronRight size={14} />
@@ -911,7 +920,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                   {/* Section 4: Referencias */}
                   <button
                     onClick={() => { setModalType('referencias'); setIsHamburgerOpen(false); }}
-                    className="w-full text-left p-2.5 rounded-lg bg-slate-100 hover:bg-indigo-50 text-indigo-950 font-bold text-[11px] uppercase flex items-center justify-between border border-slate-200"
+                    className="w-full text-left p-2.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-950 font-bold text-[11px] uppercase flex items-center justify-between border border-blue-200"
                   >
                     <span>Referencias</span>
                     <ChevronRight size={14} />
@@ -920,7 +929,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                   {/* Section 5: Contacto */}
                   <button
                     onClick={() => { setModalType('contacto'); setIsHamburgerOpen(false); }}
-                    className="w-full text-left p-2.5 rounded-lg bg-slate-100 hover:bg-indigo-50 text-indigo-950 font-bold text-[11px] uppercase flex items-center justify-between border border-slate-200"
+                    className="w-full text-left p-2.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-950 font-bold text-[11px] uppercase flex items-center justify-between border border-blue-200"
                   >
                     <span>Contacto</span>
                     <ChevronRight size={14} />
@@ -1040,7 +1049,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
               {/* MODAL 1: SOBRE NOSOTROS */}
               {modalType === 'nosotros' && (
                 <div className="space-y-3">
-                  <div className="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center">
                     <Award size={20} />
                   </div>
                   <h3 className="text-lg font-black uppercase text-slate-900">Sobre Nosotros — ATOMIC</h3>
@@ -1049,11 +1058,11 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                   </p>
                   <div className="grid grid-cols-2 gap-2.5 pt-1">
                     <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200 text-center">
-                      <span className="block font-black text-base text-indigo-600">+10,000</span>
+                      <span className="block font-black text-base text-blue-600">+10,000</span>
                       <span className="text-[9px] text-slate-500 uppercase font-bold">Clientes Satisfechos</span>
                     </div>
                     <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200 text-center">
-                      <span className="block font-black text-base text-indigo-600">100%</span>
+                      <span className="block font-black text-base text-blue-600">100%</span>
                       <span className="text-[9px] text-slate-500 uppercase font-bold">Garantía Directa</span>
                     </div>
                   </div>
@@ -1156,7 +1165,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
               {/* MODAL 5: CART */}
               {modalType === 'cart' && (
                 <div className="space-y-3">
-                  <div className="w-10 h-10 rounded-xl bg-red-100 text-red-600 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center">
                     <ShoppingCart size={20} />
                   </div>
                   <h3 className="text-lg font-black uppercase text-slate-900">Carrito de Compras</h3>
@@ -1167,7 +1176,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                     <Link
                       href="/web/cart"
                       onClick={() => setModalType(null)}
-                      className="w-full py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold text-xs uppercase rounded-xl transition-all text-center block shadow-sm"
+                      className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase rounded-xl transition-all text-center block shadow-sm"
                     >
                       Ir a Finalizar Compra
                     </Link>
@@ -1200,7 +1209,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
               {/* MODAL 7: ENVIOS */}
               {modalType === 'envios' && (
                 <div className="space-y-3">
-                  <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center">
                     <Truck size={20} />
                   </div>
                   <h3 className="text-lg font-black uppercase text-slate-900">Seguimiento & Envíos</h3>
