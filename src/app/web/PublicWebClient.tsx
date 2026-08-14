@@ -40,6 +40,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
   const [isTodosArticulosOpen, setIsTodosArticulosOpen] = useState(true)
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string | null>(null)
   const [modalType, setModalType] = useState<'nosotros' | 'ubicacion' | 'referencias' | 'contacto' | 'cart' | 'profile' | 'envios' | null>(null)
+  const [currentSlide, setCurrentSlide] = useState(0)
 
   // Auto-close hamburger menu on resize
   useEffect(() => {
@@ -49,6 +50,26 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
   }, [])
+
+  // 24 Real Promotional Banners (Copied from User Downloads)
+  const volkswagenAdBanners = [
+    { title: 'CAMARAS ESPIAS & SEGURIDAD', sub: 'Protección Residencial & Industrial en Tiempo Real', img: '/web-banners/WhatsApp Image 2026-08-14 at 7.12.17 PM (1).jpeg', tag: 'SEGURIDAD' },
+    { title: 'CONTROLES DE ACCESO BIOMETRICOS', sub: 'Sistemas Inteligentes ZKTECO con Reconocimiento Facial', img: '/web-banners/WhatsApp Image 2026-08-14 at 7.12.17 PM (2).jpeg', tag: 'ACCESO' },
+    { title: 'MONITORES & PANTALLAS AHD 7"', sub: 'Visualización de Alta Definición con Grabación Continua', img: '/web-banners/WhatsApp Image 2026-08-14 at 7.12.17 PM (3).jpeg', tag: 'GAMING' },
+    { title: 'MICROCOMPUTADORES & MINI PC', sub: 'Potencia Industrial en Chasis Ultra-Compactos', img: '/web-banners/WhatsApp Image 2026-08-14 at 7.12.17 PM.jpeg', tag: 'HARDWARE' },
+    { title: 'BOTONERAS & PUERTAS AUTOMÁTICAS', sub: 'Control de Portones Industriales de Alta Resistencia', img: '/web-banners/WhatsApp Image 2026-08-14 at 7.12.18 PM (1).jpeg', tag: 'AUTOMATIZACION' },
+    { title: 'SOLUCIONES EN DOMÓTICA & HOGAR', sub: 'Tecnología Inteligente para Tu Estilo de Vida', img: '/web-banners/WhatsApp Image 2026-08-14 at 7.12.18 PM (2).jpeg', tag: 'HOGAR' },
+    { title: 'EQUIPAMIENTO DE COCINA A GAS', sub: 'Línea de Lujo en Acero Inoxidable en Centímetros', img: '/web-banners/WhatsApp Image 2026-08-14 at 7.12.18 PM (3).jpeg', tag: 'COCINA' },
+    { title: 'CONSOLAS GAMING & DUALSENSE', sub: 'PlayStation 5 Slim, PS4, Xbox & Mandos Originales', img: '/web-banners/WhatsApp Image 2026-08-14 at 7.12.18 PM.jpeg', tag: 'GAMING' },
+  ]
+
+  // Auto Slider for Volkswagen Style Scroll Hero
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % volkswagenAdBanners.length)
+    }, 4500)
+    return () => clearInterval(timer)
+  }, [volkswagenAdBanners.length])
 
   // Filtered Products for Live Search & Category Filter
   const filteredProducts = useMemo(() => {
@@ -68,20 +89,20 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
     return result
   }, [initialProducts, searchQuery, selectedCategoryFilter])
 
-  // 12 Top Category Grid Items with Ultra-Fast High-Contrast Neon Badges
+  // 12 Top Category Grid Items with Prices "DESDE $"
   const categoryGridItems = [
-    { id: 'industrial', title: 'INDUSTRIAL', sub: 'Automatización', icon: Factory, iconBg: 'bg-blue-600/20 text-cyan-300 border-blue-500/40', href: '#industrial' },
-    { id: 'servicios', title: 'SERVICIOS', sub: 'Asesoría', icon: Award, iconBg: 'bg-indigo-600/20 text-indigo-300 border-indigo-500/40', href: '#servicios' },
-    { id: 'computacion', title: 'COMPUTACIÓN', sub: 'Laptops', icon: Laptop, iconBg: 'bg-purple-600/20 text-purple-300 border-purple-500/40', href: '/web/cpus' },
-    { id: 'telefonia', title: 'TELEFONÍA', sub: 'Celulares', icon: Smartphone, iconBg: 'bg-emerald-600/20 text-emerald-300 border-emerald-500/40', href: '/web/phones' },
-    { id: 'minipc', title: 'MINI PC', sub: 'Compactos', icon: Cpu, iconBg: 'bg-sky-600/20 text-sky-300 border-sky-500/40', href: '/web/cpus' },
-    { id: 'monitores', title: 'MONITORES', sub: 'Gaming HD', icon: Laptop, iconBg: 'bg-cyan-600/20 text-cyan-300 border-cyan-500/40', href: '/web/cpus' },
-    { id: 'tablets-infantiles', title: 'TABLETS NIÑOS', sub: 'Edición Kids', icon: Smartphone, iconBg: 'bg-rose-600/20 text-rose-300 border-rose-500/40', href: '/web/phones' },
-    { id: 'portones-automaticos', title: 'PORTONES', sub: 'Control Acceso', icon: Lock, iconBg: 'bg-amber-600/20 text-amber-300 border-amber-500/40', href: '/web/intercomunicacion' },
-    { id: 'hogar', title: 'HOGAR', sub: 'Cocina & Domótica', icon: Utensils, iconBg: 'bg-[#ff5733]/20 text-orange-300 border-[#ff5733]/40', href: '/web/cocinas' },
-    { id: 'software', title: 'SOFTWARE', sub: 'Systems & Web', icon: Code, iconBg: 'bg-blue-600/20 text-blue-300 border-blue-500/40', href: '/web/software' },
-    { id: 'tecnologia-residencial', title: 'TECNOLOGÍA RES.', sub: 'Alarmas', icon: Shield, iconBg: 'bg-teal-600/20 text-teal-300 border-teal-500/40', href: '/web/conjuntos-smart' },
-    { id: 'electronica', title: 'ELECTRÓNICA', sub: 'Cables & Micro', icon: Zap, iconBg: 'bg-yellow-600/20 text-yellow-300 border-yellow-500/40', href: '#electronica' },
+    { id: 'industrial', title: 'INDUSTRIAL', sub: 'Automatización', fromPrice: '$185.00', sampleProduct: 'Planta de Adoquines', icon: Factory, iconBg: 'bg-blue-600/20 text-cyan-300 border-blue-500/40', href: '#industrial' },
+    { id: 'servicios', title: 'SERVICIOS', sub: 'Asesoría', fromPrice: '$45.00', sampleProduct: 'Peritaciones & Consultoría', icon: Award, iconBg: 'bg-indigo-600/20 text-indigo-300 border-indigo-500/40', href: '#servicios' },
+    { id: 'computacion', title: 'COMPUTACIÓN', sub: 'Laptops', fromPrice: '$320.00', sampleProduct: 'Laptop Asus Core i7', icon: Laptop, iconBg: 'bg-purple-600/20 text-purple-300 border-purple-500/40', href: '/web/cpus' },
+    { id: 'telefonia', title: 'TELEFONÍA', sub: 'Celulares', fromPrice: '$110.00', sampleProduct: 'Honor Magic 7 5G', icon: Smartphone, iconBg: 'bg-emerald-600/20 text-emerald-300 border-emerald-500/40', href: '/web/phones' },
+    { id: 'minipc', title: 'MINI PC', sub: 'Compactos', fromPrice: '$195.00', sampleProduct: 'Mini PC Intel N100', icon: Cpu, iconBg: 'bg-sky-600/20 text-sky-300 border-sky-500/40', href: '/web/cpus' },
+    { id: 'monitores', title: 'MONITORES', sub: 'Gaming HD', fromPrice: '$135.00', sampleProduct: 'Monitor Gaming 165Hz', icon: Laptop, iconBg: 'bg-cyan-600/20 text-cyan-300 border-cyan-500/40', href: '/web/cpus' },
+    { id: 'tablets-infantiles', title: 'TABLETS NIÑOS', sub: 'Edición Kids', fromPrice: '$65.00', sampleProduct: 'Tablet Kids 7" Antigolpes', icon: Smartphone, iconBg: 'bg-rose-600/20 text-rose-300 border-rose-500/40', href: '/web/phones' },
+    { id: 'portones-automaticos', title: 'PORTONES', sub: 'Control Acceso', fromPrice: '$150.00', sampleProduct: 'Motor Portón Eléctrico', icon: Lock, iconBg: 'bg-amber-600/20 text-amber-300 border-amber-500/40', href: '/web/intercomunicacion' },
+    { id: 'hogar', title: 'HOGAR', sub: 'Cocina & Domótica', fromPrice: '$85.00', sampleProduct: 'Encimera a Gas 4 Hornillas', icon: Utensils, iconBg: 'bg-[#ff5733]/20 text-orange-300 border-[#ff5733]/40', href: '/web/cocinas' },
+    { id: 'software', title: 'SOFTWARE', sub: 'Systems & Web', fromPrice: '$150.00', sampleProduct: 'Sistema POS & ERP Web', icon: Code, iconBg: 'bg-blue-600/20 text-blue-300 border-blue-500/40', href: '/web/software' },
+    { id: 'tecnologia-residencial', title: 'TECNOLOGÍA RES.', sub: 'Alarmas', fromPrice: '$95.00', sampleProduct: 'Kit Alarma Smart Wifi', icon: Shield, iconBg: 'bg-teal-600/20 text-teal-300 border-teal-500/40', href: '/web/conjuntos-smart' },
+    { id: 'electronica', title: 'ELECTRÓNICA', sub: 'Cables & Micro', fromPrice: '$12.00', sampleProduct: 'Camara Espia HD', icon: Zap, iconBg: 'bg-yellow-600/20 text-yellow-300 border-yellow-500/40', href: '#electronica' },
   ]
 
   // Landing Pages Data
@@ -203,6 +224,119 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
       </header>
 
       {/* ═════════════════════════════════════════════════════════════ */}
+      {/* 🚘 VOLKSWAGEN LUXURY SCROLL HERO SECTION                     */}
+      {/* ═════════════════════════════════════════════════════════════ */}
+      <section className="bg-gradient-to-b from-[#0e1424] to-[#05070c] border-b border-[#1e293b] pt-5 pb-7 px-3 md:px-5">
+        <div className="max-w-6xl mx-auto space-y-4">
+          
+          {/* INTRO TEXT AS REQUESTED */}
+          <div className="text-center md:text-left space-y-1">
+            <span className="text-[10px] md:text-xs font-mono font-black text-cyan-400 uppercase tracking-[0.2em] bg-blue-950/80 px-3 py-1 rounded-full border border-blue-500/30">
+              NUESTRO ALCANCE TOTAL PARA TI
+            </span>
+            <h1 className="text-lg md:text-2xl lg:text-3xl font-black text-white uppercase tracking-tight font-mono">
+              Te invitamos a ver todas nuestras categorías
+            </h1>
+            <p className="text-xs text-slate-400 max-w-2xl font-medium">
+              Elige la tuya y configúrala como tú quieras. Innovación, importación directa y respaldo técnico en todo Ecuador.
+            </p>
+          </div>
+
+          {/* VOLKSWAGEN STYLE ELEGANT CAROUSEL WITH ADVERTISING BANNERS (FORMAL GREY STUDIO SHOWCASE) */}
+          <div className="relative rounded-2xl overflow-hidden border border-slate-700/80 bg-gradient-to-r from-slate-900 via-slate-850 to-slate-950 shadow-2xl min-h-[220px] md:min-h-[300px] flex items-center justify-between p-4 md:p-8">
+            
+            {/* Slide Details */}
+            <div className="z-10 max-w-md space-y-2">
+              <span className="text-[9px] font-mono font-bold bg-[#ff5733] text-white px-2 py-0.5 rounded uppercase tracking-wider">
+                {volkswagenAdBanners[currentSlide].tag}
+              </span>
+              <h2 className="text-base md:text-xl font-black text-white uppercase tracking-tight leading-snug">
+                {volkswagenAdBanners[currentSlide].title}
+              </h2>
+              <p className="text-xs text-slate-300 font-medium">
+                {volkswagenAdBanners[currentSlide].sub}
+              </p>
+              <div className="pt-2">
+                <a
+                  href={`https://wa.me/593969043453?text=${encodeURIComponent(`Hola ATOMIC! Deseo cotizar la línea: ${volkswagenAdBanners[currentSlide].title}`)}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-4 py-2 bg-gradient-to-r from-[#0066ff] to-[#1d4ed8] hover:from-[#0052cc] hover:to-[#1e40af] text-white font-bold text-xs uppercase rounded-xl transition-all shadow-lg inline-flex items-center gap-1.5"
+                >
+                  <MessageCircle size={14} /> Configurar Ahora
+                </a>
+              </div>
+            </div>
+
+            {/* Slide Image Presentation (Formal Studio Presentation) */}
+            <div className="relative w-1/2 h-44 md:h-64 flex items-center justify-center">
+              <img
+                src={volkswagenAdBanners[currentSlide].img}
+                alt={volkswagenAdBanners[currentSlide].title}
+                className="max-h-full max-w-full object-contain rounded-xl shadow-2xl drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)] border border-slate-700/50"
+              />
+            </div>
+
+            {/* Carousel Dots */}
+            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-20">
+              {volkswagenAdBanners.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setCurrentSlide(idx)}
+                  className={`h-1.5 rounded-full transition-all ${currentSlide === idx ? 'w-6 bg-cyan-400' : 'w-2 bg-slate-600'}`}
+                />
+              ))}
+            </div>
+
+          </div>
+
+          {/* VOLKSWAGEN STYLE HORIZONTAL CATEGORY SCROLLER WITH "DESDE $" & PRODUCT SAMPLE PRESENTATION */}
+          <div className="pt-2 space-y-2">
+            <div className="flex items-center justify-between text-xs font-mono">
+              <span className="font-bold text-slate-300">EXPLORA EL CATÁLOGO (12 DE 12 CATEGORÍAS)</span>
+              <span className="text-cyan-400 font-bold">DESDE PRECIOS DE IMPORTACIÓN</span>
+            </div>
+
+            <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2 scrollbar-none">
+              {categoryGridItems.map((cat) => {
+                const Icon = cat.icon
+                return (
+                  <div
+                    key={cat.id}
+                    onClick={() => setSelectedCategoryFilter(cat.title)}
+                    className="min-w-[180px] w-[180px] shrink-0 snap-start bg-[#0e1424] border border-[#1e293b] hover:border-cyan-400 p-3 rounded-xl shadow-md hover:bg-[#121a2f] transition-all cursor-pointer flex flex-col justify-between group"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <div className={`w-8 h-8 rounded-lg ${cat.iconBg} border flex items-center justify-center shadow-sm`}>
+                          <Icon size={16} />
+                        </div>
+                        <span className="text-[10px] font-mono font-black text-cyan-300 bg-blue-950 px-2 py-0.5 rounded border border-blue-500/30">
+                          Desde {cat.fromPrice}
+                        </span>
+                      </div>
+                      <h3 className="font-black text-xs text-white uppercase tracking-tight group-hover:text-cyan-400 transition-colors">
+                        {cat.title}
+                      </h3>
+                      <span className="text-[9px] text-slate-400 font-medium block mt-0.5">
+                        {cat.sub}
+                      </span>
+                    </div>
+
+                    <div className="mt-2.5 pt-2 border-t border-[#1e293b] flex items-center justify-between text-[10px] font-bold text-slate-300">
+                      <span className="truncate">{cat.sampleProduct}</span>
+                      <ChevronRight size={12} className="text-cyan-400 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      {/* ═════════════════════════════════════════════════════════════ */}
       {/* 📌 MINI TABS NAVIGATION BAR: CATEGORIAS | LANDING PAGES | OFERTAS */}
       {/* ═════════════════════════════════════════════════════════════ */}
       <nav className="bg-[#0b101c] border-b border-blue-500/20 shadow-md sticky top-[45px] md:top-[51px] z-40 px-3 py-1.5">
@@ -298,37 +432,6 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
         {/* ═════════════════════════════════════════════════════════════ */}
         {!searchQuery.trim() && activeTab === 'categorias' && (
           <div className="space-y-4">
-
-            {/* TOP 12 CATEGORY RIBBON/GRID (LIGHTNING FAST 2D NEON BADGES) */}
-            <div className="flex sm:grid sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-6 gap-2 overflow-x-auto snap-x snap-mandatory pb-1 px-0.5 scrollbar-none">
-              {categoryGridItems.map(item => {
-                const Icon = item.icon
-                return (
-                  <Link
-                    key={item.id}
-                    href={item.href}
-                    onClick={() => {
-                      if (item.href.startsWith('#')) {
-                        setSelectedCategoryFilter(item.title)
-                      }
-                    }}
-                    className="min-w-[105px] w-[105px] sm:w-auto shrink-0 snap-start bg-[#0e1424] border border-[#1e293b] hover:border-cyan-400 p-2 md:p-2.5 rounded-xl shadow-md hover:bg-[#121a2f] hover:-translate-y-0.5 transition-all flex flex-col items-center justify-center text-center group cursor-pointer"
-                  >
-                    {/* FAST ULTRA-HIGH CONTRAST NEON ICON BADGE */}
-                    <div className={`w-8 h-8 md:w-9 md:h-9 rounded-xl ${item.iconBg} border flex items-center justify-center mb-1 group-hover:scale-110 transition-transform shadow-sm`}>
-                      <Icon size={18} />
-                    </div>
-
-                    <h3 className="font-black text-[10px] text-white uppercase tracking-tight group-hover:text-cyan-400 transition-colors line-clamp-1 mt-0.5">
-                      {item.title}
-                    </h3>
-                    <span className="text-[8px] text-slate-400 font-medium line-clamp-1">
-                      {item.sub}
-                    </span>
-                  </Link>
-                )
-              })}
-            </div>
 
             {/* MAIN 3-COLUMN CONTENT BENTO BREAKDOWN */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 pt-0.5">
