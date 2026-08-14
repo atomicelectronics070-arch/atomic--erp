@@ -309,11 +309,16 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
                     className="min-w-[180px] w-[180px] shrink-0 snap-start bg-[#0e1424] border border-[#1e293b] hover:border-cyan-400 p-3 rounded-xl shadow-md hover:bg-[#121a2f] transition-all cursor-pointer flex flex-col justify-between group"
                   >
                     <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <div className={`w-8 h-8 rounded-lg ${cat.iconBg} border flex items-center justify-center shadow-sm`}>
-                          <Icon size={16} />
+                      <div className="flex items-center justify-between mb-2.5">
+                        {/* ULTRA-THIN GOLD BORDER WHITE BOX WITH LUMINOUS ELECTRIC BLUE 3D SHADOW & SILHOUETTE ICON */}
+                        <div className="relative group/icon">
+                          <div className="w-10 h-10 rounded-xl bg-white border border-[#d4af37] shadow-[0_0_18px_rgba(0,102,255,0.55)] flex items-center justify-center text-[#0f172a] group-hover:scale-110 transition-all duration-300 relative z-10">
+                            <Icon size={20} className="text-[#0f172a] stroke-[2.5]" />
+                          </div>
+                          {/* SERRATED LIGHTNING BLUE BACKDROP SHADOW ACCENT */}
+                          <div className="absolute -inset-0.5 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-400 opacity-60 blur-[6px] group-hover:opacity-100 transition-opacity" />
                         </div>
-                        <span className="text-[10px] font-mono font-black text-cyan-300 bg-blue-950 px-2 py-0.5 rounded border border-blue-500/30">
+                        <span className="text-[10px] font-mono font-black text-white bg-gradient-to-r from-[#ff5733] to-[#ff4136] px-2.5 py-0.5 rounded-full border border-[#ff6b4a] shadow-sm">
                           Desde {cat.fromPrice}
                         </span>
                       </div>
