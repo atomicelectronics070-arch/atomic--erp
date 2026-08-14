@@ -16,15 +16,16 @@ export async function POST(req: Request) {
             include: { contact: true }
         });
 
-        if (!conversation) return NextResponse.json({ error: 'Conversation not found' }, { status: 404 });
+        if (!conversation) return NextResponse.json({ error: 'Conversación no encontrada' }, { status: 404 });
 
-        // 1. Send via API
+        // 1. Send via Meta API
         let waMsgId = `out-${Date.now()}`;
         try {
             const waResult = await sendWhatsAppMessage(conversation.contact.whatsappId, text);
             if (waResult?.messages?.[0]?.id) waMsgId = waResult.messages[0].id;
-        } catch (err) {
-            console.error('Failed to send via Meta Cloud API:', err);
+        } catch (err: any) {
+            console.error('Failed to send via Meta Cloud API:', err.message);
+            return NextResponse.json({ error: `Error Meta WhatsApp: ${err.message}` }, { status: 400 });
         }
 
         // 2. Store in DB

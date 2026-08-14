@@ -11,7 +11,7 @@ import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import { useCart } from "@/context/CartContext"
 import CategoryBadge3D from "@/components/ui/CategoryBadge3D"
-import HeroCanvas3D from "@/components/ui/HeroCanvas3D"
+import Atom3D4K from "@/components/ui/Atom3D4K"
 
 /* ── ATOMIC ATOM LOGO SVG (COMPACT & METALLIC) ── */
 function AtomicLogoSVG() {
@@ -109,8 +109,8 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
   return (
     <div className="w-full bg-[#06080e] min-h-screen text-slate-100 font-sans selection:bg-blue-600 selection:text-white pb-20 relative overflow-x-hidden">
 
-      {/* 🔮 REAL-TIME 3D WEBGL PARTICLE FIELD BACKGROUND */}
-      <HeroCanvas3D />
+      {/* ⚛️ REAL-TIME 4K INTERACTIVE 3D ATOM BACKGROUND CANVAS */}
+      <Atom3D4K />
 
       {/* ═════════════════════════════════════════════════════════════ */}
       {/* 👑 TOP STANDALONE SLOGAN HEADER BAR (OBSIDIAN & NEON SAPPHIRE) */}
