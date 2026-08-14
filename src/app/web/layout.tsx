@@ -18,6 +18,8 @@ export default function WebLayout({ children }: { children: React.ReactNode }) {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
     const [mounted, setMounted] = useState(false)
 
+    const isHomePage = pathname === "/web" || pathname === "/web/"
+
     useEffect(() => {
         setMounted(true)
         fetch("/api/track", {
@@ -30,81 +32,80 @@ export default function WebLayout({ children }: { children: React.ReactNode }) {
     const navLinks = [
         { href: "/web/products", label: "Productos" },
         { href: "/web/categories", label: "Categorías" },
-        { href: "/web/demos", label: "Desarrollo" },
+        { href: "/web/mandos", label: "Mandos" },
+        { href: "/web/cocinas", label: "Cocinas" },
         { href: "/web/conjuntos-smart", label: "Smart" },
-        { href: "/web/chat-bots", label: "Bots" },
     ]
 
     return (
-        <div className="min-h-screen font-sans text-slate-100 bg-slate-950 relative overflow-x-hidden selection:bg-cyan-500/20">
+        <div className="min-h-screen font-sans text-slate-100 bg-slate-950 relative overflow-x-hidden selection:bg-red-500/20">
             
             {/* ── BACKGROUND 3D CANVAS & NOISE ── */}
-            <div className="fixed inset-0 z-0 pointer-events-none opacity-40">
-                {mounted && <Atom3D theme="light" />}
-            </div>
-            {/* White theme grain texture */}
-            <div className="fixed inset-0 z-[1] pointer-events-none opacity-[0.05]" 
-                 style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/stardust.png")' }} />
+            {!isHomePage && (
+                <>
+                    <div className="fixed inset-0 z-0 pointer-events-none opacity-40">
+                        {mounted && <Atom3D theme="light" />}
+                    </div>
+                    <div className="fixed inset-0 z-[1] pointer-events-none opacity-[0.05]" 
+                         style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/stardust.png")' }} />
 
-            {/* ── MINIMALIST NAVBAR (Light Ether Studio Style) ── */}
-            <nav className="fixed top-0 w-full z-50 px-6 py-6 md:px-12 flex items-center justify-between pointer-events-none mix-blend-multiply bg-transparent">
-                
-                {/* Logo */}
-                <Link href="/web" className="text-xl md:text-2xl font-black tracking-tighter uppercase pointer-events-auto text-slate-100">
-                    ATOMIC<span className="text-slate-100/30">STORE</span>
-                </Link>
-
-                {/* Desktop Links */}
-                <div className="hidden md:flex items-center gap-8 pointer-events-auto">
-                    {navLinks.map(link => (
-                        <Link
-                            key={link.href}
-                            href={link.href}
-                            className={`text-[10px] font-black uppercase tracking-[0.2em] transition-colors duration-300
-                                ${pathname.startsWith(link.href) ? 'text-slate-100' : 'text-slate-100/40 hover:text-slate-100'}`}
-                        >
-                            {link.label}
+                    {/* ── MINIMALIST NAVBAR FOR SUBPAGES ── */}
+                    <nav className="fixed top-0 w-full z-50 px-6 py-4 md:px-12 flex items-center justify-between bg-slate-950/90 backdrop-blur-md border-b border-slate-800">
+                        <Link href="/web" className="text-xl md:text-2xl font-black tracking-tighter uppercase text-red-500 flex items-center gap-2">
+                            ATOMIC<span className="text-slate-100 text-xs tracking-normal font-bold">Tecnología, Industria y Hogar</span>
                         </Link>
-                    ))}
-                </div>
 
-                {/* Actions */}
-                <div className="flex items-center gap-6 pointer-events-auto text-slate-100">
-                    <Link href="/login" className="text-slate-100/50 hover:text-slate-100 transition-colors">
-                        <User size={18} />
-                    </Link>
-                    <Link href="/web/cart" className="relative text-slate-100/50 hover:text-slate-100 transition-colors">
-                        <ShoppingCart size={18} />
-                        {totalItems > 0 && (
-                            <span className="absolute -top-2 -right-3 text-[9px] font-black w-4 h-4 flex items-center justify-center bg-black text-white rounded-full">
-                                {totalItems}
-                            </span>
-                        )}
-                    </Link>
-                    <button 
-                        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                        className="md:hidden text-slate-100 ml-2"
-                    >
-                        {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-                    </button>
-                </div>
-            </nav>
+                        <div className="hidden md:flex items-center gap-8">
+                            {navLinks.map(link => (
+                                <Link
+                                    key={link.href}
+                                    href={link.href}
+                                    className={`text-[11px] font-bold uppercase tracking-wider transition-colors duration-300
+                                        ${pathname.startsWith(link.href) ? 'text-red-500' : 'text-slate-300 hover:text-white'}`}
+                                >
+                                    {link.label}
+                                </Link>
+                            ))}
+                        </div>
+
+                        <div className="flex items-center gap-5 text-slate-100">
+                            <Link href="/login" className="text-slate-300 hover:text-white transition-colors">
+                                <User size={18} />
+                            </Link>
+                            <Link href="/web/cart" className="relative text-slate-300 hover:text-white transition-colors">
+                                <ShoppingCart size={18} />
+                                {totalItems > 0 && (
+                                    <span className="absolute -top-2 -right-3 text-[9px] font-black w-4 h-4 flex items-center justify-center bg-red-600 text-white rounded-full">
+                                        {totalItems}
+                                    </span>
+                                )}
+                            </Link>
+                            <button 
+                                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                                className="md:hidden text-slate-100 ml-2"
+                            >
+                                {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+                            </button>
+                        </div>
+                    </nav>
+                </>
+            )}
 
             {/* Mobile Menu Overlay */}
             <AnimatePresence>
-                {isMobileMenuOpen && (
+                {!isHomePage && isMobileMenuOpen && (
                     <motion.div
                         initial={{ opacity: 0, y: -20 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}
-                        className="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 flex flex-col items-center justify-center"
+                        className="fixed inset-0 z-40 bg-slate-950/95 backdrop-blur-xl flex flex-col items-center justify-center"
                     >
                         {navLinks.map(link => (
                             <Link
                                 key={link.href}
                                 href={link.href}
                                 onClick={() => setIsMobileMenuOpen(false)}
-                                className="text-2xl font-black uppercase tracking-widest my-4 hover:text-[#0055fe] transition-colors text-slate-100"
+                                className="text-2xl font-black uppercase tracking-widest my-4 hover:text-red-500 transition-colors text-slate-100"
                             >
                                 {link.label}
                             </Link>
@@ -117,22 +118,24 @@ export default function WebLayout({ children }: { children: React.ReactNode }) {
             <AnimatePresence mode="wait">
                 <motion.main
                     key={pathname}
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                    className="relative z-10 pt-32 min-h-screen"
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.3 }}
+                    className={`relative z-10 ${isHomePage ? 'pt-0' : 'pt-24'} min-h-screen`}
                 >
                     {children}
                 </motion.main>
             </AnimatePresence>
 
             {/* ── FOOTER MINIMALISTA ── */}
-            <footer className="relative z-10 bg-transparent py-12 px-8 flex justify-center border-t border-black/5 mt-20">
-                <p className="text-[10px] font-medium text-slate-100/30 uppercase tracking-[0.2em]">
-                    © {new Date().getFullYear()} Atomic Industrias — Store
-                </p>
-            </footer>
+            {!isHomePage && (
+                <footer className="relative z-10 bg-slate-950 py-8 px-8 flex justify-center border-t border-slate-800">
+                    <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">
+                        © {new Date().getFullYear()} ATOMIC — Tecnología, Industria y Hogar
+                    </p>
+                </footer>
+            )}
 
             <AISearchBot />
             <CartBotOverlay />
