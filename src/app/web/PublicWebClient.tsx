@@ -51,16 +51,16 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
-  // 24 Real Promotional Banners (Copied from User Downloads)
+  // 24 Real Promotional Banners (Clean Web Paths)
   const volkswagenAdBanners = [
-    { title: 'CAMARAS ESPIAS & SEGURIDAD', sub: 'Protección Residencial & Industrial en Tiempo Real', img: '/web-banners/WhatsApp Image 2026-08-14 at 7.12.17 PM (1).jpeg', tag: 'SEGURIDAD' },
-    { title: 'CONTROLES DE ACCESO BIOMETRICOS', sub: 'Sistemas Inteligentes ZKTECO con Reconocimiento Facial', img: '/web-banners/WhatsApp Image 2026-08-14 at 7.12.17 PM (2).jpeg', tag: 'ACCESO' },
-    { title: 'MONITORES & PANTALLAS AHD 7"', sub: 'Visualización de Alta Definición con Grabación Continua', img: '/web-banners/WhatsApp Image 2026-08-14 at 7.12.17 PM (3).jpeg', tag: 'GAMING' },
-    { title: 'MICROCOMPUTADORES & MINI PC', sub: 'Potencia Industrial en Chasis Ultra-Compactos', img: '/web-banners/WhatsApp Image 2026-08-14 at 7.12.17 PM.jpeg', tag: 'HARDWARE' },
-    { title: 'BOTONERAS & PUERTAS AUTOMÁTICAS', sub: 'Control de Portones Industriales de Alta Resistencia', img: '/web-banners/WhatsApp Image 2026-08-14 at 7.12.18 PM (1).jpeg', tag: 'AUTOMATIZACION' },
-    { title: 'SOLUCIONES EN DOMÓTICA & HOGAR', sub: 'Tecnología Inteligente para Tu Estilo de Vida', img: '/web-banners/WhatsApp Image 2026-08-14 at 7.12.18 PM (2).jpeg', tag: 'HOGAR' },
-    { title: 'EQUIPAMIENTO DE COCINA A GAS', sub: 'Línea de Lujo en Acero Inoxidable en Centímetros', img: '/web-banners/WhatsApp Image 2026-08-14 at 7.12.18 PM (3).jpeg', tag: 'COCINA' },
-    { title: 'CONSOLAS GAMING & DUALSENSE', sub: 'PlayStation 5 Slim, PS4, Xbox & Mandos Originales', img: '/web-banners/WhatsApp Image 2026-08-14 at 7.12.18 PM.jpeg', tag: 'GAMING' },
+    { title: 'CAMARAS ESPIAS & SEGURIDAD', sub: 'Protección Residencial & Industrial en Tiempo Real', img: '/web-banners/banner-13.jpg', tag: 'SEGURIDAD' },
+    { title: 'CONTROLES DE ACCESO BIOMETRICOS', sub: 'Sistemas Inteligentes ZKTECO con Reconocimiento Facial', img: '/web-banners/banner-14.jpg', tag: 'ACCESO' },
+    { title: 'MONITORES & PANTALLAS AHD 7"', sub: 'Visualización de Alta Definición con Grabación Continua', img: '/web-banners/banner-15.jpg', tag: 'GAMING' },
+    { title: 'MICROCOMPUTADORES & MINI PC', sub: 'Potencia Industrial en Chasis Ultra-Compactos', img: '/web-banners/banner-16.jpg', tag: 'HARDWARE' },
+    { title: 'BOTONERAS & PUERTAS AUTOMÁTICAS', sub: 'Control de Portones Industriales de Alta Resistencia', img: '/web-banners/banner-17.jpg', tag: 'AUTOMATIZACION' },
+    { title: 'SOLUCIONES EN DOMÓTICA & HOGAR', sub: 'Tecnología Inteligente para Tu Estilo de Vida', img: '/web-banners/banner-18.jpg', tag: 'HOGAR' },
+    { title: 'EQUIPAMIENTO DE COCINA A GAS', sub: 'Línea de Lujo en Acero Inoxidable en Centímetros', img: '/web-banners/banner-19.jpg', tag: 'COCINA' },
+    { title: 'CONSOLAS GAMING & DUALSENSE', sub: 'PlayStation 5 Slim, PS4, Xbox & Mandos Originales', img: '/web-banners/banner-20.jpg', tag: 'GAMING' },
   ]
 
   // Auto Slider for Volkswagen Style Scroll Hero
