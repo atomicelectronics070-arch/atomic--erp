@@ -28,27 +28,121 @@ const safeParseArray = (str: any, fallback: any = []) => {
     return fallback;
 };
 
+const FALLBACK_CABLES = [
+    {
+        id: "cable-cat6-100-cobre-305m",
+        name: "BOBINA DE CABLE UTP CAT6 100% COBRE PURO 305M (23AWG LSZH Fluke Passed)",
+        description: "Bobina de cable UTP Categoria 6 de 100% Cobre Puro de 305 metros. Conductor sólido 24AWG/23AWG ideal para certificación Fluke Networks, redes Gigabit 10/100/1000Mbps y alimentación PoE+ / PoE++ (Power over Ethernet). Cubierta libre de halógenos LSZH anti-incendio.",
+        price: 145.00,
+        stock: 45,
+        type: "100% COBRE",
+        category: { name: "BOBINAS DE CABLE" },
+        specs: "100% Cobre Puro, 305 Metros, Cat6 23AWG, Fluke Passed, PoE+ Support",
+        images: JSON.stringify(["/api/web-banners/banner-1.jpg"])
+    },
+    {
+        id: "cable-cat6-cca-305m",
+        name: "BOBINA DE CABLE UTP CAT6 ALEACIÓN CCA 305M (24AWG PVC Interior)",
+        description: "Bobina de cable UTP Categoría 6 Aleación CCA (Aluminio Revestido de Cobre) de 305 metros. Ideal para instalaciones de CCTV analógico / AHD / IP, redes residenciales y de oficina hasta 70m.",
+        price: 68.00,
+        stock: 60,
+        type: "ALEACIÓN CCA",
+        category: { name: "BOBINAS DE CABLE" },
+        specs: "Aleación CCA, 305 Metros, Cat6 24AWG, Jacket PVC Interior",
+        images: JSON.stringify(["/api/web-banners/banner-2.jpg"])
+    },
+    {
+        id: "cable-cat6-ftp-exterior-cobre-305m",
+        name: "BOBINA DE CABLE BLINDADO FTP CAT6 100% COBRE EXTERIOR CON MENSAJERO DE ACERO 305M",
+        description: "Bobina de cable blindado FTP Cat6 100% Cobre Puro con chaqueta de Polietileno (PE) para intemperie / exterior anti-UV y guaya mensajera de acero para tendidos aéreos entre postes.",
+        price: 185.00,
+        stock: 25,
+        type: "EXTERIOR / FTP",
+        category: { name: "BOBINAS DE CABLE" },
+        specs: "100% Cobre Puro, FTP Blindado, Dieléctrico Exterior PE, Guaya de Acero 305m",
+        images: JSON.stringify(["/api/web-banners/banner-3.jpg"])
+    },
+    {
+        id: "cable-cat5e-100-cobre-305m",
+        name: "BOBINA DE CABLE UTP CAT5E 100% COBRE PURO 305M (24AWG PVC azul/gris)",
+        description: "Bobina de cable UTP Categoría 5e 100% Cobre de 305 metros. Transmisión confiable hasta 1000Mbps, soporte PoE estándar para cámaras de seguridad IP y teléfonos VoIP.",
+        price: 95.00,
+        stock: 30,
+        type: "100% COBRE",
+        category: { name: "BOBINAS DE CABLE" },
+        specs: "100% Cobre, 305m, Cat5e 24AWG, Certificación ISO9001",
+        images: JSON.stringify(["/api/web-banners/banner-4.jpg"])
+    },
+    {
+        id: "cable-cat5e-cca-305m",
+        name: "BOBINA DE CABLE UTP CAT5E ALEACIÓN CCA 305M (Económica para Alarmas & CCTV)",
+        description: "Bobina de cable UTP Cat5e Aleación CCA de 305m. Solución de alta relación costo-beneficio para sistemas de alarma, sensores de intrusión, citofonía y cámaras de video.",
+        price: 45.00,
+        stock: 80,
+        type: "ALEACIÓN CCA",
+        category: { name: "BOBINAS DE CABLE" },
+        specs: "Aleación CCA, 305m, Cat5e, Uso Residencial & CCTV",
+        images: JSON.stringify(["/api/web-banners/banner-5.jpg"])
+    },
+    {
+        id: "fibra-optica-drop-1-hilo-1000m",
+        name: "BOBINA DE FIBRA ÓPTICA DROP 1 HILO MONOMODO FTTH 1000M CON MENSAJERO DE ACERO",
+        description: "Bobina de fibra óptica Drop monomodo G.657A1 de 1 hilo con mensajero de acero de 1000 metros. Diseñada para redes FTTH de internet por fibra óptica y enlaces punto a punto.",
+        price: 110.00,
+        stock: 15,
+        type: "FIBRA ÓPTICA",
+        category: { name: "BOBINAS DE CABLE" },
+        specs: "Monomodo G.657A1, 1 Hilo, 1000m, Mensajero de Acero FTTH",
+        images: JSON.stringify(["/api/web-banners/banner-6.jpg"])
+    },
+    {
+        id: "cable-coaxial-rg6-305m",
+        name: "BOBINA DE CABLE COAXIAL RG6 75 OHMIOS 305M (Con Malla al 60% Aluminio)",
+        description: "Bobina de cable coaxial RG6 de 75 Ohmios con blindaje de malla al 60% de aluminio. Ideal para televisión por cable HD, antenas parabólicas, televisión digital terrestre (TDT) y cámaras AHD.",
+        price: 52.00,
+        stock: 35,
+        type: "COAXIAL",
+        category: { name: "BOBINAS DE CABLE" },
+        specs: "RG6 75 Ohm, Malla 60%, 305m, TV HD & CCTV",
+        images: JSON.stringify(["/api/web-banners/banner-7.jpg"])
+    },
+    {
+        id: "cable-cat6a-stp-100-cobre-305m",
+        name: "BOBINA DE CABLE STP CAT6A 10Gbps 100% COBRE PURO 305M (Doble Blindaje Malla + Papel de Aluminio)",
+        description: "Bobina de cable Cat6A 10Gbps 500MHz con doble blindaje (S/FTP: blindaje individual por par de lámina de aluminio + malla global de cobre estañado). Diseñado para Data Centers y redes de alto tráfico.",
+        price: 240.00,
+        stock: 10,
+        type: "100% COBRE",
+        category: { name: "BOBINAS DE CABLE" },
+        specs: "100% Cobre, Cat6A 10Gbps 500MHz, Double Shielded S/FTP, 305m",
+        images: JSON.stringify(["/api/web-banners/banner-8.jpg"])
+    }
+];
+
 export default function BobinasCablesLandingPage() {
-    const [products, setProducts] = useState<any[]>([])
-    const [loading, setLoading] = useState(true)
+    const [products, setProducts] = useState<any[]>(FALLBACK_CABLES)
+    const [loading, setLoading] = useState(false)
     const [search, setSearch] = useState("")
     const [selectedTypeFilter, setSelectedTypeFilter] = useState<string>("TODOS")
     const [userRole, setUserRole] = useState<string | undefined>()
 
     useEffect(() => {
         const init = async () => {
-            setLoading(true)
             try {
                 const [pRes, sRes] = await Promise.all([
-                    fetch("/api/web/bobinas-cables").then(r => r.json()),
+                    fetch("/api/web/bobinas-cables").then(r => r.json()).catch(() => null),
                     fetch("/api/auth/session").then(r => r.json()).catch(() => null)
                 ])
-                setProducts(pRes.products || [])
+                if (pRes?.products && pRes.products.length > 0) {
+                    const map = new Map()
+                    FALLBACK_CABLES.forEach(f => map.set(f.name.toLowerCase().trim(), f))
+                    pRes.products.forEach((p: any) => map.set(p.name.toLowerCase().trim(), p))
+                    setProducts(Array.from(map.values()))
+                }
                 if (sRes?.user?.role) setUserRole(sRes.user.role)
             } catch(e) {
                 console.error(e)
             }
-            setLoading(false)
         }
         init()
     }, [])
