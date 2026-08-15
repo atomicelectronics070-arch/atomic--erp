@@ -463,7 +463,7 @@ export default function WhatsAppCrmClient() {
                                 </h4>
 
                                 <p className="text-[11px] text-slate-400 leading-snug">
-                                    Genera el archivo estándar de catálogo (**Meta Commerce Feed CSV**) con tus 9,676+ productos activos para cargarlo con 1 clic en **Meta Commerce Manager -> Catalog**.
+                                    Genera el archivo estándar de catálogo (Meta Commerce Feed CSV) con tus 9,676+ productos activos para cargarlo con 1 clic en Meta Commerce Manager &rarr; Catalog.
                                 </p>
 
                                 <div className="pt-1 flex flex-col sm:flex-row gap-2">
