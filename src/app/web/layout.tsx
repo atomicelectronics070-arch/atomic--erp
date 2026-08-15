@@ -32,6 +32,7 @@ export default function WebLayout({ children }: { children: React.ReactNode }) {
     const navLinks = [
         { href: "/web/products", label: "Productos" },
         { href: "/web/categories", label: "Categorías" },
+        { href: "/web/bobinas-cables", label: "Bobinas" },
         { href: "/web/mandos", label: "Mandos" },
         { href: "/web/cocinas", label: "Cocinas" },
         { href: "/web/conjuntos-smart", label: "Smart" },
