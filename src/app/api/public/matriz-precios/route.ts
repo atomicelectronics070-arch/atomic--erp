@@ -17,12 +17,25 @@ export async function GET(req: NextRequest) {
     };
 
     if (search) {
-      where.OR = [
-        { name: { contains: search, mode: 'insensitive' } },
-        { sku: { contains: search, mode: 'insensitive' } },
-        { provider: { contains: search, mode: 'insensitive' } },
-        { specs: { contains: search, mode: 'insensitive' } },
-      ];
+      // Clean stop words and tokenize
+      const stopWords = new Set(['de', 'del', 'la', 'el', 'en', 'para', 'con', 'un', 'una', 'y']);
+      const tokens = search
+        .split(/\s+/)
+        .map((t) => t.trim())
+        .filter((t) => t.length > 0 && !stopWords.has(t.toLowerCase()));
+
+      if (tokens.length > 0) {
+        where.AND = tokens.map((token) => ({
+          OR: [
+            { name: { contains: token, mode: 'insensitive' } },
+            { sku: { contains: token, mode: 'insensitive' } },
+            { provider: { contains: token, mode: 'insensitive' } },
+            { specs: { contains: token, mode: 'insensitive' } },
+            { description: { contains: token, mode: 'insensitive' } },
+            { category: { name: { contains: token, mode: 'insensitive' } } },
+          ],
+        }));
+      }
     }
 
     if (provider && provider !== 'ALL') {
