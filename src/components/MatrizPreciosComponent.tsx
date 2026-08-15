@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo, useRef } from 'react';
+import ProviderSyncStatusWidget from './ProviderSyncStatusWidget';
 
 interface ProductMatrixItem {
   id: string;
@@ -432,6 +433,11 @@ export default function MatrizPreciosComponent({ isVendedorMode = false }: Matri
               🖨️ IMPRIMIR
             </button>
           </div>
+        </div>
+
+        {/* MONITOR EN VIVO Y SINCRONIZADOR DE PROVEEDORES */}
+        <div className="mt-6">
+          <ProviderSyncStatusWidget />
         </div>
 
         {/* CONTROLES DE BÚSQUEDA Y FILTROS EN RECUADROS INDEPENDIENTES */}
