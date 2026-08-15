@@ -29,12 +29,12 @@ const safeParseArray = (str: any, fallback: any = []) => {
 };
 
 interface BobinasClientProps {
-    initialProducts: any[];
+    initialProducts?: any[];
 }
 
-export default function BobinasClient({ initialProducts }: BobinasClientProps) {
-    const [products, setProducts] = useState<any[]>(initialProducts || [])
-    const [loading, setLoading] = useState(false)
+export default function BobinasClient({ initialProducts = [] }: BobinasClientProps) {
+    const [products, setProducts] = useState<any[]>(initialProducts)
+    const [loading, setLoading] = useState(initialProducts.length === 0)
     const [search, setSearch] = useState("")
     const [selectedTypeFilter, setSelectedTypeFilter] = useState<string>("TODOS")
     const [userRole, setUserRole] = useState<string | undefined>()
@@ -45,8 +45,7 @@ export default function BobinasClient({ initialProducts }: BobinasClientProps) {
                 const sRes = await fetch("/api/auth/session").then(r => r.json()).catch(() => null)
                 if (sRes?.user?.role) setUserRole(sRes.user.role)
                 
-                // If initialProducts was empty for any reason, fetch fallback API
-                if (!initialProducts || initialProducts.length === 0) {
+                if (initialProducts.length === 0) {
                     setLoading(true)
                     const pRes = await fetch("/api/web/bobinas-cables").then(r => r.json())
                     setProducts(pRes.products || [])
