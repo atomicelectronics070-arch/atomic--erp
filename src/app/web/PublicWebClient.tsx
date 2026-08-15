@@ -113,6 +113,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
 
   // Landing Pages Data
   const landingPagesList = [
+    { title: 'Bobinas de Cable UTP & FTP', sub: 'Cat6, Cat5e, 100% Cobre, Aleación CCA & Blindados', url: '/web/bobinas-cables', tag: 'CABLEADO', image: '⚡' },
     { title: 'Mandos & Consolas Gaming', sub: 'DualSense PS5, PS4, Switch, PS Portal', url: '/web/mandos', tag: 'GAMING', image: '🎮' },
     { title: 'Encimeras & Hornos a Gas', sub: 'Línea de Cocina en Centímetros', url: '/web/cocinas', tag: 'HOGAR', image: '🍳' },
     { title: 'Consolas de Videojuegos', sub: 'PS5 Slim 1TB, PS4 Pro, Xbox Series X', url: '/web/collection/consolas-de-video-juegos', tag: 'CONSOLAS', image: '🕹️' },
