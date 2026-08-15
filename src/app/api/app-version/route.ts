@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { NextResponse } from "next/server"
 import { LATEST_APK_VERSION, LATEST_APK_VERSION_CODE, APK_DOWNLOAD_PATH, LATEST_CHANGELOG } from "@/lib/apkVersion"
 

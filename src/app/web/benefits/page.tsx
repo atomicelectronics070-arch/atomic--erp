@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { Shield, Zap, Smartphone, TrendingUp, Sun, Droplets, Eye, Mic, Film, Heart, Waves, Moon, Lock, Bell, Music, UserPlus, Leaf, AppWindow as WindowIcon, Search, Wrench as Tool, HardHat, Layout, Key, Cloud, Thermometer, Battery, Monitor, Puzzle, HelpCircle, Smile, CheckCircle2, ArrowRight } from "lucide-react"
 import Link from "next/link"
 

@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import React from 'react';
 import Link from 'next/link';
 import { ArrowLeft, CheckCircle, ShieldAlert, Wrench, Share2, Instagram, Facebook, Youtube } from 'lucide-react';

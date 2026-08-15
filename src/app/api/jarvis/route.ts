@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 
 const NVIDIA_API_KEY = process.env.NVIDIA_API_KEY;

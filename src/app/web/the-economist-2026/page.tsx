@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import React from 'react'
 import { Eye, AlertTriangle, Cpu, Globe, Crosshair, Download, FileText } from 'lucide-react'
 import { SummaryModal } from './SummaryModal'
