@@ -44,6 +44,18 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
   const [modalType, setModalType] = useState<'nosotros' | 'ubicacion' | 'referencias' | 'contacto' | 'cart' | 'profile' | 'envios' | null>(null)
   const [currentSlide, setCurrentSlide] = useState(0)
 
+  // Auto-read URL search parameter ?search=... or ?q=... on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const qParam = params.get('search') || params.get('q');
+      if (qParam) {
+        const cleaned = decodeURIComponent(qParam).replace(/-/g, ' ').trim();
+        setSearchQuery(cleaned);
+      }
+    }
+  }, []);
+
   // Auto-close hamburger menu on resize
   useEffect(() => {
     const handleResize = () => {
@@ -66,7 +78,7 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
     { title: 'KIT ALARMAS & SENSORES SMART', sub: 'Detección de Movimiento y Alertas a tu Celular', img: BANNER_IMAGES['banner-21.jpg'] || BANNER_IMAGES['banner-9.jpg'], tag: 'ALARMAS' },
     { title: 'PORTONES ELÉCTRICOS & ACCESOS', sub: 'Automatización para Garajes y Entradas Principales', img: BANNER_IMAGES['banner-22.jpg'] || BANNER_IMAGES['banner-10.jpg'], tag: 'PORTONES' },
     { title: 'SISTEMAS POS & SOFTWARE ERP', sub: 'Control de Ventas, Inventario y Facturación Electrónica SRI', img: BANNER_IMAGES['banner-23.jpg'] || BANNER_IMAGES['banner-11.jpg'], tag: 'SOFTWARE' },
-    { title: 'PLANTAS DE BLOQUES & INDUSTRIAL', sub: 'Maquinaria de Construcción de Alta Eficiencia', img: BANNER_IMAGES['banner-24.jpg'] || BANNER_IMAGES['banner-12.jpg'], tag: 'INDUSTRIAL' },
+    { title: 'PLANTAS DE BLOQUES & INDUSTRIAL', sub: 'Maquinaria de Construcción de Alta Eficiencia', img: BANNER_IMAGES['banner-18.jpg'] || BANNER_IMAGES['banner-12.jpg'], tag: 'INDUSTRIAL' },
   ]
 
   // Auto Slider for Volkswagen Style Scroll Hero
@@ -81,12 +93,20 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
   const filteredProducts = useMemo(() => {
     let result = initialProducts || []
     if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase().trim()
-      result = result.filter(p => 
-        p.name?.toLowerCase().includes(q) || 
-        p.category?.name?.toLowerCase().includes(q) || 
-        p.description?.toLowerCase().includes(q)
-      )
+      const stopWords = new Set(['de', 'del', 'la', 'el', 'en', 'para', 'con', 'un', 'una', 'y'])
+      const tokens = searchQuery
+        .toLowerCase()
+        .replace(/-/g, ' ')
+        .split(/\s+/)
+        .map(t => t.trim())
+        .filter(t => t.length > 0 && !stopWords.has(t))
+
+      if (tokens.length > 0) {
+        result = result.filter(p => {
+          const text = `${p.name || ''} ${p.category?.name || ''} ${p.description || ''} ${p.specs || ''}`.toLowerCase()
+          return tokens.every(token => text.includes(token))
+        })
+      }
     }
     if (selectedCategoryFilter) {
       const catQ = selectedCategoryFilter.toLowerCase()

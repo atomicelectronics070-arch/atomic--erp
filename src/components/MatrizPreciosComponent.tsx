@@ -552,7 +552,9 @@ export default function MatrizPreciosComponent({ isVendedorMode = false }: Matri
               <th className="py-3.5 px-4 border-r-2 border-zinc-950">
                 {isVendedorMode ? 'DESCRIPCIÓN PRODUCTO' : 'DESCRIPCIÓN PRODUCTO (EDITABLE)'}
               </th>
-              <th className="py-3.5 px-4 border-r-2 border-zinc-950 w-36">PROVEEDOR</th>
+              {!isVendedorMode && (
+                <th className="py-3.5 px-4 border-r-2 border-zinc-950 w-36">PROVEEDOR</th>
+              )}
               <th className="py-3.5 px-4 border-r-2 border-zinc-950 w-44">
                 {isVendedorMode ? 'CATEGORÍA' : 'CATEGORÍA (EDITABLE)'}
               </th>
@@ -660,9 +662,11 @@ export default function MatrizPreciosComponent({ isVendedorMode = false }: Matri
                       )}
                     </td>
 
-                    <td className="py-2.5 px-4 border-r border-zinc-400 font-mono text-[11px] font-bold uppercase text-zinc-800">
-                      {p.provider}
-                    </td>
+                    {!isVendedorMode && (
+                      <td className="py-2.5 px-4 border-r border-zinc-400 font-mono text-[11px] font-bold uppercase text-zinc-800">
+                        {p.provider}
+                      </td>
+                    )}
 
                     {/* CATEGORY */}
                     <td className="py-1.5 px-2 border-r border-zinc-400 font-mono text-[11px] uppercase">
@@ -801,7 +805,7 @@ export default function MatrizPreciosComponent({ isVendedorMode = false }: Matri
                     {/* ONLINE STORE DIRECT LINK */}
                     <td className="py-2.5 px-4 border-r border-zinc-400 text-center font-mono">
                       <a
-                        href={`/web?search=${encodeURIComponent(p.sku || p.name)}`}
+                        href={`/web/product/${p.id}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-block border-2 border-zinc-950 bg-white px-2.5 py-1 text-[10px] font-black uppercase hover:bg-zinc-950 hover:text-white transition-all rounded shadow-sm"

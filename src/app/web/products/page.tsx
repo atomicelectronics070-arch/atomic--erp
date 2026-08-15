@@ -56,6 +56,15 @@ export default function ProductsPage() {
             setLoading(false)
         }
         init()
+
+        if (typeof window !== 'undefined') {
+            const params = new URLSearchParams(window.location.search);
+            const qParam = params.get('search') || params.get('q');
+            if (qParam) {
+                const cleaned = decodeURIComponent(qParam).replace(/-/g, ' ').trim();
+                setSearch(cleaned);
+            }
+        }
     }, [])
 
     // Reset pagination when filters change
@@ -105,7 +114,22 @@ export default function ProductsPage() {
         if (activeLetter === '#') p = p.filter(x => !/^[a-zA-Z]/.test(x.name))
         else if (activeLetter) p = p.filter(x => x.name.toUpperCase().startsWith(activeLetter))
         
-        if (search) p = p.filter(x => x.name.toLowerCase().includes(search.toLowerCase()) || x.description?.toLowerCase().includes(search.toLowerCase()))
+        if (search) {
+            const stopWords = new Set(['de', 'del', 'la', 'el', 'en', 'para', 'con', 'un', 'una', 'y'])
+            const tokens = search
+                .toLowerCase()
+                .replace(/-/g, ' ')
+                .split(/\s+/)
+                .map(t => t.trim())
+                .filter(t => t.length > 0 && !stopWords.has(t))
+
+            if (tokens.length > 0) {
+                p = p.filter(x => {
+                    const text = `${x.name || ''} ${x.description || ''} ${x.specs || ''}`.toLowerCase();
+                    return tokens.every(token => text.includes(token));
+                });
+            }
+        }
         
         return p.sort((a, b) => a.name.localeCompare(b.name))
     }, [products, activeCategory, activeLetter, search, categories])
