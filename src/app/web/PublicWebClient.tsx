@@ -16,8 +16,19 @@ import { calculateDiscountedPrice } from "@/lib/utils/pricing"
 const CoverflowGallery = dynamic(() => import("@/components/CoverflowGallery"), {
   ssr: false,
   loading: () => (
-    <div className="w-full h-[380px] flex items-center justify-center bg-[#090e1a] rounded-2xl border border-white/10">
-      <div className="w-8 h-8 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
+    <div className="w-full py-8 flex flex-col items-center justify-center bg-[#080d1a]/80 rounded-3xl border border-blue-500/20 shadow-2xl p-6">
+      <div className="text-xs font-mono font-bold text-blue-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+        <span className="w-2 h-2 rounded-full bg-blue-400 animate-ping" />
+        <span>Cargando Catálogo 3D Coverflow de Productos IA...</span>
+      </div>
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 w-full max-w-4xl opacity-90">
+        <img src="/images/hero-3d/slide-1.png" alt="Producto IA 1" className="w-full h-24 object-cover rounded-xl border border-white/10" />
+        <img src="/images/hero-3d/slide-2.jpg" alt="Producto IA 2" className="w-full h-24 object-cover rounded-xl border border-white/10" />
+        <img src="/images/hero-3d/slide-3.jpg" alt="Producto IA 3" className="w-full h-24 object-cover rounded-xl border border-white/10" />
+        <img src="/images/hero-3d/slide-4.jpg" alt="Producto IA 4" className="w-full h-24 object-cover rounded-xl border border-white/10" />
+        <img src="/images/hero-3d/slide-5.jpg" alt="Producto IA 5" className="w-full h-24 object-cover rounded-xl border border-white/10" />
+        <img src="/images/hero-3d/slide-6.jpg" alt="Producto IA 6" className="w-full h-24 object-cover rounded-xl border border-white/10" />
+      </div>
     </div>
   )
 })
