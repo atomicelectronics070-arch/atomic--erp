@@ -190,18 +190,6 @@ export default function CoverflowGallery(props: Smooth3DSlideshowProps) {
     const loop = true
     const [active, setActive] = useState(0)
 
-    useEffect(() => {
-        setActive((a) => Math.max(0, Math.min(n - 1, a)))
-    }, [n])
-
-    if (!mounted) {
-        return (
-            <div className="w-full h-[380px] flex items-center justify-center bg-[#090e1a]">
-                <div className="w-8 h-8 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
-            </div>
-        )
-    }
-
     const moveDur =
         transition && typeof transition.duration === "number"
             ? transition.duration
@@ -259,6 +247,14 @@ export default function CoverflowGallery(props: Smooth3DSlideshowProps) {
         },
         [step]
     )
+
+    if (!mounted) {
+        return (
+            <div className="w-full h-[380px] flex items-center justify-center bg-[#090e1a]">
+                <div className="w-8 h-8 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
+            </div>
+        )
+    }
 
     const { dur, ease } = cssTransition(transition)
     const transitionCss = `transform ${dur}s ${ease}, opacity ${dur}s ${ease}`
