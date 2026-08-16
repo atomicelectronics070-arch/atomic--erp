@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Catálogo Oficial y Fichas Técnicas - Maquinaria de Bloques ATOMIC</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap');
+  
+  @page {
+    size: A4;
+    margin: 12mm 12mm 15mm 12mm;
+    @bottom-center {
+      content: "ATOMIC HEAVY MACHINERY — Catálogo Oficial & Fichas Técnicas — Página " counter(page);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 8pt;
+      color: #777;
+    }
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background-color: #050505;
+    color: #ffffff;
+    font-size: 9.5pt;
+    line-height: 1.45;
+    margin: 0;
+    padding: 0;
+  }
+
+  .hero-cover {
+    background: linear-gradient(135deg, #171717 0%, #000000 100%);
+    border: 2px solid #f59e0b;
+    border-radius: 12px;
+    padding: 30px;
+    margin-bottom: 20px;
+    box-shadow: 0 10px 30px rgba(245, 158, 11, 0.15);
+  }
+
+  .hero-cover .tag {
+    background-color: rgba(245, 158, 11, 0.2);
+    border: 1px solid rgba(245, 158, 11, 0.5);
+    color: #fbbf24;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 7.5pt;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    text-transform: uppercase;
+    display: inline-block;
+    margin-bottom: 12px;
+  }
+
+  .hero-cover h1 {
+    font-size: 26pt;
+    font-weight: 900;
+    margin: 0 0 10px 0;
+    line-height: 1.05;
+    text-transform: uppercase;
+  }
+
+  .hero-cover h1 span {
+    color: #f59e0b;
+  }
+
+  .hero-cover p {
+    font-size: 10.5pt;
+    color: #d4d4d4;
+    margin: 0;
+    font-weight: 300;
+  }
+
+  .section-header {
+    font-size: 14pt;
+    font-weight: 900;
+    color: #fbbf24;
+    border-bottom: 2px solid #262626;
+    padding-bottom: 6px;
+    margin-top: 25px;
+    margin-bottom: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .model-card {
+    background-color: #0c0c0c;
+    border: 1px solid #262626;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .model-card .header-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #262626;
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+  }
+
+  .model-card h3 {
+    font-size: 13pt;
+    font-weight: 900;
+    color: #ffffff;
+    margin: 0;
+    text-transform: uppercase;
+  }
+
+  .model-card .price {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12pt;
+    font-weight: 900;
+    color: #f59e0b;
+  }
+
+  .specs-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+    font-size: 8.5pt;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .specs-item {
+    background-color: #141414;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid #262626;
+  }
+
+  .specs-item span {
+    color: #888;
+    display: block;
+    font-size: 7.5pt;
+    text-transform: uppercase;
+  }
+
+  .specs-item strong {
+    color: #fff;
+    font-size: 9pt;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+    font-size: 8pt;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  th {
+    background-color: #171717;
+    color: #fbbf24;
+    text-align: left;
+    padding: 8px 10px;
+    border-bottom: 2px solid #262626;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #171717;
+    color: #d4d4d4;
+  }
+
+  tr:nth-child(even) {
+    background-color: rgba(255, 255, 255, 0.02);
+  }
+
+  .turnkey-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin: 15px 0;
+  }
+
+  .turnkey-box {
+    background-color: #121212;
+    border: 1px solid #262626;
+    border-radius: 8px;
+    padding: 12px;
+  }
+
+  .turnkey-box .num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8pt;
+    font-weight: 700;
+    color: #f59e0b;
+    margin-bottom: 4px;
+  }
+
+  .turnkey-box h4 {
+    font-size: 9.5pt;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0 0 4px 0;
+  }
+
+  .turnkey-box p {
+    font-size: 7.5pt;
+    color: #a3a3a3;
+    margin: 0;
+  }
+
+  .cta-box {
+    background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
+    color: #000000;
+    border-radius: 10px;
+    padding: 16px 20px;
+    text-align: center;
+    margin-top: 25px;
+  }
+
+  .cta-box h3 {
+    font-size: 13pt;
+    font-weight: 900;
+    margin: 0 0 4px 0;
+    text-transform: uppercase;
+    color: #000000;
+  }
+
+  .cta-box p {
+    font-size: 9pt;
+    font-weight: 600;
+    margin: 0;
+    color: #171717;
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO COVER -->
+<div class="hero-cover">
+  <div class="tag">División Maquinaria Pesada & Prefabricados ATOMIC</div>
+  <h1>CATÁLOGO OFICIAL Y FICHAS TÉCNICAS DE <span>PLANTAS INDUSTRIALES DE BLOQUES</span></h1>
+  <p>Ingeniería de Vibro-Compresión Hidráulica de Alta Frecuencia para producción continua de bloques sismo-resistentes, adoquines viales pesados (+45 MPa) y ladrillos ecológicos Interlocking.</p>
+</div>
+
+<div class="section-header">📑 1. Catálogo Detallado de Modelos y Fichas Técnicas</div>
+
+<!-- MODEL 1 -->
+<div class="model-card">
+  <div class="header-line">
+    <h3>1. QTJ4-40 — Planta Semi-Automática de Inicio</h3>
+    <div class="price">Inversión: $12,500 – $18,000 USD</div>
+  </div>
+  <div class="specs-grid">
+    <div class="specs-item"><span>Capacidad Nominal (Bloque 20)</span><strong>3,500 – 4,800 bloques / turno 8h</strong></div>
+    <div class="specs-item"><span>Fuerza de Presión Hidráulica</span><strong>40 KN</strong></div>
+    <div class="specs-item"><span>Potencia Instalada</span><strong>18 kW (Trifásica 220V/380V)</strong></div>
+    <div class="specs-item"><span>Tiempo de Ciclo Moldeo</span><strong>25 – 30 segundos</strong></div>
+  </div>
+  <p style="font-size:8.5pt; color:#aaa; margin:0;"><strong>Recomendado para:</strong> Emprendedores, municipios pequeños o constructoras locales que inician su propia producción de bloques con baja nómina y mantenimiento sencillo.</p>
+</div>
+
+<!-- MODEL 2 -->
+<div class="model-card">
+  <div class="header-line">
+    <h3>2. QT4-15 — Línea Comercial Estándar PLC</h3>
+    <div class="price">Inversión: $28,000 – $38,000 USD</div>
+  </div>
+  <div class="specs-grid">
+    <div class="specs-item"><span>Capacidad Nominal (Bloque 20)</span><strong>6,000 – 8,000 bloques / turno 8h</strong></div>
+    <div class="specs-item"><span>Fuerza de Presión Hidráulica</span><strong>70 KN</strong></div>
+    <div class="specs-item"><span>Potencia Instalada</span><strong>32 kW (Trifásica 220V/380V)</strong></div>
+    <div class="specs-item"><span>Tiempo de Ciclo Moldeo</span><strong>15 – 20 segundos</strong></div>
+  </div>
+  <p style="font-size:8.5pt; color:#aaa; margin:0;"><strong>Recomendado para:</strong> Bloqueras comerciales consolidadas que distribuyen a ferreterías, depósitos de materiales y contratos de vivienda en serie. Incluye Apilador Stacker y PLC Siemens.</p>
+</div>
+
+<!-- MODEL 3 -->
+<div class="model-card">
+  <div class="header-line">
+    <h3>3. QT6-15 — Línea Pesada Industrial & Adoquín Vial</h3>
+    <div class="price">Inversión: $45,000 – $58,000 USD</div>
+  </div>
+  <div class="specs-grid">
+    <div class="specs-item"><span>Capacidad Nominal (Bloque 20)</span><strong>9,000 – 12,000 bloques / 900 m² adoquín</strong></div>
+    <div class="specs-item"><span>Fuerza de Presión Hidráulica</span><strong>100 KN (Mesa Síncrona 4500 RPM)</strong></div>
+    <div class="specs-item"><span>Potencia Instalada</span><strong>45 kW (Trifásica 220V/380V)</strong></div>
+    <div class="specs-item"><span>Tiempo de Ciclo Moldeo</span><strong>15 segundos (6 bloques/ciclo)</strong></div>
+  </div>
+  <p style="font-size:8.5pt; color:#aaa; margin:0;"><strong>Recomendado para:</strong> Proveedores de infraestructura vial, contratos estatales y producción masiva de adoquines de resistencia extrema (+45 MPa) para puertos y carreteras urbanas.</p>
+</div>
+
+<!-- MODEL 4 -->
+<div class="model-card">
+  <div class="header-line">
+    <h3>4. QT10-15 — Macro Complejo Robótico Industrial</h3>
+    <div class="price">Inversión: $75,000 – $110,000 USD</div>
+  </div>
+  <div class="specs-grid">
+    <div class="specs-item"><span>Capacidad Nominal (Bloque 20)</span><strong>15,000 – 18,000 bloques / turno 8h</strong></div>
+    <div class="specs-item"><span>Fuerza de Presión Hidráulica</span><strong>120 KN</strong></div>
+    <div class="specs-item"><span>Potencia Instalada</span><strong>75 kW (Trifásica 220V/380V)</strong></div>
+    <div class="specs-item"><span>Tiempo de Ciclo Moldeo</span><strong>12 – 15 segundos</strong></div>
+  </div>
+  <p style="font-size:8.5pt; color:#aaa; margin:0;"><strong>Recomendado para:</strong> Megaproyectos de desarrollo urbano, exportación regional o franquicias de concreto prefabricado. Incluye Silo de Cemento 100T y empaquetado robótico.</p>
+</div>
+
+<div class="section-header">🛠️ 2. Equipamiento Incluido Llave en Mano (Turnkey)</div>
+
+<div class="turnkey-grid">
+  <div class="turnkey-box">
+    <div class="num">COMPONENTE 01</div>
+    <h4>Máquina Host Vibratoria</h4>
+    <p>Chasis estructural electro-soldado reforzado con mesa de vibración síncrona de 4500 RPM.</p>
+  </div>
+  <div class="turnkey-box">
+    <div class="num">COMPONENTE 02</div>
+    <h4>Mezcladora Obligatoria JS500</h4>
+    <p>Mezcladora de doble eje horizontal para concreto seco con revestimiento anti-desgaste.</p>
+  </div>
+  <div class="turnkey-box">
+    <div class="num">COMPONENTE 03</div>
+    <h4>Panel PLC Siemens HMI</h4>
+    <p>Pantalla táctil a color para control automático de presiones, conteo y diagnóstico de ciclos.</p>
+  </div>
+  <div class="turnkey-box">
+    <div class="num">COMPONENTE 04</div>
+    <h4>Cinta Transportadora 8m</h4>
+    <p>Banda vulcanizada con rodillos de triple blindaje para elevación continua de la mezcla.</p>
+  </div>
+  <div class="turnkey-box">
+    <div class="num">COMPONENTE 05</div>
+    <h4>Apilador Stacker Paletas</h4>
+    <p>Sistema elevar-apilar que agrupa automáticamente de 3 a 5 paletas de bloques frescos.</p>
+  </div>
+  <div class="turnkey-box">
+    <div class="num">COMPONENTE 06</div>
+    <h4>Kit Manganeso + Carritos</h4>
+    <p>1 Molde a elección (+120k ciclos), 2 carritos de extracción manual y paquete de repuestos.</p>
+  </div>
+</div>
+
+<div class="section-header">🤝 3. Plan de Acompañamiento Técnico On-Site y Garantía</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Etapa</th>
+      <th>Acción Realizada por Ingenieros ATOMIC</th>
+      <th>Resultado para el Cliente</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>1. Cimentación CAD</strong></td>
+      <td>Entrega previa de planos 2D/3D de losa de hormigón (15-20cm) y trifásica.</td>
+      <td>Terreno 100% acondicionado antes del desembarque.</td>
+    </tr>
+    <tr>
+      <td><strong>2. Montaje On-Site</strong></td>
+      <td>Nivelación del chasis host, anclaje y conexión hidráulica en terreno.</td>
+      <td>Planta alineada y sin vibraciones descompensadas.</td>
+    </tr>
+    <tr>
+      <td><strong>3. Capacitación Operarios</strong></td>
+      <td>Entrenamiento de 3 a 5 días en mezcla seca y uso del panel táctil Siemens.</td>
+      <td>Tripulación local autónoma desde el primer lote.</td>
+    </tr>
+    <tr>
+      <td><strong>4. Tele-Asistencia 24/7</strong></td>
+      <td>Conexión remota por módem IP al PLC Siemens para ajustes de ciclo.</td>
+      <td>Respuesta inmediata ante cualquier código de falla.</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="cta-box">
+  <h3>SOLICITA TU ASESORÍA Y PLANOS TÉCNICOS PERSONALIZADOS</h3>
+  <p>WhatsApp Comercial Directo: +593 96 904 3453 | Cotizador Web: www.atomiccotizador.shop</p>
+</div>
+
+</body>
+</html>

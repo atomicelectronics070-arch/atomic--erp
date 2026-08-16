@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Folleto y Catálogo Oficial - Plantas Industriales de Bloques ATOMIC</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&family=JetBrains+Mono:wght@400;700&display=swap');
+  
+  @page {
+    size: A4 portrait;
+    margin: 12mm 12mm 15mm 12mm;
+    @bottom-center {
+      content: "ATOMIC INDUSTRIAL — Catálogo Oficial de Maquinaria — Página " counter(page);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 8pt;
+      color: #888;
+    }
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background-color: #050505;
+    color: #ffffff;
+    font-size: 9.5pt;
+    line-height: 1.45;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* COVER HERO */
+  .hero-banner {
+    background: linear-gradient(135deg, #171717 0%, #000000 100%);
+    border: 2px solid #f59e0b;
+    border-radius: 12px;
+    padding: 25px 30px;
+    margin-bottom: 20px;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(245, 158, 11, 0.15);
+  }
+
+  .hero-banner .tag {
+    background-color: rgba(245, 158, 11, 0.2);
+    border: 1px solid rgba(245, 158, 11, 0.5);
+    color: #fbbf24;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 7.5pt;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    text-transform: uppercase;
+    display: inline-block;
+    margin-bottom: 10px;
+  }
+
+  .hero-banner h1 {
+    font-size: 24pt;
+    font-weight: 900;
+    margin: 0 0 8px 0;
+    line-height: 1.05;
+    text-transform: uppercase;
+  }
+
+  .hero-banner h1 span {
+    color: #f59e0b;
+  }
+
+  .hero-banner p {
+    font-size: 10pt;
+    color: #d4d4d4;
+    margin: 0;
+    font-weight: 300;
+  }
+
+  /* SECTION TITLES */
+  .section-title {
+    font-size: 13pt;
+    font-weight: 800;
+    color: #fbbf24;
+    border-bottom: 2px solid #262626;
+    padding-bottom: 6px;
+    margin-top: 22px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* PRODUCT GRID CARDS */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 15px;
+  }
+
+  .product-card {
+    background-color: #0d0d0d;
+    border: 1px solid #262626;
+    border-radius: 12px;
+    padding: 15px;
+    display: flex;
+    flex-col;
+    justify-content: space-between;
+  }
+
+  .product-card h3 {
+    font-size: 12pt;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0 0 6px 0;
+    text-transform: uppercase;
+  }
+
+  .product-card .price-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13pt;
+    font-weight: 900;
+    color: #f59e0b;
+    margin-bottom: 10px;
+  }
+
+  .product-card ul {
+    margin: 0 0 10px 0;
+    padding-left: 15px;
+    font-size: 8.5pt;
+    color: #a3a3a3;
+  }
+
+  .product-card ul li {
+    margin-bottom: 4px;
+  }
+
+  /* SPECS TABLE */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 8pt;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  th {
+    background-color: #171717;
+    color: #fbbf24;
+    text-align: left;
+    padding: 8px 10px;
+    border-bottom: 2px solid #262626;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  td {
+    padding: 7px 10px;
+    border-bottom: 1px solid #171717;
+    color: #d4d4d4;
+  }
+
+  tr:nth-child(even) {
+    background-color: rgba(255, 255, 255, 0.02);
+  }
+
+  /* TURNKEY KIT BOXES */
+  .turnkey-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin: 12px 0;
+  }
+
+  .turnkey-box {
+    background-color: #121212;
+    border: 1px solid #262626;
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+
+  .turnkey-box .num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8pt;
+    font-weight: 700;
+    color: #f59e0b;
+    margin-bottom: 4px;
+  }
+
+  .turnkey-box h4 {
+    font-size: 9pt;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0 0 4px 0;
+  }
+
+  .turnkey-box p {
+    font-size: 7.5pt;
+    color: #a3a3a3;
+    margin: 0;
+  }
+
+  /* ONBOARDING STEPS */
+  .step-card {
+    background-color: #121212;
+    border-left: 3px solid #f59e0b;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    border-radius: 0 6px 6px 0;
+  }
+
+  .step-card h4 {
+    font-size: 9pt;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0 0 3px 0;
+  }
+
+  .step-card p {
+    font-size: 8pt;
+    color: #a3a3a3;
+    margin: 0;
+  }
+
+  /* CONTACT CTA FOOTER */
+  .cta-banner {
+    background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
+    color: #000000;
+    border-radius: 10px;
+    padding: 15px 20px;
+    text-align: center;
+    margin-top: 20px;
+  }
+
+  .cta-banner h3 {
+    font-size: 13pt;
+    font-weight: 900;
+    margin: 0 0 4px 0;
+    text-transform: uppercase;
+    color: #000000;
+  }
+
+  .cta-banner p {
+    font-size: 9pt;
+    font-weight: 600;
+    margin: 0;
+    color: #171717;
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO COVER -->
+<div class="hero-banner">
+  <div class="tag">División Maquinaria Pesada & Prefabricados ATOMIC</div>
+  <h1>CATÁLOGO DE PLANTAS <span>INDUSTRIALES DE BLOQUES</span></h1>
+  <p>Tecnología de Vibro-Compresión Hidráulica para producción en masa de bloques de concreto, adoquines viales pesados y ladrillos ecológicos Interlocking.</p>
+</div>
+
+<!-- MODEL SPECS COMPARISON -->
+<div class="section-title">📊 1. Catálogo de Modelos y Capacidad de Producción</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Modelo de Planta</th>
+      <th>Producción / Turno (8 horas)</th>
+      <th>Fuerza Presión</th>
+      <th>Potencia</th>
+      <th>Garantía Estructural</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>QTJ4-40 (Semi-Automática)</strong></td>
+      <td>3,500 – 4,800 bloques de 20cm</td>
+      <td>40 KN</td>
+      <td>18 kW</td>
+      <td>2 Años Garantía Chasis</td>
+    </tr>
+    <tr>
+      <td><strong>QT4-15 (Línea Estándar PLC)</strong></td>
+      <td>6,000 – 8,000 bloques de 20cm</td>
+      <td>70 KN</td>
+      <td>32 kW</td>
+      <td>2 Años Garantía Chasis</td>
+    </tr>
+    <tr>
+      <td><strong>QT6-15 (Línea Pesada Industrial)</strong></td>
+      <td>9,000 – 12,000 bloques / 900m² adoquín</td>
+      <td>100 KN</td>
+      <td>45 kW</td>
+      <td>2 Años Garantía Chasis</td>
+    </tr>
+    <tr>
+      <td><strong>QT10-15 (Macro Planta Robótica)</strong></td>
+      <td>15,000 – 18,000 bloques de 20cm</td>
+      <td>120 KN</td>
+      <td>75 kW</td>
+      <td>2 Años Garantía Chasis</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- PRODUCTS YOU CAN MANUFACTURE -->
+<div class="section-title">🧩 2. Variedad de Productos Fabricables (Multi-Molde)</div>
+
+<div class="grid-2">
+  <div class="product-card">
+    <h3>Bloques Huecos Estándar</h3>
+    <div class="price-tag">Estructurales Sismo-Resistentes</div>
+    <ul>
+      <li>Bloque Estándar 20 (400x200x200mm)</li>
+      <li>Bloque Estándar 15 (400x150x200mm)</li>
+      <li>Tabique Divisorio 10 (400x100x200mm)</li>
+      <li>Alta densidad y masa uniforme sin porocidad.</li>
+    </ul>
+  </div>
+
+  <div class="product-card">
+    <h3>Adoquines Viales (Pavers)</h3>
+    <div class="price-tag">Tráfico Pesado +45 MPa</div>
+    <ul>
+      <li>Adoquín Holandés (200x100x60/80mm)</li>
+      <li>Adoquín Hexagonal (200x80mm)</li>
+      <li>Adoquín Unidecor / Hueso (Zig-Zag)</li>
+      <li>Resistencia extrema para puertos y calles.</li>
+    </ul>
+  </div>
+
+  <div class="product-card">
+    <h3>Bloques Ecológicos Interlocking</h3>
+    <div class="price-tag">Ahorro 80% en Mortero</div>
+    <ul>
+      <li>Sistema Macho-Hembra estilo Lego</li>
+      <li>Medidas 300x150x100mm / 250x125x100mm</li>
+      <li>Ensamblaje rápido sin pegante de mampostería.</li>
+    </ul>
+  </div>
+
+  <div class="product-card">
+    <h3>Bordillos Viales & Canales</h3>
+    <div class="price-tag">Contención Urbana</div>
+    <ul>
+      <li>Bordillos pesados de retención hasta 1m</li>
+      <li>Canales de aguas pluviales urbanas</li>
+      <li>Matrices reforzadas anti-desgaste.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- TURNKEY INCLUDED KIT -->
+<div class="section-title">🛠️ 3. Equipamiento Incluido de Serie (Solución Llave en Mano)</div>
+
+<div class="turnkey-grid">
+  <div class="turnkey-box">
+    <div class="num">COMPONENTE 01</div>
+    <h4>Máquina Host Vibratoria</h4>
+    <p>Chasis de acero estructural electro-soldado con mesa de vibración síncrona de 4500 RPM.</p>
+  </div>
+  <div class="turnkey-box">
+    <div class="num">COMPONENTE 02</div>
+    <h4>Mezcladora Obligatoria JS500</h4>
+    <p>Mezcladora de doble eje horizontal con placas internas de aleación anti-desgaste.</p>
+  </div>
+  <div class="turnkey-box">
+    <div class="num">COMPONENTE 03</div>
+    <h4>Panel PLC Siemens HMI</h4>
+    <p>Pantalla táctil a color para monitoreo automático de presiones y tiempos de ciclo.</p>
+  </div>
+  <div class="turnkey-box">
+    <div class="num">COMPONENTE 04</div>
+    <h4>Cinta Transportadora 8m</h4>
+    <p>Banda vulcanizada con rodillos blindados para la elevación continua de mezcla seca.</p>
+  </div>
+  <div class="turnkey-box">
+    <div class="num">COMPONENTE 05</div>
+    <h4>Apilador Stacker Paletas</h4>
+    <p>Eleva y agrupa automáticamente 3 a 5 paletas de bloques frescos producidos.</p>
+  </div>
+  <div class="turnkey-box">
+    <div class="num">COMPONENTE 06</div>
+    <h4>Kit Manganeso + Carritos</h4>
+    <p>1 Molde a elección (+120k ciclos), 2 carritos de transporte manual y kit de repuestos.</p>
+  </div>
+</div>
+
+<!-- ONBOARDING & SUPPORT -->
+<div class="section-title">🤝 4. Acompañamiento Técnico On-Site e Instalación</div>
+
+<div class="step-card">
+  <h4>Fase 1: Planos CAD de Cimentación</h4>
+  <p>Entrega previa de planos técnicos para la losa de hormigón armado de 15-20cm y acometida trifásica.</p>
+</div>
+
+<div class="step-card">
+  <h4>Fase 2: Instalación y Anclaje por Ingenieros</h4>
+  <p>Nuestros ingenieros mecánicos se trasladan a tu terreno para supervisar el montaje y calibración.</p>
+</div>
+
+<div class="step-card">
+  <h4>Fase 3: Capacitación Operativa a tu Personal</h4>
+  <p>Entrenamiento práctico en sitio para tus operarios en mezcla seca y manejo del tablero PLC Siemens.</p>
+</div>
+
+<div class="step-card">
+  <h4>Fase 4: Tele-Diagnóstico Remoto 24/7</h4>
+  <p>Módem IP integrado en el PLC para monitoreo y asistencia técnica en tiempo real desde central.</p>
+</div>
+
+<!-- CTA BANNER -->
+<div class="cta-banner">
+  <h3>SOLICITA TU COTIZACIÓN FORMAL & PLANOS DE PLANTA</h3>
+  <p>WhatsApp Comercial Directo: +593 96 904 3453 | Sitio Web Oficial: www.atomiccotizador.shop</p>
+</div>
+
+</body>
+</html>

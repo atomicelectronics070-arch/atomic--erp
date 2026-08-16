@@ -48,8 +48,9 @@ Este documento mantiene el registro estructurado de todas las URLs funcionales e
 ## 💻 5. Plataforma ERP & E-Commerce Principal
 - **E-Commerce Web Público:** [Tienda Pública Web](https://atomiccotizador.shop/web)
 - **Dashboard ERP Admin:** [Panel Admin ERP](https://atomiccotizador.shop/dashboard)
-- **Matriz de Precios Vendedor:** [Precios Vendedor](https://atomiccotizador.shop/dashboard/precios-vendedor)
-- **Matriz de Precios General:** [Matriz General de Precios](https://atomiccotizador.shop/dashboard/matriz-precios)
+- **Matriz de Precios - Versión Jefe / Coordinación (Edición Directa, Costos & Márgenes):** [Matriz Secreta Jefe](https://atomiccotizador.shop/dashboard/matriz-precios)
+- **Matriz de Precios - Versión Vendedores (Pública, Solo Lectura, Sin Costos):** [Matriz Vendedores Pública](https://atomiccotizador.shop/dashboard/precios-vendedor)
+- **Matriz Vendedores (Ruta Web Alternativa):** [Matriz Vendedores Web](https://atomiccotizador.shop/web/matriz-precios)
 - **CRM WhatsApp & Prospectos:** [CRM WhatsApp](https://atomiccotizador.shop/dashboard/whatsapp/crm)
 - **Atomic Academy / Capacitación:** [Portal Academy](https://atomiccotizador.shop/web/academy)
 

@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Guía Maestra de Ventas y Capacitación - Bloqueras ATOMIC</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap');
+  
+  @page {
+    size: A4;
+    margin: 15mm 15mm 18mm 15mm;
+    @bottom-right {
+      content: "Página " counter(page) " | GUÍA DE VENTAS ATOMIC";
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 8pt;
+      color: #888;
+    }
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background-color: #080808;
+    color: #e5e5e5;
+    font-size: 9.5pt;
+    line-height: 1.5;
+    margin: 0;
+    padding: 0;
+  }
+
+  .header {
+    border-bottom: 3px solid #f59e0b;
+    padding-bottom: 12px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  .header h1 {
+    font-size: 18pt;
+    font-weight: 900;
+    color: #ffffff;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: -0.5px;
+  }
+
+  .header h1 span {
+    color: #f59e0b;
+  }
+
+  .header .subtitle {
+    font-size: 8.5pt;
+    font-family: 'JetBrains Mono', monospace;
+    color: #fbbf24;
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+  }
+
+  .badge {
+    background-color: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    color: #f87171;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 7pt;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  h2 {
+    font-size: 13pt;
+    font-weight: 900;
+    color: #fbbf24;
+    border-bottom: 2px solid #262626;
+    padding-bottom: 6px;
+    margin-top: 25px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  h3 {
+    font-size: 11pt;
+    font-weight: 800;
+    color: #ffffff;
+    margin-top: 18px;
+    margin-bottom: 8px;
+    border-left: 3px solid #f59e0b;
+    padding-left: 8px;
+  }
+
+  p {
+    margin: 0 0 10px 0;
+    color: #d4d4d4;
+  }
+
+  .dialogue-box {
+    background-color: #121212;
+    border-left: 4px solid #3b82f6;
+    padding: 12px 15px;
+    margin: 12px 0;
+    border-radius: 0 8px 8px 0;
+    font-size: 9pt;
+  }
+
+  .dialogue-box.vendor {
+    border-left-color: #10b981;
+    background-color: #061c14;
+  }
+
+  .dialogue-box.client {
+    border-left-color: #ef4444;
+    background-color: #1f0b0b;
+  }
+
+  .dialogue-box.script {
+    border-left-color: #f59e0b;
+    background-color: #1c1305;
+  }
+
+  .dialogue-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .vendor .dialogue-title { color: #34d399; }
+  .client .dialogue-title { color: #f87171; }
+  .script .dialogue-title { color: #fbbf24; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+    font-size: 8pt;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  th {
+    background-color: #171717;
+    color: #fbbf24;
+    text-align: left;
+    padding: 8px 10px;
+    border-bottom: 2px solid #262626;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  td {
+    padding: 7px 10px;
+    border-bottom: 1px solid #171717;
+    color: #d4d4d4;
+  }
+
+  tr:nth-child(even) {
+    background-color: rgba(255, 255, 255, 0.02);
+  }
+
+  .card {
+    background-color: #121212;
+    border: 1px solid #262626;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 12px;
+  }
+
+  .card h4 {
+    margin: 0 0 6px 0;
+    color: #ffffff;
+    font-size: 9.5pt;
+    font-weight: 700;
+  }
+
+  .footer {
+    margin-top: 30px;
+    border-top: 1px solid #262626;
+    padding-top: 12px;
+    text-align: center;
+    font-size: 8pt;
+    color: #737373;
+    font-family: 'JetBrains Mono', monospace;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>GUÍA MAESTRA DE <span>VENTAS & CIERRES B2B</span></h1>
+    <div class="subtitle">Capacitación Interna de Alto Nivel — División Maquinaria Pesada ATOMIC</div>
+  </div>
+  <div class="badge">Uso Exclusivo Vendedores</div>
+</div>
+
+<h2>MÓDULO 1: FILOSOFÍA DE VENTA CONSULTIVA DE MAQUINARIA PESADA</h2>
+<p>El comprador de maquinaria industrial no está buscando comprar fierros ni motores. El comprador está buscando <strong>comprar la capacidad financiera de producir utilidad líquida diaria</strong>. Tu objetivo como asesor comercial de ATOMIC no es presionar, sino actuar como un <em>Ingeniero Consultor Financiero</em>.</p>
+
+<div class="card">
+  <h4>📌 La Regla de Oro del Vendedor ATOMIC:</h4>
+  <p>"Nunca hables del precio de la máquina antes de haber establecido el volumen de dinero que la máquina le va a generar al cliente cada mes."</p>
+</div>
+
+<h2>MÓDULO 2: GUION DE LLAMADA DE DESCUBRIMIENTO Y CALIFICACIÓN</h2>
+<p>Utiliza este diálogo de calificación paso a paso cuando un cliente escriba por WhatsApp o solicite información:</p>
+
+<div class="dialogue-box script">
+  <div class="dialogue-title">🎙️ PASO 1: APERTURA PROFESIONAL DE AUTORIDAD</div>
+  "Hola [Nombre del Cliente], gusto en saludarte. Hablas con [Tu Nombre], especialista industrial de la división de maquinaria de ATOMIC. Recibí tu solicitud sobre las plantas de bloques y adoquines. Para enviarte la cotización exacta con los planos CAD de planta, cuéntame: ¿Qué tipo de producto planeas fabricar prioritariamente: bloque estándar de construcción, adoquines viales pesados o ladrillos ecológicos?"
+</div>
+
+<div class="dialogue-box script">
+  <div class="dialogue-title">🎙️ PASO 2: DIAGNÓSTICO DE CAPACIDAD Y TERRENO</div>
+  "Perfecto. Para recomendarte la capacidad adecuada: ¿Cuántos bloques diarios esperas comercializar aproximadamente y qué tipo de acometida eléctrica tienes en tu terreno (trifásica 220V/380V o generador diésel)?"
+</div>
+
+<div class="dialogue-box script">
+  <div class="dialogue-title">🎙️ PASO 3: ENCUADRE DE INVERSIÓN Y PLANOS</div>
+  "Excelente. Con base en tus requerimientos de [5,000 bloques/día], el equipo ideal no es una máquina manual, sino la línea comercial QT4-15 con PLC Siemens Siemens y Apilador Stacker. Te voy a enviar el dossier técnico y el simulador de rentabilidad a este chat."
+</div>
+
+<h2>MÓDULO 3: ENCICLOPEDIA DE OBJECIONES Y GUION DE RESPUESTAS DE CIERRE</h2>
+
+<h3>Objeción 1: "He visto máquinas chinas más baratas en internet."</h3>
+<div class="dialogue-box client">
+  <div class="dialogue-title">🗣️ LO QUE DICE EL CLIENTE:</div>
+  "Es que estuve cotizando por fuera y encuentro máquinas que se ven iguales por $10,000 dólares menos."
+</div>
+<div class="dialogue-box vendor">
+  <div class="dialogue-title">✅ LO QUE RESPONDE EL VENDEDOR ATOMIC:</div>
+  "Te entiendo perfectamente, [Cliente]. En fotos todas las máquinas parecen idénticas porque todas tienen metal. La diferencia está en lo que pasa a los 6 meses de trabajo continuo. Esas máquinas baratas vienen con componentes electrónicos genéricos sin marca, chasis de canales delgados que se agrietan por la vibración y sin repuestos locales. Si se te quema una tarjeta electrónica genérica en medio de un contrato, pierdes $15,000 dólares en multas por entregas tardías. ATOMIC te entrega chasis de acero estructural con 2 años de garantía, PLC Siemens alemán con módem IP para tele-asistencia 24/7 y stock local inmediato de válvulas y sellos. La diferencia de precio la recuperas en el primer mes sin paros de planta."
+</div>
+
+<h3>Objeción 2: "Tengo miedo de invertir porque no sé cómo operarla ni hacer la mezcla."</h3>
+<div class="dialogue-box client">
+  <div class="dialogue-title">🗣️ LO QUE DICE EL CLIENTE:</div>
+  "Me interesa el negocio pero yo no soy ingeniero ni sé hacer bloques, me da miedo que la máquina se quede parada por no saber usarla."
+</div>
+<div class="dialogue-box vendor">
+  <div class="dialogue-title">✅ LO QUE RESPONDE EL VENDEDOR ATOMIC:</div>
+  "Justamente por eso ningún cliente de ATOMIC opera solo. Nuestra venta es 100% 'Llave en Mano'. Antes de que llegue la máquina te entregamos los planos CAD para que prepares el piso de cemento. Luego, nuestros ingenieros se trasladan a tu terreno, arman el equipo, conectan la manguería hidráulica y se quedan contigo entre 3 y 5 días capacitando a tus operarios hasta que saquen la primera producción perfecta. Además, ante cualquier duda futura, nos conectamos en vivo a tu panel Siemens por internet."
+</div>
+
+<h3>Objeción 3: "Está muy cara, voy a empezar mejor con una máquina manual."</h3>
+<div class="dialogue-box client">
+  <div class="dialogue-title">🗣️ LO QUE DICE EL CLIENTE:</div>
+  "Voy a comprar una ponedora manual pequeña para probar primero el mercado."
+</div>
+<div class="dialogue-box vendor">
+  <div class="dialogue-title">✅ LO QUE RESPONDE EL VENDEDOR ATOMIC:</div>
+  "Respeto tu decisión, [Cliente], pero haz esta cuenta conmigo: Para sacar 3,000 bloques diarios con una máquina manual vas a necesitar al menos 8 trabajadores acarreando mezcla y desmollando con los brazos. Pagando 8 sueldos mensuales vas a gastar más de $4,000 dólares al mes solo en nómina, y los bloques te saldrán porosos. Con la QT4-15 automática necesitas solo 3 personas, ahorras $2,500 en nómina mensual y sacas bloques de alta resistencia. La automatización no es un lujo, es lo que te permite competir en precio."
+</div>
+
+<h2>MÓDULO 4: ARGUMENTARIO TÉCNICO Y PITCH COMERCIAL DE MODELOS</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Modelo</th>
+      <th>Producción 8h</th>
+      <th>Presión / Potencia</th>
+      <th>Argumento Clave de Venta para el Asesor</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>QTJ4-40</strong></td>
+      <td>3,500 – 4,800 und</td>
+      <td>40 KN / 18 kW</td>
+      <td>"Para proyectos iniciales en municipios pequeños que buscan inversión accesible y bajo consumo."</td>
+    </tr>
+    <tr>
+      <td><strong>QT4-15</strong></td>
+      <td>6,000 – 8,000 und</td>
+      <td>70 KN / 32 kW</td>
+      <td>"El 'caballo de batalla' comercial. Incluye PLC Siemens y Stacker. Máxima velocidad de retorno."</td>
+    </tr>
+    <tr>
+      <td><strong>QT6-15</strong></td>
+      <td>9,000 – 12,000 und</td>
+      <td>100 KN / 45 kW</td>
+      <td>"Para adoquines viales pesados (+45 MPa). Fabrica 6 bloques de 20 por bajada. Dominio licitatorio."</td>
+    </tr>
+    <tr>
+      <td><strong>QT10-15</strong></td>
+      <td>15,000 – 18,000 und</td>
+      <td>120 KN / 75 kW</td>
+      <td>"Macro complejo robótico. Incluye silo de cemento 100T y empaquetado sin mano de obra."</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>MÓDULO 5: PROTOCOLO DE SEGUIMIENTO EN CRM Y WHATSAPP</h2>
+
+<div class="card">
+  <h4>📱 Secuencia de Seguimiento de 3 Días:</h4>
+  <p><strong>Día 1 (Envío de Cotización):</strong> Enviar PDF del Catálogo de Clientes + Nota de voz corta de 30 segundos explicando la garantía de 2 años.</p>
+  <p><strong>Día 2 (Demostración de ROI):</strong> Compartir el enlace a la Landing Page con la calculadora ROI pre-configurada con sus datos.</p>
+  <p><strong>Día 3 (Cierre de Asesoría Técnica):</strong> Proponer llamada o reunión virtual de 15 minutos con el Ingeniero de Planta para revisar planos CAD de su terreno.</p>
+</div>
+
+<div class="footer">
+  DOCUMENTO CONFIDENCIAL PARA USO INTERNO DE VENDEDORES — DIVISION DE MAQUINARIA PESADA ATOMIC
+</div>
+
+</body>
+</html>

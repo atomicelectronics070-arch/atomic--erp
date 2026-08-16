@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Manual Maestro de Capacitación y Coaching Directo para Vendedores - ATOMIC</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap');
+  
+  @page {
+    size: A4;
+    margin: 14mm 14mm 16mm 14mm;
+    @bottom-right {
+      content: "Página " counter(page) " | MANUAL MAESTRO DE VENTAS ATOMIC";
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 8pt;
+      color: #888;
+    }
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background-color: #060606;
+    color: #e5e5e5;
+    font-size: 9pt;
+    line-height: 1.5;
+    margin: 0;
+    padding: 0;
+  }
+
+  .header {
+    border-bottom: 3px solid #f59e0b;
+    padding-bottom: 12px;
+    margin-bottom: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  .header h1 {
+    font-size: 17pt;
+    font-weight: 900;
+    color: #ffffff;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: -0.5px;
+  }
+
+  .header h1 span {
+    color: #f59e0b;
+  }
+
+  .header .subtitle {
+    font-size: 8pt;
+    font-family: 'JetBrains Mono', monospace;
+    color: #fbbf24;
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+  }
+
+  .badge-danger {
+    background-color: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    color: #f87171;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 7pt;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .coach-banner {
+    background: linear-gradient(135deg, #1c1305 0%, #0a0a0a 100%);
+    border: 1px solid #f59e0b;
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 18px;
+  }
+
+  .coach-banner h3 {
+    margin: 0 0 6px 0;
+    color: #fbbf24;
+    font-size: 11pt;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  .coach-banner p {
+    margin: 0;
+    font-size: 8.5pt;
+    color: #d4d4d4;
+  }
+
+  h2 {
+    font-size: 12.5pt;
+    font-weight: 900;
+    color: #fbbf24;
+    border-bottom: 2px solid #262626;
+    padding-bottom: 5px;
+    margin-top: 22px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  h3 {
+    font-size: 10.5pt;
+    font-weight: 800;
+    color: #ffffff;
+    margin-top: 15px;
+    margin-bottom: 8px;
+    border-left: 3px solid #f59e0b;
+    padding-left: 8px;
+  }
+
+  p {
+    margin: 0 0 8px 0;
+    color: #d4d4d4;
+  }
+
+  .script-card {
+    background-color: #0d0d0d;
+    border: 1px solid #262626;
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 12px;
+  }
+
+  .script-card .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 7.5pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
+  .label-apertura { background-color: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.4); }
+  .label-cierre { background-color: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); }
+  .label-reabrir { background-color: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); }
+  .label-zoom { background-color: rgba(168, 85, 247, 0.2); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.4); }
+
+  .script-text {
+    font-size: 8.5pt;
+    color: #e5e5e5;
+    font-style: italic;
+    margin-top: 4px;
+    line-height: 1.45;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 8pt;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  th {
+    background-color: #171717;
+    color: #fbbf24;
+    text-align: left;
+    padding: 7px 9px;
+    border-bottom: 2px solid #262626;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  td {
+    padding: 7px 9px;
+    border-bottom: 1px solid #171717;
+    color: #d4d4d4;
+  }
+
+  tr:nth-child(even) {
+    background-color: rgba(255, 255, 255, 0.02);
+  }
+
+  .resource-box {
+    background-color: #111;
+    border-left: 4px solid #10b981;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+    border-radius: 0 6px 6px 0;
+  }
+
+  .resource-box strong {
+    color: #34d399;
+    font-size: 8.5pt;
+  }
+
+  .resource-box p {
+    font-size: 8pt;
+    margin: 2px 0 0 0;
+    color: #a3a3a3;
+  }
+
+  .footer {
+    margin-top: 25px;
+    border-top: 1px solid #262626;
+    padding-top: 10px;
+    text-align: center;
+    font-size: 7.5pt;
+    color: #737373;
+    font-family: 'JetBrains Mono', monospace;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>MANUAL MAESTRO DE <span>COACHING & VENTAS DE IMPACTO</span></h1>
+    <div class="subtitle">Guía Práctica e Inmediata de Tú a Tú para Asesores Comerciales — ATOMIC</div>
+  </div>
+  <div class="badge-danger">Uso Interno Vendedores</div>
+</div>
+
+<div class="coach-banner">
+  <h3>🗣️ MENSAJE DIRECTO DEL DIRECTOR DE VENTAS PARA TI, VENDEDOR ATOMIC:</h3>
+  <p>Hola. Este manual no es teoría aburrida de universidad. Es tu herramienta de combate diaria. Cada vez que sientas que un cliente se enfria, que te pide fotos, que te rebate el precio o que no responde el WhatsApp, ven a este manual. Aquí tienes la respuesta exacta palabra por palabra que debes enviar para cerrar ventas de maquinaria industrial.</p>
+</div>
+
+<h2>MÓDULO 1: ¿DÓNDE ENTRAR Y ENCONTRAR RECURSOS EN TIEMPO REAL?</h2>
+<p>Como vendedor no puedes dudar ni perder tiempo buscando archivos. Aquí tienes el mapa exacto de dónde sacar material instantáneo para enviar a tu cliente:</p>
+
+<div class="resource-box">
+  <strong>1. Si el cliente pide fotos, imágenes de alta calidad o videos de las plantas:</strong>
+  <p>Entra directo a la landing page oficial: <code>https://atomiccotizador.shop/web/blogs/guia-maquinas-de-bloques</code>. Ahí encuentras las fotos HD de las plantas en funcionamiento, los bloques desmoldados y los componentes.</p>
+</div>
+
+<div class="resource-box">
+  <strong>2. Si el cliente quiere ver la ficha individual de un producto o la maquinaria específica:</strong>
+  <p>Ingresa al catálogo web directo: <code>https://atomiccotizador.shop/web/products</code> o abre el enlace individual del producto en <code>https://atomiccotizador.shop/web/product/[ID]</code>.</p>
+</div>
+
+<div class="resource-box">
+  <strong>3. Si necesitas consultar costos, márgenes o actualizar datos en la base de datos:</strong>
+  <p>Usa la matriz de precios en tiempo real: <code>https://atomiccotizador.shop/web/matriz-precios</code> para verificar disponibilidad de stock y valores.</p>
+</div>
+
+<div class="resource-box">
+  <strong>4. Si el cliente te pide el catálogo descargable para guardar en su teléfono:</strong>
+  <p>Envíale de inmediato el enlace oficial del PDF comercial: <code>https://atomiccotizador.shop/catalogo-maquinas-de-bloques.pdf</code> o compártele el PDF que tienes guardado en la carpeta comercial.</p>
+</div>
+
+<h2>MÓDULO 2: PROTOCOLO OBLIGATORIO DE REUNIÓN ZOOM TRIPARTITA</h2>
+<p>Escucha bien esta norma de oro: <strong>Tú no tienes que cerrar ventas grandes completamente solo.</strong> Cuando identificas a un cliente caliente e interesado pero indeciso por el monto de dinero, el siguiente paso NO es enviarle otro mensaje de texto; es **escalar a una reunión virtual por Zoom**.</p>
+
+<div class="script-card">
+  <span class="label label-zoom">📹 PASO A PASO PARA ESCALAR A ZOOM TRIPARTITA</span>
+  <div class="script-text">
+    <strong>1. Cuándo convocar:</strong> Tan pronto el cliente haga más de 3 preguntas técnicas complejas o pregunte por facilidades de pago / planos de terreno.<br>
+    <strong>2. Lo que debes decirle al cliente:</strong> "Don [Nombre], veo que su proyecto de bloquera es sumamente serio. Para evitar malos entendidos en chat, quiero agendar una llamada breve de 15 minutos por Zoom. Voy a invitar a mi Coordinador Técnico e Ingeniero de Planta para que revisemos juntos los planos CAD de su lote y le mostremos el simulador en vivo. ¿Le queda mejor hoy a las 4 PM o mañana a las 10 AM?"<br>
+    <strong>3. Notificación a tu Coordinadora/Supervisor:</strong> En cuanto el cliente acepte, notifica al grupo interno: "Tengo reunión Zoom confirmada con [Cliente] para las 4 PM. Proyecto para planta QT4-15 en [Ciudad]. Requiero apoyo de Coordinación para cierre."
+  </div>
+</div>
+
+<h2>MÓDULO 3: MATRIZ DE GUÍAS PRÁCTICAS "RIGHT NOW" (ABRIR, TRANSICIONAR Y CERRAR)</h2>
+
+<h3>3.1 Cómo Abrir la Conversación (Apertura Directa)</h3>
+
+<div class="script-card">
+  <span class="label label-apertura">OPCIÓN A: CLIENTE QUE PIDE PRECIO DIRECTO POR WHATSAPP</span>
+  <div class="script-text">
+    "Hola [Nombre], gusto en saludarte. Con gusto te doy el valor exacto. Para decirte cuál de nuestras 4 líneas te conviene y no hacerte gastar de más: ¿Cuántos bloques al día planeas fabricar aproximadamente y si tu terreno cuenta con energía trifásica?"
+  </div>
+</div>
+
+<div class="script-card">
+  <span class="label label-apertura">OPCIÓN B: CLIENTE DE CONSTRUCTORA O MUNICIPIO</span>
+  <div class="script-text">
+    "Estimado [Nombre], saluda [Tu Nombre] de la división industrial de ATOMIC. Vemos que están ejecutando obras en la zona. Disponemos de plantas de vibro-compresión para adoquines viales de alta densidad (+45 MPa). Le envío nuestro catálogo PDF con fichas técnicas para su departamento de ingeniería."
+  </div>
+</div>
+
+<h3>3.2 Cómo Transicionar y Evocar Hacia la Venta (Cierre Progresivo)</h3>
+
+<div class="script-card">
+  <span class="label label-cierre">TÉCNICA DE PREGUNTA ALTERNATIVA</span>
+  <div class="script-text">
+    "Don [Cliente], de acuerdo con lo que revisamos, la línea QT4-15 de 7,000 bloques es la que mejor se ajusta a su demanda. ¿Prefiere que los moldes adicionales se los configuremos para bloque de 15cm o para adoquines Holandés de tráfico pesado?"
+  </div>
+</div>
+
+<h3>3.3 Cómo Reabrir una Conversación "Muerta" (Lead que dejó de responder)</h3>
+
+<div class="script-card">
+  <span class="label label-reabrir">MÉTODO DEL MENSAJE DE 9 PALABRAS (ENVÍALO CUANDO LLEVEN DÍAS SIN RESPONDER)</span>
+  <div class="script-text">
+    "Hola [Nombre], ¿todavía estás interesado en montar la planta de bloques para este año?"
+  </div>
+</div>
+
+<div class="script-card">
+  <span class="label label-reabrir">MÉTODO DEL PLANO CAD RESERVADO</span>
+  <div class="script-text">
+    "Don [Nombre], nuestro departamento de ingeniería está liberando los cupos de planos CAD de distribución de terreno para este mes. Quería consultar si reservamos el plano para su lote o le asignamos el espacio a otra bloquera de su zona."
+  </div>
+</div>
+
+<h2>MÓDULO 4: CASOS PRÁCTICOS SEGÚN GEOGRAFÍA Y UBICACIÓN DEL CLIENTE</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Ubicación / Entorno</th>
+      <th>Factor Técnico a Tener en Cuenta</th>
+      <th>Lo que debes decirle al Cliente para Ganar su Confianza</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Zona Sierra / Altura (+2,500m)</strong></td>
+      <td>El motor eléctrico pierde un pequeño porcentaje de eficiencia por menor densidad de oxígeno.</td>
+      <td>"Don [Cliente], para su planta en la Sierra dimensionamos los motores de vibración con reserva de potencia y sellos térmicos reforzados para evitar congelamiento de válvulas."</td>
+    </tr>
+    <tr>
+      <td><strong>Zona Costa / Calurosa / Marítima</strong></td>
+      <td>La alta salinidad oxida el chasis y la arena suele retener más humedad.</td>
+      <td>"Para la Costa aplicamos pintura anticorrosiva de epoxi industrial en el chasis host y le enseñamos la formulación de mezcla con arena lavada."</td>
+    </tr>
+    <tr>
+      <td><strong>Zona Rural sin Trifásica</strong></td>
+      <td>No hay red eléctrica pesada de 380V.</td>
+      <td>"Le estructuramos la planta QTJ4-40 o QT4-15 conectada directamente a un generador diésel dedicado de 45 kVA para que opere de forma autónoma en el campo."</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>MÓDULO 5: MANEJO PROPRIO DE OBJECIONES DIFÍCILES (EN SEGUNDOS)</h2>
+
+<div class="script-card">
+  <span class="label label-apertura">OBJECIÓN: "VOY A CONSULTARLO CON MIS SOCIOS"</span>
+  <div class="script-text">
+    "Excelente, me parece muy prudente. Para que tus socios tengan todos los números reales y no especulaciones, déjame enviarte el resumen en PDF con la simulación de retorno de inversión para que se los presentes en su reunión de hoy."
+  </div>
+</div>
+
+<div class="script-card">
+  <span class="label label-apertura">OBJECIÓN: "DAME UN DESCUENTO DEL 15% O NO COMPRO"</span>
+  <div class="script-text">
+    "Don [Nombre], en ATOMIC cuidamos la calidad estructural de cada chasis y no escatimamos en componentes Siemens. Lo que sí puedo gestionar con la gerencia es incluirte sin costo adicional el segundo carrito de transporte manual y el paquete de repuestos críticos de nitrilo."
+  </div>
+</div>
+
+<div class="footer">
+  MANUAL EXCLUSIVO DE CAPACITACIÓN INTERNA — ATOMIC HEAVY MACHINERY — PROHIBIDA SU DIVULGACIÓN EXTERNA
+</div>
+
+</body>
+</html>
