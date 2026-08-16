@@ -1,0 +1,364 @@
+"use client"
+
+import { useState, useEffect } from "react"
+import { useParams, useRouter } from "next/navigation"
+import Link from "next/link"
+import { 
+  ShoppingBag, ChevronRight, Star, ArrowRight, Shield, Zap, Truck, 
+  Search, ShoppingCart, User, Download, ExternalLink, Power, ArrowLeft, 
+  CheckCircle2, Info, Package, ImageOff, MessageCircle
+} from "lucide-react"
+import { useSession } from "next-auth/react"
+import { useCart } from "@/context/CartContext"
+import { getProductById, getRelatedProducts } from "@/lib/actions/shop"
+import { calculateDiscountedPrice } from "@/lib/utils/pricing"
+import { motion, AnimatePresence } from "framer-motion"
+
+// Enhanced cleaning for damaged image data
+const safeParseArray = (str: any, fallback: any = []) => {
+    if (!str || str === 'null' || str === '[]' || str === '') return fallback;
+    if (Array.isArray(str)) return str.length > 0 ? str : fallback;
+    if (typeof str === 'string') {
+        const trimmed = str.trim();
+        if (trimmed.startsWith('http') || trimmed.startsWith('/') || trimmed.startsWith('data:image')) return [trimmed];
+        try {
+            let cleaned = trimmed;
+            if (cleaned.startsWith('"') && cleaned.endsWith('"')) cleaned = cleaned.substring(1, cleaned.length - 1).replace(/\\"/g, '"');
+            let parsed = JSON.parse(cleaned);
+            if (typeof parsed === 'string') { try { parsed = JSON.parse(parsed); } catch(e) {} }
+            if (Array.isArray(parsed)) return parsed.length > 0 ? parsed : fallback;
+            if (typeof parsed === 'string' && parsed.length > 0) return [parsed];
+        } catch (e) {
+            const urlRegex = /(https?:\/\/[^\s"\]]+)/g;
+            const matches = trimmed.match(urlRegex);
+            if (matches && matches.length > 0) return matches;
+        }
+    }
+    return fallback;
+};
+
+/* ─── Robust Image Component with Fallback ─── */
+function SafeImage({ src, alt, className, fill = false, width, height, ...props }: any) {
+    const [error, setError] = useState(false)
+    const [isLoading, setIsLoading] = useState(true)
+
+    if (!src || error) {
+        return (
+            <div className={`flex flex-col items-center justify-center bg-slate-50 border border-slate-100 p-4 ${className} ${fill ? 'absolute inset-0' : ''}`}>
+                <div className="relative">
+                    <Package className="text-blue-100 w-12 h-12 animate-pulse" strokeWidth={1} />
+                    <ImageOff className="absolute inset-0 m-auto text-blue-200" size={18} />
+                </div>
+                <span className="text-[7px] font-black text-slate-300 uppercase tracking-widest mt-2">Imagen en Sincronización</span>
+            </div>
+        )
+    }
+
+    return (
+        <div className={`relative overflow-hidden ${fill ? 'absolute inset-0 w-full h-full' : ''} ${className}`}>
+            <img
+                src={src}
+                alt={alt}
+                onError={() => setError(true)}
+                onLoad={() => setIsLoading(false)}
+                className={`transition-all duration-700 ${isLoading ? 'scale-110 blur-xl opacity-0' : 'scale-100 blur-0 opacity-100'} ${fill ? 'w-full h-full object-contain' : ''}`}
+                style={{ width: fill ? '100%' : width, height: fill ? '100%' : height }}
+                referrerPolicy="no-referrer"
+                {...props}
+            />
+            {isLoading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-slate-50">
+                    <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                </div>
+            )}
+        </div>
+    )
+}
+
+export default function ProductDetailPage() {
+    const { data: session } = useSession()
+    const userRole = session?.user?.role
+    const { addToCart } = useCart()
+    const params = useParams()
+    const [product, setProduct] = useState<any>(null)
+    const [related, setRelated] = useState<any[]>([])
+    const [loading, setLoading] = useState(true)
+    const [selectedImage, setSelectedImage] = useState(0)
+    const [errorMsg, setErrorMsg] = useState<string | null>(null)
+    const [added, setAdded] = useState(false)
+
+    const handleAddToCart = () => {
+        if (!product) return;
+        const price = calculateDiscountedPrice(product.price, userRole);
+        const images = safeParseArray(product.images);
+        addToCart({
+            id: product.id,
+            name: product.name,
+            price: price,
+            quantity: 1,
+            image: images.length > 0 ? images[0] : undefined
+        });
+        setAdded(true);
+        setTimeout(() => setAdded(false), 2000);
+    }
+
+    const handleWhatsAppShare = () => {
+        if (!product) return;
+        const url = window.location.href;
+        const text = `¡Mira este producto increíble en ATOMIC ERP!\n\n*${product.name}*\n\nÉchale un vistazo aquí: ${url}`;
+        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+    }
+
+    useEffect(() => {
+        const load = async () => {
+            if (!params.id) return
+            setLoading(true)
+            try {
+                const p = await getProductById(params.id as string)
+                if (p) {
+                    setProduct(p)
+                    const r = await getRelatedProducts(p.categoryId, p.id)
+                    setRelated(r)
+                } else {
+                    setErrorMsg("Producto no encontrado en DB.")
+                }
+            } catch (error: any) {
+                console.error("Error loading product detail:", error)
+                setErrorMsg(error?.message || "Error al cargar detalle")
+            }
+            setLoading(false)
+        }
+        load()
+    }, [params.id])
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center">
+                <div className="animate-pulse flex flex-col items-center space-y-4">
+                    <div className="w-16 h-16 bg-slate-100 mb-4 rounded-none ring-1 ring-slate-200"></div>
+                    <div className="h-2 w-48 bg-slate-100"></div>
+                </div>
+            </div>
+        )
+    }
+
+    if (!product) {
+        return (
+            <div className="min-h-screen bg-[#F8FAFC] flex flex-col items-center justify-center space-y-6">
+                <h1 className="text-4xl font-black uppercase text-slate-300 tracking-tighter">Producto no encontrado</h1>
+                <Link href="/web" className="text-[10px] font-black uppercase tracking-[0.3em] bg-[#1E3A8A] text-white px-8 py-4 hover:bg-blue-800 transition-all flex items-center space-x-3 rounded-none shadow-[0_12px_40px_rgba(0,0,0,0.5)]">
+                    <ArrowLeft size={14} />
+                    <span>Volver al catálogo</span>
+                </Link>
+            </div>
+        )
+    }
+
+    const images = safeParseArray(product.images);
+    const specs = (() => {
+        try { return product.specs ? JSON.parse(product.specs) : null } catch (e) { return null }
+    })()
+
+    return (
+        <div className="min-h-screen bg-[#F8FAFC] text-slate-900 font-sans">
+            <div className="max-w-7xl mx-auto px-6 py-12">
+                
+                {/* Breadcrumbs */}
+                <div className="flex items-center space-x-2 text-[10px] font-black uppercase tracking-widest text-slate-400 mb-12 overflow-x-auto whitespace-nowrap pb-4 md:pb-0">
+                    <Link href="/web" className="hover:text-[#1E3A8A] flex items-center">
+                        <ArrowLeft size={10} className="mr-1" /> Inicio
+                    </Link>
+                    <ChevronRight size={10} />
+                    <span className="text-slate-500">{product.category?.name || 'Varios'}</span>
+                    <ChevronRight size={10} />
+                    <span className="text-[#1E3A8A] truncate max-w-[200px]">{product.name}</span>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-20">
+                    {/* Gallery */}
+                    <div className="space-y-6">
+                        <div className="aspect-square bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 relative overflow-hidden flex items-center justify-center p-12 group shadow-xl rounded-3xl">
+                             <SafeImage src={images[selectedImage]} alt={product.name} fill className="group-hover:scale-105 transition-transform duration-700" />
+                            {product.featured && (
+                                <div className="absolute top-8 left-8 bg-[#1E3A8A] text-white text-[8px] font-black uppercase px-3 py-1.5 shadow-[0_12px_40px_rgba(0,0,0,0.5)] z-10">Destacado</div>
+                            )}
+                        </div>
+                        {images.length > 1 && (
+                            <div className="grid grid-cols-4 gap-4">
+                                {images.map((img: string, i: number) => (
+                                    <button 
+                                        key={i}
+                                        onClick={() => setSelectedImage(i)}
+                                        className={`aspect-square bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border transition-all p-3 flex items-center justify-center rounded-2xl overflow-hidden ${selectedImage === i ? 'border-[#1E3A8A] ring-2 ring-[#1E3A8A]/10' : 'border-slate-200 hover:border-blue-300'}`}
+                                    >
+                                        <SafeImage src={img} alt="" className="w-full h-full object-contain" />
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Info */}
+                    <div className="flex flex-col">
+                        <div className="flex items-center justify-between mb-4">
+                             <span className="text-[10px] font-black text-blue-600 uppercase tracking-[0.3em]">{product.category?.name || 'Varios'}</span>
+                             {product.sku && <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] bg-slate-50 px-3 py-1 border border-slate-200">REF: {product.sku}</span>}
+                        </div>
+                        <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter leading-[0.85] mb-8 text-[#1E3A8A] italic">
+                            {product.name}
+                        </h1>
+                        
+                        <div className="flex flex-col mb-12">
+                            {product.isConsultOnly ? (
+                                <p className="text-5xl font-black text-[#1E3A8A] font-mono tracking-tighter uppercase italic">
+                                    Cotizar
+                                </p>
+                            ) : (
+                                <>
+                                    <div className="flex items-center space-x-6">
+                                        <p className="text-5xl font-black text-[#1E3A8A] font-mono tracking-tighter italic">
+                                            ${calculateDiscountedPrice(product.price, userRole).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                        </p>
+                                    </div>
+                                    {userRole && (userRole === 'AFILIADO' || userRole === 'DISTRIBUIDOR') && (
+                                        <p className="text-[10px] font-black text-blue-500 uppercase tracking-widest mt-2 italic">
+                                            Precio especial para {userRole} aplicado
+                                        </p>
+                                    )}
+                                </>
+                            )}
+                        </div>
+
+                        <div className="space-y-10 flex-1">
+                            <div className="p-8 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-100 text-slate-700 relative overflow-hidden group rounded-3xl shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
+                                <div className="absolute right-0 top-0 h-full w-24 bg-blue-50/50 skew-x-[30deg] translate-x-12 group-hover:translate-x-0 transition-transform duration-1000"></div>
+                                <p className="text-[9px] font-black uppercase tracking-[0.3em] text-[#1E3A8A] mb-6 flex items-center italic">
+                                    <Info size={14} className="mr-2" /> Descripción Técnica
+                                </p>
+                                {product.description && product.description.trim().startsWith('<') ? (
+                                    <div 
+                                        className="text-sm leading-relaxed font-medium prose prose-sm max-w-none prose-img:rounded-xl prose-img:mx-auto prose-img:shadow-[0_8px_32px_rgba(0,0,0,0.5)] [&_img]:max-w-full [&_img]:h-auto [&_ul]:list-disc [&_ul]:pl-5 [&_li]:mb-1 [&_strong]:font-black [&_strong]:text-[#1E3A8A]"
+                                        dangerouslySetInnerHTML={{ __html: product.description }}
+                                    />
+                                ) : (
+                                    <p className="text-sm leading-relaxed font-medium">
+                                        {product.description || "Este equipo ATOMIC representa la vanguardia en tecnología Corporativo, diseñado para optimizar procesos y garantizar máxima durabilidad en entornos exigentes."}
+                                    </p>
+                                )}
+                            </div>
+
+                            <div className="space-y-4">
+                                {product.isConsultOnly ? (
+                                    <button 
+                                        onClick={() => alert("Por favor contáctenos para cotizar este producto.")}
+                                        className={`w-full py-6 text-[10px] font-black uppercase tracking-[0.4em] transition-all shadow-xl flex items-center justify-center space-x-4 group rounded-2xl bg-[#1E3A8A] text-white hover:bg-blue-800 shadow-blue-100`}
+                                    >
+                                        <Info size={18} /><span>Consultar Precio</span><ArrowRight size={16} className="translate-x-0 group-hover:translate-x-3 transition-transform" />
+                                    </button>
+                                ) : (
+                                    <button 
+                                        onClick={handleAddToCart}
+                                        className={`w-full py-6 text-[10px] font-black uppercase tracking-[0.4em] transition-all shadow-xl flex items-center justify-center space-x-4 group rounded-2xl ${added ? 'bg-emerald-600 text-white' : 'bg-[#1E3A8A] text-white hover:bg-blue-800 shadow-blue-100'}`}
+                                    >
+                                        {added ? (
+                                            <><CheckCircle2 size={18} /><span>¡Añadido!</span></>
+                                        ) : (
+                                            <><ShoppingCart size={18} /><span>Añadir al Carrito</span><ArrowRight size={16} className="translate-x-0 group-hover:translate-x-3 transition-transform" /></>
+                                        )}
+                                    </button>
+                                )}
+                                
+                                <button 
+                                    onClick={handleWhatsAppShare}
+                                    className="w-full py-6 text-[10px] font-black uppercase tracking-[0.4em] transition-all shadow-xl flex items-center justify-center space-x-4 group rounded-2xl bg-[#25D366] text-white hover:bg-[#128C7E] shadow-green-100/50"
+                                >
+                                    <MessageCircle size={18} /><span>Compartir a WhatsApp</span><ArrowRight size={16} className="translate-x-0 group-hover:translate-x-3 transition-transform" />
+                                </button>
+
+                                {product.specSheetUrl && (
+                                    <a 
+                                        href={product.specSheetUrl} 
+                                        target="_blank" 
+                                        className="w-full border-2 border-slate-200 py-6 text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 hover:text-[#1E3A8A] hover:border-[#1E3A8A] transition-all flex items-center justify-center space-x-3 rounded-2xl"
+                                    >
+                                        <Download size={16} /><span>Ficha Técnica PDF</span>
+                                    </a>
+                                )}
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8 border-t border-slate-100">
+                                <div className="flex items-start space-x-4 group">
+                                    <div className="w-10 h-10 border border-slate-200 flex items-center justify-center text-blue-600 group-hover:bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all group-hover:text-white transition-all shadow-[0_4px_15px_rgba(0,0,0,0.3)] rounded-xl"><Truck size={18} /></div>
+                                    <div className="space-y-1">
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-[#1E3A8A]">Envío Nacional</p>
+                                        <p className="text-[10px] font-bold text-slate-400 uppercase">Logística de Alta Precisión</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-start space-x-4 group">
+                                    <div className="w-10 h-10 border border-slate-200 flex items-center justify-center text-blue-600 group-hover:bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:scale-105 transition-all group-hover:text-white transition-all shadow-[0_4px_15px_rgba(0,0,0,0.3)] rounded-xl"><Shield size={18} /></div>
+                                    <div className="space-y-1">
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-[#1E3A8A]">Garantía Protegida</p>
+                                        <p className="text-[10px] font-bold text-slate-400 uppercase">Soporte Directo</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Technical specs */}
+                {specs && Object.keys(specs).length > 0 && (
+                    <div className="mt-40 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 p-10 md:p-16 shadow-xl rounded-[3rem]">
+                        <div className="space-y-2 mb-16">
+                            <p className="text-blue-600 text-[10px] font-black uppercase tracking-[0.3em]">Hardware & Performance</p>
+                            <h2 className="text-4xl font-light text-[#1E3A8A] tracking-tighter leading-none italic">
+                                Especificaciones <span className="font-black text-[#1E3A8A]">Técnicas Pro</span>
+                            </h2>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-1">
+                            {Object.entries(specs).map(([key, value]: [string, any]) => (
+                                <div key={key} className="flex justify-between items-center py-6 border-b border-slate-100 group hover:border-blue-500/20 transition-all px-2">
+                                    <span className="text-[9px] font-black uppercase text-slate-300 tracking-[0.2em] group-hover:text-slate-500">{key}</span>
+                                    <span className="text-[11px] font-black text-[#1E3A8A] uppercase">{String(value)}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* Related Products */}
+                {related.length > 0 && (
+                    <div className="mt-48 pb-20">
+                        <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+                            <div className="space-y-2">
+                                <p className="text-blue-600 text-[10px] font-black uppercase tracking-[0.3em]">Complementos Sugeridos</p>
+                                <h2 className="text-4xl font-light text-[#1E3A8A] tracking-tighter italic">Equipos <span className="font-black text-[#1E3A8A]">Similares</span></h2>
+                            </div>
+                            <Link href="/web" className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-[#1E3A8A] transition-colors border-b-2 border-slate-100 hover:border-[#1E3A8A] pb-1 italic">Ver catálogo completo</Link>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                            {related.map((p) => (
+                                <Link key={p.id} href={`/web/product/${p.id}`} className="group flex flex-col h-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 p-6 hover:shadow-2xl hover:border-blue-300 transition-all duration-500 rounded-[2rem]">
+                                    <div className="aspect-square bg-slate-50 relative overflow-hidden flex items-center justify-center p-6 mb-6 rounded-2xl">
+                                         <SafeImage src={safeParseArray(p.images)[0]} alt={p.name} fill className="group-hover:scale-110 transition-transform duration-700" />
+                                    </div>
+                                    <div className="space-y-4 flex-1 flex flex-col">
+                                        <h4 className="text-[10px] font-black uppercase tracking-[0.15em] text-slate-500 group-hover:text-[#1E3A8A] transition-colors leading-tight line-clamp-2 h-8 italic">{p.name}</h4>
+                                        <div className="pt-4 border-t border-slate-100 flex items-center justify-between mt-auto">
+                                            {p.isConsultOnly ? (
+                                                <p className="font-mono font-black text-lg text-[#1E3A8A] uppercase italic">Cotizar</p>
+                                            ) : (
+                                                <p className="font-mono font-black text-lg text-[#1E3A8A] italic">${calculateDiscountedPrice(p.price, userRole).toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
+                                            )}
+                                            <div className="w-8 h-8 bg-slate-50 rounded-lg flex items-center justify-center group-hover:bg-[#1E3A8A] group-hover:text-white transition-all"><ChevronRight size={14} /></div>
+                                        </div>
+                                    </div>
+                                </Link>
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </div>
+        </div>
+    )
+}
