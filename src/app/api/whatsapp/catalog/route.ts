@@ -24,7 +24,13 @@ export async function GET(req: Request) {
                 const condition = 'new';
                 const price = `${(p.price || 0).toFixed(2)} USD`;
                 const link = `https://atomiccotizador.shop/web/product/${p.id}`;
-                const imageLink = p.imageUrl || 'https://atomiccotizador.shop/icon.png';
+                let mainImg = 'https://atomiccotizador.shop/icon.png';
+                try {
+                    const parsed = JSON.parse(p.images || '[]');
+                    if (Array.isArray(parsed) && parsed[0]) mainImg = parsed[0];
+                } catch(e) {}
+
+                const imageLink = mainImg;
                 const brand = 'ATOMIC';
 
                 csv += `${id},${title},${description},${availability},${condition},${price},${link},${imageLink},${brand}\n`;
@@ -40,15 +46,22 @@ export async function GET(req: Request) {
 
         return NextResponse.json({
             count: products.length,
-            products: products.map(p => ({
-                id: p.id,
-                name: p.name,
-                price: p.price,
-                stock: p.stock,
-                category: p.category?.name || 'General',
-                imageUrl: p.imageUrl,
-                link: `https://atomiccotizador.shop/web/product/${p.id}`
-            }))
+            products: products.map(p => {
+                let img = 'https://atomiccotizador.shop/icon.png';
+                try {
+                    const parsed = JSON.parse(p.images || '[]');
+                    if (Array.isArray(parsed) && parsed[0]) img = parsed[0];
+                } catch(e) {}
+                return {
+                    id: p.id,
+                    name: p.name,
+                    price: p.price,
+                    stock: p.stock,
+                    category: p.category?.name || 'General',
+                    imageUrl: img,
+                    link: `https://atomiccotizador.shop/web/product/${p.id}`
+                };
+            })
         });
     } catch (error: any) {
         console.error('[WHATSAPP_CATALOG_ERROR]', error);

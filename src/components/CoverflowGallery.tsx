@@ -391,7 +391,7 @@ const COMPONENT_DEFAULTS = {
     gap: 8,
     opacity: 60,
     autoplay: true,
-    autoplayDirection: "rightToLeft",
+    autoplayDirection: "rightToLeft" as AutoplayDir,
     transition: {
         type: "tween",
         duration: 0.6,
@@ -408,7 +408,7 @@ const COMPONENT_DEFAULTS = {
     } as any,
     titleColor: "#ffffff",
     titlePosition: {
-        position: "bottomLeft",
+        position: "bottomLeft" as TitleCorner,
         paddingLeft: 22,
         paddingRight: 22,
         paddingTop: 24,

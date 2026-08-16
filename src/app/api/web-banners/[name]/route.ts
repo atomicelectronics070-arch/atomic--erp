@@ -3,10 +3,10 @@ import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 
-export async function GET(req: Request, { params }: { params: { name: string } }) {
+export async function GET(req: Request, { params }: { params: Promise<{ name: string }> }) {
     try {
-        const fileName = params.name;
-        const safeName = path.basename(fileName);
+        const { name } = await params;
+        const safeName = path.basename(name);
 
         // Candidate paths for both local dev and Railway standalone container
         const candidatePaths = [
