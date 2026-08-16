@@ -12,6 +12,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { useCart } from "@/context/CartContext"
 
 import { BANNER_IMAGES } from "@/lib/banner-data"
+import CoverflowGallery from "@/components/CoverflowGallery"
 
 /* ── ATOMIC ATOM LOGO SVG (LUXURY HIGH-CONTRAST) ── */
 function AtomicLogoSVG() {
@@ -249,6 +250,26 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
 
         </div>
       </header>
+
+      {/* ═════════════════════════════════════════════════════════════ */}
+      {/* 🔮 3D COVERFLOW GALLERY HERO (ORIGINKIT 3D SHOWCASE)         */}
+      {/* ═════════════════════════════════════════════════════════════ */}
+      <section className="bg-gradient-to-b from-[#060913] via-[#090e1a] to-[#0e1424] pt-6 pb-4 border-b border-[#1e293b] overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 text-center space-y-2 mb-2">
+          <span className="inline-block text-[10px] md:text-xs font-mono font-black text-cyan-400 uppercase tracking-[0.3em] bg-blue-950/90 px-3.5 py-1 rounded-full border border-cyan-500/40 shadow-[0_0_15px_rgba(6,182,212,0.3)]">
+            ✨ ATOMIC SHOWCASE 3D DE PRODUCTOS IA
+          </span>
+          <h2 className="text-xl md:text-3xl lg:text-4xl font-black text-white uppercase tracking-tight font-mono">
+            GALERÍA DE PRODUCTOS DESTACADOS
+          </h2>
+          <p className="text-xs md:text-sm text-slate-300 max-w-2xl mx-auto font-medium">
+            Explora nuestra línea de importación y productos inteligentes en tecnología 3D.
+          </p>
+        </div>
+        <div className="w-full max-w-6xl mx-auto min-h-[420px] flex items-center justify-center">
+          <CoverflowGallery autoplay={true} cardWidth={480} cardHeight={360} gap={8} tilt={12} sideTilt={8} opacity={60} />
+        </div>
+      </section>
 
       {/* ═════════════════════════════════════════════════════════════ */}
       {/* 🚘 VOLKSWAGEN LUXURY SCROLL HERO SECTION                     */}
