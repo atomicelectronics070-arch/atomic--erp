@@ -11,9 +11,12 @@ export default function Error({
     reset: () => void
 }) {
     useEffect(() => {
-        // Log the error to an error reporting service
         console.error("Global Error Caught:", error)
-    }, [error])
+        const timer = setTimeout(() => {
+            reset()
+        }, 150)
+        return () => clearTimeout(timer)
+    }, [error, reset])
 
     return (
         <div className="flex h-screen w-screen flex-col items-center justify-center bg-white p-8 text-center font-sans relative overflow-hidden">

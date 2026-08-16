@@ -62,13 +62,15 @@ function SafeImage({ src, alt, className, fill = false, width, height, ...props 
   const [isLoading, setIsLoading] = useState(true)
   const imgRef = useRef<HTMLImageElement>(null)
 
+  const realSrc = typeof src === 'string' ? src : (src && typeof src === 'object' ? (src.src || src.url || '') : '')
+
   useEffect(() => {
     if (imgRef.current?.complete) {
       setIsLoading(false)
     }
-  }, [src])
+  }, [realSrc])
 
-  if (!src || error) {
+  if (!realSrc || error) {
     return (
       <div className={`flex flex-col items-center justify-center bg-neutral-900 border border-white/5 p-4 ${className} ${fill ? 'absolute inset-0' : ''}`}>
         <Hexagon className="text-neutral-700 w-10 h-10 animate-[spin_20s_linear_infinite]" strokeWidth={1} />
@@ -82,7 +84,7 @@ function SafeImage({ src, alt, className, fill = false, width, height, ...props 
     <div className={`relative overflow-hidden bg-neutral-950 ${fill ? 'absolute inset-0 w-full h-full' : ''} ${className}`}>
       <img
         ref={imgRef}
-        src={src}
+        src={realSrc}
         alt={alt}
         onLoad={() => setIsLoading(false)}
         onError={() => { setIsLoading(false); setError(true); }}
