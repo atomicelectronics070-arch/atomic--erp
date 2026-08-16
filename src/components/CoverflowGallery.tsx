@@ -111,6 +111,8 @@ function cssTransition(t: any): { dur: number; ease: string } {
         ease = map[e] || "ease"
     }
     return { dur, ease }
+}
+
 const COMPONENT_DEFAULTS = {
     slides: DEFAULT_SLIDES,
     cardWidth: 480,
