@@ -147,12 +147,25 @@ export default function CoverflowGallery(props: Smooth3DSlideshowProps) {
     const list = slides && slides.length ? slides : DEFAULT_SLIDES
     const n = list.length
 
+    const [mounted, setMounted] = useState(false)
+    useEffect(() => {
+        setMounted(true)
+    }, [])
+
     const loop = true
     const [active, setActive] = useState(0)
 
     useEffect(() => {
         setActive((a) => Math.max(0, Math.min(n - 1, a)))
     }, [n])
+
+    if (!mounted) {
+        return (
+            <div className="w-full h-[380px] flex items-center justify-center bg-[#090e1a]">
+                <div className="w-8 h-8 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
+            </div>
+        )
+    }
 
     const moveDur =
         transition && typeof transition.duration === "number"

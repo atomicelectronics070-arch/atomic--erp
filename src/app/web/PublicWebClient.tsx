@@ -11,8 +11,17 @@ import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import { useCart } from "@/context/CartContext"
 
+import dynamic from "next/dynamic"
 import { BANNER_IMAGES } from "@/lib/banner-data"
-import CoverflowGallery from "@/components/CoverflowGallery"
+
+const CoverflowGallery = dynamic(() => import("@/components/CoverflowGallery"), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-[380px] flex items-center justify-center bg-[#090e1a] rounded-2xl border border-slate-800">
+      <div className="w-8 h-8 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
+    </div>
+  )
+})
 
 /* ── ATOMIC ATOM LOGO SVG (LUXURY HIGH-CONTRAST) ── */
 function AtomicLogoSVG() {
