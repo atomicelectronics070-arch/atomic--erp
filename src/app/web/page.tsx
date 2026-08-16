@@ -7,6 +7,7 @@ import { getStoreSettings } from "@/lib/actions/shop"
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
+export const fetchCache = 'force-no-store';
 
 // Lightweight skeleton shown immediately while products load
 function StoreSkeleton() {
