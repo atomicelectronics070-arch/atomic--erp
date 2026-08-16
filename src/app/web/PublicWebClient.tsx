@@ -132,7 +132,11 @@ const fuzzyMatch = (query: string, target: string): boolean => {
   return words.every(w => t.includes(w))
 }
 
-export default function PublicWebClient({ initialProducts, metadata, userRole }: PublicWebClientProps) {
+export default function PublicWebClient({ 
+  initialProducts = [], 
+  metadata = { categories: [], collections: [] }, 
+  userRole 
+}: PublicWebClientProps) {
   const [searchQuery, setSearchQuery] = useState("")
   const [activeMainCategoryId, setActiveMainCategoryId] = useState<string | null>(null)
   const [activeSubcategoryId, setActiveSubcategoryId] = useState<string | null>(null)
@@ -208,11 +212,12 @@ export default function PublicWebClient({ initialProducts, metadata, userRole }:
     if (activeSubcategoryId) {
       return base.filter(p => p.category?.id === activeSubcategoryId)
     } else if (activeMainCategoryId) {
-      const subCatIds = metadata.categories.filter(c => c.parentId === activeMainCategoryId).map(c => c.id)
+      const cats = metadata?.categories || []
+      const subCatIds = cats.filter(c => c.parentId === activeMainCategoryId).map(c => c.id)
       return base.filter(p => p.category?.id === activeMainCategoryId || subCatIds.includes(p.category?.id))
     }
     return base
-  }, [searchQuery, searchResults, dynamicProducts, initialProducts, activeMainCategoryId, activeSubcategoryId, metadata.categories])
+  }, [searchQuery, searchResults, dynamicProducts, initialProducts, activeMainCategoryId, activeSubcategoryId, metadata?.categories])
 
   return (
     <div className="w-full bg-[#070709] min-h-screen text-white font-sans selection:bg-blue-500/30 overflow-x-hidden">

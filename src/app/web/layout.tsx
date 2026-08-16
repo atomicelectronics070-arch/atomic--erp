@@ -2,7 +2,6 @@
 
 import { usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
-import { useCart } from "@/context/CartContext"
 import { motion, AnimatePresence } from "framer-motion"
 
 import { AISearchBot } from "@/components/ui/AISearchBot"
@@ -11,7 +10,6 @@ import { BuyerBotOverlay } from "@/components/ui/BuyerBotOverlay"
 
 export default function WebLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname()
-    const { totalItems } = useCart()
     const [mounted, setMounted] = useState(false)
 
     useEffect(() => {
