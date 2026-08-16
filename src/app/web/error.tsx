@@ -11,11 +11,7 @@ export default function WebError({
 }) {
     useEffect(() => {
         console.error("[WEB_RUNTIME_ERROR]", error)
-        const timer = setTimeout(() => {
-            reset()
-        }, 150)
-        return () => clearTimeout(timer)
-    }, [error, reset])
+    }, [error])
 
     return (
         <div className="min-h-screen bg-[#070709] text-white flex flex-col items-center justify-center p-6 text-center font-sans">

@@ -111,6 +111,39 @@ function cssTransition(t: any): { dur: number; ease: string } {
         ease = map[e] || "ease"
     }
     return { dur, ease }
+const COMPONENT_DEFAULTS = {
+    slides: DEFAULT_SLIDES,
+    cardWidth: 480,
+    cardHeight: 360,
+    radius: 12,
+    tilt: 12,
+    sideTilt: 8,
+    gap: 8,
+    opacity: 60,
+    autoplay: true,
+    autoplayDirection: "rightToLeft" as AutoplayDir,
+    transition: {
+        type: "tween",
+        duration: 0.6,
+        delay: 3.5,
+        ease: [0.22, 1, 0.36, 1],
+    },
+    showTitle: true,
+    titleFont: {
+        fontFamily: "system-ui",
+        variant: "Bold",
+        fontSize: "22px",
+        letterSpacing: "-0.01em",
+        lineHeight: "1.2em",
+    } as any,
+    titleColor: "#ffffff",
+    titlePosition: {
+        position: "bottomLeft" as TitleCorner,
+        paddingLeft: 22,
+        paddingRight: 22,
+        paddingTop: 24,
+        paddingBottom: 24,
+    },
 }
 
 export default function CoverflowGallery(props: Smooth3DSlideshowProps) {
@@ -392,39 +425,4 @@ export default function CoverflowGallery(props: Smooth3DSlideshowProps) {
             </div>
         </div>
     )
-}
-
-const COMPONENT_DEFAULTS = {
-    slides: DEFAULT_SLIDES,
-    cardWidth: 480,
-    cardHeight: 360,
-    radius: 12,
-    tilt: 12,
-    sideTilt: 8,
-    gap: 8,
-    opacity: 60,
-    autoplay: true,
-    autoplayDirection: "rightToLeft" as AutoplayDir,
-    transition: {
-        type: "tween",
-        duration: 0.6,
-        delay: 3.5,
-        ease: [0.22, 1, 0.36, 1],
-    },
-    showTitle: true,
-    titleFont: {
-        fontFamily: "system-ui",
-        variant: "Bold",
-        fontSize: "22px",
-        letterSpacing: "-0.01em",
-        lineHeight: "1.2em",
-    } as any,
-    titleColor: "#ffffff",
-    titlePosition: {
-        position: "bottomLeft" as TitleCorner,
-        paddingLeft: 22,
-        paddingRight: 22,
-        paddingTop: 24,
-        paddingBottom: 24,
-    },
 }
