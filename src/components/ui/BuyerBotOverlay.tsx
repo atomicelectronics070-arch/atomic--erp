@@ -8,20 +8,6 @@ import { useSession } from "next-auth/react"
 export const BuyerBotOverlay = () => {
     const { status } = useSession()
     const [isOpen, setIsOpen] = useState(false)
-    const [hasOpened, setHasOpened] = useState(false)
-
-    useEffect(() => {
-        // Auto-open after a short delay if user is unauthenticated and hasn't opened yet
-        if (status === "unauthenticated") {
-            const timer = setTimeout(() => {
-                if (!hasOpened) {
-                    setIsOpen(true)
-                    setHasOpened(true)
-                }
-            }, 4000)
-            return () => clearTimeout(timer)
-        }
-    }, [status, hasOpened])
 
     if (status !== "unauthenticated") {
         return null;

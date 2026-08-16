@@ -14,6 +14,7 @@ interface UpdateInfo {
 }
 
 export function AppUpdateChecker() {
+  const [mounted, setMounted] = useState(false)
   const [updateInfo, setUpdateInfo] = useState<UpdateInfo | null>(null)
   const [dismissed, setDismissed] = useState(true) // Inicialmente true para evitar destello
   const [downloading, setDownloading] = useState(false)
@@ -21,6 +22,11 @@ export function AppUpdateChecker() {
   const [currentVersion, setCurrentVersion] = useState<string>("0.0.0")
 
   useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (!mounted) return
     // Comprobar si ya fue desestimada esta versión en el dispositivo
     const isDismissed = localStorage.getItem(`update_dismissed_${LATEST_APK_VERSION}`) === "true"
     if (isDismissed) {
@@ -93,7 +99,7 @@ export function AppUpdateChecker() {
     }
   }
 
-  if (!updateInfo || dismissed) return null
+  if (!mounted || !updateInfo || dismissed) return null
 
   return (
     <AnimatePresence>
