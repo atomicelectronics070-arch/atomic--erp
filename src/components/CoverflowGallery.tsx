@@ -69,8 +69,8 @@ const DEFAULT_SLIDES: Slide[] = [
         title: "COMPUTADORA DELL 27\" ALL-IN-ONE\nPotencia Empresarial i7 16GB RAM",
     },
     {
-        image: { src: "/images/hero-3d/slide-4.jpg", alt: "Automatización de Portones" },
-        title: "PORTONES ELÉCTRICOS & ACCESOS\nAutomatización de Alta Resistencia",
+        image: { src: "/images/hero-3d/slide-4.jpg", alt: "Generadores a Gasolina" },
+        title: "GENERADORES A GASOLINA\nRespaldo de Energía Confiable 950W para tu Hogar",
     },
     {
         image: { src: "/images/hero-3d/slide-6.jpg", alt: "Equipamiento de Cocina" },
