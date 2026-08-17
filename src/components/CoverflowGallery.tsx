@@ -7,6 +7,7 @@ import {
     useRef,
     type CSSProperties,
 } from "react"
+import { ChevronLeft, ChevronRight } from "lucide-react"
 
 const useIsStaticRenderer = () => false
 
@@ -286,8 +287,34 @@ export default function CoverflowGallery(props: Smooth3DSlideshowProps) {
             role="group"
             aria-roledescription="carousel"
             onKeyDown={isStatic ? undefined : onKeyDown}
-            className="select-none py-6"
+            className="select-none py-6 group relative"
         >
+            {/* MANUAL LEFT NAVIGATION BUTTON */}
+            <button
+                type="button"
+                onClick={(e) => {
+                    e.stopPropagation()
+                    step(-1)
+                }}
+                className="absolute left-3 sm:left-8 top-1/2 -translate-y-1/2 z-40 w-12 h-12 rounded-2xl bg-neutral-950/80 hover:bg-blue-600/90 border border-white/20 hover:border-blue-400 text-white flex items-center justify-center shadow-[0_0_25px_rgba(0,0,0,0.8)] backdrop-blur-xl transition-all duration-200 active:scale-90 hover:scale-110 cursor-pointer"
+                aria-label="Diapositiva Anterior"
+            >
+                <ChevronLeft size={24} className="text-white" />
+            </button>
+
+            {/* MANUAL RIGHT NAVIGATION BUTTON */}
+            <button
+                type="button"
+                onClick={(e) => {
+                    e.stopPropagation()
+                    step(1)
+                }}
+                className="absolute right-3 sm:right-8 top-1/2 -translate-y-1/2 z-40 w-12 h-12 rounded-2xl bg-neutral-950/80 hover:bg-blue-600/90 border border-white/20 hover:border-blue-400 text-white flex items-center justify-center shadow-[0_0_25px_rgba(0,0,0,0.8)] backdrop-blur-xl transition-all duration-200 active:scale-90 hover:scale-110 cursor-pointer"
+                aria-label="Siguiente Diapositiva"
+            >
+                <ChevronRight size={24} className="text-white" />
+            </button>
+
             <div
                 style={{
                     position: "relative",
@@ -420,6 +447,22 @@ export default function CoverflowGallery(props: Smooth3DSlideshowProps) {
                         </div>
                     )
                 })}
+            </div>
+
+            {/* SLIDE INDICATOR DOTS */}
+            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-40 flex items-center gap-1.5 px-3 py-1 bg-black/60 backdrop-blur-md rounded-full border border-white/10">
+                {list.map((_, idx) => (
+                    <button
+                        key={idx}
+                        onClick={() => setActive(idx)}
+                        className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
+                            idx === active
+                                ? "w-6 bg-blue-400"
+                                : "w-2 bg-white/30 hover:bg-white/60"
+                        }`}
+                        aria-label={`Ir a diapositiva ${idx + 1}`}
+                    />
+                ))}
             </div>
         </div>
     )
