@@ -49,12 +49,12 @@ const DEFAULT_SLIDES: Slide[] = [
         title: "CARGADORES DE AUTO ELÉCTRICO\nCompatibles & Potencia Ajustable 1.5 - 7 KW",
     },
     {
-        image: { src: "/images/hero-3d/slide-3.jpg", alt: "Kit de Cámaras de Seguridad Dos Lentes" },
-        title: "KIT DE CÁMARAS DE SEGURIDAD DOS LENTES\nVisión Nocturna 360° & Monitoreo HD",
+        image: { src: "/images/hero-3d/slide-3.jpg", alt: "Portero Smart para Casas y Conjuntos" },
+        title: "PORTERO SMART PARA CASAS Y CONJUNTOS\nAcceso Biométrico, Tarjeta & App Celular",
     },
     {
-        image: { src: "/images/hero-3d/slide-2.jpg", alt: "Portero Smart para Casas y Conjuntos" },
-        title: "PORTERO SMART PARA CASAS Y CONJUNTOS\nAcceso Biométrico, Tarjeta & App Celular",
+        image: { src: "/images/hero-3d/slide-2.jpg", alt: "Kit de Cámaras de Seguridad Doble Lente" },
+        title: "KIT DE CÁMARAS DE SEGURIDAD DOBLE LENTE\nVisión Nocturna 360° & Monitoreo HD",
     },
     {
         image: { src: "/images/hero-3d/slide-5.jpg", alt: "Generadores Eléctricos" },
