@@ -49,7 +49,11 @@ const DEFAULT_SLIDES: Slide[] = [
         title: "CARGADORES DE AUTO ELÉCTRICO\nCompatibles & Potencia Ajustable 1.5 - 7 KW",
     },
     {
-        image: { src: "/images/hero-3d/slide-3.jpg", alt: "Portero Smart para Casas y Conjuntos" },
+        image: { src: "/images/hero-3d/slide-3.jpg", alt: "Cámara de Seguridad con Luz Policial" },
+        title: "CÁMARA DE SEGURIDAD CON LUZ POLICIAL\nAlertas Inteligentes Luz Rojo-Azul & Visión Nocturna",
+    },
+    {
+        image: { src: "/web-banners/banner-17.jpg", alt: "Portero Smart para Casas y Conjuntos" },
         title: "PORTERO SMART PARA CASAS Y CONJUNTOS\nAcceso Biométrico, Tarjeta & App Celular",
     },
     {
