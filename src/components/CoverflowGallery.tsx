@@ -45,7 +45,23 @@ export interface Smooth3DSlideshowProps {
 
 const DEFAULT_SLIDES: Slide[] = [
     {
-        image: { src: "/images/hero-3d/slide-1.png", alt: "Chapa Smart Inteligente" },
+        image: { src: "/web-banners/banner-24.jpg", alt: "Cargadores de Auto Eléctrico" },
+        title: "CARGADORES DE AUTO ELÉCTRICO\nCompatibles & Potencia Ajustable 1.5 - 7 KW",
+    },
+    {
+        image: { src: "/images/hero-3d/slide-3.jpg", alt: "Kit de Cámaras de Seguridad Dos Lentes" },
+        title: "KIT DE CÁMARAS DE SEGURIDAD DOS LENTES\nVisión Nocturna 360° & Monitoreo HD",
+    },
+    {
+        image: { src: "/images/hero-3d/slide-2.jpg", alt: "Portero Smart para Casas y Conjuntos" },
+        title: "PORTERO SMART PARA CASAS Y CONJUNTOS\nAcceso Biométrico, Tarjeta & App Celular",
+    },
+    {
+        image: { src: "/images/hero-3d/slide-5.jpg", alt: "Generadores Eléctricos" },
+        title: "GENERADORES ELÉCTRICOS\nEnergía Limpia & Silenciosa Ecofriendly",
+    },
+    {
+        image: { src: "/images/hero-3d/slide-1.png", alt: "Cerraduras Smart" },
         title: "CERRADURAS SMART & ACCESO BIOMÉTRICO\nControl Total desde tu Celular",
     },
     {
@@ -53,20 +69,8 @@ const DEFAULT_SLIDES: Slide[] = [
         title: "COMPUTADORA DELL 27\" ALL-IN-ONE\nPotencia Empresarial i7 16GB RAM",
     },
     {
-        image: { src: "/images/hero-3d/slide-2.jpg", alt: "Tecnología Industrial & Hogar" },
-        title: "TECNOLOGÍA RESIDENCIAL & INDUSTRIAL\nSistemas de Alta Precisión",
-    },
-    {
-        image: { src: "/images/hero-3d/slide-3.jpg", alt: "Cámaras & Seguridad" },
-        title: "CÁMARAS ESPIAS & SEGURIDAD SMART\nMonitoreo 24/7 en Tiempo Real",
-    },
-    {
-        image: { src: "/images/hero-3d/slide-4.jpg", alt: "Automatización & Portones" },
+        image: { src: "/images/hero-3d/slide-4.jpg", alt: "Automatización de Portones" },
         title: "PORTONES ELÉCTRICOS & ACCESOS\nAutomatización de Alta Resistencia",
-    },
-    {
-        image: { src: "/images/hero-3d/slide-5.jpg", alt: "Domótica & Iluminación" },
-        title: "DOMÓTICA & HOGAR INTELIGENTE\nAmbientes Automatizados",
     },
     {
         image: { src: "/images/hero-3d/slide-6.jpg", alt: "Equipamiento de Cocina" },
@@ -77,16 +81,8 @@ const DEFAULT_SLIDES: Slide[] = [
         title: "CONSOLAS GAMING & PERIFÉRICOS\nPlayStation 5, Xbox & Mandos",
     },
     {
-        image: { src: "/images/hero-3d/slide-8.jpg", alt: "Alarmas & Sensores" },
-        title: "ALARMAS & SENSORES SMART\nDetección de Movimiento",
-    },
-    {
         image: { src: "/images/hero-3d/slide-9.jpg", alt: "Sistemas POS & Software" },
         title: "SISTEMAS POS & SOFTWARE ERP\nFacturación Electrónica SRI",
-    },
-    {
-        image: { src: "/images/hero-3d/slide-10.jpg", alt: "Maquinaria & Construcción" },
-        title: "PLANTAS DE BLOQUES & INDUSTRIAL\nMaquinaria de Alta Eficiencia",
     },
 ]
 
