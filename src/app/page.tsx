@@ -1,51 +1,28 @@
-"use client"
-// Atomic Industrias — Landing Page v13.0 — Ultra-Clean High-Contrast Dark Aesthetic
+"use client";
 
-import { useEffect, useState } from "react"
-import { motion } from "framer-motion"
-import { LogIn, ShoppingBag, ArrowRight, ShieldCheck, Truck, Zap, MessageCircle } from "lucide-react"
-import Atom3D from "@/components/ui/Atom3D"
-import Link from "next/link"
+// Atomic Industrias — Landing Page v14.0 — Originkit Presence01 Interactive 3D Dotted Globe
 
-export default function Home() {
-  const [mounted, setMounted] = useState(false);
+import React from "react";
+import Globe from "@/components/originkit/ui/globe";
+import OrbitControls from "@/components/originkit/ui/orbit-controls";
+import { LogIn, ShoppingBag, ArrowRight, MessageCircle, Globe as GlobeIcon, ShieldCheck, Truck, Zap } from "lucide-react";
+import Link from "next/link";
 
-  useEffect(() => {
-    setMounted(true);
-    fetch("/api/track", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type: "web" })
-    }).catch(() => {})
-  }, [])
+const METRICS = [
+  { value: "100%", label: "Cobertura Logística Nacional Directa" },
+  { value: "50%", label: "Entregas & Cotización Más Rápidas" },
+  { value: "98%+", label: "Satisfacción en Productos Originales" },
+] as const;
 
+export default function Presence01() {
   return (
-    <div className="min-h-screen bg-[#050814] text-white flex flex-col relative selection:bg-blue-500/30 font-sans overflow-x-hidden">
+    <main className="min-h-screen bg-[#030712] text-white flex flex-col relative selection:bg-blue-500/30 font-sans overflow-x-hidden">
       
-      {/* ═══════════ HIGH-TECH VECTOR GRID & AMBIENT LIGHTS ═══════════ */}
-      
-      {/* Crisp Grid Background Pattern */}
-      <div 
-        className="absolute inset-0 z-0 pointer-events-none opacity-20"
-        style={{
-          backgroundImage: `radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px)`,
-          backgroundSize: '32px 32px'
-        }}
-      />
-
-      {/* Top Blue Ambient Glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-5xl h-[500px] bg-gradient-to-b from-blue-600/25 via-indigo-600/10 to-transparent blur-[140px] pointer-events-none z-0" />
-
-      {/* 3D Atom Core */}
-      <div className="fixed inset-0 z-0 pointer-events-none opacity-45">
-        {mounted && <Atom3D />}
-      </div>
-
       {/* ═══════════ NAVIGATION BAR ═══════════ */}
-      <nav className="relative z-20 w-full px-6 md:px-16 py-6 flex justify-between items-center border-b border-white/10 backdrop-blur-xl bg-[#050814]/80">
+      <nav className="relative z-30 w-full px-6 md:px-16 py-6 flex justify-between items-center border-b border-white/10 backdrop-blur-xl bg-[#030712]/80">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-500 via-indigo-500 to-emerald-400 p-[1px] shadow-lg shadow-blue-500/30">
-            <div className="w-full h-full bg-[#090d20] rounded-[15px] flex items-center justify-center font-black text-blue-400 text-base">
+            <div className="w-full h-full bg-[#070b16] rounded-[15px] flex items-center justify-center font-black text-blue-400 text-base">
               ⚛
             </div>
           </div>
@@ -55,140 +32,117 @@ export default function Home() {
         </div>
 
         <div className="flex items-center gap-4 text-xs font-bold tracking-wider uppercase font-mono">
-          <Link href="/web" className="text-white hover:text-blue-400 transition-colors flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600/20 border border-blue-500/40 hover:bg-blue-600/30 shadow-[0_0_20px_rgba(37,99,235,0.2)]">
+          <Link 
+            href="/web" 
+            className="text-white hover:text-blue-400 transition-colors flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600/20 border border-blue-500/40 hover:bg-blue-600/30 shadow-[0_0_20px_rgba(37,99,235,0.25)]"
+          >
             <ShoppingBag size={15} />
             <span>Tienda en Línea</span>
           </Link>
-          <Link href="/login" className="text-neutral-300 hover:text-white transition-colors hidden sm:flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:border-white/20">
+          <Link 
+            href="/login" 
+            className="text-neutral-300 hover:text-white transition-colors hidden sm:flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:border-white/20"
+          >
             <LogIn size={15} />
             <span>Portal ERP</span>
           </Link>
         </div>
       </nav>
 
-      {/* ═══════════ HERO CONTENT ═══════════ */}
-      <main className="relative z-10 flex-1 flex flex-col justify-center px-6 md:px-16 max-w-[1400px] mx-auto w-full pt-12 pb-16">
-        
-        <div className="max-w-4xl pt-6">
+      {/* ═══════════ ORIGINKIT PRESENCE01 3D GLOBE HERO ═══════════ */}
+      <section
+        aria-labelledby="global-presence-heading"
+        className="relative mx-auto flex w-full max-w-7xl flex-col items-center pt-8 pb-16 px-4 sm:px-6 z-10"
+      >
+        {/* Globe Container */}
+        <div className="relative h-[380px] sm:h-[480px] w-full shrink-0 overflow-visible flex items-center justify-center">
           
-          {/* Clean Badge */}
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-400/30 text-blue-300 mb-8 backdrop-blur-md"
-          >
-            <span className="w-2.5 h-2.5 rounded-full bg-blue-400 animate-pulse" />
-            <span className="text-[11px] font-mono font-bold tracking-widest uppercase">
-              El Futuro de la Industria & Comercio Electrónico
-            </span>
-          </motion.div>
+          {/* Ambient Glow Mask behind Globe */}
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="pointer-events-none absolute left-1/2 top-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(59,130,246,0.25),transparent_70%)]" />
+            <OrbitControls />
+          </div>
 
-          {/* Main Title */}
-          <motion.h1
-            initial={{ opacity: 0, y: 25 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.1 }}
-            className="text-[11vw] md:text-[7.5vw] font-black leading-[0.88] tracking-tighter uppercase mb-6 drop-shadow-2xl"
-          >
-            ATOMIC <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-blue-100 to-blue-400">
-              INDUSTRIAS
-            </span>
-          </motion.h1>
+          {/* Interactive 3D Dotted WebGL Globe */}
+          <div className="pointer-events-auto relative z-10 w-full max-w-[460px]">
+            <Globe
+              direction="right"
+              speed={1.2}
+              interactive
+              oceanColor="#030712"
+            />
+          </div>
 
-          {/* Subtitle */}
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.7, delay: 0.2 }}
-            className="text-lg md:text-xl font-medium text-neutral-200 max-w-2xl mb-12 leading-relaxed"
-          >
-            Ecosistema empresarial de nueva generación y tienda oficial en línea. 
-            Tecnología de vanguardia, equipamiento industrial y logística de alta precisión para todo Ecuador.
-          </motion.p>
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-b from-transparent to-[#030712]" />
         </div>
 
-        {/* ═══════════ ACTION BUTTONS ═══════════ */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.3 }}
-          className="flex flex-col sm:flex-row items-stretch sm:items-center gap-5 mt-2"
-        >
-          {/* Primary CTA button */}
-          <Link
-            href="/web"
-            className="group relative px-8 py-5 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-500 hover:from-blue-500 hover:to-indigo-500 text-white font-black tracking-wider uppercase text-sm shadow-[0_0_40px_rgba(37,99,235,0.5)] transition-all duration-300 hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-4 border border-blue-300/30"
-          >
-            <span>INGRESAR A LA TIENDA Y CATÁLOGO</span>
-            <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform duration-300" />
-          </Link>
-
-          {/* Secondary CTA button */}
-          <Link
-            href="/login"
-            className="px-8 py-5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/15 text-neutral-200 hover:text-white font-bold tracking-wider uppercase text-sm backdrop-blur-md transition-all duration-300 flex items-center justify-center gap-3"
-          >
-            <LogIn size={16} />
-            <span>PORTAL CLIENTES & ERP</span>
-          </Link>
-
-          {/* WhatsApp Direct */}
-          <a
-            href="https://wa.me/593969043453?text=Hola%20ATOMIC!%20Deseo%20informaci%C3%B3n%20sobre%20sus%20productos."
-            target="_blank"
-            rel="noreferrer"
-            className="px-6 py-5 rounded-2xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 font-bold tracking-wider uppercase text-xs backdrop-blur-md transition-all duration-300 flex items-center justify-center gap-2"
-          >
-            <MessageCircle size={16} />
-            <span>ASESORÍA WHATSAPP</span>
-          </a>
-        </motion.div>
-
-        {/* ═══════════ TECH FEATURE CARDS ═══════════ */}
-        <motion.div
-          initial={{ opacity: 0, y: 25 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.45 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16 pt-10 border-t border-white/10"
-        >
-          {/* Card 1 */}
-          <div className="group relative p-6 rounded-3xl bg-[#090d20]/80 border border-white/10 hover:border-blue-500/50 backdrop-blur-xl transition-all duration-300 hover:shadow-[0_0_30px_rgba(59,130,246,0.25)]">
-            <div className="w-12 h-12 rounded-2xl bg-blue-500/20 border border-blue-400/40 flex items-center justify-center text-blue-400 mb-4 group-hover:scale-110 transition-transform">
-              <Truck size={22} />
-            </div>
-            <h3 className="text-base font-black text-white uppercase tracking-wider mb-2">Envíos a Todo Ecuador</h3>
-            <p className="text-xs text-neutral-400 leading-relaxed font-mono">
-              Cobertura logística nacional directa con despacho urgente asegurado.
+        {/* Content Header */}
+        <div className="relative z-20 flex w-full flex-col items-center pt-4 text-center">
+          <header className="flex w-full max-w-3xl flex-col items-center gap-4 px-2 text-center -mt-6">
+            
+            {/* Tag Badge */}
+            <p className="inline-flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-widest text-blue-400 bg-blue-500/10 border border-blue-500/30 px-4 py-2 rounded-full shadow-[0_0_25px_rgba(59,130,246,0.2)]">
+              <GlobeIcon size={15} className="text-blue-400 animate-spin-slow" />
+              Presencia Global & Distribución Nacional
             </p>
+
+            <div className="flex flex-col items-center gap-4 mt-2">
+              <h1
+                id="global-presence-heading"
+                className="text-4xl sm:text-6xl md:text-7xl font-black leading-[1.05] tracking-tight text-white uppercase"
+              >
+                ATOMIC <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-blue-100 to-blue-400 drop-shadow-[0_0_35px_rgba(59,130,246,0.3)]">
+                  INDUSTRIAS
+                </span>
+              </h1>
+
+              <p className="max-w-2xl font-medium leading-relaxed text-neutral-300 text-base sm:text-lg">
+                Impulsando la tecnología empresarial, equipamiento industrial y comercio electrónico de alta precisión para todo el Ecuador.
+              </p>
+            </div>
+          </header>
+
+          {/* CTAs */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mt-8 w-full max-w-xl justify-center px-4">
+            <Link
+              href="/web"
+              className="group relative px-8 py-5 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-500 hover:from-blue-500 hover:to-indigo-500 text-white font-black tracking-wider uppercase text-sm shadow-[0_0_40px_rgba(37,99,235,0.5)] transition-all duration-300 hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3 border border-blue-300/30"
+            >
+              <span>INGRESAR A LA TIENDA Y CATÁLOGO</span>
+              <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform duration-300" />
+            </Link>
+
+            <a
+              href="https://wa.me/593969043453?text=Hola%20ATOMIC!%20Deseo%20informaci%C3%B3n%20sobre%20sus%20productos."
+              target="_blank"
+              rel="noreferrer"
+              className="px-6 py-5 rounded-2xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 font-bold tracking-wider uppercase text-xs backdrop-blur-md transition-all duration-300 flex items-center justify-center gap-2"
+            >
+              <MessageCircle size={16} />
+              <span>ASESORÍA WHATSAPP</span>
+            </a>
           </div>
 
-          {/* Card 2 */}
-          <div className="group relative p-6 rounded-3xl bg-[#090d20]/80 border border-white/10 hover:border-emerald-500/50 backdrop-blur-xl transition-all duration-300 hover:shadow-[0_0_30px_rgba(16,185,129,0.25)]">
-            <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-emerald-400 mb-4 group-hover:scale-110 transition-transform">
-              <ShieldCheck size={22} />
-            </div>
-            <h3 className="text-base font-black text-white uppercase tracking-wider mb-2">Garantía Directa</h3>
-            <p className="text-xs text-neutral-400 leading-relaxed font-mono">
-              Equipamiento 100% original con respaldo técnico de fábrica y soporte oficial.
-            </p>
-          </div>
+          {/* Metrics Grid from Originkit */}
+          <ul className="mt-14 mb-8 grid w-full max-w-4xl grid-cols-1 sm:grid-cols-3 gap-6 pt-10 border-t border-white/10">
+            {METRICS.map((metric, index) => (
+              <li
+                key={metric.value}
+                className="relative flex flex-col items-center gap-3 p-6 rounded-3xl bg-[#080d1e]/80 border border-white/10 hover:border-blue-500/40 backdrop-blur-xl transition-all duration-300 hover:shadow-[0_0_30px_rgba(59,130,246,0.2)] text-center"
+              >
+                <span className="bg-gradient-to-r from-white via-blue-100 to-blue-400 bg-clip-text text-4xl sm:text-5xl font-black tracking-tight text-transparent">
+                  {metric.value}
+                </span>
+                <span className="text-xs font-mono font-medium text-neutral-400 uppercase tracking-wider">
+                  {metric.label}
+                </span>
+              </li>
+            ))}
+          </ul>
 
-          {/* Card 3 */}
-          <div className="group relative p-6 rounded-3xl bg-[#090d20]/80 border border-white/10 hover:border-indigo-500/50 backdrop-blur-xl transition-all duration-300 hover:shadow-[0_0_30px_rgba(99,102,241,0.25)]">
-            <div className="w-12 h-12 rounded-2xl bg-indigo-500/20 border border-indigo-400/40 flex items-center justify-center text-indigo-400 mb-4 group-hover:scale-110 transition-transform">
-              <Zap size={22} />
-            </div>
-            <h3 className="text-base font-black text-white uppercase tracking-wider mb-2">Atención Inmediata</h3>
-            <p className="text-xs text-neutral-400 leading-relaxed font-mono">
-              Cotización automatizada con asesoría humana y respuesta en tiempo real.
-            </p>
-          </div>
-        </motion.div>
-
-      </main>
-      
-    </div>
-  )
+        </div>
+      </section>
+    </main>
+  );
 }
