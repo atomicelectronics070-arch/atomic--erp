@@ -57,28 +57,27 @@ const safeParseArray = (str: any, fallback: any = []) => {
 };
 
 /* ─── Robust Image Component ─── */
-function SafeImage({ src, alt, className, fill = false, width, height, ...props }: any) {
+function SafeImage({ src, alt = "", className, fill = false, width, height, ...props }: any) {
   const [error, setError] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const imgRef = useRef<HTMLImageElement>(null)
 
-  const realSrc = typeof src === 'string' ? src : (src && typeof src === 'object' ? (src.src || src.url || '') : '')
+  const altLower = (alt || "").toLowerCase()
+  let fallbackImage = "/web-banners/banner-17.jpg"
+  if (altLower.includes("camara") || altLower.includes("h6c") || altLower.includes("ezviz") || altLower.includes("ip")) {
+    fallbackImage = "/images/hero-3d/slide-2.jpg"
+  } else if (altLower.includes("biometrico") || altLower.includes("zkteco") || altLower.includes("senseface") || altLower.includes("acceso") || altLower.includes("portero")) {
+    fallbackImage = "/assets/portero/portero2.jpeg"
+  }
+
+  const rawSrc = typeof src === 'string' ? src : (src && typeof src === 'object' ? (src.src || src.url || '') : '')
+  const realSrc = (!rawSrc || error) ? fallbackImage : rawSrc
 
   useEffect(() => {
     if (imgRef.current?.complete) {
       setIsLoading(false)
     }
   }, [realSrc])
-
-  if (!realSrc || error) {
-    return (
-      <div className={`flex flex-col items-center justify-center bg-neutral-900 border border-white/5 p-4 ${className} ${fill ? 'absolute inset-0' : ''}`}>
-        <Hexagon className="text-neutral-700 w-10 h-10 animate-[spin_20s_linear_infinite]" strokeWidth={1} />
-        <ImageOff className="text-neutral-600 mt-2" size={16} />
-        <span className="text-[8px] font-bold text-neutral-500 uppercase tracking-widest mt-1">Sin imagen</span>
-      </div>
-    )
-  }
 
   return (
     <div className={`relative overflow-hidden bg-neutral-950 ${fill ? 'absolute inset-0 w-full h-full' : ''} ${className}`}>
@@ -88,7 +87,7 @@ function SafeImage({ src, alt, className, fill = false, width, height, ...props 
         alt={alt}
         onLoad={() => setIsLoading(false)}
         onError={() => { setIsLoading(false); setError(true); }}
-        className={`transition-all duration-500 ${isLoading ? 'scale-105 blur-md opacity-0' : 'scale-100 blur-0 opacity-100'} ${fill ? 'w-full h-full object-contain' : ''}`}
+        className={`transition-all duration-500 ${isLoading ? 'scale-105 blur-md opacity-0' : 'scale-100 blur-0 opacity-100'} ${fill ? 'w-full h-full object-cover' : ''}`}
         style={{ width: fill ? '100%' : width, height: fill ? '100%' : height }}
         referrerPolicy="no-referrer"
         {...props}
