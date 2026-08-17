@@ -261,7 +261,16 @@ export default function PublicWebClient({
           </motion.div>
 
           <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="text-5xl sm:text-7xl font-black uppercase tracking-tight leading-none mb-4">
-            ATOMIC <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-300 to-emerald-400">HARDWARE</span>
+            <span 
+              className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-300 to-emerald-400 inline-block py-1"
+              style={{ 
+                WebkitTextStroke: "1.5px #ffffff",
+                paintOrder: "stroke fill",
+                filter: "drop-shadow(0 0 15px rgba(59, 130, 246, 0.4))"
+              }}
+            >
+              ATOMIC
+            </span>
           </motion.h1>
 
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="text-xs font-mono font-bold tracking-[0.35em] uppercase text-blue-400 mb-8">
