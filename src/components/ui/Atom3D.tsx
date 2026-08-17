@@ -25,7 +25,7 @@ const Core = () => {
 };
 
 // Electron Ring
-const Ring = ({ radius, speed, rotationX, rotationY, color = "rgba(255, 255, 255, 0.4)", electronColor = "#ffffff" }: { radius: number, speed: number, rotationX: number, rotationY: number, color?: string, electronColor?: string }) => {
+const Ring = ({ radius, speed, rotationX, rotationY, color = "#ffffff", opacity = 0.4, electronColor = "#ffffff" }: { radius: number, speed: number, rotationX: number, rotationY: number, color?: string, opacity?: number, electronColor?: string }) => {
   const ringRef = useRef<THREE.Group>(null);
   
   const points = useMemo(() => {
@@ -45,7 +45,7 @@ const Ring = ({ radius, speed, rotationX, rotationY, color = "rgba(255, 255, 255
 
   return (
     <group ref={ringRef} rotation={[rotationX, rotationY, 0]}>
-      <Line points={points} color={color} lineWidth={1.5} transparent opacity={0.5} />
+      <Line points={points} color={color} lineWidth={1.5} transparent opacity={opacity} />
       {/* Electron */}
       <mesh position={[radius, 0, 0]}>
         <sphereGeometry args={[0.1, 16, 16]} />
@@ -58,7 +58,8 @@ const Ring = ({ radius, speed, rotationX, rotationY, color = "rgba(255, 255, 255
 const AtomScene = ({ theme }: { theme: 'light' | 'dark' }) => {
   const groupRef = useRef<THREE.Group>(null);
   
-  const ringColor = theme === 'light' ? "rgba(0, 0, 0, 0.2)" : "rgba(255, 255, 255, 0.4)";
+  const ringColor = theme === 'light' ? "#000000" : "#ffffff";
+  const ringOpacity = theme === 'light' ? 0.2 : 0.4;
   const electronColor = theme === 'light' ? "#000000" : "#ffffff";
 
   useFrame((state) => {
@@ -79,9 +80,9 @@ const AtomScene = ({ theme }: { theme: 'light' | 'dark' }) => {
   return (
     <group ref={groupRef}>
       <Core />
-      <Ring radius={2.5} speed={0.01} rotationX={0} rotationY={0} color={ringColor} electronColor={electronColor} />
-      <Ring radius={2.5} speed={0.015} rotationX={Math.PI / 3} rotationY={Math.PI / 3} color={ringColor} electronColor={electronColor} />
-      <Ring radius={2.5} speed={0.012} rotationX={-Math.PI / 3} rotationY={Math.PI / 3} color={ringColor} electronColor={electronColor} />
+      <Ring radius={2.5} speed={0.01} rotationX={0} rotationY={0} color={ringColor} opacity={ringOpacity} electronColor={electronColor} />
+      <Ring radius={2.5} speed={0.015} rotationX={Math.PI / 3} rotationY={Math.PI / 3} color={ringColor} opacity={ringOpacity} electronColor={electronColor} />
+      <Ring radius={2.5} speed={0.012} rotationX={-Math.PI / 3} rotationY={Math.PI / 3} color={ringColor} opacity={ringOpacity} electronColor={electronColor} />
     </group>
   );
 };
