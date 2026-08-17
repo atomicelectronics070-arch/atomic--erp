@@ -73,8 +73,8 @@ const DEFAULT_SLIDES: Slide[] = [
         title: "GENERADORES A GASOLINA\nRespaldo de Energía Confiable 950W para tu Hogar",
     },
     {
-        image: { src: "/images/hero-3d/slide-6.jpg", alt: "Equipamiento de Cocina" },
-        title: "EQUIPAMIENTO DE COCINA A GAS\nLínea de Lujo en Acero Inoxidable",
+        image: { src: "/images/hero-3d/slide-6.jpg", alt: "Cámara de Seguridad Un Lente" },
+        title: "CÁMARA DE SEGURIDAD UN LENTE\nMonitoreo Exterior IP66 Panorámica 270°",
     },
     {
         image: { src: "/images/hero-3d/slide-7.jpg", alt: "Gaming & Consolas" },
