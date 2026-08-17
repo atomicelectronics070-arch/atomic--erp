@@ -259,6 +259,15 @@ export default function PublicWebClient({
               <span>→</span>
             </a>
 
+            {/* INICIAR SESIÓN BUTTON */}
+            <Link
+              href="/login"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold font-mono tracking-wider shadow-md shadow-blue-500/20 border border-blue-400/30 transition-all duration-200"
+            >
+              <LogIn size={13} />
+              <span>INICIAR SESIÓN</span>
+            </Link>
+
             {/* USER DROPDOWN MENU */}
             <div className="relative z-50" ref={userMenuRef}>
               <button

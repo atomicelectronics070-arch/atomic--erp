@@ -66,10 +66,10 @@ export default function Presence01() {
           </Link>
           <Link 
             href="/login" 
-            className="text-neutral-300 hover:text-white transition-colors hidden sm:flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:border-white/20"
+            className="text-neutral-300 hover:text-white transition-colors flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-lg shadow-blue-500/25 border border-blue-400/30 font-bold"
           >
             <LogIn size={15} />
-            <span>Portal ERP</span>
+            <span>INICIAR SESIÓN</span>
           </Link>
         </div>
       </nav>
