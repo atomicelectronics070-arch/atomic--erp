@@ -81,8 +81,8 @@ const DEFAULT_SLIDES: Slide[] = [
         title: "CÁMARA DE SEGURIDAD UN LENTE\nMonitoreo Exterior IP66 Panorámica 270°",
     },
     {
-        image: { src: "/images/hero-3d/slide-7.jpg", alt: "Gaming & Consolas" },
-        title: "CONSOLAS GAMING & PERIFÉRICOS\nPlayStation 5, Xbox & Mandos",
+        image: { src: "/images/hero-3d/slide-7.jpg", alt: "Calefactores de Exterior" },
+        title: "CALEFACTORES DE EXTERIOR\nCalidez & Confort para Hogar, Jardín y Espacios",
     },
     {
         image: { src: "/images/hero-3d/slide-9.jpg", alt: "Sistemas POS & Software" },
