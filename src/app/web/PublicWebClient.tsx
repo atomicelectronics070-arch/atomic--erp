@@ -5,7 +5,7 @@ import { useState, useRef, useEffect, useMemo } from "react"
 import {
   ShoppingBag, ChevronRight, ArrowRight, Shield, Zap, Truck,
   ChevronLeft, Hexagon, Star, X, Smartphone, Sparkles, Code, Bot,
-  Search, ImageOff, Home, Building, Factory, Cpu, Gamepad2, Utensils, Laptop, Award
+  Search, ImageOff, Home, Building, Factory, Cpu, Gamepad2, Utensils, Laptop, Award, User, Settings, ChevronDown, Package
 } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
@@ -147,6 +147,19 @@ export default function PublicWebClient({
   const [searchResults, setSearchResults] = useState<any[] | null>(null)
   const [isSearching, setIsSearching] = useState(false)
   const searchDebounce = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
+  const [activeUserModal, setActiveUserModal] = useState<string | null>(null)
+  const userMenuRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
+        setIsUserMenuOpen(false)
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [])
 
   useEffect(() => {
     const handleSearchUpdate = (e: any) => {
@@ -240,11 +253,82 @@ export default function PublicWebClient({
               href="https://wa.me/593969043453?text=Hola%20ATOMIC!%20Deseo%20informaci%C3%B3n%20sobre%20sus%20productos."
               target="_blank"
               rel="noreferrer"
-              className="text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-1.5 transition-colors"
+              className="text-emerald-400 hover:text-emerald-300 font-bold hidden sm:flex items-center gap-1.5 transition-colors"
             >
               <span>💬 Asesoría Instantánea WhatsApp</span>
               <span>→</span>
             </a>
+
+            {/* USER DROPDOWN MENU */}
+            <div className="relative z-50" ref={userMenuRef}>
+              <button
+                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-blue-900/60 via-neutral-900 to-indigo-900/60 border border-blue-500/40 hover:border-blue-400/80 rounded-xl text-xs font-bold text-white shadow-lg transition-all hover:shadow-blue-500/20 active:scale-95 cursor-pointer"
+              >
+                <div className="w-5 h-5 rounded-full bg-blue-500/20 border border-blue-400/40 flex items-center justify-center text-blue-400">
+                  <User size={12} />
+                </div>
+                <span className="font-mono tracking-wider font-bold text-white">USER</span>
+                <ChevronDown size={14} className={`text-blue-400 transition-transform duration-200 ${isUserMenuOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              <AnimatePresence>
+                {isUserMenuOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 8, scale: 0.95 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute right-0 mt-2 w-52 bg-[#0c101c]/95 border border-blue-500/30 rounded-2xl shadow-2xl backdrop-blur-2xl p-2 z-50 overflow-hidden"
+                  >
+                    <div className="px-3 py-2 border-b border-white/10 mb-1">
+                      <p className="text-[10px] font-mono text-blue-400 uppercase font-bold tracking-widest">Cuenta Activa</p>
+                      <p className="text-xs font-bold text-white truncate">Usuario ATOMIC</p>
+                    </div>
+
+                    <button
+                      onClick={() => { setActiveUserModal('perfil'); setIsUserMenuOpen(false); }}
+                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-blue-600/20 text-neutral-200 hover:text-white text-xs font-bold transition-all text-left group cursor-pointer"
+                    >
+                      <div className="w-7 h-7 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
+                        <User size={14} />
+                      </div>
+                      <span>Perfil</span>
+                    </button>
+
+                    <button
+                      onClick={() => { setActiveUserModal('compras'); setIsUserMenuOpen(false); }}
+                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-emerald-600/20 text-neutral-200 hover:text-white text-xs font-bold transition-all text-left group cursor-pointer"
+                    >
+                      <div className="w-7 h-7 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform">
+                        <ShoppingBag size={14} />
+                      </div>
+                      <span>Compras</span>
+                    </button>
+
+                    <button
+                      onClick={() => { setActiveUserModal('envios'); setIsUserMenuOpen(false); }}
+                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-amber-600/20 text-neutral-200 hover:text-white text-xs font-bold transition-all text-left group cursor-pointer"
+                    >
+                      <div className="w-7 h-7 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 group-hover:scale-110 transition-transform">
+                        <Truck size={14} />
+                      </div>
+                      <span>Envíos</span>
+                    </button>
+
+                    <button
+                      onClick={() => { setActiveUserModal('settings'); setIsUserMenuOpen(false); }}
+                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-purple-600/20 text-neutral-200 hover:text-white text-xs font-bold transition-all text-left group cursor-pointer"
+                    >
+                      <div className="w-7 h-7 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform">
+                        <Settings size={14} />
+                      </div>
+                      <span>Settings</span>
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
         </div>
       </section>
@@ -508,6 +592,128 @@ export default function PublicWebClient({
         </div>
       </section>
 
-    </div>
+    
+      {/* ═══════════ USER DROPDOWN ACTION MODALS ═══════════ */}
+      <AnimatePresence>
+        {activeUserModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-4"
+            onClick={() => setActiveUserModal(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-[#0b0f19] border border-blue-500/30 rounded-3xl p-6 max-w-md w-full shadow-2xl text-white relative overflow-hidden"
+            >
+              <button
+                onClick={() => setActiveUserModal(null)}
+                className="absolute top-4 right-4 text-neutral-400 hover:text-white p-2 rounded-xl bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
+              >
+                <X size={18} />
+              </button>
+
+              {activeUserModal === 'perfil' && (
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3 border-b border-white/10 pb-4">
+                    <div className="w-12 h-12 rounded-2xl bg-blue-500/20 border border-blue-500/30 flex items-center justify-center text-blue-400 font-bold text-xl">
+                      👤
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-black uppercase text-white">Mi Perfil ATOMIC</h3>
+                      <p className="text-xs text-blue-400 font-mono">Usuario Registrado</p>
+                    </div>
+                  </div>
+                  <div className="space-y-2 text-xs text-neutral-300 font-mono">
+                    <div className="p-3 rounded-xl bg-white/5 border border-white/5 flex justify-between">
+                      <span className="text-neutral-400">Cliente:</span>
+                      <span className="font-bold text-white">Usuario Preferencial</span>
+                    </div>
+                    <div className="p-3 rounded-xl bg-white/5 border border-white/5 flex justify-between">
+                      <span className="text-neutral-400">Estado:</span>
+                      <span className="font-bold text-emerald-400">Activo & Verificado</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {activeUserModal === 'compras' && (
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3 border-b border-white/10 pb-4">
+                    <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-bold text-xl">
+                      🛍️
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-black uppercase text-white">Mis Compras</h3>
+                      <p className="text-xs text-emerald-400 font-mono">Historial de Pedidos</p>
+                    </div>
+                  </div>
+                  <div className="p-4 rounded-xl bg-white/5 border border-white/5 text-center text-xs text-neutral-400">
+                    <p className="font-bold text-white mb-1">Sin pedidos pendientes</p>
+                    <p>Tus cotizaciones y compras aparecerán aquí automáticamente.</p>
+                  </div>
+                </div>
+              )}
+
+              {activeUserModal === 'envios' && (
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3 border-b border-white/10 pb-4">
+                    <div className="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400 font-bold text-xl">
+                      🚚
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-black uppercase text-white">Seguimiento de Envíos</h3>
+                      <p className="text-xs text-amber-400 font-mono">Cobertura Todo Ecuador</p>
+                    </div>
+                  </div>
+                  <div className="p-4 rounded-xl bg-white/5 border border-white/5 text-xs space-y-2">
+                    <div className="flex items-center justify-between text-emerald-400 font-bold">
+                      <span>Servientrega / Tramaco / Envíos Directos</span>
+                      <span>100% Garantizado</span>
+                    </div>
+                    <p className="text-neutral-400">Tus guías de despacho se sincronizan automáticamente con tu número de WhatsApp.</p>
+                  </div>
+                </div>
+              )}
+
+              {activeUserModal === 'settings' && (
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3 border-b border-white/10 pb-4">
+                    <div className="w-12 h-12 rounded-2xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-purple-400 font-bold text-xl">
+                      ⚙️
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-black uppercase text-white">Configuración</h3>
+                      <p className="text-xs text-purple-400 font-mono">Preferencias de Usuario</p>
+                    </div>
+                  </div>
+                  <div className="space-y-2 text-xs">
+                    <div className="p-3 rounded-xl bg-white/5 border border-white/5 flex items-center justify-between">
+                      <span>Moneda Predeterminada</span>
+                      <span className="font-bold text-blue-400">USD ($)</span>
+                    </div>
+                    <div className="p-3 rounded-xl bg-white/5 border border-white/5 flex items-center justify-between">
+                      <span>Notificaciones WhatsApp</span>
+                      <span className="font-bold text-emerald-400">Activadas</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <button
+                onClick={() => setActiveUserModal(null)}
+                className="w-full mt-4 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
+              >
+                Cerrar
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+</div>
   )
 }
