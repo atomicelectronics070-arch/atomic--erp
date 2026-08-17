@@ -85,8 +85,8 @@ const DEFAULT_SLIDES: Slide[] = [
         title: "CALEFACTORES DE EXTERIOR\nCalidez & Confort para Hogar, Jardín y Espacios",
     },
     {
-        image: { src: "/images/hero-3d/slide-9.jpg", alt: "Sistemas POS & Software" },
-        title: "SISTEMAS POS & SOFTWARE ERP\nFacturación Electrónica SRI",
+        image: { src: "/images/hero-3d/slide-9.jpg", alt: "Control de Accesos y Portero Smart" },
+        title: "CONTROL DE ACCESOS Y PORTERO SMART\nSeguridad Biométrica para Conjuntos & Edificios",
     },
 ]
 
