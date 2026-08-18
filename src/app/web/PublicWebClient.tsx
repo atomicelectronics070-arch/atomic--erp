@@ -366,7 +366,7 @@ export default function PublicWebClient({
           </motion.h1>
 
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="text-xs font-mono font-bold tracking-[0.35em] uppercase text-blue-400 mb-8">
-            Catálogo Oficial & Tienda en Línea
+            ELECTRÓNICA, TECNOLOGÍA Y HOGAR
           </motion.p>
 
           {/* SEARCH BAR */}
