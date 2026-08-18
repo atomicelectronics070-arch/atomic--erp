@@ -149,6 +149,7 @@ export default function PublicWebClient({
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
   const [activeUserModal, setActiveUserModal] = useState<string | null>(null)
   const userMenuRef = useRef<HTMLDivElement>(null)
+  const [activeTab, setActiveTab] = useState<string | null>(null)
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -340,6 +341,255 @@ export default function PublicWebClient({
           </div>
         </div>
       </section>
+
+      {/* ═══════════ HORIZONTAL NAV TABS ═══════════ */}
+      <nav className="sticky top-0 z-40 w-full bg-[#08090f]/95 backdrop-blur-xl border-b border-white/8 shadow-lg shadow-black/40">
+        <div className="max-w-7xl mx-auto px-4 flex items-center justify-center gap-1 overflow-x-auto scrollbar-hide py-2">
+
+          {/* BACK ARROW — visible when a tab is active */}
+          {activeTab && (
+            <button
+              onClick={() => setActiveTab(null)}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-blue-600/20 border border-blue-500/40 text-blue-400 hover:text-white hover:bg-blue-600/40 text-xs font-black font-mono tracking-wider transition-all shrink-0 mr-2"
+            >
+              <ChevronLeft size={15} />
+              <span className="hidden sm:inline">INICIO</span>
+            </button>
+          )}
+
+          {([
+            { id: 'categorias', label: '📦 Categorías' },
+            { id: 'ofertas', label: '🔥 Ofertas' },
+            { id: 'blog', label: '📝 Blog' },
+            { id: 'newsletter', label: '✉️ Newsletter' },
+            { id: 'landings', label: '🚀 Landings' },
+            { id: 'especializacion', label: '🎓 Áreas de Esp.' },
+            { id: 'nosotros', label: '🏢 Sobre Nosotros' },
+            { id: 'contacto', label: '📞 Contáctanos' },
+            { id: 'resenas', label: '⭐ Reseñas' },
+          ] as { id: string; label: string }[]).map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(activeTab === tab.id ? null : tab.id)}
+              className={`shrink-0 px-4 py-2 rounded-xl text-[11px] font-black font-mono tracking-wider uppercase transition-all duration-200 whitespace-nowrap border ${
+                activeTab === tab.id
+                  ? 'bg-blue-600 text-white border-blue-500 shadow-lg shadow-blue-500/30 scale-105'
+                  : 'bg-white/5 text-neutral-300 border-white/8 hover:bg-white/10 hover:text-white hover:border-white/20'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+      </nav>
+
+      {/* ═══════════ TAB CONTENT PANELS ═══════════ */}
+      <AnimatePresence mode="wait">
+        {activeTab === 'categorias' && (
+          <motion.section key="categorias" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} className="max-w-7xl mx-auto px-6 py-12">
+            <div className="flex items-center gap-3 mb-8">
+              <button onClick={() => setActiveTab(null)} className="p-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-neutral-400 hover:text-white transition-all">
+                <ChevronLeft size={18} />
+              </button>
+              <h2 className="text-2xl font-black uppercase tracking-tight text-white">Categorías</h2>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+              {(metadata?.categories?.filter(c => !c.parentId) || []).map((cat: any) => (
+                <button key={cat.id} onClick={() => { setActiveMainCategoryId(cat.id); setActiveTab(null); document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' }); }} className="p-5 rounded-2xl bg-neutral-900 border border-white/10 hover:border-blue-500/50 hover:bg-neutral-800 text-left transition-all group">
+                  <p className="text-sm font-black text-white group-hover:text-blue-400 transition-colors">{cat.name}</p>
+                  <p className="text-[10px] font-mono text-neutral-500 mt-1 uppercase tracking-widest">Ver productos →</p>
+                </button>
+              ))}
+            </div>
+          </motion.section>
+        )}
+
+        {activeTab === 'ofertas' && (
+          <motion.section key="ofertas" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} className="max-w-7xl mx-auto px-6 py-12">
+            <div className="flex items-center gap-3 mb-8">
+              <button onClick={() => setActiveTab(null)} className="p-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-neutral-400 hover:text-white transition-all">
+                <ChevronLeft size={18} />
+              </button>
+              <h2 className="text-2xl font-black uppercase tracking-tight text-white">Ofertas Especiales 🔥</h2>
+            </div>
+            <p className="text-neutral-300 text-sm mb-6">Descuentos exclusivos en tecnología, electrónica y hogar. <strong className="text-white">¡Por tiempo limitado!</strong></p>
+            <button onClick={() => { setSearchQuery('oferta'); setActiveTab(null); document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' }); }} className="px-8 py-4 rounded-2xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-black uppercase tracking-wider text-sm transition-all hover:scale-105 shadow-lg shadow-red-500/30">Ver Todas las Ofertas</button>
+          </motion.section>
+        )}
+
+        {activeTab === 'blog' && (
+          <motion.section key="blog" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} className="max-w-7xl mx-auto px-6 py-12">
+            <div className="flex items-center gap-3 mb-8">
+              <button onClick={() => setActiveTab(null)} className="p-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-neutral-400 hover:text-white transition-all">
+                <ChevronLeft size={18} />
+              </button>
+              <h2 className="text-2xl font-black uppercase tracking-tight text-white">Blog 📝</h2>
+            </div>
+            <div className="grid gap-5 sm:grid-cols-2 md:grid-cols-3">
+              {[
+                { title: 'Post #1: Introducción a ATOMIC', href: '/post-1', desc: 'Conoce nuestra historia y misión tecnológica.' },
+                { title: 'Post #2: Seguridad para el Hogar', href: '/post-2', desc: 'Cámaras IP, porteros y sistemas biométricos.' },
+                { title: 'Post #3: Recursos de Aprendizaje', href: '/recursos', desc: 'Cursos gratuitos de universidades top del mundo.' },
+                { title: 'Post #4: 9 Cursos de YouTube Gratuitos', href: '/post-4', desc: 'Ventas, IA, Copywriting, Liderazgo y Neurociencia.' },
+              ].map(post => (
+                <Link key={post.href} href={post.href} className="p-5 rounded-2xl bg-neutral-900 border border-white/10 hover:border-blue-500/50 hover:bg-neutral-800 transition-all group block">
+                  <h3 className="text-sm font-black text-white group-hover:text-blue-400 transition-colors mb-2">{post.title}</h3>
+                  <p className="text-[11px] text-neutral-400">{post.desc}</p>
+                  <span className="mt-3 inline-block text-[10px] font-mono text-blue-400 uppercase font-bold">Leer →</span>
+                </Link>
+              ))}
+            </div>
+          </motion.section>
+        )}
+
+        {activeTab === 'newsletter' && (
+          <motion.section key="newsletter" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} className="max-w-3xl mx-auto px-6 py-12 text-center">
+            <div className="flex items-center gap-3 mb-8 justify-center">
+              <button onClick={() => setActiveTab(null)} className="p-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-neutral-400 hover:text-white transition-all">
+                <ChevronLeft size={18} />
+              </button>
+              <h2 className="text-2xl font-black uppercase tracking-tight text-white">Newsletter ✉️</h2>
+            </div>
+            <p className="text-neutral-300 mb-6 text-sm">Suscríbete y recibe <strong className="text-white">ofertas exclusivas, novedades tecnológicas y guías de IA</strong> directamente en tu correo.</p>
+            <Link href="/recursos" className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black uppercase tracking-wider text-sm transition-all hover:scale-105 shadow-lg shadow-blue-500/30">
+              Suscribirme Ahora <ArrowRight size={16} />
+            </Link>
+          </motion.section>
+        )}
+
+        {activeTab === 'landings' && (
+          <motion.section key="landings" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} className="max-w-7xl mx-auto px-6 py-12">
+            <div className="flex items-center gap-3 mb-8">
+              <button onClick={() => setActiveTab(null)} className="p-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-neutral-400 hover:text-white transition-all">
+                <ChevronLeft size={18} />
+              </button>
+              <h2 className="text-2xl font-black uppercase tracking-tight text-white">Landings de Productos 🚀</h2>
+            </div>
+            <div className="grid gap-5 sm:grid-cols-2 md:grid-cols-3">
+              {[
+                { name: 'ZKTeco SenseFace 2A', href: '/senseface-2a', desc: 'Biométrico Facial 3D, Huella & RFID', icon: '🔐' },
+                { name: 'EZVIZ H6c PT 2K', href: '/h6c', desc: 'Cámara IP Panorámica 360° Wi-Fi', icon: '📹' },
+                { name: 'Recursos de Aprendizaje', href: '/recursos', desc: 'MIT, Harvard, Stanford y más — 100% Gratis', icon: '🎓' },
+                { name: '9 Cursos YouTube Gratis', href: '/post-4', desc: 'Ventas, IA, Copywriting, Neurociencia', icon: '▶️' },
+              ].map(l => (
+                <Link key={l.href} href={l.href} className="p-5 rounded-2xl bg-neutral-900 border border-white/10 hover:border-emerald-500/50 hover:bg-neutral-800 transition-all group block">
+                  <div className="text-3xl mb-3">{l.icon}</div>
+                  <h3 className="text-sm font-black text-white group-hover:text-emerald-400 transition-colors mb-1">{l.name}</h3>
+                  <p className="text-[11px] text-neutral-400">{l.desc}</p>
+                  <span className="mt-3 inline-block text-[10px] font-mono text-emerald-400 uppercase font-bold">Ver Landing →</span>
+                </Link>
+              ))}
+            </div>
+          </motion.section>
+        )}
+
+        {activeTab === 'especializacion' && (
+          <motion.section key="especializacion" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} className="max-w-7xl mx-auto px-6 py-12">
+            <div className="flex items-center gap-3 mb-8">
+              <button onClick={() => setActiveTab(null)} className="p-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-neutral-400 hover:text-white transition-all">
+                <ChevronLeft size={18} />
+              </button>
+              <h2 className="text-2xl font-black uppercase tracking-tight text-white">Áreas de Especialización 🎓</h2>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+              {[
+                { area: '🔐 Seguridad & Control de Acceso', desc: 'Biométricos, porteros eléctricos, CCTV y vigilancia IP.' },
+                { area: '📺 Electrónica de Consumo', desc: 'Smart TVs, audio, gaming, periféricos y accesorios.' },
+                { area: '🏠 Hogar Inteligente', desc: 'Encimeras, hornos, electrodomésticos y automatización.' },
+                { area: '💻 Computación & Laptops', desc: 'Portátiles, PCs, componentes y soluciones de red.' },
+                { area: '⚡ Energía & Carga EV', desc: 'Cargadores de vehículos eléctricos y soluciones solares.' },
+                { area: '🤖 Tecnología IA & Robótica', desc: 'Automatización inteligente, bots y soluciones de última generación.' },
+              ].map(a => (
+                <div key={a.area} className="p-5 rounded-2xl bg-neutral-900 border border-white/10 hover:border-purple-500/40 hover:bg-neutral-800 transition-all">
+                  <h3 className="text-sm font-black text-white mb-2">{a.area}</h3>
+                  <p className="text-[11px] text-neutral-400">{a.desc}</p>
+                </div>
+              ))}
+            </div>
+          </motion.section>
+        )}
+
+        {activeTab === 'nosotros' && (
+          <motion.section key="nosotros" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} className="max-w-4xl mx-auto px-6 py-12">
+            <div className="flex items-center gap-3 mb-8">
+              <button onClick={() => setActiveTab(null)} className="p-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-neutral-400 hover:text-white transition-all">
+                <ChevronLeft size={18} />
+              </button>
+              <h2 className="text-2xl font-black uppercase tracking-tight text-white">Sobre Nosotros 🏢</h2>
+            </div>
+            <div className="space-y-6">
+              <p className="text-neutral-300 text-sm leading-relaxed"><strong className="text-white">ATOMIC INDUSTRIAS</strong> es una empresa ecuatoriana especializada en electrónica, tecnología y productos para el hogar. Ofrecemos los mejores precios con garantía 100% original, envíos seguros a todo Ecuador y asesoría técnica instantánea vía WhatsApp.</p>
+              <div className="grid sm:grid-cols-3 gap-4">
+                {[
+                  { stat: '100%', label: 'Productos Originales' },
+                  { stat: '24/7', label: 'Soporte Técnico' },
+                  { stat: 'EC', label: 'Cobertura Nacional' },
+                ].map(s => (
+                  <div key={s.stat} className="p-5 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-center">
+                    <p className="text-3xl font-black text-blue-400">{s.stat}</p>
+                    <p className="text-[11px] font-mono text-neutral-400 uppercase tracking-widest mt-1">{s.label}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </motion.section>
+        )}
+
+        {activeTab === 'contacto' && (
+          <motion.section key="contacto" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} className="max-w-4xl mx-auto px-6 py-12">
+            <div className="flex items-center gap-3 mb-8">
+              <button onClick={() => setActiveTab(null)} className="p-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-neutral-400 hover:text-white transition-all">
+                <ChevronLeft size={18} />
+              </button>
+              <h2 className="text-2xl font-black uppercase tracking-tight text-white">Contáctanos 📞</h2>
+            </div>
+            <div className="grid sm:grid-cols-2 gap-5">
+              <a href="https://wa.me/593969043453?text=Hola%20ATOMIC!" target="_blank" rel="noreferrer" className="flex items-center gap-4 p-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 hover:bg-emerald-500/20 transition-all group">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 flex items-center justify-center text-2xl">💬</div>
+                <div>
+                  <p className="text-sm font-black text-white group-hover:text-emerald-400 transition-colors">WhatsApp</p>
+                  <p className="text-[11px] text-neutral-400">Asesoría instantánea disponible ahora</p>
+                </div>
+              </a>
+              <div className="flex items-center gap-4 p-5 rounded-2xl bg-blue-500/10 border border-blue-500/30">
+                <div className="w-12 h-12 rounded-2xl bg-blue-500/20 flex items-center justify-center text-2xl">📍</div>
+                <div>
+                  <p className="text-sm font-black text-white">Ecuador</p>
+                  <p className="text-[11px] text-neutral-400">Envíos a todo el país</p>
+                </div>
+              </div>
+            </div>
+          </motion.section>
+        )}
+
+        {activeTab === 'resenas' && (
+          <motion.section key="resenas" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} className="max-w-7xl mx-auto px-6 py-12">
+            <div className="flex items-center gap-3 mb-8">
+              <button onClick={() => setActiveTab(null)} className="p-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-neutral-400 hover:text-white transition-all">
+                <ChevronLeft size={18} />
+              </button>
+              <h2 className="text-2xl font-black uppercase tracking-tight text-white">Reseñas de Clientes ⭐</h2>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+              {[
+                { name: 'Carlos M.', rating: 5, text: 'Excelente servicio, el producto llegó rápido y en perfectas condiciones. 100% recomendado.' },
+                { name: 'Andrea L.', rating: 5, text: 'La asesoría por WhatsApp fue increíble, me ayudaron a elegir el mejor biométrico para mi empresa.' },
+                { name: 'Roberto V.', rating: 5, text: 'Compré una cámara EZVIZ H6c y funciona perfectamente. La calidad 2K es impresionante.' },
+                { name: 'María F.', rating: 5, text: 'Productos originales con garantía, los precios son los mejores de todo Ecuador.' },
+                { name: 'Jorge P.', rating: 5, text: 'El SenseFace 2A funciona perfecto en nuestras instalaciones. Muy buen equipo ATOMIC.' },
+                { name: 'Lucía G.', rating: 5, text: 'Atención al cliente excepcional. Resolvieron todas mis dudas antes de la compra.' },
+              ].map(r => (
+                <div key={r.name} className="p-5 rounded-2xl bg-neutral-900 border border-white/10 hover:border-amber-500/30 transition-all">
+                  <div className="flex items-center gap-1 mb-3">{Array.from({length: r.rating}).map((_,i) => <Star key={i} size={14} className="text-amber-400 fill-amber-400" />)}</div>
+                  <p className="text-sm text-neutral-300 italic mb-3">"{r.text}"</p>
+                  <p className="text-xs font-black text-white">{r.name}</p>
+                  <p className="text-[10px] font-mono text-neutral-500">Cliente ATOMIC ✓</p>
+                </div>
+              ))}
+            </div>
+          </motion.section>
+        )}
+      </AnimatePresence>
 
       {/* ═══════════ HERO SECTION ═══════════ */}
       <section className="pt-14 pb-16 flex flex-col items-center justify-center text-center px-6 relative overflow-hidden bg-gradient-to-b from-neutral-950 via-[#0a0a10] to-[#070709]">
