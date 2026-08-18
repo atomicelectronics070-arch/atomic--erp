@@ -1,4 +1,4 @@
-/* Atomic Premium Design System — Monochrome Black & White — v8.0 */
+/* Atomic × Appit Dark Design System — v9.0 */
 @import "tailwindcss";
 
 /* ── Global Scale Reduction ── */
@@ -22,49 +22,90 @@ html {
   min-width: 133.333vw !important;
 }
 
-@theme {
-  --color-background: #FFFFFF;
-  --color-foreground: #000000;
-  --color-primary: #000000;
-  --color-primary-light: #27272A;
-  --color-navy: #000000;
-  --color-secondary: #F4F4F5;
+/* ── Appit Font Imports ── */
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,600;0,700;0,900;1,600;1,700;1,900&family=Instrument+Sans:ital,wght@0,500;0,600;0,700;1,500;1,600;1,700&family=Inter:wght@400;500;600;700&display=swap');
 
-  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui;
-  --font-heading: "IBM Plex Sans", ui-sans-serif, system-ui;
-  --font-mono: "IBM Plex Mono", monospace;
+@theme {
+  /* Appit Dark Color Palette */
+  --color-background: #09090A;
+  --color-foreground: #FFFFFF;
+  --color-primary: #FFFFFF;
+  --color-primary-light: #E4E4E6;
+  --color-navy: #0E0E10;
+  --color-secondary: #131315;
+
+  /* Appit Surface Scale */
+  --color-surface-0: #09090A;
+  --color-surface-1: #0E0E10;
+  --color-surface-2: #131315;
+  --color-surface-3: #181819;
+  --color-surface-4: #1D1D20;
+
+  /* Appit Gray Scale */
+  --color-gray-900: #09090A;
+  --color-gray-800: #131315;
+  --color-gray-700: #28282C;
+  --color-gray-600: #62646C;
+  --color-gray-500: #797B85;
+  --color-gray-400: #94969D;
+  --color-gray-300: #AEBOB6;
+  --color-gray-200: #C9CACE;
+  --color-gray-100: #E4E4E6;
+
+  /* Fonts — Appit style */
+  --font-sans: "Instrument Sans", "Inter", ui-sans-serif, system-ui;
+  --font-heading: "Inter Tight", "Instrument Sans", ui-sans-serif, system-ui;
+  --font-mono: "Inter", "IBM Plex Mono", monospace;
 }
 
 :root {
-  --background: #FFFFFF;
-  --foreground: #000000;
-  --primary: #000000;
-  --primary-light: #27272A;
-  --navy: #000000;
-  --secondary: #F4F4F5;
+  --background: #09090A;
+  --foreground: #FFFFFF;
+  --primary: #FFFFFF;
+  --primary-light: #E4E4E6;
+  --navy: #0E0E10;
+  --secondary: #131315;
 
-  /* Surface tokens */
-  --surface-0: #FFFFFF;
-  --surface-1: #FAFAFA;
-  --surface-2: #F4F4F5;
+  /* Surface tokens — Appit dark */
+  --surface-0: #09090A;
+  --surface-1: #0E0E10;
+  --surface-2: #131315;
 
-  /* Refined Design: Monochromatic Premium */
-  --glass-bg: rgba(255, 255, 255, 0.95);
-  --glass-border: rgba(0, 0, 0, 0.08);
-  --navy-glow: 0 0 20px rgba(0, 0, 0, 0.05);
+  /* Glass effects — dark style */
+  --glass-bg: rgba(14, 14, 16, 0.90);
+  --glass-border: rgba(255, 255, 255, 0.06);
+  --navy-glow: 0 0 40px rgba(255, 255, 255, 0.03);
+
+  /* Appit exact color tokens (used by legacy classes) */
+  --appit-bg-0: rgb(9, 9, 10);
+  --appit-bg-1: rgb(14, 14, 16);
+  --appit-bg-2: rgb(19, 19, 21);
+  --appit-bg-3: rgb(24, 24, 26);
+  --appit-bg-4: rgb(29, 29, 32);
+  --appit-gray-dark: rgb(40, 40, 44);
+  --appit-gray-mid: rgb(98, 100, 108);
+  --appit-gray-light: rgb(228, 228, 230);
 }
 
 body {
-  background-color: #FFFFFF !important;
-  color: var(--foreground);
-  font-family: var(--font-sans);
-  accent-color: var(--primary);
+  background-color: #09090A !important;
+  color: #FFFFFF;
+  font-family: "Instrument Sans", "Inter", ui-sans-serif, system-ui;
+  accent-color: #FFFFFF;
   letter-spacing: 0.01em;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   margin: 0;
   padding: 0;
 }
+
+/* Heading override — Inter Tight (Appit style) */
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Inter Tight", "Instrument Sans", ui-sans-serif, system-ui;
+  -webkit-font-smoothing: antialiased;
+}
+
 
 /* ── Glass panel (Monochrome) ── */
 .glass-panel {

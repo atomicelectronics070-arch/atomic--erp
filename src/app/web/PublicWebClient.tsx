@@ -1,6 +1,6 @@
 "use client"
 
-// Version: 2.0.0 - High-Converting Modern E-Commerce Redesign (Read-only UI)
+// Version: 3.0.0 — ATOMIC × Appit Theme Integration (Inter Tight + Instrument Sans, real Appit CSS tokens)
 import { useState, useRef, useEffect, useMemo } from "react"
 import {
   ShoppingBag, ChevronRight, ArrowRight, Shield, Zap, Truck,

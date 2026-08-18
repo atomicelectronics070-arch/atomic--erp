@@ -1,5 +1,4 @@
 import { Providers } from "@/components/Providers";
-// SpaceBackground removed for cleaner corporate look
 import type { Metadata } from "next";
 import "./globals.css";
 
@@ -27,20 +26,41 @@ export default function RootLayout({
   return (
     <html lang="es">
       <head>
-      <link rel="preconnect" href="https://fonts.googleapis.com" />
+        {/* ── Appit Real Fonts: preconnect ── */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        {/* Preload la fuente crítica para evitar FOIT (Flash of Invisible Text) */}
+
+        {/* ── Inter Tight (Appit headings — weight 600/700/900) ── */}
         <link
-          rel="preload"
-          href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&display=swap"
-          as="style"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,600;0,700;0,900;1,600;1,700;1,900&display=swap"
           rel="stylesheet"
         />
+
+        {/* ── Instrument Sans (Appit body — weight 500/600/700) ── */}
+        <link
+          href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,500;0,600;0,700;1,500;1,600;1,700&display=swap"
+          rel="stylesheet"
+        />
+
+        {/* ── Inter (Appit UI elements — weight 400/500/600/700) ── */}
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
+
+        {/* ── Appit Real Design Token CSS (extracted from Originkit template) ── */}
+        <link rel="stylesheet" href="/appit-theme.css" />
       </head>
-      <body className="antialiased bg-[#080808] text-white selection:bg-[#0055fe]/20 selection:text-[#0055fe]" style={{ fontFamily: "'DM Sans', ui-sans-serif, system-ui" }}>
+      <body
+        className="antialiased selection:bg-blue-500/20 selection:text-blue-300"
+        style={{
+          backgroundColor: "#09090A",
+          color: "#FFFFFF",
+          fontFamily: "'Instrument Sans', 'Inter', ui-sans-serif, system-ui",
+          WebkitFontSmoothing: "antialiased",
+          MozOsxFontSmoothing: "grayscale",
+        }}
+      >
         <Providers>
           {children}
         </Providers>
@@ -48,6 +68,3 @@ export default function RootLayout({
     </html>
   );
 }
-
-
-
