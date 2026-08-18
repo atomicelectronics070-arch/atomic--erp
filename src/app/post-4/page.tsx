@@ -1,6 +1,6 @@
 "use client";
 
-// Publicación #4 — Landing Page & Blog de Recursos YouTube Gratuitos
+// Publicación #4 — Landing Page & Blog de Recursos YouTube Gratuitos con Imágenes Oficiales de Láminas
 
 import React, { useState } from "react";
 import { 
@@ -11,22 +11,14 @@ import {
   Mail, 
   Send, 
   ArrowRight, 
-  BookOpen, 
   Award, 
   PlayCircle, 
-  UserCheck, 
-  Instagram, 
-  Share2,
-  Clock,
-  Video,
-  Code,
-  TrendingUp,
-  Brain,
-  MessageSquare
+  Instagram
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
-// ── 9 YOUTUBE COURSES THAT WILL TEACH YOU MORE THAN A 4-YEAR DEGREE ──
+// ── 9 YOUTUBE COURSES WITH OFFICIAL SLIDE IMAGES ──
 const YOUTUBE_COURSES = [
   {
     id: "video-01",
@@ -36,6 +28,7 @@ const YOUTUBE_COURSES = [
     title: "How to Sell Better than 99% Of People (4 Hour Ultimate Guide)",
     description: "La guía definitiva de 4 horas para dominar el arte de las ventas, cierre de tratos, manejo de objeciones y psicología del comprador sin ser agresivo.",
     url: "https://www.youtube.com/results?search_query=Alex+Hormozi+How+to+Sell+Better+than+99%25+Of+People",
+    image: "/posts/post-4/slide-3.jpg",
     tagColor: "bg-amber-500/10 text-amber-400 border-amber-500/30",
     borderColor: "border-amber-500/30"
   },
@@ -47,6 +40,7 @@ const YOUTUBE_COURSES = [
     title: "Stop Asking Claude to 'Humanise This' — Do This Instead! (100% AI Detection Bypass)",
     description: "Método exacto paso a paso para estructurar prompts en Claude e IA para que redacten textos completamente naturales, humanos y que pasen los detectores de IA.",
     url: "https://www.youtube.com/results?search_query=Awa+K+Penn+Stop+asking+Claude+to+Humanise+This",
+    image: "/posts/post-4/slide-1.jpg",
     tagColor: "bg-purple-500/10 text-purple-400 border-purple-500/30",
     borderColor: "border-purple-500/30"
   },
@@ -58,6 +52,7 @@ const YOUTUBE_COURSES = [
     title: "Full Influencer Marketing Agency Course [100% FREE]",
     description: "Curso completo de nivel avanzado para crear y escalar una agencia de marketing de influencers desde $0 hasta facturar más de $5M.",
     url: "https://www.youtube.com/results?search_query=Suhit+Amin+Full+Influencer+Marketing+Agency+Course",
+    image: "/posts/post-4/slide-10.jpg",
     tagColor: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
     borderColor: "border-emerald-500/30"
   },
@@ -69,6 +64,7 @@ const YOUTUBE_COURSES = [
     title: "CLAUDE CODE FULL COURSE 4 HOURS: Build & Sell (2026)",
     description: "Curso maestro de 4 horas sobre Claude Code, arquitectura de subagentes, herramientas MCP, memoria de contexto y cómo construir y vender software con IA.",
     url: "https://www.youtube.com/results?search_query=Nick+Saraev+CLAUDE+CODE+FULL+COURSE+4+HOURS",
+    image: "/posts/post-4/slide-6.jpg",
     tagColor: "bg-blue-500/10 text-blue-400 border-blue-500/30",
     borderColor: "border-blue-500/30"
   },
@@ -80,6 +76,7 @@ const YOUTUBE_COURSES = [
     title: "Forget Canva & Figma: Claude Design is Taking Over (Claude Design in 10 Mins)",
     description: "Cómo usar las capacidades de diseño nativas de Claude para generar interfaces web, componentes visuales y maquetas completas en minutos.",
     url: "https://www.youtube.com/results?search_query=Awa+K+Penn+Forget+Canva+Figma+Claude+Design",
+    image: "/posts/post-4/slide-5.jpg",
     tagColor: "bg-pink-500/10 text-pink-400 border-pink-500/30",
     borderColor: "border-pink-500/30"
   },
@@ -91,6 +88,7 @@ const YOUTUBE_COURSES = [
     title: "Improve Your Communication Skills with This! How Successful People Talk",
     description: "Los secretos y principios fundamentales de comunicación efectiva, persuasión y oratoria dictados por el equipo de liderazgo certificado de John C. Maxwell.",
     url: "https://www.youtube.com/results?search_query=Maxwell+Leadership+Improve+Your+Communication+Skills+with+This",
+    image: "/posts/post-4/slide-9.jpg",
     tagColor: "bg-cyan-500/10 text-cyan-400 border-cyan-500/30",
     borderColor: "border-cyan-500/30"
   },
@@ -102,6 +100,7 @@ const YOUTUBE_COURSES = [
     title: "FREE 8 Hour Copywriting Course For Beginners | $0-$10k/mo In 90 Days",
     description: "Masterclass intensiva de 8 horas sobre redacción persuasiva, ofertas irresistibles y secuencias de emails para generar ingresos recurrentes.",
     url: "https://www.youtube.com/results?search_query=Tyson+4D+FREE+8+Hour+Copywriting+Course",
+    image: "/posts/post-4/slide-4.jpg",
     tagColor: "bg-rose-500/10 text-rose-400 border-rose-500/30",
     borderColor: "border-rose-500/30"
   },
@@ -113,6 +112,7 @@ const YOUTUBE_COURSES = [
     title: "Did Claude Code Just Replace Video Editors? (Editing is Over)",
     description: "Análisis técnico y demostración en vivo sobre cómo los nuevos modelos de IA y herramientas de código pueden automatizar la edición de video.",
     url: "https://www.youtube.com/results?search_query=Charlie+Hills+Did+Claude+Code+Just+Replace+Video+Editors",
+    image: "/posts/post-4/slide-7.jpg",
     tagColor: "bg-indigo-500/10 text-indigo-400 border-indigo-500/30",
     borderColor: "border-indigo-500/30"
   },
@@ -124,6 +124,7 @@ const YOUTUBE_COURSES = [
     title: "The 3 Brain Strategies That *Actually* Rewire Your Mind (The REWIRE Formula)",
     description: "Explicación neurocientífica para reprogramar patrones mentales, eliminar la procrastinación y elevar la concentración profunda en proyectos de alto impacto.",
     url: "https://www.youtube.com/results?search_query=Dr+Tracey+Marks+The+3+Brain+Strategies+That+Actually+Rewire+Your+Mind",
+    image: "/posts/post-4/slide-8.jpg",
     tagColor: "bg-teal-500/10 text-teal-400 border-teal-500/30",
     borderColor: "border-teal-500/30"
   }
@@ -190,7 +191,7 @@ export default function Post4LandingPage() {
       </nav>
 
       {/* ── HERO SECTION ── */}
-      <section className="relative z-10 max-w-4xl mx-auto px-6 pt-16 pb-12 text-center flex flex-col items-center">
+      <section className="relative z-10 max-w-5xl mx-auto px-6 pt-16 pb-12 text-center flex flex-col items-center">
         
         {/* Verification Tag */}
         <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-red-500/10 border border-red-500/30 text-red-400 mb-8 backdrop-blur-md shadow-[0_0_30px_rgba(239,68,68,0.25)]">
@@ -218,13 +219,13 @@ export default function Post4LandingPage() {
           href="#cursos"
           className="group px-8 py-4 rounded-2xl bg-gradient-to-r from-red-600 via-rose-600 to-red-500 hover:from-red-500 hover:to-rose-500 text-white font-black tracking-wider uppercase text-sm shadow-[0_0_40px_rgba(225,29,72,0.5)] transition-all duration-300 hover:scale-[1.02] flex items-center gap-3 border border-red-300/30"
         >
-          <span>ACCEDER A LOS 9 CURSOS GRATIS</span>
+          <span>ACCEDER A LOS 9 CURSOS CON FOTOS OFICIALES</span>
           <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
         </a>
       </section>
 
-      {/* ── COURSE LIST / BLOG CONTENT ── */}
-      <section id="cursos" className="relative z-10 max-w-4xl mx-auto px-6 py-12 w-full">
+      {/* ── COURSE LIST / BLOG CONTENT WITH SLIDE IMAGES ── */}
+      <section id="cursos" className="relative z-10 max-w-5xl mx-auto px-6 py-12 w-full">
         
         <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/10">
           <div className="flex items-center gap-3">
@@ -234,52 +235,66 @@ export default function Post4LandingPage() {
             </h2>
           </div>
           <span className="text-xs font-mono text-neutral-400 font-bold">
-            9 / 9 Acceso Directo Gratuito
+            9 / 9 Fotos de Lámina Incluidas
           </span>
         </div>
 
-        {/* YouTube Video Cards */}
-        <div className="flex flex-col gap-6">
+        {/* YouTube Video Cards with Images */}
+        <div className="flex flex-col gap-8">
           {YOUTUBE_COURSES.map((course) => (
             <div 
               key={course.id}
-              className={`group relative p-6 sm:p-8 rounded-3xl bg-[#070b1a]/90 border ${course.borderColor} backdrop-blur-xl transition-all duration-300 hover:shadow-[0_0_35px_rgba(239,68,68,0.2)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6`}
+              className={`group relative p-6 sm:p-8 rounded-3xl bg-[#070b1a]/90 border ${course.borderColor} backdrop-blur-xl transition-all duration-300 hover:shadow-[0_0_35px_rgba(239,68,68,0.2)] flex flex-col md:flex-row items-stretch gap-8`}
             >
-              <div className="flex flex-col gap-3 flex-1">
-                
-                <div className="flex items-center gap-3 flex-wrap">
-                  <span className="text-xs font-mono font-black tracking-widest text-red-400 bg-red-500/10 px-3 py-1 rounded-full border border-red-500/20">
-                    Video {course.num}
-                  </span>
-                  <span className={`text-[11px] font-mono font-bold px-3 py-1 rounded-full border ${course.tagColor}`}>
-                    {course.badge}
-                  </span>
-                </div>
-
-                <h3 className="text-xl sm:text-2xl font-black text-white leading-tight group-hover:text-red-300 transition-colors">
-                  {course.title}
-                </h3>
-
-                <p className="text-sm text-neutral-300 leading-relaxed font-normal">
-                  {course.description}
-                </p>
-
-                <p className="text-xs font-mono text-neutral-400 flex items-center gap-1.5 pt-1">
-                  <Award size={14} className="text-amber-400" />
-                  Creador: <span className="text-white font-semibold">{course.creator}</span>
-                </p>
-
+              {/* Slide Image Preview */}
+              <div className="w-full md:w-80 h-52 sm:h-60 shrink-0 relative rounded-2xl overflow-hidden border border-white/10 shadow-lg bg-black/40">
+                <img
+                  src={course.image}
+                  alt={course.title}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                <span className="absolute bottom-3 left-3 text-[10px] font-mono font-bold text-white/90 bg-black/60 px-2.5 py-1 rounded-md border border-white/10 backdrop-blur-md">
+                  LÁMINA OFICIAL {course.num}
+                </span>
               </div>
 
-              <a
-                href={course.url}
-                target="_blank"
-                rel="noreferrer"
-                className="w-full sm:w-auto shrink-0 px-6 py-4 rounded-xl bg-red-600 hover:bg-red-500 text-white font-black text-xs tracking-wider uppercase flex items-center justify-center gap-2 shadow-lg shadow-red-600/30 transition-all duration-200 hover:scale-105 active:scale-95"
-              >
-                <span>Ver Video en YouTube</span>
-                <ExternalLink size={16} />
-              </a>
+              {/* Course Info */}
+              <div className="flex flex-col justify-between flex-1 gap-4">
+                <div className="flex flex-col gap-3">
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <span className="text-xs font-mono font-black tracking-widest text-red-400 bg-red-500/10 px-3 py-1 rounded-full border border-red-500/20">
+                      Video {course.num}
+                    </span>
+                    <span className={`text-[11px] font-mono font-bold px-3 py-1 rounded-full border ${course.tagColor}`}>
+                      {course.badge}
+                    </span>
+                  </div>
+
+                  <h3 className="text-xl sm:text-2xl font-black text-white leading-tight group-hover:text-red-300 transition-colors">
+                    {course.title}
+                  </h3>
+
+                  <p className="text-sm text-neutral-300 leading-relaxed font-normal">
+                    {course.description}
+                  </p>
+
+                  <p className="text-xs font-mono text-neutral-400 flex items-center gap-1.5 pt-1">
+                    <Award size={14} className="text-amber-400" />
+                    Creador: <span className="text-white font-semibold">{course.creator}</span>
+                  </p>
+                </div>
+
+                <a
+                  href={course.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-full sm:w-auto self-start px-6 py-3.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-black text-xs tracking-wider uppercase flex items-center justify-center gap-2 shadow-lg shadow-red-600/30 transition-all duration-200 hover:scale-105 active:scale-95"
+                >
+                  <span>Ver Video en YouTube</span>
+                  <ExternalLink size={16} />
+                </a>
+              </div>
 
             </div>
           ))}
@@ -288,7 +303,7 @@ export default function Post4LandingPage() {
       </section>
 
       {/* ── LEAD MAGNET / NEWSLETTER SECTION ── */}
-      <section className="relative z-10 max-w-4xl mx-auto px-6 py-16 w-full">
+      <section className="relative z-10 max-w-5xl mx-auto px-6 py-16 w-full">
         <div className="relative p-8 sm:p-12 rounded-3xl bg-gradient-to-br from-red-950/70 via-[#070b1a] to-blue-950/70 border border-red-500/40 backdrop-blur-2xl shadow-[0_0_50px_rgba(239,68,68,0.25)] overflow-hidden">
           
           <div className="absolute top-0 right-0 w-80 h-80 bg-red-500/10 rounded-full blur-[100px] pointer-events-none" />
@@ -364,7 +379,7 @@ export default function Post4LandingPage() {
       </section>
 
       {/* ── AUTHORITY FOOTER ── */}
-      <footer className="relative z-10 max-w-4xl mx-auto px-6 pt-8 pb-20 w-full text-center border-t border-white/10">
+      <footer className="relative z-10 max-w-5xl mx-auto px-6 pt-8 pb-20 w-full text-center border-t border-white/10">
         <div className="flex flex-col items-center gap-4 max-w-xl mx-auto">
           
           <div className="w-16 h-16 rounded-full bg-gradient-to-br from-red-500 to-blue-600 p-[2px] shadow-xl shadow-red-500/20">
