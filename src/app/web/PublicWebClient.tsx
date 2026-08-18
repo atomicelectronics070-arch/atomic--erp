@@ -701,6 +701,151 @@ export default function PublicWebClient({
         </div>
       </section>
 
+      {/* ═══════════ CATEGORÍAS — FRONTENDJOE CARD STYLE ═══════════ */}
+      <section className="w-full max-w-7xl mx-auto px-6 pt-16 pb-12" id="categorias-seccion">
+        <div className="text-center max-w-3xl mx-auto mb-14">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#131315] border border-white/10 text-xs font-bold text-neutral-300 mb-4 shadow-xl">
+            <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
+            <span className="font-heading uppercase tracking-wider text-[11px]">Catálogo Principal de Especialización</span>
+          </div>
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black uppercase tracking-tight text-white font-heading mb-4">
+            Categorías
+          </h2>
+          <p className="text-sm text-[#94969D] leading-relaxed">
+            Explora nuestras 8 divisiones especializadas en tecnología residencial, electrónica de consumo, equipamiento para el hogar, maquinaria industrial y soluciones digitales.
+          </p>
+        </div>
+
+        {/* 8 CATEGORY CARDS GRID — EXACT FRONTENDJOE FLOATING OFFSET STYLE */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
+          {[
+            {
+              id: 'cat-residencial',
+              title: 'Tecnología Residencial',
+              subtitle: 'Domótica & Seguridad Smart',
+              description: 'Cámaras IP con audio bidireccional, reconocimiento facial 3D, porteros inteligentes y control de accesos.',
+              image: '/images/hero-3d/slide-2.jpg',
+              badge: 'Seguridad Smart',
+              query: 'camara',
+            },
+            {
+              id: 'cat-electronica',
+              title: 'Electrónica',
+              subtitle: 'Audio, Gadgets & Periféricos',
+              description: 'Equipos de audio de alta fidelidad, iluminación inteligente, periféricos para creadores y componentes electrónicos.',
+              image: '/images/hero-3d/slide-6.jpg',
+              badge: 'Audio & Gadgets',
+              query: 'electronica',
+            },
+            {
+              id: 'cat-hogar',
+              title: 'Hogar',
+              subtitle: 'Cocina Premium & Confort',
+              description: 'Encimeras a gas de alta eficiencia, hornos empotrables de acero inoxidable y electrodomésticos modernos para el hogar.',
+              image: '/images/hero-3d/slide-4.jpg',
+              badge: 'Línea Hogar',
+              query: 'cocina',
+            },
+            {
+              id: 'cat-industria',
+              title: 'Industria',
+              subtitle: 'Maquinaria & Plantas de Bloques',
+              description: 'Plantas automáticas de bloques de hormigón, mezcladoras de concreto reforzado y automatización pesada.',
+              image: '/images/hero-3d/slide-5.jpg',
+              badge: 'Industrial',
+              query: 'bloque',
+            },
+            {
+              id: 'cat-entretenimiento',
+              title: 'Entretenimiento',
+              subtitle: 'Gaming, Consolas & Mandos',
+              description: 'Mandos DualSense inalámbricos para PS5, consolas Nintendo Switch, Xbox Series X|S y PlayStation Portal.',
+              image: '/images/hero-3d/slide-1.png',
+              badge: 'Gaming',
+              query: 'mando',
+            },
+            {
+              id: 'cat-computacion',
+              title: 'Computación',
+              subtitle: 'Laptops, PCs & Procesadores',
+              description: 'Portátiles de alto rendimiento, estaciones de trabajo All-in-One Dell, CPUs Intel/AMD y almacenamiento ultrarrápido.',
+              image: '/images/hero-3d/slide-3.jpg',
+              badge: 'Hardware',
+              query: 'laptop',
+            },
+            {
+              id: 'cat-telefonia',
+              title: 'Telefonía',
+              subtitle: 'Smartphones, Tablets & Redes',
+              description: 'Dispositivos móviles de última generación, tablets para productividad, accesorios de carga rápida y conectividad.',
+              image: '/images/hero-3d/slide-2.jpg',
+              badge: 'Móvil',
+              query: 'telefono',
+            },
+            {
+              id: 'cat-software',
+              title: 'Software & Servicios',
+              subtitle: 'ERP, CRM & Automatización IA',
+              description: 'Sistemas de gestión empresarial integral, cotizadores automáticos, asesoría tecnológica y desarrollo a medida.',
+              image: '/images/hero-3d/slide-6.jpg',
+              badge: 'Cloud & IA',
+              query: 'software',
+            },
+          ].map((c) => (
+            <div
+              key={c.id}
+              className="relative flex flex-col sm:flex-row items-center bg-[#121017] border border-white/[0.08] rounded-3xl p-6 sm:p-7 shadow-[0_40px_60px_rgba(0,0,0,0.5)] hover:border-white/20 transition-all duration-300 group"
+            >
+              {/* Floating offset image */}
+              <div className="relative shrink-0 w-full sm:w-48 h-52 sm:h-56 -mt-8 sm:mt-0 sm:-ml-12 rounded-2xl overflow-hidden shadow-[0_30px_40px_rgba(0,0,0,0.6)] border border-white/10 bg-[#09090A]">
+                <img
+                  src={c.image}
+                  alt={c.title}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-black/70 backdrop-blur-md border border-white/10 text-[9px] font-mono font-bold text-white uppercase tracking-wider">
+                  {c.badge}
+                </div>
+              </div>
+
+              {/* Card content */}
+              <div className="flex flex-col pt-5 sm:pt-0 sm:pl-6 text-center sm:text-left flex-grow">
+                <h3 className="text-xl sm:text-2xl font-black text-white font-heading tracking-tight leading-tight group-hover:text-blue-400 transition-colors">
+                  {c.title}
+                </h3>
+                <p className="text-xs font-semibold text-blue-400 mt-1 mb-2 font-heading">
+                  {c.subtitle}
+                </p>
+                <p className="text-xs text-[#94969D] leading-relaxed mb-6 line-clamp-3">
+                  {c.description}
+                </p>
+
+                {/* Buttons styled like FrontendJoe */}
+                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2.5 mt-auto">
+                  <button
+                    onClick={() => {
+                      setSearchQuery(c.query);
+                      document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                    className="px-5 py-2.5 rounded-full border border-white/20 hover:border-white hover:bg-white/10 text-white text-xs font-bold font-heading transition-all cursor-pointer"
+                  >
+                    Ver Catálogo
+                  </button>
+                  <a
+                    href={`https://wa.me/593969043453?text=${encodeURIComponent(`Hola ATOMIC! Deseo información y cotización sobre la categoría: ${c.title}`)}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-5 py-2.5 rounded-full bg-white hover:bg-neutral-200 text-[#121017] text-xs font-black font-heading transition-all shadow-lg hover:scale-105"
+                  >
+                    💬 WhatsApp
+                  </a>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* ═══════════ MAIN FEATURED PROMO BANNERS (APPIT BENTO STYLE) ═══════════ */}
       {!searchQuery && !activeMainCategoryId && (
         <section className="py-12 px-6 max-w-7xl mx-auto">
