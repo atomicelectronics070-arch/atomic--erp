@@ -13,7 +13,9 @@ export default async function QuotationPage() {
     const [products, history, lastQuote, clients] = await Promise.all([
         prisma.product.findMany({ 
             where: { isDeleted: false }, 
-            select: { id: true, name: true, price: true, sku: true, description: true, stock: true, images: true } 
+            select: { id: true, name: true, price: true, sku: true, description: true, stock: true, images: true },
+            orderBy: [{ stock: 'desc' }, { updatedAt: 'desc' }],
+            take: 30
         }),
         prisma.quote.findMany({ 
             orderBy: { createdAt: 'desc' },

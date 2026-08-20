@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, useMemo, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { 
     Plus, Trash2, FileOutput, Calculator, Image as ImageIcon, 
@@ -77,12 +77,96 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
         { id: "1", productId: "", description: "", quantity: 1, unitPrice: 0 }
     ])
 
-    const findProduct = (productId?: string, description?: string) => {
-        return initialProducts.find((p: Product) => 
-            (productId && p.sku === productId) || 
-            (description && p.name === description)
+    const [productPool, setProductPool] = useState<Product[]>(initialProducts || [])
+    const [searchResults, setSearchResults] = useState<Product[]>((initialProducts || []).slice(0, 25))
+    const [isSearchingProducts, setIsSearchingProducts] = useState(false)
+    const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+    const searchDropdownRef = useRef<HTMLDivElement | null>(null)
+
+    // Fast O(1) product lookup map for SKU, ID, and Name
+    const productMap = useMemo(() => {
+        const map = new Map<string, Product>();
+        productPool.forEach((p: Product) => {
+            if (p.id) map.set(p.id, p);
+            if (p.sku) map.set(p.sku, p);
+            if (p.name) map.set(p.name, p);
+        });
+        return map;
+    }, [productPool]);
+
+    const findProduct = useCallback((productId?: string, description?: string) => {
+        if (productId && productMap.has(productId)) return productMap.get(productId);
+        if (description && productMap.has(description)) return productMap.get(description);
+        return undefined;
+    }, [productMap]);
+
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            if (searchDropdownRef.current && !searchDropdownRef.current.contains(e.target as Node)) {
+                setShowProductList(null);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    const handleProductSearch = (itemId: string, query: string) => {
+        handleItemChange(itemId, "description", query);
+        setShowProductList(itemId);
+
+        if (searchTimeoutRef.current) {
+            clearTimeout(searchTimeoutRef.current);
+        }
+
+        const trimmed = query.trim();
+        if (!trimmed) {
+            setSearchResults(productPool.slice(0, 25));
+            return;
+        }
+
+        // Fast immediate local filter
+        const localMatches = productPool.filter(p => 
+            p.name.toLowerCase().includes(trimmed.toLowerCase()) || 
+            (p.sku && p.sku.toLowerCase().includes(trimmed.toLowerCase()))
         );
+        if (localMatches.length > 0) {
+            setSearchResults(localMatches.slice(0, 25));
+        }
+
+        // Debounced API search on entire 9,600+ database
+        setIsSearchingProducts(true);
+        searchTimeoutRef.current = setTimeout(async () => {
+            try {
+                const res = await fetch(`/api/products/search?q=${encodeURIComponent(trimmed)}&limit=25`);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.success && Array.isArray(data.products)) {
+                        setSearchResults(data.products);
+                        setProductPool(prev => {
+                            const map = new Map(prev.map(p => [p.id, p]));
+                            data.products.forEach((p: Product) => map.set(p.id, p));
+                            return Array.from(map.values());
+                        });
+                    }
+                }
+            } catch (err) {
+                console.error("Search error:", err);
+            } finally {
+                setIsSearchingProducts(false);
+            }
+        }, 180);
     };
+
+    const handleProductFocus = (itemId: string, currentVal: string) => {
+        setShowProductList(itemId);
+        const trimmed = (currentVal || "").trim();
+        if (!trimmed) {
+            setSearchResults(productPool.slice(0, 25));
+        } else {
+            handleProductSearch(itemId, currentVal);
+        }
+    };
+
     const [discountPercent, setDiscountPercent] = useState(0)
     const [status, setStatus] = useState<"PENDIENTE" | "CERRADO" | "ABANDONADO">("PENDIENTE")
     const [quoteHistory, setQuoteHistory] = useState(initialHistory)
@@ -653,10 +737,10 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                                 {showClientList && clientName && (
                                     <div className="absolute top-full left-0 w-full bg-slate-950 border border-slate-800 shadow-2xl rounded-2xl z-50 max-h-52 overflow-y-auto mt-1">
                                         <div className="flex justify-between items-center p-3 border-b border-slate-800">
-                                            <span className="text-[10px] font-mono font-bold text-slate-400 uppercase">Coincidencias ({initialClients.filter((c: any) => c.name.toLowerCase().includes(clientName.toLowerCase())).length})</span>
+                                            <span className="text-[10px] font-mono font-bold text-slate-400 uppercase">Coincidencias ({initialClients.filter((c: any) => c.name.toLowerCase().includes(clientName.toLowerCase())).slice(0, 20).length})</span>
                                             <button onClick={() => setShowClientList(false)} className="text-slate-400 hover:text-white"><X size={14}/></button>
                                         </div>
-                                        {initialClients.filter((c: any) => c.name.toLowerCase().includes(clientName.toLowerCase())).map((c: any) => (
+                                        {initialClients.filter((c: any) => c.name.toLowerCase().includes(clientName.toLowerCase())).slice(0, 20).map((c: any) => (
                                             <button 
                                                 key={c.id} 
                                                 onClick={() => {
@@ -789,28 +873,62 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                                             <label className="md:hidden text-[9px] font-mono font-bold text-slate-400 block mb-1">DESCRIPCIÓN</label>
                                             <input 
                                                 value={item.description} 
-                                                onFocus={() => setShowProductList(item.id)}
-                                                onChange={e => handleItemChange(item.id, "description", e.target.value)} 
+                                                onFocus={() => handleProductFocus(item.id, item.description)}
+                                                onChange={e => handleProductSearch(item.id, e.target.value)} 
                                                 className="w-full bg-slate-900 border border-slate-800 text-white p-2.5 text-xs font-bold rounded-xl outline-none focus:border-cyan-500/50 transition-colors" 
                                                 placeholder="Buscar producto..."
                                             />
                                             {showProductList === item.id && (
-                                                <div className="absolute top-full left-0 w-full bg-slate-950 border border-slate-800 shadow-2xl rounded-2xl z-50 max-h-56 overflow-y-auto mt-1 min-w-[280px]">
-                                                    {initialProducts.filter((p: Product) => p.name.toLowerCase().includes(item.description.toLowerCase())).map((p: Product) => (
-                                                        <button key={p.id} onClick={() => selectProduct(item.id, p)} className="w-full text-left p-3 hover:bg-slate-900 border-b border-slate-800 flex items-center gap-3 transition-colors">
-                                                            <div className="w-9 h-9 bg-slate-900 rounded-lg flex-shrink-0 overflow-hidden border border-slate-800 flex items-center justify-center">
-                                                                {p.images && safeParseArray(p.images).length > 0 ? (
-                                                                    <img src={safeParseArray(p.images)[0]} className="w-full h-full object-contain" />
-                                                                ) : (
-                                                                    <ImageIcon size={14} className="text-slate-600" />
-                                                                )}
-                                                            </div>
-                                                            <div className="flex-1 min-w-0">
-                                                                <p className="text-xs font-bold text-white truncate">{p.name}</p>
-                                                                <p className="text-[10px] text-cyan-400 font-mono">${p.price.toFixed(2)} • Stock: {p.stock || 0}</p>
-                                                            </div>
+                                                <div 
+                                                    ref={searchDropdownRef}
+                                                    className="absolute top-full left-0 w-full bg-slate-950 border border-slate-800 shadow-2xl rounded-2xl z-50 max-h-64 overflow-y-auto mt-1 min-w-[300px] divide-y divide-slate-800/60"
+                                                >
+                                                    <div className="px-3 py-1.5 bg-slate-900/90 text-[10px] font-mono font-bold text-cyan-400 flex items-center justify-between sticky top-0 z-10 backdrop-blur-md">
+                                                        <span>{isSearchingProducts ? "🔍 Buscando en 9,600+ productos..." : `Resultados (${searchResults.length})`}</span>
+                                                        <button 
+                                                            type="button" 
+                                                            onMouseDown={(e) => { e.preventDefault(); setShowProductList(null); }}
+                                                            className="text-slate-400 hover:text-white"
+                                                        >
+                                                            <X size={12}/>
                                                         </button>
-                                                    ))}
+                                                    </div>
+                                                    {searchResults.length === 0 ? (
+                                                        <div className="p-4 text-center text-xs text-slate-500 font-mono">
+                                                            {isSearchingProducts ? "Buscando productos..." : "No se encontraron coincidencias"}
+                                                        </div>
+                                                    ) : (
+                                                        searchResults.slice(0, 25).map((p: Product) => (
+                                                            <button 
+                                                                key={p.id} 
+                                                                type="button"
+                                                                onMouseDown={(e) => {
+                                                                    e.preventDefault();
+                                                                    selectProduct(item.id, p);
+                                                                }} 
+                                                                className="w-full text-left p-3 hover:bg-slate-900 border-b border-slate-800 flex items-center gap-3 transition-colors group cursor-pointer"
+                                                            >
+                                                                <div className="w-9 h-9 bg-slate-900 rounded-lg flex-shrink-0 overflow-hidden border border-slate-800 flex items-center justify-center">
+                                                                    {p.images && safeParseArray(p.images).length > 0 ? (
+                                                                        <img src={safeParseArray(p.images)[0]} className="w-full h-full object-contain" alt={p.name} />
+                                                                    ) : (
+                                                                        <ImageIcon size={14} className="text-slate-600" />
+                                                                    )}
+                                                                </div>
+                                                                <div className="flex-1 min-w-0">
+                                                                    <div className="flex items-center gap-1.5">
+                                                                        {p.sku && (
+                                                                            <span className="text-[9px] font-mono font-bold text-cyan-300 bg-cyan-950/80 px-1 py-0.5 rounded border border-cyan-800/40 shrink-0">
+                                                                                {p.sku}
+                                                                            </span>
+                                                                        )}
+                                                                        <p className="text-xs font-bold text-white truncate group-hover:text-cyan-200">{p.name}</p>
+                                                                    </div>
+                                                                    <p className="text-[10px] text-cyan-400 font-mono mt-0.5">${p.price.toFixed(2)} • Stock: {p.stock || 0}</p>
+                                                                </div>
+                                                            </button>
+                                                        ))
+                                                    )}
                                                 </div>
                                             )}
                                         </div>
