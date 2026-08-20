@@ -57,7 +57,7 @@ const PRODUCTS = [
     badge: "REDES",
     badgeColor: "bg-cyan-500/20 text-cyan-300 border-cyan-500/30",
     specs: ["AC1200 Mbps dual band", "2×2 MIMO", "Compatible PoE 802.3af", "IP65 resistente a la intemperie", "Omada Controller gratuito", "Portal cautivo integrado"],
-    image: "https://static.tp-link.com/upload/product-overview/2022/202206/20220627/EAP225-Outdoor(EU)_V4_1.jpg",
+    image: "/images/seguridad/tplink-eap225-outdoor.jpg",
     sku: "APOTPLC225-OUTDOOR",
     waMsg: "Hola ATOMIC! Quiero cotizar el Access Point TP-Link EAP225-Outdoor AC1200. ¿Disponibilidad y precio?",
   },
@@ -70,7 +70,7 @@ const PRODUCTS = [
     badge: "CONTROL ACCESO",
     badgeColor: "bg-blue-500/20 text-blue-300 border-blue-500/30",
     specs: ["Reconocimiento facial visible", "1,500 rostros / 3,000 huellas", "3,000 tarjetas RFID", "150,000 registros de eventos", "TCP/IP y USB Host", "ONVIF + ZKBio Access compatible"],
-    image: "https://www.zkteco.es/wp-content/uploads/2023/01/ZKTeco-SenseFace-2A.jpg",
+    image: "/images/seguridad/zkteco-senseface-2a.jpg",
     sku: "ZK-SENSEFACE-2A",
     waMsg: "Hola ATOMIC! Quiero cotizar el ZKTeco SenseFace 2A – Reloj Biométrico Facial. ¿Stock y precio?",
   },
@@ -83,7 +83,7 @@ const PRODUCTS = [
     badge: "VIDEO PORTERO",
     badgeColor: "bg-purple-500/20 text-purple-300 border-purple-500/30",
     specs: ["Pantalla táctil LCD 7\"", "4 canales simultáneos", "Protocolo SIP 2.0 + TCP/IP", "WiFi + Ethernet", "Apertura remota de puerta", "Micro TF hasta 128GB"],
-    image: "https://www.zkteco.com/upfile/file/20230215/20230215164408_13437.jpg",
+    image: "/images/seguridad/zkteco-vt07-product.jpg",
     sku: "ZK-VT07-B01-W",
     waMsg: "Hola ATOMIC! Quiero cotizar el Monitor ZKTeco ZK-VT07-B01-W (video portero 7\"). ¿Stock y precio?",
   },
@@ -220,27 +220,39 @@ export default function SeguridadClient() {
         </div>
       </section>
 
-      {/* ── IMAGE GALLERY (user downloads) ── */}
+      {/* ── IMAGE GALLERY (fotos reales de proveedor) ── */}
       <section className="border-b border-white/[0.06] py-10 px-6 overflow-hidden">
         <div className="max-w-7xl mx-auto">
           <p className="text-[10px] font-black text-neutral-600 uppercase tracking-widest mb-6">Sistema en acción</p>
           <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-2">
             {[
               {
-                src: "https://www.zkteco.es/wp-content/uploads/2023/01/ZKTeco-SenseFace-2A-edificio.jpg",
-                caption: "SenseFace 2A — Lobby edificio",
+                src: "/images/seguridad/zkteco-acceso-edificio.jpg",
+                caption: "SenseFace 2A — Instalación en lobby",
               },
               {
-                src: "https://www.zkteco.com/upfile/file/20230215/20230215164408_13437.jpg",
-                caption: "Monitor VT07 — Pantalla principal",
+                src: "/images/seguridad/zkteco-vt07-lifestyle.jpg",
+                caption: "Monitor VT07 — Pantalla táctil 7\"",
               },
               {
-                src: "https://static.tp-link.com/upload/product-overview/2022/202206/20220627/EAP225-Outdoor(EU)_V4_1.jpg",
-                caption: "EAP225-Outdoor — Cobertura amplia",
+                src: "/images/seguridad/zkteco-vt07-multicam.jpg",
+                caption: "Monitor VT07 — 4 canales simultáneos",
               },
               {
-                src: "https://www.zkteco.es/wp-content/uploads/2023/03/Kit-SenseFace-2A.jpg",
-                caption: "Kit completo de instalación",
+                src: "/images/seguridad/tplink-eap225-lifestyle.jpg",
+                caption: "EAP225-Outdoor — Cobertura exterior",
+              },
+              {
+                src: "/images/seguridad/zkteco-kit-acceso.jpg",
+                caption: "Kit completo de instalación ZKTeco",
+              },
+              {
+                src: "/images/seguridad/zkteco-specs.jpg",
+                caption: "SenseFace 2A — Ficha técnica oficial",
+              },
+              {
+                src: "/images/seguridad/zkteco-vt07-specs.jpg",
+                caption: "Monitor VT07 — Ficha técnica y puertos",
               },
             ].map((img, i) => (
               <div key={i} className="flex-none w-64 rounded-2xl overflow-hidden bg-[#0E0E10] border border-white/[0.06]">
@@ -252,7 +264,7 @@ export default function SeguridadClient() {
                     (e.target as HTMLImageElement).style.display = "none";
                   }}
                 />
-                <p className="px-4 py-2 text-[10px] font-bold text-neutral-500">{img.caption}</p>
+                <p className="px-4 py-2 text-[10px] font-bold text-neutral-400">{img.caption}</p>
               </div>
             ))}
           </div>
