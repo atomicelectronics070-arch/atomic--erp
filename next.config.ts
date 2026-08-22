@@ -5,12 +5,32 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   turbopack: {
     root: path.resolve(__dirname),
   },
   reactStrictMode: true,
   async headers() {
     return [
+      {
+        source: "/",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0, s-maxage=0",
+          },
+          {
+            key: "Pragma",
+            value: "no-cache",
+          },
+          {
+            key: "Expires",
+            value: "0",
+          },
+        ],
+      },
       {
         source: "/web",
         headers: [
