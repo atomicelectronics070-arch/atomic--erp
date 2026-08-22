@@ -1,17 +1,17 @@
 "use client";
 
-// Atomic Industrias — Landing Page v15.0 — 3D Globe Hero Background (Originkit Presence01)
+// Atomic — Landing Page — 3D Globe Hero Background
 
 import React from "react";
 import Globe from "@/components/originkit/ui/globe";
 import OrbitControls from "@/components/originkit/ui/orbit-controls";
-import { LogIn, ShoppingBag, ArrowRight, MessageCircle, Globe as GlobeIcon, ShieldCheck, Truck, Zap } from "lucide-react";
+import { LogIn, ShoppingBag, ArrowRight, MessageCircle, Globe as GlobeIcon } from "lucide-react";
 import Link from "next/link";
 
 const METRICS = [
-  { value: "100%", label: "Cobertura Logística Nacional Directa" },
-  { value: "50%", label: "Entregas & Cotización Más Rápidas" },
-  { value: "98%+", label: "Satisfacción en Productos Originales" },
+  { value: "100%", label: "Cobertura a Nivel Nacional" },
+  { value: "100%", label: "Entorno 100% Automatizado" },
+  { value: "100%", label: "Garantía del 100% en Productos" },
 ] as const;
 
 export default function Presence01() {
@@ -56,20 +56,20 @@ export default function Presence01() {
           </span>
         </div>
 
-        <div className="flex items-center gap-4 text-xs font-bold tracking-wider uppercase font-mono">
+        <div className="flex items-center gap-3 text-xs font-bold tracking-wider uppercase font-mono">
           <Link 
             href="/web" 
-            className="text-white hover:text-blue-400 transition-colors flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600/25 border border-blue-500/40 hover:bg-blue-600/40 shadow-[0_0_20px_rgba(37,99,235,0.3)]"
+            className="text-white hover:text-blue-400 transition-colors flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600/20 border border-blue-500/30 hover:bg-blue-600/30"
           >
-            <ShoppingBag size={15} />
-            <span>Tienda en Línea</span>
+            <ShoppingBag size={14} />
+            <span>Tienda</span>
           </Link>
           <Link 
             href="/login" 
-            className="text-neutral-300 hover:text-white transition-colors flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-lg shadow-blue-500/25 border border-blue-400/30 font-bold"
+            className="text-neutral-300 hover:text-white transition-colors flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 hover:border-slate-500 text-white font-bold"
           >
-            <LogIn size={15} />
-            <span>INICIAR SESIÓN</span>
+            <LogIn size={14} />
+            <span>Acceso</span>
           </Link>
         </div>
       </nav>
@@ -83,38 +83,40 @@ export default function Presence01() {
           <span>Presencia Global & Distribución Nacional</span>
         </div>
 
-        {/* Main Title */}
-        <h1 className="text-5xl sm:text-7xl md:text-8xl font-black leading-[0.9] tracking-tighter uppercase mb-6 drop-shadow-[0_10px_35px_rgba(0,0,0,0.9)]">
-          ATOMIC <br />
+        {/* Main Title - Solo ATOMIC */}
+        <h1 className="text-6xl sm:text-8xl md:text-9xl font-black leading-[0.9] tracking-tighter uppercase mb-10 drop-shadow-[0_10px_35px_rgba(0,0,0,0.9)]">
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-blue-100 to-blue-400 drop-shadow-[0_0_40px_rgba(59,130,246,0.4)]">
-            INDUSTRIAS
+            ATOMIC
           </span>
         </h1>
 
-        {/* Subtitle */}
-        <p className="max-w-2xl font-medium leading-relaxed text-neutral-200 text-base sm:text-xl mb-10 drop-shadow-md">
-          Ecosistema empresarial de nueva generación y tienda oficial en línea. 
-          Tecnología de vanguardia, equipamiento industrial y logística de alta precisión para todo Ecuador.
-        </p>
-
-        {/* CTAs */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full max-w-xl justify-center">
+        {/* CTAs - 3 Botones Principales */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full max-w-4xl justify-center">
           <Link
             href="/web"
-            className="group relative px-8 py-5 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-500 hover:from-blue-500 hover:to-indigo-500 text-white font-black tracking-wider uppercase text-sm shadow-[0_0_45px_rgba(37,99,235,0.6)] transition-all duration-300 hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3 border border-blue-300/40"
+            className="group relative px-7 py-4 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-500 hover:from-blue-500 hover:to-indigo-500 text-white font-black tracking-wider uppercase text-xs sm:text-sm shadow-[0_0_40px_rgba(37,99,235,0.6)] transition-all duration-300 hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2.5 border border-blue-300/40"
           >
-            <span>INGRESAR A LA TIENDA Y CATÁLOGO</span>
-            <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform duration-300" />
+            <ShoppingBag size={16} />
+            <span>Tienda en Línea y Catálogo</span>
+            <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform duration-300" />
+          </Link>
+
+          <Link
+            href="/login"
+            className="px-6 py-4 rounded-2xl bg-slate-900/80 hover:bg-slate-800 border border-slate-700/80 text-white font-bold tracking-wider uppercase text-xs backdrop-blur-md transition-all duration-300 hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 hover:border-blue-400/40"
+          >
+            <LogIn size={15} />
+            <span>Iniciar Sesión</span>
           </Link>
 
           <a
             href="https://wa.me/593969043453?text=Hola%20ATOMIC!%20Deseo%20informaci%C3%B3n%20sobre%20sus%20productos."
             target="_blank"
             rel="noreferrer"
-            className="px-6 py-5 rounded-2xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 font-bold tracking-wider uppercase text-xs backdrop-blur-md transition-all duration-300 flex items-center justify-center gap-2"
+            className="px-6 py-4 rounded-2xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 font-bold tracking-wider uppercase text-xs backdrop-blur-md transition-all duration-300 hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2"
           >
             <MessageCircle size={16} />
-            <span>ASESORÍA WHATSAPP</span>
+            <span>Asesoría de WhatsApp</span>
           </a>
         </div>
 
@@ -122,13 +124,13 @@ export default function Presence01() {
         <ul className="mt-16 grid w-full max-w-4xl grid-cols-1 sm:grid-cols-3 gap-6 pt-10 border-t border-white/10">
           {METRICS.map((metric) => (
             <li
-              key={metric.value}
+              key={metric.label}
               className="flex flex-col items-center gap-2 p-6 rounded-3xl bg-[#070b18]/80 border border-white/10 hover:border-blue-500/50 backdrop-blur-xl transition-all duration-300 hover:shadow-[0_0_30px_rgba(59,130,246,0.25)] text-center"
             >
               <span className="bg-gradient-to-r from-white via-blue-100 to-blue-400 bg-clip-text text-4xl sm:text-5xl font-black tracking-tight text-transparent">
                 {metric.value}
               </span>
-              <span className="text-xs font-mono font-medium text-neutral-400 uppercase tracking-wider">
+              <span className="text-xs font-mono font-medium text-neutral-300 uppercase tracking-wider">
                 {metric.label}
               </span>
             </li>
