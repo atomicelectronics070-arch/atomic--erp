@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --webpack",
-    "build": "prisma generate && next build --no-lint",
+    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
     "postinstall": "prisma generate"
@@ -26,6 +26,7 @@
     "bcryptjs": "2.4.3",
     "cheerio": "^1.2.0",
     "clsx": "^2.1.1",
+    "cobe": "^2.0.1",
     "csv-writer": "^1.6.0",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.38.0",
