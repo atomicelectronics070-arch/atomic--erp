@@ -131,7 +131,7 @@ const SMART_LOCK_KITS: SmartLockProduct[] = [
     versionTag: "Instalación sin Perforación en Vidrio // Perno Doble",
     badge: "🏢 PUERTAS DE VIDRIO",
     category: "airbnb",
-    image: "/categories/cerraduras-smart-y-accesos.png",
+    image: "/images/cerraduras/bp-quantum-lock.png",
     priceBase: 119.99,
     highlights: [
       "Instalación limpia mediante abrazadera de alta presión sin perforar el vidrio templado",
@@ -151,7 +151,7 @@ const SMART_LOCK_KITS: SmartLockProduct[] = [
     versionTag: "Reemplazo Directo de Pomo // Dormitorios & Oficinas",
     badge: "🚪 FÁCIL INSTALACIÓN",
     category: "airbnb",
-    image: "/banners/smart.jpeg",
+    image: "/images/cerraduras/yale-ydl120.png",
     priceBase: 49.99,
     highlights: [
       "Reemplaza directamente cualquier pomo estándar tradicional sin modificar la puerta",
@@ -173,7 +173,7 @@ const SMART_LOCK_KITS: SmartLockProduct[] = [
     versionTag: "Línea Cronte Technology // WiFi Directo Tuya",
     badge: "🛡️ CRONTE OFFICIAL",
     category: "manija",
-    image: "/banners/smart_doorbell.png",
+    image: "/images/cerraduras/bp-plasma-lock.png",
     priceBase: 98.99,
     highlights: [
       "Cuerpo reforzado en aleación de zinc fundido a presión antivandalismo",
@@ -194,7 +194,7 @@ const SMART_LOCK_KITS: SmartLockProduct[] = [
     versionTag: "Especial Perfil Europeo & Puertas Angostas",
     badge: "🛡️ CRONTE SLIM",
     category: "cerrojo",
-    image: "/categories/cerraduras-smart-y-accesos.png",
+    image: "/images/cerraduras/bp-voltex-lock.webp",
     priceBase: 84.50,
     highlights: [
       "Diseño ultra estrecho de 38mm compatible con perfiles de aluminio y hierro",
@@ -214,7 +214,7 @@ const SMART_LOCK_KITS: SmartLockProduct[] = [
     versionTag: "Cerrojo Automático Heavy-Duty",
     badge: "🛡️ CRONTE TECH",
     category: "cerrojo",
-    image: "/banners/smart.jpeg",
+    image: "/images/cerraduras/yale-ydr41.png",
     priceBase: 62.99,
     highlights: [
       "Cerrojo motorizado de cierre automático al cerrar la puerta",
@@ -236,7 +236,7 @@ const SMART_LOCK_KITS: SmartLockProduct[] = [
     versionTag: "Original Yale Ecuador // Huella + Código + Tarjeta",
     badge: "🏆 YALE ORIGINAL",
     category: "cerrojo",
-    image: "/categories/cerraduras-smart-y-accesos.png",
+    image: "/images/cerraduras/yale-ymc420d.png",
     priceBase: 135.00,
     highlights: [
       "Certificación internacional de seguridad Yale y cilindro antibumping Grado 1",
@@ -257,7 +257,7 @@ const SMART_LOCK_KITS: SmartLockProduct[] = [
     versionTag: "Seguridad Grado 2 // Pantalla Touch Capacitiva",
     badge: "🏆 YALE ORIGINAL",
     category: "cerrojo",
-    image: "/categories/cerraduras-smart-y-accesos.png",
+    image: "/images/cerraduras/yale-ydf40a.png",
     priceBase: 118.00,
     highlights: [
       "Lector de huella digital de precisión escandinava con lectura en 0.3s",
@@ -277,7 +277,7 @@ const SMART_LOCK_KITS: SmartLockProduct[] = [
     versionTag: "Bloqueo Automático Inteligente // Claves Temporales",
     badge: "🏆 YALE ORIGINAL",
     category: "cerrojo",
-    image: "/banners/smart.jpeg",
+    image: "/images/cerraduras/yale-ydr41.png",
     priceBase: 98.50,
     highlights: [
       "Teclado táctil invisible que se enciende solo al tacto de la palma",
@@ -297,7 +297,7 @@ const SMART_LOCK_KITS: SmartLockProduct[] = [
     versionTag: "Línea Real Living // Diseño Clásico & Moderno",
     badge: "🏆 YALE ORIGINAL",
     category: "cerrojo",
-    image: "/categories/cerraduras-smart-y-accesos.png",
+    image: "/images/cerraduras/yale-yrd226.png",
     priceBase: 89.00,
     highlights: [
       "Acabado en bronce oscuro de lujo o acero inoxidable níquel satinado",
@@ -319,7 +319,7 @@ const SMART_LOCK_KITS: SmartLockProduct[] = [
     versionTag: "Versión Biométrica Semiconductores // WiFi & Bluetooth",
     badge: "🔥 MÁS VENDIDO BP",
     category: "manija",
-    image: "/banners/smart_doorbell.png",
+    image: "/images/cerraduras/bp-quantum-lock.png",
     priceBase: 109.99,
     highlights: [
       "Lector de huella digital integrado ergonomicamente en la manija",
@@ -341,7 +341,7 @@ const SMART_LOCK_KITS: SmartLockProduct[] = [
     versionTag: "Versión Manija Digital Multi-Acceso 5 en 1",
     badge: "⚡ CALIDAD/PRECIO BP",
     category: "manija",
-    image: "/categories/cerraduras-smart-y-accesos.png",
+    image: "/images/cerraduras/bp-plasma-lock.png",
     priceBase: 87.99,
     highlights: [
       "5 Métodos de apertura simultáneos para toda la familia",
@@ -362,7 +362,7 @@ const SMART_LOCK_KITS: SmartLockProduct[] = [
     versionTag: "Versión Slimline // Aluminio Aeroespacial",
     badge: "🏠 DEPARTAMENTOS BP",
     category: "airbnb",
-    image: "/banners/smart.jpeg",
+    image: "/images/cerraduras/bp-voltex-lock.webp",
     priceBase: 76.99,
     highlights: [
       "Perfil estilizado extra delgado para diseño moderno y departamentos",
@@ -374,6 +374,26 @@ const SMART_LOCK_KITS: SmartLockProduct[] = [
     differentiator: "Diseño ultra moderno que combina con acabados de madera fina y puertas contemporáneas.",
     description: "Compacta, segura y fácil de administrar desde tu smartphone."
   },
+  {
+    id: "lock-bp-dortmund",
+    name: "Cerradura de Seguridad Heavy-Duty Dortmund BP para Puerta Principal",
+    provider: "BP",
+    providerName: "Banco del Perno (BP)",
+    versionTag: "Acero Niquelado Reforzado // Puerta Exterior",
+    badge: "🔩 ALTA SEGURIDAD BP",
+    category: "cerrojo",
+    image: "/images/cerraduras/bp-dortmund.png",
+    priceBase: 48.99,
+    highlights: [
+      "Cilindro de latón sólido con 5 llaves de puntos de alta seguridad",
+      "Escudo exterior antibumping y antitaladro",
+      "Mecanismo de doble vuelta con bulones de acero macizo",
+      "Acabado en cromo satinado resistente a la intemperie"
+    ],
+    methods: ["Llaves de Punto", "Cilindro de Seguridad", "Compatible con Smart Deadbolt"],
+    differentiator: "La máxima resistencia mecánica tradicional de Banco del Perno para puertas residenciales.",
+    description: "Cerradura de alta resistencia mecánica para puertas principales exteriores."
+  },
 
   // ─── SISEGUSA / ZKTECO / HIKVISION / EZVIZ ───
   {
@@ -384,7 +404,7 @@ const SMART_LOCK_KITS: SmartLockProduct[] = [
     versionTag: "Versión Especial Airbnb, Hoteles & Rentas Cortas",
     badge: "💎 AIRBNB READY",
     category: "airbnb",
-    image: "/categories/cerraduras-smart-y-accesos.png",
+    image: "/images/cerraduras/sisegusa-dl04.jpg",
     priceBase: 59.99,
     highlights: [
       "Configuración de contraseñas con fecha y hora de inicio y fin para huéspedes",
@@ -405,7 +425,7 @@ const SMART_LOCK_KITS: SmartLockProduct[] = [
     versionTag: "Económica & Segura // Claves Numéricas",
     badge: "⚡ ECONÓMICA SMART",
     category: "airbnb",
-    image: "/banners/smart.jpeg",
+    image: "/images/cerraduras/sisegusa-dl03.jpg",
     priceBase: 48.99,
     highlights: [
       "Teclado táctil iluminado de alta durabilidad",
@@ -425,7 +445,7 @@ const SMART_LOCK_KITS: SmartLockProduct[] = [
     versionTag: "Pantalla Touch 7\" 2K + Conexión a Cerradura",
     badge: "📱 VIDEOPORTERO 2K",
     category: "edificios",
-    image: "/images/seguridad/zkteco-acceso-edificio.jpg",
+    image: "/images/seguridad/zkteco-vt07-product.jpg",
     priceBase: 165.00,
     highlights: [
       "Pantalla táctil a color de 7 pulgadas con resolución 2K Ultra HD",
@@ -1135,22 +1155,32 @@ export default function CerradurasSmartClient() {
               {/* Modal Content */}
               <div className="space-y-6">
                 
-                {/* Header */}
-                <div className="pr-8">
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <span className="px-2.5 py-0.5 rounded-lg bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[10px] font-bold font-heading uppercase tracking-widest">
-                      {modalProduct.providerName}
-                    </span>
-                    <span className="px-2.5 py-0.5 rounded-lg bg-white/10 text-neutral-300 border border-white/15 text-[10px] font-bold font-mono">
-                      {modalProduct.versionTag}
-                    </span>
+                {/* Header with Product Image */}
+                <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 pr-8">
+                  <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-[#07070a] border border-white/10 p-2 flex items-center justify-center shrink-0 shadow-inner">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={modalProduct.image}
+                      alt={modalProduct.name}
+                      className="w-full h-full object-contain"
+                    />
                   </div>
-                  <h3 className="text-xl sm:text-2xl font-black text-white font-heading uppercase mt-1">
-                    {modalProduct.name}
-                  </h3>
-                  <p className="text-xs text-neutral-400 mt-1">
-                    {modalProduct.description}
-                  </p>
+                  <div>
+                    <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                      <span className="px-2.5 py-0.5 rounded-lg bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[10px] font-bold font-heading uppercase tracking-widest">
+                        {modalProduct.providerName}
+                      </span>
+                      <span className="px-2.5 py-0.5 rounded-lg bg-white/10 text-neutral-300 border border-white/15 text-[10px] font-bold font-mono">
+                        {modalProduct.versionTag}
+                      </span>
+                    </div>
+                    <h3 className="text-xl sm:text-2xl font-black text-white font-heading uppercase mt-1">
+                      {modalProduct.name}
+                    </h3>
+                    <p className="text-xs text-neutral-400 mt-1">
+                      {modalProduct.description}
+                    </p>
+                  </div>
                 </div>
 
                 {/* Province Selector for this product */}
