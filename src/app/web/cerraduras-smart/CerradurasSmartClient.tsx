@@ -236,6 +236,21 @@ export default function CerradurasSmartClient() {
     return (basePrice + installCost).toFixed(2)
   }
 
+  // Fictitious regular prices before 30% promo discount
+  const calculateRegularProductPrice = (basePrice: number) => {
+    return (basePrice / 0.70).toFixed(2)
+  }
+
+  const calculateRegularInstalledPrice = (basePrice: number, installCost: number) => {
+    return ((basePrice + installCost) / 0.70).toFixed(2)
+  }
+
+  const calculateSavings = (basePrice: number, installCost: number) => {
+    const regular = (basePrice + installCost) / 0.70
+    const current = basePrice + installCost
+    return (regular - current).toFixed(2)
+  }
+
   // Generate dynamic WhatsApp URL
   const getWhatsAppUrl = (product: SmartLockProduct, province: ProvinceData) => {
     const total = calculateTotal(product.priceBase, province.cost)
@@ -707,27 +722,40 @@ export default function CerradurasSmartClient() {
                   {/* Dual Pricing Display */}
                   <div className="pt-4 flex items-end justify-between">
                     <div>
-                      <span className="text-[10px] text-neutral-400 font-mono uppercase tracking-wider block">
-                        Solo Producto
-                      </span>
-                      <span className="text-sm font-bold text-neutral-400 line-through">
-                        ${(product.priceBase * 1.3).toFixed(2)}
-                      </span>
-                      <div className="text-base font-black text-neutral-200">
+                      <div className="flex items-center gap-1.5 mb-0.5">
+                        <span className="text-[10px] text-neutral-400 font-mono uppercase tracking-wider">
+                          Solo Producto
+                        </span>
+                        <span className="px-1.5 py-0.2 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30 text-[9px] font-black font-mono">
+                          -30%
+                        </span>
+                      </div>
+                      <div className="text-xs font-bold text-neutral-400 line-through font-mono">
+                        ${calculateRegularProductPrice(product.priceBase)} USD
+                      </div>
+                      <div className="text-base font-black text-neutral-200 font-heading">
                         ${product.priceBase.toFixed(2)} USD
                       </div>
                     </div>
 
                     {/* Highlighted Kit Installed Price */}
                     <div className="text-right">
-                      <span className="text-[10px] text-emerald-400 font-mono font-bold uppercase tracking-wider block">
-                        KIT INSTALADO EN {selectedProvince.id === "quito" ? "QUITO" : selectedProvince.name.split(' ')[0].toUpperCase()}
-                      </span>
+                      <div className="flex items-center justify-end gap-1.5 mb-0.5">
+                        <span className="text-[10px] text-emerald-400 font-mono font-bold uppercase tracking-wider">
+                          KIT INSTALADO EN {selectedProvince.id === "quito" ? "QUITO" : selectedProvince.name.split(' ')[0].toUpperCase()}
+                        </span>
+                        <span className="px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[9px] font-black font-mono">
+                          -30% OFF
+                        </span>
+                      </div>
+                      <div className="text-xs font-bold text-neutral-400 line-through font-mono">
+                        Antes: ${calculateRegularInstalledPrice(product.priceBase, selectedProvince.cost)} USD
+                      </div>
                       <div className="text-2xl sm:text-3xl font-black text-white font-heading text-emerald-400">
                         ${installedTotal} <span className="text-xs font-mono text-neutral-300 font-normal">USD</span>
                       </div>
                       <span className="text-[9px] text-neutral-400 block font-mono">
-                        (Incluye +${selectedProvince.cost} de instalación)
+                        (Ahorras 30%: -${calculateSavings(product.priceBase, selectedProvince.cost)} USD)
                       </span>
                     </div>
                   </div>
@@ -823,9 +851,23 @@ export default function CerradurasSmartClient() {
                   </select>
 
                   {/* Price Breakdown Calculation */}
-                  <div className="pt-2 border-t border-white/10 space-y-1 text-xs">
-                    <div className="flex justify-between text-neutral-300">
-                      <span>Cerradura Inteligente (Solo Equipo):</span>
+                  <div className="pt-2 border-t border-white/10 space-y-1.5 text-xs">
+                    <div className="flex justify-between text-neutral-400">
+                      <span>Precio regular sin descuento:</span>
+                      <span className="line-through font-mono text-neutral-400">
+                        ${calculateRegularInstalledPrice(modalProduct.priceBase, selectedProvince.cost)} USD
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-rose-400 font-bold">
+                      <span className="flex items-center gap-1">
+                        <Sparkles size={12} /> Descuento Especial Promocional (30% OFF):
+                      </span>
+                      <span className="font-mono">
+                        -${calculateSavings(modalProduct.priceBase, selectedProvince.cost)} USD
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-neutral-300 pt-1 border-t border-white/5">
+                      <span>Cerradura Inteligente (Solo Equipo en Oferta):</span>
                       <strong className="text-white">${modalProduct.priceBase.toFixed(2)} USD</strong>
                     </div>
                     <div className="flex justify-between text-neutral-300">
@@ -833,7 +875,7 @@ export default function CerradurasSmartClient() {
                       <strong className="text-emerald-400">+${selectedProvince.cost.toFixed(2)} USD</strong>
                     </div>
                     <div className="flex justify-between text-base font-black text-white pt-2 border-t border-white/10 font-heading">
-                      <span className="text-emerald-400">TOTAL ESTIMADO KIT + INSTALACIÓN:</span>
+                      <span className="text-emerald-400">TOTAL OFERTA KIT + INSTALACIÓN:</span>
                       <span className="text-emerald-400 text-xl font-heading">
                         ${calculateTotal(modalProduct.priceBase, selectedProvince.cost)} USD
                       </span>
