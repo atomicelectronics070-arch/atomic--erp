@@ -879,45 +879,169 @@ const SMART_LOCK_KITS: SmartLockProduct[] = [
 
   // ─── SISEGUSA / ZKTECO / HIKVISION / EZVIZ ───
   {
-    id: "lock-sisegusa-dl04",
-    name: "Cerradura Inteligente DL04 Teclado Táctil, WiFi, Bluetooth & RFID",
+    id: "lock-zkteco-tl800",
+    name: "Cerradura Digital ZKTeco TL800 con Videocámara, Pantalla LCD & WiFi ZSmart",
     provider: "SISEGUSA",
     providerName: "Sisegusa / ZKTeco",
-    versionTag: "Versión Especial Airbnb, Hoteles & Rentas Cortas",
-    badge: "💎 AIRBNB READY",
-    category: "airbnb",
-    image: "/images/cerraduras/sisegusa-dl04.jpg",
-    priceBase: 59.99,
+    versionTag: "Flagship ZKTeco // Cámara HD + Pantalla LCD // WiFi ZSmart",
+    badge: "🏆 FLAGSHIP ZKTECO",
+    category: "facial",
+    image: "/images/cerraduras/zkteco/zk-tl800.png",
+    priceBase: 238.00,
     highlights: [
-      "Configuración de contraseñas con fecha y hora de inicio y fin para huéspedes",
-      "Check-in y check-out 100% automatizado y remoto sin entregar llaves físicas",
-      "Registro detallado de ingresos y salidas en tu teléfono móvil",
-      "Compatibilidad total con cerraduras tubulares estándar",
-      "Carcasa sellada a prueba de polvo y humedad"
+      "Videocámara HD frontal gran angular con visión nocturna infrarroja",
+      "Pantalla interior a color OLED para ver quién está al otro lado",
+      "Envío de fotografía y videollamada al smartphone al tocar el timbre",
+      "Lector de huella digital capacitivo de alta precisión (<0.5s)",
+      "Batería recargable de litio de 4200 mAh de larga duración"
     ],
-    methods: ["Códigos con Horario", "Bluetooth / WiFi", "Tarjeta RFID", "Llave de Respaldo"],
-    differentiator: "La herramienta perfecta para anfitriones de Airbnb: tus huéspedes reciben su código y tú te liberas de citas presenciales.",
-    description: "Optimiza la gestión de tus departamentos de renta con contraseñas programadas por hora de estancia."
+    methods: ["Videocámara HD", "Huella Digital", "App ZSmart WiFi", "Contraseña Táctil", "Tarjetas RFID IC", "Llave Mecánica"],
+    differentiator: "La cúspide tecnológica de ZKTeco: videoportero y cerradura biométrica de lujo en un solo equipo.",
+    description: "Cerradura inteligente insignia ZKTeco TL800 con videocámara HD, pantalla LCD y cerradura motorizada.",
+    popular: true
   },
   {
-    id: "lock-sisegusa-dl03",
-    name: "Cerradura Inteligente DL03 Teclado Táctil & Conectividad WiFi Directa",
+    id: "lock-zkteco-tl400b-left",
+    name: "Cerradura Digital ZKTeco TL400B Izquierda con Huella, Bluetooth & Teclado",
     provider: "SISEGUSA",
     providerName: "Sisegusa / ZKTeco",
-    versionTag: "Económica & Segura // Claves Numéricas",
-    badge: "⚡ ECONÓMICA SMART",
-    category: "airbnb",
-    image: "/images/cerraduras/sisegusa-dl03.jpg",
-    priceBase: 48.99,
+    versionTag: "Manija Izquierda // Sensor FPC // Bluetooth 4.0",
+    badge: "🛡️ ZKTECO BIOMETRÍA",
+    category: "manija",
+    image: "/images/cerraduras/zkteco/zk-tl400b-left.png",
+    priceBase: 175.00,
     highlights: [
-      "Teclado táctil iluminado de alta durabilidad",
-      "Gestión remota por aplicación móvil con registro de aperturas",
-      "Apertura de emergencia por llave física o batería externa",
-      "Alarma de intento de manipulación no autorizada"
+      "Orientación de manija izquierda para puertas de apertura a la izquierda",
+      "Sensor semiconductor FPC de grado bancario para 100 huellas",
+      "Conectividad Bluetooth 4.0 con administración desde app ZKBioBT",
+      "Guía interactiva por voz en español y pantalla OLED integrada",
+      "Grosor de puerta compatible: 35 a 65mm con mortise reforzado"
     ],
-    methods: ["Clave Numérica", "App WiFi", "Tarjeta de Proximidad", "Llave"],
-    differentiator: "Acceso digital seguro al precio más accesible del mercado.",
-    description: "Cerradura digital con teclado táctil retroiluminado y conectividad WiFi."
+    methods: ["Huella Semiconductora", "App Bluetooth", "Teclado Táctil", "Tarjetas Mifare", "Llave Oculta"],
+    differentiator: "Diseño industrial de vanguardia y máxima robustez certificada para puertas principales.",
+    description: "Cerradura inteligente para puerta principal ZKTeco TL400B con orientación izquierda y Bluetooth."
+  },
+  {
+    id: "lock-zkteco-tl400b-right",
+    name: "Cerradura Digital ZKTeco TL400B Derecha con Huella, Bluetooth & Teclado",
+    provider: "SISEGUSA",
+    providerName: "Sisegusa / ZKTeco",
+    versionTag: "Manija Derecha // Sensor FPC // Bluetooth 4.0",
+    badge: "🛡️ ZKTECO BIOMETRÍA",
+    category: "manija",
+    image: "/images/cerraduras/zkteco/zk-tl400b-right.png",
+    priceBase: 175.00,
+    highlights: [
+      "Orientación de manija derecha para puertas de apertura a la derecha",
+      "Sensor biométrico de huella digital semiconductor de alta sensibilidad",
+      "Capacidad para 100 huellas, 100 contraseñas y 100 tarjetas Mifare",
+      "Alarma inteligente ante intentos de intrusión o batería baja"
+    ],
+    methods: ["Huella Semiconductora", "App Bluetooth", "Teclado Táctil", "Tarjetas Mifare", "Llave Oculta"],
+    differentiator: "Reconocimiento biométrico instantáneo con manija reversible de alta resistencia.",
+    description: "Cerradura inteligente para puerta principal ZKTeco TL400B con orientación derecha."
+  },
+  {
+    id: "lock-zkteco-lh6000-left",
+    name: "Cerradura Hotelera de Proximidad RFID ZKTeco LH6000 Izquierda",
+    provider: "SISEGUSA",
+    providerName: "Sisegusa / ZKTeco",
+    versionTag: "RFID Mifare 13.56MHz // Hoteles & Rentas Cortas // Acero Inox",
+    badge: "🏨 LÍNEA HOTELERA",
+    category: "airbnb",
+    image: "/images/cerraduras/zkteco/zk-lh6000-left.png",
+    priceBase: 89.90,
+    highlights: [
+      "Lector sin contacto para tarjetas inteligentes Mifare-1 13.56 MHz",
+      "Cuerpo de acero inoxidable SUS304 para uso intensivo en hoteles",
+      "Mortise estándar americano con 5 pestillos de alta seguridad",
+      "Almacena auditoría de los últimos 224 registros de apertura",
+      "Compatible con software hotelero ZKBioAccess / ZKHotel"
+    ],
+    methods: ["Tarjeta RFID Mifare", "Llave Mecánica de Emergencia"],
+    differentiator: "Especialmente construida para hoteles, posadas y edificios de departamentos en renta.",
+    description: "Cerradura electrónica hotelera ZKTeco LH6000 con lector de proximidad RFID y manija izquierda."
+  },
+  {
+    id: "lock-zkteco-lh6000-right",
+    name: "Cerradura Hotelera de Proximidad RFID ZKTeco LH6000 Derecha",
+    provider: "SISEGUSA",
+    providerName: "Sisegusa / ZKTeco",
+    versionTag: "RFID Mifare 13.56MHz // Manija Derecha // Auditoría 224 Eventos",
+    badge: "🏨 LÍNEA HOTELERA",
+    category: "airbnb",
+    image: "/images/cerraduras/zkteco/zk-lh6000-right.png",
+    priceBase: 89.90,
+    highlights: [
+      "Orientación de manija derecha para habitaciones hoteleras",
+      "Lector de proximidad ultra rápido sin contacto",
+      "Diseño estilizado en acero inoxidable anticorrosión",
+      "Compatible con tarjetas maestras de piso, de servicio y huéspedes"
+    ],
+    methods: ["Tarjeta RFID Mifare", "Llave Mecánica de Emergencia"],
+    differentiator: "Elimina la pérdida de llaves y permite programar tarjetas por fecha y hora de checkout.",
+    description: "Cerradura electrónica para hoteles ZKTeco LH6000 con apertura derecha."
+  },
+  {
+    id: "lock-zkteco-ll-01",
+    name: "Chapa Eléctrica ZKTeco LL-01 12VDC en Acero Inox con Botón Pulsador Interior",
+    provider: "SISEGUSA",
+    providerName: "Sisegusa / ZKTeco",
+    versionTag: "12VDC // Acero Inoxidable // Botón Mecánico Interior",
+    badge: "⚡ SOBREPONER 12V",
+    category: "edificios",
+    image: "/images/cerraduras/zkteco/zk-ll-01.png",
+    priceBase: 32.50,
+    highlights: [
+      "Construcción íntegra en acero inoxidable resistente a la intemperie",
+      "Botón mecánico de apertura interior integrado en la carcasa",
+      "Alimentación 12VDC estándar para conexión a porteros, biométricos y receptores RF",
+      "Pestillo reversible de latón macizo para puertas de apertura interior o exterior",
+      "Incluye 3 llaves dentadas de seguridad exterior"
+    ],
+    methods: ["Pulso Eléctrico 12V", "Botón Mecánico Interior", "Llave Exterior"],
+    differentiator: "Chapa de sobreponer ultra duradera para portones peatonales residenciales y comerciales.",
+    description: "Cerradura eléctrica de sobreponer ZKTeco LL-01 de 12VDC construida en acero inoxidable."
+  },
+  {
+    id: "lock-ezviz-dl05",
+    name: "Cerradura Digital Inteligente EZVIZ DL05 con Huella, Teclado & WiFi",
+    provider: "SISEGUSA",
+    providerName: "Sisegusa / EZVIZ",
+    versionTag: "Ecosistema EZVIZ // WiFi Directo // Huella Biométrica",
+    badge: "📱 EZVIZ SMART",
+    category: "manija",
+    image: "/images/cerraduras/bp-quantum-lock.png",
+    priceBase: 185.00,
+    highlights: [
+      "Conexión WiFi directa e integración en el ecosistema de seguridad EZVIZ",
+      "Lector de huella biométrico en el eje de la manija",
+      "Códigos temporales y periódicos para visitas y personal",
+      "Alertas instantáneas de intentos de manipulación o apertura forzada"
+    ],
+    methods: ["Huella Digital", "App EZVIZ", "Código Táctil", "Tarjetas RFID", "Llave Mecánica"],
+    differentiator: "Se integra perfectamente con tus cámaras y videoporteros EZVIZ en una sola app.",
+    description: "Cerradura digital inteligente EZVIZ DL05 con conectividad WiFi nativa y lector biométrico."
+  },
+  {
+    id: "lock-zkteco-ml100",
+    name: "Cerrojo Inteligente ZKTeco ML100 con Huella Digital & Teclado Táctil",
+    provider: "SISEGUSA",
+    providerName: "Sisegusa / ZKTeco",
+    versionTag: "Cerrojo Motorizado // Huella + Teclado Táctil",
+    badge: "🔩 CERROJO SMART",
+    category: "cerrojo",
+    image: "/images/cerraduras/yale/yale-cerrojo-digital-yale-ydl120-1.png",
+    priceBase: 115.00,
+    highlights: [
+      "Cerrojo motorizado de bloqueo automático",
+      "Lector biométrico semiconductor de rápida respuesta",
+      "Teclado numérico táctil retroiluminado",
+      "Compatible con perforaciones estándar de cerrojo de 54mm"
+    ],
+    methods: ["Huella Digital", "Clave PIN", "Bluetooth Móvil", "Llaves"],
+    differentiator: "Cerrojo biométrico robusto ideal para mantener tu manija de lujo existente.",
+    description: "Cerrojo digital biométrico ZKTeco ML100 de alta seguridad con lector de huella dactilar."
   },
   {
     id: "lock-ezviz-hp7",
