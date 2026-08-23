@@ -7,13 +7,15 @@ import {
     useRef,
     type CSSProperties,
 } from "react"
-import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react"
+import { ChevronLeft, ChevronRight, ArrowRight, Package, Sparkles } from "lucide-react"
 
 const useIsStaticRenderer = () => false
 
 export interface Slide {
     image?: { src?: string; srcSet?: string; alt?: string }
     title?: string
+    badge?: string
+    placeholder?: boolean
 }
 
 type AutoplayDir = "leftToRight" | "rightToLeft"
@@ -123,8 +125,8 @@ const COMPONENT_DEFAULTS = {
     autoplayDirection: "rightToLeft" as AutoplayDir,
     transition: {
         type: "tween",
-        duration: 0.6,
-        delay: 3.5,
+        duration: 0.45,
+        delay: 2.2,
         ease: [0.22, 1, 0.36, 1],
     },
     showTitle: true,
@@ -391,7 +393,26 @@ export default function CoverflowGallery(props: Smooth3DSlideshowProps) {
                                         userSelect: "none",
                                     }}
                                 />
-                            ) : null}
+                            ) : (
+                                <div className="absolute inset-0 bg-gradient-to-br from-[#13121A] via-[#0B0A10] to-[#050508] flex flex-col items-center justify-center p-8 text-center border border-white/10 select-none">
+                                    <div className="absolute w-40 h-40 bg-blue-500/10 rounded-full blur-2xl pointer-events-none" />
+                                    <div className="w-16 h-16 rounded-2xl bg-white/[0.04] border border-dashed border-white/20 flex items-center justify-center text-neutral-400 mb-3 shadow-inner group-hover:scale-105 transition-transform duration-300">
+                                        <Package size={28} className="text-blue-400/80 animate-pulse" />
+                                    </div>
+                                    {slide.badge && (
+                                        <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-blue-500/15 border border-blue-500/30 text-blue-300 font-mono font-bold text-[10px] uppercase tracking-widest mb-2 shadow-md">
+                                            <Sparkles size={10} className="text-blue-400" />
+                                            <span>{slide.badge}</span>
+                                        </div>
+                                    )}
+                                    <p className="text-[10px] font-mono uppercase tracking-widest text-[#94969D] mb-1">
+                                        CATÁLOGO MULTIMEDIA // DISPONIBLE
+                                    </p>
+                                    <h4 className="text-sm sm:text-base font-extrabold text-white uppercase font-heading max-w-[320px] line-clamp-2 drop-shadow-md">
+                                        {slide.title || "Espacio para nuevas publicaciones"}
+                                    </h4>
+                                </div>
+                            )}
 
                             {/* AURA GLOW OVERLAY WHEN HOVERED */}
                             {isActive && isHovered && (
@@ -407,7 +428,7 @@ export default function CoverflowGallery(props: Smooth3DSlideshowProps) {
                                 />
                             )}
 
-                            {showTitle && (
+                            {src && showTitle && (
                                 <>
                                     <div
                                         style={{
@@ -454,16 +475,16 @@ export default function CoverflowGallery(props: Smooth3DSlideshowProps) {
                                 </>
                             )}
 
-                            {/* ANIMATED VER MÁS BUTTON */}
+                            {/* ANIMATED VER MÁS BUTTON (LARGER & ULTRA-SNAPPY) */}
                             <div
                                 style={{
                                     position: "absolute",
-                                    bottom: 20,
-                                    right: 20,
+                                    bottom: 22,
+                                    right: 22,
                                     zIndex: 35,
                                     opacity: isActive && isHovered ? 1 : 0,
-                                    transform: isActive && isHovered ? "translateY(0) scale(1)" : "translateY(16px) scale(0.85)",
-                                    transition: "opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.08s, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.08s",
+                                    transform: isActive && isHovered ? "translateY(0) scale(1)" : "translateY(10px) scale(0.9)",
+                                    transition: "opacity 0.16s cubic-bezier(0.16, 1, 0.3, 1), transform 0.16s cubic-bezier(0.16, 1, 0.3, 1)",
                                     pointerEvents: isActive && isHovered ? "auto" : "none",
                                 }}
                             >
@@ -475,10 +496,10 @@ export default function CoverflowGallery(props: Smooth3DSlideshowProps) {
                                         window.dispatchEvent(new CustomEvent('atomic-search-update', { detail: query.split(' ')[0] }))
                                         document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' })
                                     }}
-                                    className="px-4 py-2 rounded-full bg-white text-black font-black text-xs font-heading tracking-wider flex items-center gap-2 shadow-[0_10px_35px_rgba(0,0,0,0.9)] hover:bg-neutral-200 hover:scale-105 transition-all duration-200 active:scale-95 cursor-pointer uppercase"
+                                    className="px-6 py-2.5 sm:px-7 sm:py-3 rounded-full bg-white text-black font-black text-xs sm:text-sm font-heading tracking-wider flex items-center gap-2.5 shadow-[0_12px_40px_rgba(0,0,0,0.95)] hover:bg-neutral-100 hover:scale-105 transition-all duration-150 active:scale-95 cursor-pointer uppercase"
                                 >
                                     <span>VER MÁS</span>
-                                    <ArrowRight size={14} className="text-black" />
+                                    <ArrowRight size={16} className="text-black" />
                                 </button>
                             </div>
 

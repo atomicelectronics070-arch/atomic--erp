@@ -5,13 +5,44 @@ import { useState, useRef, useEffect, useMemo } from "react"
 import {
   ShoppingBag, ChevronRight, ArrowRight, Shield, Zap, Truck,
   ChevronLeft, Hexagon, Star, X, Smartphone, Sparkles, Code, Bot,
-  Search, ImageOff, Home, Building, Factory, Cpu, Gamepad2, Utensils, Laptop, Award, User, Settings, ChevronDown, Package, LogIn, Menu
+  Search, ImageOff, Home, Building, Factory, Cpu, Gamepad2, Utensils, Laptop, Award, User, Settings, ChevronDown, Package, LogIn, Menu,
+  Wrench, Clock, ShieldCheck
 } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
 import dynamic from "next/dynamic"
 import { calculateDiscountedPrice } from "@/lib/utils/pricing"
+
+const PROMO_COVERFLOW_SLIDES = [
+  { title: "DESCUENTO 30% EN CERRADURAS SMART\nAcceso Biométrico & Control Móvil Tuya", badge: "PROMOCIÓN", placeholder: true },
+  { title: "KIT 4 CÁMARAS FULL-COLOR WI-FI\nVisión Nocturna 2K & Audio Bidireccional", badge: "PROMO EXCLUSIVA", placeholder: true },
+  { title: "GENERADORES ELÉCTRICOS ECOFRIENDLY\nEnergía Limpia, Silenciosa & Portátil", badge: "DESCUENTO ESPECIAL", placeholder: true },
+]
+
+const TEMPORADA_COVERFLOW_SLIDES = [
+  { title: "ESPECIAL PRODUCTIVIDAD & TRABAJO\nLaptops & Computadoras All-in-One i7", badge: "TEMPORADA", placeholder: true },
+  { title: "LÍNEA CONFORT & HOGAR SMART\nEncimeras de Inducción & Hornos", badge: "TEMPORADA", placeholder: true },
+  { title: "CLIMATIZACIÓN & ENERGÍA RENOVABLE\nEstaciones Eléctricas de Alta Eficiencia", badge: "TEMPORADA", placeholder: true },
+]
+
+const COMBOS_COVERFLOW_SLIDES = [
+  { title: "COMBO SEGURIDAD INTEGRAL PRO\nCámara 360° + Cerradura Smart + Alarma", badge: "SUPER COMBO", placeholder: true },
+  { title: "COMBO GAMING PROFESIONAL\nMando Inalámbrico + Headset Surround 7.1", badge: "COMBO GAMER", placeholder: true },
+  { title: "COMBO EMPRESA & NEGOCIO SEGURO\nBiométrico ZKTeco + Lector RFID", badge: "COMBO PYME", placeholder: true },
+]
+
+const INSTALACION_COVERFLOW_SLIDES = [
+  { title: "CÁMARAS & CCTV CON INSTALACIÓN\nTécnicos Certificados en Todo el Ecuador", badge: "CON INSTALACIÓN", placeholder: true },
+  { title: "BIOMÉTRICOS & SISTEMAS DE ACCESO\nInstalación & Configuración de Red", badge: "CON INSTALACIÓN", placeholder: true },
+  { title: "PLANTAS DE BLOQUES DE HORMIGÓN\nMontaje en Sitio y Puesta en Marcha", badge: "CON INSTALACIÓN", placeholder: true },
+]
+
+const SERVICIOS_COVERFLOW_SLIDES = [
+  { title: "SOPORTE TÉCNICO ESPECIALIZADO 24/7\nMantenimiento Preventivo & Asesoría", badge: "SERVICIOS", placeholder: true },
+  { title: "GENERADOR DE COTIZACIONES ERP\nProformas Instantáneas para Empresas", badge: "SERVICIOS", placeholder: true },
+  { title: "LOGÍSTICA & DESPACHO DIRECTO\nEnvíos Seguros a las 24 Provincias", badge: "SERVICIOS", placeholder: true },
+]
 
 const CoverflowGallery = dynamic(() => import("@/components/CoverflowGallery"), {
   ssr: false,
@@ -172,6 +203,7 @@ export default function PublicWebClient({
   const userMenuRef = useRef<HTMLDivElement>(null)
   const [activeTab, setActiveTab] = useState<string | null>(null)
   const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false)
+  const [coverflowSection, setCoverflowSection] = useState<'ofertas' | 'promociones' | 'temporada' | 'combos' | 'instalacion' | 'servicios'>('ofertas')
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -1074,9 +1106,65 @@ export default function PublicWebClient({
             )}
           </motion.div>
 
-          {/* 3D COVERFLOW GALLERY SHOWCASE */}
-          <div className="w-full max-w-5xl mx-auto my-6 overflow-hidden">
-            <CoverflowGallery autoplay={true} cardWidth={480} cardHeight={360} gap={8} tilt={12} sideTilt={8} opacity={60} />
+          {/* ═══════════ MINI RECUADROS OPACOS (FILTROS DIFUMINADOS BLANCO/GRIS) ═══════════ */}
+          <div className="flex flex-wrap items-center justify-center gap-2 max-w-4xl mx-auto my-6 px-4">
+            {[
+              { id: 'ofertas', label: 'OFERTAS' },
+              { id: 'promociones', label: 'PROMOCIONES' },
+              { id: 'temporada', label: 'POR TEMPORADA' },
+              { id: 'combos', label: 'COMBOS' },
+              { id: 'instalacion', label: 'CON INSTALACIÓN' },
+              { id: 'servicios', label: 'SERVICIOS' },
+            ].map((item) => {
+              const isSelected = coverflowSection === item.id
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => setCoverflowSection(item.id as any)}
+                  className={`px-4 py-2 rounded-2xl border text-[11px] font-extrabold font-heading uppercase tracking-wider transition-all duration-200 cursor-pointer shadow-md flex items-center gap-2 ${
+                    isSelected
+                      ? 'bg-white text-black border-white shadow-xl shadow-white/20 scale-105'
+                      : 'bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 hover:text-white border-white/[0.12] hover:border-white/30 backdrop-blur-md'
+                  }`}
+                >
+                  <span className={`w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-black' : 'bg-blue-400'}`} />
+                  <span>{item.label}</span>
+                </button>
+              )
+            })}
+          </div>
+
+          {/* ═══════════ 3D COVERFLOW GALLERY SHOWCASE (CON ANIMACIÓN VERTICAL) ═══════════ */}
+          <div className="w-full max-w-5xl mx-auto my-4 overflow-hidden min-h-[400px]">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={coverflowSection}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+                className="w-full"
+              >
+                {coverflowSection === 'ofertas' && (
+                  <CoverflowGallery autoplay={true} cardWidth={480} cardHeight={360} gap={8} tilt={12} sideTilt={8} opacity={60} />
+                )}
+                {coverflowSection === 'promociones' && (
+                  <CoverflowGallery slides={PROMO_COVERFLOW_SLIDES} autoplay={true} cardWidth={480} cardHeight={360} gap={8} tilt={12} sideTilt={8} opacity={60} />
+                )}
+                {coverflowSection === 'temporada' && (
+                  <CoverflowGallery slides={TEMPORADA_COVERFLOW_SLIDES} autoplay={true} cardWidth={480} cardHeight={360} gap={8} tilt={12} sideTilt={8} opacity={60} />
+                )}
+                {coverflowSection === 'combos' && (
+                  <CoverflowGallery slides={COMBOS_COVERFLOW_SLIDES} autoplay={true} cardWidth={480} cardHeight={360} gap={8} tilt={12} sideTilt={8} opacity={60} />
+                )}
+                {coverflowSection === 'instalacion' && (
+                  <CoverflowGallery slides={INSTALACION_COVERFLOW_SLIDES} autoplay={true} cardWidth={480} cardHeight={360} gap={8} tilt={12} sideTilt={8} opacity={60} />
+                )}
+                {coverflowSection === 'servicios' && (
+                  <CoverflowGallery slides={SERVICIOS_COVERFLOW_SLIDES} autoplay={true} cardWidth={480} cardHeight={360} gap={8} tilt={12} sideTilt={8} opacity={60} />
+                )}
+              </motion.div>
+            </AnimatePresence>
           </div>
 
           {/* ═══════════ OFERTAS SECTION HEADER (REQUESTED PLACEMENT) ═══════════ */}
