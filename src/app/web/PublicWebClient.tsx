@@ -412,6 +412,7 @@ export default function PublicWebClient({
               </button>
             ))}
           </div>
+        </div>
 
           {/* RIGHT: WHATSAPP (GOLD OUTLINE), LOGIN (ICON ONLY) & USER (ICON ONLY) */}
           <div className="flex items-center gap-2 shrink-0">
