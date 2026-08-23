@@ -238,17 +238,17 @@ export default function PublicWebClient({
     <div className="w-full bg-[#09090A] min-h-screen text-white font-sans selection:bg-white/20 selection:text-white overflow-x-hidden">
       
       {/* ═══════════ PROMO TOP HIGHLIGHT BAR (APPIT STYLE) ═══════════ */}
-      <section className="bg-[#09090A] border-b border-white/[0.06] py-3 px-6 text-xs text-[#94969D]">
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-6">
-            <span className="flex items-center gap-2 text-white font-bold font-heading text-xs uppercase tracking-wide">
-              <Truck size={14} className="text-white" /> PROMO: ENVÍOS SIN RECARGO A NIVEL NACIONAL EN CUALQUIER PRODUCTO
+      <section className="bg-[#09090A] border-b border-white/[0.06] py-2.5 px-4 sm:px-6 text-xs text-[#94969D]">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
+          <div className="flex items-center gap-4 flex-wrap justify-center md:justify-start">
+            <span className="flex items-center gap-2 text-white font-bold font-heading text-[11px] sm:text-xs uppercase tracking-wide">
+              <Truck size={14} className="text-white shrink-0" /> PROMO: ENVÍOS SIN RECARGO A NIVEL NACIONAL EN CUALQUIER PRODUCTO
             </span>
-            <span className="hidden md:flex items-center gap-2 text-[#94969D] font-medium text-xs uppercase tracking-wider">
-              <Shield size={14} className="text-emerald-400" /> PRODUCTOS 100% ORIGINALES & GARANTÍA
+            <span className="hidden xl:flex items-center gap-2 text-[#94969D] font-medium text-[11px] uppercase tracking-wider">
+              <Shield size={14} className="text-emerald-400 shrink-0" /> PRODUCTOS 100% ORIGINALES & GARANTÍA
             </span>
           </div>
-          <div className="flex items-center gap-4 text-[11px]">
+          <div className="flex items-center gap-3 shrink-0 text-[11px]">
             <a
               href="https://wa.me/593969043453?text=Hola%20ATOMIC!%20Deseo%20informaci%C3%B3n%20sobre%20sus%20productos."
               target="_blank"
@@ -657,45 +657,56 @@ export default function PublicWebClient({
             <CoverflowGallery autoplay={true} cardWidth={480} cardHeight={360} gap={8} tilt={12} sideTilt={8} opacity={60} />
           </div>
 
+          {/* ═══════════ OFERTAS SECTION HEADER (REQUESTED PLACEMENT) ═══════════ */}
+          <div className="text-center max-w-3xl mx-auto mt-10 mb-8">
+            <div className="inline-flex items-center justify-center gap-2 px-4 py-1.5 rounded-full bg-[#131315] border border-white/10 text-xs font-bold text-neutral-300 mb-3 shadow-xl mx-auto">
+              <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
+              <span className="font-heading uppercase tracking-wider text-[11px]">OFERTAS POR CATEGORÍA</span>
+            </div>
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black uppercase tracking-tight text-white font-heading mb-2">
+              OFERTAS
+            </h2>
+          </div>
+
           {/* QUICK CATEGORY HUB BUTTONS (APPIT PILLS) */}
-          <div className="flex flex-wrap items-center justify-center gap-3 max-w-4xl mx-auto">
+          <div className="flex flex-wrap items-center justify-center gap-3 max-w-4xl mx-auto mb-16">
             <Link
               href="/web/mandos"
-              className="px-5 py-3 rounded-full bg-[#0E0E10] border border-white/[0.08] hover:border-white/20 hover:bg-[#131315] text-xs font-bold text-neutral-200 transition-all flex items-center gap-2 shadow-lg"
+              className="px-5 py-3 rounded-full bg-[#0E0E10] border border-white/[0.08] hover:border-white/20 hover:bg-[#131315] text-xs font-bold text-neutral-200 transition-all flex items-center gap-2 shadow-lg group"
             >
-              <span>🎮 Mandos & Consolas</span>
-              <span className="text-[10px] bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full border border-blue-500/30">NUEVO</span>
+              <span className="font-heading uppercase tracking-wider text-[11px]">Mandos & Consolas</span>
+              <span className="text-[10px] bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full border border-blue-500/30 font-mono font-bold">NUEVO</span>
             </Link>
 
             <Link
               href="/web/cocinas"
-              className="px-5 py-3 rounded-full bg-[#0E0E10] border border-white/[0.08] hover:border-white/20 hover:bg-[#131315] text-xs font-bold text-neutral-200 transition-all flex items-center gap-2 shadow-lg"
+              className="px-5 py-3 rounded-full bg-[#0E0E10] border border-white/[0.08] hover:border-white/20 hover:bg-[#131315] text-xs font-bold text-neutral-200 transition-all flex items-center gap-2 shadow-lg group"
             >
-              <span>🍳 Encimeras & Hornos</span>
-              <span className="text-[10px] bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full border border-amber-500/30">Línea Hogar</span>
+              <span className="font-heading uppercase tracking-wider text-[11px]">Encimeras & Hornos</span>
+              <span className="text-[10px] bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full border border-amber-500/30 font-mono font-bold">LÍNEA HOGAR</span>
             </Link>
 
             <Link
               href="/web/cpus"
-              className="px-5 py-3 rounded-full bg-[#0E0E10] border border-white/[0.08] hover:border-white/20 hover:bg-[#131315] text-xs font-bold text-neutral-200 transition-all flex items-center gap-2 shadow-lg"
+              className="px-5 py-3 rounded-full bg-[#0E0E10] border border-white/[0.08] hover:border-white/20 hover:bg-[#131315] text-xs font-bold text-neutral-200 transition-all flex items-center gap-2 shadow-lg group"
             >
-              <span>💻 Laptops & CPUs</span>
-              <span className="text-[10px] bg-purple-500/20 text-purple-400 px-2 py-0.5 rounded-full border border-purple-500/30">Procesadores</span>
+              <span className="font-heading uppercase tracking-wider text-[11px]">Laptops & CPUs</span>
+              <span className="text-[10px] bg-purple-500/20 text-purple-400 px-2 py-0.5 rounded-full border border-purple-500/30 font-mono font-bold">PROCESADORES</span>
             </Link>
 
             <Link
               href="/web/phones"
-              className="px-5 py-3 rounded-full bg-[#0E0E10] border border-white/[0.08] hover:border-white/20 hover:bg-[#131315] text-xs font-bold text-neutral-200 transition-all flex items-center gap-2 shadow-lg"
+              className="px-5 py-3 rounded-full bg-[#0E0E10] border border-white/[0.08] hover:border-white/20 hover:bg-[#131315] text-xs font-bold text-neutral-200 transition-all flex items-center gap-2 shadow-lg group"
             >
-              <span>📱 Celulares & Tablets</span>
+              <span className="font-heading uppercase tracking-wider text-[11px]">Celulares & Tablets</span>
             </Link>
 
             <Link
               href="/web/blogs/guia-maquinas-de-bloques"
-              className="px-5 py-3 rounded-full bg-[#0E0E10] border border-white/[0.08] hover:border-white/20 hover:bg-[#131315] text-xs font-bold text-neutral-200 transition-all flex items-center gap-2 shadow-lg"
+              className="px-5 py-3 rounded-full bg-[#0E0E10] border border-white/[0.08] hover:border-white/20 hover:bg-[#131315] text-xs font-bold text-neutral-200 transition-all flex items-center gap-2 shadow-lg group"
             >
-              <span>🏗️ Plantas de Bloques</span>
-              <span className="text-[10px] bg-orange-500/20 text-orange-400 px-2 py-0.5 rounded-full border border-orange-500/30">Industrial</span>
+              <span className="font-heading uppercase tracking-wider text-[11px]">Plantas de Bloques</span>
+              <span className="text-[10px] bg-orange-500/20 text-orange-400 px-2 py-0.5 rounded-full border border-orange-500/30 font-mono font-bold">INDUSTRIAL</span>
             </Link>
           </div>
 
