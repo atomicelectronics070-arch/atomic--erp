@@ -23,17 +23,24 @@ const PROMO_COVERFLOW_SLIDES = [
     link: "/web/cerraduras-smart" 
   },
   { 
-    image: { src: "/images/cerraduras/yale/yale-cerrojo-digital-ymc420d-1.png", alt: "Cerrojo Digital Yale YMC420D Biométrico" },
-    title: "CERROJO DIGITAL YALE YMC420D BIOMÉTRICO\nLector Escandinavo, Pantalla Touch & Tarjeta RFID", 
-    badge: "TOP GAMA YALE", 
-    src: "/images/cerraduras/yale/yale-cerrojo-digital-ymc420d-1.png", 
-    link: "/web/cerraduras-smart" 
+    image: { src: "/banners/camaras-hogar-portada-4k.jpg", alt: "Cámaras para Hogar de Alta Calidad 4K con Garantía de 2 Años" },
+    title: "CÁMARAS PARA HOGAR CON GARANTÍA DE 2 AÑOS\nSeguridad Inteligente 4K & Wi-Fi Sin Cables", 
+    badge: "GARANTÍA 2 AÑOS", 
+    src: "/banners/camaras-hogar-portada-4k.jpg", 
+    link: "/web/camaras-hogar" 
   },
   { 
     image: { src: "/images/cerraduras/yale/yale-cerrojo-digital-ydf40a-m-dulo-para-abrir-1.webp", alt: "Yale YDF40A + Yale Connect" },
     title: "CERROJO YDF40A + MÓDULO YALE CONNECT CELULAR\nApertura Remota por Smartphone & Huella Dactilar", 
     badge: "YALE CONNECT", 
     src: "/images/cerraduras/yale/yale-cerrojo-digital-ydf40a-m-dulo-para-abrir-1.webp", 
+    link: "/web/cerraduras-smart" 
+  },
+  { 
+    image: { src: "/images/cerraduras/yale/yale-cerrojo-digital-ymc420d-1.png", alt: "Cerrojo Digital Yale YMC420D Biométrico" },
+    title: "CERROJO DIGITAL YALE YMC420D BIOMÉTRICO\nLector Escandinavo, Pantalla Touch & Tarjeta RFID", 
+    badge: "TOP GAMA YALE", 
+    src: "/images/cerraduras/yale/yale-cerrojo-digital-ymc420d-1.png", 
     link: "/web/cerraduras-smart" 
   },
 ]
@@ -51,6 +58,13 @@ const COMBOS_COVERFLOW_SLIDES = [
     badge: "SUPER COMBO", 
     src: "/images/cerraduras/cerraduras-instalacion-portada.jpg", 
     link: "/web/cerraduras-smart" 
+  },
+  { 
+    image: { src: "/banners/camaras-hogar-portada-4k.jpg", alt: "Combo Cámaras Hogar 4K con Garantía 2 Años" },
+    title: "COMBO CÁMARAS HOGAR 4K CON GARANTÍA DE 2 AÑOS\nMonitoreo 24/7 en Celular + Detección IA", 
+    badge: "COMBO SEGURIDAD", 
+    src: "/banners/camaras-hogar-portada-4k.jpg", 
+    link: "/web/camaras-hogar" 
   },
   { 
     image: { src: "/images/cerraduras/yale/yale-cerradura-digital-ymf40a-m-dulo-para-abr-1.webp", alt: "Combo Yale YMF40A + Connect" },
@@ -77,17 +91,17 @@ const INSTALACION_COVERFLOW_SLIDES = [
     link: "/web/cerraduras-smart" 
   },
   { 
+    image: { src: "/banners/camaras-hogar-portada-4k.jpg", alt: "Cámaras para Hogar con Garantía de 2 Años" },
+    title: "CÁMARAS PARA HOGAR CON GARANTÍA DE 2 AÑOS\nInstalación & Montaje Técnico en las 24 Provincias", 
+    badge: "GARANTÍA 2 AÑOS", 
+    src: "/banners/camaras-hogar-portada-4k.jpg", 
+    link: "/web/camaras-hogar" 
+  },
+  { 
     image: { src: "/images/cerraduras/yale/yale-cerradura-digital-ymf40a-m-dulo-para-abr-1.webp", alt: "Yale Connect YMF40A con Instalación" },
     title: "YALE CONNECT YMF40A KIT CON INSTALACIÓN\nTécnicos Certificados en las 24 Provincias del Ecuador", 
     badge: "YALE CONNECT", 
     src: "/images/cerraduras/yale/yale-cerradura-digital-ymf40a-m-dulo-para-abr-1.webp", 
-    link: "/web/cerraduras-smart" 
-  },
-  { 
-    image: { src: "/images/cerraduras/yale/yale-cerrojo-digital-yrd226-m-dulo-para-abrir-1.webp", alt: "Yale Real Living YRD226 + Celular con Instalación" },
-    title: "CERROJO REAL LIVING YRD226 + YALE CONNECT\nInstalación Limpia, Rápida & Garantizada", 
-    badge: "YALE ECUADOR", 
-    src: "/images/cerraduras/yale/yale-cerrojo-digital-yrd226-m-dulo-para-abrir-1.webp", 
     link: "/web/cerraduras-smart" 
   },
   { 
@@ -685,6 +699,7 @@ export default function PublicWebClient({
 
                     <div className="relative pl-5 space-y-2.5 before:absolute before:top-2 before:bottom-2 before:left-2 before:w-0.5 before:bg-amber-500/30">
                       {[
+                        { name: "Cámaras Hogar 4K (2 Años Garantía)", href: "/web/camaras-hogar", badge: "2 AÑOS" },
                         { name: "Cerraduras Smart + Instalación", href: "/web/cerraduras-smart", badge: "KITS" },
                         { name: "Mandos & Consolas Gaming", href: "/web/mandos", badge: "NUEVO" },
                         { name: "Encimeras & Hornos", href: "/web/cocinas", badge: "HOGAR" },
@@ -1256,6 +1271,14 @@ export default function PublicWebClient({
 
           {/* QUICK CATEGORY HUB BUTTONS (APPIT PILLS) */}
           <div className="flex flex-wrap items-center justify-center gap-3 max-w-4xl mx-auto mb-16">
+            <Link
+              href="/web/camaras-hogar"
+              className="px-5 py-3 rounded-full bg-[#0E0E10] border border-amber-500/30 hover:border-amber-400 hover:bg-[#131315] text-xs font-bold text-neutral-200 transition-all flex items-center gap-2 shadow-lg group"
+            >
+              <span className="font-heading uppercase tracking-wider text-[11px] text-amber-300">CÁMARAS HOGAR 4K</span>
+              <span className="text-[10px] bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full border border-amber-500/30 font-mono font-bold">2 AÑOS</span>
+            </Link>
+
             <Link
               href="/web/mandos"
               className="px-5 py-3 rounded-full bg-[#0E0E10] border border-white/[0.08] hover:border-white/20 hover:bg-[#131315] text-xs font-bold text-neutral-200 transition-all flex items-center gap-2 shadow-lg group"

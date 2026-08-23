@@ -238,11 +238,17 @@ export default function CoverflowGallery(props: Smooth3DSlideshowProps) {
 
     const handleCardClick = useCallback(
         (i: number) => {
-            if (isStatic || autoplay || lockRef.current) return
+            if (isStatic) return
+            const slide = list[i]
+            if (i === active && (slide as any)?.link) {
+                window.location.href = (slide as any).link
+                return
+            }
+            if (lockRef.current) return
             lock()
-            setActive((a) => (i === a ? (a + 1) % n : i))
+            setActive(i)
         },
-        [isStatic, autoplay, n, lock]
+        [isStatic, active, list, lock]
     )
 
     const delay =
@@ -393,7 +399,7 @@ export default function CoverflowGallery(props: Smooth3DSlideshowProps) {
                         transform: `translate(-50%, -50%) translateX(${tx}px) translateZ(${tz}px) rotateY(${ry}deg) rotateZ(${rz}deg) scale(${sc})`,
                         transition: transitionCss,
                         opacity: visible ? 1 : 0,
-                        cursor: autoplay || isActive ? "default" : "pointer",
+                        cursor: "pointer",
                         pointerEvents:
                             visible && !isStatic ? "auto" : "none",
                         backgroundColor: "#07070a",
