@@ -1153,22 +1153,22 @@ export default function PublicWebClient({
                 className="w-full"
               >
                 {coverflowSection === 'ofertas' && (
-                  <CoverflowGallery autoplay={true} cardWidth={460} cardHeight={440} gap={8} tilt={12} sideTilt={8} opacity={60} />
+                  <CoverflowGallery autoplay={true} cardWidth={460} cardHeight={460} gap={8} tilt={12} sideTilt={8} opacity={60} radius={20} />
                 )}
                 {coverflowSection === 'promociones' && (
-                  <CoverflowGallery slides={PROMO_COVERFLOW_SLIDES} autoplay={true} cardWidth={460} cardHeight={440} gap={8} tilt={12} sideTilt={8} opacity={60} />
+                  <CoverflowGallery slides={PROMO_COVERFLOW_SLIDES} autoplay={true} cardWidth={460} cardHeight={460} gap={8} tilt={12} sideTilt={8} opacity={60} radius={20} />
                 )}
                 {coverflowSection === 'temporada' && (
-                  <CoverflowGallery slides={TEMPORADA_COVERFLOW_SLIDES} autoplay={true} cardWidth={460} cardHeight={440} gap={8} tilt={12} sideTilt={8} opacity={60} />
+                  <CoverflowGallery slides={TEMPORADA_COVERFLOW_SLIDES} autoplay={true} cardWidth={460} cardHeight={460} gap={8} tilt={12} sideTilt={8} opacity={60} radius={20} />
                 )}
                 {coverflowSection === 'combos' && (
-                  <CoverflowGallery slides={COMBOS_COVERFLOW_SLIDES} autoplay={true} cardWidth={460} cardHeight={440} gap={8} tilt={12} sideTilt={8} opacity={60} />
+                  <CoverflowGallery slides={COMBOS_COVERFLOW_SLIDES} autoplay={true} cardWidth={460} cardHeight={460} gap={8} tilt={12} sideTilt={8} opacity={60} radius={20} />
                 )}
                 {coverflowSection === 'instalacion' && (
-                  <CoverflowGallery slides={INSTALACION_COVERFLOW_SLIDES} autoplay={true} cardWidth={460} cardHeight={440} gap={8} tilt={12} sideTilt={8} opacity={60} />
+                  <CoverflowGallery slides={INSTALACION_COVERFLOW_SLIDES} autoplay={true} cardWidth={460} cardHeight={460} gap={8} tilt={12} sideTilt={8} opacity={60} radius={20} />
                 )}
                 {coverflowSection === 'servicios' && (
-                  <CoverflowGallery slides={SERVICIOS_COVERFLOW_SLIDES} autoplay={true} cardWidth={460} cardHeight={440} gap={8} tilt={12} sideTilt={8} opacity={60} />
+                  <CoverflowGallery slides={SERVICIOS_COVERFLOW_SLIDES} autoplay={true} cardWidth={460} cardHeight={460} gap={8} tilt={12} sideTilt={8} opacity={60} radius={20} />
                 )}
               </motion.div>
             </AnimatePresence>

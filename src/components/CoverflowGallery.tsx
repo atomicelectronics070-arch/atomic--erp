@@ -115,8 +115,8 @@ function cssTransition(t: any): { dur: number; ease: string } {
 const COMPONENT_DEFAULTS = {
     slides: DEFAULT_SLIDES,
     cardWidth: 460,
-    cardHeight: 440,
-    radius: 16,
+    cardHeight: 460,
+    radius: 20,
     tilt: 12,
     sideTilt: 8,
     gap: 8,
@@ -281,9 +281,7 @@ export default function CoverflowGallery(props: Smooth3DSlideshowProps) {
     const { dur, ease } = cssTransition(transition)
     const transitionCss = `transform ${dur}s ${ease}, opacity ${dur}s ${ease}`
 
-    const effectiveRadius =
-        (Math.max(0, Math.min(20, radius)) / 20) *
-        (Math.min(cardWidth, cardHeight) / 2)
+    const effectiveRadius = typeof radius === "number" ? Math.min(Math.max(0, radius), 32) : 20
     const dim = 1 - Math.max(0, Math.min(100, opacity)) / 100
 
     const rootStyle: CSSProperties = {
