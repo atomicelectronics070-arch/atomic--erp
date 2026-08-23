@@ -101,12 +101,12 @@ function SafeImage({ src, alt = "", className, fill = false, width, height, ...p
   )
 }
 
-/* ─── Atom Logo (300% Size + Enhanced Futuristic Glow) ─── */
+/* ─── Atom Logo (300% Size + 100% Electric Blue Glow) ─── */
 function AtomLogo() {
   return (
     <div className="relative flex items-center justify-center my-2">
-      {/* Background Soft Glow */}
-      <div className="absolute w-48 h-48 bg-blue-500/25 rounded-full blur-3xl pointer-events-none" />
+      {/* Background Soft Electric Blue Aura */}
+      <div className="absolute w-52 h-52 bg-blue-600/30 rounded-full blur-3xl pointer-events-none" />
       
       <svg
         width="168"
@@ -114,20 +114,21 @@ function AtomLogo() {
         viewBox="0 0 72 72"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className="drop-shadow-[0_0_30px_rgba(59,130,246,0.8)] transition-transform hover:scale-105 duration-500 relative z-10"
+        className="drop-shadow-[0_0_35px_rgba(59,130,246,0.95)] transition-transform hover:scale-105 duration-500 relative z-10"
       >
-        {/* Core Glowing Nucleus */}
-        <circle cx="36" cy="36" r="8" fill="#60a5fa" className="animate-pulse" />
-        <circle cx="36" cy="36" r="5" fill="#ffffff" />
+        {/* Core Glowing Blue Nucleus */}
+        <circle cx="36" cy="36" r="9" fill="#2563eb" className="animate-pulse" />
+        <circle cx="36" cy="36" r="6" fill="#60a5fa" />
+        <circle cx="36" cy="36" r="3.5" fill="#ffffff" />
         
-        {/* Orbital Ring 1 */}
-        <ellipse cx="36" cy="36" rx="31" ry="11" stroke="rgba(96, 165, 250, 0.85)" strokeWidth="2" fill="none" />
+        {/* 100% Pure Electric Blue Orbital Ring 1 */}
+        <ellipse cx="36" cy="36" rx="31" ry="11" stroke="#3b82f6" strokeWidth="2.2" strokeOpacity="0.95" fill="none" />
         
-        {/* Orbital Ring 2 */}
-        <ellipse cx="36" cy="36" rx="31" ry="11" stroke="rgba(129, 140, 248, 0.85)" strokeWidth="2" fill="none" transform="rotate(60 36 36)" />
+        {/* 100% Pure Electric Blue Orbital Ring 2 */}
+        <ellipse cx="36" cy="36" rx="31" ry="11" stroke="#60a5fa" strokeWidth="2.2" strokeOpacity="0.95" fill="none" transform="rotate(60 36 36)" />
         
-        {/* Orbital Ring 3 */}
-        <ellipse cx="36" cy="36" rx="31" ry="11" stroke="rgba(52, 211, 153, 0.85)" strokeWidth="2" fill="none" transform="rotate(120 36 36)" />
+        {/* 100% Pure Electric Blue Orbital Ring 3 */}
+        <ellipse cx="36" cy="36" rx="31" ry="11" stroke="#2563eb" strokeWidth="2.2" strokeOpacity="0.95" fill="none" transform="rotate(120 36 36)" />
       </svg>
     </div>
   )
