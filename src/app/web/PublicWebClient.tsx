@@ -674,7 +674,7 @@ export default function PublicWebClient({
               href="/web/mandos"
               className="px-5 py-3 rounded-full bg-[#0E0E10] border border-white/[0.08] hover:border-white/20 hover:bg-[#131315] text-xs font-bold text-neutral-200 transition-all flex items-center gap-2 shadow-lg group"
             >
-              <span className="font-heading uppercase tracking-wider text-[11px]">Mandos & Consolas</span>
+              <span className="font-heading uppercase tracking-wider text-[11px]">MANDOS & CONSOLAS</span>
               <span className="text-[10px] bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full border border-blue-500/30 font-mono font-bold">NUEVO</span>
             </Link>
 
@@ -682,7 +682,7 @@ export default function PublicWebClient({
               href="/web/cocinas"
               className="px-5 py-3 rounded-full bg-[#0E0E10] border border-white/[0.08] hover:border-white/20 hover:bg-[#131315] text-xs font-bold text-neutral-200 transition-all flex items-center gap-2 shadow-lg group"
             >
-              <span className="font-heading uppercase tracking-wider text-[11px]">Encimeras & Hornos</span>
+              <span className="font-heading uppercase tracking-wider text-[11px]">ENCIMERAS & HORNOS</span>
               <span className="text-[10px] bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full border border-amber-500/30 font-mono font-bold">LÍNEA HOGAR</span>
             </Link>
 
@@ -690,7 +690,7 @@ export default function PublicWebClient({
               href="/web/cpus"
               className="px-5 py-3 rounded-full bg-[#0E0E10] border border-white/[0.08] hover:border-white/20 hover:bg-[#131315] text-xs font-bold text-neutral-200 transition-all flex items-center gap-2 shadow-lg group"
             >
-              <span className="font-heading uppercase tracking-wider text-[11px]">Laptops & CPUs</span>
+              <span className="font-heading uppercase tracking-wider text-[11px]">LAPTOPS & CPUS</span>
               <span className="text-[10px] bg-purple-500/20 text-purple-400 px-2 py-0.5 rounded-full border border-purple-500/30 font-mono font-bold">PROCESADORES</span>
             </Link>
 
@@ -698,14 +698,14 @@ export default function PublicWebClient({
               href="/web/phones"
               className="px-5 py-3 rounded-full bg-[#0E0E10] border border-white/[0.08] hover:border-white/20 hover:bg-[#131315] text-xs font-bold text-neutral-200 transition-all flex items-center gap-2 shadow-lg group"
             >
-              <span className="font-heading uppercase tracking-wider text-[11px]">Celulares & Tablets</span>
+              <span className="font-heading uppercase tracking-wider text-[11px]">CELULARES & TABLETS</span>
             </Link>
 
             <Link
               href="/web/blogs/guia-maquinas-de-bloques"
               className="px-5 py-3 rounded-full bg-[#0E0E10] border border-white/[0.08] hover:border-white/20 hover:bg-[#131315] text-xs font-bold text-neutral-200 transition-all flex items-center gap-2 shadow-lg group"
             >
-              <span className="font-heading uppercase tracking-wider text-[11px]">Plantas de Bloques</span>
+              <span className="font-heading uppercase tracking-wider text-[11px]">PLANTAS DE BLOQUES</span>
               <span className="text-[10px] bg-orange-500/20 text-orange-400 px-2 py-0.5 rounded-full border border-orange-500/30 font-mono font-bold">INDUSTRIAL</span>
             </Link>
           </div>
@@ -721,7 +721,7 @@ export default function PublicWebClient({
             <span className="font-heading uppercase tracking-wider text-[11px]">Catálogo Principal de Especialización</span>
           </div>
           <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black uppercase tracking-tight text-white font-heading mb-4">
-            Categorías
+            CATEGORÍAS
           </h2>
           <p className="text-sm text-[#94969D] leading-relaxed">
             Explora nuestras 8 divisiones especializadas en tecnología residencial, electrónica de consumo, equipamiento para el hogar, maquinaria industrial y soluciones digitales.
@@ -733,74 +733,74 @@ export default function PublicWebClient({
           {[
             {
               id: 'cat-residencial',
-              title: 'Tecnología Residencial',
-              subtitle: 'Domótica & Seguridad Smart',
+              title: 'TECNOLOGÍA RESIDENCIAL',
+              subtitle: 'DOMÓTICA & SEGURIDAD SMART',
               description: 'Cámaras IP con audio bidireccional, reconocimiento facial 3D, porteros inteligentes y control de accesos.',
               image: '/images/hero-3d/slide-2.jpg',
-              badge: 'Seguridad Smart',
+              badge: 'SEGURIDAD SMART',
               query: 'camara',
             },
             {
               id: 'cat-electronica',
-              title: 'Electrónica',
-              subtitle: 'Audio, Gadgets & Periféricos',
+              title: 'ELECTRÓNICA',
+              subtitle: 'AUDIO, GADGETS & PERIFÉRICOS',
               description: 'Equipos de audio de alta fidelidad, iluminación inteligente, periféricos para creadores y componentes electrónicos.',
               image: '/images/hero-3d/slide-6.jpg',
-              badge: 'Audio & Gadgets',
+              badge: 'AUDIO & GADGETS',
               query: 'electronica',
             },
             {
               id: 'cat-hogar',
-              title: 'Hogar',
-              subtitle: 'Cocina Premium & Confort',
+              title: 'HOGAR',
+              subtitle: 'COCINA PREMIUM & CONFORT',
               description: 'Encimeras a gas de alta eficiencia, hornos empotrables de acero inoxidable y electrodomésticos modernos para el hogar.',
               image: '/images/hero-3d/slide-4.jpg',
-              badge: 'Línea Hogar',
+              badge: 'LÍNEA HOGAR',
               query: 'cocina',
             },
             {
               id: 'cat-industria',
-              title: 'Industria',
-              subtitle: 'Maquinaria & Plantas de Bloques',
+              title: 'INDUSTRIA',
+              subtitle: 'MAQUINARIA & PLANTAS DE BLOQUES',
               description: 'Plantas automáticas de bloques de hormigón, mezcladoras de concreto reforzado y automatización pesada.',
               image: '/images/hero-3d/slide-5.jpg',
-              badge: 'Industrial',
+              badge: 'INDUSTRIAL',
               query: 'bloque',
             },
             {
               id: 'cat-entretenimiento',
-              title: 'Entretenimiento',
-              subtitle: 'Gaming, Consolas & Mandos',
+              title: 'ENTRETENIMIENTO',
+              subtitle: 'GAMING, CONSOLAS & MANDOS',
               description: 'Mandos DualSense inalámbricos para PS5, consolas Nintendo Switch, Xbox Series X|S y PlayStation Portal.',
               image: '/images/hero-3d/slide-1.png',
-              badge: 'Gaming',
+              badge: 'GAMING',
               query: 'mando',
             },
             {
               id: 'cat-computacion',
-              title: 'Computación',
-              subtitle: 'Laptops, PCs & Procesadores',
+              title: 'COMPUTACIÓN',
+              subtitle: 'LAPTOPS, PCS & PROCESADORES',
               description: 'Portátiles de alto rendimiento, estaciones de trabajo All-in-One Dell, CPUs Intel/AMD y almacenamiento ultrarrápido.',
               image: '/images/hero-3d/slide-3.jpg',
-              badge: 'Hardware',
+              badge: 'HARDWARE',
               query: 'laptop',
             },
             {
               id: 'cat-telefonia',
-              title: 'Telefonía',
-              subtitle: 'Smartphones, Tablets & Redes',
+              title: 'TELEFONÍA',
+              subtitle: 'SMARTPHONES, TABLETS & REDES',
               description: 'Dispositivos móviles de última generación, tablets para productividad, accesorios de carga rápida y conectividad.',
               image: '/images/hero-3d/slide-2.jpg',
-              badge: 'Móvil',
+              badge: 'MÓVIL',
               query: 'telefono',
             },
             {
               id: 'cat-software',
-              title: 'Software & Servicios',
-              subtitle: 'ERP, CRM & Automatización IA',
+              title: 'SOFTWARE & SERVICIOS',
+              subtitle: 'ERP, CRM & AUTOMATIZACIÓN IA',
               description: 'Sistemas de gestión empresarial integral, cotizadores automáticos, asesoría tecnológica y desarrollo a medida.',
               image: '/images/hero-3d/slide-6.jpg',
-              badge: 'Cloud & IA',
+              badge: 'CLOUD & IA',
               query: 'software',
             },
           ].map((c) => (
@@ -822,10 +822,10 @@ export default function PublicWebClient({
 
               {/* Card content */}
               <div className="flex flex-col pt-5 sm:pt-0 sm:pl-6 text-center sm:text-left flex-grow">
-                <h3 className="text-xl sm:text-2xl font-black text-white font-heading tracking-tight leading-tight group-hover:text-blue-400 transition-colors">
+                <h3 className="text-xl sm:text-2xl font-black text-white font-heading tracking-tight leading-tight group-hover:text-blue-400 transition-colors uppercase">
                   {c.title}
                 </h3>
-                <p className="text-xs font-semibold text-blue-400 mt-1 mb-2 font-heading">
+                <p className="text-xs font-bold text-blue-400 mt-1 mb-2 font-heading uppercase tracking-wider">
                   {c.subtitle}
                 </p>
                 <p className="text-xs text-[#94969D] leading-relaxed mb-6 line-clamp-3">
