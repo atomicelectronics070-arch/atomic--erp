@@ -291,114 +291,16 @@ export default function PublicWebClient({
   return (
     <div className="w-full bg-[#09090A] min-h-screen text-white font-sans selection:bg-white/20 selection:text-white overflow-x-hidden">
       
-      {/* ═══════════ MINIMAL STICKY HEADER (SIEMPRE NOS SIGUE A TODAS PARTES) ═══════════ */}
-      <header className="sticky top-0 z-50 w-full bg-[#070709]/95 backdrop-blur-xl border-b border-white/[0.06] py-1.5 px-4 sm:px-6 text-xs text-[#94969D] shadow-lg">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
-          
-          {/* LEFT: PRODUCTOS 100% ORIGINALES & GARANTÍA (MINIMALIST) */}
-          <div className="flex items-center gap-2">
-            <Shield size={13} className="text-emerald-400 shrink-0" />
-            <span className="text-emerald-400 font-extrabold font-heading text-[10px] sm:text-[11px] uppercase tracking-wider">
-              PRODUCTOS 100% ORIGINALES & GARANTÍA
-            </span>
-          </div>
-
-          {/* RIGHT: WHATSAPP (GOLD OUTLINE), LOGIN (ICON ONLY) & USER (ICON ONLY) */}
-          <div className="flex items-center gap-2 sm:gap-2.5 shrink-0 text-[11px]">
-            {/* WHATSAPP WITH HYPER-THIN GOLD CONTOUR */}
-            <a
-              href="https://wa.me/593969043453?text=Hola%20ATOMIC!%20Deseo%20informaci%C3%B3n%20sobre%20sus%20productos."
-              target="_blank"
-              rel="noreferrer"
-              className="px-3 py-1 rounded-full border border-amber-400/50 hover:border-amber-400 bg-amber-500/[0.08] hover:bg-amber-500/20 text-amber-300 hover:text-amber-200 font-bold font-heading uppercase tracking-wider text-[10px] sm:text-[11px] shadow-[0_0_12px_rgba(245,158,11,0.18)] transition-all flex items-center gap-1.5"
-              title="Asesoría Instantánea WhatsApp"
-            >
-              <span>ASESORÍA WHATSAPP</span>
-              <span className="text-amber-400">→</span>
-            </a>
-
-            {/* INICIAR SESIÓN (ICONO SOLAMENTE) */}
-            <Link
-              href="/login"
-              className="w-7 h-7 sm:w-7.5 sm:h-7.5 rounded-full bg-white text-black hover:bg-neutral-200 flex items-center justify-center shadow-md transition-all active:scale-95 shrink-0"
-              title="Iniciar Sesión"
-              aria-label="Iniciar Sesión"
-            >
-              <LogIn size={13} className="text-black" />
-            </Link>
-
-            {/* USER (ICONO SOLAMENTE) */}
-            <div className="relative z-50" ref={userMenuRef}>
-              <button
-                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                className="w-7 h-7 sm:w-7.5 sm:h-7.5 bg-[#131315] border border-white/15 hover:border-white/30 rounded-full text-white shadow-md transition-all active:scale-95 cursor-pointer flex items-center justify-center shrink-0"
-                title="Cuenta de Usuario"
-                aria-label="Cuenta de Usuario"
-              >
-                <User size={13} className="text-neutral-200" />
-              </button>
-
-              <AnimatePresence>
-                {isUserMenuOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 8, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 8, scale: 0.95 }}
-                    transition={{ duration: 0.15 }}
-                    className="absolute right-0 mt-2 w-52 bg-[#0c101c]/95 border border-blue-500/30 rounded-2xl shadow-2xl backdrop-blur-2xl p-2 z-50 overflow-hidden"
-                  >
-                    <div className="px-3 py-2 border-b border-white/10 mb-1">
-                      <p className="text-[10px] font-mono text-blue-400 uppercase font-bold tracking-widest">Cuenta Activa</p>
-                      <p className="text-xs font-bold text-white truncate">Usuario ATOMIC</p>
-                    </div>
-
-                    <button
-                      onClick={() => { setActiveUserModal('perfil'); setIsUserMenuOpen(false); }}
-                      className="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-blue-600/20 text-neutral-200 hover:text-white text-xs font-bold transition-all text-left group cursor-pointer"
-                    >
-                      <div className="w-7 h-7 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
-                        <User size={14} />
-                      </div>
-                      <span>Perfil</span>
-                    </button>
-
-                    <button
-                      onClick={() => { setActiveUserModal('compras'); setIsUserMenuOpen(false); }}
-                      className="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-emerald-600/20 text-neutral-200 hover:text-white text-xs font-bold transition-all text-left group cursor-pointer"
-                    >
-                      <div className="w-7 h-7 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform">
-                        <ShoppingBag size={14} />
-                      </div>
-                      <span>Compras</span>
-                    </button>
-
-                    <button
-                      onClick={() => { setActiveUserModal('envios'); setIsUserMenuOpen(false); }}
-                      className="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-amber-600/20 text-neutral-200 hover:text-white text-xs font-bold transition-all text-left group cursor-pointer"
-                    >
-                      <div className="w-7 h-7 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 group-hover:scale-110 transition-transform">
-                        <Truck size={14} />
-                      </div>
-                      <span>Envíos</span>
-                    </button>
-
-                    <button
-                      onClick={() => { setActiveUserModal('settings'); setIsUserMenuOpen(false); }}
-                      className="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-purple-600/20 text-neutral-200 hover:text-white text-xs font-bold transition-all text-left group cursor-pointer"
-                    >
-                      <div className="w-7 h-7 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform">
-                        <Settings size={14} />
-                      </div>
-                      <span>Settings</span>
-                    </button>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          </div>
-
+      {/* ═══════════ APARTADO INDEPENDIENTE: PRODUCTOS 100% ORIGINALES & GARANTÍA (SIEMPRE NOS SIGUE A TODAS PARTES) ═══════════ */}
+      <div className="sticky top-0 z-50 w-full bg-[#050507]/95 backdrop-blur-xl border-b border-emerald-500/20 py-1.5 px-4 text-center shadow-md">
+        <div className="max-w-7xl mx-auto flex items-center justify-center gap-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)] shrink-0" />
+          <span className="text-emerald-400 font-extrabold font-heading text-[10px] sm:text-[11px] uppercase tracking-widest">
+            PRODUCTOS 100% ORIGINALES & GARANTÍA
+          </span>
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)] shrink-0" />
         </div>
-      </header>
+      </div>
 
       {/* ═══════════ BANNER INDEPENDIENTE CENTRADO — ENVÍOS SIN RECARGO ═══════════ */}
       <section className="w-full bg-[#0D0C12] border-b border-white/[0.04] py-2.5 px-4 text-center">
@@ -411,34 +313,36 @@ export default function PublicWebClient({
         </div>
       </section>
 
-      {/* ═══════════ STICKY HORIZONTAL NAV TABS + IN-PLACE DESPLEGABLE EN VIVO ═══════════ */}
-      <nav className="sticky top-[35px] z-40 w-full bg-[#09090A]/95 backdrop-blur-2xl border-b border-white/[0.06] shadow-2xl shadow-black/60">
-        <div className="max-w-7xl mx-auto px-4 flex items-center justify-center gap-2.5 overflow-x-auto scrollbar-hide py-2.5">
+      {/* ═══════════ STICKY HORIZONTAL NAV TABS + ACCIONES + IN-PLACE DESPLEGABLE EN VIVO ═══════════ */}
+      <nav className="sticky top-[29px] z-40 w-full bg-[#09090A]/95 backdrop-blur-2xl border-b border-white/[0.06] shadow-2xl shadow-black/60">
+        <div className="max-w-7xl mx-auto px-4 flex items-center justify-between gap-3 py-2.5">
 
-          {/* 3-LINES HAMBURGER ICON BUTTON (SOLO LAS 3 LÍNEAS, SIN TEXTO) */}
-          <button
-            onClick={() => setIsMegaMenuOpen(!isMegaMenuOpen)}
-            className={`p-2 rounded-full border transition-all duration-200 active:scale-95 shrink-0 shadow-lg cursor-pointer flex items-center justify-center ${
-              isMegaMenuOpen
-                ? 'bg-blue-500 text-white border-blue-400 shadow-blue-500/30'
-                : 'bg-white/[0.06] hover:bg-white/15 text-blue-400 border-white/10 hover:text-white'
-            }`}
-            title="Mapa Conceptual de Navegación"
-            aria-label="Abrir Menú"
-          >
-            <Menu size={16} className={`transition-transform duration-300 ${isMegaMenuOpen ? 'rotate-90 text-white' : 'text-blue-400'}`} />
-          </button>
-
-          {/* BACK ARROW — visible when a tab is active */}
-          {activeTab && (
+          {/* LEFT: 3-LINES HAMBURGER + TABS */}
+          <div className="flex items-center gap-2.5 overflow-x-auto scrollbar-hide">
+            {/* 3-LINES HAMBURGER ICON BUTTON (SOLO LAS 3 LÍNEAS, SIN TEXTO) */}
             <button
-              onClick={() => setActiveTab(null)}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white/10 border border-white/15 text-white hover:bg-white/20 text-xs font-bold font-mono tracking-wider transition-all shrink-0 mr-1 shadow-lg"
+              onClick={() => setIsMegaMenuOpen(!isMegaMenuOpen)}
+              className={`p-2 rounded-full border transition-all duration-200 active:scale-95 shrink-0 shadow-lg cursor-pointer flex items-center justify-center ${
+                isMegaMenuOpen
+                  ? 'bg-blue-500 text-white border-blue-400 shadow-blue-500/30'
+                  : 'bg-white/[0.06] hover:bg-white/15 text-blue-400 border-white/10 hover:text-white'
+              }`}
+              title="Mapa Conceptual de Navegación"
+              aria-label="Abrir Menú"
             >
-              <ChevronLeft size={15} />
-              <span className="hidden sm:inline">INICIO</span>
+              <Menu size={16} className={`transition-transform duration-300 ${isMegaMenuOpen ? 'rotate-90 text-white' : 'text-blue-400'}`} />
             </button>
-          )}
+
+            {/* BACK ARROW — visible when a tab is active */}
+            {activeTab && (
+              <button
+                onClick={() => setActiveTab(null)}
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white/10 border border-white/15 text-white hover:bg-white/20 text-xs font-bold font-mono tracking-wider transition-all shrink-0 mr-1 shadow-lg"
+              >
+                <ChevronLeft size={15} />
+                <span className="hidden sm:inline">INICIO</span>
+              </button>
+            )}
 
           {/* ─── SECCIÓN 1: CATÁLOGO & NAVEGACIÓN PRINCIPAL ─── */}
           <div className="flex items-center gap-1 bg-white/[0.04] hover:bg-white/[0.06] p-1 rounded-full border border-white/[0.08] backdrop-blur-md shrink-0 shadow-inner transition-colors">
@@ -509,6 +413,99 @@ export default function PublicWebClient({
             ))}
           </div>
 
+          {/* RIGHT: WHATSAPP (GOLD OUTLINE), LOGIN (ICON ONLY) & USER (ICON ONLY) */}
+          <div className="flex items-center gap-2 shrink-0">
+            {/* WHATSAPP WITH HYPER-THIN GOLD CONTOUR */}
+            <a
+              href="https://wa.me/593969043453?text=Hola%20ATOMIC!%20Deseo%20informaci%C3%B3n%20sobre%20sus%20productos."
+              target="_blank"
+              rel="noreferrer"
+              className="px-3 py-1.5 rounded-full border border-amber-400/50 hover:border-amber-400 bg-amber-500/[0.08] hover:bg-amber-500/20 text-amber-300 hover:text-amber-200 font-bold font-heading uppercase tracking-wider text-[10px] sm:text-[11px] shadow-[0_0_12px_rgba(245,158,11,0.18)] transition-all flex items-center gap-1.5"
+              title="Asesoría Instantánea WhatsApp"
+            >
+              <span>ASESORÍA WHATSAPP</span>
+              <span className="text-amber-400">→</span>
+            </a>
+
+            {/* INICIAR SESIÓN (ICONO SOLAMENTE) */}
+            <Link
+              href="/login"
+              className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white text-black hover:bg-neutral-200 flex items-center justify-center shadow-md transition-all active:scale-95 shrink-0"
+              title="Iniciar Sesión"
+              aria-label="Iniciar Sesión"
+            >
+              <LogIn size={13} className="text-black" />
+            </Link>
+
+            {/* USER (ICONO SOLAMENTE) */}
+            <div className="relative z-50" ref={userMenuRef}>
+              <button
+                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                className="w-7 h-7 sm:w-8 sm:h-8 bg-[#131315] border border-white/15 hover:border-white/30 rounded-full text-white shadow-md transition-all active:scale-95 cursor-pointer flex items-center justify-center shrink-0"
+                title="Cuenta de Usuario"
+                aria-label="Cuenta de Usuario"
+              >
+                <User size={13} className="text-neutral-200" />
+              </button>
+
+              <AnimatePresence>
+                {isUserMenuOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 8, scale: 0.95 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute right-0 mt-2 w-52 bg-[#0c101c]/95 border border-blue-500/30 rounded-2xl shadow-2xl backdrop-blur-2xl p-2 z-50 overflow-hidden"
+                  >
+                    <div className="px-3 py-2 border-b border-white/10 mb-1">
+                      <p className="text-[10px] font-mono text-blue-400 uppercase font-bold tracking-widest">Cuenta Activa</p>
+                      <p className="text-xs font-bold text-white truncate">Usuario ATOMIC</p>
+                    </div>
+
+                    <button
+                      onClick={() => { setActiveUserModal('perfil'); setIsUserMenuOpen(false); }}
+                      className="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-blue-600/20 text-neutral-200 hover:text-white text-xs font-bold transition-all text-left group cursor-pointer"
+                    >
+                      <div className="w-7 h-7 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
+                        <User size={14} />
+                      </div>
+                      <span>Perfil</span>
+                    </button>
+
+                    <button
+                      onClick={() => { setActiveUserModal('compras'); setIsUserMenuOpen(false); }}
+                      className="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-emerald-600/20 text-neutral-200 hover:text-white text-xs font-bold transition-all text-left group cursor-pointer"
+                    >
+                      <div className="w-7 h-7 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform">
+                        <ShoppingBag size={14} />
+                      </div>
+                      <span>Compras</span>
+                    </button>
+
+                    <button
+                      onClick={() => { setActiveUserModal('envios'); setIsUserMenuOpen(false); }}
+                      className="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-amber-600/20 text-neutral-200 hover:text-white text-xs font-bold transition-all text-left group cursor-pointer"
+                    >
+                      <div className="w-7 h-7 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 group-hover:scale-110 transition-transform">
+                        <Truck size={14} />
+                      </div>
+                      <span>Envíos</span>
+                    </button>
+
+                    <button
+                      onClick={() => { setActiveUserModal('settings'); setIsUserMenuOpen(false); }}
+                      className="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-purple-600/20 text-neutral-200 hover:text-white text-xs font-bold transition-all text-left group cursor-pointer"
+                    >
+                      <div className="w-7 h-7 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform">
+                        <Settings size={14} />
+                      </div>
+                      <span>Settings</span>
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
         </div>
 
         {/* ═══════════ DESPLEGABLE EN VIVO (INLINE ACCORDION DROPDOWN) ═══════════ */}
