@@ -101,15 +101,35 @@ function SafeImage({ src, alt = "", className, fill = false, width, height, ...p
   )
 }
 
-/* ─── Atom Logo ─── */
+/* ─── Atom Logo (300% Size + Enhanced Futuristic Glow) ─── */
 function AtomLogo() {
   return (
-    <svg width="56" height="56" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="36" cy="36" r="6" fill="#3b82f6" className="animate-pulse" />
-      <ellipse cx="36" cy="36" rx="30" ry="10" stroke="rgba(59, 130, 246, 0.6)" strokeWidth="1.5" fill="none" />
-      <ellipse cx="36" cy="36" rx="30" ry="10" stroke="rgba(99, 102, 241, 0.6)" strokeWidth="1.5" fill="none" transform="rotate(60 36 36)" />
-      <ellipse cx="36" cy="36" rx="30" ry="10" stroke="rgba(16, 185, 129, 0.6)" strokeWidth="1.5" fill="none" transform="rotate(120 36 36)" />
-    </svg>
+    <div className="relative flex items-center justify-center my-2">
+      {/* Background Soft Glow */}
+      <div className="absolute w-48 h-48 bg-blue-500/25 rounded-full blur-3xl pointer-events-none" />
+      
+      <svg
+        width="168"
+        height="168"
+        viewBox="0 0 72 72"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className="drop-shadow-[0_0_30px_rgba(59,130,246,0.8)] transition-transform hover:scale-105 duration-500 relative z-10"
+      >
+        {/* Core Glowing Nucleus */}
+        <circle cx="36" cy="36" r="8" fill="#60a5fa" className="animate-pulse" />
+        <circle cx="36" cy="36" r="5" fill="#ffffff" />
+        
+        {/* Orbital Ring 1 */}
+        <ellipse cx="36" cy="36" rx="31" ry="11" stroke="rgba(96, 165, 250, 0.85)" strokeWidth="2" fill="none" />
+        
+        {/* Orbital Ring 2 */}
+        <ellipse cx="36" cy="36" rx="31" ry="11" stroke="rgba(129, 140, 248, 0.85)" strokeWidth="2" fill="none" transform="rotate(60 36 36)" />
+        
+        {/* Orbital Ring 3 */}
+        <ellipse cx="36" cy="36" rx="31" ry="11" stroke="rgba(52, 211, 153, 0.85)" strokeWidth="2" fill="none" transform="rotate(120 36 36)" />
+      </svg>
+    </div>
   )
 }
 
@@ -343,44 +363,90 @@ export default function PublicWebClient({
         </div>
       </section>
 
-      {/* ═══════════ HORIZONTAL NAV TABS (APPIT PILL STYLE) ═══════════ */}
+      {/* ═══════════ HORIZONTAL NAV TABS (3 INTELLIGENT SECTIONS) ═══════════ */}
       <nav className="sticky top-0 z-40 w-full bg-[#09090A]/95 backdrop-blur-2xl border-b border-white/[0.06] shadow-2xl shadow-black/60">
-        <div className="max-w-7xl mx-auto px-4 flex items-center justify-center gap-1.5 overflow-x-auto scrollbar-hide py-2.5">
+        <div className="max-w-7xl mx-auto px-4 flex items-center justify-center gap-2.5 overflow-x-auto scrollbar-hide py-2.5">
 
           {/* BACK ARROW — visible when a tab is active */}
           {activeTab && (
             <button
               onClick={() => setActiveTab(null)}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white/10 border border-white/15 text-white hover:bg-white/20 text-xs font-bold font-mono tracking-wider transition-all shrink-0 mr-2 shadow-lg"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white/10 border border-white/15 text-white hover:bg-white/20 text-xs font-bold font-mono tracking-wider transition-all shrink-0 mr-1 shadow-lg"
             >
               <ChevronLeft size={15} />
               <span className="hidden sm:inline">INICIO</span>
             </button>
           )}
 
-          {([
-            { id: 'categorias', label: 'CATEGORÍAS' },
-            { id: 'ofertas', label: 'OFERTAS' },
-            { id: 'blog', label: 'BLOG' },
-            { id: 'newsletter', label: 'NEWSLETTER' },
-            { id: 'landings', label: 'LANDINGS' },
-            { id: 'especializacion', label: 'ÁREAS' },
-            { id: 'nosotros', label: 'NOSOTROS' },
-            { id: 'contacto', label: 'CONTACTO' },
-            { id: 'resenas', label: 'RESEÑAS' },
-          ] as { id: string; label: string }[]).map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(activeTab === tab.id ? null : tab.id)}
-              className={`shrink-0 px-4 py-2 rounded-full text-[11px] font-bold tracking-wide transition-all duration-200 whitespace-nowrap border ${
-                activeTab === tab.id
-                  ? 'bg-white text-black border-white shadow-xl shadow-white/10 scale-105'
-                  : 'bg-[#131315] text-[#94969D] border-white/[0.06] hover:bg-[#1D1D20] hover:text-white hover:border-white/15'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
+          {/* ─── SECCIÓN 1: CATÁLOGO & NAVEGACIÓN PRINCIPAL ─── */}
+          <div className="flex items-center gap-1 bg-white/[0.04] hover:bg-white/[0.06] p-1 rounded-full border border-white/[0.08] backdrop-blur-md shrink-0 shadow-inner transition-colors">
+            {[
+              { id: 'categorias', label: 'CATEGORÍAS' },
+              { id: 'ofertas', label: 'OFERTAS' },
+              { id: 'especializacion', label: 'ÁREAS' },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(activeTab === tab.id ? null : tab.id)}
+                className={`shrink-0 px-3.5 py-1.5 rounded-full text-[11px] font-bold tracking-wider font-heading transition-all duration-200 whitespace-nowrap border ${
+                  activeTab === tab.id
+                    ? 'bg-white text-black border-white shadow-xl shadow-white/10 scale-105'
+                    : 'bg-transparent text-[#94969D] border-transparent hover:bg-white/10 hover:text-white'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {/* LÍNEA DIVISORIA VERTICAL 1 */}
+          <div className="h-5 w-[1px] bg-white/20 shrink-0" />
+
+          {/* ─── SECCIÓN 2: SUSCRIBIBLES & CONTENIDO DINÁMICO ─── */}
+          <div className="flex items-center gap-1 bg-white/[0.04] hover:bg-white/[0.06] p-1 rounded-full border border-white/[0.08] backdrop-blur-md shrink-0 shadow-inner transition-colors">
+            {[
+              { id: 'landings', label: 'LANDINGS' },
+              { id: 'newsletter', label: 'NEWSLETTER' },
+              { id: 'blog', label: 'BLOG' },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(activeTab === tab.id ? null : tab.id)}
+                className={`shrink-0 px-3.5 py-1.5 rounded-full text-[11px] font-bold tracking-wider font-heading transition-all duration-200 whitespace-nowrap border ${
+                  activeTab === tab.id
+                    ? 'bg-white text-black border-white shadow-xl shadow-white/10 scale-105'
+                    : 'bg-transparent text-[#94969D] border-transparent hover:bg-white/10 hover:text-white'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {/* LÍNEA DIVISORIA VERTICAL 2 */}
+          <div className="h-5 w-[1px] bg-white/20 shrink-0" />
+
+          {/* ─── SECCIÓN 3: CONFIANZA, EMPRESA & SOPORTE ─── */}
+          <div className="flex items-center gap-1 bg-white/[0.04] hover:bg-white/[0.06] p-1 rounded-full border border-white/[0.08] backdrop-blur-md shrink-0 shadow-inner transition-colors">
+            {[
+              { id: 'nosotros', label: 'NOSOTROS' },
+              { id: 'contacto', label: 'CONTACTO' },
+              { id: 'resenas', label: 'RESEÑAS' },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(activeTab === tab.id ? null : tab.id)}
+                className={`shrink-0 px-3.5 py-1.5 rounded-full text-[11px] font-bold tracking-wider font-heading transition-all duration-200 whitespace-nowrap border ${
+                  activeTab === tab.id
+                    ? 'bg-white text-black border-white shadow-xl shadow-white/10 scale-105'
+                    : 'bg-transparent text-[#94969D] border-transparent hover:bg-white/10 hover:text-white'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
         </div>
       </nav>
 
