@@ -259,58 +259,51 @@ export default function PublicWebClient({
   return (
     <div className="w-full bg-[#09090A] min-h-screen text-white font-sans selection:bg-white/20 selection:text-white overflow-x-hidden">
       
-      {/* ═══════════ PROMO TOP HIGHLIGHT BAR (APPIT STYLE) ═══════════ */}
-      <section className="bg-[#09090A] border-b border-white/[0.06] py-2.5 px-4 sm:px-6 text-xs text-[#94969D]">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
-          <div className="flex items-center gap-3 flex-wrap justify-center md:justify-start">
-            <button
-              onClick={() => setIsMegaMenuOpen(true)}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/10 hover:bg-white/20 text-white text-[11px] font-bold font-heading uppercase tracking-wider transition-all border border-white/15 active:scale-95 shadow-md shrink-0"
-              title="Abrir Mapa Conceptual de Navegación"
-            >
-              <Menu size={13} className="text-blue-400" />
-              <span>MENÚ</span>
-            </button>
-            <span className="flex items-center gap-2 text-white font-bold font-heading text-[11px] sm:text-xs uppercase tracking-wide">
-              <Truck size={14} className="text-white shrink-0" /> PROMO: ENVÍOS SIN RECARGO A NIVEL NACIONAL EN CUALQUIER PRODUCTO
-            </span>
-            <span className="hidden xl:flex items-center gap-2 text-[#94969D] font-medium text-[11px] uppercase tracking-wider">
-              <Shield size={14} className="text-emerald-400 shrink-0" /> PRODUCTOS 100% ORIGINALES & GARANTÍA
+      {/* ═══════════ MINIMAL STICKY HEADER (SIEMPRE NOS SIGUE A TODAS PARTES) ═══════════ */}
+      <header className="sticky top-0 z-50 w-full bg-[#070709]/95 backdrop-blur-xl border-b border-white/[0.06] py-1.5 px-4 sm:px-6 text-xs text-[#94969D] shadow-lg">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
+          
+          {/* LEFT: PRODUCTOS 100% ORIGINALES & GARANTÍA (MINIMALIST) */}
+          <div className="flex items-center gap-2">
+            <Shield size={13} className="text-emerald-400 shrink-0" />
+            <span className="text-emerald-400 font-extrabold font-heading text-[10px] sm:text-[11px] uppercase tracking-wider">
+              PRODUCTOS 100% ORIGINALES & GARANTÍA
             </span>
           </div>
+
+          {/* RIGHT: WHATSAPP, LOGIN & USER */}
           <div className="flex items-center gap-3 shrink-0 text-[11px]">
             <a
               href="https://wa.me/593969043453?text=Hola%20ATOMIC!%20Deseo%20informaci%C3%B3n%20sobre%20sus%20productos."
               target="_blank"
               rel="noreferrer"
-              className="text-[#94969D] hover:text-white font-bold hidden sm:flex items-center gap-1.5 transition-colors uppercase tracking-wider text-[11px]"
+              className="text-[#94969D] hover:text-white font-bold hidden sm:flex items-center gap-1.5 transition-colors uppercase tracking-wider text-[10px] sm:text-[11px]"
             >
-              <span>ASESORÍA INSTANTÁNEA WHATSAPP</span>
+              <span>ASESORÍA WHATSAPP</span>
               <span>→</span>
             </a>
 
-            {/* INICIAR SESIÓN BUTTON (APPIT PILL) */}
+            {/* INICIAR SESIÓN BUTTON */}
             <Link
               href="/login"
-              className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white text-black hover:bg-neutral-200 text-xs font-bold font-heading tracking-wider shadow-lg transition-all"
+              className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white text-black hover:bg-neutral-200 text-[10px] sm:text-[11px] font-bold font-heading tracking-wider shadow-md transition-all"
             >
-              <LogIn size={13} />
+              <LogIn size={12} />
               <span>INICIAR SESIÓN</span>
             </Link>
 
-            {/* USER DROPDOWN MENU (APPIT PILL) */}
+            {/* USER DROPDOWN MENU */}
             <div className="relative z-50" ref={userMenuRef}>
               <button
                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                className="flex items-center gap-2 px-3.5 py-1.5 bg-[#131315] border border-white/10 hover:border-white/20 rounded-full text-xs font-bold text-white shadow-lg transition-all active:scale-95 cursor-pointer"
+                className="flex items-center gap-1.5 px-2.5 py-1 bg-[#131315] border border-white/10 hover:border-white/20 rounded-full text-[10px] sm:text-[11px] font-bold text-white shadow-md transition-all active:scale-95 cursor-pointer"
               >
-                <div className="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center text-white">
-                  <User size={12} />
+                <div className="w-4 h-4 rounded-full bg-white/10 flex items-center justify-center text-white">
+                  <User size={10} />
                 </div>
                 <span className="font-heading tracking-wider font-bold text-white">USER</span>
-                <ChevronDown size={14} className={`text-neutral-400 transition-transform duration-200 ${isUserMenuOpen ? 'rotate-180' : ''}`} />
+                <ChevronDown size={12} className={`text-neutral-400 transition-transform duration-200 ${isUserMenuOpen ? 'rotate-180' : ''}`} />
               </button>
-
 
               <AnimatePresence>
                 {isUserMenuOpen && (
@@ -328,7 +321,7 @@ export default function PublicWebClient({
 
                     <button
                       onClick={() => { setActiveUserModal('perfil'); setIsUserMenuOpen(false); }}
-                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-blue-600/20 text-neutral-200 hover:text-white text-xs font-bold transition-all text-left group cursor-pointer"
+                      className="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-blue-600/20 text-neutral-200 hover:text-white text-xs font-bold transition-all text-left group cursor-pointer"
                     >
                       <div className="w-7 h-7 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
                         <User size={14} />
@@ -338,7 +331,7 @@ export default function PublicWebClient({
 
                     <button
                       onClick={() => { setActiveUserModal('compras'); setIsUserMenuOpen(false); }}
-                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-emerald-600/20 text-neutral-200 hover:text-white text-xs font-bold transition-all text-left group cursor-pointer"
+                      className="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-emerald-600/20 text-neutral-200 hover:text-white text-xs font-bold transition-all text-left group cursor-pointer"
                     >
                       <div className="w-7 h-7 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform">
                         <ShoppingBag size={14} />
@@ -348,7 +341,7 @@ export default function PublicWebClient({
 
                     <button
                       onClick={() => { setActiveUserModal('envios'); setIsUserMenuOpen(false); }}
-                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-amber-600/20 text-neutral-200 hover:text-white text-xs font-bold transition-all text-left group cursor-pointer"
+                      className="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-amber-600/20 text-neutral-200 hover:text-white text-xs font-bold transition-all text-left group cursor-pointer"
                     >
                       <div className="w-7 h-7 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 group-hover:scale-110 transition-transform">
                         <Truck size={14} />
@@ -358,7 +351,7 @@ export default function PublicWebClient({
 
                     <button
                       onClick={() => { setActiveUserModal('settings'); setIsUserMenuOpen(false); }}
-                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-purple-600/20 text-neutral-200 hover:text-white text-xs font-bold transition-all text-left group cursor-pointer"
+                      className="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-purple-600/20 text-neutral-200 hover:text-white text-xs font-bold transition-all text-left group cursor-pointer"
                     >
                       <div className="w-7 h-7 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform">
                         <Settings size={14} />
@@ -370,21 +363,37 @@ export default function PublicWebClient({
               </AnimatePresence>
             </div>
           </div>
+
+        </div>
+      </header>
+
+      {/* ═══════════ BANNER INDEPENDIENTE CENTRADO — ENVÍOS SIN RECARGO ═══════════ */}
+      <section className="w-full bg-[#0D0C12] border-b border-white/[0.04] py-2.5 px-4 text-center">
+        <div className="max-w-7xl mx-auto flex items-center justify-center gap-2">
+          <Truck size={14} className="text-blue-400 shrink-0 animate-bounce" />
+          <span className="text-white font-black font-heading text-[11px] sm:text-xs uppercase tracking-wider">
+            PROMO: ENVÍOS SIN RECARGO A NIVEL NACIONAL EN CUALQUIER PRODUCTO
+          </span>
+          <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse ml-1 shrink-0" />
         </div>
       </section>
 
-      {/* ═══════════ HORIZONTAL NAV TABS (3 INTELLIGENT SECTIONS) ═══════════ */}
-      <nav className="sticky top-0 z-40 w-full bg-[#09090A]/95 backdrop-blur-2xl border-b border-white/[0.06] shadow-2xl shadow-black/60">
+      {/* ═══════════ STICKY HORIZONTAL NAV TABS + IN-PLACE DESPLEGABLE EN VIVO ═══════════ */}
+      <nav className="sticky top-[35px] z-40 w-full bg-[#09090A]/95 backdrop-blur-2xl border-b border-white/[0.06] shadow-2xl shadow-black/60">
         <div className="max-w-7xl mx-auto px-4 flex items-center justify-center gap-2.5 overflow-x-auto scrollbar-hide py-2.5">
 
-          {/* HAMBURGER CONCEPT MAP TRIGGER */}
+          {/* 3-LINES HAMBURGER ICON BUTTON (SOLO LAS 3 LÍNEAS, SIN TEXTO) */}
           <button
-            onClick={() => setIsMegaMenuOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-500/15 hover:bg-blue-500/25 border border-blue-500/30 text-blue-400 hover:text-white text-[11px] font-bold font-heading uppercase tracking-wider transition-all shrink-0 shadow-lg active:scale-95 group"
-            title="Abrir Mapa Conceptual de Navegación"
+            onClick={() => setIsMegaMenuOpen(!isMegaMenuOpen)}
+            className={`p-2 rounded-full border transition-all duration-200 active:scale-95 shrink-0 shadow-lg cursor-pointer flex items-center justify-center ${
+              isMegaMenuOpen
+                ? 'bg-blue-500 text-white border-blue-400 shadow-blue-500/30'
+                : 'bg-white/[0.06] hover:bg-white/15 text-blue-400 border-white/10 hover:text-white'
+            }`}
+            title="Mapa Conceptual de Navegación"
+            aria-label="Abrir Menú"
           >
-            <Menu size={14} className="group-hover:rotate-90 transition-transform duration-300" />
-            <span className="hidden sm:inline">EXPLORAR MAPA</span>
+            <Menu size={16} className={`transition-transform duration-300 ${isMegaMenuOpen ? 'rotate-90 text-white' : 'text-blue-400'}`} />
           </button>
 
           {/* BACK ARROW — visible when a tab is active */}
@@ -407,7 +416,7 @@ export default function PublicWebClient({
             ].map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(activeTab === tab.id ? null : tab.id)}
+                onClick={() => { setActiveTab(activeTab === tab.id ? null : tab.id); setIsMegaMenuOpen(false); }}
                 className={`shrink-0 px-3.5 py-1.5 rounded-full text-[11px] font-bold tracking-wider font-heading transition-all duration-200 whitespace-nowrap border ${
                   activeTab === tab.id
                     ? 'bg-white text-black border-white shadow-xl shadow-white/10 scale-105'
@@ -431,7 +440,7 @@ export default function PublicWebClient({
             ].map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(activeTab === tab.id ? null : tab.id)}
+                onClick={() => { setActiveTab(activeTab === tab.id ? null : tab.id); setIsMegaMenuOpen(false); }}
                 className={`shrink-0 px-3.5 py-1.5 rounded-full text-[11px] font-bold tracking-wider font-heading transition-all duration-200 whitespace-nowrap border ${
                   activeTab === tab.id
                     ? 'bg-white text-black border-white shadow-xl shadow-white/10 scale-105'
@@ -455,7 +464,7 @@ export default function PublicWebClient({
             ].map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(activeTab === tab.id ? null : tab.id)}
+                onClick={() => { setActiveTab(activeTab === tab.id ? null : tab.id); setIsMegaMenuOpen(false); }}
                 className={`shrink-0 px-3.5 py-1.5 rounded-full text-[11px] font-bold tracking-wider font-heading transition-all duration-200 whitespace-nowrap border ${
                   activeTab === tab.id
                     ? 'bg-white text-black border-white shadow-xl shadow-white/10 scale-105'
@@ -468,6 +477,332 @@ export default function PublicWebClient({
           </div>
 
         </div>
+
+        {/* ═══════════ DESPLEGABLE EN VIVO (INLINE ACCORDION DROPDOWN) ═══════════ */}
+        <AnimatePresence>
+          {isMegaMenuOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+              className="w-full bg-[#09080E]/98 border-t border-white/10 shadow-2xl overflow-hidden backdrop-blur-2xl"
+            >
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 max-h-[80vh] overflow-y-auto scrollbar-thin scrollbar-thumb-white/20">
+                {/* Header */}
+                <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-xl bg-blue-500/20 border border-blue-500/40 flex items-center justify-center text-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.3)]">
+                      <Hexagon size={18} />
+                    </div>
+                    <div>
+                      <span className="text-[9px] font-mono font-bold uppercase tracking-widest text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">
+                        ECOSISTEMA INTEGRAL ATOMIC
+                      </span>
+                      <h2 className="text-lg sm:text-xl font-black uppercase tracking-tight text-white font-heading">
+                        MAPA CONCEPTUAL DE NAVEGACIÓN
+                      </h2>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setIsMegaMenuOpen(false)}
+                    className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-neutral-300 hover:text-white transition-all cursor-pointer"
+                    title="Cerrar Desplegable"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+
+                {/* Central Root Node (Mapa Conceptual) */}
+                <div className="flex flex-col items-center justify-center mb-8">
+                  <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-gradient-to-r from-blue-900/40 via-indigo-900/40 to-blue-900/40 border border-blue-500/40 shadow-[0_0_25px_rgba(59,130,246,0.25)]">
+                    <span className="w-2 h-2 rounded-full bg-blue-400 animate-ping" />
+                    <span className="text-xs sm:text-sm font-black font-heading tracking-widest text-white uppercase">
+                      ATOMIC PLATFORM // CORE HUB
+                    </span>
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  </div>
+                  <div className="w-0.5 h-5 bg-gradient-to-b from-blue-500/60 to-blue-500/20 my-1" />
+                </div>
+
+                {/* Conceptual Map Grid with Interconnected Tree Lines */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 relative">
+                  
+                  {/* ─── RAMA 1: SECTORES ─── */}
+                  <div className="relative bg-[#121017] border border-white/[0.08] hover:border-blue-500/40 rounded-2xl p-5 transition-all group">
+                    <div className="flex items-center gap-3 mb-4 pb-3 border-b border-white/10">
+                      <div className="w-8 h-8 rounded-xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-400">
+                        <Building size={16} />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-black uppercase tracking-wider text-white font-heading">
+                          SECTORES
+                        </h3>
+                        <p className="text-[10px] text-[#94969D] font-mono">Divisiones de Especialización</p>
+                      </div>
+                    </div>
+
+                    <div className="relative pl-5 space-y-2.5 before:absolute before:top-2 before:bottom-2 before:left-2 before:w-0.5 before:bg-blue-500/30">
+                      {[
+                        { name: "Tecnología Residencial & Domótica", desc: "Seguridad y control smart", query: "camara" },
+                        { name: "Electrónica & Periféricos", desc: "Audio, gadgets y creadores", query: "electronica" },
+                        { name: "Línea Hogar & Confort", desc: "Cocinas, encimeras y hornos", query: "cocina" },
+                        { name: "Industria & Construcción", desc: "Plantas de bloques y maquinaria", query: "bloque" },
+                        { name: "Energía & Movilidad Eléctrica", desc: "Cargadores EV y generadores", query: "generador" },
+                      ].map((item, idx) => (
+                        <div
+                          key={idx}
+                          onClick={() => {
+                            setIsMegaMenuOpen(false)
+                            setActiveTab(null)
+                            setSearchQuery(item.query)
+                            document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' })
+                          }}
+                          className="relative cursor-pointer hover:bg-white/[0.06] p-2 rounded-xl transition-all after:absolute after:top-1/2 after:-left-3 after:w-3 after:h-0.5 after:bg-blue-500/40"
+                        >
+                          <div className="text-xs font-bold text-neutral-200 group-hover:text-white flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0" />
+                            <span>{item.name}</span>
+                          </div>
+                          <div className="text-[10px] text-[#94969D] pl-3.5">{item.desc}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* ─── RAMA 2: CATEGORÍAS ─── */}
+                  <div className="relative bg-[#121017] border border-white/[0.08] hover:border-amber-500/40 rounded-2xl p-5 transition-all group">
+                    <div className="flex items-center gap-3 mb-4 pb-3 border-b border-white/10">
+                      <div className="w-8 h-8 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400">
+                        <Package size={16} />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-black uppercase tracking-wider text-white font-heading">
+                          CATEGORÍAS
+                        </h3>
+                        <p className="text-[10px] text-[#94969D] font-mono">Líneas de Producto Activas</p>
+                      </div>
+                    </div>
+
+                    <div className="relative pl-5 space-y-2.5 before:absolute before:top-2 before:bottom-2 before:left-2 before:w-0.5 before:bg-amber-500/30">
+                      {[
+                        { name: "Mandos & Consolas Gaming", href: "/web/mandos", badge: "NUEVO" },
+                        { name: "Encimeras & Hornos", href: "/web/cocinas", badge: "HOGAR" },
+                        { name: "Laptops & CPUs Intel/AMD", href: "/web/cpus", badge: "PRO" },
+                        { name: "Celulares, Tablets & Redes", href: "/web/phones", badge: "MÓVIL" },
+                        { name: "Plantas de Bloques de Hormigón", href: "/web/blogs/guia-maquinas-de-bloques", badge: "INDUSTRIAL" },
+                      ].map((item, idx) => (
+                        <Link
+                          key={idx}
+                          href={item.href}
+                          onClick={() => setIsMegaMenuOpen(false)}
+                          className="relative block hover:bg-white/[0.06] p-2 rounded-xl transition-all after:absolute after:top-1/2 after:-left-3 after:w-3 after:h-0.5 after:bg-amber-500/40"
+                        >
+                          <div className="flex items-center justify-between text-xs font-bold text-neutral-200">
+                            <span className="flex items-center gap-2">
+                              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />
+                              {item.name}
+                            </span>
+                            <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                              {item.badge}
+                            </span>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* ─── RAMA 3: BLOG & NEWSLETTER ─── */}
+                  <div className="relative bg-[#121017] border border-white/[0.08] hover:border-purple-500/40 rounded-2xl p-5 transition-all group">
+                    <div className="flex items-center gap-3 mb-4 pb-3 border-b border-white/10">
+                      <div className="w-8 h-8 rounded-xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-400">
+                        <Sparkles size={16} />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-black uppercase tracking-wider text-white font-heading">
+                          BLOG & NEWSLETTER
+                        </h3>
+                        <p className="text-[10px] text-[#94969D] font-mono">Contenido, New Sellers & Landings</p>
+                      </div>
+                    </div>
+
+                    <div className="relative pl-5 space-y-2.5 before:absolute before:top-2 before:bottom-2 before:left-2 before:w-0.5 before:bg-purple-500/30">
+                      {[
+                        { tab: "blog", name: "Blog Tecnológico & Guías", desc: "Artículos y comparativas técnicas" },
+                        { tab: "newsletter", name: "Newsletter Semanal", desc: "Ofertas exclusivas y lanzamientos" },
+                        { tab: "landings", name: "Landings & New Sellers", desc: "Páginas dedicadas y distribuidores" },
+                      ].map((item, idx) => (
+                        <div
+                          key={idx}
+                          onClick={() => {
+                            setIsMegaMenuOpen(false)
+                            setActiveTab(item.tab)
+                          }}
+                          className="relative cursor-pointer hover:bg-white/[0.06] p-2 rounded-xl transition-all after:absolute after:top-1/2 after:-left-3 after:w-3 after:h-0.5 after:bg-purple-500/40"
+                        >
+                          <div className="text-xs font-bold text-neutral-200 group-hover:text-white flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-purple-400 shrink-0" />
+                            <span>{item.name}</span>
+                          </div>
+                          <div className="text-[10px] text-[#94969D] pl-3.5">{item.desc}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* ─── RAMA 4: OFERTAS & BENEFICIOS ─── */}
+                  <div className="relative bg-[#121017] border border-white/[0.08] hover:border-emerald-500/40 rounded-2xl p-5 transition-all group">
+                    <div className="flex items-center gap-3 mb-4 pb-3 border-b border-white/10">
+                      <div className="w-8 h-8 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                        <Zap size={16} />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-black uppercase tracking-wider text-white font-heading">
+                          OFERTAS
+                        </h3>
+                        <p className="text-[10px] text-[#94969D] font-mono">Promociones y Despacho</p>
+                      </div>
+                    </div>
+
+                    <div className="relative pl-5 space-y-2.5 before:absolute before:top-2 before:bottom-2 before:left-2 before:w-0.5 before:bg-emerald-500/30">
+                      <div
+                        onClick={() => {
+                          setIsMegaMenuOpen(false)
+                          setActiveTab('ofertas')
+                        }}
+                        className="relative cursor-pointer hover:bg-white/[0.06] p-2 rounded-xl transition-all after:absolute after:top-1/2 after:-left-3 after:w-3 after:h-0.5 after:bg-emerald-500/40"
+                      >
+                        <div className="text-xs font-bold text-neutral-200 flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
+                          <span>Ofertas Destacadas</span>
+                        </div>
+                        <div className="text-[10px] text-[#94969D] pl-3.5">Descuentos y combos de temporada</div>
+                      </div>
+
+                      <div className="relative hover:bg-white/[0.06] p-2 rounded-xl transition-all after:absolute after:top-1/2 after:-left-3 after:w-3 after:h-0.5 after:bg-emerald-500/40">
+                        <div className="text-xs font-bold text-neutral-200 flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
+                          <span>Envíos Sin Recargo Nacional</span>
+                        </div>
+                        <div className="text-[10px] text-[#94969D] pl-3.5">Entrega segura en todo el Ecuador</div>
+                      </div>
+
+                      <div className="relative hover:bg-white/[0.06] p-2 rounded-xl transition-all after:absolute after:top-1/2 after:-left-3 after:w-3 after:h-0.5 after:bg-emerald-500/40">
+                        <div className="text-xs font-bold text-neutral-200 flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
+                          <span>Garantía 100% Originales</span>
+                        </div>
+                        <div className="text-[10px] text-[#94969D] pl-3.5">Equipos con respaldo y certificación</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* ─── RAMA 5: INICIAR SESIÓN & CUENTA ─── */}
+                  <div className="relative bg-[#121017] border border-white/[0.08] hover:border-cyan-500/40 rounded-2xl p-5 transition-all group">
+                    <div className="flex items-center gap-3 mb-4 pb-3 border-b border-white/10">
+                      <div className="w-8 h-8 rounded-xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+                        <LogIn size={16} />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-black uppercase tracking-wider text-white font-heading">
+                          INICIAR SESIÓN
+                        </h3>
+                        <p className="text-[10px] text-[#94969D] font-mono">Acceso a Plataforma ERP</p>
+                      </div>
+                    </div>
+
+                    <div className="relative pl-5 space-y-2.5 before:absolute before:top-2 before:bottom-2 before:left-2 before:w-0.5 before:bg-cyan-500/30">
+                      <Link
+                        href="/login"
+                        onClick={() => setIsMegaMenuOpen(false)}
+                        className="relative block hover:bg-white/[0.06] p-2 rounded-xl transition-all after:absolute after:top-1/2 after:-left-3 after:w-3 after:h-0.5 after:bg-cyan-500/40"
+                      >
+                        <div className="text-xs font-bold text-white flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shrink-0" />
+                          <span>Acceso al Sistema (Login)</span>
+                        </div>
+                        <div className="text-[10px] text-[#94969D] pl-3.5">Ingreso con credenciales corporativas</div>
+                      </Link>
+
+                      <Link
+                        href="/login"
+                        onClick={() => setIsMegaMenuOpen(false)}
+                        className="relative block hover:bg-white/[0.06] p-2 rounded-xl transition-all after:absolute after:top-1/2 after:-left-3 after:w-3 after:h-0.5 after:bg-cyan-500/40"
+                      >
+                        <div className="text-xs font-bold text-white flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shrink-0" />
+                          <span>Generador de Cotizaciones</span>
+                        </div>
+                        <div className="text-[10px] text-[#94969D] pl-3.5">Cotizador inteligente automatizado</div>
+                      </Link>
+                    </div>
+                  </div>
+
+                  {/* ─── RAMA 6: CONTACTO & ASISTENCIA ─── */}
+                  <div className="relative bg-[#121017] border border-white/[0.08] hover:border-rose-500/40 rounded-2xl p-5 transition-all group">
+                    <div className="flex items-center gap-3 mb-4 pb-3 border-b border-white/10">
+                      <div className="w-8 h-8 rounded-xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-400">
+                        <User size={16} />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-black uppercase tracking-wider text-white font-heading">
+                          CONTACTO
+                        </h3>
+                        <p className="text-[10px] text-[#94969D] font-mono">Atención Directa y Reseñas</p>
+                      </div>
+                    </div>
+
+                    <div className="relative pl-5 space-y-2.5 before:absolute before:top-2 before:bottom-2 before:left-2 before:w-0.5 before:bg-rose-500/30">
+                      <a
+                        href="https://wa.me/593969043453?text=Hola%20ATOMIC!%20Deseo%20informaci%C3%B3n%20sobre%20sus%20productos."
+                        target="_blank"
+                        rel="noreferrer"
+                        onClick={() => setIsMegaMenuOpen(false)}
+                        className="relative block hover:bg-white/[0.06] p-2 rounded-xl transition-all after:absolute after:top-1/2 after:-left-3 after:w-3 after:h-0.5 after:bg-rose-500/40"
+                      >
+                        <div className="text-xs font-bold text-white flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
+                          <span>WhatsApp Oficial (+593 96 904 3453)</span>
+                        </div>
+                        <div className="text-[10px] text-[#94969D] pl-3.5">Respuesta inmediata de asesores</div>
+                      </a>
+
+                      <div
+                        onClick={() => {
+                          setIsMegaMenuOpen(false)
+                          setActiveTab('contacto')
+                        }}
+                        className="relative cursor-pointer hover:bg-white/[0.06] p-2 rounded-xl transition-all after:absolute after:top-1/2 after:-left-3 after:w-3 after:h-0.5 after:bg-rose-500/40"
+                      >
+                        <div className="text-xs font-bold text-neutral-200 flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-rose-400 shrink-0" />
+                          <span>Formulario de Contacto & Ubicación</span>
+                        </div>
+                        <div className="text-[10px] text-[#94969D] pl-3.5">Matriz comercial y canales oficiales</div>
+                      </div>
+
+                      <div
+                        onClick={() => {
+                          setIsMegaMenuOpen(false)
+                          setActiveTab('resenas')
+                        }}
+                        className="relative cursor-pointer hover:bg-white/[0.06] p-2 rounded-xl transition-all after:absolute after:top-1/2 after:-left-3 after:w-3 after:h-0.5 after:bg-rose-500/40"
+                      >
+                        <div className="text-xs font-bold text-neutral-200 flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-rose-400 shrink-0" />
+                          <span>Reseñas de Clientes</span>
+                        </div>
+                        <div className="text-[10px] text-[#94969D] pl-3.5">Opiniones y calificaciones 5 estrellas</div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
       </nav>
 
       {/* ═══════════ TAB CONTENT PANELS (APPIT BENTO STYLE) ═══════════ */}
@@ -1217,348 +1552,6 @@ export default function PublicWebClient({
               >
                 Cerrar
               </button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* ═══════════ MAPA CONCEPTUAL / MEGA-MENÚ DESPLEGABLE CON LÍNEAS ═══════════ */}
-      <AnimatePresence>
-        {isMegaMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/85 backdrop-blur-2xl flex items-center justify-center p-3 sm:p-6 overflow-y-auto"
-            onClick={() => setIsMegaMenuOpen(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.92, y: 20, opacity: 0 }}
-              animate={{ scale: 1, y: 0, opacity: 1 }}
-              exit={{ scale: 0.92, y: 20, opacity: 0 }}
-              transition={{ type: "spring", stiffness: 300, damping: 28 }}
-              className="relative w-full max-w-6xl max-h-[92vh] overflow-y-auto bg-[#0B0A10]/95 border border-white/15 rounded-3xl p-6 sm:p-8 shadow-[0_25px_80px_rgba(0,0,0,0.95)] text-white scrollbar-thin scrollbar-thumb-white/20"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Header */}
-              <div className="flex items-center justify-between border-b border-white/10 pb-5 mb-8">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-2xl bg-blue-500/20 border border-blue-500/40 flex items-center justify-center text-blue-400 shadow-[0_0_20px_rgba(59,130,246,0.3)]">
-                    <Hexagon size={22} className="animate-spin-slow" />
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">
-                        ECOSISTEMA INTEGRAL ATOMIC
-                      </span>
-                    </div>
-                    <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tight text-white font-heading">
-                      MAPA CONCEPTUAL DE NAVEGACIÓN
-                    </h2>
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => setIsMegaMenuOpen(false)}
-                  className="p-2.5 rounded-full bg-white/10 hover:bg-white/20 text-neutral-300 hover:text-white border border-white/10 transition-all active:scale-95 cursor-pointer"
-                >
-                  <X size={20} />
-                </button>
-              </div>
-
-              {/* Central Root Node (Mapa Conceptual) */}
-              <div className="flex flex-col items-center justify-center mb-8">
-                <div className="inline-flex items-center gap-3 px-6 py-2.5 rounded-full bg-gradient-to-r from-blue-900/40 via-indigo-900/40 to-blue-900/40 border border-blue-500/40 shadow-[0_0_30px_rgba(59,130,246,0.25)]">
-                  <span className="w-2.5 h-2.5 rounded-full bg-blue-400 animate-ping" />
-                  <span className="text-xs sm:text-sm font-black font-heading tracking-widest text-white uppercase">
-                    ATOMIC PLATFORM // CORE HUB
-                  </span>
-                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-                </div>
-                {/* Connector stem */}
-                <div className="w-0.5 h-6 bg-gradient-to-b from-blue-500/60 to-blue-500/20 my-1" />
-              </div>
-
-              {/* Conceptual Map Grid with Interconnected Tree Lines */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 relative">
-                
-                {/* ─── RAMA 1: SECTORES & ÁREAS ─── */}
-                <div className="relative bg-[#121017] border border-white/[0.08] hover:border-blue-500/40 rounded-2xl p-5 transition-all group">
-                  <div className="flex items-center gap-3 mb-4 pb-3 border-b border-white/10">
-                    <div className="w-8 h-8 rounded-xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-400">
-                      <Building size={16} />
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-black uppercase tracking-wider text-white font-heading">
-                        SECTORES
-                      </h3>
-                      <p className="text-[10px] text-[#94969D] font-mono">Divisiones de Especialización</p>
-                    </div>
-                  </div>
-
-                  {/* Connected child nodes tree with lines */}
-                  <div className="relative pl-5 space-y-2.5 before:absolute before:top-2 before:bottom-2 before:left-2 before:w-0.5 before:bg-blue-500/30">
-                    {[
-                      { name: "Tecnología Residencial & Domótica", desc: "Seguridad y control smart", query: "camara" },
-                      { name: "Electrónica & Periféricos", desc: "Audio, gadgets y creadores", query: "electronica" },
-                      { name: "Línea Hogar & Confort", desc: "Cocinas, encimeras y hornos", query: "cocina" },
-                      { name: "Industria & Construcción", desc: "Plantas de bloques y maquinaria", query: "bloque" },
-                      { name: "Energía & Movilidad Eléctrica", desc: "Cargadores EV y generadores", query: "generador" },
-                    ].map((item, idx) => (
-                      <div
-                        key={idx}
-                        onClick={() => {
-                          setIsMegaMenuOpen(false)
-                          setActiveTab(null)
-                          setSearchQuery(item.query)
-                          document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' })
-                        }}
-                        className="relative cursor-pointer hover:bg-white/[0.06] p-2 rounded-xl transition-all after:absolute after:top-1/2 after:-left-3 after:w-3 after:h-0.5 after:bg-blue-500/40"
-                      >
-                        <div className="text-xs font-bold text-neutral-200 group-hover:text-white flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0" />
-                          <span>{item.name}</span>
-                        </div>
-                        <div className="text-[10px] text-[#94969D] pl-3.5">{item.desc}</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* ─── RAMA 2: CATEGORÍAS ─── */}
-                <div className="relative bg-[#121017] border border-white/[0.08] hover:border-amber-500/40 rounded-2xl p-5 transition-all group">
-                  <div className="flex items-center gap-3 mb-4 pb-3 border-b border-white/10">
-                    <div className="w-8 h-8 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400">
-                      <Package size={16} />
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-black uppercase tracking-wider text-white font-heading">
-                        CATEGORÍAS
-                      </h3>
-                      <p className="text-[10px] text-[#94969D] font-mono">Líneas de Producto Activas</p>
-                    </div>
-                  </div>
-
-                  {/* Connected child nodes tree with lines */}
-                  <div className="relative pl-5 space-y-2.5 before:absolute before:top-2 before:bottom-2 before:left-2 before:w-0.5 before:bg-amber-500/30">
-                    {[
-                      { name: "Mandos & Consolas Gaming", href: "/web/mandos", badge: "NUEVO" },
-                      { name: "Encimeras & Hornos", href: "/web/cocinas", badge: "HOGAR" },
-                      { name: "Laptops & CPUs Intel/AMD", href: "/web/cpus", badge: "PRO" },
-                      { name: "Celulares, Tablets & Redes", href: "/web/phones", badge: "MÓVIL" },
-                      { name: "Plantas de Bloques de Hormigón", href: "/web/blogs/guia-maquinas-de-bloques", badge: "INDUSTRIAL" },
-                    ].map((item, idx) => (
-                      <Link
-                        key={idx}
-                        href={item.href}
-                        onClick={() => setIsMegaMenuOpen(false)}
-                        className="relative block hover:bg-white/[0.06] p-2 rounded-xl transition-all after:absolute after:top-1/2 after:-left-3 after:w-3 after:h-0.5 after:bg-amber-500/40"
-                      >
-                        <div className="flex items-center justify-between text-xs font-bold text-neutral-200">
-                          <span className="flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />
-                            {item.name}
-                          </span>
-                          <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30">
-                            {item.badge}
-                          </span>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-
-                {/* ─── RAMA 3: BLOG, NEW SELLERS & NEWSLETTER ─── */}
-                <div className="relative bg-[#121017] border border-white/[0.08] hover:border-purple-500/40 rounded-2xl p-5 transition-all group">
-                  <div className="flex items-center gap-3 mb-4 pb-3 border-b border-white/10">
-                    <div className="w-8 h-8 rounded-xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-400">
-                      <Sparkles size={16} />
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-black uppercase tracking-wider text-white font-heading">
-                        BLOG & NEWSLETTER
-                      </h3>
-                      <p className="text-[10px] text-[#94969D] font-mono">Contenido, New Sellers & Landings</p>
-                    </div>
-                  </div>
-
-                  {/* Connected child nodes tree with lines */}
-                  <div className="relative pl-5 space-y-2.5 before:absolute before:top-2 before:bottom-2 before:left-2 before:w-0.5 before:bg-purple-500/30">
-                    {[
-                      { tab: "blog", name: "Blog Tecnológico & Guías", desc: "Artículos y comparativas técnicas" },
-                      { tab: "newsletter", name: "Newsletter Semanal", desc: "Ofertas exclusivas y lanzamientos" },
-                      { tab: "landings", name: "Landings & New Sellers", desc: "Páginas dedicadas y distribuidores" },
-                    ].map((item, idx) => (
-                      <div
-                        key={idx}
-                        onClick={() => {
-                          setIsMegaMenuOpen(false)
-                          setActiveTab(item.tab)
-                        }}
-                        className="relative cursor-pointer hover:bg-white/[0.06] p-2 rounded-xl transition-all after:absolute after:top-1/2 after:-left-3 after:w-3 after:h-0.5 after:bg-purple-500/40"
-                      >
-                        <div className="text-xs font-bold text-neutral-200 group-hover:text-white flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 rounded-full bg-purple-400 shrink-0" />
-                          <span>{item.name}</span>
-                        </div>
-                        <div className="text-[10px] text-[#94969D] pl-3.5">{item.desc}</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* ─── RAMA 4: OFERTAS & BENEFICIOS ─── */}
-                <div className="relative bg-[#121017] border border-white/[0.08] hover:border-emerald-500/40 rounded-2xl p-5 transition-all group">
-                  <div className="flex items-center gap-3 mb-4 pb-3 border-b border-white/10">
-                    <div className="w-8 h-8 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
-                      <Zap size={16} />
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-black uppercase tracking-wider text-white font-heading">
-                        OFERTAS
-                      </h3>
-                      <p className="text-[10px] text-[#94969D] font-mono">Promociones y Despacho</p>
-                    </div>
-                  </div>
-
-                  {/* Connected child nodes tree with lines */}
-                  <div className="relative pl-5 space-y-2.5 before:absolute before:top-2 before:bottom-2 before:left-2 before:w-0.5 before:bg-emerald-500/30">
-                    <div
-                      onClick={() => {
-                        setIsMegaMenuOpen(false)
-                        setActiveTab('ofertas')
-                      }}
-                      className="relative cursor-pointer hover:bg-white/[0.06] p-2 rounded-xl transition-all after:absolute after:top-1/2 after:-left-3 after:w-3 after:h-0.5 after:bg-emerald-500/40"
-                    >
-                      <div className="text-xs font-bold text-neutral-200 flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
-                        <span>Ofertas Destacadas</span>
-                      </div>
-                      <div className="text-[10px] text-[#94969D] pl-3.5">Descuentos y combos de temporada</div>
-                    </div>
-
-                    <div className="relative hover:bg-white/[0.06] p-2 rounded-xl transition-all after:absolute after:top-1/2 after:-left-3 after:w-3 after:h-0.5 after:bg-emerald-500/40">
-                      <div className="text-xs font-bold text-neutral-200 flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
-                        <span>Envíos Sin Recargo Nacional</span>
-                      </div>
-                      <div className="text-[10px] text-[#94969D] pl-3.5">Entrega segura en todo el Ecuador</div>
-                    </div>
-
-                    <div className="relative hover:bg-white/[0.06] p-2 rounded-xl transition-all after:absolute after:top-1/2 after:-left-3 after:w-3 after:h-0.5 after:bg-emerald-500/40">
-                      <div className="text-xs font-bold text-neutral-200 flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
-                        <span>Garantía 100% Originales</span>
-                      </div>
-                      <div className="text-[10px] text-[#94969D] pl-3.5">Equipos con respaldo y certificación</div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* ─── RAMA 5: INICIAR SESIÓN & CUENTA ─── */}
-                <div className="relative bg-[#121017] border border-white/[0.08] hover:border-cyan-500/40 rounded-2xl p-5 transition-all group">
-                  <div className="flex items-center gap-3 mb-4 pb-3 border-b border-white/10">
-                    <div className="w-8 h-8 rounded-xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
-                      <LogIn size={16} />
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-black uppercase tracking-wider text-white font-heading">
-                        INICIAR SESIÓN
-                      </h3>
-                      <p className="text-[10px] text-[#94969D] font-mono">Acceso a Plataforma ERP</p>
-                    </div>
-                  </div>
-
-                  {/* Connected child nodes tree with lines */}
-                  <div className="relative pl-5 space-y-2.5 before:absolute before:top-2 before:bottom-2 before:left-2 before:w-0.5 before:bg-cyan-500/30">
-                    <Link
-                      href="/login"
-                      onClick={() => setIsMegaMenuOpen(false)}
-                      className="relative block hover:bg-white/[0.06] p-2 rounded-xl transition-all after:absolute after:top-1/2 after:-left-3 after:w-3 after:h-0.5 after:bg-cyan-500/40"
-                    >
-                      <div className="text-xs font-bold text-white flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shrink-0" />
-                        <span>Acceso al Sistema (Login)</span>
-                      </div>
-                      <div className="text-[10px] text-[#94969D] pl-3.5">Ingreso con credenciales corporativas</div>
-                    </Link>
-
-                    <Link
-                      href="/login"
-                      onClick={() => setIsMegaMenuOpen(false)}
-                      className="relative block hover:bg-white/[0.06] p-2 rounded-xl transition-all after:absolute after:top-1/2 after:-left-3 after:w-3 after:h-0.5 after:bg-cyan-500/40"
-                    >
-                      <div className="text-xs font-bold text-white flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shrink-0" />
-                        <span>Generador de Cotizaciones</span>
-                      </div>
-                      <div className="text-[10px] text-[#94969D] pl-3.5">Cotizador inteligente automatizado</div>
-                    </Link>
-                  </div>
-                </div>
-
-                {/* ─── RAMA 6: CONTACTO & ASISTENCIA ─── */}
-                <div className="relative bg-[#121017] border border-white/[0.08] hover:border-rose-500/40 rounded-2xl p-5 transition-all group">
-                  <div className="flex items-center gap-3 mb-4 pb-3 border-b border-white/10">
-                    <div className="w-8 h-8 rounded-xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-400">
-                      <User size={16} />
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-black uppercase tracking-wider text-white font-heading">
-                        CONTACTO
-                      </h3>
-                      <p className="text-[10px] text-[#94969D] font-mono">Atención Directa y Reseñas</p>
-                    </div>
-                  </div>
-
-                  {/* Connected child nodes tree with lines */}
-                  <div className="relative pl-5 space-y-2.5 before:absolute before:top-2 before:bottom-2 before:left-2 before:w-0.5 before:bg-rose-500/30">
-                    <a
-                      href="https://wa.me/593969043453?text=Hola%20ATOMIC!%20Deseo%20informaci%C3%B3n%20sobre%20sus%20productos."
-                      target="_blank"
-                      rel="noreferrer"
-                      onClick={() => setIsMegaMenuOpen(false)}
-                      className="relative block hover:bg-white/[0.06] p-2 rounded-xl transition-all after:absolute after:top-1/2 after:-left-3 after:w-3 after:h-0.5 after:bg-rose-500/40"
-                    >
-                      <div className="text-xs font-bold text-white flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
-                        <span>WhatsApp Oficial (+593 96 904 3453)</span>
-                      </div>
-                      <div className="text-[10px] text-[#94969D] pl-3.5">Respuesta inmediata de asesores</div>
-                    </a>
-
-                    <div
-                      onClick={() => {
-                        setIsMegaMenuOpen(false)
-                        setActiveTab('contacto')
-                      }}
-                      className="relative cursor-pointer hover:bg-white/[0.06] p-2 rounded-xl transition-all after:absolute after:top-1/2 after:-left-3 after:w-3 after:h-0.5 after:bg-rose-500/40"
-                    >
-                      <div className="text-xs font-bold text-neutral-200 flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-rose-400 shrink-0" />
-                        <span>Formulario de Contacto & Ubicación</span>
-                      </div>
-                      <div className="text-[10px] text-[#94969D] pl-3.5">Matriz comercial y canales oficiales</div>
-                    </div>
-
-                    <div
-                      onClick={() => {
-                        setIsMegaMenuOpen(false)
-                        setActiveTab('resenas')
-                      }}
-                      className="relative cursor-pointer hover:bg-white/[0.06] p-2 rounded-xl transition-all after:absolute after:top-1/2 after:-left-3 after:w-3 after:h-0.5 after:bg-rose-500/40"
-                    >
-                      <div className="text-xs font-bold text-neutral-200 flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-rose-400 shrink-0" />
-                        <span>Reseñas de Clientes</span>
-                      </div>
-                      <div className="text-[10px] text-[#94969D] pl-3.5">Opiniones y calificaciones 5 estrellas</div>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-
             </motion.div>
           </motion.div>
         )}
