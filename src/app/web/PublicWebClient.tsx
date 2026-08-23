@@ -241,11 +241,11 @@ export default function PublicWebClient({
       <section className="bg-[#09090A] border-b border-white/[0.06] py-3 px-6 text-xs text-[#94969D]">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-6">
-            <span className="flex items-center gap-2 text-white font-bold font-heading text-xs">
-              <Truck size={14} className="text-white" /> Envíos Seguros a Todo Ecuador
+            <span className="flex items-center gap-2 text-white font-bold font-heading text-xs uppercase tracking-wide">
+              <Truck size={14} className="text-white" /> PROMO: ENVÍOS SIN RECARGO A NIVEL NACIONAL EN CUALQUIER PRODUCTO
             </span>
-            <span className="hidden md:flex items-center gap-2 text-[#94969D] font-medium text-xs">
-              <Shield size={14} className="text-emerald-400" /> Productos 100% Originales & Garantía
+            <span className="hidden md:flex items-center gap-2 text-[#94969D] font-medium text-xs uppercase tracking-wider">
+              <Shield size={14} className="text-emerald-400" /> PRODUCTOS 100% ORIGINALES & GARANTÍA
             </span>
           </div>
           <div className="flex items-center gap-4 text-[11px]">
@@ -253,9 +253,9 @@ export default function PublicWebClient({
               href="https://wa.me/593969043453?text=Hola%20ATOMIC!%20Deseo%20informaci%C3%B3n%20sobre%20sus%20productos."
               target="_blank"
               rel="noreferrer"
-              className="text-[#94969D] hover:text-white font-bold hidden sm:flex items-center gap-1.5 transition-colors"
+              className="text-[#94969D] hover:text-white font-bold hidden sm:flex items-center gap-1.5 transition-colors uppercase tracking-wider text-[11px]"
             >
-              <span>💬 Asesoría Instantánea WhatsApp</span>
+              <span>ASESORÍA INSTANTÁNEA WHATSAPP</span>
               <span>→</span>
             </a>
 
@@ -359,15 +359,15 @@ export default function PublicWebClient({
           )}
 
           {([
-            { id: 'categorias', label: '📦 Categorías' },
-            { id: 'ofertas', label: '🔥 Ofertas' },
-            { id: 'blog', label: '📝 Blog' },
-            { id: 'newsletter', label: '✉️ Newsletter' },
-            { id: 'landings', label: '🚀 Landings' },
-            { id: 'especializacion', label: '🎓 Áreas' },
-            { id: 'nosotros', label: '🏢 Nosotros' },
-            { id: 'contacto', label: '📞 Contacto' },
-            { id: 'resenas', label: '⭐ Reseñas' },
+            { id: 'categorias', label: 'CATEGORÍAS' },
+            { id: 'ofertas', label: 'OFERTAS' },
+            { id: 'blog', label: 'BLOG' },
+            { id: 'newsletter', label: 'NEWSLETTER' },
+            { id: 'landings', label: 'LANDINGS' },
+            { id: 'especializacion', label: 'ÁREAS' },
+            { id: 'nosotros', label: 'NOSOTROS' },
+            { id: 'contacto', label: 'CONTACTO' },
+            { id: 'resenas', label: 'RESEÑAS' },
           ] as { id: string; label: string }[]).map((tab) => (
             <button
               key={tab.id}
@@ -411,7 +411,7 @@ export default function PublicWebClient({
               <button onClick={() => setActiveTab(null)} className="p-2.5 rounded-2xl bg-[#131315] border border-white/10 hover:bg-[#1D1D20] text-neutral-400 hover:text-white transition-all">
                 <ChevronLeft size={18} />
               </button>
-              <h2 className="text-3xl font-black uppercase tracking-tight text-white font-heading">Ofertas Especiales 🔥</h2>
+              <h2 className="text-3xl font-black uppercase tracking-tight text-white font-heading">Ofertas Especiales</h2>
             </div>
             <p className="text-[#94969D] text-sm mb-6">Descuentos exclusivos en tecnología, electrónica y hogar. <strong className="text-white">¡Por tiempo limitado!</strong></p>
             <button onClick={() => { setSearchQuery('oferta'); setActiveTab(null); document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' }); }} className="px-8 py-4 rounded-full bg-white text-black font-bold uppercase tracking-wider text-xs transition-all hover:bg-neutral-200 shadow-xl">Ver Todas las Ofertas</button>
@@ -424,7 +424,7 @@ export default function PublicWebClient({
               <button onClick={() => setActiveTab(null)} className="p-2.5 rounded-2xl bg-[#131315] border border-white/10 hover:bg-[#1D1D20] text-neutral-400 hover:text-white transition-all">
                 <ChevronLeft size={18} />
               </button>
-              <h2 className="text-3xl font-black uppercase tracking-tight text-white font-heading">Blog & Guías 📝</h2>
+              <h2 className="text-3xl font-black uppercase tracking-tight text-white font-heading">Blog & Guías</h2>
             </div>
             <div className="grid gap-5 sm:grid-cols-2 md:grid-cols-3">
               {[
@@ -516,7 +516,7 @@ export default function PublicWebClient({
               <button onClick={() => setActiveTab(null)} className="p-2.5 rounded-2xl bg-[#131315] border border-white/10 hover:bg-[#1D1D20] text-neutral-400 hover:text-white transition-all">
                 <ChevronLeft size={18} />
               </button>
-              <h2 className="text-3xl font-black uppercase tracking-tight text-white font-heading">Sobre Nosotros 🏢</h2>
+              <h2 className="text-3xl font-black uppercase tracking-tight text-white font-heading">Sobre Nosotros</h2>
             </div>
             <div className="space-y-6">
               <p className="text-[#AEB0B6] text-sm leading-relaxed"><strong className="text-white">ATOMIC INDUSTRIAS</strong> es una empresa ecuatoriana especializada en electrónica, tecnología y productos para el hogar. Ofrecemos los mejores precios con garantía 100% original, envíos seguros a todo Ecuador y asesoría técnica instantánea vía WhatsApp.</p>
@@ -542,18 +542,18 @@ export default function PublicWebClient({
               <button onClick={() => setActiveTab(null)} className="p-2.5 rounded-2xl bg-[#131315] border border-white/10 hover:bg-[#1D1D20] text-neutral-400 hover:text-white transition-all">
                 <ChevronLeft size={18} />
               </button>
-              <h2 className="text-3xl font-black uppercase tracking-tight text-white font-heading">Contáctanos 📞</h2>
+              <h2 className="text-3xl font-black uppercase tracking-tight text-white font-heading">Contáctanos</h2>
             </div>
             <div className="grid sm:grid-cols-2 gap-5">
               <a href="https://wa.me/593969043453?text=Hola%20ATOMIC!" target="_blank" rel="noreferrer" className="flex items-center gap-4 p-6 rounded-3xl bg-[#0E0E10] border border-white/[0.06] hover:border-emerald-500/40 hover:bg-[#131315] transition-all group shadow-xl">
-                <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-2xl">💬</div>
+                <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 font-bold text-base">WA</div>
                 <div>
                   <p className="text-sm font-bold text-white group-hover:text-emerald-400 transition-colors font-heading">WhatsApp</p>
                   <p className="text-xs text-[#94969D]">Asesoría instantánea disponible ahora</p>
                 </div>
               </a>
               <div className="flex items-center gap-4 p-6 rounded-3xl bg-[#0E0E10] border border-white/[0.06] shadow-xl">
-                <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-2xl">📍</div>
+                <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-white font-bold text-base">EC</div>
                 <div>
                   <p className="text-sm font-bold text-white font-heading">Ecuador</p>
                   <p className="text-xs text-[#94969D]">Envíos directos a las 24 provincias</p>
@@ -569,7 +569,7 @@ export default function PublicWebClient({
               <button onClick={() => setActiveTab(null)} className="p-2.5 rounded-2xl bg-[#131315] border border-white/10 hover:bg-[#1D1D20] text-neutral-400 hover:text-white transition-all">
                 <ChevronLeft size={18} />
               </button>
-              <h2 className="text-3xl font-black uppercase tracking-tight text-white font-heading">Reseñas de Clientes ⭐</h2>
+              <h2 className="text-3xl font-black uppercase tracking-tight text-white font-heading">Reseñas de Clientes</h2>
             </div>
             <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
               {[
@@ -604,10 +604,11 @@ export default function PublicWebClient({
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#131315] border border-white/10 text-xs font-bold text-neutral-300 mb-6 shadow-xl"
+            className="inline-flex items-center justify-center gap-2.5 px-4 py-1.5 rounded-full bg-[#131315] border border-white/10 text-xs font-bold text-neutral-300 mb-6 shadow-xl mx-auto"
           >
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="font-heading">Tecnología, Electrónica & Hogar Inteligente</span>
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)] shrink-0" />
+            <span className="font-heading uppercase tracking-wider text-[11px]">Tecnología, Electrónica & Hogar Inteligente</span>
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)] shrink-0" />
           </motion.div>
 
           <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5 }} className="mb-4 flex flex-col items-center">
