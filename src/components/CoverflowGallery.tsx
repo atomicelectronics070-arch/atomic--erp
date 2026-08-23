@@ -378,7 +378,7 @@ export default function CoverflowGallery(props: Smooth3DSlideshowProps) {
                     const tz = -ax * DEPTH
                     const ry = -rel * tilt
                     const rz = rel * sideTilt
-                    const src = slide.image?.src || ""
+                    const src = slide.image?.src || (slide as any).src || (typeof (slide as any).image === "string" ? (slide as any).image : "") || ""
 
                     const cardStyle: CSSProperties = {
                         position: "absolute",

@@ -15,9 +15,27 @@ import dynamic from "next/dynamic"
 import { calculateDiscountedPrice } from "@/lib/utils/pricing"
 
 const PROMO_COVERFLOW_SLIDES = [
-  { title: "DESCUENTO 30% EN CERRADURAS SMART\nAcceso Biométrico & Control Móvil Tuya", badge: "PROMOCIÓN", src: "/categories/cerraduras-smart-y-accesos.png", link: "/web/cerraduras-smart" },
-  { title: "KIT 4 CÁMARAS FULL-COLOR WI-FI\nVisión Nocturna 2K & Audio Bidireccional", badge: "PROMO EXCLUSIVA", placeholder: true },
-  { title: "GENERADORES ELÉCTRICOS ECOFRIENDLY\nEnergía Limpia, Silenciosa & Portátil", badge: "DESCUENTO ESPECIAL", placeholder: true },
+  { 
+    image: { src: "/images/cerraduras/cerraduras-instalacion-portada.jpg", alt: "Promoción 30% Descuento en Cerraduras Smart con Instalación" },
+    title: "PROMOCIÓN 30% DE DESCUENTO EN CERRADURAS SMART\nAl Comprar tu Cerradura y Adquirirla con Instalación", 
+    badge: "30% DE DESCUENTO", 
+    src: "/images/cerraduras/cerraduras-instalacion-portada.jpg", 
+    link: "/web/cerraduras-smart" 
+  },
+  { 
+    image: { src: "/images/cerraduras/yale/yale-cerrojo-digital-ymc420d-1.png", alt: "Cerrojo Digital Yale YMC420D Biométrico" },
+    title: "CERROJO DIGITAL YALE YMC420D BIOMÉTRICO\nLector Escandinavo, Pantalla Touch & Tarjeta RFID", 
+    badge: "TOP GAMA YALE", 
+    src: "/images/cerraduras/yale/yale-cerrojo-digital-ymc420d-1.png", 
+    link: "/web/cerraduras-smart" 
+  },
+  { 
+    image: { src: "/images/cerraduras/yale/yale-cerrojo-digital-ydf40a-m-dulo-para-abrir-1.webp", alt: "Yale YDF40A + Yale Connect" },
+    title: "CERROJO YDF40A + MÓDULO YALE CONNECT CELULAR\nApertura Remota por Smartphone & Huella Dactilar", 
+    badge: "YALE CONNECT", 
+    src: "/images/cerraduras/yale/yale-cerrojo-digital-ydf40a-m-dulo-para-abrir-1.webp", 
+    link: "/web/cerraduras-smart" 
+  },
 ]
 
 const TEMPORADA_COVERFLOW_SLIDES = [
@@ -27,15 +45,65 @@ const TEMPORADA_COVERFLOW_SLIDES = [
 ]
 
 const COMBOS_COVERFLOW_SLIDES = [
-  { title: "COMBO SEGURIDAD INTEGRAL PRO\nCámara 360° + Cerradura Smart + Alarma", badge: "SUPER COMBO", src: "/categories/cerraduras-smart-y-accesos.png", link: "/web/cerraduras-smart" },
-  { title: "COMBO GAMING PROFESIONAL\nMando Inalámbrico + Headset Surround 7.1", badge: "COMBO GAMER", placeholder: true },
-  { title: "COMBO EMPRESA & NEGOCIO SEGURO\nBiométrico ZKTeco + Lector RFID", badge: "COMBO PYME", src: "/images/seguridad/zkteco-kit-acceso.jpg", link: "/web/cerraduras-smart" },
+  { 
+    image: { src: "/images/cerraduras/cerraduras-instalacion-portada.jpg", alt: "Combo Cerradura Smart con Instalación" },
+    title: "COMBO CERRADURA SMART + INSTALACIÓN PROFESIONAL\nGarantía en Producto e Instalación a Nivel Nacional", 
+    badge: "SUPER COMBO", 
+    src: "/images/cerraduras/cerraduras-instalacion-portada.jpg", 
+    link: "/web/cerraduras-smart" 
+  },
+  { 
+    image: { src: "/images/cerraduras/yale/yale-cerradura-digital-ymf40a-m-dulo-para-abr-1.webp", alt: "Combo Yale YMF40A + Connect" },
+    title: "COMBO YALE YMF40A + MÓDULO CELULAR + INSTALACIÓN\nManija de Embutir + WiFi Hub para Smartphone", 
+    badge: "COMBO YALE", 
+    src: "/images/cerraduras/yale/yale-cerradura-digital-ymf40a-m-dulo-para-abr-1.webp", 
+    link: "/web/cerraduras-smart" 
+  },
+  { 
+    image: { src: "/images/seguridad/zkteco-kit-acceso.jpg", alt: "Combo Acceso Edificios" },
+    title: "COMBO EMPRESA & ACCESO EDIFICIOS SEGURO\nBiométrico Senseface 2A + Electroimán + Pulsador", 
+    badge: "COMBO CONJUNTOS", 
+    src: "/images/seguridad/zkteco-kit-acceso.jpg", 
+    link: "/web/cerraduras-smart" 
+  },
 ]
 
 const INSTALACION_COVERFLOW_SLIDES = [
-  { title: "CERRADURAS SMART & CONTROL DE ACCESO\nKits con Instalación a Nivel Nacional", badge: "CON INSTALACIÓN", src: "/categories/cerraduras-smart-y-accesos.png", link: "/web/cerraduras-smart" },
-  { title: "CÁMARAS & CCTV CON INSTALACIÓN\nTécnicos Certificados en Todo el Ecuador", badge: "CON INSTALACIÓN", placeholder: true },
-  { title: "PLANTAS DE BLOQUES DE HORMIGÓN\nMontaje en Sitio y Puesta en Marcha", badge: "CON INSTALACIÓN", placeholder: true },
+  { 
+    image: { src: "/images/cerraduras/cerraduras-instalacion-portada.jpg", alt: "Instalación con tu Cerradura ATOMIC" },
+    title: "INSTALACIÓN CON TU CERRADURA // ATOMIC INDUSTRIES\n30% OFF al Comprar tu Cerradura con Instalación", 
+    badge: "PORTADA OFICIAL", 
+    src: "/images/cerraduras/cerraduras-instalacion-portada.jpg", 
+    link: "/web/cerraduras-smart" 
+  },
+  { 
+    image: { src: "/images/cerraduras/yale/yale-cerradura-digital-ymf40a-m-dulo-para-abr-1.webp", alt: "Yale Connect YMF40A con Instalación" },
+    title: "YALE CONNECT YMF40A KIT CON INSTALACIÓN\nTécnicos Certificados en las 24 Provincias del Ecuador", 
+    badge: "YALE CONNECT", 
+    src: "/images/cerraduras/yale/yale-cerradura-digital-ymf40a-m-dulo-para-abr-1.webp", 
+    link: "/web/cerraduras-smart" 
+  },
+  { 
+    image: { src: "/images/cerraduras/yale/yale-cerrojo-digital-yrd226-m-dulo-para-abrir-1.webp", alt: "Yale Real Living YRD226 + Celular con Instalación" },
+    title: "CERROJO REAL LIVING YRD226 + YALE CONNECT\nInstalación Limpia, Rápida & Garantizada", 
+    badge: "YALE ECUADOR", 
+    src: "/images/cerraduras/yale/yale-cerrojo-digital-yrd226-m-dulo-para-abrir-1.webp", 
+    link: "/web/cerraduras-smart" 
+  },
+  { 
+    image: { src: "/images/cerraduras/bp-quantum-lock.png", alt: "Quantum Lock con Instalación" },
+    title: "CERRADURA QUANTUM LOCK BP CON INSTALACIÓN\nManija Digital 5 en 1 + Bluetooth Gateway Móvil", 
+    badge: "BANCO DEL PERNO", 
+    src: "/images/cerraduras/bp-quantum-lock.png", 
+    link: "/web/cerraduras-smart" 
+  },
+  { 
+    image: { src: "/images/seguridad/zkteco-kit-acceso.jpg", alt: "Control de Acceso con Instalación" },
+    title: "SISTEMA ACCESO EDIFICIOS + INSTALACIÓN INTEGRAL\nTerminal Facial Senseface + Electroimán 600 Lbs", 
+    badge: "CONJUNTOS & EDIFICIOS", 
+    src: "/images/seguridad/zkteco-kit-acceso.jpg", 
+    link: "/web/cerraduras-smart" 
+  },
 ]
 
 const SERVICIOS_COVERFLOW_SLIDES = [

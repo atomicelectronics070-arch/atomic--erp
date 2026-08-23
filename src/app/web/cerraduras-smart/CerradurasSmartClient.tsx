@@ -973,6 +973,20 @@ export default function CerradurasSmartClient() {
 
           </motion.div>
 
+          {/* ═══════════ OFFICIAL CAMPAIGN FLYER DISPLAY ═══════════ */}
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.35 }}
+            className="mt-8 max-w-3xl mx-auto rounded-3xl overflow-hidden border border-amber-400/30 shadow-2xl shadow-amber-500/15 bg-[#0a0910] p-2"
+          >
+            <img
+              src="/images/cerraduras/cerraduras-instalacion-portada.jpg"
+              alt="Instalación con tu Cerradura - Promoción 30% Descuento ATOMIC"
+              className="w-full h-auto max-h-[520px] object-contain rounded-2xl mx-auto"
+            />
+          </motion.div>
+
         </div>
       </section>
 
