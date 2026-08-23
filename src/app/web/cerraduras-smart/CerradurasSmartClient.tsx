@@ -85,7 +85,7 @@ const PROVINCES_DATA: ProvinceData[] = [
 interface SmartLockProduct {
   id: string
   name: string
-  provider: "CRONTE" | "YALE" | "BP" | "YAE" | "SISEGUSA"
+  provider: "CRONTE" | "YALE" | "BP" | "YAE" | "SISEGUSA" | "STEREN" | "DIEL" | "MEELTECH"
   providerName: string
   versionTag: string
   badge: string
@@ -1134,6 +1134,319 @@ const SMART_LOCK_KITS: SmartLockProduct[] = [
     methods: ["Reconocimiento Facial", "Huella Dactilar", "Tarjeta RFID", "Videollamada por App", "Pulsador No Touch"],
     differentiator: "Sistema integral para copropiedades: elimina duplicados de llaves y controla el acceso vehicular o peatonal.",
     description: "Solución profesional de control de accesos para conjuntos residenciales, urbanizaciones cerradas y edificios."
+  },
+
+  // ─── STEREN ECUADOR (LÍNEA LOCK SMART WI-FI) ───
+  {
+    id: "lock-steren-lock480",
+    name: "Cerradura Digital Wi-Fi Steren LOCK-480 con Videotimbre & Pantalla",
+    provider: "STEREN",
+    providerName: "Steren Ecuador",
+    versionTag: "Videotimbre HD Integrado // Pantalla Color // Wi-Fi Directo",
+    badge: "📹 CÁMARA & PANTALLA",
+    category: "facial",
+    image: "/images/cerraduras/steren/steren-lock-480.jpg",
+    priceBase: 270.00,
+    highlights: [
+      "Cámara HD integrada en el escudo exterior que transmite video en vivo al celular",
+      "Pantalla interior a color de alta definición para ver quién toca el timbre",
+      "Lector de huella digital capacitivo de alta precisión",
+      "Teclado táctil iluminado con soporte de contraseñas dinámicas por app Steren Home",
+      "Batería recargable de litio de larga duración con aviso de recarga"
+    ],
+    methods: ["Videotimbre HD", "Huella Digital", "App Steren Home", "Clave Numérica", "Tarjetas RFID", "Llave"],
+    differentiator: "Videoportero y cerradura biométrica de alta gama Steren en un solo equipo con conexión Wi-Fi directa.",
+    description: "Cerradura digital Wi-Fi de máxima seguridad Steren LOCK-480 con cámara y pantalla interior a color.",
+    popular: true
+  },
+  {
+    id: "lock-steren-lock510",
+    name: "Cerradura Digital Wi-Fi Steren LOCK-510 Compatible con Asistentes de Voz",
+    provider: "STEREN",
+    providerName: "Steren Ecuador",
+    versionTag: "Alexa & Google Assistant // Manija Reversible // Wi-Fi",
+    badge: "🗣️ CONTROL POR VOZ",
+    category: "manija",
+    image: "/images/cerraduras/steren/steren-lock-510.jpg",
+    priceBase: 195.00,
+    highlights: [
+      "Compatibilidad nativa con Amazon Alexa y Google Assistant para apertura por voz",
+      "Sensor biométrico de huella digital de respuesta instantánea (<0.4s)",
+      "Conexión Wi-Fi directa de 2.4 GHz sin necesidad de concentrador adicional",
+      "Generación de códigos de acceso temporales para visitas y personal doméstico",
+      "Mortise reforzado de acero inoxidable con sensor de puerta cerrada"
+    ],
+    methods: ["Comandos de Voz", "Huella Digital", "App Steren Home", "Teclado Táctil", "Tarjetas RFID", "Llaves"],
+    differentiator: "Abre o revisa el estado de tu puerta con simples comandos de voz desde cualquier bocina inteligente.",
+    description: "Cerradura digital Wi-Fi de alta gama Steren LOCK-510 para puertas principales y oficinas modernas."
+  },
+  {
+    id: "lock-steren-lock500",
+    name: "Cerradura Digital Wi-Fi Steren LOCK-500 de Seguridad",
+    provider: "STEREN",
+    providerName: "Steren Ecuador",
+    versionTag: "Manija Digital Inteligente // 5 Métodos de Apertura",
+    badge: "🛡️ ALTA RESISTENCIA",
+    category: "manija",
+    image: "/images/cerraduras/steren/steren-lock-500.jpg",
+    priceBase: 149.00,
+    highlights: [
+      "Estructura robusta de aleación de zinc resistente a intentos de vandalismo",
+      "Sensor de huella digital en el eje de la manija para apertura ergonómica",
+      "Teclado táctil iluminado con tecnología de clave aleatoria antiespía",
+      "Bloqueo automático de pestillos al cerrar la puerta",
+      "Historial completo de aperturas con fecha y hora en el smartphone"
+    ],
+    methods: ["Huella Ergonómica", "App Steren Home", "Clave PIN", "Tarjetas de Proximidad", "Llave Mecánica"],
+    differentiator: "Construcción sólida y elegante para brindar máxima seguridad a tu familia.",
+    description: "Cerradura digital Wi-Fi de embutir Steren LOCK-500 con manija inteligente y teclado numérico."
+  },
+  {
+    id: "lock-steren-lock450",
+    name: "Cerradura Digital Wi-Fi Steren LOCK-450 con Timbre Táctil",
+    provider: "STEREN",
+    providerName: "Steren Ecuador",
+    versionTag: "Timbre Táctil Integrado // Wi-Fi Nativo",
+    badge: "🔔 TIMBRE SMART",
+    category: "manija",
+    image: "/images/cerraduras/steren/steren-lock-450.jpg",
+    priceBase: 126.00,
+    highlights: [
+      "Botón de timbre digital integrado en el panel táctil con alerta al celular",
+      "Lector de huella dactilar de alta precisión y lectura 360 grados",
+      "Conexión Wi-Fi directa con notificaciones de apertura en tiempo real",
+      "Alimentación con 4 baterías AA y puerto micro-USB de respaldo de energía"
+    ],
+    methods: ["Timbre Notificador", "Huella Digital", "App Móvil", "Clave Numérica", "Tarjetas RFID", "Llaves"],
+    differentiator: "Combina timbre inteligente y cerradura biométrica en una sola instalación elegante.",
+    description: "Cerradura digital inteligente Steren LOCK-450 con timbre integrado y conectividad Wi-Fi."
+  },
+  {
+    id: "lock-steren-lock350",
+    name: "Cerradura Digital Bluetooth Steren LOCK-350 Compacta",
+    provider: "STEREN",
+    providerName: "Steren Ecuador",
+    versionTag: "Bluetooth 4.2 // Teclado Táctil // Económica",
+    badge: "⚡ ECONÓMICA BLUETOOTH",
+    category: "cerrojo",
+    image: "/images/cerraduras/steren/steren-lock-350.jpg",
+    priceBase: 120.00,
+    highlights: [
+      "Conectividad Bluetooth para apertura por proximidad desde el celular",
+      "Teclado táctil retroiluminado con soporte de claves numéricas",
+      "Diseño compacto para puertas interiores, oficinas y despachos",
+      "Pestillo ajustable para instalación estándar en puertas de 35 a 50 mm"
+    ],
+    methods: ["App Bluetooth", "Clave PIN", "Tarjetas RFID", "Llaves Físicas"],
+    differentiator: "Acceso digital sin llaves al precio más accesible de la línea Steren.",
+    description: "Cerradura digital compacta Bluetooth Steren LOCK-350 con teclado numérico."
+  },
+
+  // ─── LA COMPETENCIA (DIEL & KOCOM) ───
+  {
+    id: "lock-diel-os527-facial",
+    name: "Cerradura Inteligente DIEL OS527 TYFA con Reconocimiento Facial 3D & WiFi",
+    provider: "DIEL",
+    providerName: "La Competencia / DIEL",
+    versionTag: "Reconocimiento Facial 3D // Tuya Smart WiFi // 5 Pistones",
+    badge: "👤 FACIAL 3D DIEL",
+    category: "facial",
+    image: "/images/cerraduras/diel/diel-os527-tyfa-facial.jpg",
+    priceBase: 199.00,
+    highlights: [
+      "Reconocimiento facial infrarrojo 3D de grado militar (funciona en oscuridad total)",
+      "Sensor biométrico de huella digital de lectura en 0.3 segundos",
+      "Conexión Wi-Fi directa y sincronización con el ecosistema Tuya Smart / Smart Life",
+      "Cuerpo blindado de acero con mortise reforzado de 5 pistones macizos",
+      "Batería recargable de litio de alta densidad incluida"
+    ],
+    methods: ["Rostro 3D Infrarrojo", "Huella Digital", "App Tuya WiFi", "Contraseña Táctil", "Tarjetas IC", "Llave"],
+    differentiator: "La cerradura con reconocimiento facial 3D más potente y accesible del mercado ecuatoriano.",
+    description: "Cerradura inteligente DIEL OS527 TYFA con biometría facial 3D y conectividad Wi-Fi Tuya.",
+    popular: true
+  },
+  {
+    id: "lock-diel-os527-video",
+    name: "Cerradura Inteligente DIEL OS527 TYFV con Videocámara & Pantalla LCD Posterior",
+    provider: "DIEL",
+    providerName: "La Competencia / DIEL",
+    versionTag: "Cámara Exterior HD + Pantalla LCD Posterior // Tuya Smart",
+    badge: "📹 CÁMARA & PANTALLA",
+    category: "facial",
+    image: "/images/cerraduras/diel/diel-os527-tyfv-video.jpg",
+    priceBase: 170.00,
+    highlights: [
+      "Cámara frontal gran angular que captura fotos y videollamada al tocar el timbre",
+      "Pantalla interior a color LCD para visualizar a las visitas antes de abrir",
+      "Sensor biométrico de huella digital semiconductor en la manija",
+      "Registro fotográfico de accesos guardado en la nube y app Tuya Smart"
+    ],
+    methods: ["Videocámara HD", "Pantalla Posterior LCD", "Huella Digital", "App Tuya WiFi", "Clave PIN", "Tarjetas", "Llaves"],
+    differentiator: "Mira a tus visitantes tanto en la pantalla interior de la puerta como en tu celular desde cualquier lugar.",
+    description: "Cerradura inteligente DIEL OS527 TYFV con pantalla posterior y captura fotográfica de visitas."
+  },
+  {
+    id: "lock-diel-os527-tyf",
+    name: "Cerradura Digital Inteligente DIEL OS527 TYF WiFi Multi-Acceso",
+    provider: "DIEL",
+    providerName: "La Competencia / DIEL",
+    versionTag: "Tuya Smart WiFi // Manija Reversible // Biometría",
+    badge: "⚡ MULTI-ACCESO DIEL",
+    category: "manija",
+    image: "/images/cerraduras/diel/diel-os527-tyf-wifi.jpg",
+    priceBase: 161.00,
+    highlights: [
+      "5 métodos de acceso: Huella dactilar, clave numérica, tarjeta RFID, app Tuya y llave",
+      "Conexión Wi-Fi nativa para generación de claves temporales y registro de eventos",
+      "Mortise de alta seguridad de acero con pestillos antisierra",
+      "Alarma ante intentos de vandalismo o batería baja"
+    ],
+    methods: ["Huella Digital", "App Tuya WiFi", "Clave Numérica", "Tarjetas RFID", "Llaves de Seguridad"],
+    differentiator: "Gran balance entre robustez mecánica y tecnología de control inteligente para el hogar.",
+    description: "Cerradura digital inteligente DIEL OS527 TYF con conectividad Wi-Fi Tuya."
+  },
+  {
+    id: "lock-diel-os8810ble",
+    name: "Cerradura Inteligente DIEL OS8810 BLE con Manija & Tarjeta RFID",
+    provider: "DIEL",
+    providerName: "La Competencia / DIEL",
+    versionTag: "Bluetooth BLE // Manija Reversible Izquierda/Derecha",
+    badge: "🛡️ BLE INTELIGENTE",
+    category: "manija",
+    image: "/images/cerraduras/diel/diel-os8810ble-manija.jpg",
+    priceBase: 163.00,
+    highlights: [
+      "Comunicación Bluetooth de bajo consumo para gestión local desde el smartphone",
+      "Teclado táctil retroiluminado con soporte de contraseñas dinámicas",
+      "Sensor biométrico de huella digital de rápida respuesta",
+      "Estructura reforzada en aluminio fundido con tratamiento anticorrosión"
+    ],
+    methods: ["App Bluetooth BLE", "Huella Digital", "Clave Numérica", "Tarjeta RFID", "Llave Mecánica"],
+    differentiator: "Excelente opción para departamentos y oficinas que buscan control por Bluetooth de alta estabilidad.",
+    description: "Cerradura inteligente DIEL OS8810 BLE con manija y teclado táctil."
+  },
+  {
+    id: "lock-diel-os477-tyf",
+    name: "Cerradura Digital Inteligente DIEL OS477 TYF con 4 Pestillos de Alta Seguridad",
+    provider: "DIEL",
+    providerName: "La Competencia / DIEL",
+    versionTag: "4 Pestillos Macizos // Tuya Smart // Alta Seguridad",
+    badge: "🔩 4 PESTILLOS BLINDADOS",
+    category: "manija",
+    image: "/images/cerraduras/diel/diel-os477-tyf-4pestillos.jpg",
+    priceBase: 122.00,
+    highlights: [
+      "Mecanismo de embutir con 4 pestillos cilíndricos de acero endurecido",
+      "Sensor de huella digital en la manija para apertura natural",
+      "Conectividad Wi-Fi Tuya para monitoreo remoto",
+      "Teclado numérico táctil y tarjetas RFID de acceso rápido"
+    ],
+    methods: ["Huella en Manija", "App Tuya WiFi", "Clave PIN", "Tarjetas de Proximidad", "Llaves"],
+    differentiator: "Máximo blindaje mecánico con 4 pestillos de acero al precio más competitivo.",
+    description: "Cerradura digital inteligente DIEL OS477 TYF con mecanismo de 4 pestillos de alta seguridad."
+  },
+  {
+    id: "lock-diel-os695-pomo",
+    name: "Cerradura Pomo Digital Inteligente DIEL OS695 FC para Interiores & Dormitorios",
+    provider: "DIEL",
+    providerName: "La Competencia / DIEL",
+    versionTag: "Pomo Redondo Digital // Huella en el Eje // Interiores",
+    badge: "🚪 POMO SMART INTERIOR",
+    category: "airbnb",
+    image: "/images/cerraduras/diel/diel-os695-pomo.jpg",
+    priceBase: 71.00,
+    highlights: [
+      "Diseño de pomo redondo inteligente para reemplazar perillas estándar de dormitorio",
+      "Sensor de huella dactilar integrado directamente en el centro del pomo",
+      "Teclado numérico táctil en el borde de la empuñadura",
+      "Instalación ultra rápida en la misma perforación existente de 54mm"
+    ],
+    methods: ["Huella en Pomo", "Clave Numérica", "App Bluetooth", "Llave Mecánica"],
+    differentiator: "Reemplaza tu perilla convencional de dormitorio u oficina en 5 minutos por una cerradura biométrica.",
+    description: "Cerradura pomo digital inteligente DIEL OS695 FC para dormitorios, oficinas y estancias privadas."
+  },
+  {
+    id: "lock-kocom-kdl4100sk",
+    name: "Cerradura Inteligente Coreana KOCOM KDL-4100SK de Alta Gama",
+    provider: "DIEL",
+    providerName: "La Competencia / KOCOM",
+    versionTag: "Tecnología Coreana Premium // Alta Resistencia",
+    badge: "🇰🇷 KOCOM KOREA",
+    category: "manija",
+    image: "/images/cerraduras/diel/kocom-kdl-4100sk.jpg",
+    priceBase: 269.00,
+    highlights: [
+      "Ingeniería y fabricación de alta durabilidad KOCOM Corea del Sur",
+      "Sensor de huella dactilar de precisión óptica industrial",
+      "Teclado táctil iluminado de alta sensibilidad con código señuelo",
+      "Mortise coreano de alta seguridad con pasadores dobles de acero templado",
+      "Integración disponible con videoporteros KOCOM del edificio"
+    ],
+    methods: ["Huella Óptica", "App Móvil Bluetooth", "Clave PIN", "Tarjetas RFID KOCOM", "Llaves Maestras"],
+    differentiator: "Prestigio y confiabilidad surcoreana para residencias que exigen componentes de grado industrial.",
+    description: "Cerradura inteligente KOCOM KDL-4100SK de alta gama con tecnología coreana."
+  },
+
+  // ─── MEELTECH STORE (GEEKSMART & TUYA BIOMÉTRICA) ───
+  {
+    id: "lock-meeltech-geeksmart-lb400",
+    name: "Cerradura Inteligente GeekSmart L-B400 con Huella, App & Llave de Repuesto",
+    provider: "MEELTECH",
+    providerName: "Meeltech Store",
+    versionTag: "GeekSmart USA // Sensor Semiconductor 360° // App Móvil",
+    badge: "🇺🇸 GEEKSMART",
+    category: "manija",
+    image: "/images/cerraduras/meeltech/meeltech-geeksmart-lb400.jpg",
+    priceBase: 133.00,
+    highlights: [
+      "Sensor biométrico de huella semiconductor de última generación con reconocimiento en 0.2s",
+      "Gestión integral por app móvil GeekSmart con registro de aperturas",
+      "Teclado numérico táctil de respuesta inmediata",
+      "Construcción en aleación de aluminio aeroespacial con acabado negro satinado"
+    ],
+    methods: ["Huella Semiconductora", "App GeekSmart", "Clave Numérica", "Llave Mecánica"],
+    differentiator: "Reconocida marca internacional GeekSmart con diseño moderno y minimalista.",
+    description: "Cerradura inteligente GeekSmart L-B400 con sensor de huella semiconductor y app móvil."
+  },
+  {
+    id: "lock-meeltech-tuya-pro",
+    name: "Cerradura Inteligente Tuya Pro con Huella Dactilar, Código, Tarjeta & App",
+    provider: "MEELTECH",
+    providerName: "Meeltech Store",
+    versionTag: "Ecosistema Tuya Smart // 5 Métodos de Apertura",
+    badge: "📱 TUYA SMART PRO",
+    category: "manija",
+    image: "/images/cerraduras/meeltech/meeltech-tuya-pro.png",
+    priceBase: 126.00,
+    highlights: [
+      "Integración nativa con la plataforma de domótica Tuya Smart y Smart Life",
+      "Lector de huella digital de alta sensibilidad para hasta 100 usuarios",
+      "Teclado táctil iluminado con soporte de claves temporales para visitas",
+      "Tarjetas inteligentes de proximidad RFID incluidas en el kit"
+    ],
+    methods: ["Huella Digital", "App Tuya / Smart Life", "Clave Numérica", "Tarjetas RFID", "Llaves Físicas"],
+    differentiator: "Ideal para automatizaciones inteligentes del hogar que se activan al abrir la puerta.",
+    description: "Cerradura inteligente para puerta con huella dactilar, código, tarjeta RFID y app Tuya."
+  },
+  {
+    id: "lock-meeltech-geek-lf500",
+    name: "Cerradura Inteligente Geek L-F500 de Puerta con Huella Dactilar & Código",
+    provider: "MEELTECH",
+    providerName: "Meeltech Store",
+    versionTag: "Diseño Ergonómico // Huella en Manija // Económica",
+    badge: "⚡ GEEK COMPACT",
+    category: "manija",
+    image: "/images/cerraduras/meeltech/meeltech-geek-lf500.jpg",
+    priceBase: 89.00,
+    highlights: [
+      "Sensor biométrico en la manija para apertura con el pulgar en un solo movimiento",
+      "Teclado numérico táctil integrado en la placa frontal",
+      "App móvil para gestión de accesos y contraseñas temporales",
+      "Baterías de larga duración con alerta acústica de baja energía"
+    ],
+    methods: ["Huella en Manija", "App Móvil", "Clave PIN", "Llave de Respaldo"],
+    differentiator: "Apertura biométrica ágil al precio más accesible para puertas interiores o de paso.",
+    description: "Cerradura inteligente Geek L-F500 con huella dactilar, código y aplicación móvil."
   }
 ]
 
@@ -1521,12 +1834,15 @@ export default function CerradurasSmartClient() {
             </div>
 
             {/* Provider Quick Counts */}
-            <div className="flex items-center gap-2 text-xs font-mono text-neutral-400">
+            <div className="flex flex-wrap items-center gap-2 text-xs font-mono text-neutral-400">
               <span className="px-2.5 py-1 rounded-lg bg-white/[0.04] border border-white/10">CRONTE</span>
               <span className="px-2.5 py-1 rounded-lg bg-white/[0.04] border border-white/10">YALE</span>
               <span className="px-2.5 py-1 rounded-lg bg-white/[0.04] border border-white/10">BP</span>
-              <span className="px-2.5 py-1 rounded-lg bg-white/[0.04] border border-white/10">YAE</span>
               <span className="px-2.5 py-1 rounded-lg bg-white/[0.04] border border-white/10">SISEGUSA</span>
+              <span className="px-2.5 py-1 rounded-lg bg-white/[0.04] border border-white/10">STEREN</span>
+              <span className="px-2.5 py-1 rounded-lg bg-white/[0.04] border border-white/10">DIEL</span>
+              <span className="px-2.5 py-1 rounded-lg bg-white/[0.04] border border-white/10">MEELTECH</span>
+              <span className="px-2.5 py-1 rounded-lg bg-white/[0.04] border border-white/10">YAE</span>
             </div>
           </div>
 
@@ -1541,8 +1857,11 @@ export default function CerradurasSmartClient() {
                 { id: "CRONTE", label: "🛡️ CRONTE TECHNOLOGY", count: SMART_LOCK_KITS.filter(p => p.provider === 'CRONTE').length },
                 { id: "YALE", label: "🏆 YALE ECUADOR", count: SMART_LOCK_KITS.filter(p => p.provider === 'YALE').length },
                 { id: "BP", label: "🔩 BANCO DEL PERNO (BP)", count: SMART_LOCK_KITS.filter(p => p.provider === 'BP').length },
-                { id: "YAE", label: "⭐ YAE SMART LIFE", count: SMART_LOCK_KITS.filter(p => p.provider === 'YAE').length },
                 { id: "SISEGUSA", label: "🏢 SISEGUSA & ZKTECO", count: SMART_LOCK_KITS.filter(p => p.provider === 'SISEGUSA').length },
+                { id: "STEREN", label: "⚡ STEREN ECUADOR", count: SMART_LOCK_KITS.filter(p => p.provider === 'STEREN').length },
+                { id: "DIEL", label: "🚪 DIEL & KOCOM", count: SMART_LOCK_KITS.filter(p => p.provider === 'DIEL').length },
+                { id: "MEELTECH", label: "📱 MEELTECH / GEEK", count: SMART_LOCK_KITS.filter(p => p.provider === 'MEELTECH').length },
+                { id: "YAE", label: "⭐ YAE SMART LIFE", count: SMART_LOCK_KITS.filter(p => p.provider === 'YAE').length },
               ].map((tab) => (
                 <button
                   key={tab.id}
