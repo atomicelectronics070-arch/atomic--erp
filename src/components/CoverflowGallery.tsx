@@ -54,10 +54,6 @@ const DEFAULT_SLIDES: Slide[] = [
         title: "CÁMARA DE SEGURIDAD CON LUZ POLICIAL\nAlertas Inteligentes Luz Rojo-Azul & Visión Nocturna",
     },
     {
-        image: { src: "/web-banners/banner-17.jpg", alt: "Portero Smart para Casas y Conjuntos" },
-        title: "PORTERO SMART PARA CASAS Y CONJUNTOS\nAcceso Biométrico, Tarjeta & App Celular",
-    },
-    {
         image: { src: "/images/hero-3d/slide-2.jpg", alt: "Kit de Cámaras de Seguridad Doble Lente" },
         title: "KIT DE CÁMARAS DE SEGURIDAD DOBLE LENTE\nVisión Nocturna 360° & Monitoreo HD",
     },
