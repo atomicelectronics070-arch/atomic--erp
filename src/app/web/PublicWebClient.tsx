@@ -271,38 +271,39 @@ export default function PublicWebClient({
             </span>
           </div>
 
-          {/* RIGHT: WHATSAPP, LOGIN & USER */}
-          <div className="flex items-center gap-3 shrink-0 text-[11px]">
+          {/* RIGHT: WHATSAPP (GOLD OUTLINE), LOGIN (ICON ONLY) & USER (ICON ONLY) */}
+          <div className="flex items-center gap-2 sm:gap-2.5 shrink-0 text-[11px]">
+            {/* WHATSAPP WITH HYPER-THIN GOLD CONTOUR */}
             <a
               href="https://wa.me/593969043453?text=Hola%20ATOMIC!%20Deseo%20informaci%C3%B3n%20sobre%20sus%20productos."
               target="_blank"
               rel="noreferrer"
-              className="text-[#94969D] hover:text-white font-bold hidden sm:flex items-center gap-1.5 transition-colors uppercase tracking-wider text-[10px] sm:text-[11px]"
+              className="px-3 py-1 rounded-full border border-amber-400/50 hover:border-amber-400 bg-amber-500/[0.08] hover:bg-amber-500/20 text-amber-300 hover:text-amber-200 font-bold font-heading uppercase tracking-wider text-[10px] sm:text-[11px] shadow-[0_0_12px_rgba(245,158,11,0.18)] transition-all flex items-center gap-1.5"
+              title="Asesoría Instantánea WhatsApp"
             >
               <span>ASESORÍA WHATSAPP</span>
-              <span>→</span>
+              <span className="text-amber-400">→</span>
             </a>
 
-            {/* INICIAR SESIÓN BUTTON */}
+            {/* INICIAR SESIÓN (ICONO SOLAMENTE) */}
             <Link
               href="/login"
-              className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white text-black hover:bg-neutral-200 text-[10px] sm:text-[11px] font-bold font-heading tracking-wider shadow-md transition-all"
+              className="w-7 h-7 sm:w-7.5 sm:h-7.5 rounded-full bg-white text-black hover:bg-neutral-200 flex items-center justify-center shadow-md transition-all active:scale-95 shrink-0"
+              title="Iniciar Sesión"
+              aria-label="Iniciar Sesión"
             >
-              <LogIn size={12} />
-              <span>INICIAR SESIÓN</span>
+              <LogIn size={13} className="text-black" />
             </Link>
 
-            {/* USER DROPDOWN MENU */}
+            {/* USER (ICONO SOLAMENTE) */}
             <div className="relative z-50" ref={userMenuRef}>
               <button
                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                className="flex items-center gap-1.5 px-2.5 py-1 bg-[#131315] border border-white/10 hover:border-white/20 rounded-full text-[10px] sm:text-[11px] font-bold text-white shadow-md transition-all active:scale-95 cursor-pointer"
+                className="w-7 h-7 sm:w-7.5 sm:h-7.5 bg-[#131315] border border-white/15 hover:border-white/30 rounded-full text-white shadow-md transition-all active:scale-95 cursor-pointer flex items-center justify-center shrink-0"
+                title="Cuenta de Usuario"
+                aria-label="Cuenta de Usuario"
               >
-                <div className="w-4 h-4 rounded-full bg-white/10 flex items-center justify-center text-white">
-                  <User size={10} />
-                </div>
-                <span className="font-heading tracking-wider font-bold text-white">USER</span>
-                <ChevronDown size={12} className={`text-neutral-400 transition-transform duration-200 ${isUserMenuOpen ? 'rotate-180' : ''}`} />
+                <User size={13} className="text-neutral-200" />
               </button>
 
               <AnimatePresence>
