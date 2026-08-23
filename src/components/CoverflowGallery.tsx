@@ -114,9 +114,9 @@ function cssTransition(t: any): { dur: number; ease: string } {
 
 const COMPONENT_DEFAULTS = {
     slides: DEFAULT_SLIDES,
-    cardWidth: 480,
-    cardHeight: 360,
-    radius: 12,
+    cardWidth: 460,
+    cardHeight: 440,
+    radius: 16,
     tilt: 12,
     sideTilt: 8,
     gap: 8,
@@ -125,7 +125,7 @@ const COMPONENT_DEFAULTS = {
     autoplayDirection: "rightToLeft" as AutoplayDir,
     transition: {
         type: "tween",
-        duration: 0.45,
+        duration: 0.55,
         delay: 2.2,
         ease: [0.22, 1, 0.36, 1],
     },
@@ -133,17 +133,17 @@ const COMPONENT_DEFAULTS = {
     titleFont: {
         fontFamily: "system-ui",
         variant: "Bold",
-        fontSize: "22px",
+        fontSize: "15px",
         letterSpacing: "-0.01em",
-        lineHeight: "1.2em",
+        lineHeight: "1.25em",
     } as any,
     titleColor: "#ffffff",
     titlePosition: {
         position: "bottomLeft" as TitleCorner,
-        paddingLeft: 22,
-        paddingRight: 22,
-        paddingTop: 24,
-        paddingBottom: 24,
+        paddingLeft: 20,
+        paddingRight: 160,
+        paddingTop: 20,
+        paddingBottom: 20,
     },
 }
 
@@ -151,9 +151,9 @@ export default function CoverflowGallery(props: Smooth3DSlideshowProps) {
     props = { ...COMPONENT_DEFAULTS, ...props }
     const {
         slides = DEFAULT_SLIDES,
-        cardWidth = 480,
-        cardHeight = 360,
-        radius = 12,
+        cardWidth = 460,
+        cardHeight = 440,
+        radius = 16,
         tilt = 12,
         sideTilt = 8,
         gap = 8,
@@ -172,10 +172,10 @@ export default function CoverflowGallery(props: Smooth3DSlideshowProps) {
     const corner: TitleCorner = tp.position || "bottomLeft"
     const isTop = corner === "topLeft" || corner === "topRight"
     const isRight = corner === "topRight" || corner === "bottomRight"
-    const padLeft = tp.paddingLeft ?? 22
-    const padRight = tp.paddingRight ?? 22
-    const padTop = tp.paddingTop ?? 24
-    const padBottom = tp.paddingBottom ?? 24
+    const padLeft = tp.paddingLeft ?? 20
+    const padRight = tp.paddingRight ?? 160
+    const padTop = tp.paddingTop ?? 20
+    const padBottom = tp.paddingBottom ?? 20
 
     const isStatic = useIsStaticRenderer()
     const list = slides && slides.length ? slides : DEFAULT_SLIDES
@@ -189,11 +189,12 @@ export default function CoverflowGallery(props: Smooth3DSlideshowProps) {
     const loop = true
     const [active, setActive] = useState(0)
     const [isHovered, setIsHovered] = useState(false)
+    const hoverScrollTimer = useRef<ReturnType<typeof setInterval> | null>(null)
 
     const moveDur =
         transition && typeof transition.duration === "number"
             ? transition.duration
-            : 0.6
+            : 0.55
     const lockRef = useRef(false)
     const lock = useCallback(() => {
         lockRef.current = true
@@ -214,6 +215,27 @@ export default function CoverflowGallery(props: Smooth3DSlideshowProps) {
         [n, lock]
     )
 
+    const startHoverScroll = useCallback((dir: number) => {
+        if (hoverScrollTimer.current) clearInterval(hoverScrollTimer.current)
+        step(dir)
+        hoverScrollTimer.current = setInterval(() => {
+            step(dir)
+        }, 1300)
+    }, [step])
+
+    const stopHoverScroll = useCallback(() => {
+        if (hoverScrollTimer.current) {
+            clearInterval(hoverScrollTimer.current)
+            hoverScrollTimer.current = null
+        }
+    }, [])
+
+    useEffect(() => {
+        return () => {
+            if (hoverScrollTimer.current) clearInterval(hoverScrollTimer.current)
+        }
+    }, [])
+
     const handleCardClick = useCallback(
         (i: number) => {
             if (isStatic || autoplay || lockRef.current) return
@@ -226,7 +248,7 @@ export default function CoverflowGallery(props: Smooth3DSlideshowProps) {
     const delay =
         transition && typeof transition.delay === "number"
             ? transition.delay
-            : 3.5
+            : 2.2
     useEffect(() => {
         if (isStatic || !autoplay || isHovered || n < 2) return
         const ms = Math.max(0.3, delay) * 1000
@@ -290,6 +312,26 @@ export default function CoverflowGallery(props: Smooth3DSlideshowProps) {
             onMouseLeave={() => setIsHovered(false)}
             className="select-none py-6 group relative"
         >
+            {/* LEFT HOVER SCROLL ZONE (ENTRE LA FLECHA Y LA TARJETA) */}
+            <div
+                onMouseEnter={() => startHoverScroll(-1)}
+                onMouseLeave={stopHoverScroll}
+                className="absolute left-0 top-0 bottom-0 w-24 sm:w-44 z-30 cursor-pointer group/left flex items-center justify-start pl-2 sm:pl-4 transition-all"
+                title="Pasa el mouse para rotar hacia la izquierda"
+            >
+                <div className="w-16 h-full bg-gradient-to-r from-blue-600/15 via-blue-600/5 to-transparent opacity-0 group-hover/left:opacity-100 transition-opacity duration-300 pointer-events-none rounded-l-3xl" />
+            </div>
+
+            {/* RIGHT HOVER SCROLL ZONE (ENTRE LA FLECHA Y LA TARJETA) */}
+            <div
+                onMouseEnter={() => startHoverScroll(1)}
+                onMouseLeave={stopHoverScroll}
+                className="absolute right-0 top-0 bottom-0 w-24 sm:w-44 z-30 cursor-pointer group/right flex items-center justify-end pr-2 sm:pr-4 transition-all"
+                title="Pasa el mouse para rotar hacia la derecha"
+            >
+                <div className="w-16 h-full bg-gradient-to-l from-blue-600/15 via-blue-600/5 to-transparent opacity-0 group-hover/right:opacity-100 transition-opacity duration-300 pointer-events-none rounded-r-3xl" />
+            </div>
+
             {/* MANUAL LEFT NAVIGATION BUTTON */}
             <button
                 type="button"
@@ -356,7 +398,7 @@ export default function CoverflowGallery(props: Smooth3DSlideshowProps) {
                         cursor: autoplay || isActive ? "default" : "pointer",
                         pointerEvents:
                             visible && !isStatic ? "auto" : "none",
-                        backgroundColor: "#09090b",
+                        backgroundColor: "#07070a",
                         boxShadow: isActive
                             ? (isHovered
                                 ? "0 0 50px rgba(59, 130, 246, 0.85), 0 0 100px rgba(99, 102, 241, 0.45), 0 25px 60px rgba(0, 0, 0, 0.95)"
@@ -388,7 +430,9 @@ export default function CoverflowGallery(props: Smooth3DSlideshowProps) {
                                         inset: 0,
                                         width: "100%",
                                         height: "100%",
-                                        objectFit: "cover",
+                                        objectFit: "contain",
+                                        objectPosition: "center center",
+                                        backgroundColor: "#07070a",
                                         display: "block",
                                         userSelect: "none",
                                     }}
@@ -435,8 +479,8 @@ export default function CoverflowGallery(props: Smooth3DSlideshowProps) {
                                             position: "absolute",
                                             inset: 0,
                                             background: isTop
-                                                ? "linear-gradient(0deg, rgba(0,0,0,0) 35%, rgba(0,0,0,0.85) 100%)"
-                                                : "linear-gradient(180deg, rgba(0,0,0,0) 35%, rgba(0,0,0,0.85) 100%)",
+                                                ? "linear-gradient(0deg, rgba(0,0,0,0) 55%, rgba(0,0,0,0.75) 100%)"
+                                                : "linear-gradient(180deg, rgba(0,0,0,0) 65%, rgba(0,0,0,0.85) 100%)",
                                             pointerEvents: "none",
                                         }}
                                     />
@@ -453,18 +497,19 @@ export default function CoverflowGallery(props: Smooth3DSlideshowProps) {
                                                 ? "right"
                                                 : "left",
                                             pointerEvents: "none",
+                                            zIndex: 25,
                                         }}
                                     >
                                         <span
                                             style={{
                                                 color: titleColor,
-                                                fontSize: 22,
+                                                fontSize: 15,
                                                 fontWeight: 800,
-                                                lineHeight: "1.2em",
+                                                lineHeight: "1.25em",
                                                 letterSpacing: "-0.01em",
                                                 whiteSpace: "pre-line",
                                                 textShadow:
-                                                    "0 2px 10px rgba(0,0,0,0.8)",
+                                                    "0 2px 10px rgba(0,0,0,0.95)",
                                                 fontFamily: "var(--font-sans, system-ui)",
                                                 ...(titleFont || {}),
                                             }}
