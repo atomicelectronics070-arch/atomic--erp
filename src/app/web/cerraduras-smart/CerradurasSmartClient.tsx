@@ -234,10 +234,10 @@ const SMART_LOCK_KITS: SmartLockProduct[] = [
     provider: "YALE",
     providerName: "Yale Ecuador",
     versionTag: "Original Yale Ecuador // Huella + Código + Tarjeta",
-    badge: "🏆 YALE ORIGINAL",
+    badge: "🏆 TOP YALE",
     category: "cerrojo",
-    image: "/images/cerraduras/yale-ymc420d.png",
-    priceBase: 135.00,
+    image: "/images/cerraduras/yale/yale-cerrojo-digital-ymc420d-1.png",
+    priceBase: 260.02,
     highlights: [
       "Certificación internacional de seguridad Yale y cilindro antibumping Grado 1",
       "Pantalla táctil capacitiva que no deja marcas de huellas dactilares",
@@ -250,6 +250,46 @@ const SMART_LOCK_KITS: SmartLockProduct[] = [
     popular: true
   },
   {
+    id: "lock-yale-ymf40a-hub",
+    name: "Cerradura Digital Yale YMF40A + Módulo Yale Connect para Celular",
+    provider: "YALE",
+    providerName: "Yale Ecuador",
+    versionTag: "Manija de Embutir + WiFi Yale Connect Hub",
+    badge: "📱 YALE SMART CONNECT",
+    category: "manija",
+    image: "/images/cerraduras/yale/yale-cerradura-digital-ymf40a-m-dulo-para-abr-1.webp",
+    priceBase: 463.33,
+    highlights: [
+      "Apertura remota desde celular con la app Yale Connect desde cualquier parte",
+      "Sensor biométrico escandinavo de lectura ultra rápida",
+      "Manija de embutir reversible para puertas principales de alta gama",
+      "Menú guiado por voz en español para configuración intuitiva"
+    ],
+    methods: ["App Yale Connect", "Huella Digital", "Código PIN", "Llave de Puntos"],
+    differentiator: "Control total desde tu smartphone con la app oficial de Yale y biometría de grado bancario.",
+    description: "Cerradura digital insignia Yale con módulo de conectividad móvil incluido."
+  },
+  {
+    id: "lock-yale-ymf40a",
+    name: "Cerradura Digital Yale YMF40A Biometría y Manija de Embutir",
+    provider: "YALE",
+    providerName: "Yale Ecuador",
+    versionTag: "Seguridad Grado 1 // Manija de Embutir",
+    badge: "🏆 YALE ORIGINAL",
+    category: "manija",
+    image: "/images/cerraduras/yale/yale-cerradura-digital-ymf40a-1.png",
+    priceBase: 388.43,
+    highlights: [
+      "Lector de huella digital de un toque con tecnología biométrica escandinava",
+      "Mecanismo de embutir de acero templado ultra resistente",
+      "Capacidad para hasta 100 usuarios con huellas y claves individuales",
+      "Cierre automático con sensor magnético de puerta cerrada"
+    ],
+    methods: ["Huella Digital", "Código PIN", "Llave Mecánica de Emergencia"],
+    differentiator: "Elegancia y máxima solidez estructural para puertas principales residenciales.",
+    description: "Cerradura biométrica digital Yale con manija de embutir y acabado en negro piano."
+  },
+  {
     id: "lock-yale-ydf40a",
     name: "Cerrojo Digital Yale YDF40A con Lector Huella de Alta Precisión",
     provider: "YALE",
@@ -257,8 +297,8 @@ const SMART_LOCK_KITS: SmartLockProduct[] = [
     versionTag: "Seguridad Grado 2 // Pantalla Touch Capacitiva",
     badge: "🏆 YALE ORIGINAL",
     category: "cerrojo",
-    image: "/images/cerraduras/yale-ydf40a.png",
-    priceBase: 118.00,
+    image: "/images/cerraduras/yale/yale-cerrojo-digital-ydf40a-1.png",
+    priceBase: 263.13,
     highlights: [
       "Lector de huella digital de precisión escandinava con lectura en 0.3s",
       "Menú guiado por voz en español para fácil configuración",
@@ -270,6 +310,26 @@ const SMART_LOCK_KITS: SmartLockProduct[] = [
     description: "Cerrojo digital biométrico Yale para hogares y oficinas con estándar internacional de protección."
   },
   {
+    id: "lock-yale-ysd100",
+    name: "Cerradura Digital Yale YSD100 para Puertas Abatibles & Corredizas",
+    provider: "YALE",
+    providerName: "Yale Ecuador",
+    versionTag: "Especial Puertas Corredizas y Abatibles // Perfil Delgado",
+    badge: "🚪 CORREDIZAS YALE",
+    category: "cerrojo",
+    image: "/images/cerraduras/yale/yale-cerradura-digital-ysd100-puerta-abatible-1.png",
+    priceBase: 227.72,
+    highlights: [
+      "Mecanismo de gancho doble especial para puertas corredizas y marcos angostos",
+      "Teclado táctil invisible con código señuelo antiespía",
+      "Cuerpo ultra delgado de aleación de zinc de alta durabilidad",
+      "Compatible con apertura por tarjeta de proximidad RFID y código PIN"
+    ],
+    methods: ["Código PIN", "Tarjeta RFID", "Llave Mecánica"],
+    differentiator: "La solución oficial de Yale diseñada específicamente para puertas corredizas de balcón y acceso.",
+    description: "Cerradura digital de sobreponer Yale con cerrojo de gancho para puertas corredizas y batientes."
+  },
+  {
     id: "lock-yale-ydr41",
     name: "Cerrojo Digital Touchscreen Yale YDR41 Antiespía",
     provider: "YALE",
@@ -277,8 +337,8 @@ const SMART_LOCK_KITS: SmartLockProduct[] = [
     versionTag: "Bloqueo Automático Inteligente // Claves Temporales",
     badge: "🏆 YALE ORIGINAL",
     category: "cerrojo",
-    image: "/images/cerraduras/yale-ydr41.png",
-    priceBase: 98.50,
+    image: "/images/cerraduras/yale/yale-cerrojo-digital-ydr41-1.png",
+    priceBase: 280.42,
     highlights: [
       "Teclado táctil invisible que se enciende solo al tacto de la palma",
       "Código señuelo: puedes ingresar números aleatorios antes o después de tu clave real",
@@ -290,6 +350,26 @@ const SMART_LOCK_KITS: SmartLockProduct[] = [
     description: "Cerrojo digital Yale con teclado táctil retroiluminado y código señuelo para máxima privacidad."
   },
   {
+    id: "lock-yale-yrd226-hub",
+    name: "Cerrojo Digital Yale YRD226 Real Living + Módulo Yale Connect",
+    provider: "YALE",
+    providerName: "Yale Ecuador",
+    versionTag: "Conectividad Total Celular // Acabado Bronce / Níquel",
+    badge: "📱 YALE CONNECT",
+    category: "cerrojo",
+    image: "/images/cerraduras/yale/yale-cerrojo-digital-yrd226-m-dulo-para-abrir-1.webp",
+    priceBase: 329.72,
+    highlights: [
+      "Abre, cierra y monitorea el estado de tu puerta desde tu celular con la app Yale Connect",
+      "Mecanismo motorizado de acero con cerrojo cónico que corrige desalineaciones",
+      "Pantalla táctil retroiluminada de alta resistencia",
+      "Alertas en tiempo real al teléfono ante aperturas no autorizadas"
+    ],
+    methods: ["App Celular", "Pantalla Touch", "Llave Física Yale"],
+    differentiator: "El cerrojo inteligente más elegante del mercado con control remoto total por internet.",
+    description: "Cerrojo táctil motorizado Yale Real Living con kit de conexión móvil Yale Connect."
+  },
+  {
     id: "lock-yale-yrd226",
     name: "Cerrojo Digital Yale YRD226 Bronce Oscuro / Acero Níquel",
     provider: "YALE",
@@ -297,8 +377,8 @@ const SMART_LOCK_KITS: SmartLockProduct[] = [
     versionTag: "Línea Real Living // Diseño Clásico & Moderno",
     badge: "🏆 YALE ORIGINAL",
     category: "cerrojo",
-    image: "/images/cerraduras/yale-yrd226.png",
-    priceBase: 89.00,
+    image: "/images/cerraduras/yale/yale-cerrojo-digital-yrd226-bronce-oscuro-1.jpg",
+    priceBase: 174.93,
     highlights: [
       "Acabado en bronce oscuro de lujo o acero inoxidable níquel satinado",
       "Resistente a la intemperie y rayos UV para puertas exteriores",
@@ -308,6 +388,166 @@ const SMART_LOCK_KITS: SmartLockProduct[] = [
     methods: ["Pantalla Táctil", "Llave Física Yale", "Compatible con Smart Home"],
     differentiator: "Elegante diseño en bronce o níquel satinado que realza la estética de cualquier fachada.",
     description: "Cerrojo digital inteligente Yale con teclado táctil resistente a la intemperie."
+  },
+  {
+    id: "lock-yale-yrd256",
+    name: "Cerrojo Digital Touchscreen Yale YRD256 Negro Mate (Keyless)",
+    provider: "YALE",
+    providerName: "Yale Ecuador",
+    versionTag: "100% Digital Sin Llave // Teclado Táctil Capacitivo",
+    badge: "⚡ KEYLESS YALE",
+    category: "cerrojo",
+    image: "/images/cerraduras/yale/yale-cerrojo-digital-yrd256-negro-1.png",
+    priceBase: 186.89,
+    highlights: [
+      "Diseño 100% keyless (sin orificio de llave para evitar manipulaciones mecánicas)",
+      "Pantalla táctil retroiluminada de alta sensibilidad",
+      "Terminal exterior para batería de 9V en caso de agotamiento de pilas",
+      "Bloqueo automático de seguridad tras intentos fallidos consecutivos"
+    ],
+    methods: ["Pantalla Táctil", "Códigos Temporales", "Compatible Yale Connect"],
+    differentiator: "Sin cilindro exterior: elimina por completo el riesgo de ganzuado o bumping.",
+    description: "Cerrojo digital sin llave Yale YRD256 con teclado capacitivo en acabado negro mate."
+  },
+  {
+    id: "lock-yale-yrl226",
+    name: "Cerradura Digital con Manija Yale YRL226 Touchscreen",
+    provider: "YALE",
+    providerName: "Yale Ecuador",
+    versionTag: "Manija Integrada Reversible // Teclado Táctil",
+    badge: "🏆 YALE ORIGINAL",
+    category: "manija",
+    image: "/images/cerraduras/yale/yale-cerrojo-digital-yrl226-m-dulo-para-abrir-1.webp",
+    priceBase: 227.72,
+    highlights: [
+      "Manija integrada de accionamiento suave para un acceso rápido y cómodo",
+      "Teclado táctil iluminado de alta durabilidad con código antiespía",
+      "Mecanismo tubular reversible para instalación izquierda o derecha",
+      "Capacidad para hasta 250 códigos de usuario"
+    ],
+    methods: ["Pantalla Táctil", "Llave Física de Seguridad", "Compatible Yale Hub"],
+    differentiator: "Todo en uno: sustituye tu manija tradicional por una cerradura digital táctil premium.",
+    description: "Cerradura digital de manija integrada Yale Real Living con teclado táctil."
+  },
+  {
+    id: "lock-yale-lia-smart",
+    name: "Cerradura Digital LIA Yale Connect Embutir / Tubular",
+    provider: "YALE",
+    providerName: "Yale Ecuador",
+    versionTag: "Línea LIA // Diseño Minimalista Escandinavo",
+    badge: "💎 DISEÑO LIA",
+    category: "cerrojo",
+    image: "/images/cerraduras/yale/yale-cerradura-digital-lia-embutir--1.jpg",
+    priceBase: 246.42,
+    highlights: [
+      "Diseño estilizado extra delgado de líneas redondeadas y limpias",
+      "Lectura biométrica de huella digital y teclado táctil iluminado",
+      "Conectividad con ecosistema Yale Connect para apertura remota",
+      "Ideal para interiores modernos, departamentos y puertas principales"
+    ],
+    methods: ["Huella Digital", "Teclado Táctil", "App Yale Connect", "Llave"],
+    differentiator: "Estética vanguardista minimalista que complementa la arquitectura moderna.",
+    description: "Cerradura digital biométrica Yale LIA de diseño escandinavo contemporáneo."
+  },
+  {
+    id: "lock-yale-ydl120",
+    name: "Cerrojo Digital Yale YDL120 con Teclado Numérico",
+    provider: "YALE",
+    providerName: "Yale Ecuador",
+    versionTag: "Económico & Resistente // Teclado Retroiluminado",
+    badge: "⚡ ECONÓMICO YALE",
+    category: "cerrojo",
+    image: "/images/cerraduras/yale/yale-cerrojo-digital-yale-ydl120-1.png",
+    priceBase: 136.84,
+    highlights: [
+      "Teclado numérico iluminado con teclas de fácil pulsación",
+      "Programación de hasta 50 códigos de usuario",
+      "Cierre automático programable de 10 a 99 segundos",
+      "Cuerpo de zinc fundido resistente a intentos de impacto"
+    ],
+    methods: ["Teclado Numérico", "Llave Mecánica"],
+    differentiator: "La confiabilidad de Yale al precio más accesible para departamentos y oficinas.",
+    description: "Cerrojo digital con teclado retroiluminado Yale YDL120 de alta practicidad."
+  },
+  {
+    id: "lock-yale-ydd120",
+    name: "Cerrojo Digital Yale YDD120 Negro Mate",
+    provider: "YALE",
+    providerName: "Yale Ecuador",
+    versionTag: "Diseño Compacto // Bloqueo Automático",
+    badge: "⚡ COMPACTO YALE",
+    category: "cerrojo",
+    image: "/images/cerraduras/yale/yale-cerrojo-digital-ydd120-negra-1.png",
+    priceBase: 92.57,
+    highlights: [
+      "Cuerpo compacto en acabado negro mate de alta resistencia",
+      "Teclado numérico retroiluminado para fácil uso en la noche",
+      "Modo privacidad y alarma de batería baja",
+      "Instalación directa en perforaciones estándar de cerrojo"
+    ],
+    methods: ["Código PIN", "Llave Mecánica"],
+    differentiator: "Compacto, seguro y fácil de operar para toda la familia.",
+    description: "Cerrojo digital Yale YDD120 con teclado y pestillo de seguridad motorizado."
+  },
+  {
+    id: "lock-yale-cilindro",
+    name: "Cilindro Biométrico Inteligente Yale para Cerraduras Europerfil",
+    provider: "YALE",
+    providerName: "Yale Ecuador",
+    versionTag: "Instalación en 3 Minutos // Europerfil Estándar",
+    badge: "🔩 CILINDRO SMART",
+    category: "cerrojo",
+    image: "/images/cerraduras/yale/yale-cilindro-biom-trico-1.png",
+    priceBase: 117.00,
+    highlights: [
+      "Reemplaza el cilindro mecánico existente sin cambiar la cerradura ni taladrar",
+      "Lector de huella digital integrado en el pomo exterior",
+      "Batería recargable con duración de hasta 12 meses",
+      "Compatible con cualquier cerradura estándar de perfil europeo"
+    ],
+    methods: ["Huella Digital", "Llave Mecánica de Respaldo", "App Bluetooth"],
+    differentiator: "Convierte cualquier cerradura existente en biométrica en solo 3 minutos sin obras.",
+    description: "Cilindro digital biométrico Yale para actualización inmediata de puertas existentes."
+  },
+  {
+    id: "lock-yale-phillips-ph240",
+    name: "Cerrojo Digital Phillips PH240 Yale de Sobreponer",
+    provider: "YALE",
+    providerName: "Yale Ecuador",
+    versionTag: "Instalación de Sobreponer // Teclado Touch",
+    badge: "🔩 ROBUSTA PHILLIPS",
+    category: "cerrojo",
+    image: "/images/cerraduras/yale/yale-cerrojo-digital-phillips-ph240-1.png",
+    priceBase: 67.00,
+    highlights: [
+      "Cerradura de sobreponer ideal para puertas metálicas, rejas y madera",
+      "Teclado táctil iluminado con códigos de acceso",
+      "Pestillo de acero reforzado de alta sujeción",
+      "Respaldo oficial Phillips - Yale Ecuador"
+    ],
+    methods: ["Teclado Táctil", "Llave de Seguridad"],
+    differentiator: "Fuerza mecánica tradicional con la comodidad de acceso digital por teclado.",
+    description: "Cerrojo digital de sobreponer Phillips PH240 para máxima solidez en puertas y rejas."
+  },
+  {
+    id: "lock-yale-mueble-biometrico",
+    name: "Cerradura Digital Biométrica Yale para Muebles, Cajones & Gabinetes",
+    provider: "YALE",
+    providerName: "Yale Ecuador",
+    versionTag: "Biometría Mini // Cajones, Armarios & Muebles YF67",
+    badge: "🔒 MUEBLES & GABINETES",
+    category: "airbnb",
+    image: "/images/cerraduras/yale/yale-cerradura-digital-para-mueble-yf67-1.png",
+    priceBase: 34.84,
+    highlights: [
+      "Sensor biométrico ultra compacto para cajones de oficina, vitrinas y armarios",
+      "Apertura instantánea en 0.2 segundos al colocar el dedo",
+      "Batería recargable vía micro-USB con bajo consumo de energía",
+      "Instalación discreta y elegante en cualquier tipo de mueble de madera o metal"
+    ],
+    methods: ["Huella Digital", "Llave USB de Emergencia"],
+    differentiator: "Protege documentos confidenciales, dinero o pertenencias valiosas en tu oficina u hogar.",
+    description: "Cerradura biométrica compacta Yale para muebles, gavetas y armarios de seguridad."
   },
 
   // ─── BANCO DEL PERNO (BP / VOLTEX / PLASMA / QUANTUM) ───
