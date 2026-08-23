@@ -34,7 +34,9 @@ import {
   Building,
   Home,
   Check,
-  Cpu
+  Cpu,
+  Filter,
+  Tag
 } from "lucide-react"
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -78,14 +80,16 @@ const PROVINCES_DATA: ProvinceData[] = [
 ]
 
 // ═══════════════════════════════════════════════════════════════════════════
-// SMART LOCK PRODUCTS & KITS DATA
+// SMART LOCK PRODUCTS ACROSS ALL OFFICIAL PROVIDERS (CRONTE, YALE, BP, YAE, SISEGUSA/ZKTECO)
 // ═══════════════════════════════════════════════════════════════════════════
 interface SmartLockProduct {
   id: string
   name: string
+  provider: "CRONTE" | "YALE" | "BP" | "YAE" | "SISEGUSA"
+  providerName: string
   versionTag: string
   badge: string
-  category: "facial" | "manija" | "airbnb" | "edificios"
+  category: "facial" | "manija" | "cerrojo" | "airbnb" | "edificios"
   image: string
   priceBase: number
   highlights: string[]
@@ -96,9 +100,12 @@ interface SmartLockProduct {
 }
 
 const SMART_LOCK_KITS: SmartLockProduct[] = [
+  // ─── YAE & SMART LIFE ECOSYSTEM ───
   {
-    id: "lock-facial-3d",
+    id: "lock-yae-facial-3d",
     name: "Cerradura Smart Biometría Facial 3D & Mirilla Cámara LCD Tuya Pro",
+    provider: "YAE",
+    providerName: "YAE Smart Life",
     versionTag: "Edición Flagship 2026 // Facial 3D + Pantalla HD",
     badge: "⭐ TOP DE GAMA",
     category: "facial",
@@ -112,15 +119,205 @@ const SMART_LOCK_KITS: SmartLockProduct[] = [
       "Compatible con puertas de madera, metal y blindadas (38mm - 100mm)"
     ],
     methods: ["Facial 3D", "Huella 360°", "App Tuya/SmartLife", "Clave PIN Antiespía", "Tarjeta RFID", "Llave Mecánica"],
-    differentiator: "Máximo nivel de lujo y comodidad: se abre automáticamente al detectar tu rostro sin tocar la cerradura.",
-    description: "Nuestra cerradura inteligente más avanzada. Equipada con sensores biométricos 3D infrarrojos que reconocen tu rostro en 0.4s incluso en oscuridad absoluta. La mirilla integrada envía fotos en tiempo real a tu smartphone cuando alguien toca el timbre.",
+    differentiator: "Máximo nivel de lujo: se abre automáticamente al detectar tu rostro sin necesidad de tocar la cerradura.",
+    description: "Nuestra cerradura insignia más avanzada. Equipada con sensores biométricos 3D infrarrojos que reconocen tu rostro en 0.4s incluso en total oscuridad.",
     popular: true
   },
   {
-    id: "lock-quantum-pro",
+    id: "lock-yae-glass-door",
+    name: "Cerradura Smart Tuya WiFi para Puertas de Vidrio Templado & Corredizas",
+    provider: "YAE",
+    providerName: "YAE Smart Life",
+    versionTag: "Instalación sin Perforación en Vidrio // Perno Doble",
+    badge: "🏢 PUERTAS DE VIDRIO",
+    category: "airbnb",
+    image: "/categories/cerraduras-smart-y-accesos.png",
+    priceBase: 119.99,
+    highlights: [
+      "Instalación limpia mediante abrazadera de alta presión sin perforar el vidrio templado",
+      "Compatible con puertas de vidrio batientes, corredizas y marcos metálicos",
+      "Sensor biométrico de huella digital capacitivo de 360 grados",
+      "Control por app Tuya con contraseñas temporales y registros de asistencia"
+    ],
+    methods: ["Huella 360°", "App Tuya", "Clave PIN", "Tarjetas IC", "Control Remoto"],
+    differentiator: "Ideal para oficinas comerciales, consultorios y locales con puertas de vidrio templado.",
+    description: "Cerradura digital de sobreponer diseñada exclusivamente para puertas de vidrio templado de 10 a 12mm sin taladrar."
+  },
+  {
+    id: "lock-yae-knob-smart",
+    name: "Cerradura Pomo Smart Biométrico YAE con Lector de Huella Integrado",
+    provider: "YAE",
+    providerName: "YAE Smart Life",
+    versionTag: "Reemplazo Directo de Pomo // Dormitorios & Oficinas",
+    badge: "🚪 FÁCIL INSTALACIÓN",
+    category: "airbnb",
+    image: "/banners/smart.jpeg",
+    priceBase: 49.99,
+    highlights: [
+      "Reemplaza directamente cualquier pomo estándar tradicional sin modificar la puerta",
+      "Lector de huella de alta precisión ubicado en el centro del pomo",
+      "Modo paso libre para reuniones o eventos familiares",
+      "Baterías AAA con autonomía de más de 12 meses + puerto de emergencia USB"
+    ],
+    methods: ["Huella en Pomo", "App Bluetooth", "Claves Numéricas", "Llave Mecánica"],
+    differentiator: "La solución más rápida y económica para independizar habitaciones, oficinas privadas o departamentos.",
+    description: "Transforma tu pomo tradicional en un acceso biométrico moderno en cuestión de minutos."
+  },
+
+  // ─── CRONTE TECHNOLOGY ───
+  {
+    id: "lock-cronte-cyberlock",
+    name: "Cerradura Smart Cronte CyberLock Pro WiFi Tuya Biometría 360°",
+    provider: "CRONTE",
+    providerName: "Cronte Technology",
+    versionTag: "Línea Cronte Technology // WiFi Directo Tuya",
+    badge: "🛡️ CRONTE OFFICIAL",
+    category: "manija",
+    image: "/banners/smart_doorbell.png",
+    priceBase: 98.99,
+    highlights: [
+      "Cuerpo reforzado en aleación de zinc fundido a presión antivandalismo",
+      "Conexión WiFi directa sin gateways adicionales a la app Tuya / SmartLife",
+      "Sensor semiconductor FPC de grado bancario sueco (lectura en 0.25s)",
+      "Capacidad para 100 huellas, 100 contraseñas y 100 tarjetas RFID"
+    ],
+    methods: ["Huella FPC", "App Tuya", "Contraseña Táctil", "Tarjetas RFID", "Llave de Seguridad"],
+    differentiator: "Excelente robustez y durabilidad respaldada por la ingeniería y garantía directa de Cronte Technology.",
+    description: "Cerradura de alta seguridad con conectividad nativa WiFi para monitoreo continuo, avisos de apertura y generación remota de claves.",
+    popular: true
+  },
+  {
+    id: "lock-cronte-slimline",
+    name: "Cerradura Cronte Slimline Embutir para Perfiles de Aluminio y Metal",
+    provider: "CRONTE",
+    providerName: "Cronte Technology",
+    versionTag: "Especial Perfil Europeo & Puertas Angostas",
+    badge: "🛡️ CRONTE SLIM",
+    category: "cerrojo",
+    image: "/categories/cerraduras-smart-y-accesos.png",
+    priceBase: 84.50,
+    highlights: [
+      "Diseño ultra estrecho de 38mm compatible con perfiles de aluminio y hierro",
+      "Protección contra intemperie y humedad IP65",
+      "Manija reversible de acero inoxidable 304 de alta durabilidad",
+      "Notificaciones automáticas de intrusión o intentos fallidos"
+    ],
+    methods: ["Huella Digital", "Clave PIN", "App Móvil", "Tarjetas de Proximidad", "Llave"],
+    differentiator: "Diseñada específicamente para puertas de aluminio, rejas metálicas y puertas principales de acceso exterior.",
+    description: "Cerradura digital de perfil delgado diseñada para marcos estrechos donde una cerradura convencional no cabe."
+  },
+  {
+    id: "lock-cronte-deadbolt",
+    name: "Cerrojo Smart Cronte Touch con Conectividad WiFi & Teclado Táctil",
+    provider: "CRONTE",
+    providerName: "Cronte Technology",
+    versionTag: "Cerrojo Automático Heavy-Duty",
+    badge: "🛡️ CRONTE TECH",
+    category: "cerrojo",
+    image: "/banners/smart.jpeg",
+    priceBase: 62.99,
+    highlights: [
+      "Cerrojo motorizado de cierre automático al cerrar la puerta",
+      "Teclado táctil iluminado con dígitos aleatorios antiespía",
+      "Permite conservar tu manija o jaladera de lujo existente",
+      "Alertas de batería baja con 200 aperturas de anticipación"
+    ],
+    methods: ["Código Touch", "App Tuya WiFi", "Huella Digital", "Llaves"],
+    differentiator: "Ideal para combinar con manijas o jaladeras de diseño arquitectónico existentes.",
+    description: "Cerrojo inteligente motorizado que brinda la máxima resistencia al apalancamiento."
+  },
+
+  // ─── YALE ECUADOR ───
+  {
+    id: "lock-yale-ymc420d",
+    name: "Cerrojo Digital Inteligente Yale YMC420D Biométrico de Alta Gama",
+    provider: "YALE",
+    providerName: "Yale Ecuador",
+    versionTag: "Original Yale Ecuador // Huella + Código + Tarjeta",
+    badge: "🏆 YALE ORIGINAL",
+    category: "cerrojo",
+    image: "/categories/cerraduras-smart-y-accesos.png",
+    priceBase: 135.00,
+    highlights: [
+      "Certificación internacional de seguridad Yale y cilindro antibumping Grado 1",
+      "Pantalla táctil capacitiva que no deja marcas de huellas dactilares",
+      "Bloqueo automático programable al cerrar la puerta",
+      "Alarma sonora de 80dB ante intento de sabotaje o golpe"
+    ],
+    methods: ["Lector Biométrico Yale", "Código PIN", "Tarjeta Yale", "Llave Mecánica"],
+    differentiator: "El respaldo, prestigio y confiabilidad legendaria de la marca número 1 en cerrajería del mundo.",
+    description: "Cerrojo digital de máxima seguridad Yale con teclado inteligente y acabados premium.",
+    popular: true
+  },
+  {
+    id: "lock-yale-ydf40a",
+    name: "Cerrojo Digital Yale YDF40A con Lector Huella de Alta Precisión",
+    provider: "YALE",
+    providerName: "Yale Ecuador",
+    versionTag: "Seguridad Grado 2 // Pantalla Touch Capacitiva",
+    badge: "🏆 YALE ORIGINAL",
+    category: "cerrojo",
+    image: "/categories/cerraduras-smart-y-accesos.png",
+    priceBase: 118.00,
+    highlights: [
+      "Lector de huella digital de precisión escandinava con lectura en 0.3s",
+      "Menú guiado por voz en español para fácil configuración",
+      "Integrable con módulo Yale Connect para control desde celular",
+      "Puerto exterior para batería de 9V en caso de emergencia"
+    ],
+    methods: ["Huella Yale", "Código Maestro y Usuarios", "Llave de Emergencia"],
+    differentiator: "Guiado por voz en español y lectura biométrica de altísima precisión.",
+    description: "Cerrojo digital biométrico Yale para hogares y oficinas con estándar internacional de protección."
+  },
+  {
+    id: "lock-yale-ydr41",
+    name: "Cerrojo Digital Touchscreen Yale YDR41 Antiespía",
+    provider: "YALE",
+    providerName: "Yale Ecuador",
+    versionTag: "Bloqueo Automático Inteligente // Claves Temporales",
+    badge: "🏆 YALE ORIGINAL",
+    category: "cerrojo",
+    image: "/banners/smart.jpeg",
+    priceBase: 98.50,
+    highlights: [
+      "Teclado táctil invisible que se enciende solo al tacto de la palma",
+      "Código señuelo: puedes ingresar números aleatorios antes o después de tu clave real",
+      "Cierre automático con pestillo de acero cementado",
+      "Compatible con puertas de 30 a 55mm de espesor"
+    ],
+    methods: ["Código Touch", "Tarjeta de Proximidad Yale", "Llave de Alta Seguridad"],
+    differentiator: "Función de código falso para que nadie pueda memorizar tu clave al verte teclear.",
+    description: "Cerrojo digital Yale con teclado táctil retroiluminado y código señuelo para máxima privacidad."
+  },
+  {
+    id: "lock-yale-yrd226",
+    name: "Cerrojo Digital Yale YRD226 Bronce Oscuro / Acero Níquel",
+    provider: "YALE",
+    providerName: "Yale Ecuador",
+    versionTag: "Línea Real Living // Diseño Clásico & Moderno",
+    badge: "🏆 YALE ORIGINAL",
+    category: "cerrojo",
+    image: "/categories/cerraduras-smart-y-accesos.png",
+    priceBase: 89.00,
+    highlights: [
+      "Acabado en bronce oscuro de lujo o acero inoxidable níquel satinado",
+      "Resistente a la intemperie y rayos UV para puertas exteriores",
+      "Capacidad para 250 códigos de usuario",
+      "Mecanismo de embutir ultra suave con cerrojo de acero motorizado"
+    ],
+    methods: ["Pantalla Táctil", "Llave Física Yale", "Compatible con Smart Home"],
+    differentiator: "Elegante diseño en bronce o níquel satinado que realza la estética de cualquier fachada.",
+    description: "Cerrojo digital inteligente Yale con teclado táctil resistente a la intemperie."
+  },
+
+  // ─── BANCO DEL PERNO (BP / VOLTEX / PLASMA / QUANTUM) ───
+  {
+    id: "lock-bp-quantum-pro",
     name: "Cerradura Electrónica Premium Quantum Lock Biometría & Bluetooth Gateway",
+    provider: "BP",
+    providerName: "Banco del Perno (BP)",
     versionTag: "Versión Biométrica Semiconductores // WiFi & Bluetooth",
-    badge: "🔥 MÁS VENDIDO",
+    badge: "🔥 MÁS VENDIDO BP",
     category: "manija",
     image: "/banners/smart_doorbell.png",
     priceBase: 109.99,
@@ -133,14 +330,16 @@ const SMART_LOCK_KITS: SmartLockProduct[] = [
     ],
     methods: ["Huella Ergonómica", "App Móvil", "Contraseña Táctil", "2 Tarjetas RFID", "Llaves Físicas"],
     differentiator: "Apertura en un solo movimiento: pon el pulgar en la manija y empuja suavemente para entrar.",
-    description: "Diseñada para residencias y departamentos que buscan elegancia minimalista y robustez. Su sensor de huella dactilar semiconductor de grado bancario previene réplicas y garantiza lectura instantánea en 0.3 segundos.",
+    description: "Diseñada para residencias y departamentos que buscan elegancia minimalista y robustez con tecnología BP.",
     popular: true
   },
   {
-    id: "lock-plasma-lock",
-    name: "Cerradura Electrónica Plasma Lock Manija Digital Inteligente",
+    id: "lock-bp-plasma-lock",
+    name: "Cerradura Electrónica Premium Plasma Lock Manija Digital Inteligente 5 en 1",
+    provider: "BP",
+    providerName: "Banco del Perno (BP)",
     versionTag: "Versión Manija Digital Multi-Acceso 5 en 1",
-    badge: "⚡ EXCELENTE RELACIÓN CALIDAD/PRECIO",
+    badge: "⚡ CALIDAD/PRECIO BP",
     category: "manija",
     image: "/categories/cerraduras-smart-y-accesos.png",
     priceBase: 87.99,
@@ -153,13 +352,15 @@ const SMART_LOCK_KITS: SmartLockProduct[] = [
     ],
     methods: ["Huella Digital", "Clave Numérica", "Tarjeta IC M1", "App Tuya", "Llave Mecánica"],
     differentiator: "Ideal para renovar cerraduras convencionales de pomo o manija sin modificar la puerta.",
-    description: "Transforma tu puerta tradicional en un acceso inteligente blindado. Soporta hasta 100 huellas y 100 tarjetas RFID. Baterías con autonomía de hasta 12 meses con aviso de batería baja con 200 aperturas de anticipación."
+    description: "Transforma tu puerta tradicional en un acceso inteligente blindado con el respaldo de Banco del Perno."
   },
   {
-    id: "lock-voltex-lock",
-    name: "Cerradura Voltex Lock Smart WiFi para Interiores & Departamentos",
+    id: "lock-bp-voltex-lock",
+    name: "Cerradura Electrónica Premium Voltex Lock Smart WiFi para Interiores",
+    provider: "BP",
+    providerName: "Banco del Perno (BP)",
     versionTag: "Versión Slimline // Aluminio Aeroespacial",
-    badge: "🏠 IDEAL DEPARTAMENTOS",
+    badge: "🏠 DEPARTAMENTOS BP",
     category: "airbnb",
     image: "/banners/smart.jpeg",
     priceBase: 76.99,
@@ -167,16 +368,19 @@ const SMART_LOCK_KITS: SmartLockProduct[] = [
       "Perfil estilizado extra delgado para diseño moderno y departamentos",
       "Conexión WiFi directa sin necesidad de gateways adicionales",
       "Códigos de un solo uso para personal de limpieza o entregas",
-      "Resistencia a cambios de temperatura e intemperie ligera IP54",
-      "Cilindro de seguridad de grado C antibumping"
+      "Resistencia a cambios de temperatura e intemperie ligera IP54"
     ],
     methods: ["Huella 360°", "Clave Virtual", "Tuya Smart", "Tarjetas Proximidad", "Llaves"],
     differentiator: "Diseño ultra moderno que combina con acabados de madera fina y puertas contemporáneas.",
-    description: "Compacta, segura y fácil de administrar. Permite compartir llaves electrónicas virtuales temporales a visitas o familiares desde la app en cualquier momento sin importar dónde estés."
+    description: "Compacta, segura y fácil de administrar desde tu smartphone."
   },
+
+  // ─── SISEGUSA / ZKTECO / HIKVISION / EZVIZ ───
   {
-    id: "lock-dl04-airbnb",
+    id: "lock-sisegusa-dl04",
     name: "Cerradura Inteligente DL04 Teclado Táctil, WiFi, Bluetooth & RFID",
+    provider: "SISEGUSA",
+    providerName: "Sisegusa / ZKTeco",
     versionTag: "Versión Especial Airbnb, Hoteles & Rentas Cortas",
     badge: "💎 AIRBNB READY",
     category: "airbnb",
@@ -191,12 +395,54 @@ const SMART_LOCK_KITS: SmartLockProduct[] = [
     ],
     methods: ["Códigos con Horario", "Bluetooth / WiFi", "Tarjeta RFID", "Llave de Respaldo"],
     differentiator: "La herramienta perfecta para anfitriones de Airbnb: tus huéspedes reciben su código y tú te liberas de citas presenciales.",
-    description: "Optimiza la gestión de tus departamentos de renta. Envía el código de acceso a tus huéspedes por WhatsApp con caducidad automática al finalizar su estancia. Ahorra tiempo y brinda máxima seguridad."
+    description: "Optimiza la gestión de tus departamentos de renta con contraseñas programadas por hora de estancia."
+  },
+  {
+    id: "lock-sisegusa-dl03",
+    name: "Cerradura Inteligente DL03 Teclado Táctil & Conectividad WiFi Directa",
+    provider: "SISEGUSA",
+    providerName: "Sisegusa / ZKTeco",
+    versionTag: "Económica & Segura // Claves Numéricas",
+    badge: "⚡ ECONÓMICA SMART",
+    category: "airbnb",
+    image: "/banners/smart.jpeg",
+    priceBase: 48.99,
+    highlights: [
+      "Teclado táctil iluminado de alta durabilidad",
+      "Gestión remota por aplicación móvil con registro de aperturas",
+      "Apertura de emergencia por llave física o batería externa",
+      "Alarma de intento de manipulación no autorizada"
+    ],
+    methods: ["Clave Numérica", "App WiFi", "Tarjeta de Proximidad", "Llave"],
+    differentiator: "Acceso digital seguro al precio más accesible del mercado.",
+    description: "Cerradura digital con teclado táctil retroiluminado y conectividad WiFi."
+  },
+  {
+    id: "lock-ezviz-hp7",
+    name: "Videoportero Smart Híbrido EZVIZ HP7 con Apertura de Cerradura Eléctrica",
+    provider: "SISEGUSA",
+    providerName: "Sisegusa / EZVIZ",
+    versionTag: "Pantalla Touch 7\" 2K + Conexión a Cerradura",
+    badge: "📱 VIDEOPORTERO 2K",
+    category: "edificios",
+    image: "/images/seguridad/zkteco-acceso-edificio.jpg",
+    priceBase: 165.00,
+    highlights: [
+      "Pantalla táctil a color de 7 pulgadas con resolución 2K Ultra HD",
+      "Cámara exterior con visión nocturna infrarroja y detección de personas",
+      "Apertura remota de cerradura eléctrica o pestillo electromagnético desde app EZVIZ",
+      "Conexión Wi-Fi de doble banda (2.4 / 5 GHz)"
+    ],
+    methods: ["App EZVIZ Móvil", "Pantalla Touch 7\"", "Tarjeta RFID", "Reconocimiento de Personas"],
+    differentiator: "Ve en video 2K quién toca a tu puerta desde cualquier lugar del mundo y ábrele con un toque.",
+    description: "Sistema de videoportero inteligente EZVIZ HP7 con control de cerradura integrado."
   },
   {
     id: "combo-acceso-edificio",
-    name: "Combo Seguridad Acceso Edificios & Conjuntos Senseface 2A + Electroimán 600 Lbs",
-    versionTag: "Kit Comunitario // Portones, Edificios & Oficinas",
+    name: "Combo Seguridad Acceso Edificios Senseface 2A + Electroimán 600 Lbs + Botonera",
+    provider: "SISEGUSA",
+    providerName: "Sisegusa / ZKTeco",
+    versionTag: "ZKTeco Multibiométrico // Edificios & Conjuntos",
     badge: "🏢 CONJUNTOS & EDIFICIOS",
     category: "edificios",
     image: "/images/seguridad/zkteco-kit-acceso.jpg",
@@ -210,13 +456,14 @@ const SMART_LOCK_KITS: SmartLockProduct[] = [
     ],
     methods: ["Reconocimiento Facial", "Huella Dactilar", "Tarjeta RFID", "Videollamada por App", "Pulsador No Touch"],
     differentiator: "Sistema integral para copropiedades: elimina duplicados de llaves y controla el acceso vehicular o peatonal.",
-    description: "Solución profesional de control de accesos para conjuntos residenciales, urbanizaciones cerradas, edificios y sedes corporativas. Garantiza seguridad absoluta con reporte de ingresos auditable."
+    description: "Solución profesional de control de accesos para conjuntos residenciales, urbanizaciones cerradas y edificios."
   }
 ]
 
 export default function CerradurasSmartClient() {
   const [selectedProvinceId, setSelectedProvinceId] = useState<string>("quito")
   const [activeCategory, setActiveCategory] = useState<string>("todos")
+  const [activeProvider, setActiveProvider] = useState<string>("todos")
   const [modalProduct, setModalProduct] = useState<SmartLockProduct | null>(null)
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null)
 
@@ -225,11 +472,14 @@ export default function CerradurasSmartClient() {
     return PROVINCES_DATA.find((p) => p.id === selectedProvinceId) || PROVINCES_DATA[0]
   }, [selectedProvinceId])
 
-  // Filtered products
+  // Filtered products by both Category and Provider
   const filteredProducts = useMemo(() => {
-    if (activeCategory === "todos") return SMART_LOCK_KITS
-    return SMART_LOCK_KITS.filter((p) => p.category === activeCategory)
-  }, [activeCategory])
+    return SMART_LOCK_KITS.filter((p) => {
+      const matchCat = activeCategory === "todos" || p.category === activeCategory
+      const matchProv = activeProvider === "todos" || p.provider === activeProvider
+      return matchCat && matchProv
+    })
+  }, [activeCategory, activeProvider])
 
   // Helper to calculate total installed price
   const calculateTotal = (basePrice: number, installCost: number) => {
@@ -257,12 +507,13 @@ export default function CerradurasSmartClient() {
     const text = encodeURIComponent(
       `¡Hola ATOMIC! 👋 Deseo solicitar el KIT CON INSTALACIÓN de la cerradura inteligente:\n\n` +
       `🔒 Producto: ${product.name}\n` +
+      `🏢 Proveedor: ${product.providerName}\n` +
       `🏷️ Versión: ${product.versionTag}\n` +
       `📍 Provincia / Ciudad: ${province.name}\n` +
       `🌎 Región: ${province.region}\n` +
-      `💵 Precio Producto: $${product.priceBase.toFixed(2)}\n` +
+      `💵 Precio Producto (30% OFF): $${product.priceBase.toFixed(2)}\n` +
       `🛠️ Instalación Profesional: $${province.cost.toFixed(2)}\n` +
-      `💰 TOTAL ESTIMADO: $${total} USD\n\n` +
+      `💰 TOTAL OFERTA KIT: $${total} USD\n\n` +
       `Por favor indíquenme disponibilidad y agendamiento de técnico certificado en mi zona. ¡Gracias!`
     )
     return `https://wa.me/593969043453?text=${text}`
@@ -276,7 +527,7 @@ export default function CerradurasSmartClient() {
         <div className="max-w-7xl mx-auto flex items-center justify-center gap-2">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)] shrink-0" />
           <span className="text-emerald-400 font-extrabold font-heading text-[10px] sm:text-[11px] uppercase tracking-widest">
-            PRODUCTOS 100% ORIGINALES & GARANTÍA DE INSTALACIÓN
+            PRODUCTOS 100% ORIGINALES // CRONTE • YALE • BP • YAE • SISEGUSA // GARANTÍA DE INSTALACIÓN
           </span>
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)] shrink-0" />
         </div>
@@ -379,7 +630,7 @@ export default function CerradurasSmartClient() {
             transition={{ delay: 0.2 }}
             className="mt-5 text-sm sm:text-base text-neutral-300 max-w-3xl mx-auto leading-relaxed font-normal"
           >
-            Las siguientes promociones son <strong>Kits Integrales con Instalación Certificada Incluida</strong>. Olvídate de buscar cerrajeros inexpertos: nosotros suministramos la cerradura inteligente original, la adaptamos a tu puerta de madera, metal o blindada, configuramos la app en tu teléfono y te dejamos el sistema 100% operativo con 1 año de garantía escrita.
+            Disponemos del catálogo más completo de cerraduras inteligentes homologadas de proveedores líderes: <strong>CRONTE, YALE ECUADOR, BANCO DEL PERNO (BP), YAE SMART LIFE y SISEGUSA / ZKTECO</strong>. Todas nuestras opciones se entregan como <strong>Kits con Instalación Profesional Garantizada</strong> en tu domicilio a nivel nacional con <strong>30% de Descuento Promocional</strong>.
           </motion.p>
 
           {/* ═══════════ PROVINCE SELECTOR HERO BANNER (REAL-TIME REGION CALCULATOR) ═══════════ */}
@@ -562,42 +813,93 @@ export default function CerradurasSmartClient() {
         </div>
       </section>
 
-      {/* ═══════════ CATEGORY FILTER PILLS ═══════════ */}
+      {/* ═══════════ FILTER CONTROLS: PROVEEDOR & CATEGORÍA ═══════════ */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 pt-12 pb-4">
         
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
-          <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#14131C] border border-white/10 text-xs font-bold text-neutral-300 mb-2">
-              <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
-              <span className="font-heading uppercase tracking-wider text-[11px]">CATÁLOGO DE KITS SMART</span>
+        <div className="flex flex-col gap-5 mb-6">
+          
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#14131C] border border-white/10 text-xs font-bold text-neutral-300 mb-2">
+                <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
+                <span className="font-heading uppercase tracking-wider text-[11px]">CATÁLOGO MULTI-PROVEEDOR ({filteredProducts.length} MODELOS)</span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-black font-heading uppercase text-white tracking-tight">
+                Cerraduras Smart de Proveedores Homologados
+              </h2>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-black font-heading uppercase text-white tracking-tight">
-              Modelos y Versiones Disponibles
-            </h2>
+
+            {/* Provider Quick Counts */}
+            <div className="flex items-center gap-2 text-xs font-mono text-neutral-400">
+              <span className="px-2.5 py-1 rounded-lg bg-white/[0.04] border border-white/10">CRONTE</span>
+              <span className="px-2.5 py-1 rounded-lg bg-white/[0.04] border border-white/10">YALE</span>
+              <span className="px-2.5 py-1 rounded-lg bg-white/[0.04] border border-white/10">BP</span>
+              <span className="px-2.5 py-1 rounded-lg bg-white/[0.04] border border-white/10">YAE</span>
+              <span className="px-2.5 py-1 rounded-lg bg-white/[0.04] border border-white/10">SISEGUSA</span>
+            </div>
           </div>
 
-          {/* Filter Buttons */}
-          <div className="flex flex-wrap items-center gap-1.5 bg-[#121118] p-1.5 rounded-2xl border border-white/10 shadow-inner">
-            {[
-              { id: "todos", label: "TODOS LOS KITS" },
-              { id: "facial", label: "FACIAL 3D & MIRILLA" },
-              { id: "manija", label: "MANIJAS CON HUELLA" },
-              { id: "airbnb", label: "AIRBNB & RENTAS" },
-              { id: "edificios", label: "EDIFICIOS & ACCESOS" },
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveCategory(tab.id)}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold font-heading uppercase tracking-wider transition-all duration-200 cursor-pointer ${
-                  activeCategory === tab.id
-                    ? "bg-white text-black shadow-lg shadow-white/20 font-black scale-105"
-                    : "text-neutral-400 hover:text-white hover:bg-white/[0.06]"
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
+          {/* ─── FILTRO 1: POR PROVEEDOR HOMOLOGADO ─── */}
+          <div>
+            <span className="text-[10px] font-mono text-neutral-400 uppercase tracking-widest block mb-2 font-bold">
+              1. Filtrar por Proveedor / Marca:
+            </span>
+            <div className="flex flex-wrap items-center gap-2 bg-[#121118] p-1.5 rounded-2xl border border-white/10 shadow-inner">
+              {[
+                { id: "todos", label: "TODOS LOS PROVEEDORES", count: SMART_LOCK_KITS.length },
+                { id: "CRONTE", label: "🛡️ CRONTE TECHNOLOGY", count: SMART_LOCK_KITS.filter(p => p.provider === 'CRONTE').length },
+                { id: "YALE", label: "🏆 YALE ECUADOR", count: SMART_LOCK_KITS.filter(p => p.provider === 'YALE').length },
+                { id: "BP", label: "🔩 BANCO DEL PERNO (BP)", count: SMART_LOCK_KITS.filter(p => p.provider === 'BP').length },
+                { id: "YAE", label: "⭐ YAE SMART LIFE", count: SMART_LOCK_KITS.filter(p => p.provider === 'YAE').length },
+                { id: "SISEGUSA", label: "🏢 SISEGUSA & ZKTECO", count: SMART_LOCK_KITS.filter(p => p.provider === 'SISEGUSA').length },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveProvider(tab.id)}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold font-heading uppercase tracking-wider transition-all duration-200 cursor-pointer flex items-center gap-1.5 ${
+                    activeProvider === tab.id
+                      ? "bg-blue-500 text-white shadow-lg shadow-blue-500/25 font-black scale-105"
+                      : "text-neutral-400 hover:text-white hover:bg-white/[0.06]"
+                  }`}
+                >
+                  <span>{tab.label}</span>
+                  <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded ${activeProvider === tab.id ? 'bg-white/20 text-white' : 'bg-white/10 text-neutral-400'}`}>
+                    {tab.count}
+                  </span>
+                </button>
+              ))}
+            </div>
           </div>
+
+          {/* ─── FILTRO 2: POR TIPO DE CERRADURA ─── */}
+          <div>
+            <span className="text-[10px] font-mono text-neutral-400 uppercase tracking-widest block mb-2 font-bold">
+              2. Filtrar por Tipo de Mecanismo / Uso:
+            </span>
+            <div className="flex flex-wrap items-center gap-2 bg-[#121118] p-1.5 rounded-2xl border border-white/10 shadow-inner">
+              {[
+                { id: "todos", label: "TODAS LAS CATEGORÍAS" },
+                { id: "facial", label: "FACIAL 3D & MIRILLA" },
+                { id: "manija", label: "MANIJAS CON HUELLA" },
+                { id: "cerrojo", label: "CERROJOS DIGITALES" },
+                { id: "airbnb", label: "AIRBNB & RENTAS" },
+                { id: "edificios", label: "EDIFICIOS & ACCESOS" },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveCategory(tab.id)}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold font-heading uppercase tracking-wider transition-all duration-200 cursor-pointer ${
+                    activeCategory === tab.id
+                      ? "bg-white text-black shadow-lg shadow-white/20 font-black scale-105"
+                      : "text-neutral-400 hover:text-white hover:bg-white/[0.06]"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
         </div>
 
         {/* Selected Province Banner Alert */}
@@ -628,167 +930,187 @@ export default function CerradurasSmartClient() {
       {/* ═══════════ PRODUCTS & KITS GRID ═══════════ */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 pb-20">
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-          {filteredProducts.map((product) => {
-            const installedTotal = calculateTotal(product.priceBase, selectedProvince.cost)
-            const quitoTotal = calculateTotal(product.priceBase, 45)
+        {filteredProducts.length === 0 ? (
+          <div className="bg-[#121118] border border-white/10 rounded-3xl p-12 text-center my-8">
+            <Package size={36} className="text-neutral-500 mx-auto mb-3" />
+            <h3 className="text-base font-bold text-white uppercase font-heading">No se encontraron productos con estos filtros</h3>
+            <p className="text-xs text-neutral-400 mt-1 mb-4">Prueba seleccionando "Todos los proveedores" o "Todas las categorías".</p>
+            <button
+              onClick={() => { setActiveProvider("todos"); setActiveCategory("todos"); }}
+              className="px-5 py-2 rounded-xl bg-blue-500 hover:bg-blue-400 text-white text-xs font-bold cursor-pointer"
+            >
+              Restablecer Filtros
+            </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            {filteredProducts.map((product) => {
+              const installedTotal = calculateTotal(product.priceBase, selectedProvince.cost)
 
-            return (
-              <motion.div
-                key={product.id}
-                layout
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-                className="bg-[#0e0d14] border border-white/10 hover:border-blue-500/50 rounded-3xl overflow-hidden shadow-2xl transition-all duration-300 flex flex-col justify-between group hover:shadow-blue-500/10"
-              >
-                {/* Top Section */}
-                <div>
-                  {/* Image & Badges Container */}
-                  <div className="relative w-full aspect-square bg-[#060608] overflow-hidden p-6 flex items-center justify-center border-b border-white/[0.06]">
-                    
-                    {/* Top Badges */}
-                    <div className="absolute top-3.5 left-3.5 z-20 flex flex-col gap-1.5 items-start">
-                      <span className="px-3 py-1 rounded-full bg-emerald-500 text-black font-black text-[10px] uppercase tracking-wider font-heading shadow-lg flex items-center gap-1">
-                        <Wrench size={11} /> + INSTALACIÓN INCLUIDA
-                      </span>
-                      {product.badge && (
-                        <span className="px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[9px] font-extrabold uppercase tracking-widest font-heading">
-                          {product.badge}
+              return (
+                <motion.div
+                  key={product.id}
+                  layout
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="bg-[#0e0d14] border border-white/10 hover:border-blue-500/50 rounded-3xl overflow-hidden shadow-2xl transition-all duration-300 flex flex-col justify-between group hover:shadow-blue-500/10"
+                >
+                  {/* Top Section */}
+                  <div>
+                    {/* Image & Badges Container */}
+                    <div className="relative w-full aspect-square bg-[#060608] overflow-hidden p-6 flex items-center justify-center border-b border-white/[0.06]">
+                      
+                      {/* Top Badges */}
+                      <div className="absolute top-3.5 left-3.5 z-20 flex flex-col gap-1.5 items-start">
+                        <span className="px-3 py-1 rounded-full bg-emerald-500 text-black font-black text-[10px] uppercase tracking-wider font-heading shadow-lg flex items-center gap-1">
+                          <Wrench size={11} /> + INSTALACIÓN INCLUIDA
                         </span>
-                      )}
-                    </div>
-
-                    {/* Product Image */}
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="w-full h-full object-contain max-h-[280px] group-hover:scale-105 transition-transform duration-500"
-                    />
-
-                    {/* Quick Differentiator Ribbon */}
-                    <div className="absolute bottom-2 left-2 right-2 z-20 bg-[#12111a]/90 backdrop-blur-md border border-white/10 rounded-xl px-3 py-1.5 text-[10px] text-neutral-300 font-mono flex items-center justify-between">
-                      <span className="truncate">{product.versionTag}</span>
-                    </div>
-                  </div>
-
-                  {/* Content Body */}
-                  <div className="p-5 sm:p-6 space-y-4">
-                    
-                    {/* Title */}
-                    <h3 className="text-base sm:text-lg font-black text-white font-heading uppercase leading-snug group-hover:text-blue-300 transition-colors">
-                      {product.name}
-                    </h3>
-
-                    {/* Differentiator callout */}
-                    <p className="text-xs text-neutral-300 italic bg-white/[0.03] p-2.5 rounded-xl border border-white/[0.06] leading-relaxed">
-                      "{product.differentiator}"
-                    </p>
-
-                    {/* Access Methods Pills */}
-                    <div>
-                      <span className="text-[10px] font-mono text-neutral-400 uppercase tracking-widest block mb-1.5">
-                        Métodos de Desbloqueo:
-                      </span>
-                      <div className="flex flex-wrap gap-1.5">
-                        {product.methods.map((method, idx) => (
-                          <span
-                            key={idx}
-                            className="px-2.5 py-1 rounded-lg bg-white/[0.05] border border-white/10 text-[10px] font-bold text-neutral-200"
-                          >
-                            {method}
+                        {product.badge && (
+                          <span className="px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[9px] font-extrabold uppercase tracking-widest font-heading">
+                            {product.badge}
                           </span>
+                        )}
+                      </div>
+
+                      {/* Provider Badge (Top Right) */}
+                      <div className="absolute top-3.5 right-3.5 z-20">
+                        <span className="px-2 py-0.5 rounded-lg bg-black/80 backdrop-blur-md border border-white/20 text-white font-mono text-[9px] font-bold uppercase tracking-wider">
+                          {product.providerName}
+                        </span>
+                      </div>
+
+                      {/* Product Image */}
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className="w-full h-full object-contain max-h-[280px] group-hover:scale-105 transition-transform duration-500"
+                      />
+
+                      {/* Quick Differentiator Ribbon */}
+                      <div className="absolute bottom-2 left-2 right-2 z-20 bg-[#12111a]/90 backdrop-blur-md border border-white/10 rounded-xl px-3 py-1.5 text-[10px] text-neutral-300 font-mono flex items-center justify-between">
+                        <span className="truncate">{product.versionTag}</span>
+                      </div>
+                    </div>
+
+                    {/* Content Body */}
+                    <div className="p-5 sm:p-6 space-y-4">
+                      
+                      {/* Title */}
+                      <h3 className="text-base sm:text-lg font-black text-white font-heading uppercase leading-snug group-hover:text-blue-300 transition-colors">
+                        {product.name}
+                      </h3>
+
+                      {/* Differentiator callout */}
+                      <p className="text-xs text-neutral-300 italic bg-white/[0.03] p-2.5 rounded-xl border border-white/[0.06] leading-relaxed">
+                        "{product.differentiator}"
+                      </p>
+
+                      {/* Access Methods Pills */}
+                      <div>
+                        <span className="text-[10px] font-mono text-neutral-400 uppercase tracking-widest block mb-1.5">
+                          Métodos de Desbloqueo:
+                        </span>
+                        <div className="flex flex-wrap gap-1.5">
+                          {product.methods.map((method, idx) => (
+                            <span
+                              key={idx}
+                              className="px-2.5 py-1 rounded-lg bg-white/[0.05] border border-white/10 text-[10px] font-bold text-neutral-200"
+                            >
+                              {method}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Highlights List */}
+                      <div className="space-y-1.5 pt-1 text-xs text-neutral-400">
+                        {product.highlights.slice(0, 3).map((item, idx) => (
+                          <div key={idx} className="flex items-start gap-2">
+                            <CheckCircle2 size={13} className="text-emerald-400 shrink-0 mt-0.5" />
+                            <span className="text-[11px] leading-tight text-neutral-300">{item}</span>
+                          </div>
                         ))}
                       </div>
-                    </div>
 
-                    {/* Highlights List */}
-                    <div className="space-y-1.5 pt-1 text-xs text-neutral-400">
-                      {product.highlights.slice(0, 3).map((item, idx) => (
-                        <div key={idx} className="flex items-start gap-2">
-                          <CheckCircle2 size={13} className="text-emerald-400 shrink-0 mt-0.5" />
-                          <span className="text-[11px] leading-tight text-neutral-300">{item}</span>
+                    </div>
+                  </div>
+
+                  {/* Bottom Pricing & Actions */}
+                  <div className="p-5 sm:p-6 pt-0 border-t border-white/[0.06] bg-[#0c0b11]/50 space-y-4 mt-2">
+                    
+                    {/* Dual Pricing Display */}
+                    <div className="pt-4 flex items-end justify-between">
+                      <div>
+                        <div className="flex items-center gap-1.5 mb-0.5">
+                          <span className="text-[10px] text-neutral-400 font-mono uppercase tracking-wider">
+                            Solo Producto
+                          </span>
+                          <span className="px-1.5 py-0.2 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30 text-[9px] font-black font-mono">
+                            -30%
+                          </span>
                         </div>
-                      ))}
+                        <div className="text-xs font-bold text-neutral-400 line-through font-mono">
+                          ${calculateRegularProductPrice(product.priceBase)} USD
+                        </div>
+                        <div className="text-base font-black text-neutral-200 font-heading">
+                          ${product.priceBase.toFixed(2)} USD
+                        </div>
+                      </div>
+
+                      {/* Highlighted Kit Installed Price */}
+                      <div className="text-right">
+                        <div className="flex items-center justify-end gap-1.5 mb-0.5">
+                          <span className="text-[10px] text-emerald-400 font-mono font-bold uppercase tracking-wider">
+                            KIT INSTALADO EN {selectedProvince.id === "quito" ? "QUITO" : selectedProvince.name.split(' ')[0].toUpperCase()}
+                          </span>
+                          <span className="px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[9px] font-black font-mono">
+                            -30% OFF
+                          </span>
+                        </div>
+                        <div className="text-xs font-bold text-neutral-400 line-through font-mono">
+                          Antes: ${calculateRegularInstalledPrice(product.priceBase, selectedProvince.cost)} USD
+                        </div>
+                        <div className="text-2xl sm:text-3xl font-black text-white font-heading text-emerald-400">
+                          ${installedTotal} <span className="text-xs font-mono text-neutral-300 font-normal">USD</span>
+                        </div>
+                        <span className="text-[9px] text-neutral-400 block font-mono">
+                          (Ahorras 30%: -${calculateSavings(product.priceBase, selectedProvince.cost)} USD)
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="grid grid-cols-2 gap-2.5 pt-1">
+                      {/* Open Details & Province Calculator Modal */}
+                      <button
+                        onClick={() => setModalProduct(product)}
+                        className="w-full py-2.5 px-3 rounded-2xl bg-white/[0.08] hover:bg-white/15 border border-white/15 hover:border-white/30 text-white text-xs font-bold font-heading uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                      >
+                        <Layers size={13} />
+                        <span>Más Opciones</span>
+                      </button>
+
+                      {/* Direct WhatsApp Order */}
+                      <a
+                        href={getWhatsAppUrl(product, selectedProvince)}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="w-full py-2.5 px-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-black font-black text-xs font-heading uppercase tracking-wider shadow-lg shadow-emerald-500/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-1.5"
+                      >
+                        <MessageCircle size={14} />
+                        <span>Pedir Kit</span>
+                      </a>
                     </div>
 
                   </div>
-                </div>
 
-                {/* Bottom Pricing & Actions */}
-                <div className="p-5 sm:p-6 pt-0 border-t border-white/[0.06] bg-[#0c0b11]/50 space-y-4 mt-2">
-                  
-                  {/* Dual Pricing Display */}
-                  <div className="pt-4 flex items-end justify-between">
-                    <div>
-                      <div className="flex items-center gap-1.5 mb-0.5">
-                        <span className="text-[10px] text-neutral-400 font-mono uppercase tracking-wider">
-                          Solo Producto
-                        </span>
-                        <span className="px-1.5 py-0.2 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30 text-[9px] font-black font-mono">
-                          -30%
-                        </span>
-                      </div>
-                      <div className="text-xs font-bold text-neutral-400 line-through font-mono">
-                        ${calculateRegularProductPrice(product.priceBase)} USD
-                      </div>
-                      <div className="text-base font-black text-neutral-200 font-heading">
-                        ${product.priceBase.toFixed(2)} USD
-                      </div>
-                    </div>
-
-                    {/* Highlighted Kit Installed Price */}
-                    <div className="text-right">
-                      <div className="flex items-center justify-end gap-1.5 mb-0.5">
-                        <span className="text-[10px] text-emerald-400 font-mono font-bold uppercase tracking-wider">
-                          KIT INSTALADO EN {selectedProvince.id === "quito" ? "QUITO" : selectedProvince.name.split(' ')[0].toUpperCase()}
-                        </span>
-                        <span className="px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[9px] font-black font-mono">
-                          -30% OFF
-                        </span>
-                      </div>
-                      <div className="text-xs font-bold text-neutral-400 line-through font-mono">
-                        Antes: ${calculateRegularInstalledPrice(product.priceBase, selectedProvince.cost)} USD
-                      </div>
-                      <div className="text-2xl sm:text-3xl font-black text-white font-heading text-emerald-400">
-                        ${installedTotal} <span className="text-xs font-mono text-neutral-300 font-normal">USD</span>
-                      </div>
-                      <span className="text-[9px] text-neutral-400 block font-mono">
-                        (Ahorras 30%: -${calculateSavings(product.priceBase, selectedProvince.cost)} USD)
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Action Buttons */}
-                  <div className="grid grid-cols-2 gap-2.5 pt-1">
-                    {/* Open Details & Province Calculator Modal */}
-                    <button
-                      onClick={() => setModalProduct(product)}
-                      className="w-full py-2.5 px-3 rounded-2xl bg-white/[0.08] hover:bg-white/15 border border-white/15 hover:border-white/30 text-white text-xs font-bold font-heading uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-                    >
-                      <Layers size={13} />
-                      <span>Más Opciones</span>
-                    </button>
-
-                    {/* Direct WhatsApp Order */}
-                    <a
-                      href={getWhatsAppUrl(product, selectedProvince)}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="w-full py-2.5 px-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-black font-black text-xs font-heading uppercase tracking-wider shadow-lg shadow-emerald-500/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-1.5"
-                    >
-                      <MessageCircle size={14} />
-                      <span>Pedir Kit</span>
-                    </a>
-                  </div>
-
-                </div>
-
-              </motion.div>
-            )
-          })}
-        </div>
+                </motion.div>
+              )
+            })}
+          </div>
+        )}
 
       </section>
 
@@ -815,10 +1137,15 @@ export default function CerradurasSmartClient() {
                 
                 {/* Header */}
                 <div className="pr-8">
-                  <span className="px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[10px] font-bold font-heading uppercase tracking-widest">
-                    {modalProduct.versionTag}
-                  </span>
-                  <h3 className="text-xl sm:text-2xl font-black text-white font-heading uppercase mt-2">
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <span className="px-2.5 py-0.5 rounded-lg bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[10px] font-bold font-heading uppercase tracking-widest">
+                      {modalProduct.providerName}
+                    </span>
+                    <span className="px-2.5 py-0.5 rounded-lg bg-white/10 text-neutral-300 border border-white/15 text-[10px] font-bold font-mono">
+                      {modalProduct.versionTag}
+                    </span>
+                  </div>
+                  <h3 className="text-xl sm:text-2xl font-black text-white font-heading uppercase mt-1">
                     {modalProduct.name}
                   </h3>
                   <p className="text-xs text-neutral-400 mt-1">
@@ -943,7 +1270,7 @@ export default function CerradurasSmartClient() {
           {[
             {
               q: "¿Qué incluye exactamente el valor de instalación?",
-              a: "El valor cubre la visita técnica en tu domicilio, retiro de tu cerradura antigua (si aplica), perforación y adaptación milimétrica del mortise en tu puerta, montaje electrónico de la cerradura, colocación de baterías, configuración de la aplicación móvil (Tuya/SmartLife), registro de huellas/rostros/códigos y una explicación detallada de su funcionamiento."
+              a: "El valor cubre la visita técnica en tu domicilio, retiro de tu cerradura antigua (si aplica), perforación y adaptación milimétrica del mortise en tu puerta, montaje electrónico de la cerradura, colocación de baterías, configuración de la aplicación móvil (Tuya/SmartLife/Yale/EZVIZ), registro de huellas/rostros/códigos y una explicación detallada de su funcionamiento."
             },
             {
               q: "¿Cómo coordina ATOMIC la instalación si estoy en otra ciudad o provincia?",
@@ -954,8 +1281,8 @@ export default function CerradurasSmartClient() {
               a: "Todas nuestras cerraduras inteligentes cuentan con dos sistemas de emergencia: 1) Llave mecánica física oculta de alta seguridad para abrir de forma manual; 2) Puerto de alimentación de emergencia USB/Type-C donde puedes conectar una powerbank portátil para darle energía instantánea y abrir con tu huella o código."
             },
             {
-              q: "¿Sirven para cualquier tipo de puerta (madera, metal, aluminio)?",
-              a: "Sí, son compatibles con puertas de madera sólida, tamborada, perfiles de aluminio, metal y puertas blindadas con grosores entre 35 mm y 100 mm. Nuestros técnicos llevan brocas y herramientas especializadas para cada material."
+              q: "¿Sirven para cualquier tipo de puerta (madera, metal, aluminio, vidrio)?",
+              a: "Sí, contamos con modelos específicos para puertas de madera sólida, perfiles de aluminio europeo, rejas de metal, puertas blindadas y puertas de vidrio templado (con abrazadera sin perforación). Nuestros técnicos llevan herramientas para cada material."
             },
             {
               q: "¿Puedo crear códigos para visitas o para inquilinos de Airbnb que expiren solos?",
@@ -1004,7 +1331,7 @@ export default function CerradurasSmartClient() {
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2 text-white font-heading font-black text-sm">
             <Shield size={16} className="text-blue-400" />
-            <span>ATOMIC // CERRADURAS SMART & ACCESOS BIOMÉTRICOS</span>
+            <span>ATOMIC // CERRADURAS SMART • CRONTE • YALE • BP • YAE • SISEGUSA</span>
           </div>
 
           <div className="flex items-center gap-4 text-xs text-neutral-400">
@@ -1017,7 +1344,7 @@ export default function CerradurasSmartClient() {
         </div>
 
         <p className="text-[11px] text-neutral-600">
-          © {new Date().getFullYear()} ATOMIC Electronics & Technologies. Red nacional de instalación y distribución en las 24 provincias de Ecuador.
+          © {new Date().getFullYear()} ATOMIC Electronics & Technologies. Red nacional de instalación y distribución multimarca en las 24 provincias de Ecuador.
         </p>
       </footer>
 
