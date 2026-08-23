@@ -1104,8 +1104,17 @@ export default function PublicWebClient({
             )}
           </motion.div>
 
+          {/* ═══════════ PREVIEW / INTRODUCCIÓN SECTION TITLE ═══════════ */}
+          <div className="text-center max-w-3xl mx-auto mt-4 mb-2">
+            <div className="inline-flex items-center justify-center gap-2 px-4 py-1.5 rounded-full bg-[#131315] border border-white/10 text-xs font-bold text-neutral-300 mb-2 shadow-xl mx-auto">
+              <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
+              <span className="font-heading uppercase tracking-wider text-[11px]">PREVIEW / INTRODUCCIÓN</span>
+              <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
+            </div>
+          </div>
+
           {/* ═══════════ MINI RECUADROS OPACOS (FILTROS DIFUMINADOS BLANCO/GRIS) ═══════════ */}
-          <div className="flex flex-wrap items-center justify-center gap-2 max-w-4xl mx-auto my-6 px-4">
+          <div className="flex flex-wrap items-center justify-center gap-2 max-w-4xl mx-auto mb-6 px-4">
             {[
               { id: 'ofertas', label: 'OFERTAS' },
               { id: 'promociones', label: 'PROMOCIONES' },
