@@ -15,7 +15,7 @@ import dynamic from "next/dynamic"
 import { calculateDiscountedPrice } from "@/lib/utils/pricing"
 
 const PROMO_COVERFLOW_SLIDES = [
-  { title: "DESCUENTO 30% EN CERRADURAS SMART\nAcceso Biométrico & Control Móvil Tuya", badge: "PROMOCIÓN", placeholder: true },
+  { title: "DESCUENTO 30% EN CERRADURAS SMART\nAcceso Biométrico & Control Móvil Tuya", badge: "PROMOCIÓN", src: "/categories/cerraduras-smart-y-accesos.png", link: "/web/cerraduras-smart" },
   { title: "KIT 4 CÁMARAS FULL-COLOR WI-FI\nVisión Nocturna 2K & Audio Bidireccional", badge: "PROMO EXCLUSIVA", placeholder: true },
   { title: "GENERADORES ELÉCTRICOS ECOFRIENDLY\nEnergía Limpia, Silenciosa & Portátil", badge: "DESCUENTO ESPECIAL", placeholder: true },
 ]
@@ -27,14 +27,14 @@ const TEMPORADA_COVERFLOW_SLIDES = [
 ]
 
 const COMBOS_COVERFLOW_SLIDES = [
-  { title: "COMBO SEGURIDAD INTEGRAL PRO\nCámara 360° + Cerradura Smart + Alarma", badge: "SUPER COMBO", placeholder: true },
+  { title: "COMBO SEGURIDAD INTEGRAL PRO\nCámara 360° + Cerradura Smart + Alarma", badge: "SUPER COMBO", src: "/categories/cerraduras-smart-y-accesos.png", link: "/web/cerraduras-smart" },
   { title: "COMBO GAMING PROFESIONAL\nMando Inalámbrico + Headset Surround 7.1", badge: "COMBO GAMER", placeholder: true },
-  { title: "COMBO EMPRESA & NEGOCIO SEGURO\nBiométrico ZKTeco + Lector RFID", badge: "COMBO PYME", placeholder: true },
+  { title: "COMBO EMPRESA & NEGOCIO SEGURO\nBiométrico ZKTeco + Lector RFID", badge: "COMBO PYME", src: "/images/seguridad/zkteco-kit-acceso.jpg", link: "/web/cerraduras-smart" },
 ]
 
 const INSTALACION_COVERFLOW_SLIDES = [
+  { title: "CERRADURAS SMART & CONTROL DE ACCESO\nKits con Instalación a Nivel Nacional", badge: "CON INSTALACIÓN", src: "/categories/cerraduras-smart-y-accesos.png", link: "/web/cerraduras-smart" },
   { title: "CÁMARAS & CCTV CON INSTALACIÓN\nTécnicos Certificados en Todo el Ecuador", badge: "CON INSTALACIÓN", placeholder: true },
-  { title: "BIOMÉTRICOS & SISTEMAS DE ACCESO\nInstalación & Configuración de Red", badge: "CON INSTALACIÓN", placeholder: true },
   { title: "PLANTAS DE BLOQUES DE HORMIGÓN\nMontaje en Sitio y Puesta en Marcha", badge: "CON INSTALACIÓN", placeholder: true },
 ]
 
@@ -617,6 +617,7 @@ export default function PublicWebClient({
 
                     <div className="relative pl-5 space-y-2.5 before:absolute before:top-2 before:bottom-2 before:left-2 before:w-0.5 before:bg-amber-500/30">
                       {[
+                        { name: "Cerraduras Smart + Instalación", href: "/web/cerraduras-smart", badge: "KITS" },
                         { name: "Mandos & Consolas Gaming", href: "/web/mandos", badge: "NUEVO" },
                         { name: "Encimeras & Hornos", href: "/web/cocinas", badge: "HOGAR" },
                         { name: "Laptops & CPUs Intel/AMD", href: "/web/cpus", badge: "PRO" },
@@ -1351,15 +1352,25 @@ export default function PublicWebClient({
 
                 {/* Buttons styled like FrontendJoe */}
                 <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2.5 mt-auto">
-                  <button
-                    onClick={() => {
-                      setSearchQuery(c.query);
-                      document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' });
-                    }}
-                    className="px-5 py-2.5 rounded-full border border-white/20 hover:border-white hover:bg-white/10 text-white text-xs font-bold font-heading transition-all cursor-pointer"
-                  >
-                    Ver Catálogo
-                  </button>
+                  {c.id === 'cat-residencial' ? (
+                    <Link
+                      href="/web/cerraduras-smart"
+                      className="px-5 py-2.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-black font-heading transition-all shadow-lg hover:scale-105 flex items-center gap-1.5"
+                    >
+                      <Wrench size={13} />
+                      <span>Kits + Instalación</span>
+                    </Link>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        setSearchQuery(c.query);
+                        document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' });
+                      }}
+                      className="px-5 py-2.5 rounded-full border border-white/20 hover:border-white hover:bg-white/10 text-white text-xs font-bold font-heading transition-all cursor-pointer"
+                    >
+                      Ver Catálogo
+                    </button>
+                  )}
                   <a
                     href={`https://wa.me/593969043453?text=${encodeURIComponent(`Hola ATOMIC! Deseo información y cotización sobre la categoría: ${c.title}`)}`}
                     target="_blank"

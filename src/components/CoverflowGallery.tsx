@@ -535,6 +535,10 @@ export default function CoverflowGallery(props: Smooth3DSlideshowProps) {
                                     type="button"
                                     onClick={(e) => {
                                         e.stopPropagation()
+                                        if ((slide as any).link) {
+                                            window.location.href = (slide as any).link
+                                            return
+                                        }
                                         const query = slide.title?.split('\n')[0] || ''
                                         window.dispatchEvent(new CustomEvent('atomic-search-update', { detail: query.split(' ')[0] }))
                                         document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' })
