@@ -7,7 +7,7 @@ import {
     useRef,
     type CSSProperties,
 } from "react"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react"
 
 const useIsStaticRenderer = () => false
 
@@ -186,6 +186,7 @@ export default function CoverflowGallery(props: Smooth3DSlideshowProps) {
 
     const loop = true
     const [active, setActive] = useState(0)
+    const [isHovered, setIsHovered] = useState(false)
 
     const moveDur =
         transition && typeof transition.duration === "number"
@@ -225,12 +226,12 @@ export default function CoverflowGallery(props: Smooth3DSlideshowProps) {
             ? transition.delay
             : 3.5
     useEffect(() => {
-        if (isStatic || !autoplay || n < 2) return
+        if (isStatic || !autoplay || isHovered || n < 2) return
         const ms = Math.max(0.3, delay) * 1000
         const dir = autoplayDirection === "leftToRight" ? -1 : 1
         const id = window.setInterval(() => step(dir), ms)
         return () => window.clearInterval(id)
-    }, [isStatic, autoplay, autoplayDirection, delay, n, step])
+    }, [isStatic, autoplay, isHovered, autoplayDirection, delay, n, step])
 
     const onKeyDown = useCallback(
         (e: React.KeyboardEvent) => {
@@ -283,6 +284,8 @@ export default function CoverflowGallery(props: Smooth3DSlideshowProps) {
             role="group"
             aria-roledescription="carousel"
             onKeyDown={isStatic ? undefined : onKeyDown}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
             className="select-none py-6 group relative"
         >
             {/* MANUAL LEFT NAVIGATION BUTTON */}
@@ -350,10 +353,16 @@ export default function CoverflowGallery(props: Smooth3DSlideshowProps) {
                         opacity: visible ? 1 : 0,
                         cursor: autoplay || isActive ? "default" : "pointer",
                         pointerEvents:
-                            visible && !isStatic && !autoplay ? "auto" : "none",
+                            visible && !isStatic ? "auto" : "none",
                         backgroundColor: "#09090b",
-                        boxShadow: isActive ? "0 25px 50px -12px rgba(0, 0, 0, 0.7)" : "0 10px 25px -5px rgba(0, 0, 0, 0.4)",
-                        border: "2px solid rgba(255, 255, 255, 0.15)",
+                        boxShadow: isActive
+                            ? (isHovered
+                                ? "0 0 50px rgba(59, 130, 246, 0.85), 0 0 100px rgba(99, 102, 241, 0.45), 0 25px 60px rgba(0, 0, 0, 0.95)"
+                                : "0 25px 50px -12px rgba(0, 0, 0, 0.7)")
+                            : "0 10px 25px -5px rgba(0, 0, 0, 0.4)",
+                        border: isActive
+                            ? (isHovered ? "2.5px solid #60a5fa" : "2px solid rgba(255, 255, 255, 0.2)")
+                            : "2px solid rgba(255, 255, 255, 0.1)",
                     }
 
                     return (
@@ -365,6 +374,7 @@ export default function CoverflowGallery(props: Smooth3DSlideshowProps) {
                             }
                             aria-label={slide.title}
                             aria-hidden={!visible}
+                            className="relative group"
                         >
                             {src ? (
                                 <img
@@ -382,6 +392,20 @@ export default function CoverflowGallery(props: Smooth3DSlideshowProps) {
                                     }}
                                 />
                             ) : null}
+
+                            {/* AURA GLOW OVERLAY WHEN HOVERED */}
+                            {isActive && isHovered && (
+                                <div
+                                    style={{
+                                        position: "absolute",
+                                        inset: 0,
+                                        borderRadius: effectiveRadius,
+                                        boxShadow: "inset 0 0 35px rgba(59, 130, 246, 0.7), inset 0 0 70px rgba(99, 102, 241, 0.35)",
+                                        pointerEvents: "none",
+                                        zIndex: 15,
+                                    }}
+                                />
+                            )}
 
                             {showTitle && (
                                 <>
@@ -429,6 +453,34 @@ export default function CoverflowGallery(props: Smooth3DSlideshowProps) {
                                     </div>
                                 </>
                             )}
+
+                            {/* ANIMATED VER MÁS BUTTON */}
+                            <div
+                                style={{
+                                    position: "absolute",
+                                    bottom: 20,
+                                    right: 20,
+                                    zIndex: 35,
+                                    opacity: isActive && isHovered ? 1 : 0,
+                                    transform: isActive && isHovered ? "translateY(0) scale(1)" : "translateY(16px) scale(0.85)",
+                                    transition: "opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.08s, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.08s",
+                                    pointerEvents: isActive && isHovered ? "auto" : "none",
+                                }}
+                            >
+                                <button
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.stopPropagation()
+                                        const query = slide.title?.split('\n')[0] || ''
+                                        window.dispatchEvent(new CustomEvent('atomic-search-update', { detail: query.split(' ')[0] }))
+                                        document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' })
+                                    }}
+                                    className="px-4 py-2 rounded-full bg-white text-black font-black text-xs font-heading tracking-wider flex items-center gap-2 shadow-[0_10px_35px_rgba(0,0,0,0.9)] hover:bg-neutral-200 hover:scale-105 transition-all duration-200 active:scale-95 cursor-pointer uppercase"
+                                >
+                                    <span>VER MÁS</span>
+                                    <ArrowRight size={14} className="text-black" />
+                                </button>
+                            </div>
 
                             <div
                                 style={{
