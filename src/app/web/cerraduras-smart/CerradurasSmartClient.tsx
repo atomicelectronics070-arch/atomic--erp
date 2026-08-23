@@ -164,47 +164,289 @@ const SMART_LOCK_KITS: SmartLockProduct[] = [
     description: "Transforma tu pomo tradicional en un acceso biométrico moderno en cuestión de minutos."
   },
 
-  // ─── CRONTE TECHNOLOGY ───
+  // ─── CRONTE TECHNOLOGY (MAADOK & TUYA SMART) ───
   {
-    id: "lock-cronte-cyberlock",
-    name: "Cerradura Smart Cronte CyberLock Pro WiFi Tuya Biometría 360°",
+    id: "lock-cronte-facial-3d",
+    name: "Cerradura Inteligente Facial 3D WiFi Tuya Smart Máxima Seguridad 5 Pistones",
     provider: "CRONTE",
     providerName: "Cronte Technology",
-    versionTag: "Línea Cronte Technology // WiFi Directo Tuya",
-    badge: "🛡️ CRONTE OFFICIAL",
-    category: "manija",
+    versionTag: "Reconocimiento Facial 3D // 5 Pistones de Acero // Batería Litio",
+    badge: "⭐ TOP CRONTE",
+    category: "facial",
     image: "/images/cerraduras/bp-plasma-lock.png",
-    priceBase: 98.99,
+    priceBase: 137.99,
     highlights: [
-      "Cuerpo reforzado en aleación de zinc fundido a presión antivandalismo",
-      "Conexión WiFi directa sin gateways adicionales a la app Tuya / SmartLife",
-      "Sensor semiconductor FPC de grado bancario sueco (lectura en 0.25s)",
-      "Capacidad para 100 huellas, 100 contraseñas y 100 tarjetas RFID"
+      "Reconocimiento facial 3D infrarrojo de alta velocidad y precisión",
+      "Mirilla con cámara HD y pantalla LCD a color integrada",
+      "Cuerpo de embutir blindado con 5 pistones de acero templado",
+      "Apertura remota instantánea desde app Tuya Smart / Smart Life",
+      "Batería recargable de litio de 4200 mAh de larga duración"
     ],
-    methods: ["Huella FPC", "App Tuya", "Contraseña Táctil", "Tarjetas RFID", "Llave de Seguridad"],
-    differentiator: "Excelente robustez y durabilidad respaldada por la ingeniería y garantía directa de Cronte Technology.",
-    description: "Cerradura de alta seguridad con conectividad nativa WiFi para monitoreo continuo, avisos de apertura y generación remota de claves.",
+    methods: ["Facial 3D", "Huella Digital", "App Tuya WiFi", "Contraseña PIN", "Tarjetas IC", "Llave Mecánica"],
+    differentiator: "Reconocimiento facial biométrico ultra rápido con máxima resistencia mecánica de 5 pistones.",
+    description: "Cerradura insignia Cronte con biometría facial 3D infrarroja y pantalla LCD a color.",
     popular: true
   },
   {
-    id: "lock-cronte-slimline",
-    name: "Cerradura Cronte Slimline Embutir para Perfiles de Aluminio y Metal",
+    id: "lock-cronte-cam-lcd",
+    name: "Cerradura Inteligente WiFi Tuya Smart 5 Pistones con Videocámara & Mirilla LCD",
     provider: "CRONTE",
     providerName: "Cronte Technology",
-    versionTag: "Especial Perfil Europeo & Puertas Angostas",
-    badge: "🛡️ CRONTE SLIM",
+    versionTag: "Videocámara HD + Pantalla LCD // Timbre Intercomunicador",
+    badge: "📷 CÁMARA & LCD",
+    category: "facial",
+    image: "/categories/cerraduras-smart-y-accesos.png",
+    priceBase: 140.00,
+    highlights: [
+      "Videocámara HD frontal con visión nocturna infrarroja integrada",
+      "Pantalla interior a color para visualización de visitantes en tiempo real",
+      "Envío de fotografía y videollamada al celular al pulsar el timbre",
+      "Cerradura de embutir reforzada con 5 pistones anti-palanca"
+    ],
+    methods: ["Videocámara HD", "Huella Digital", "App Tuya", "Clave PIN", "Tarjetas RFID", "Llave"],
+    differentiator: "Funciona como videoportero y cerradura biométrica en un solo dispositivo integrado.",
+    description: "Cerradura inteligente Cronte con cámara timbre frontal y pantalla LCD interior."
+  },
+  {
+    id: "lock-cronte-push-pull",
+    name: "Cerradura Inteligente Push-Pull Totalmente Automática 5 Pistones",
+    provider: "CRONTE",
+    providerName: "Cronte Technology",
+    versionTag: "Mecanismo Push-Pull 100% Motorizado // Apertura Suave",
+    badge: "⚡ PUSH-PULL PRO",
+    category: "manija",
+    image: "/images/cerraduras/bp-quantum-lock.png",
+    priceBase: 169.49,
+    highlights: [
+      "Mecanismo Push-Pull 100% automático (se abre empujando suavemente)",
+      "Lector de huella digital integrado ergonómicamente en la manija",
+      "Bloqueo y desbloqueo motorizado sin esfuerzo manual",
+      "Conexión WiFi directa sin requerir gateways adicionales"
+    ],
+    methods: ["Push-Pull Motorizado", "Huella Digital", "App Tuya", "Contraseña", "Tarjeta IC", "Llave"],
+    differentiator: "Máximo confort: abre con un toque en la huella y empuja la puerta sin girar manijas.",
+    description: "Cerradura Push-Pull automática con cerrojo motorizado de alta gama."
+  },
+  {
+    id: "lock-cronte-chapa-ext",
+    name: "Chapa Eléctrica Inteligente WiFi Exterior con Huella, Teclado & Control Remoto",
+    provider: "CRONTE",
+    providerName: "Cronte Technology",
+    versionTag: "Exterior & Portones // Huella Impermeable + Control Remoto",
+    badge: "🚪 EXTERIOR & PORTONES",
+    category: "edificios",
+    image: "/images/cerraduras/bp-plasma-lock.png",
+    priceBase: 127.95,
+    highlights: [
+      "Diseño sellado de sobreponer para puertas exteriores, portones y rejas",
+      "Teclado táctil exterior impermeable con lector de huella dactilar",
+      "Incluye control remoto inalámbrico de largo alcance",
+      "Apertura remota desde celular vía app Tuya / Smart Life",
+      "Cilindro de alta seguridad con llaves de punto de respaldo"
+    ],
+    methods: ["Huella Exterior", "App Tuya WiFi", "Control Remoto", "Clave PIN", "Tarjetas Mifare", "Llave"],
+    differentiator: "La solución definitiva para portones principales de casas y conjuntos expuestos al sol y lluvia.",
+    description: "Chapa inteligente de sobreponer para exteriores con lector biométrico impermeable y control remoto."
+  },
+  {
+    id: "lock-cronte-chapa-huella",
+    name: "Chapa Eléctrica Inteligente WiFi Tuya Smart con Huella Exterior",
+    provider: "CRONTE",
+    providerName: "Cronte Technology",
+    versionTag: "Sobreponer Peatonal // Biometría Exterior",
+    badge: "⚡ SOBREPONER SMART",
+    category: "edificios",
+    image: "/images/cerraduras/bp-plasma-lock.png",
+    priceBase: 101.65,
+    highlights: [
+      "Chapa de sobreponer para accesos peatonales y puertas metálicas",
+      "Lector de huella exterior con protección contra polvo y salpicaduras",
+      "Registro detallado de aperturas con fecha y hora en el celular",
+      "Alimentación 12V DC compatible con intercomunicadores"
+    ],
+    methods: ["Huella Digital", "App Tuya", "Código PIN", "Tarjeta RFID", "Llave"],
+    differentiator: "Automatiza cualquier portón o reja exterior con acceso biométrico seguro.",
+    description: "Chapa eléctrica inteligente de sobreponer para accesos peatonales y rejas."
+  },
+  {
+    id: "lock-cronte-vidrio-disp",
+    name: "Cerradura Inteligente WiFi para Puerta de Vidrio Templado con Pantalla",
+    provider: "CRONTE",
+    providerName: "Cronte Technology",
+    versionTag: "Sin Perforación en Vidrio // Pantalla OLED + Perno Doble",
+    badge: "🏢 PUERTAS DE VIDRIO",
+    category: "airbnb",
+    image: "/images/cerraduras/bp-quantum-lock.png",
+    priceBase: 111.62,
+    highlights: [
+      "Instalación limpia por abrazadera a presión sin taladrar el vidrio templado",
+      "Compatible con puertas de vidrio batientes, corredizas y marcos de 10-12mm",
+      "Pantalla OLED integrada para fácil administración de usuarios",
+      "Conexión WiFi nativa Tuya Smart con generación de claves temporales"
+    ],
+    methods: ["Huella 360°", "App Tuya WiFi", "Contraseña Táctil", "Tarjeta IC", "Control Remoto"],
+    differentiator: "Especialmente diseñada para oficinas, locales comerciales y consultorios con puertas de vidrio.",
+    description: "Cerradura digital de sobreponer para puertas de vidrio templado sin taladrar."
+  },
+  {
+    id: "lock-cronte-vidrio-ble",
+    name: "Cerradura Inteligente Tuya Bluetooth para Puerta de Vidrio Templado",
+    provider: "CRONTE",
+    providerName: "Cronte Technology",
+    versionTag: "Económica Puerta de Vidrio // Bluetooth Tuya",
+    badge: "🏢 VIDRIO ECONÓMICA",
+    category: "airbnb",
+    image: "/images/cerraduras/bp-quantum-lock.png",
+    priceBase: 71.94,
+    highlights: [
+      "Fijación rápida por abrazadera sin obras",
+      "Lector de huella capacitivo de 360 grados",
+      "Control de accesos y registros desde app Bluetooth",
+      "Perno de acero templado de alta sujeción"
+    ],
+    methods: ["Huella Digital", "App Bluetooth", "Clave PIN", "Tarjeta RFID"],
+    differentiator: "Acceso seguro y profesional para puertas de vidrio al precio más competitivo.",
+    description: "Cerradura biométrica Bluetooth para puertas de cristal de oficinas y consultorios."
+  },
+  {
+    id: "lock-cronte-slim-alum",
+    name: "Cerradura Smart WiFi para Puerta Corrediza de Aluminio & Perfil Angosto",
+    provider: "CRONTE",
+    providerName: "Cronte Technology",
+    versionTag: "Diseño Slimline 38mm // Gancho Corrediza // Acero Inox",
+    badge: "🛡️ PERFIL DELGADO",
     category: "cerrojo",
     image: "/images/cerraduras/bp-voltex-lock.webp",
-    priceBase: 84.50,
+    priceBase: 139.78,
     highlights: [
-      "Diseño ultra estrecho de 38mm compatible con perfiles de aluminio y hierro",
+      "Diseño estilizado de 38mm compatible con perfiles de aluminio y hierro",
+      "Cerradura de gancho doble especial para puertas corredizas",
       "Protección contra intemperie y humedad IP65",
-      "Manija reversible de acero inoxidable 304 de alta durabilidad",
-      "Notificaciones automáticas de intrusión o intentos fallidos"
+      "Manija reversible de acero inoxidable 304"
     ],
-    methods: ["Huella Digital", "Clave PIN", "App Móvil", "Tarjetas de Proximidad", "Llave"],
-    differentiator: "Diseñada específicamente para puertas de aluminio, rejas metálicas y puertas principales de acceso exterior.",
-    description: "Cerradura digital de perfil delgado diseñada para marcos estrechos donde una cerradura convencional no cabe."
+    methods: ["Huella Digital", "App Tuya WiFi", "Contraseña PIN", "Tarjetas RFID", "Llave"],
+    differentiator: "Diseñada a medida para puertas corredizas de balcón, ventanas de acceso y perfiles angostos.",
+    description: "Cerradura digital slimline para puertas corredizas y perfiles angostos de aluminio."
+  },
+  {
+    id: "lock-cronte-manija-5p",
+    name: "Cerradura Inteligente WiFi Tuya Smart 5 Pistones Manija Reversible",
+    provider: "CRONTE",
+    providerName: "Cronte Technology",
+    versionTag: "Aleación de Zinc // Sensor FPC Sueco // 5 Pistones",
+    badge: "🛡️ 5 PISTONES CRONTE",
+    category: "manija",
+    image: "/images/cerraduras/bp-plasma-lock.png",
+    priceBase: 89.80,
+    highlights: [
+      "Cuerpo de aleación de zinc de alta durabilidad antivandálica",
+      "Lector semiconductor sueco FPC de alta velocidad (0.25s)",
+      "Caja de cerradura con 5 pistones de acero reforzado",
+      "Historial de aperturas y notificaciones en tiempo real al celular"
+    ],
+    methods: ["Huella FPC", "App Tuya", "Contraseña Táctil", "Tarjetas RFID", "Llave"],
+    differentiator: "Máxima robustez y solidez para puertas principales residenciales y de oficinas.",
+    description: "Cerradura de alta seguridad Cronte con manija ergonómica y mecanismo de 5 pistones."
+  },
+  {
+    id: "lock-cronte-manija-2p",
+    name: "Cerradura Inteligente WiFi Tuya Smart 2 Pistones Manija Negra",
+    provider: "CRONTE",
+    providerName: "Cronte Technology",
+    versionTag: "Línea Black Edition // 2 Pistones // WiFi Directo",
+    badge: "⚡ CALIDAD/PRECIO",
+    category: "manija",
+    image: "/images/cerraduras/bp-plasma-lock.png",
+    priceBase: 86.48,
+    highlights: [
+      "Elegante acabado en negro mate de alta resistencia",
+      "Teclado táctil retroiluminado con código antiespía",
+      "Apertura remota por app Tuya Smart / Smart Life",
+      "Función de bloqueo de privacidad interno"
+    ],
+    methods: ["Huella Digital", "Clave Numérica", "App Tuya", "Tarjeta RFID", "Llave"],
+    differentiator: "Excelente balance entre precio accesible, diseño moderno y tecnología de punta.",
+    description: "Cerradura digital de manija en negro mate con conectividad WiFi nativa."
+  },
+  {
+    id: "lock-cronte-pomo-huella",
+    name: "Pomo Inteligente Biométrico WiFi con Lector de Huella en Pomo",
+    provider: "CRONTE",
+    providerName: "Cronte Technology",
+    versionTag: "Reemplazo Directo de Pomo // Dormitorios & Oficinas",
+    badge: "🚪 FÁCIL INSTALACIÓN",
+    category: "airbnb",
+    image: "/images/cerraduras/yale/yale-cerrojo-digital-yale-ydl120-1.png",
+    priceBase: 58.56,
+    highlights: [
+      "Lector de huella integrado en el centro del pomo de la puerta",
+      "Conexión WiFi directa para apertura y monitoreo por app",
+      "Sustituye cualquier pomo convencional de 54mm sin taladros adicionales",
+      "Modo paso libre para libre acceso temporal"
+    ],
+    methods: ["Huella en Pomo", "App Tuya WiFi", "Clave Numérica", "Llave Mecánica"],
+    differentiator: "La forma más rápida y limpia de poner acceso biométrico en dormitorios u oficinas.",
+    description: "Pomo digital biométrico con lector de huella dactilar integrado y WiFi."
+  },
+  {
+    id: "lock-cronte-pomo-teclado",
+    name: "Cerradura Bluetooth + WiFi Pomo con Teclado Táctil & Huella",
+    provider: "CRONTE",
+    providerName: "Cronte Technology",
+    versionTag: "Pomo con Teclado Numérico // Claves Temporales",
+    badge: "💎 AIRBNB POMO",
+    category: "airbnb",
+    image: "/images/cerraduras/yale/yale-cerrojo-digital-yale-ydl120-1.png",
+    priceBase: 67.78,
+    highlights: [
+      "Teclado táctil completo integrado en la roseta del pomo",
+      "Lector biométrico de huella digital de respuesta rápida",
+      "Generación de contraseñas dinámicas por horario para huéspedes",
+      "Puerto de alimentación Type-C de emergencia"
+    ],
+    methods: ["Huella Digital", "Código PIN Táctil", "App Tuya", "Llave"],
+    differentiator: "Ideal para anfitriones de Airbnb que desean controlar habitaciones independientes.",
+    description: "Cerradura de pomo con teclado numérico retroiluminado y lector de huella."
+  },
+  {
+    id: "lock-cronte-candado-smart",
+    name: "Candado Inteligente App Tuya Smart Bluetooth con Lector de Huella",
+    provider: "CRONTE",
+    providerName: "Cronte Technology",
+    versionTag: "Cuerpo Aleación Zinc // Arco Acero // IP65",
+    badge: "🔒 CANDADO SMART",
+    category: "airbnb",
+    image: "/images/cerraduras/bp-quantum-lock.png",
+    priceBase: 32.66,
+    highlights: [
+      "Apertura biométrica instantánea en 0.2 segundos al poner el dedo",
+      "Cuerpo de aleación de zinc y arco de acero cementado",
+      "Batería recargable USB con duración de hasta 2,000 aperturas",
+      "Protección contra lluvia y polvo IP65"
+    ],
+    methods: ["Huella Dactilar", "App Tuya Bluetooth"],
+    differentiator: "Protege casilleros, bodegas, rejas, motos o portones sin necesidad de llevar llaves.",
+    description: "Candado inteligente biométrico recargable por USB con control Bluetooth."
+  },
+  {
+    id: "lock-cronte-chapa-boton",
+    name: "Chapa Eléctrica con Botón para Puerta Peatonal de Sobreponer",
+    provider: "CRONTE",
+    providerName: "Cronte Technology",
+    versionTag: "12V AC/DC // Acero Niquelado // Botón Mecánico",
+    badge: "🔩 CHAPA PEATONAL",
+    category: "edificios",
+    image: "/images/cerraduras/yale/yale-cerradura-el-ctrica-678-con-bot-n-1.png",
+    priceBase: 26.65,
+    highlights: [
+      "Botón mecánico de apertura interior de fácil pulsación",
+      "Bobina eléctrica de 12V compatible con videoporteros y pulsadores",
+      "Carcasa de acero niquelado resistente a la intemperie",
+      "Incluye 3 llaves dentadas de seguridad exterior"
+    ],
+    methods: ["Pulsador Eléctrico 12V", "Botón Mecánico Interior", "Llave Exterior"],
+    differentiator: "Máxima durabilidad mecánica tradicional para portones peatonales de alto tráfico.",
+    description: "Cerradura eléctrica tradicional de sobreponer para portones peatonales y rejas."
   },
   {
     id: "lock-cronte-deadbolt",
