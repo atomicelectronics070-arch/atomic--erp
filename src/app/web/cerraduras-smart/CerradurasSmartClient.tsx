@@ -23,6 +23,7 @@ import {
   Zap,
   Phone,
   MessageCircle,
+  Package,
   HelpCircle,
   Award,
   Layers,

@@ -83,7 +83,7 @@ export interface BarreraProduct {
   speed: string
   cycles: string
   motor: string
-  direction: "Izquierda" | "Derecha" | "Reversible"
+  direction: string
   voltage: string
   priceBaseWithoutVat: number
   priceWithVat: number
