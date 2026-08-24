@@ -30,6 +30,13 @@ const PROMO_COVERFLOW_SLIDES = [
     link: "/web/camaras-hogar" 
   },
   { 
+    image: { src: "/images/barreras/zkteco-bg1030-bg1045.jpg", alt: "Barreras Vehiculares Automáticas & Control de Acceso" },
+    title: "BARRERAS VEHICULARES AUTOMÁTICAS & CONTROL DE ACCESO\nSistemas Brushless de 1.5s a 6s para Urbanizaciones e Industrias", 
+    badge: "NUEVA LÍNEA", 
+    src: "/images/barreras/zkteco-bg1030-bg1045.jpg", 
+    link: "/web/barreras-vehiculares" 
+  },
+  { 
     image: { src: "/images/cerraduras/yale/yale-cerrojo-digital-ydf40a-m-dulo-para-abrir-1.webp", alt: "Yale YDF40A + Yale Connect" },
     title: "CERROJO YDF40A + MÓDULO YALE CONNECT CELULAR\nApertura Remota por Smartphone & Huella Dactilar", 
     badge: "YALE CONNECT", 
@@ -67,6 +74,13 @@ const COMBOS_COVERFLOW_SLIDES = [
     link: "/web/camaras-hogar" 
   },
   { 
+    image: { src: "/images/barreras/zkteco-bg1030-bg1045.jpg", alt: "Barreras Vehiculares Automáticas & Control de Acceso" },
+    title: "BARRERAS VEHICULARES AUTOMÁTICAS & CONTROL DE ACCESO\nSistemas Brushless de 1.5s a 6s para Urbanizaciones e Industrias", 
+    badge: "NUEVA LÍNEA", 
+    src: "/images/barreras/zkteco-bg1030-bg1045.jpg", 
+    link: "/web/barreras-vehiculares" 
+  },
+  { 
     image: { src: "/images/cerraduras/yale/yale-cerradura-digital-ymf40a-m-dulo-para-abr-1.webp", alt: "Combo Yale YMF40A + Connect" },
     title: "COMBO YALE YMF40A + MÓDULO CELULAR + INSTALACIÓN\nManija de Embutir + WiFi Hub para Smartphone", 
     badge: "COMBO YALE", 
@@ -96,6 +110,13 @@ const INSTALACION_COVERFLOW_SLIDES = [
     badge: "GARANTÍA 2 AÑOS", 
     src: "/banners/camaras-hogar-portada-4k.jpg", 
     link: "/web/camaras-hogar" 
+  },
+  { 
+    image: { src: "/images/barreras/zkteco-bg1030-bg1045.jpg", alt: "Barreras Vehiculares con Instalación Estructural" },
+    title: "BARRERAS VEHICULARES CON INSTALACIÓN ESTRUCTURAL\nAnclaje en Loza, Sensores de Masa & Calibración Certificada", 
+    badge: "BARRERAS AUTOMÁTICAS", 
+    src: "/images/barreras/zkteco-bg1030-bg1045.jpg", 
+    link: "/web/barreras-vehiculares" 
   },
   { 
     image: { src: "/images/cerraduras/yale/yale-cerradura-digital-ymf40a-m-dulo-para-abr-1.webp", alt: "Yale Connect YMF40A con Instalación" },
@@ -699,6 +720,7 @@ export default function PublicWebClient({
 
                     <div className="relative pl-5 space-y-2.5 before:absolute before:top-2 before:bottom-2 before:left-2 before:w-0.5 before:bg-amber-500/30">
                       {[
+                        { name: "Barreras Vehiculares Automáticas", href: "/web/barreras-vehiculares", badge: "2026" },
                         { name: "Cámaras Hogar 4K (2 Años Garantía)", href: "/web/camaras-hogar", badge: "2 AÑOS" },
                         { name: "Cerraduras Smart + Instalación", href: "/web/cerraduras-smart", badge: "KITS" },
                         { name: "Mandos & Consolas Gaming", href: "/web/mandos", badge: "NUEVO" },
