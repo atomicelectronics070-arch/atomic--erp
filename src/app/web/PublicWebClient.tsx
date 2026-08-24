@@ -112,8 +112,8 @@ const INSTALACION_COVERFLOW_SLIDES = [
     link: "/web/camaras-hogar" 
   },
   { 
-    image: { src: "/images/barreras/zkteco-bg1030-bg1045.jpg", alt: "Barreras Vehiculares con Instalación Estructural" },
-    title: "BARRERAS VEHICULARES CON INSTALACIÓN ESTRUCTURAL\nAnclaje en Loza, Sensores de Masa & Calibración Certificada", 
+    image: { src: "/images/barreras/zkteco-bg1030-bg1045.jpg", alt: "Barreras Vehiculares Automáticas" },
+    title: "BARRERAS VEHICULARES AUTOMÁTICAS & CONTROL DE ACCESO\nSistemas Brushless de Alta Velocidad para Urbanizaciones", 
     badge: "BARRERAS AUTOMÁTICAS", 
     src: "/images/barreras/zkteco-bg1030-bg1045.jpg", 
     link: "/web/barreras-vehiculares" 

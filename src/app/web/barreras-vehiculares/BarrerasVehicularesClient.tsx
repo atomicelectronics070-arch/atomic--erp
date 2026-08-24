@@ -5,15 +5,9 @@ import Link from "next/link"
 import {
   Shield,
   Zap,
-  MapPin,
-  CheckCircle2,
   PhoneCall,
-  Clock,
   ArrowRight,
   HelpCircle,
-  Car,
-  Layers,
-  Radio,
   Sliders,
   ChevronDown,
   ChevronUp,
@@ -21,52 +15,10 @@ import {
   Gauge,
   Activity,
   Cpu,
-  RefreshCw,
   Eye,
-  Camera,
-  Flame,
-  Check
+  Check,
+  Package
 } from "lucide-react"
-
-// ═══════════════════════════════════════════════════════════════════════════
-// PROVINCIAL DATA & INSTALLATION TARIFFS
-// ═══════════════════════════════════════════════════════════════════════════
-interface ProvinceTariff {
-  id: string
-  name: string
-  region: "Pichincha / DMQ" | "Sierra" | "Costa" | "Oriente" | "Galápagos"
-  installCost: number
-  warrantyMonths: number
-  badgeText: string
-  flag: string
-}
-
-const PROVINCES_DATA: ProvinceTariff[] = [
-  { id: "quito", name: "Pichincha (Quito / Valles)", region: "Pichincha / DMQ", installCost: 75.00, warrantyMonths: 24, badgeText: "⚡ Mando Inmediato 24h", flag: "🟡🔴" },
-  { id: "guayas", name: "Guayas (Guayaquil / Samborondón / Daule)", region: "Costa", installCost: 115.00, warrantyMonths: 24, badgeText: "🛡️ Técnicos en Sitio", flag: "🔵⚪" },
-  { id: "azuay", name: "Azuay (Cuenca / Gualaceo)", region: "Sierra", installCost: 95.00, warrantyMonths: 24, badgeText: "🚗 Cobertura Austro", flag: "🟡🔴" },
-  { id: "manabi", name: "Manabí (Manta / Portoviejo)", region: "Costa", installCost: 115.00, warrantyMonths: 24, badgeText: "🌊 Cobertura Costa", flag: "🟢🔴" },
-  { id: "tungurahua", name: "Tungurahua (Ambato)", region: "Sierra", installCost: 95.00, warrantyMonths: 24, badgeText: "⛰️ Centro Sierra", flag: "🔴🟢" },
-  { id: "el-oro", name: "El Oro (Machala / Pasaje)", region: "Costa", installCost: 115.00, warrantyMonths: 24, badgeText: "🍌 Frontera Sur", flag: "🟡🟢" },
-  { id: "imbabura", name: "Imbabura (Ibarra / Otavalo)", region: "Sierra", installCost: 95.00, warrantyMonths: 24, badgeText: "🏔️ Sierra Norte", flag: "🔴🟡" },
-  { id: "chimborazo", name: "Chimborazo (Riobamba)", region: "Sierra", installCost: 95.00, warrantyMonths: 24, badgeText: "🌋 Sierra Central", flag: "🔴🔵" },
-  { id: "loja", name: "Loja (Loja / Catamayo)", region: "Sierra", installCost: 115.00, warrantyMonths: 24, badgeText: "🏰 Región Sur", flag: "🟡🔴" },
-  { id: "santo-domingo", name: "Santo Domingo de los Tsáchilas", region: "Costa", installCost: 105.00, warrantyMonths: 24, badgeText: "🌴 Eje Vial Principal", flag: "🔴🟢" },
-  { id: "santa-elena", name: "Santa Elena (Salinas / La Libertad)", region: "Costa", installCost: 115.00, warrantyMonths: 24, badgeText: "🏖️ Península", flag: "🔵🟡" },
-  { id: "los-rios", name: "Los Ríos (Babahoyo / Quevedo)", region: "Costa", installCost: 115.00, warrantyMonths: 24, badgeText: "🚜 Zona Agrícola", flag: "🟢⚪" },
-  { id: "cotopaxi", name: "Cotopaxi (Latacunga)", region: "Sierra", installCost: 95.00, warrantyMonths: 24, badgeText: "🗻 Sierra Centro", flag: "🔴🔵" },
-  { id: "esmeraldas", name: "Esmeraldas", region: "Costa", installCost: 125.00, warrantyMonths: 24, badgeText: "🥥 Costa Norte", flag: "⚪🟢" },
-  { id: "carchi", name: "Carchi (Tulcán)", region: "Sierra", installCost: 105.00, warrantyMonths: 24, badgeText: "⛰️ Frontera Norte", flag: "🟡🔴" },
-  { id: "bolivar", name: "Bolívar (Guaranda)", region: "Sierra", installCost: 105.00, warrantyMonths: 24, badgeText: "🌲 Sierra Occidental", flag: "🔴🟢" },
-  { id: "canar", name: "Cañar (Azogues)", region: "Sierra", installCost: 105.00, warrantyMonths: 24, badgeText: "🏰 Zona Austral", flag: "🟡🔵" },
-  { id: "pastaza", name: "Pastaza (Puyo)", region: "Oriente", installCost: 135.00, warrantyMonths: 24, badgeText: "🌳 Amazonía", flag: "🟢🟡" },
-  { id: "napo", name: "Napo (Tena)", region: "Oriente", installCost: 135.00, warrantyMonths: 24, badgeText: "🌿 Amazonía Norte", flag: "🟡🔵" },
-  { id: "sucumbios", name: "Sucumbíos (Lago Agrio)", region: "Oriente", installCost: 145.00, warrantyMonths: 24, badgeText: "🛢️ Oriente Norte", flag: "🟢⚪" },
-  { id: "orellana", name: "Orellana (Coca)", region: "Oriente", installCost: 145.00, warrantyMonths: 24, badgeText: "🌴 Amazonía Central", flag: "🟢🟡" },
-  { id: "morona-santiago", name: "Morona Santiago (Macas)", region: "Oriente", installCost: 145.00, warrantyMonths: 24, badgeText: "🎋 Amazonía Sur", flag: "🔴🟡" },
-  { id: "zamora-chinchipe", name: "Zamora Chinchipe (Zamora)", region: "Oriente", installCost: 145.00, warrantyMonths: 24, badgeText: "⛏️ Región Amazónica", flag: "🟢🔴" },
-  { id: "galapagos", name: "Galápagos (Santa Cruz / San Cristóbal)", region: "Galápagos", installCost: 185.00, warrantyMonths: 24, badgeText: "🐢 Logística Aérea", flag: "🟢⚪" }
-]
 
 // ═══════════════════════════════════════════════════════════════════════════
 // PRODUCT DATA INTERFACE
@@ -714,17 +666,11 @@ export const BARRERAS_PRODUCTS: BarreraProduct[] = [
 // MAIN INTERACTIVE CLIENT COMPONENT
 // ═══════════════════════════════════════════════════════════════════════════
 export default function BarrerasVehicularesClient() {
-  const [selectedProvinceId, setSelectedProvinceId] = useState<string>("quito")
   const [activeBrand, setActiveBrand] = useState<string>("todos")
   const [activeArmType, setActiveArmType] = useState<string>("todos")
   const [activeTraffic, setActiveTraffic] = useState<string>("todos")
   const [modalProduct, setModalProduct] = useState<BarreraProduct | null>(null)
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null)
-
-  // Current selected province
-  const selectedProvince = useMemo(() => {
-    return PROVINCES_DATA.find((p) => p.id === selectedProvinceId) || PROVINCES_DATA[0]
-  }, [selectedProvinceId])
 
   // Filtered products list
   const filteredProducts = useMemo(() => {
@@ -740,23 +686,15 @@ export default function BarrerasVehicularesClient() {
   }, [activeBrand, activeArmType, activeTraffic])
 
   // WhatsApp checkout message generator
-  const getWhatsAppUrl = (product: BarreraProduct, withInstall: boolean) => {
-    const finalPrice = withInstall
-      ? (product.priceWithVat + selectedProvince.installCost).toFixed(2)
-      : product.priceWithVat.toFixed(2)
-
+  const getWhatsAppUrl = (product: BarreraProduct) => {
     const text = encodeURIComponent(
       `Hola ATOMIC, deseo cotizar la siguiente Barrera Vehicular:\n\n` +
       `📌 *Modelo:* ${product.name}\n` +
       `🏷️ *Marca:* ${product.brandName}\n` +
       `📏 *Brazo:* ${product.armLength} (${product.armTypeLabel})\n` +
       `⚡ *Velocidad:* ${product.speed} | *Motor:* ${product.motor}\n` +
-      `💵 *Precio Equipo (+IVA):* $${product.priceWithVat.toFixed(2)} USD\n` +
-      (withInstall
-        ? `🛠️ *Instalación en:* ${selectedProvince.name} (+$${selectedProvince.installCost.toFixed(2)} USD)\n` +
-          `💰 *TOTAL INSTALADO:* $${finalPrice} USD\n\n`
-        : `🚚 *Modalidad:* Envío sin instalación\n\n`) +
-      `¿Me pueden brindar asesoría técnica y fecha disponible de instalación/entrega?`
+      `💵 *Precio Oferta (+15% IVA):* $${product.priceWithVat.toFixed(2)} USD (Base: $${product.priceBaseWithoutVat.toFixed(2)} + IVA)\n\n` +
+      `¿Me pueden brindar asesoría técnica y tiempo de entrega en Ecuador?`
     )
     return `https://wa.me/593999008080?text=${text}`
   }
@@ -872,10 +810,10 @@ export default function BarrerasVehicularesClient() {
                 </div>
               </div>
               <div className="p-3 rounded-2xl bg-white/[0.04] border border-white/10 flex items-center gap-2.5">
-                <MapPin className="w-5 h-5 text-amber-400 shrink-0" />
+                <Cpu className="w-5 h-5 text-amber-400 shrink-0" />
                 <div>
-                  <div className="text-white font-bold">24 PROVINCIAS</div>
-                  <div className="text-neutral-400 text-[10px]">Técnicos certificados</div>
+                  <div className="text-white font-bold">MOTOR BRUSHLESS</div>
+                  <div className="text-neutral-400 text-[10px]">Cero mantenimiento</div>
                 </div>
               </div>
             </div>
@@ -1003,46 +941,6 @@ export default function BarrerasVehicularesClient() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════════
-          PROVINCE SELECTOR BAR (INTERACTIVE)
-      ══════════════════════════════════════════════════════════════════════ */}
-      <section className="sticky top-16 z-40 bg-[#12101b]/95 backdrop-blur-xl border-b border-white/10 py-3.5 shadow-xl">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-3">
-            
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center">
-                <MapPin className="w-4 h-4" />
-              </div>
-              <div>
-                <span className="text-xs font-mono font-bold uppercase text-white flex items-center gap-1.5">
-                  Cotizar Instalación en Tu Provincia:
-                </span>
-                <span className="text-[10px] text-neutral-400 font-mono">
-                  {selectedProvince.name} • {selectedProvince.badgeText}
-                </span>
-              </div>
-            </div>
-
-            {/* Dropdown Selector */}
-            <div className="flex items-center gap-3 w-full md:w-auto">
-              <select
-                value={selectedProvinceId}
-                onChange={(e) => setSelectedProvinceId(e.target.value)}
-                className="w-full md:w-80 px-3.5 py-2 rounded-xl bg-black/60 border border-white/20 text-white font-mono text-xs font-bold focus:outline-none focus:border-amber-500 cursor-pointer"
-              >
-                {PROVINCES_DATA.map((prov) => (
-                  <option key={prov.id} value={prov.id} className="bg-[#12101b] text-white">
-                    {prov.flag} {prov.name} (+${prov.installCost.toFixed(2)} USD Inst.)
-                  </option>
-                ))}
-              </select>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════════════════════════════
           CATALOG SECTION: 15 PRODUCTS WITH DYNAMIC FILTERS
       ══════════════════════════════════════════════════════════════════════ */}
       <section id="catalogo-barreras" className="py-16">
@@ -1062,8 +960,8 @@ export default function BarrerasVehicularesClient() {
             
             {/* Active Quick Filters Info */}
             <div className="text-xs font-mono text-neutral-400 flex items-center gap-2">
-              <span className="px-2 py-1 rounded-lg bg-white/[0.04] border border-white/10">30% OFF APLICADO</span>
-              <span className="px-2 py-1 rounded-lg bg-white/[0.04] border border-white/10">15% IVA INCLUIDO</span>
+              <span className="px-2.5 py-1 rounded-lg bg-white/[0.04] border border-white/10">30% OFF APLICADO</span>
+              <span className="px-2.5 py-1 rounded-lg bg-white/[0.04] border border-white/10">15% IVA INCLUIDO</span>
             </div>
           </div>
 
@@ -1130,8 +1028,6 @@ export default function BarrerasVehicularesClient() {
           {/* ─── PRODUCT GRID ─── */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
             {filteredProducts.map((product) => {
-              const totalInstalledPrice = (product.priceWithVat + selectedProvince.installCost).toFixed(2)
-              
               return (
                 <div
                   key={product.id}
@@ -1229,12 +1125,10 @@ export default function BarrerasVehicularesClient() {
                         </div>
                       </div>
 
-                      {/* With Installation Callout */}
                       <div className="text-right">
-                        <div className="text-[10px] text-neutral-400 font-mono">Instalado en {selectedProvince.name.split(' ')[0]}:</div>
-                        <div className="text-sm font-black font-mono text-emerald-400">
-                          ${totalInstalledPrice} USD
-                        </div>
+                        <span className="inline-flex items-center gap-1 text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-lg border border-emerald-500/20 font-bold">
+                          ✓ Envío Nacional
+                        </span>
                       </div>
                     </div>
 
@@ -1249,7 +1143,7 @@ export default function BarrerasVehicularesClient() {
                       </button>
 
                       <a
-                        href={getWhatsAppUrl(product, true)}
+                        href={getWhatsAppUrl(product)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-black font-black text-xs uppercase tracking-wider font-heading hover:brightness-110 shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-1.5 transition-transform hover:scale-[1.02]"
@@ -1268,9 +1162,7 @@ export default function BarrerasVehicularesClient() {
           {/* No results placeholder */}
           {filteredProducts.length === 0 && (
             <div className="text-center py-16 p-8 rounded-3xl bg-white/[0.02] border border-white/10 space-y-4">
-              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center mx-auto text-xl">
-                🔍
-              </div>
+              <Package className="w-12 h-12 text-neutral-500 mx-auto" />
               <h3 className="text-lg font-black font-heading text-white">No se encontraron modelos con los filtros seleccionados</h3>
               <button
                 onClick={() => { setActiveBrand("todos"); setActiveArmType("todos"); setActiveTraffic("todos"); }}
@@ -1280,54 +1172,6 @@ export default function BarrerasVehicularesClient() {
               </button>
             </div>
           )}
-
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════════════════════════════
-          INSTALLATION TARIFFS DETAIL TABLE
-      ══════════════════════════════════════════════════════════════════════ */}
-      <section className="py-16 bg-[#0c0a14] border-t border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-          
-          <div className="text-center max-w-3xl mx-auto space-y-3">
-            <span className="text-xs font-mono uppercase tracking-widest text-amber-400 font-bold">
-              Transparencia Total en Costos de Mano de Obra
-            </span>
-            <h2 className="text-2xl sm:text-4xl font-black font-heading uppercase text-white tracking-tight">
-              Tarifario de Instalación Certificada por Provincia
-            </h2>
-            <p className="text-neutral-400 text-sm leading-relaxed">
-              Nuestros técnicos realizan la fijación con pernos expansores de grado estructural, calibración de balance de resortes, conexión eléctrica, sincronización de controles y pruebas de seguridad anti-aplastamiento.
-            </p>
-          </div>
-
-          {/* Regional Table Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 font-mono text-xs">
-            {PROVINCES_DATA.map((prov) => (
-              <div
-                key={prov.id}
-                onClick={() => setSelectedProvinceId(prov.id)}
-                className={`p-4 rounded-2xl border transition-all cursor-pointer flex items-center justify-between ${
-                  selectedProvinceId === prov.id
-                    ? "bg-amber-500/10 border-amber-500 text-white shadow-lg shadow-amber-500/10 scale-[1.02]"
-                    : "bg-white/[0.02] border-white/10 text-neutral-300 hover:border-white/25 hover:bg-white/[0.04]"
-                }`}
-              >
-                <div className="space-y-1">
-                  <div className="font-bold flex items-center gap-1.5 text-white">
-                    <span>{prov.flag}</span>
-                    <span>{prov.name}</span>
-                  </div>
-                  <div className="text-[10px] text-neutral-400">{prov.region} • {prov.badgeText}</div>
-                </div>
-                <div className="text-right">
-                  <div className="text-amber-400 font-bold text-sm">+${prov.installCost.toFixed(2)}</div>
-                  <div className="text-[9px] text-emerald-400 font-bold">Garantía {prov.warrantyMonths}m</div>
-                </div>
-              </div>
-            ))}
-          </div>
 
         </div>
       </section>
@@ -1343,7 +1187,7 @@ export default function BarrerasVehicularesClient() {
               Preguntas Frecuentes de Clientes & Administradores
             </span>
             <h2 className="text-2xl sm:text-3xl font-black font-heading uppercase text-white">
-              Todo lo que necesitas saber antes de instalar tu barrera
+              Todo lo que necesitas saber antes de adquirir tu barrera
             </h2>
           </div>
 
@@ -1498,19 +1342,21 @@ export default function BarrerasVehicularesClient() {
                 <div className="text-2xl font-black font-heading text-amber-400">
                   ${modalProduct.priceWithVat.toFixed(2)} USD
                 </div>
+                <div className="text-[10px] text-neutral-400 font-mono">
+                  (Base: ${modalProduct.priceBaseWithoutVat.toFixed(2)} + IVA)
+                </div>
               </div>
               <div className="text-right">
-                <div className="text-[10px] text-neutral-400 font-mono">Instalado en {selectedProvince.name.split(' ')[0]}:</div>
-                <div className="text-lg font-black font-mono text-emerald-400">
-                  ${(modalProduct.priceWithVat + selectedProvince.installCost).toFixed(2)} USD
-                </div>
+                <span className="inline-flex items-center gap-1 text-xs font-mono text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/20 font-bold">
+                  ✓ Despacho Nacional
+                </span>
               </div>
             </div>
 
             {/* CTA Button */}
             <div className="pt-2">
               <a
-                href={getWhatsAppUrl(modalProduct, true)}
+                href={getWhatsAppUrl(modalProduct)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-black font-black text-xs uppercase tracking-widest font-heading hover:brightness-110 shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2"
