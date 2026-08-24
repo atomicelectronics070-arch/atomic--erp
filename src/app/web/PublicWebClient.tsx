@@ -30,10 +30,10 @@ const PROMO_COVERFLOW_SLIDES = [
     link: "/web/camaras-hogar" 
   },
   { 
-    image: { src: "/images/barreras/zkteco-bg1030-bg1045.jpg", alt: "Barreras Vehiculares Automáticas & Control de Acceso" },
+    image: { src: "/images/barreras/barreras-portada-promociones.jpg", alt: "Barreras Vehiculares Automáticas & Control de Acceso" },
     title: "BARRERAS VEHICULARES AUTOMÁTICAS & CONTROL DE ACCESO\nSistemas Brushless de 1.5s a 6s para Urbanizaciones e Industrias", 
     badge: "NUEVA LÍNEA", 
-    src: "/images/barreras/zkteco-bg1030-bg1045.jpg", 
+    src: "/images/barreras/barreras-portada-promociones.jpg", 
     link: "/web/barreras-vehiculares" 
   },
   { 
@@ -74,10 +74,10 @@ const COMBOS_COVERFLOW_SLIDES = [
     link: "/web/camaras-hogar" 
   },
   { 
-    image: { src: "/images/barreras/zkteco-bg1030-bg1045.jpg", alt: "Barreras Vehiculares Automáticas & Control de Acceso" },
+    image: { src: "/images/barreras/barreras-portada-promociones.jpg", alt: "Barreras Vehiculares Automáticas & Control de Acceso" },
     title: "BARRERAS VEHICULARES AUTOMÁTICAS & CONTROL DE ACCESO\nSistemas Brushless de 1.5s a 6s para Urbanizaciones e Industrias", 
     badge: "NUEVA LÍNEA", 
-    src: "/images/barreras/zkteco-bg1030-bg1045.jpg", 
+    src: "/images/barreras/barreras-portada-promociones.jpg", 
     link: "/web/barreras-vehiculares" 
   },
   { 
@@ -112,10 +112,10 @@ const INSTALACION_COVERFLOW_SLIDES = [
     link: "/web/camaras-hogar" 
   },
   { 
-    image: { src: "/images/barreras/zkteco-bg1030-bg1045.jpg", alt: "Barreras Vehiculares Automáticas" },
+    image: { src: "/images/barreras/barreras-portada-promociones.jpg", alt: "Barreras Vehiculares Automáticas" },
     title: "BARRERAS VEHICULARES AUTOMÁTICAS & CONTROL DE ACCESO\nSistemas Brushless de Alta Velocidad para Urbanizaciones", 
     badge: "BARRERAS AUTOMÁTICAS", 
-    src: "/images/barreras/zkteco-bg1030-bg1045.jpg", 
+    src: "/images/barreras/barreras-portada-promociones.jpg", 
     link: "/web/barreras-vehiculares" 
   },
   { 
