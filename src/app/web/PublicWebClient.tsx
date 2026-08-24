@@ -37,6 +37,13 @@ const PROMO_COVERFLOW_SLIDES = [
     link: "/web/barreras-vehiculares" 
   },
   { 
+    image: { src: "https://coretms.tecnomegastore.ec/assets/images/main/26/COMAPLMLY23LEA.webp", alt: "Ecosistema Apple Oficial Ecuador" },
+    title: "ECOSISTEMA APPLE OFICIAL ECUADOR\nMacBook M2/M3/M4/M5, iPhone 13 al 17 Pro Max, iPad & Watch", 
+    badge: "APPLE STORE", 
+    src: "https://coretms.tecnomegastore.ec/assets/images/main/26/COMAPLMLY23LEA.webp", 
+    link: "/web/apple" 
+  },
+  { 
     image: { src: "/images/cerraduras/yale/yale-cerrojo-digital-ydf40a-m-dulo-para-abrir-1.webp", alt: "Yale YDF40A + Yale Connect" },
     title: "CERROJO YDF40A + MÓDULO YALE CONNECT CELULAR\nApertura Remota por Smartphone & Huella Dactilar", 
     badge: "YALE CONNECT", 
@@ -79,6 +86,13 @@ const COMBOS_COVERFLOW_SLIDES = [
     badge: "NUEVA LÍNEA", 
     src: "/images/barreras/barreras-portada-promociones.jpg", 
     link: "/web/barreras-vehiculares" 
+  },
+  { 
+    image: { src: "https://coretms.tecnomegastore.ec/assets/images/main/26/COMAPLMLY23LEA.webp", alt: "Ecosistema Apple Oficial Ecuador" },
+    title: "ECOSISTEMA APPLE OFICIAL ECUADOR\nMacBook M2/M3/M4/M5, iPhone 13 al 17 Pro Max, iPad & Watch", 
+    badge: "APPLE STORE", 
+    src: "https://coretms.tecnomegastore.ec/assets/images/main/26/COMAPLMLY23LEA.webp", 
+    link: "/web/apple" 
   },
   { 
     image: { src: "/images/cerraduras/yale/yale-cerradura-digital-ymf40a-m-dulo-para-abr-1.webp", alt: "Combo Yale YMF40A + Connect" },
@@ -720,6 +734,7 @@ export default function PublicWebClient({
 
                     <div className="relative pl-5 space-y-2.5 before:absolute before:top-2 before:bottom-2 before:left-2 before:w-0.5 before:bg-amber-500/30">
                       {[
+                        { name: "Apple Store (Mac, iPhone, iPad, Watch)", href: "/web/apple", badge: "APPLE" },
                         { name: "Barreras Vehiculares Automáticas", href: "/web/barreras-vehiculares", badge: "2026" },
                         { name: "Cámaras Hogar 4K (2 Años Garantía)", href: "/web/camaras-hogar", badge: "2 AÑOS" },
                         { name: "Cerraduras Smart + Instalación", href: "/web/cerraduras-smart", badge: "KITS" },
