@@ -314,6 +314,9 @@ export default function PublicWebClient({
   const [isLoadingCategory, setIsLoadingCategory] = useState(false)
   const [searchResults, setSearchResults] = useState<any[] | null>(null)
   const [isSearching, setIsSearching] = useState(false)
+  const [showLiveDropdown, setShowLiveDropdown] = useState(false)
+  const [liveMatches, setLiveMatches] = useState<any[]>([])
+  const searchContainerRef = useRef<HTMLDivElement>(null)
   const searchDebounce = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
   const [activeUserModal, setActiveUserModal] = useState<string | null>(null)
@@ -327,6 +330,9 @@ export default function PublicWebClient({
       if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
         setIsUserMenuOpen(false)
       }
+      if (searchContainerRef.current && !searchContainerRef.current.contains(e.target as Node)) {
+        setShowLiveDropdown(false)
+      }
     }
     document.addEventListener("mousedown", handleClickOutside)
     return () => document.removeEventListener("mousedown", handleClickOutside)
@@ -337,6 +343,7 @@ export default function PublicWebClient({
       setSearchQuery(e.detail)
       setActiveMainCategoryId(null)
       setActiveSubcategoryId(null)
+      setShowLiveDropdown(false)
       document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' })
     }
     window.addEventListener('atomic-search-update', handleSearchUpdate)
@@ -345,25 +352,45 @@ export default function PublicWebClient({
 
   useEffect(() => {
     if (searchDebounce.current) clearTimeout(searchDebounce.current)
-    if (!searchQuery.trim()) {
+    const q = searchQuery.trim()
+    if (!q) {
       setSearchResults(null)
+      setLiveMatches([])
       setIsSearching(false)
+      setShowLiveDropdown(false)
       return
     }
+
+    // Instant zero-lag local filter from initial products
+    const localMatches = (initialProducts || []).filter((p: any) => {
+      const target = `${p.name || ''} ${p.provider || ''} ${p.category?.name || ''} ${p.sku || ''}`
+      return fuzzyMatch(q, target)
+    }).slice(0, 8)
+
+    if (localMatches.length > 0) {
+      setLiveMatches(localMatches)
+      setShowLiveDropdown(true)
+    }
+
     setIsSearching(true)
     searchDebounce.current = setTimeout(async () => {
       try {
-        const res = await fetch(`/api/web/products?search=${encodeURIComponent(searchQuery.trim())}&pageSize=120`)
+        const res = await fetch(`/api/web/products?search=${encodeURIComponent(q)}&pageSize=30`)
         const data = await res.json()
-        setSearchResults(data.products || [])
+        if (data && data.products) {
+          setLiveMatches(data.products.slice(0, 8))
+          setSearchResults(data.products)
+          setShowLiveDropdown(true)
+        }
       } catch {
-        setSearchResults(null)
+        // preserve local matches
       } finally {
         setIsSearching(false)
       }
-    }, 350)
+    }, 150)
+
     return () => { if (searchDebounce.current) clearTimeout(searchDebounce.current) }
-  }, [searchQuery])
+  }, [searchQuery, initialProducts])
 
   useEffect(() => {
     if (!activeMainCategoryId && !activeSubcategoryId) {
@@ -1198,31 +1225,149 @@ export default function PublicWebClient({
             ELECTRÓNICA, TECNOLOGÍA Y HOGAR
           </motion.p>
 
-          {/* SEARCH BAR (APPIT PILL INPUT) */}
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="w-full max-w-2xl mx-auto mb-10 relative group">
-            {isSearching ? (
-              <div className="absolute left-5 top-1/2 -translate-y-1/2">
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              </div>
-            ) : (
-              <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-[#62646C] group-hover:text-white transition-colors" size={18} />
-            )}
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setActiveMainCategoryId(null);
-                setActiveSubcategoryId(null);
-              }}
-              placeholder="Buscar producto, marca, categoría (ej. PS5, Aurora, Encimera)..."
-              className="w-full bg-[#0E0E10] border border-white/10 rounded-full py-4 pl-14 pr-12 text-xs font-bold uppercase tracking-wider text-white placeholder-[#62646C] focus:border-white/30 focus:bg-[#131315] transition-all outline-none shadow-2xl"
-            />
-            {searchQuery && (
-              <button onClick={() => setSearchQuery("")} className="absolute right-5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white transition-colors">
-                <X size={16} />
-              </button>
-            )}
+          {/* SEARCH BAR (APPIT PILL INPUT & LIVE FLOATING DROPDOWN) */}
+          <motion.div 
+            ref={searchContainerRef}
+            initial={{ opacity: 0, y: 10 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            transition={{ delay: 0.3 }} 
+            className="w-full max-w-2xl mx-auto mb-10 relative group z-40"
+          >
+            <div className="relative">
+              {isSearching ? (
+                <div className="absolute left-5 top-1/2 -translate-y-1/2 z-10">
+                  <div className="w-4 h-4 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin" />
+                </div>
+              ) : (
+                <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-[#62646C] group-hover:text-white transition-colors z-10" size={18} />
+              )}
+              <input
+                type="text"
+                value={searchQuery}
+                onFocus={() => {
+                  if (searchQuery.trim() && liveMatches.length > 0) setShowLiveDropdown(true);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    setShowLiveDropdown(false);
+                    document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' });
+                  } else if (e.key === 'Escape') {
+                    setShowLiveDropdown(false);
+                  }
+                }}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setActiveMainCategoryId(null);
+                  setActiveSubcategoryId(null);
+                }}
+                placeholder="Buscar producto, marca, categoría (ej. PS5, Aurora, Encimera)..."
+                className="w-full bg-[#0E0E10] border border-white/10 rounded-full py-4 pl-14 pr-12 text-xs font-bold uppercase tracking-wider text-white placeholder-[#62646C] focus:border-emerald-500/50 focus:bg-[#131315] focus:shadow-[0_0_25px_rgba(16,185,129,0.2)] transition-all outline-none shadow-2xl"
+              />
+              {searchQuery && (
+                <button 
+                  onClick={() => {
+                    setSearchQuery("");
+                    setShowLiveDropdown(false);
+                  }} 
+                  className="absolute right-5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white transition-colors z-10"
+                >
+                  <X size={16} />
+                </button>
+              )}
+            </div>
+
+            {/* LIVE FLOATING DROPDOWN WINDOW */}
+            <AnimatePresence>
+              {showLiveDropdown && searchQuery.trim() && (
+                <motion.div
+                  initial={{ opacity: 0, y: -8, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -8, scale: 0.98 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute top-full left-0 right-0 mt-2 bg-[#0C101A]/95 backdrop-blur-2xl border border-white/15 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.85)] overflow-hidden z-50 text-left divide-y divide-white/5"
+                >
+                  {/* Dropdown Header */}
+                  <div className="px-5 py-3 bg-white/[0.03] flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                      <span className="text-[11px] font-heading font-black uppercase tracking-wider text-emerald-400">
+                        Resultados en vivo ({liveMatches.length})
+                      </span>
+                    </div>
+                    <span className="text-[10px] font-mono font-bold text-neutral-400">
+                      Presiona <kbd className="px-1.5 py-0.5 rounded bg-white/10 text-white font-mono text-[9px] border border-white/20">ENTER ↵</kbd> para ver todos
+                    </span>
+                  </div>
+
+                  {/* Matches List */}
+                  <div className="max-h-[360px] overflow-y-auto divide-y divide-white/5 p-2 space-y-1">
+                    {liveMatches.length === 0 ? (
+                      <div className="py-8 text-center text-xs font-mono text-neutral-400">
+                        {isSearching ? 'Buscando en tiempo real...' : 'No se encontraron productos coincidentes.'}
+                      </div>
+                    ) : (
+                      liveMatches.map((item: any) => {
+                        const parsedImg = safeParseArray(item.images, [''])[0] || '';
+                        return (
+                          <a
+                            key={item.id}
+                            href={`/web/product/${item.id}`}
+                            className="flex items-center gap-3.5 p-2.5 rounded-2xl hover:bg-white/10 transition-all group/item cursor-pointer"
+                          >
+                            <div className="w-12 h-12 rounded-xl bg-black/50 border border-white/10 overflow-hidden shrink-0 flex items-center justify-center">
+                              {parsedImg ? (
+                                <SafeImage src={parsedImg} alt={item.name} className="w-full h-full object-cover group-hover/item:scale-110 transition-transform duration-300" />
+                              ) : (
+                                <Package size={20} className="text-neutral-500" />
+                              )}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h4 className="text-xs font-bold text-white group-hover/item:text-emerald-300 transition-colors truncate">
+                                {item.name}
+                              </h4>
+                              <div className="flex items-center gap-2 mt-0.5">
+                                <span className="text-[10px] font-mono uppercase text-neutral-400 truncate">
+                                  {item.category?.name || item.provider || 'Atomic'}
+                                </span>
+                                {item.stock > 0 && (
+                                  <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-mono font-bold">
+                                    Stock: {item.stock}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            <div className="text-right shrink-0">
+                              <span className="text-xs font-black font-mono text-emerald-400 block">
+                                ${Number(item.price || 0).toFixed(2)}
+                              </span>
+                              <span className="text-[10px] text-neutral-400 group-hover/item:text-white flex items-center gap-1 justify-end font-bold">
+                                Ver <ChevronRight size={10} />
+                              </span>
+                            </div>
+                          </a>
+                        );
+                      })
+                    )}
+                  </div>
+
+                  {/* Dropdown Footer CTA */}
+                  <div className="p-2.5 bg-white/[0.02]">
+                    <button
+                      onClick={() => {
+                        setShowLiveDropdown(false);
+                        document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' });
+                      }}
+                      className="w-full py-2.5 px-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-black font-heading font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 cursor-pointer"
+                    >
+                      <Search size={14} />
+                      <span>Ver todos los resultados en el catálogo</span>
+                      <span className="text-[10px] opacity-75 font-mono">(ENTER ↵)</span>
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
 
           {/* ═══════════ PREVIEW / INTRODUCCIÓN SECTION TITLE ═══════════ */}

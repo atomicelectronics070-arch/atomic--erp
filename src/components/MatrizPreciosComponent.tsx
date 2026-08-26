@@ -19,9 +19,19 @@ interface ProductMatrixItem {
 
 interface MatrizPreciosProps {
   isVendedorMode?: boolean;
+  title?: string;
+  subtitle?: string;
+  allowPermanentDelete?: boolean;
+  defaultTheme?: 'bw' | 'bw-inv' | 'green' | 'amber';
 }
 
-export default function MatrizPreciosComponent({ isVendedorMode = false }: MatrizPreciosProps) {
+export default function MatrizPreciosComponent({ 
+  isVendedorMode = false,
+  title,
+  subtitle,
+  allowPermanentDelete = true,
+  defaultTheme = 'bw-inv'
+}: MatrizPreciosProps) {
   const [products, setProducts] = useState<ProductMatrixItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -33,7 +43,7 @@ export default function MatrizPreciosComponent({ isVendedorMode = false }: Matri
   const [limit, setLimit] = useState(150);
   const [totalProducts, setTotalProducts] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
-  const [themeMode, setThemeMode] = useState<'bw' | 'bw-inv' | 'green' | 'amber'>('bw-inv');
+  const [themeMode, setThemeMode] = useState<'bw' | 'bw-inv' | 'green' | 'amber'>(defaultTheme);
 
   // Edit Mode & Trash Bin state
   const [isEditMode, setIsEditMode] = useState(!isVendedorMode);
@@ -343,15 +353,15 @@ export default function MatrizPreciosComponent({ isVendedorMode = false }: Matri
             <div className="flex items-center gap-3">
               <span className="w-3.5 h-3.5 rounded-full bg-emerald-500 animate-pulse border-2 border-zinc-950" />
               <h1 className="text-xl md:text-2xl font-black uppercase tracking-widest">
-                {isVendedorMode 
+                {title || (isVendedorMode 
                   ? '[ATOMIC_SYSTEM] CATÁLOGO Y MATRIZ DE PRECIOS VENDEDORES V2.0' 
-                  : '[ATOMIC_SYSTEM] DATABASE PRICING & CATEGORY MATRIX v2.0'}
+                  : '[ATOMIC_SYSTEM] DATABASE PRICING & CATEGORY MATRIX v2.0')}
               </h1>
             </div>
             <p className="text-xs font-bold opacity-80 mt-1 uppercase tracking-wider">
-              {isVendedorMode 
+              {subtitle || (isVendedorMode 
                 ? 'CATÁLOGO GENERAL DE PRODUCTOS · CONSULTA PÚBLICA DE PRECIOS PVP Y DESCUENTOS MÁXIMOS PERMITIDOS' 
-                : 'MATRIZ GENERAL DE PRODUCTOS · EDICIÓN DIRECTA DE CATEGORÍAS, STOCK, COSTOS Y PRECIOS EN TIEMPO REAL'}
+                : 'MATRIZ GENERAL DE PRODUCTOS · EDICIÓN DIRECTA DE CATEGORÍAS, STOCK, COSTOS Y PRECIOS EN TIEMPO REAL')}
             </p>
           </div>
 
@@ -832,13 +842,15 @@ export default function MatrizPreciosComponent({ isVendedorMode = false }: Matri
                             >
                               ♻️ RESTAURAR
                             </button>
-                            <button
-                              onClick={() => handlePermanentDeleteProduct(p.id, p.name)}
-                              title="Eliminar definitivamente de BD"
-                              className="px-2 py-1 border-2 border-zinc-950 bg-rose-600 text-white font-black text-[10px] hover:bg-rose-700 rounded shadow-sm"
-                            >
-                              💥 ELIMINAR
-                            </button>
+                            {allowPermanentDelete && (
+                              <button
+                                onClick={() => handlePermanentDeleteProduct(p.id, p.name)}
+                                title="Eliminar definitivamente de BD"
+                                className="px-2 py-1 border-2 border-zinc-950 bg-rose-600 text-white font-black text-[10px] hover:bg-rose-700 rounded shadow-sm"
+                              >
+                                💥 ELIMINAR
+                              </button>
+                            )}
                           </div>
                         ) : (
                           <button
