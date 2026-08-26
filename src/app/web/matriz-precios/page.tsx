@@ -8,5 +8,12 @@ export const metadata = {
 };
 
 export default function WebMatrizPreciosPage() {
-  return <MatrizPreciosComponent isVendedorMode={true} />;
+  return (
+    <MatrizPreciosComponent 
+      isVendedorMode={true}
+      title="LISTA DE PRECIOS PUBLICOS"
+      subtitle="LISTA GENERAL DE PRODUCTOS"
+      defaultTheme="bw-inv"
+    />
+  );
 }

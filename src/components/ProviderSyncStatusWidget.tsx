@@ -46,7 +46,7 @@ export default function ProviderSyncStatusWidget() {
             </span>
           </div>
           <p className="text-[11px] text-slate-300 font-medium">
-            Detecta automáticamente productos descontinuados (marca AGOTADO) e importa nuevos ítems de proveedores.
+            Escribe en el buscador y encuentra todos los productos para tus clientes.
           </p>
         </div>
 
@@ -54,19 +54,19 @@ export default function ProviderSyncStatusWidget() {
         <div className="flex items-center gap-3">
           {lastSyncTime && (
             <span className="text-[10px] font-mono text-slate-400 bg-slate-950 px-2.5 py-1.5 rounded border border-slate-800">
-              Último escaneo: <strong className="text-white">{lastSyncTime}</strong>
+              Última actualización: <strong className="text-white">{lastSyncTime}</strong>
             </span>
           )}
 
           <button
             onClick={() => runSync(true)}
             disabled={syncing}
-            className={`px-4 py-2 text-xs font-black uppercase tracking-wider rounded-lg border-2 border-amber-400 bg-amber-500 text-slate-950 hover:bg-amber-400 transition-all flex items-center gap-2 shadow-lg ${
+            className={`px-4 py-2 text-xs font-black uppercase tracking-wider rounded-lg border-2 border-emerald-400 bg-emerald-500 text-slate-950 hover:bg-emerald-400 transition-all flex items-center gap-2 shadow-lg ${
               syncing ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105 active:scale-95'
             }`}
           >
             <RefreshCw className={`w-3.5 h-3.5 ${syncing ? 'animate-spin' : ''}`} />
-            <span>{syncing ? 'Escaneando Proveedores...' : '⚡ Sincronizar Ahora'}</span>
+            <span>{syncing ? 'Actualizando lista...' : '🔄 ACTUALIZAR LISTA'}</span>
           </button>
         </div>
       </div>

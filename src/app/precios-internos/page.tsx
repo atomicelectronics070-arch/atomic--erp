@@ -12,7 +12,7 @@ export default function PreciosInternosPage() {
     <MatrizPreciosComponent
       isVendedorMode={true}
       title="LISTA DE PRECIOS PUBLICOS"
-      subtitle="CATÁLOGO GENERAL DE PRODUCTOS · CONSULTA PÚBLICA DE PRECIOS PVP Y DESCUENTOS MÁXIMOS PERMITIDOS"
+      subtitle="LISTA GENERAL DE PRODUCTOS"
       allowPermanentDelete={false}
       defaultTheme="bw-inv"
     />

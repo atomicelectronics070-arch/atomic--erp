@@ -50,6 +50,8 @@ export default function MatrizPreciosComponent({
   const [viewTrash, setViewTrash] = useState(false);
   const [savingId, setSavingId] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [showLandingsModal, setShowLandingsModal] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Table refs for intelligent scroll control
   const tableContainerRef = useRef<HTMLDivElement>(null);
@@ -360,12 +362,45 @@ export default function MatrizPreciosComponent({
             </div>
             <p className="text-xs font-bold opacity-80 mt-1 uppercase tracking-wider">
               {subtitle || (isVendedorMode 
-                ? 'CATÁLOGO GENERAL DE PRODUCTOS · CONSULTA PÚBLICA DE PRECIOS PVP Y DESCUENTOS MÁXIMOS PERMITIDOS' 
+                ? 'LISTA GENERAL DE PRODUCTOS' 
                 : 'MATRIZ GENERAL DE PRODUCTOS · EDICIÓN DIRECTA DE CATEGORÍAS, STOCK, COSTOS Y PRECIOS EN TIEMPO REAL')}
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
+            {/* BOTÓN LANDING PAGES */}
+            <button
+              onClick={() => setShowLandingsModal(true)}
+              className="px-4 py-2.5 border-2 border-zinc-950 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black text-xs uppercase flex items-center gap-2 rounded-lg shadow-sm transition-all"
+            >
+              <span>🚀 LANDINGS</span>
+            </button>
+
+            {/* BOTÓN PROMOCIONES */}
+            <a
+              href="/web"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-4 py-2.5 border-2 border-zinc-950 bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-zinc-950 font-black text-xs uppercase flex items-center gap-2 rounded-lg shadow-sm transition-all"
+            >
+              <span>🔥 PROMOCIONES</span>
+            </a>
+
+            {/* BOTÓN ACTUALIZAR LISTA */}
+            <button
+              onClick={async () => {
+                setIsRefreshing(true);
+                await fetchMatrixData();
+                setIsRefreshing(false);
+                showNotification('✅ Lista de productos actualizada en tiempo real');
+              }}
+              disabled={isRefreshing || loading}
+              className="px-4 py-2.5 border-2 border-zinc-950 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-black text-xs uppercase flex items-center gap-2 rounded-lg shadow-sm transition-all"
+            >
+              <span className={isRefreshing ? 'animate-spin' : ''}>🔄</span>
+              <span>{isRefreshing ? 'ACTUALIZANDO...' : 'ACTUALIZAR LISTA'}</span>
+            </button>
+
             {!isVendedorMode && (
               <>
                 <button
@@ -445,17 +480,19 @@ export default function MatrizPreciosComponent({
           </div>
         </div>
 
-        {/* MONITOR EN VIVO Y SINCRONIZADOR DE PROVEEDORES */}
-        <div className="mt-6">
-          <ProviderSyncStatusWidget />
-        </div>
+        {/* MONITOR EN VIVO Y SINCRONIZADOR DE PROVEEDORES (SOLO MODO ADMIN) */}
+        {!isVendedorMode && (
+          <div className="mt-6">
+            <ProviderSyncStatusWidget />
+          </div>
+        )}
 
         {/* CONTROLES DE BÚSQUEDA Y FILTROS EN RECUADROS INDEPENDIENTES */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6 pt-6 border-t-2 border-zinc-950">
+        <div className={`grid grid-cols-1 ${isVendedorMode ? 'md:grid-cols-3' : 'md:grid-cols-4'} gap-4 mt-6 pt-6 border-t-2 border-zinc-950`}>
           
-          <div className="md:col-span-2 space-y-1.5 p-3 border-2 border-zinc-950 bg-white/90 rounded-lg shadow-sm">
+          <div className={`${isVendedorMode ? 'md:col-span-2' : 'md:col-span-2'} space-y-1.5 p-3 border-2 border-zinc-950 bg-white/90 rounded-lg shadow-sm`}>
             <label className="text-[10px] uppercase font-black tracking-widest text-zinc-900 block">
-              🔍 Búsqueda Rápida (SKU, Nombre, Marca, Specs)
+              🔍 Escribe en el buscador y encuentra todos los productos para tus clientes
             </label>
             <input
               type="text"
@@ -464,33 +501,35 @@ export default function MatrizPreciosComponent({
                 setSearch(e.target.value);
                 setPage(1);
               }}
-              placeholder="Escribe para buscar instantáneamente..."
+              placeholder="Escribe en el buscador y encuentra todos los productos para tus clientes..."
               className={`w-full px-4 py-2 text-sm uppercase ${themeClasses.inputBg} outline-none font-mono tracking-wider rounded-md`}
             />
           </div>
 
-          <div className="space-y-1.5 p-3 border-2 border-zinc-950 bg-white/90 rounded-lg shadow-sm">
-            <label className="text-[10px] uppercase font-black tracking-widest text-zinc-900 block">
-              🏢 Filtro por Proveedor
-            </label>
-            <select
-              value={selectedProvider}
-              onChange={(e) => {
-                setSelectedProvider(e.target.value);
-                setPage(1);
-              }}
-              className={`w-full px-3 py-2 text-xs uppercase ${themeClasses.inputBg} outline-none font-mono cursor-pointer rounded-md`}
-            >
-              <option value="ALL">-- TODOS LOS PROVEEDORES --</option>
-              {providers.map((pr) => (
-                <option key={pr} value={pr}>
-                  {pr}
-                </option>
-              ))}
-            </select>
-          </div>
+          {!isVendedorMode && (
+            <div className="space-y-1.5 p-3 border-2 border-zinc-950 bg-white/90 rounded-lg shadow-sm">
+              <label className="text-[10px] uppercase font-black tracking-widest text-zinc-900 block">
+                🏢 Filtro por Proveedor
+              </label>
+              <select
+                value={selectedProvider}
+                onChange={(e) => {
+                  setSelectedProvider(e.target.value);
+                  setPage(1);
+                }}
+                className={`w-full px-3 py-2 text-xs uppercase ${themeClasses.inputBg} outline-none font-mono cursor-pointer rounded-md`}
+              >
+                <option value="ALL">-- TODOS LOS PROVEEDORES --</option>
+                {providers.map((pr) => (
+                  <option key={pr} value={pr}>
+                    {pr}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
-          <div className="space-y-1.5 p-3 border-2 border-zinc-950 bg-white/90 rounded-lg shadow-sm">
+          <div className={`${isVendedorMode ? 'md:col-span-1' : ''} space-y-1.5 p-3 border-2 border-zinc-950 bg-white/90 rounded-lg shadow-sm`}>
             <label className="text-[10px] uppercase font-black tracking-widest text-zinc-900 block">
               📂 Filtro por Categoría
             </label>
@@ -913,6 +952,67 @@ export default function MatrizPreciosComponent({
           </button>
         </div>
       </div>
+
+      {/* ================= MODAL DE LANDING PAGES ACTIVAS ================= */}
+      {showLandingsModal && (
+        <div className="fixed inset-0 z-[200] bg-black/70 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-white border-4 border-zinc-950 rounded-2xl shadow-2xl max-w-2xl w-full p-6 text-zinc-950 font-sans">
+            <div className="flex items-center justify-between border-b-2 border-zinc-950 pb-4 mb-4">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">🚀</span>
+                <h3 className="text-base sm:text-lg font-black uppercase font-heading tracking-wider text-zinc-950">
+                  CATÁLOGO DE LANDING PAGES ACTIVAS
+                </h3>
+              </div>
+              <button
+                onClick={() => setShowLandingsModal(false)}
+                className="px-3 py-1 bg-zinc-950 text-white font-black text-xs rounded-lg uppercase hover:bg-rose-600 transition-colors cursor-pointer"
+              >
+                ✕ Cerrar
+              </button>
+            </div>
+
+            <p className="text-xs text-zinc-600 font-bold mb-4">
+              Selecciona una landing page para abrirla en una pestaña nueva y compartirla con tus clientes:
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[60vh] overflow-y-auto p-1">
+              {[
+                { title: "Encimera a Gas New York 76", path: "/encimera-newyork-76", icon: "🍳", badge: "Oficial" },
+                { title: "Barreras & Manijas Antipánico", path: "/web/barreras-antipanico", icon: "🚪", badge: "Seguridad" },
+                { title: "Cerraduras Smart Digitales", path: "/web/cerraduras-smart", icon: "🔐", badge: "30% OFF" },
+                { title: "Cámaras para Hogar 4K", path: "/web/camaras-hogar", icon: "📹", badge: "2 Años Garantía" },
+                { title: "Barreras Vehiculares Automáticas", path: "/web/barreras-vehiculares", icon: "🚧", badge: "Acceso" },
+                { title: "Ecosistema Apple Oficial", path: "/web/apple", icon: "🍏", badge: "Original" },
+                { title: "Laptops & Computación", path: "/web/laptops", icon: "💻", badge: "Equipos" },
+                { title: "Consolas de Videojuegos", path: "/web/consolas", icon: "🎮", badge: "Gaming" },
+                { title: "Guía de Bloqueras Industriales", path: "/web/blogs/guia-maquinas-de-bloques", icon: "🏗️", badge: "Blog" },
+              ].map((l) => (
+                <a
+                  key={l.path}
+                  href={l.path}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between p-3 border-2 border-zinc-950 rounded-xl hover:bg-zinc-100 hover:scale-[1.02] transition-all shadow-sm group"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">{l.icon}</span>
+                    <div>
+                      <h4 className="text-xs font-black uppercase text-zinc-900 group-hover:text-blue-600 transition-colors">
+                        {l.title}
+                      </h4>
+                      <span className="text-[10px] text-zinc-500 font-mono">{l.path}</span>
+                    </div>
+                  </div>
+                  <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded bg-zinc-200 border border-zinc-400 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                    {l.badge}
+                  </span>
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
