@@ -14,7 +14,42 @@ import { motion, AnimatePresence } from "framer-motion"
 import dynamic from "next/dynamic"
 import { calculateDiscountedPrice } from "@/lib/utils/pricing"
 
-const PROMO_COVERFLOW_SLIDES = [
+const OFERTAS_COVERFLOW_SLIDES = [
+  { 
+    image: { src: "/images/promociones/repuestos-computadoras-portada.jpg", alt: "Línea de Repuestos para Computadoras y Laptops" },
+    title: "LÍNEA DE REPUESTOS PARA COMPUTADORAS\nBaterías, Cargadores, RAM, CPUs, Cases & Fuentes", 
+    badge: "REPUESTOS ORIGINALES", 
+    src: "/images/promociones/repuestos-computadoras-portada.jpg", 
+    link: "/web/repuestos" 
+  },
+  { 
+    image: { src: "/images/promociones/cargador-wallbox-mevo.jpg", alt: "Cargadores de Auto Eléctrico Wallbox Livoltek Mevo" },
+    title: "CARGADORES DE AUTO ELÉCTRICO\nWallbox Livoltek Mevo 7.3 kW & Portátiles 220V", 
+    badge: "MOVILIDAD ELÉCTRICA", 
+    src: "/images/promociones/cargador-wallbox-mevo.jpg", 
+    link: "/web/cargadores-electricos" 
+  },
+  { 
+    image: { src: "/images/promociones/apple-portada.jpg", alt: "Ecosistema Apple Oficial Ecuador" },
+    title: "ECOSISTEMA APPLE OFICIAL ECUADOR\nMacBook M2/M3/M4/M5, iPhone 13 al 17 Pro Max, iPad & Watch", 
+    badge: "APPLE STORE", 
+    src: "/images/promociones/apple-portada.jpg", 
+    link: "/web/apple" 
+  },
+  { 
+    image: { src: "/images/promociones/laptops-portada.jpg", alt: "Línea de Laptops & Computación ATOMIC" },
+    title: "LÍNEA DE COMPUTACIÓN & LAPTOPS ATOMIC\nPortátiles Profesionales, PCs de Escritorio, All-in-One y Mini PCs", 
+    badge: "COMPUTACIÓN", 
+    src: "/images/promociones/laptops-portada.jpg", 
+    link: "/web/laptops" 
+  },
+  { 
+    image: { src: "/images/promociones/cercos-electricos-portada.jpg", alt: "Barreras de Cerco Eléctrico de Alta Precisión" },
+    title: "BARRERAS DE CERCO ELÉCTRICO DE ALTA PRECISIÓN\nSistemas Electrificadores Inteligentes, Disuasión Activa y Monitoreo 24/7", 
+    badge: "SEGURIDAD PERIMETRAL", 
+    src: "/images/promociones/cercos-electricos-portada.jpg", 
+    link: "/web/cercos-electricos" 
+  },
   { 
     image: { src: "/images/cerraduras/cerraduras-instalacion-portada.jpg", alt: "Promoción 30% Descuento en Cerraduras Smart con Instalación" },
     title: "PROMOCIÓN 30% DE DESCUENTO EN CERRADURAS SMART\nAl Comprar tu Cerradura y Adquirirla con Instalación", 
@@ -36,36 +71,190 @@ const PROMO_COVERFLOW_SLIDES = [
     src: "/images/barreras/barreras-portada-promociones.jpg", 
     link: "/web/barreras-vehiculares" 
   },
+]
+
+const PROMO_COVERFLOW_SLIDES = [
   { 
-    image: { src: "https://coretms.tecnomegastore.ec/assets/images/main/26/COMAPLMLY23LEA.webp", alt: "Ecosistema Apple Oficial Ecuador" },
+    image: { src: "/images/cerraduras/cerraduras-instalacion-portada.jpg", alt: "Promoción 30% Descuento en Cerraduras Smart con Instalación" },
+    title: "PROMOCIÓN 30% DE DESCUENTO EN CERRADURAS SMART\nAl Comprar tu Cerradura y Adquirirla con Instalación", 
+    badge: "30% DE DESCUENTO", 
+    src: "/images/cerraduras/cerraduras-instalacion-portada.jpg", 
+    link: "/web/cerraduras-smart" 
+  },
+  { 
+    image: { src: "/images/promociones/cargador-wallbox-mevo.jpg", alt: "Cargadores de Auto Eléctrico Wallbox Livoltek Mevo" },
+    title: "CARGADORES DE AUTO ELÉCTRICO\nWallbox Livoltek Mevo 7.3 kW & Portátiles 220V", 
+    badge: "MOVILIDAD ELÉCTRICA", 
+    src: "/images/promociones/cargador-wallbox-mevo.jpg", 
+    link: "/web/cargadores-electricos" 
+  },
+  { 
+    image: { src: "/images/promociones/repuestos-computadoras-portada.jpg", alt: "Línea de Repuestos para Computadoras y Laptops" },
+    title: "LÍNEA DE REPUESTOS PARA COMPUTADORAS\nBaterías, Cargadores, RAM, CPUs, Cases & Fuentes", 
+    badge: "REPUESTOS ORIGINALES", 
+    src: "/images/promociones/repuestos-computadoras-portada.jpg", 
+    link: "/web/repuestos" 
+  },
+  { 
+    image: { src: "/images/promociones/apple-portada.jpg", alt: "Ecosistema Apple Oficial Ecuador" },
     title: "ECOSISTEMA APPLE OFICIAL ECUADOR\nMacBook M2/M3/M4/M5, iPhone 13 al 17 Pro Max, iPad & Watch", 
     badge: "APPLE STORE", 
-    src: "https://coretms.tecnomegastore.ec/assets/images/main/26/COMAPLMLY23LEA.webp", 
+    src: "/images/promociones/apple-portada.jpg", 
     link: "/web/apple" 
   },
   { 
-    image: { src: "/images/cerraduras/yale/yale-cerrojo-digital-ydf40a-m-dulo-para-abrir-1.webp", alt: "Yale YDF40A + Yale Connect" },
-    title: "CERROJO YDF40A + MÓDULO YALE CONNECT CELULAR\nApertura Remota por Smartphone & Huella Dactilar", 
-    badge: "YALE CONNECT", 
-    src: "/images/cerraduras/yale/yale-cerrojo-digital-ydf40a-m-dulo-para-abrir-1.webp", 
-    link: "/web/cerraduras-smart" 
+    image: { src: "/images/promociones/laptops-portada.jpg", alt: "Línea de Laptops & Computación ATOMIC" },
+    title: "LÍNEA DE COMPUTACIÓN & LAPTOPS ATOMIC\nPortátiles Profesionales, PCs de Escritorio, All-in-One y Mini PCs", 
+    badge: "COMPUTACIÓN", 
+    src: "/images/promociones/laptops-portada.jpg", 
+    link: "/web/laptops" 
   },
   { 
-    image: { src: "/images/cerraduras/yale/yale-cerrojo-digital-ymc420d-1.png", alt: "Cerrojo Digital Yale YMC420D Biométrico" },
-    title: "CERROJO DIGITAL YALE YMC420D BIOMÉTRICO\nLector Escandinavo, Pantalla Touch & Tarjeta RFID", 
-    badge: "TOP GAMA YALE", 
-    src: "/images/cerraduras/yale/yale-cerrojo-digital-ymc420d-1.png", 
-    link: "/web/cerraduras-smart" 
+    image: { src: "/images/promociones/cercos-electricos-portada.jpg", alt: "Barreras de Cerco Eléctrico de Alta Precisión" },
+    title: "BARRERAS DE CERCO ELÉCTRICO DE ALTA PRECISIÓN\nSistemas Electrificadores Inteligentes, Disuasión Activa y Monitoreo 24/7", 
+    badge: "SEGURIDAD PERIMETRAL", 
+    src: "/images/promociones/cercos-electricos-portada.jpg", 
+    link: "/web/cercos-electricos" 
+  },
+  { 
+    image: { src: "/images/parlantes/parlante-smart-rendimiento.jpg", alt: "Parlante Smart Alto Rendimiento con Audífonos TWS de Regalo" },
+    title: "PARLANTE SMART ALTO RENDIMIENTO\nSonido Único Envolvente + Audífonos Bluetooth de Regalo", 
+    badge: "REGALO TWS", 
+    src: "/images/parlantes/parlante-smart-rendimiento.jpg", 
+    link: "/web/parlante-smart" 
+  },
+  { 
+    image: { src: "/images/camaras-espia/gafas-camara-espia.jpg", alt: "Gafas con Cámara Espía y Micro Vigilancia" },
+    title: "CÁMARAS ESPÍA & DISPOSITIVOS DISCRETOS\nGafas Full HD, Cargadores y Percheros con Cámara Oculta", 
+    badge: "DISCRETO", 
+    src: "/images/camaras-espia/gafas-camara-espia.jpg", 
+    link: "/web/camaras-espia" 
+  },
+  { 
+    image: { src: "/images/videoporteros/videoportero-diel-10.jpg", alt: "Videoportero DIEL 10 con Botonera Antivandálica" },
+    title: "VIDEOPORTEROS SMART & BOTONERAS METÁLICAS\nPantalla 10\" DIEL ($221.01) y EZVIZ HP7 Inalámbrico", 
+    badge: "ANTIVANDÁLICO", 
+    src: "/images/videoporteros/videoportero-diel-10.jpg", 
+    link: "/web/videoporteros" 
   },
 ]
 
 const TEMPORADA_COVERFLOW_SLIDES = [
-  { title: "ESPECIAL PRODUCTIVIDAD & TRABAJO\nLaptops & Computadoras All-in-One i7", badge: "TEMPORADA", placeholder: true },
-  { title: "LÍNEA CONFORT & HOGAR SMART\nEncimeras de Inducción & Hornos", badge: "TEMPORADA", placeholder: true },
-  { title: "CLIMATIZACIÓN & ENERGÍA RENOVABLE\nEstaciones Eléctricas de Alta Eficiencia", badge: "TEMPORADA", placeholder: true },
+  { 
+    image: { src: "/images/scooters/scooter-ninebot-f25.jpg", alt: "Scooters Eléctricos Smart Ninebot & KickScooter" },
+    title: "SCOOTERS ELÉCTRICOS SMART 2026\nSegway Ninebot F25 ($489), ES1L ($412) y E12 ($269)", 
+    badge: "MOVILIDAD SMART", 
+    src: "/images/scooters/scooter-ninebot-f25.jpg", 
+    link: "/web/scooters" 
+  },
+  { 
+    image: { src: "/images/scooters/scooter-es1l.jpg", alt: "KickScooter ES1L Ligero Urbano" },
+    title: "KICKSCOOTER ES1L LIGERO URBANO ($412)\nMovilidad Práctica • Solo 11 kg de Peso", 
+    badge: "ULTRA LIGERO", 
+    src: "/images/scooters/scooter-es1l.jpg", 
+    link: "/web/scooters" 
+  },
+  { 
+    image: { src: "/images/bicicletas/bicicleta-shimano-r8014.jpg", alt: "Bicicletas Eléctricas Shimano & Montaña" },
+    title: "BICICLETAS ELÉCTRICAS • TEMPORADA DE VERANO\n25% OFF General y 40% OFF para Estudiantes", 
+    badge: "25% - 40% OFF", 
+    src: "/images/bicicletas/bicicleta-shimano-r8014.jpg", 
+    link: "/web/bicicletas-electricas" 
+  },
+  { 
+    image: { src: "/images/bicicletas/bicicleta-montana-26.jpg", alt: "Bicicleta de Montaña 26 Pulgadas Uso Rudo" },
+    title: "BICICLETA DE MONTAÑA 26\" USO RUDO\nBatería Litio 48V 10Ah • Motor 350W • Uso 24/7", 
+    badge: "USO RUDO", 
+    src: "/images/bicicletas/bicicleta-montana-26.jpg", 
+    link: "/web/bicicletas-electricas" 
+  },
+  { 
+    image: { src: "/images/bicicletas/bicicleta-plegable-48v.jpg", alt: "Bicicleta Eléctrica Plegable Alto Rendimiento" },
+    title: "BICICLETA ELÉCTRICA PLEGABLE ALTO RENDIMIENTO\nNeumáticos 21\" • Puerto USB LCD • Batería 48V", 
+    badge: "PLEGABLE", 
+    src: "/images/bicicletas/bicicleta-plegable-48v.jpg", 
+    link: "/web/bicicletas-electricas" 
+  },
+  { 
+    image: { src: "/images/luminarias/luces-led-solares-300-800w.jpg", alt: "Luminarias Solares Autónomas Atomeca" },
+    title: "LUMINARIAS SOLARES AUTÓNOMAS ATOMECA\n300W ($43), 600W ($54) y 800W ($66) con Panel Solar IP65", 
+    badge: "ENERGÍA SOLAR", 
+    src: "/images/luminarias/luces-led-solares-300-800w.jpg", 
+    link: "/web/luminarias-solares" 
+  },
+  { 
+    image: { src: "/images/luminarias/iluminacion-lujo-colgante.jpg", alt: "Iluminación de Lujo para Departamentos" },
+    title: "ILUMINACIÓN DE LUJO PARA DEPARTAMENTOS\nLámparas Colgantes Industriales a Costo Mega Reducido", 
+    badge: "DISEÑO VINTAGE", 
+    src: "/images/luminarias/iluminacion-lujo-colgante.jpg", 
+    link: "/web/iluminacion" 
+  },
+  { 
+    image: { src: "/images/pizarras/pizarra-smart-4k-75.jpg", alt: "Pizarra Smart Interactiva 4K UHD 75" },
+    title: "PIZARRA SMART INTERACTIVA 4K UHD 75\"\nViewBoard IFP7550-5F • Android 11 • 8GB/128GB", 
+    badge: "SMART 4K", 
+    src: "/images/pizarras/pizarra-smart-4k-75.jpg", 
+    link: "/web/pizarras-smart" 
+  },
+  { 
+    image: { src: "/images/camaras/camara-wifi-bateria.jpg", alt: "Cámaras de Seguridad Wi-Fi a Batería" },
+    title: "CÁMARAS DE SEGURIDAD WI-FI A BATERÍA\nEconómicas de Alto Rendimiento para Garitas y Locales", 
+    badge: "100% WI-FI", 
+    src: "/images/camaras/camara-wifi-bateria.jpg", 
+    link: "/web/camaras-wifi" 
+  },
+  { 
+    image: { src: "/images/monitores/monitor-dahua-19.jpg", alt: "Monitor Dahua DH-LM19 LED Bajo Consumo" },
+    title: "MONITORES DAHUA LED 24/7\nResolución HD+ 1600x900 • Entradas HDMI & VGA", 
+    badge: "DAHUA CCTV", 
+    src: "/images/monitores/monitor-dahua-19.jpg", 
+    link: "/web/monitores" 
+  },
 ]
 
 const COMBOS_COVERFLOW_SLIDES = [
+  { 
+    image: { src: "/images/generadores/comparativa-generadores.jpg", alt: "Generadores Eléctricos vs Gasolina" },
+    title: "GENERADORES ELÉCTRICOS + PANELES + ACCESORIOS\nConfigura tu Estación Solar o Generador a la Medida", 
+    badge: "CONFIGURADOR", 
+    src: "/images/generadores/comparativa-generadores.jpg", 
+    link: "/web/generadores" 
+  },
+  { 
+    image: { src: "/images/generadores/generadores-ecofriendly.jpg", alt: "Generadores Ecofriendly Silenciosos" },
+    title: "ESTACIONES DE ENERGÍA ECOFRIENDLY\nCero Emisiones • 100% Silencioso • Recarga Solar", 
+    badge: "ECOFRIENDLY", 
+    src: "/images/generadores/generadores-ecofriendly.jpg", 
+    link: "/web/generadores" 
+  },
+  { 
+    image: { src: "/images/linternas/linterna-potencia-steren.jpg", alt: "Linterna Steren Alto Nivel Lumínico" },
+    title: "LINTERNA STEREN ALTO NIVEL LUMÍNICO\nPotencia Extrema + Paquete de Baterías de Regalo", 
+    badge: "BATERÍAS GRATIS", 
+    src: "/images/linternas/linterna-potencia-steren.jpg", 
+    link: "/web/linterna-potencia" 
+  },
+  { 
+    image: { src: "/images/consolas/ps4-slim-reacondicionada.jpg", alt: "PS4 Slim Reacondicionada $325" },
+    title: "PLAYSTATION 4 SLIM REACONDICIONADA $325\n2 Controles + Parlante Gratis + 2 Años de Garantía", 
+    badge: "BUNDLE PS4", 
+    src: "/images/consolas/ps4-slim-reacondicionada.jpg", 
+    link: "/web/playstation-4" 
+  },
+  { 
+    image: { src: "/images/consolas/control-wireless-gaming.jpg", alt: "Control Wireless Bluetooth Gaming" },
+    title: "CONTROL WIRELESS GAMING (AMC-2885) $29.99\nPC, Android, iOS • Audífonos y Envío Gratis", 
+    badge: "OFERTA GAMING", 
+    src: "/images/consolas/control-wireless-gaming.jpg", 
+    link: "/web/playstation-4" 
+  },
+  { 
+    image: { src: "/images/repuestos/repuestos-portada.jpg", alt: "Cargadores de Laptop por Mayor" },
+    title: "CARGADORES DE LAPTOP POR MAYOR\nCompra 6 Unidades a Precio de Distribuidor Exclusivo", 
+    badge: "MAYORISTA 6+ U.", 
+    src: "/images/repuestos/repuestos-portada.jpg", 
+    link: "/web/cargadores-laptop" 
+  },
   { 
     image: { src: "/images/cerraduras/cerraduras-instalacion-portada.jpg", alt: "Combo Cerradura Smart con Instalación" },
     title: "COMBO CERRADURA SMART + INSTALACIÓN PROFESIONAL\nGarantía en Producto e Instalación a Nivel Nacional", 
@@ -80,37 +269,37 @@ const COMBOS_COVERFLOW_SLIDES = [
     src: "/banners/camaras-hogar-portada-4k.jpg", 
     link: "/web/camaras-hogar" 
   },
-  { 
-    image: { src: "/images/barreras/barreras-portada-promociones.jpg", alt: "Barreras Vehiculares Automáticas & Control de Acceso" },
-    title: "BARRERAS VEHICULARES AUTOMÁTICAS & CONTROL DE ACCESO\nSistemas Brushless de 1.5s a 6s para Urbanizaciones e Industrias", 
-    badge: "NUEVA LÍNEA", 
-    src: "/images/barreras/barreras-portada-promociones.jpg", 
-    link: "/web/barreras-vehiculares" 
-  },
-  { 
-    image: { src: "https://coretms.tecnomegastore.ec/assets/images/main/26/COMAPLMLY23LEA.webp", alt: "Ecosistema Apple Oficial Ecuador" },
-    title: "ECOSISTEMA APPLE OFICIAL ECUADOR\nMacBook M2/M3/M4/M5, iPhone 13 al 17 Pro Max, iPad & Watch", 
-    badge: "APPLE STORE", 
-    src: "https://coretms.tecnomegastore.ec/assets/images/main/26/COMAPLMLY23LEA.webp", 
-    link: "/web/apple" 
-  },
-  { 
-    image: { src: "/images/cerraduras/yale/yale-cerradura-digital-ymf40a-m-dulo-para-abr-1.webp", alt: "Combo Yale YMF40A + Connect" },
-    title: "COMBO YALE YMF40A + MÓDULO CELULAR + INSTALACIÓN\nManija de Embutir + WiFi Hub para Smartphone", 
-    badge: "COMBO YALE", 
-    src: "/images/cerraduras/yale/yale-cerradura-digital-ymf40a-m-dulo-para-abr-1.webp", 
-    link: "/web/cerraduras-smart" 
-  },
-  { 
-    image: { src: "/images/seguridad/zkteco-kit-acceso.jpg", alt: "Combo Acceso Edificios" },
-    title: "COMBO EMPRESA & ACCESO EDIFICIOS SEGURO\nBiométrico Senseface 2A + Electroimán + Pulsador", 
-    badge: "COMBO CONJUNTOS", 
-    src: "/images/seguridad/zkteco-kit-acceso.jpg", 
-    link: "/web/cerraduras-smart" 
-  },
 ]
 
 const INSTALACION_COVERFLOW_SLIDES = [
+  { 
+    image: { src: "/images/servidores/catalogo-servidores.jpg", alt: "Servidores Empresariales con Instalación" },
+    title: "CATÁLOGO DE SERVIDORES CON INSTALACIÓN TI\nDell PowerEdge, HPE & Supermicro para Empresas", 
+    badge: "SERVIDORES RACK", 
+    src: "/images/servidores/catalogo-servidores.jpg", 
+    link: "/web/servidores" 
+  },
+  { 
+    image: { src: "/images/videoporteros/videoportero-diel-10.jpg", alt: "Videoportero DIEL 10 con Botonera Antivandálica" },
+    title: "VIDEOPORTERO DIEL 10\" + BOTONERA METÁLICA\nInstalación Residencial & Comercial Garantizada", 
+    badge: "VIDEOPORTEROS", 
+    src: "/images/videoporteros/videoportero-diel-10.jpg", 
+    link: "/web/videoporteros" 
+  },
+  { 
+    image: { src: "/images/videoporteros/ezviz-cb1-hp7.jpg", alt: "Portero Smart EZVIZ HP7 CB1 Inalámbrico" },
+    title: "PORTERO SMART EZVIZ HP7 CB1 SIN CABLES\nPantalla Táctil 7\" • Desbloqueo RFID • App Móvil", 
+    badge: "100% INALÁMBRICO", 
+    src: "/images/videoporteros/ezviz-cb1-hp7.jpg", 
+    link: "/web/videoporteros" 
+  },
+  { 
+    image: { src: "/images/promociones/cercos-electricos-portada.jpg", alt: "Cercos Eléctricos con Instalación" },
+    title: "BARRERAS DE CERCO ELÉCTRICO CON INSTALACIÓN\nSistemas Electrificadores Inteligentes y Monitoreo 24/7", 
+    badge: "CERCOS SMART", 
+    src: "/images/promociones/cercos-electricos-portada.jpg", 
+    link: "/web/cercos-electricos" 
+  },
   { 
     image: { src: "/images/cerraduras/cerraduras-instalacion-portada.jpg", alt: "Instalación con tu Cerradura ATOMIC" },
     title: "INSTALACIÓN CON TU CERRADURA // ATOMIC INDUSTRIES\n30% OFF al Comprar tu Cerradura con Instalación", 
@@ -126,39 +315,85 @@ const INSTALACION_COVERFLOW_SLIDES = [
     link: "/web/camaras-hogar" 
   },
   { 
-    image: { src: "/images/barreras/barreras-portada-promociones.jpg", alt: "Barreras Vehiculares Automáticas" },
-    title: "BARRERAS VEHICULARES AUTOMÁTICAS & CONTROL DE ACCESO\nSistemas Brushless de Alta Velocidad para Urbanizaciones", 
-    badge: "BARRERAS AUTOMÁTICAS", 
-    src: "/images/barreras/barreras-portada-promociones.jpg", 
-    link: "/web/barreras-vehiculares" 
-  },
-  { 
-    image: { src: "/images/cerraduras/yale/yale-cerradura-digital-ymf40a-m-dulo-para-abr-1.webp", alt: "Yale Connect YMF40A con Instalación" },
-    title: "YALE CONNECT YMF40A KIT CON INSTALACIÓN\nTécnicos Certificados en las 24 Provincias del Ecuador", 
-    badge: "YALE CONNECT", 
-    src: "/images/cerraduras/yale/yale-cerradura-digital-ymf40a-m-dulo-para-abr-1.webp", 
-    link: "/web/cerraduras-smart" 
-  },
-  { 
-    image: { src: "/images/cerraduras/bp-quantum-lock.png", alt: "Quantum Lock con Instalación" },
-    title: "CERRADURA QUANTUM LOCK BP CON INSTALACIÓN\nManija Digital 5 en 1 + Bluetooth Gateway Móvil", 
-    badge: "BANCO DEL PERNO", 
-    src: "/images/cerraduras/bp-quantum-lock.png", 
-    link: "/web/cerraduras-smart" 
-  },
-  { 
-    image: { src: "/images/seguridad/zkteco-kit-acceso.jpg", alt: "Control de Acceso con Instalación" },
-    title: "SISTEMA ACCESO EDIFICIOS + INSTALACIÓN INTEGRAL\nTerminal Facial Senseface + Electroimán 600 Lbs", 
-    badge: "CONJUNTOS & EDIFICIOS", 
-    src: "/images/seguridad/zkteco-kit-acceso.jpg", 
-    link: "/web/cerraduras-smart" 
+    image: { src: "/images/camaras/camara-exterior-imou.jpg", alt: "Cámara Exterior Profesional IMOU 360" },
+    title: "CÁMARA EXTERIOR PROFESIONAL IMOU 360°\nAntena Dual Wi-Fi • Micrófono • Configuración Incluida", 
+    badge: "EXTERIOR IP66", 
+    src: "/images/camaras/camara-exterior-imou.jpg", 
+    link: "/web/camaras-wifi" 
   },
 ]
 
 const SERVICIOS_COVERFLOW_SLIDES = [
-  { title: "SOPORTE TÉCNICO ESPECIALIZADO 24/7\nMantenimiento Preventivo & Asesoría", badge: "SERVICIOS", placeholder: true },
-  { title: "GENERADOR DE COTIZACIONES ERP\nProformas Instantáneas para Empresas", badge: "SERVICIOS", placeholder: true },
-  { title: "LOGÍSTICA & DESPACHO DIRECTO\nEnvíos Seguros a las 24 Provincias", badge: "SERVICIOS", placeholder: true },
+  { 
+    image: { src: "/images/software/automatizacion-bot-99.jpg", alt: "Bot Inteligente 24/7 Atomic Systems" },
+    title: "TEN UN BOT INTELIGENTE QUE TRABAJA 24/7 ($99/MES)\nAtiende WhatsApp, Factura SRI, Llama con Voz IA & Agenda", 
+    badge: "$99 AL MES", 
+    src: "/images/software/automatizacion-bot-99.jpg", 
+    link: "/web/automatizacion" 
+  },
+  { 
+    image: { src: "/images/software/atencion-bot-24-7.jpg", alt: "Módulo Atiende Bot 24/7" },
+    title: "MÓDULO ATIENDE • RESPUESTAS EN VIVO 24/7\nFlujos Lógicos • Cotizaciones PDF • Reportes Excel", 
+    badge: "ATENCIÓN 24/7", 
+    src: "/images/software/atencion-bot-24-7.jpg", 
+    link: "/web/automatizacion" 
+  },
+  { 
+    image: { src: "/images/software/facturacion-cotizacion.jpg", alt: "Facturación SRI y Cotización Oficial" },
+    title: "FACTURACIÓN ELECTRÓNICA CONECTADA AL SRI\nEmisión Oficial de Facturas, Histórico y Cobranza", 
+    badge: "SRI ECUADOR", 
+    src: "/images/software/facturacion-cotizacion.jpg", 
+    link: "/web/automatizacion" 
+  },
+  { 
+    image: { src: "/images/software/llamadas-bot.jpg", alt: "Módulo Llama con Voz IA" },
+    title: "MÓDULO LLAMA • VOZ IA NATURAL & FLUIDA\nLlamadas Telefónicas Salientes para Ventas y Cobranzas", 
+    badge: "VOZ INTELIGENTE", 
+    src: "/images/software/llamadas-bot.jpg", 
+    link: "/web/automatizacion" 
+  },
+  { 
+    image: { src: "/images/software/agenda-bot.jpg", alt: "Módulo Agenda Inteligente" },
+    title: "MÓDULO AGENDA • TU TIEMPO OPTIMIZADO\nSincronización de Citas y Recordatorios WhatsApp", 
+    badge: "AGENDAMIENTO", 
+    src: "/images/software/agenda-bot.jpg", 
+    link: "/web/automatizacion" 
+  },
+  { 
+    image: { src: "/images/consolas/mantenimiento-consolas.jpg", alt: "Mantenimiento y Reparación de Consolas" },
+    title: "SERVICIO TÉCNICO DE CONSOLAS DE VIDEOJUEGOS\nPS5, PS4, Xbox & Switch • 10% Descuento > $80", 
+    badge: "10% OFF", 
+    src: "/images/consolas/mantenimiento-consolas.jpg", 
+    link: "/web/mantenimiento-consolas" 
+  },
+  { 
+    image: { src: "/images/software/sistema-control-qr.jpg", alt: "Software Control de Acceso por QR y Tickets" },
+    title: "SOFTWARE CONTROL DE ACCESO POR QR & TICKETS\nRegistro de Visitantes, Torniquetes y Barreras", 
+    badge: "SISTEMA QR", 
+    src: "/images/software/sistema-control-qr.jpg", 
+    link: "/web/software-qr" 
+  },
+  { 
+    image: { src: "/images/software/impulsa-tienda-online.jpg", alt: "Impulsa tu Tienda en Línea desde Quito" },
+    title: "IMPULSA TU NEGOCIO CON TU PROPIA TIENDA EN LÍNEA\nDesarrollo E-Commerce desde Quito (El Labrador)", 
+    badge: "TIENDA EN LÍNEA", 
+    src: "/images/software/impulsa-tienda-online.jpg", 
+    link: "/web/tienda-en-linea" 
+  },
+  { 
+    image: { src: "/images/contrataciones/empleo-ingeniero-redes.jpg", alt: "Ecosistema de Contrataciones Atomic Talent" },
+    title: "ECOSISTEMA DE CONTRATACIONES • ATOMIC TALENT\nIngeniero en Redes, Instaladores y Ventas $450/mes", 
+    badge: "EMPLEO & VENTAS", 
+    src: "/images/contrataciones/empleo-ingeniero-redes.jpg", 
+    link: "/web/contrataciones" 
+  },
+  { 
+    image: { src: "/images/contrataciones/gana-450-celular.jpg", alt: "Ventas Digitales $450 Fijo más Comisiones" },
+    title: "VENDEDORES DIGITALES • $450 FIJO + COMISIONES\nGana Dinero Desde Tu Celular con Capacitación Incluida", 
+    badge: "$450 / MES", 
+    src: "/images/contrataciones/gana-450-celular.jpg", 
+    link: "/web/contrataciones" 
+  },
 ]
 
 const CoverflowGallery = dynamic(() => import("@/components/CoverflowGallery"), {
@@ -210,28 +445,30 @@ function SafeImage({ src, alt = "", className, fill = false, width, height, ...p
   const [isLoading, setIsLoading] = useState(true)
   const imgRef = useRef<HTMLImageElement>(null)
 
-  const altLower = (alt || "").toLowerCase()
-  let fallbackImage = "/web-banners/banner-17.jpg"
-  if (altLower.includes("camara") || altLower.includes("h6c") || altLower.includes("ezviz") || altLower.includes("ip")) {
-    fallbackImage = "/images/hero-3d/slide-2.jpg"
-  } else if (altLower.includes("biometrico") || altLower.includes("zkteco") || altLower.includes("senseface") || altLower.includes("acceso") || altLower.includes("portero")) {
-    fallbackImage = "/assets/portero/portero2.jpeg"
-  }
-
   const rawSrc = typeof src === 'string' ? src : (src && typeof src === 'object' ? (src.src || src.url || '') : '')
-  const realSrc = (!rawSrc || error) ? fallbackImage : rawSrc
 
   useEffect(() => {
     if (imgRef.current?.complete) {
       setIsLoading(false)
     }
-  }, [realSrc])
+  }, [rawSrc])
+
+  if (!rawSrc || error) {
+    return (
+      <div className={`relative overflow-hidden bg-neutral-900/80 border border-white/5 flex flex-col items-center justify-center p-4 text-center ${fill ? 'absolute inset-0 w-full h-full' : ''} ${className}`} style={{ width: fill ? '100%' : width, height: fill ? '100%' : height }}>
+        <div className="w-12 h-12 rounded-2xl bg-white/[0.04] border border-white/10 flex items-center justify-center text-neutral-500 mb-2">
+          <Package size={22} className="text-neutral-400" />
+        </div>
+        <span className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider font-bold">ATOMIC PRODUCTO</span>
+      </div>
+    )
+  }
 
   return (
     <div className={`relative overflow-hidden bg-neutral-950 ${fill ? 'absolute inset-0 w-full h-full' : ''} ${className}`}>
       <img
         ref={imgRef}
-        src={realSrc}
+        src={rawSrc}
         alt={alt}
         onLoad={() => setIsLoading(false)}
         onError={() => { setIsLoading(false); setError(true); }}
@@ -1419,7 +1656,7 @@ export default function PublicWebClient({
                 className="w-full"
               >
                 {coverflowSection === 'ofertas' && (
-                  <CoverflowGallery autoplay={true} cardWidth={460} cardHeight={460} gap={8} tilt={12} sideTilt={8} opacity={60} radius={20} />
+                  <CoverflowGallery slides={OFERTAS_COVERFLOW_SLIDES} autoplay={true} cardWidth={460} cardHeight={460} gap={8} tilt={12} sideTilt={8} opacity={60} radius={20} />
                 )}
                 {coverflowSection === 'promociones' && (
                   <CoverflowGallery slides={PROMO_COVERFLOW_SLIDES} autoplay={true} cardWidth={460} cardHeight={460} gap={8} tilt={12} sideTilt={8} opacity={60} radius={20} />
@@ -1790,6 +2027,115 @@ export default function PublicWebClient({
             })}
           </div>
         )}
+      {/* ═══════════ INTERACTIVE CAMPAIGN & LANDING BANNERS ═══════════ */}
+      <section className="w-full max-w-7xl mx-auto px-6 py-12 space-y-8">
+        
+        {/* Banner 1: Generadores Eléctricos vs Gasolina */}
+        <div className="rounded-3xl bg-gradient-to-r from-amber-950/40 via-yellow-950/30 to-[#0E0E10] border border-amber-500/30 p-8 sm:p-12 flex flex-col lg:flex-row items-center justify-between gap-8 shadow-2xl relative overflow-hidden group">
+          <div className="space-y-4 max-w-2xl relative z-10">
+            <span className="px-3.5 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-black uppercase tracking-wider border border-amber-500/30">
+              ⚡ Energía & Comparativa Versus
+            </span>
+            <h3 className="text-2xl sm:text-4xl font-black text-white leading-tight">
+              ¿Generadores Eléctricos a Batería vs Generadores a Gasolina?
+            </h3>
+            <p className="text-slate-300 text-xs sm:text-sm leading-relaxed">
+              Analiza los pros y contras de cada tecnología. Silencio, cero humo, recarga solar vs potencia continua. Configura tu kit ideal con paneles solares y accesorios.
+            </p>
+            <div className="pt-2">
+              <Link
+                href="/web/generadores"
+                className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 font-black text-sm hover:brightness-110 shadow-lg shadow-amber-500/25 transition-all"
+              >
+                <span>Ver Comparativa & Combos</span>
+                <ArrowRight size={16} />
+              </Link>
+            </div>
+          </div>
+          <div className="relative z-10 shrink-0 w-full lg:w-72 aspect-video sm:aspect-square rounded-2xl bg-black/40 border border-white/10 overflow-hidden flex items-center justify-center p-4">
+            <SafeImage src="/images/generadores/comparativa-generadores.jpg" alt="Generadores Eléctricos vs Gasolina" className="object-contain w-full h-full group-hover:scale-105 transition-transform" />
+          </div>
+        </div>
+
+        {/* Banner 2: Botonera Antigolpes & Videoportero */}
+        <div className="rounded-3xl bg-gradient-to-r from-blue-950/40 via-cyan-950/30 to-[#0E0E10] border border-cyan-500/30 p-8 sm:p-12 flex flex-col lg:flex-row items-center justify-between gap-8 shadow-2xl relative overflow-hidden group">
+          <div className="space-y-4 max-w-2xl relative z-10">
+            <span className="px-3.5 py-1 rounded-full bg-cyan-500/20 text-cyan-300 text-xs font-black uppercase tracking-wider border border-cyan-500/30">
+              🛡️ Ofertas de Alta Calidad
+            </span>
+            <h3 className="text-2xl sm:text-4xl font-black text-white leading-tight">
+              Kit Videoportero LCD 10" con Botonera Antigolpes Metálica & Antivandálica
+            </h3>
+            <p className="text-slate-300 text-xs sm:text-sm leading-relaxed">
+              Máxima durabilidad y seguridad perimetral para conjuntos, residencias y empresas. Visión nocturna, apertura remota y audio bidireccional sin fallas.
+            </p>
+            <div className="pt-2">
+              <Link
+                href="/web/videoporteros"
+                className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-black text-sm hover:brightness-110 shadow-lg shadow-cyan-500/25 transition-all"
+              >
+                <span>Ver Videoporteros & Precios</span>
+                <ArrowRight size={16} />
+              </Link>
+            </div>
+          </div>
+          <div className="relative z-10 shrink-0 w-full lg:w-72 aspect-video sm:aspect-square rounded-2xl bg-black/40 border border-white/10 overflow-hidden flex items-center justify-center p-4">
+            <SafeImage src="/images/videoporteros/videoportero-diel-10.jpg" alt="Kit Videoportero DIEL 10" className="object-contain w-full h-full group-hover:scale-105 transition-transform" />
+          </div>
+        </div>
+
+        {/* Banner 3: Nuestra Especialidad es la Tecnología */}
+        <div className="rounded-3xl bg-gradient-to-r from-purple-950/40 via-indigo-950/30 to-[#0E0E10] border border-purple-500/30 p-8 sm:p-12 text-center shadow-2xl relative overflow-hidden">
+          <span className="px-3.5 py-1 rounded-full bg-purple-500/20 text-purple-300 text-xs font-black uppercase tracking-wider border border-purple-500/30">
+            ✨ ATOMIC INDUSTRIES • ECUADOR
+          </span>
+          <h3 className="text-3xl sm:text-5xl font-black text-white mt-4 max-w-4xl mx-auto leading-tight">
+            Nuestra Especialidad es la Tecnología
+          </h3>
+          <p className="text-slate-300 text-xs sm:text-base max-w-3xl mx-auto mt-3">
+            Desde seguridad electrónica inteligente y servidores corporativos hasta movilidad urbana, computación y automatización con IA. Transformamos tu vida y tu negocio.
+          </p>
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+            <Link href="/web/automatizacion" className="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs border border-white/15 transition-all">
+              🤖 Bots & IA ($99/mes)
+            </Link>
+            <Link href="/web/scooters" className="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs border border-white/15 transition-all">
+              🛵 Scooters Eléctricos
+            </Link>
+            <Link href="/web/bicicletas-electricas" className="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs border border-white/15 transition-all">
+              🚲 Bicicletas Eléctricas (40% OFF)
+            </Link>
+            <Link href="/web/servidores" className="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs border border-white/15 transition-all">
+              🖥️ Servidores Rack TI
+            </Link>
+          </div>
+        </div>
+
+        {/* Banner 4: Ver más sobre nosotros */}
+        <div className="rounded-3xl bg-gradient-to-r from-emerald-950/40 via-teal-950/30 to-[#0E0E10] border border-emerald-500/30 p-8 sm:p-12 flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl">
+          <div className="space-y-2 text-center md:text-left">
+            <h4 className="text-2xl font-black text-white">¿Quieres conocer más sobre el Ecosistema Atomic?</h4>
+            <p className="text-xs text-slate-300 max-w-xl">
+              Somos importadores directos, integradores de tecnología e ingenieros en software desde Quito. Oficinas presenciales en El Labrador y despachos a todo el país.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <Link
+              href="/web/tienda-en-linea"
+              className="px-6 py-3.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-black text-xs hover:brightness-110 shadow-lg shadow-emerald-500/25 transition-all flex items-center gap-2"
+            >
+              <span>Ver Más Sobre Nosotros</span>
+              <ArrowRight size={14} />
+            </Link>
+            <Link
+              href="/web/contrataciones"
+              className="px-6 py-3.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs border border-white/15 transition-all"
+            >
+              Trabaja con Nosotros
+            </Link>
+          </div>
+        </div>
+
       </section>
 
       {/* ═══════════ BOTTOM BRANDING & CONFIDENCE (APPIT BENTO CARDS) ═══════════ */}

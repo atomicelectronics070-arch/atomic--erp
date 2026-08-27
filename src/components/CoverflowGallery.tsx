@@ -16,6 +16,8 @@ export interface Slide {
     title?: string
     badge?: string
     placeholder?: boolean
+    link?: string
+    src?: string
 }
 
 type AutoplayDir = "leftToRight" | "rightToLeft"
@@ -48,44 +50,54 @@ export interface Smooth3DSlideshowProps {
 
 const DEFAULT_SLIDES: Slide[] = [
     {
-        image: { src: "/web-banners/banner-24.jpg", alt: "Cargadores de Auto Eléctrico" },
-        title: "CARGADORES DE AUTO ELÉCTRICO\nCompatibles & Potencia Ajustable 1.5 - 7 KW",
+        image: { src: "/images/promociones/repuestos-computadoras-portada.jpg", alt: "Línea de Repuestos para Computadoras y Laptops" },
+        title: "LÍNEA DE REPUESTOS PARA COMPUTADORAS\nBaterías, Cargadores, RAM, CPUs, Cases & Fuentes",
+        badge: "REPUESTOS ORIGINALES",
+        link: "/web/repuestos",
+        src: "/images/promociones/repuestos-computadoras-portada.jpg"
+    },
+    {
+        image: { src: "/images/promociones/cargador-wallbox-mevo.jpg", alt: "Cargadores de Auto Eléctrico Wallbox Livoltek Mevo" },
+        title: "CARGADORES DE AUTO ELÉCTRICO\nCompatibles & Potencia Ajustable 1.5 - 22 KW",
+        badge: "MOVILIDAD ELÉCTRICA",
+        link: "/web/cargadores-electricos",
+        src: "/images/promociones/cargador-wallbox-mevo.jpg"
     },
     {
         image: { src: "/images/hero-3d/slide-3.jpg", alt: "Cámara de Seguridad con Luz Policial" },
         title: "CÁMARA DE SEGURIDAD CON LUZ POLICIAL\nAlertas Inteligentes Luz Rojo-Azul & Visión Nocturna",
+        link: "/web/camaras-hogar"
     },
     {
         image: { src: "/images/hero-3d/slide-2.jpg", alt: "Kit de Cámaras de Seguridad Doble Lente" },
         title: "KIT DE CÁMARAS DE SEGURIDAD DOBLE LENTE\nVisión Nocturna 360° & Monitoreo HD",
+        link: "/web/camaras-hogar"
     },
     {
         image: { src: "/images/hero-3d/slide-5.jpg", alt: "Generadores Eléctricos" },
         title: "GENERADORES ELÉCTRICOS\nEnergía Limpia & Silenciosa Ecofriendly",
+        link: "/web/generadores",
+        src: "/images/hero-3d/slide-5.jpg"
     },
     {
         image: { src: "/images/hero-3d/slide-1.png", alt: "Cerraduras Smart" },
         title: "CERRADURAS SMART & ACCESO BIOMÉTRICO\nControl Total desde tu Celular",
+        link: "/web/cerraduras-smart"
     },
     {
-        image: { src: "/images/hero-3d/slide-11.jpg", alt: "Dell 27 All-In-One" },
-        title: "COMPUTADORA DELL 27\" ALL-IN-ONE\nPotencia Empresarial i7 16GB RAM",
+        image: { src: "/images/promociones/laptops-portada.jpg", alt: "Laptops y Computación" },
+        title: "LÍNEA DE COMPUTACIÓN & LAPTOPS ATOMIC\nPotencia Empresarial, All-in-One y Mini PCs",
+        link: "/web/laptops"
     },
     {
-        image: { src: "/images/hero-3d/slide-4.jpg", alt: "Generadores a Gasolina" },
-        title: "GENERADORES A GASOLINA\nRespaldo de Energía Confiable 950W para tu Hogar",
+        image: { src: "/images/promociones/apple-portada.jpg", alt: "Ecosistema Apple Oficial" },
+        title: "ECOSISTEMA APPLE OFICIAL ECUADOR\nMacBook M2/M3/M4, iPhone 13 al 17 Pro Max",
+        link: "/web/apple"
     },
     {
-        image: { src: "/images/hero-3d/slide-6.jpg", alt: "Cámara de Seguridad Un Lente" },
-        title: "CÁMARA DE SEGURIDAD UN LENTE\nMonitoreo Exterior IP66 Panorámica 270°",
-    },
-    {
-        image: { src: "/images/hero-3d/slide-7.jpg", alt: "Calefactores de Exterior" },
-        title: "CALEFACTORES DE EXTERIOR\nCalidez & Confort para Hogar, Jardín y Espacios",
-    },
-    {
-        image: { src: "/images/hero-3d/slide-9.jpg", alt: "Control de Accesos y Portero Smart" },
-        title: "CONTROL DE ACCESOS Y PORTERO SMART\nSeguridad Biométrica para Conjuntos & Edificios",
+        image: { src: "/images/promociones/cercos-electricos-portada.jpg", alt: "Cercos Eléctricos de Alta Precisión" },
+        title: "BARRERAS DE CERCO ELÉCTRICO DE ALTA PRECISIÓN\nSistemas Electrificadores Inteligentes y Monitoreo 24/7",
+        link: "/web/cercos-electricos"
     },
 ]
 
