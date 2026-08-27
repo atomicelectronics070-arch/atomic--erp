@@ -53,6 +53,95 @@ export default function MatrizPreciosComponent({
   const [showLandingsModal, setShowLandingsModal] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
+  // Quick Quote state & modal
+  const [showQuoteModal, setShowQuoteModal] = useState(false);
+  const [quoteClient, setQuoteClient] = useState('');
+  const [quotePhone, setQuotePhone] = useState('');
+  const [quoteLocation, setQuoteLocation] = useState('Quito / Entrega a Domicilio');
+  const [quoteProductName, setQuoteProductName] = useState('');
+  const [quoteSpecs, setQuoteSpecs] = useState('');
+  const [quotePrice, setQuotePrice] = useState<number>(0);
+  const [quoteQty, setQuoteQty] = useState<number>(1);
+  const [quoteDiscount, setQuoteDiscount] = useState<number>(0);
+  const [quoteShipping, setQuoteShipping] = useState<number>(0);
+  const [quoteCode, setQuoteCode] = useState('COT-2026-0001');
+
+  const openQuoteModalWithProduct = (p?: ProductMatrixItem | null) => {
+    const randomCode = `COT-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+    setQuoteCode(randomCode);
+    if (p) {
+      setQuoteProductName(p.name);
+      setQuotePrice(p.salePrice || 0);
+      setQuoteQty(1);
+      setQuoteDiscount(0);
+      setQuoteShipping(0);
+      setQuoteSpecs(`• SKU / Código: ${p.sku || 'N/A'}\n• Categoría: ${p.category || 'General'}\n• Garantía de 1 año con soporte técnico directo ATOMIC\n• Producto 100% original con entrega garantizada`);
+    } else {
+      setQuoteProductName('');
+      setQuotePrice(0);
+      setQuoteQty(1);
+      setQuoteDiscount(0);
+      setQuoteShipping(0);
+      setQuoteSpecs('• Garantía de 1 año con soporte técnico directo ATOMIC\n• Disponibilidad y entrega express');
+    }
+    setShowQuoteModal(true);
+  };
+
+  const getQuoteTotal = () => {
+    const base = (Number(quotePrice) || 0) * (Number(quoteQty) || 1);
+    const disc = Number(quoteDiscount) || 0;
+    const ship = Number(quoteShipping) || 0;
+    return Math.max(0, base - disc + ship);
+  };
+
+  const buildQuoteText = () => {
+    const total = getQuoteTotal();
+    return `*📄 PROFORMA OFICIAL · ATOMIC SOLUTIONS*
+*Cotización N°:* ${quoteCode}
+*Fecha:* ${new Date().toLocaleDateString('es-EC')}
+
+*👤 Cliente:* ${quoteClient.trim() || 'Estimado/a Cliente'}
+*📍 Ubicación:* ${quoteLocation}
+
+*📦 PRODUCTO / EQUIPAMIENTO:*
+*${quoteProductName.trim() || 'Producto por definir'}*
+
+*📋 ESPECIFICACIONES & DETALLES:*
+${quoteSpecs}
+
+*💰 DESGLOSE ECONÓMICO:*
+• Cantidad: ${quoteQty} unid.
+• Precio Unitario: $${Number(quotePrice).toFixed(2)} USD
+${Number(quoteDiscount) > 0 ? `• Descuento Especial: -$${Number(quoteDiscount).toFixed(2)} USD\n` : ''}${Number(quoteShipping) > 0 ? `• Envío / Instalación: +$${Number(quoteShipping).toFixed(2)} USD\n` : ''}*TOTAL A PAGAR: $${total.toFixed(2)} USD*
+
+*🛡️ CONDICIONES Y GARANTÍA:*
+• 1 Año de Garantía Directa.
+• Disponibilidad Inmediata / Despacho Express 24-48h.
+• Métodos de Pago: Transferencia Bancaria, Tarjeta de Crédito, Efectivo.
+
+_¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
+  };
+
+  const handleSendWhatsAppQuote = () => {
+    const text = buildQuoteText();
+    const cleanPh = quotePhone.replace(/\D/g, '');
+    let targetNum = cleanPh;
+    if (!targetNum) {
+      targetNum = '593969043453';
+    } else if (!targetNum.startsWith('593') && targetNum.startsWith('09')) {
+      targetNum = '593' + targetNum.substring(1);
+    }
+    const url = `https://wa.me/${targetNum}?text=${encodeURIComponent(text)}`;
+    window.open(url, '_blank');
+    showNotification('📲 Abriendo WhatsApp con la proforma generada...');
+  };
+
+  const handleCopyQuoteText = () => {
+    const text = buildQuoteText();
+    navigator.clipboard.writeText(text);
+    showNotification('📋 ¡Texto de cotización copiado al portapapeles!');
+  };
+
   // Table refs for intelligent scroll control
   const tableContainerRef = useRef<HTMLDivElement>(null);
   const tableHeaderRef = useRef<HTMLTableSectionElement>(null);
@@ -368,6 +457,15 @@ export default function MatrizPreciosComponent({
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
+            {/* BOTÓN HACER COTIZACIÓN / COTIZADOR RÁPIDO */}
+            <button
+              onClick={() => openQuoteModalWithProduct(null)}
+              className="px-4 py-2.5 border-2 border-zinc-950 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-xs uppercase flex items-center gap-2 rounded-lg shadow-sm transition-all"
+            >
+              <span>📑</span>
+              <span>HACER COTIZACIÓN</span>
+            </button>
+
             {/* BOTÓN LANDING PAGES */}
             <button
               onClick={() => setShowLandingsModal(true)}
@@ -857,16 +955,26 @@ export default function MatrizPreciosComponent({
                       {maxDiscountPercent > 0 ? `${maxDiscountPercent.toFixed(2)}%` : '0.00%'}
                     </td>
 
-                    {/* ONLINE STORE DIRECT LINK */}
-                    <td className="py-2.5 px-4 border-r border-zinc-400 text-center font-mono">
-                      <a
-                        href={`/web/product/${p.id}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-block border-2 border-zinc-950 bg-white px-2.5 py-1 text-[10px] font-black uppercase hover:bg-zinc-950 hover:text-white transition-all rounded shadow-sm"
-                      >
-                        🔗 VER EN WEB
-                      </a>
+                    {/* ONLINE STORE DIRECT LINK & QUICK QUOTE */}
+                    <td className="py-2.5 px-3 border-r border-zinc-400 text-center font-mono">
+                      <div className="flex items-center justify-center gap-1.5">
+                        <button
+                          onClick={() => openQuoteModalWithProduct(p)}
+                          className="border-2 border-zinc-950 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 px-2 py-1 text-[10px] font-black uppercase transition-all rounded shadow-sm flex items-center gap-1 cursor-pointer"
+                          title="Generar cotización rápida de este producto"
+                        >
+                          <span>📑</span> COTIZAR
+                        </button>
+                        <a
+                          href={`/web/product/${p.id}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-block border-2 border-zinc-950 bg-white px-2 py-1 text-[10px] font-black uppercase hover:bg-zinc-950 hover:text-white transition-all rounded shadow-sm"
+                          title="Ver en tienda web"
+                        >
+                          🔗 VER
+                        </a>
+                      </div>
                     </td>
 
                     {/* ACTIONS (EDIT / TRASH / RESTORE / PERMANENT DELETE) */}
@@ -1009,6 +1117,182 @@ export default function MatrizPreciosComponent({
                   </span>
                 </a>
               ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ================= MODAL DE COTIZADOR RÁPIDO OFICIAL ================= */}
+      {showQuoteModal && (
+        <div className="fixed inset-0 z-[250] bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-[#12131C] border-4 border-emerald-500 rounded-2xl shadow-[0_0_50px_rgba(16,185,129,0.35)] max-w-xl w-full p-6 text-white font-sans overflow-hidden flex flex-col max-h-[90vh]">
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-4 shrink-0">
+              <div className="flex items-center gap-2.5">
+                <span className="w-3 h-3 rounded-full bg-emerald-400 animate-ping" />
+                <h3 className="text-base sm:text-lg font-black uppercase font-heading tracking-wider text-white">
+                  📑 COTIZADOR RÁPIDO OFICIAL
+                </h3>
+                <span className="bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-[11px] font-mono font-black px-2.5 py-0.5 rounded-full">
+                  {quoteCode}
+                </span>
+              </div>
+              <button
+                onClick={() => setShowQuoteModal(false)}
+                className="px-3 py-1 bg-zinc-800 text-neutral-300 font-black text-xs rounded-lg uppercase hover:bg-rose-600 hover:text-white transition-colors cursor-pointer"
+              >
+                ✕ Cerrar
+              </button>
+            </div>
+
+            {/* Scrollable Form Body */}
+            <div className="flex-1 overflow-y-auto space-y-3 pr-1 text-xs font-sans">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <div>
+                  <label className="text-[10px] font-mono font-bold uppercase text-neutral-400 block mb-1">
+                    👤 Nombre del Cliente *
+                  </label>
+                  <input
+                    type="text"
+                    value={quoteClient}
+                    onChange={(e) => setQuoteClient(e.target.value)}
+                    placeholder="Ej. Ing. Carlos Mendoza / Empresa ABC"
+                    className="w-full bg-[#1A1C28] border border-white/15 rounded-lg px-3 py-2 text-xs font-bold text-white placeholder-neutral-500 outline-none focus:border-emerald-400"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] font-mono font-bold uppercase text-neutral-400 block mb-1">
+                    📱 Teléfono / WhatsApp
+                  </label>
+                  <input
+                    type="text"
+                    value={quotePhone}
+                    onChange={(e) => setQuotePhone(e.target.value)}
+                    placeholder="Ej. 0992823615"
+                    className="w-full bg-[#1A1C28] border border-white/15 rounded-lg px-3 py-2 text-xs font-bold text-white placeholder-neutral-500 outline-none focus:border-emerald-400 font-mono"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-[10px] font-mono font-bold uppercase text-neutral-400 block mb-1">
+                  📍 Ciudad / Ubicación de Entrega
+                </label>
+                <input
+                  type="text"
+                  value={quoteLocation}
+                  onChange={(e) => setQuoteLocation(e.target.value)}
+                  placeholder="Ej. Quito / Guayaquil / Cuenca / Entrega Express"
+                  className="w-full bg-[#1A1C28] border border-white/15 rounded-lg px-3 py-2 text-xs font-bold text-white placeholder-neutral-500 outline-none focus:border-emerald-400"
+                />
+              </div>
+
+              <div>
+                <label className="text-[10px] font-mono font-bold uppercase text-neutral-400 block mb-1">
+                  📦 Producto / Equipamiento Cotizado *
+                </label>
+                <input
+                  type="text"
+                  value={quoteProductName}
+                  onChange={(e) => setQuoteProductName(e.target.value)}
+                  placeholder="Nombre completo del producto..."
+                  className="w-full bg-[#1A1C28] border border-white/15 rounded-lg px-3 py-2 text-xs font-black text-emerald-300 placeholder-neutral-500 outline-none focus:border-emerald-400 uppercase"
+                />
+              </div>
+
+              <div>
+                <label className="text-[10px] font-mono font-bold uppercase text-neutral-400 block mb-1">
+                  📋 Especificaciones / Beneficios Incluidos
+                </label>
+                <textarea
+                  rows={3}
+                  value={quoteSpecs}
+                  onChange={(e) => setQuoteSpecs(e.target.value)}
+                  placeholder="Detalles técnicos, garantía, accesorios..."
+                  className="w-full bg-[#1A1C28] border border-white/15 rounded-lg p-2.5 text-xs text-neutral-200 placeholder-neutral-500 outline-none focus:border-emerald-400 font-mono leading-relaxed"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <div>
+                  <label className="text-[10px] font-mono font-bold uppercase text-neutral-400 block mb-1">
+                    💵 Precio Unit ($)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={quotePrice || ''}
+                    onChange={(e) => setQuotePrice(parseFloat(e.target.value) || 0)}
+                    className="w-full bg-[#1A1C28] border border-white/15 rounded-lg px-3 py-2 text-xs font-mono font-bold text-white outline-none focus:border-emerald-400"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] font-mono font-bold uppercase text-neutral-400 block mb-1">
+                    🔢 Cantidad
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    value={quoteQty || ''}
+                    onChange={(e) => setQuoteQty(parseInt(e.target.value) || 1)}
+                    className="w-full bg-[#1A1C28] border border-white/15 rounded-lg px-3 py-2 text-xs font-mono font-bold text-white outline-none focus:border-emerald-400"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] font-mono font-bold uppercase text-amber-400 block mb-1">
+                    🏷️ Desc ($)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={quoteDiscount || ''}
+                    onChange={(e) => setQuoteDiscount(parseFloat(e.target.value) || 0)}
+                    className="w-full bg-[#1A1C28] border border-amber-500/40 rounded-lg px-3 py-2 text-xs font-mono font-bold text-amber-300 outline-none focus:border-amber-400"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] font-mono font-bold uppercase text-cyan-400 block mb-1">
+                    🚚 Envío/Instal ($)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={quoteShipping || ''}
+                    onChange={(e) => setQuoteShipping(parseFloat(e.target.value) || 0)}
+                    className="w-full bg-[#1A1C28] border border-cyan-500/40 rounded-lg px-3 py-2 text-xs font-mono font-bold text-cyan-300 outline-none focus:border-cyan-400"
+                  />
+                </div>
+              </div>
+
+              {/* TOTAL DISPLAY BOX */}
+              <div className="bg-gradient-to-r from-emerald-950/60 to-teal-950/60 border-2 border-emerald-500/50 rounded-xl p-3.5 flex items-center justify-between shadow-lg">
+                <div>
+                  <span className="text-[10px] font-mono font-bold text-neutral-400 uppercase block">TOTAL PROFORMA:</span>
+                  <span className="text-xs text-neutral-300 font-medium">Incluye IVA y garantía oficial</span>
+                </div>
+                <span className="text-2xl font-black font-mono text-emerald-400 tracking-tight">
+                  ${getQuoteTotal().toFixed(2)} USD
+                </span>
+              </div>
+            </div>
+
+            {/* Footer Action Buttons */}
+            <div className="pt-4 mt-3 border-t border-white/10 flex flex-wrap items-center gap-2 shrink-0">
+              <button
+                onClick={handleSendWhatsAppQuote}
+                className="flex-1 min-w-[200px] py-3 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-heading font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/25 cursor-pointer active:scale-98"
+              >
+                <span>🚀</span>
+                <span>ENVIAR POR WHATSAPP</span>
+              </button>
+              <button
+                onClick={handleCopyQuoteText}
+                className="py-3 px-4 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white font-heading font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 border border-white/10 cursor-pointer"
+                title="Copiar texto formateado"
+              >
+                <span>📋</span>
+                <span>COPIAR</span>
+              </button>
             </div>
           </div>
         </div>
