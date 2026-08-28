@@ -368,6 +368,112 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
         }
     }
 
+    const exportCatalogToPDF = async () => {
+        if (!filteredProducts.length) {
+            alert("No hay productos filtrados para exportar.")
+            return
+        }
+        try {
+            const { jsPDF } = await import("jspdf")
+            const doc = new jsPDF({
+                orientation: "landscape",
+                unit: "mm",
+                format: "a4"
+            })
+
+            const pageWidth = doc.internal.pageSize.getWidth()
+            const pageHeight = doc.internal.pageSize.getHeight()
+            const today = new Date().toLocaleDateString("es-EC")
+
+            let currentY = 28
+            let pageNum = 1
+
+            const drawHeader = (pNum: number) => {
+                doc.setFillColor(15, 23, 42)
+                doc.rect(0, 0, pageWidth, 20, "F")
+                doc.setFillColor(37, 99, 235)
+                doc.rect(0, 20, pageWidth, 1.5, "F")
+
+                doc.setTextColor(255, 255, 255)
+                doc.setFont("helvetica", "bold")
+                doc.setFontSize(14)
+                doc.text("ATOMIC ECUADOR · CATÁLOGO GENERAL DE PRECIOS", 14, 11)
+
+                doc.setFont("helvetica", "normal")
+                doc.setFontSize(8)
+                doc.setTextColor(203, 213, 225)
+                doc.text(`Fecha: ${today} · Total: ${filteredProducts.length} productos · Página ${pNum}`, 14, 16)
+                doc.text("Ventas: 0969043453 · atomiccotizador.shop", pageWidth - 14, 16, { align: "right" })
+
+                doc.setFillColor(30, 41, 59)
+                doc.rect(14, 23, pageWidth - 28, 7, "F")
+
+                doc.setTextColor(255, 255, 255)
+                doc.setFont("helvetica", "bold")
+                doc.setFontSize(7.5)
+                doc.text("N°", 16, 27.5)
+                doc.text("SKU / CÓDIGO", 24, 27.5)
+                doc.text("DESCRIPCIÓN DEL ARTÍCULO", 60, 27.5)
+                doc.text("PROVEEDOR", pageWidth - 120, 27.5)
+                doc.text("CATEGORÍA", pageWidth - 75, 27.5)
+                doc.text("STOCK", pageWidth - 42, 27.5, { align: "center" })
+                doc.text("PVP (USD)", pageWidth - 18, 27.5, { align: "right" })
+            }
+
+            drawHeader(pageNum)
+            currentY = 32
+
+            filteredProducts.forEach((p, idx) => {
+                if (currentY > pageHeight - 18) {
+                    doc.addPage()
+                    pageNum++
+                    drawHeader(pageNum)
+                    currentY = 32
+                }
+
+                const isEven = idx % 2 === 0
+                doc.setFillColor(isEven ? 255 : 248, isEven ? 255 : 250, isEven ? 255 : 252)
+                doc.rect(14, currentY - 2, pageWidth - 28, 6.5, "F")
+
+                doc.setDrawColor(241, 245, 249)
+                doc.line(14, currentY + 4.5, pageWidth - 14, currentY + 4.5)
+
+                doc.setFont("helvetica", "normal")
+                doc.setFontSize(7)
+                doc.setTextColor(100, 116, 139)
+                doc.text(`${idx + 1}`, 16, currentY + 2)
+
+                doc.setFont("helvetica", "bold")
+                doc.setTextColor(15, 23, 42)
+                doc.text((p.sku || "N/A").substring(0, 16), 24, currentY + 2)
+
+                doc.setFont("helvetica", "bold")
+                doc.setTextColor(30, 41, 59)
+                doc.text(p.name.substring(0, 55), 60, currentY + 2)
+
+                doc.setFont("helvetica", "normal")
+                doc.setTextColor(71, 85, 105)
+                doc.text((p.provider || "General").substring(0, 20), pageWidth - 120, currentY + 2)
+                doc.text((p.category?.name || "General").substring(0, 18), pageWidth - 75, currentY + 2)
+
+                doc.setFont("helvetica", "bold")
+                doc.setTextColor(p.stock > 0 ? 16 : 225, p.stock > 0 ? 185 : 29, p.stock > 0 ? 129 : 72)
+                doc.text(`${p.stock}`, pageWidth - 42, currentY + 2, { align: "center" })
+
+                doc.setFont("helvetica", "bold")
+                doc.setTextColor(15, 23, 42)
+                doc.text(`$${p.price.toFixed(2)}`, pageWidth - 18, currentY + 2, { align: "right" })
+
+                currentY += 6.5
+            })
+
+            doc.save(`CATALOGO_PRECIOS_ATOMIC_${new Date().toISOString().split("T")[0]}.pdf`)
+        } catch (err) {
+            console.error("Error exportando PDF:", err)
+            alert("Error al exportar catálogo PDF")
+        }
+    }
+
     const handleBulkPriceUpdate = async (updateFields: { price?: number; compareAtPrice?: number; stock?: number; isActive?: boolean }) => {
         if (selectedProducts.length === 0) return
         setUpdatingBulk(true)
@@ -553,10 +659,19 @@ export function PriceListManager({ isAdmin = false }: PriceListManagerProps) {
                             }
                         }}
                         disabled={loading}
-                        className="px-4 py-2.5 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 text-slate-700 font-semibold text-xs rounded-xl hover:bg-slate-50 hover:border-slate-300 transition-all duration-300 shadow-[0_4px_15px_rgba(0,0,0,0.3)] disabled:opacity-50 flex items-center gap-2 group"
+                        className="px-4 py-2.5 bg-slate-900/50 backdrop-blur-xl border-slate-700/50 border border-slate-200 text-slate-700 font-semibold text-xs rounded-xl hover:bg-slate-50 hover:border-slate-300 transition-all duration-300 shadow-[0_4px_15px_rgba(0,0,0,0.3)] disabled:opacity-50 flex items-center gap-2 group cursor-pointer"
                     >
                         <RefreshCw size={14} className={`${loading ? "animate-spin" : "group-hover:rotate-180 transition-transform duration-700"}`} />
                         <span>Actualizar</span>
+                    </button>
+
+                    <button
+                        onClick={exportCatalogToPDF}
+                        className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl transition-all duration-300 shadow-[0_4px_15px_rgba(16,185,129,0.25)] flex items-center gap-2 cursor-pointer active:scale-95"
+                        title="Descargar catálogo filtrado en documento PDF oficial"
+                    >
+                        <Download size={14} />
+                        <span>Exportar PDF</span>
                     </button>
                 </div>
             </div>

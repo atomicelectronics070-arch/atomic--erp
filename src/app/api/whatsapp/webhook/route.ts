@@ -27,21 +27,85 @@ export async function POST(req: Request) {
 
         const value = body.entry[0].changes[0].value;
 
-        // Handle Messages
+        // Handle Inbound Messages
         if (value.messages) {
             for (const msg of value.messages) {
-                const from = msg.from; // Phone number
+                const from = msg.from; // Phone number in E.164 format
                 const contactName = value.contacts?.[0]?.profile?.name || 'Cliente WhatsApp';
-                const text = msg.text?.body || '';
+                
+                let msgType = msg.type || 'text';
+                let msgBody = '';
+                let mediaUrl: string | null = null;
 
-                // 1. Find or create contact
+                // 1. Check for Facebook/Instagram Ads Referral (Click to WhatsApp Ads)
+                const referral = msg.referral || msg.context?.referral;
+                let referralPrefix = '';
+                if (referral) {
+                    const referralData = {
+                        sourceUrl: referral.source_url || '',
+                        sourceType: referral.source_type || 'ad',
+                        sourceId: referral.source_id || '',
+                        headline: referral.headline || '',
+                        body: referral.body || '',
+                        mediaType: referral.media_type || 'image',
+                        imageUrl: referral.image_url || '',
+                        videoUrl: referral.video_url || '',
+                        thumbnailUrl: referral.thumbnail_url || referral.image_url || '',
+                        ctwaClid: referral.ctwa_clid || ''
+                    };
+                    referralPrefix = `[PAUTA_META:${JSON.stringify(referralData)}]\n`;
+                }
+
+                // 2. Extract content & media according to message type
+                switch (msgType) {
+                    case 'text':
+                        msgBody = msg.text?.body || '';
+                        break;
+                    case 'image':
+                        mediaUrl = `/api/whatsapp/media/${msg.image.id}`;
+                        msgBody = msg.image.caption || '';
+                        break;
+                    case 'audio':
+                        mediaUrl = `/api/whatsapp/media/${msg.audio.id}`;
+                        msgBody = msg.audio.voice ? '🎤 Nota de voz' : '🎵 Audio';
+                        break;
+                    case 'video':
+                        mediaUrl = `/api/whatsapp/media/${msg.video.id}`;
+                        msgBody = msg.video.caption || '🎬 Video';
+                        break;
+                    case 'document':
+                        mediaUrl = `/api/whatsapp/media/${msg.document.id}`;
+                        msgBody = msg.document.filename 
+                            ? `📄 ${msg.document.filename}${msg.document.caption ? ' · ' + msg.document.caption : ''}`
+                            : (msg.document.caption || '📄 Documento');
+                        break;
+                    case 'location':
+                        msgBody = `📍 Ubicación: ${msg.location.name || ''} ${msg.location.address || ''} (${msg.location.latitude}, ${msg.location.longitude})`.trim();
+                        break;
+                    case 'sticker':
+                        mediaUrl = `/api/whatsapp/media/${msg.sticker.id}`;
+                        msgBody = '🏷️ Sticker';
+                        break;
+                    case 'interactive':
+                        msgBody = msg.interactive?.button_reply?.title || msg.interactive?.list_reply?.title || 'Respuesta interactiva';
+                        break;
+                    case 'button':
+                        msgBody = msg.button?.text || 'Respuesta de botón';
+                        break;
+                    default:
+                        msgBody = msg.text?.body || `[Mensaje ${msgType}]`;
+                }
+
+                const finalBody = referralPrefix + msgBody;
+
+                // 3. Find or create contact
                 const contact = await prisma.wAContact.upsert({
                     where: { whatsappId: from },
                     update: { name: contactName },
                     create: { whatsappId: from, name: contactName }
                 });
 
-                // 2. Find or create/reopen conversation
+                // 4. Find or create/reopen conversation
                 let conversation = await prisma.wAConversation.findFirst({
                     where: {
                         contactId: contact.id,
@@ -54,21 +118,22 @@ export async function POST(req: Request) {
                     conversation = await prisma.wAConversation.create({
                         data: {
                             contactId: contact.id,
-                            status: 'NEW',
-                            priority: 'MEDIUM'
+                            status: referral ? 'LEAD_PAUTA' : 'NEW',
+                            priority: referral ? 'HIGH' : 'MEDIUM'
                         }
                     });
                 }
 
-                // 3. Store message safely
+                // 5. Store message safely
                 try {
                     await prisma.wAMessage.create({
                         data: {
                             conversationId: conversation.id,
                             whatsappMessageId: msg.id,
                             direction: 'INBOUND',
-                            type: msg.type || 'text',
-                            body: text,
+                            type: msgType,
+                            body: finalBody,
+                            mediaUrl: mediaUrl,
                             status: 'DELIVERED'
                         }
                     });
@@ -76,7 +141,7 @@ export async function POST(req: Request) {
                     // Ignore duplicate message webhook retry
                 }
 
-                // 4. Update conversation timestamp
+                // 6. Update conversation timestamp
                 await prisma.wAConversation.update({
                     where: { id: conversation.id },
                     data: { updatedAt: new Date(), lastMessageAt: new Date() }

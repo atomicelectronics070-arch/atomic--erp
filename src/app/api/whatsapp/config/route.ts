@@ -32,7 +32,14 @@ export async function GET() {
         const settings = await prisma.systemSetting.findMany({
             where: {
                 key: {
-                    in: ['WHATSAPP_BOT_PLAN', 'WHATSAPP_NEURAL_MEMORY']
+                    in: [
+                        'WHATSAPP_TOKEN',
+                        'WHATSAPP_PHONE_NUMBER_ID',
+                        'WHATSAPP_BUSINESS_ACCOUNT_ID',
+                        'WHATSAPP_VERIFY_TOKEN',
+                        'WHATSAPP_BOT_PLAN',
+                        'WHATSAPP_NEURAL_MEMORY'
+                    ]
                 }
             }
         })
