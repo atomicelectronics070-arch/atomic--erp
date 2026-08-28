@@ -470,9 +470,35 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
     }
   };
 
+  // Handler para descargar directamente la proforma PDF oficial de un producto de la tabla
+  const handleDirectDownloadProductPDF = async (p: ProductMatrixItem) => {
+    try {
+      showNotification(`⏳ Generando Proforma PDF de "${p.name.substring(0, 25)}..."`);
+      const randomCode = `COT-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+      const pdfData = await generateAtomicQuotePDF({
+        code: randomCode,
+        client: 'Cliente General',
+        phone: '',
+        location: 'Quito / Entrega a Domicilio',
+        productName: p.name,
+        specs: `• SKU / Código: ${p.sku || 'N/A'}\n• Categoría: ${p.category || 'General'}\n• Garantía de 1 año con soporte técnico directo ATOMIC\n• Producto 100% original con entrega garantizada`,
+        price: p.salePrice || 0,
+        qty: 1,
+        discount: 0,
+        shipping: 0,
+        total: p.salePrice || 0
+      });
+      pdfData.doc.save(`Proforma_${(p.sku || 'COT').replace(/\s+/g, '_')}_${randomCode}.pdf`);
+      showNotification(`✅ ¡Proforma PDF de "${p.name.substring(0, 20)}..." descargada con éxito!`);
+    } catch (err) {
+      console.error('Error generando PDF individual:', err);
+      showNotification('❌ Error al generar proforma PDF');
+    }
+  };
+
   // Handler para abrir y compartir PDF rápido de un producto de la tabla
   const handleQuickPDFForProduct = (p: ProductMatrixItem) => {
-    openQuoteModalWithProduct(p);
+    handleDirectDownloadProductPDF(p);
   };
 
   // Table refs for intelligent scroll control
@@ -1419,9 +1445,9 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
                         <button
                           onClick={() => handleQuickPDFForProduct(p)}
                           className="border-2 border-zinc-950 bg-blue-600 hover:bg-blue-500 text-white px-2 py-1 text-[10px] font-black uppercase transition-all rounded shadow-sm flex items-center gap-1 cursor-pointer"
-                          title="Generar y compartir proforma PDF oficial"
+                          title="Descargar directamente la cotización en PDF oficial de este producto"
                         >
-                          <span>📄</span> PDF
+                          <span>📄</span> EXPORTAR PDF
                         </button>
                         <a
                           href={`/web/product/${p.id}`}
