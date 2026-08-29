@@ -41,6 +41,24 @@ export default function ShopConfigPage() {
     const { data: session, status } = useSession()
     const router = useRouter()
     
+    const isAuthorized = session?.user?.role === "ADMIN" || session?.user?.role === "MANAGEMENT" || session?.user?.role === "COORDINATOR" || session?.user?.role === "COORD_ASSISTANT"
+
+    useEffect(() => {
+        if (status === "authenticated" && !isAuthorized) {
+            router.push("/dashboard/quotes")
+        }
+    }, [status, isAuthorized, router])
+
+    if (status === "authenticated" && !isAuthorized) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-4">
+                <ShieldAlert size={48} className="text-rose-500 animate-pulse" />
+                <h2 className="text-xl font-bold text-white uppercase tracking-wider">Acceso Restringido</h2>
+                <p className="text-xs text-slate-400 max-w-md">El módulo de Inventario y Catálogo General está reservado exclusivamente para la Coordinación y Dirección de ATOMIC.</p>
+            </div>
+        )
+    }
+    
     const [view, setView] = useState<'list' | 'add' | 'edit'>('list')
     const [activeTab, setActiveTab] = useState<'products' | 'catalogs' | 'settings' | 'suppliers' | 'prices_list'>('products')
     const [products, setProducts] = useState<any[]>([])

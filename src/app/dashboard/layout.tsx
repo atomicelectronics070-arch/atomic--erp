@@ -18,15 +18,6 @@ export default function DashboardLayout({
     const { data: session, status } = useSession()
     const [sidebarOpen, setSidebarOpen] = useState(false)
     const [unreadCount, setUnreadCount] = useState(0)
-    const [openSections, setOpenSections] = useState<Record<string, boolean>>({
-        areas: true,
-        operaciones: true, // Also open operations by default for convenience
-        rrhh: false,
-        comunicacion: false,
-        marketing: true,
-        ia: false,
-        config: false
-    })
     const router = useRouter()
     const pathname = usePathname()
     const isDashboard = pathname.startsWith("/dashboard")
@@ -94,10 +85,6 @@ export default function DashboardLayout({
 
     const role = session.user?.role
 
-    const toggleSection = (section: string) => {
-        setOpenSections(prev => ({ ...prev, [section]: !prev[section] }))
-    }
-
     return (
         <div className="flex h-screen bg-slate-950 text-slate-200 overflow-x-hidden font-sans relative selection:bg-cyan-500/30 selection:text-white">
             
@@ -135,110 +122,55 @@ export default function DashboardLayout({
                     </Link>
                 </div>
 
-                <nav className="flex-1 overflow-y-auto px-4 py-8 space-y-2 custom-scrollbar relative">
-                    <div className="mb-6 space-y-2">
-                        <NavLink href="/dashboard" icon={<Globe size={18} />} label="Dashboard" isActive={pathname === '/dashboard'} />
-                        <NavLink href="/dashboard/analytics" icon={<LayoutDashboard size={18} />} label="Análisis" isActive={pathname === '/dashboard/analytics'} />
+                <nav className="flex-1 overflow-y-auto px-3 py-6 space-y-1 custom-scrollbar relative">
+                    <NavLink href="/dashboard" icon={<Globe size={16} />} label="Dashboard" isActive={pathname === '/dashboard'} />
+                    <NavLink href="/dashboard/analytics" icon={<LayoutDashboard size={16} />} label="Análisis" isActive={pathname === '/dashboard/analytics'} />
+                    
+                    <div className="pt-4 pb-1 px-3 text-[9px] font-black text-cyan-400/80 uppercase tracking-[0.25em] italic flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+                        Operaciones & Ventas
                     </div>
-
-                    <div className="space-y-6">
-                        {(role === "ADMIN" || role === "MANAGEMENT" || role === "SALESPERSON" || role === "AFILIADO") && (
-                            <>
-                                <CollapsibleSection
-                                    label="Áreas de Trabajo"
-                                    isOpen={openSections.areas}
-                                    onToggle={() => toggleSection('areas')}
-                                >
-                                    <NavLink href="/dashboard/quotes" icon={<FileText size={14} />} label="Ventas" isSubItem />
-                                    <NavLink href="/dashboard/shop" icon={<ShoppingBag size={14} />} label="Inventario" isSubItem />
-                                    {role === "ADMIN" && (
-                                        <NavLink href="/dashboard/coordinacion" icon={<Users size={14} />} label="Coordinación" isSubItem />
-                                    )}
-                                    <NavLink href="/dashboard/map-prospecting" icon={<Map size={14} />} label="Prospección" isSubItem />
-                                    <NavLink href="/dashboard/admin/personal-management" icon={<ShieldCheck size={14} />} label="Administración Central" isSubItem />
-                                    <NavLink href="/dashboard/admin/personal-management" icon={<Code2 size={14} />} label="Tecnología" isSubItem />
-                                    <NavLink href="/dashboard/admin/personal-management" icon={<BrainCircuit size={14} />} label="Sistemas & IA" isSubItem />
-                                    <NavLink href="/dashboard/admin/personal-management" icon={<Smartphone size={14} />} label="Edición & Media" isSubItem />
-                                </CollapsibleSection>
-
-                                <CollapsibleSection
-                                    label="Archivo"
-                                    isOpen={openSections.almacenamiento ?? false}
-                                    onToggle={() => toggleSection('almacenamiento')}
-                                >
-                                    <NavLink href="/dashboard/storage" icon={<Database size={14} />} label="Nube" isSubItem />
-                                    <NavLink href="/dashboard/documents" icon={<FileText size={14} />} label="Documentos" isSubItem />
-                                </CollapsibleSection>
-
-                                <CollapsibleSection
-                                    label="Formularios Web"
-                                    isOpen={openSections.formularios ?? true}
-                                    onToggle={() => toggleSection('formularios')}
-                                >
-                                    <NavLink href="/dashboard/formularios" icon={<FileSpreadsheet size={14} />} label="Tratos con Proveedores" isSubItem />
-                                </CollapsibleSection>
-
-                                <CollapsibleSection
-                                    label="WhatsApp CRM"
-                                    isOpen={openSections.crm ?? true}
-                                    onToggle={() => toggleSection('crm')}
-                                >
-                                    <NavLink href="/dashboard/whatsapp/crm" icon={<Smartphone size={14} />} label="CRM WhatsApp" isSubItem />
-                                    <NavLink href="/dashboard/whatsapp/leads" icon={<Users size={14} />} label="Gestión de Leads" isSubItem />
-                                </CollapsibleSection>
-
-                                <CollapsibleSection
-                                    label="Finanzas"
-                                    isOpen={openSections.finanzas ?? false}
-                                    onToggle={() => toggleSection('finanzas')}
-                                >
-                                    <NavLink href="/dashboard/finance" icon={<DollarSign size={14} />} label="Gestión" isSubItem />
-                                </CollapsibleSection>
-
-                                <CollapsibleSection
-                                    label="Social Hub"
-                                    isOpen={openSections.social ?? true}
-                                    onToggle={() => toggleSection('social')}
-                                >
-                                    <NavLink href="/dashboard/blogs" icon={<Share2 size={14} />} label="Social Command" isSubItem />
-                                </CollapsibleSection>
-
-                                <CollapsibleSection
-                                    label="Marketing"
-                                    isOpen={openSections.marketing ?? false}
-                                    onToggle={() => toggleSection('marketing')}
-                                >
-                                    <NavLink href="/dashboard/marketing" icon={<BarChart3 size={14} />} label="Command" isSubItem />
-                                    <NavLink href="/dashboard/benefits" icon={<Tag size={14} />} label="Beneficios" isSubItem />
-                                </CollapsibleSection>
-                            </>
-                        )}
-
-                        {(role === "ADMIN" || role === "MANAGEMENT" || role === "COORDINATOR" || role === "COORD_ASSISTANT") && (
-                            <CollapsibleSection
-                                label="RRHH"
-                                isOpen={openSections.rrhh}
-                                onToggle={() => toggleSection('rrhh')}
-                            >
-                                <NavLink href="/dashboard/evaluations" icon={<Users size={14} />} label="Asesores" isSubItem />
-                            </CollapsibleSection>
-                        )}
-
-                        <CollapsibleSection
-                            label="Inteligencia"
-                            isOpen={openSections.ia ?? false}
-                            onToggle={() => toggleSection('ia')}
-                        >
-                            <NavLink href="/dashboard/coach" icon={<BrainCircuit size={14} />} label="AI Coach" isSubItem />
-                            <NavLink href="/dashboard/academy" icon={<GraduationCap size={14} />} label="Cursos" isSubItem />
-                            <NavLink href="/dashboard/bot-ruta" icon={<Bot size={14} />} label="Bot Ruta" isSubItem />
-                            {role === "ADMIN" && (
-                                <NavLink href="/dashboard/admin/personal-management" icon={<Users size={14} />} label="Gestión de Personal" isSubItem />
-                            )}
-                        </CollapsibleSection>
-
-
+                    <NavLink href="/dashboard/quotes" icon={<FileText size={16} />} label="Cotizaciones" isActive={pathname.startsWith('/dashboard/quotes')} />
+                    {(role === "ADMIN" || role === "MANAGEMENT" || role === "COORDINATOR" || role === "COORD_ASSISTANT") && (
+                        <NavLink href="/dashboard/shop" icon={<ShoppingBag size={16} />} label="Inventario" isActive={pathname.startsWith('/dashboard/shop')} />
+                    )}
+                    {role === "ADMIN" && (
+                        <NavLink href="/dashboard/coordinacion" icon={<Users size={16} />} label="Coordinación" isActive={pathname.startsWith('/dashboard/coordinacion')} />
+                    )}
+                    <NavLink href="/dashboard/map-prospecting" icon={<Map size={16} />} label="Prospección" isActive={pathname.startsWith('/dashboard/map-prospecting')} />
+                    <NavLink href="/dashboard/formularios" icon={<FileSpreadsheet size={16} />} label="Tratos Proveedores" isActive={pathname.startsWith('/dashboard/formularios')} />
+                    
+                    <div className="pt-4 pb-1 px-3 text-[9px] font-black text-indigo-400/80 uppercase tracking-[0.25em] italic flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>
+                        WhatsApp & CRM
                     </div>
+                    <NavLink href="/dashboard/whatsapp/crm" icon={<Smartphone size={16} />} label="CRM WhatsApp" isActive={pathname.startsWith('/dashboard/whatsapp/crm')} />
+                    <NavLink href="/dashboard/whatsapp/leads" icon={<Users size={16} />} label="Gestión de Leads" isActive={pathname.startsWith('/dashboard/whatsapp/leads')} />
+                    <NavLink href="/dashboard/blogs" icon={<Share2 size={16} />} label="Social Command" isActive={pathname.startsWith('/dashboard/blogs')} />
+                    
+                    <div className="pt-4 pb-1 px-3 text-[9px] font-black text-emerald-400/80 uppercase tracking-[0.25em] italic flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                        Gestión & Finanzas
+                    </div>
+                    <NavLink href="/dashboard/finance" icon={<DollarSign size={16} />} label="Finanzas" isActive={pathname.startsWith('/dashboard/finance')} />
+                    <NavLink href="/dashboard/marketing" icon={<BarChart3 size={16} />} label="Marketing" isActive={pathname.startsWith('/dashboard/marketing')} />
+                    <NavLink href="/dashboard/benefits" icon={<Tag size={16} />} label="Beneficios" isActive={pathname.startsWith('/dashboard/benefits')} />
+                    <NavLink href="/dashboard/storage" icon={<Database size={16} />} label="Nube & Archivos" isActive={pathname.startsWith('/dashboard/storage')} />
+                    <NavLink href="/dashboard/documents" icon={<FileText size={16} />} label="Documentos" isActive={pathname.startsWith('/dashboard/documents')} />
+                    
+                    <div className="pt-4 pb-1 px-3 text-[9px] font-black text-purple-400/80 uppercase tracking-[0.25em] italic flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-purple-400"></span>
+                        Inteligencia & Equipo
+                    </div>
+                    <NavLink href="/dashboard/coach" icon={<BrainCircuit size={16} />} label="AI Coach" isActive={pathname.startsWith('/dashboard/coach')} />
+                    <NavLink href="/dashboard/academy" icon={<GraduationCap size={16} />} label="Cursos Academy" isActive={pathname.startsWith('/dashboard/academy')} />
+                    <NavLink href="/dashboard/bot-ruta" icon={<Bot size={16} />} label="Bot Ruta" isActive={pathname.startsWith('/dashboard/bot-ruta')} />
+                    {(role === "ADMIN" || role === "MANAGEMENT" || role === "COORDINATOR" || role === "COORD_ASSISTANT") && (
+                        <NavLink href="/dashboard/evaluations" icon={<Users size={16} />} label="Asesores RRHH" isActive={pathname.startsWith('/dashboard/evaluations')} />
+                    )}
+                    {role === "ADMIN" && (
+                        <NavLink href="/dashboard/admin/personal-management" icon={<ShieldCheck size={16} />} label="Admin Central" isActive={pathname.startsWith('/dashboard/admin')} />
+                    )}
                 </nav>
 
                 <div className="p-6 shrink-0 border-t border-slate-800/50 bg-slate-950/50">
@@ -325,61 +257,24 @@ export default function DashboardLayout({
     )
 }
 
-function NavLink({ href, icon, label, isActive, isSubItem }: { href: string; icon: React.ReactNode; label: string; isActive?: boolean; isSubItem?: boolean }) {
+function NavLink({ href, icon, label, isActive }: { href: string; icon: React.ReactNode; label: string; isActive?: boolean }) {
     return (
         <Link
             href={href}
             className={`
-                flex items-center space-x-4 px-5 py-3 rounded-xl transition-all duration-300 group relative mx-2 mb-1
+                flex items-center space-x-3.5 px-4 py-2.5 rounded-xl transition-all duration-300 group relative mx-1
                 ${isActive 
-                    ? 'bg-gradient-to-r from-cyan-500/20 to-transparent text-cyan-300 border-l-2 border-cyan-400 shadow-[inset_0_0_20px_rgba(6,182,212,0.1)]' 
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 hover:shadow-[inset_0_0_15px_rgba(0,0,0,0.5)]'}
-                ${isSubItem ? 'ml-6 text-[9px] border-l border-slate-800 pl-4 py-2' : ''}
+                    ? 'bg-gradient-to-r from-cyan-500/20 via-indigo-500/10 to-transparent text-cyan-300 border-l-2 border-cyan-400 shadow-[inset_0_0_20px_rgba(6,182,212,0.15)] font-bold' 
+                    : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 hover:shadow-[inset_0_0_15px_rgba(0,0,0,0.4)]'}
             `}
         >
-            <span className={`transition-all duration-300 ${isActive ? 'text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.8)] scale-110' : 'group-hover:text-indigo-400 group-hover:scale-110'}`}>
+            <span className={`transition-all duration-300 ${isActive ? 'text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.8)] scale-110' : 'text-slate-500 group-hover:text-indigo-400 group-hover:scale-110'}`}>
                 {icon}
             </span>
-            <span className={`text-[10px] font-black uppercase tracking-[0.2em] italic transition-all duration-300 ${isActive ? 'translate-x-1 text-cyan-100' : 'group-hover:translate-x-1'}`}>
+            <span className={`text-[10.5px] font-black uppercase tracking-[0.15em] italic transition-all duration-300 ${isActive ? 'translate-x-1 text-cyan-100' : 'group-hover:translate-x-1'}`}>
                 {label}
             </span>
         </Link>
-    )
-}
-
-function CollapsibleSection({ label, children, isOpen, onToggle }: { label: string; children: React.ReactNode; isOpen: boolean; onToggle: () => void }) {
-    return (
-        <div className="space-y-1">
-            <button
-                onClick={onToggle}
-                className="w-full flex items-center justify-between px-5 py-3 group cursor-pointer transition-all duration-300 hover:bg-slate-800/40 rounded-lg mx-2"
-            >
-                <div className="flex items-center gap-3">
-                    <div className={`w-1 h-3 rounded-full transition-all duration-500 ${isOpen ? 'bg-cyan-400 h-4 shadow-[0_0_8px_rgba(34,211,238,0.8)]' : 'bg-slate-700 group-hover:bg-indigo-400'}`}></div>
-                    <span className={`text-[9px] font-black uppercase tracking-[0.4em] italic transition-all duration-300 group-hover:text-indigo-300 ${isOpen ? 'text-cyan-300' : 'text-slate-500'}`}>
-                        {label}
-                    </span>
-                </div>
-                <div className={`transition-transform duration-500 ${isOpen ? 'rotate-180 text-cyan-400' : 'text-slate-600 group-hover:text-indigo-400'}`}>
-                    <ChevronDown size={12} />
-                </div>
-            </button>
-            <AnimatePresence initial={false}>
-                {isOpen && (
-                    <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-                        className="overflow-hidden"
-                    >
-                        <div className="space-y-1 py-1">
-                            {children}
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-        </div>
     )
 }
 

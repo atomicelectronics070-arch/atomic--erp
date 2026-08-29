@@ -2,9 +2,13 @@
 
 import { useState, useEffect, useRef } from "react"
 import { useSession } from "next-auth/react"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
-import { X, Send, Sparkles, Loader2, Copy, Check, FileText } from "lucide-react"
+import { 
+    X, Send, Sparkles, Loader2, Copy, Check, FileText, 
+    ShoppingBag, Users, Map, Smartphone, DollarSign, Palette, 
+    FileSpreadsheet, Bot, GraduationCap, ArrowRight
+} from "lucide-react"
 
 interface BotMessage {
     id: string
@@ -13,9 +17,31 @@ interface BotMessage {
     suggestions?: string[]
 }
 
+interface ModuleQuickAction {
+    id: string
+    label: string
+    icon: React.ReactNode
+    query: string
+    path: string
+}
+
+const QUICK_MODULES: ModuleQuickAction[] = [
+    { id: "quotes", label: "Cotizaciones PROP", icon: <FileText size={12} />, query: "¿Cómo funciona el módulo de cotizaciones y cómo descargo el PDF?", path: "/dashboard/quotes" },
+    { id: "shop", label: "Inventario & Stock", icon: <ShoppingBag size={12} />, query: "¿Cómo consultar el catálogo de inventario y precios?", path: "/dashboard/shop" },
+    { id: "coordinacion", label: "Coordinación", icon: <Users size={12} />, query: "¿Cómo asignar leads y usar la bitácora de coordinación?", path: "/dashboard/coordinacion" },
+    { id: "prospecting", label: "Radar Prospección", icon: <Map size={12} />, query: "¿Cómo buscar clientes en el radar de prospección en mapa?", path: "/dashboard/map-prospecting" },
+    { id: "crm", label: "WhatsApp CRM", icon: <Smartphone size={12} />, query: "¿Cómo gestionar los leads y pautas desde WhatsApp CRM?", path: "/dashboard/whatsapp/crm" },
+    { id: "finance", label: "Finanzas", icon: <DollarSign size={12} />, query: "¿Cómo revisar el balance y comisiones en Finanzas?", path: "/dashboard/finance" },
+    { id: "themes", label: "Cambiar Temas", icon: <Palette size={12} />, query: "¿Cómo personalizar los temas visuales del sistema?", path: "/dashboard/profile" },
+    { id: "forms", label: "Tratos Proveedores", icon: <FileSpreadsheet size={12} />, query: "¿Cómo registrar fichas y tratos con proveedores?", path: "/dashboard/formularios" },
+    { id: "academy", label: "Cursos Academy", icon: <GraduationCap size={12} />, query: "¿Qué capacitaciones comerciales tenemos en Academy?", path: "/dashboard/academy" },
+    { id: "bot", label: "Bot Ruta & IA", icon: <Bot size={12} />, query: "¿Cómo funciona el bot de ruta y automatización?", path: "/dashboard/bot-ruta" }
+]
+
 export default function PersonalBotBubble() {
     const { data: session } = useSession()
     const pathname = usePathname()
+    const router = useRouter()
     const [isOpen, setIsOpen] = useState(false)
     const [messages, setMessages] = useState<BotMessage[]>([])
     const [input, setInput] = useState("")
@@ -28,18 +54,6 @@ export default function PersonalBotBubble() {
     const [copiedIndex, setCopiedIndex] = useState<number | null>(null)
     const messagesEndRef = useRef<HTMLDivElement>(null)
 
-    // Quick Quote Template
-    const quickQuoteTemplate = `📋 **FORMATO DE COTIZACIÓN RÁPIDA**
-----------------------------------------
-• **Asunto/Tema:** [Cotización Equipos NFC]
-• **Nombre / Razón Social:** [Nombre del Cliente]
-• **Correo Electrónico:** [cliente@empresa.com]
-• **Teléfono:** [+593 99 999 9999]
-• **Lista de Productos:**
-  - Código: [SKU-001] | Desc: [Acrílico Google Reviews] | Cant: [5] | P.Unit: [$15.00]
-----------------------------------------
-*Puedes copiar este texto, llenar los datos y pegarlo aquí mismo para generar la cotización descargable en PDF.*`
-
     // Load memory on mount
     useEffect(() => {
         if (!session?.user) return
@@ -48,7 +62,7 @@ export default function PersonalBotBubble() {
             .then(data => {
                 const memory = data.memory
                 if (memory) {
-                    setBotName(memory.botName)
+                    setBotName(memory.botName || "Alfred")
                     setOnboardingDone(memory.onboardingDone)
                     if (memory.messages?.length > 0) {
                         const loaded: BotMessage[] = memory.messages.map((m: any) => ({
@@ -57,20 +71,18 @@ export default function PersonalBotBubble() {
                             content: m.content,
                         }))
                         setMessages(loaded)
-                    } else if (!memory.botName) {
-                        setIsNamingBot(true)
+                    } else {
                         setMessages([{
                             id: "welcome",
                             role: "assistant",
-                            content: `👋 ¡Hola ${session.user.name?.split(" ")[0] || ""}! Soy tu asistente personal de **ATOMIC Industries**.\n\nTengo acceso a todo tu perfil, tus cotizaciones, tu posición en el ranking y mucho más. Estaré contigo donde estés para guiarte en un camino laboral saludable y con futuro.\n\n✨ **¿Cómo te gustaría llamarme?**\n*(Escribe el nombre que quieras darme — lo recordaré siempre)*`,
+                            content: `👋 ¡Hola **${session.user.name?.split(" ")[0] || "Asesor"}**! Soy tu asistente personal de **ATOMIC Industries**.\n\nTengo acceso a todos los módulos: Cotizaciones \`PROP\`, Inventario, Coordinación, Radar de Prospección y más.\n\n✨ Usa el **menú deslizable** abajo o escribe cualquier consulta para comenzar.`,
                         }])
                     }
                 } else {
-                    setIsNamingBot(true)
                     setMessages([{
                         id: "welcome",
                         role: "assistant",
-                        content: `👋 ¡Hola ${session.user.name?.split(" ")[0] || ""}! Soy tu asistente personal de **ATOMIC Industries**.\n\nTengo acceso a todo tu perfil, tus cotizaciones, tu posición en el ranking y mucho más. Estaré contigo donde estés para guiarte en un camino laboral saludable y con futuro.\n\n✨ **¿Cómo te gustaría llamarme?**\n*(Escribe el nombre que quieras darme — lo recordaré siempre)*`,
+                        content: `👋 ¡Hola **${session.user.name?.split(" ")[0] || "Asesor"}**! Soy tu asistente personal de **ATOMIC Industries**.\n\n¿Sobre qué módulo o tarea deseas que te asista hoy?`,
                     }])
                 }
             })
@@ -80,32 +92,30 @@ export default function PersonalBotBubble() {
 
     // Contextual pop notification on route change
     useEffect(() => {
-        if (!botName || !onboardingDone || isInitializing) return
+        if (!botName || isInitializing) return
 
         let popupText = ""
         if (pathname === "/dashboard") {
-            popupText = `📍 **Estás en la Oficina Virtual**: Aquí encuentras la red social interna, las publicaciones del equipo, noticias y las estaciones de trabajo 2.5D con avatares asignados.`
-        } else if (pathname === "/dashboard/analytics") {
-            popupText = `📍 **Estás en Análisis Strategic BI 2027**: Módulo diseñado para darte un resumen profundo en tiempo real de ingresos, conversión y telemetría de asesores.`
-        } else if (pathname === "/dashboard/coordinacion") {
-            popupText = `📍 **Estás en Coordinación**: Este módulo sirve para la planificación estratégica diaria, asignación de objetivos de leads y supervisión de equipos.`
+            popupText = `📍 **Estás en el Dashboard Principal**: Visualiza el estado operativo de ATOMIC, accesos rápidos y actividad de tu equipo.`
         } else if (pathname === "/dashboard/quotes") {
-            popupText = `📍 **Estás en Cotizaciones**: Aquí emites cotizaciones formales en PDF. Puedes usar el botón de **Hacer Cotización Rápida** para enviarme los datos y procesarla al instante.`
+            popupText = `📍 **Estás en Cotizaciones**: Emite propuestas formales en PDF \`PROP-XXXX\` o usa el generador unificado.`
         } else if (pathname === "/dashboard/shop") {
-            popupText = `📍 **Estás en Inventario y Precios**: Catálogo de productos con stock en tiempo real y fichas técnicas. ¿Tienes alguna duda de un modelo?`
-        } else if (pathname === "/dashboard/map-prospecting") {
-            popupText = `📍 **Estás en Prospección Mapa**: Módulo para buscar negocios o conjuntos cercanos. ¿Quieres que busque por ti? Escríbeme qué buscar (ej: "conjuntos residenciales") y activaré el radar. Si un lead no tiene teléfono, lo guardaremos para Visitas Técnicas.`
+            popupText = `📍 **Estás en Inventario**: Consulta el catálogo de más de 9,700 artículos, precios y proveedores.`
+        } else if (pathname === "/dashboard/coordinacion") {
+            popupText = `📍 **Estás en Coordinación**: Planifica metas de leads, bitácoras y supervisión de propuestas.`
+        } else if (pathname === "/dashboard/profile") {
+            popupText = `📍 **Estás en tu Perfil**: Puedes actualizar tus datos personales y seleccionar entre los **5 Temas Globales** del sistema.`
         }
 
         if (popupText) {
             setMessages(prev => {
                 const last = prev[prev.length - 1]
-                if (last && last.content.startsWith(popupText.substring(0, 20))) return prev
+                if (last && last.content.startsWith(popupText.substring(0, 25))) return prev
                 return [...prev, { id: Date.now().toString(), role: "assistant", content: popupText }]
             })
             setHasNewMessage(true)
         }
-    }, [pathname, botName, onboardingDone, isInitializing])
+    }, [pathname, botName, isInitializing])
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -128,8 +138,8 @@ export default function PersonalBotBubble() {
             })
             const data = await res.json()
 
-            if (isNamingBot || data.botName) {
-                setBotName(data.botName || msgText)
+            if (data.botName) {
+                setBotName(data.botName)
                 setIsNamingBot(false)
                 setOnboardingDone(true)
             }
@@ -137,7 +147,7 @@ export default function PersonalBotBubble() {
             const botMsg: BotMessage = {
                 id: (Date.now() + 1).toString(),
                 role: "assistant",
-                content: data.text,
+                content: data.text || "Estoy listo para ayudarte con cualquier módulo de ATOMIC.",
                 suggestions: data.suggestions || []
             }
             setMessages(prev => [...prev, botMsg])
@@ -147,17 +157,11 @@ export default function PersonalBotBubble() {
             setMessages(prev => [...prev, {
                 id: (Date.now() + 2).toString(),
                 role: "assistant",
-                content: "❌ Error conectando con el asistente. Intenta de nuevo."
+                content: "⚠️ Hubo un breve problema de conexión. Puedes elegir cualquier módulo del menú inferior para consultarme directamente."
             }])
         } finally {
             setIsLoading(false)
         }
-    }
-
-    const copyTemplate = () => {
-        navigator.clipboard.writeText(quickQuoteTemplate)
-        setCopiedIndex(999)
-        setTimeout(() => setCopiedIndex(null), 2000)
     }
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -169,14 +173,15 @@ export default function PersonalBotBubble() {
 
     const formatContent = (text: string) => {
         return text
-            .replace(/\*\*(.*?)\*\*/g, '<strong class="text-emerald-300 font-bold">$1</strong>')
+            .replace(/\*\*(.*?)\*\*/g, '<strong class="text-cyan-300 font-bold">$1</strong>')
             .replace(/\*(.*?)\*/g, '<em class="text-slate-300">$1</em>')
+            .replace(/`([^`]+)`/g, '<code class="bg-slate-900 px-1.5 py-0.5 rounded text-emerald-400 font-mono text-xs">$1</code>')
             .replace(/\n/g, '<br/>')
     }
 
     if (!session?.user) return null
 
-    const displayName = botName || "ATOM"
+    const displayName = botName || "Alfred"
     const firstLetter = displayName[0].toUpperCase()
 
     return (
@@ -184,15 +189,15 @@ export default function PersonalBotBubble() {
             {/* Floating Bubble */}
             <motion.button
                 onClick={() => { setIsOpen(true); setHasNewMessage(false) }}
-                className="fixed bottom-6 right-6 z-50 w-16 h-16 rounded-full flex items-center justify-center shadow-2xl group"
-                whileHover={{ scale: 1.1 }}
+                className="fixed bottom-6 right-6 z-50 w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(6,182,212,0.4)] group cursor-pointer"
+                whileHover={{ scale: 1.08 }}
                 whileTap={{ scale: 0.95 }}
                 style={{ display: isOpen ? "none" : "flex" }}
             >
-                <div className="absolute inset-0 rounded-full bg-emerald-500 opacity-20 animate-ping" />
-                <div className="absolute inset-1 rounded-full bg-gradient-to-br from-cyan-400 via-emerald-500 to-teal-600 shadow-[0_0_30px_rgba(16,185,129,0.6)]" />
+                <div className="absolute inset-0 rounded-full bg-cyan-500 opacity-25 animate-ping" />
+                <div className="absolute inset-1 rounded-full bg-gradient-to-br from-cyan-400 via-indigo-600 to-teal-500 shadow-[0_0_30px_rgba(6,182,212,0.6)]" />
                 <div className="relative z-10 flex flex-col items-center justify-center">
-                    <span className="text-white font-black text-xl">{firstLetter}</span>
+                    <span className="text-white font-black text-xl italic">{firstLetter}</span>
                     {hasNewMessage && (
                         <div className="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 rounded-full border-2 border-slate-950 animate-bounce" />
                     )}
@@ -207,64 +212,55 @@ export default function PersonalBotBubble() {
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
                         transition={{ type: "spring", damping: 20, stiffness: 300 }}
-                        className="fixed bottom-6 right-6 z-50 w-[430px] h-[640px] flex flex-col rounded-3xl overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.8)] border border-emerald-500/20"
-                        style={{ background: "linear-gradient(135deg, #0a0f1e 0%, #0d1b2a 50%, #050d15 100%)" }}
+                        className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50 w-[92vw] sm:w-[440px] h-[85vh] sm:h-[650px] flex flex-col rounded-3xl overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.9)] border border-cyan-500/30"
+                        style={{ background: "linear-gradient(145deg, #090e1a 0%, #0d1527 50%, #060a12 100%)" }}
                     >
                         {/* Header */}
-                        <div className="flex items-center gap-3 px-5 py-4 border-b border-emerald-500/10"
-                            style={{ background: "linear-gradient(90deg, rgba(16,185,129,0.08) 0%, rgba(6,182,212,0.05) 100%)" }}>
-                            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-cyan-400 to-emerald-600 flex items-center justify-center font-black text-white text-lg shadow-[0_0_15px_rgba(16,185,129,0.5)]">
+                        <div className="flex items-center gap-3 px-5 py-4 border-b border-cyan-500/20 bg-slate-950/60 backdrop-blur-md">
+                            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-cyan-400 to-indigo-600 flex items-center justify-center font-black text-white text-lg shadow-[0_0_15px_rgba(6,182,212,0.5)]">
                                 {firstLetter}
                             </div>
                             <div className="flex-1 min-w-0">
-                                <h3 className="text-white font-black text-sm tracking-wide truncate">{displayName}</h3>
-                                <p className="text-emerald-400 text-[10px] font-mono uppercase tracking-widest flex items-center gap-1.5 truncate">
+                                <div className="flex items-center gap-2">
+                                    <h3 className="text-white font-black text-sm tracking-wide truncate">{displayName}</h3>
+                                    <span className="px-1.5 py-0.5 rounded-full bg-cyan-400/15 text-cyan-300 text-[9px] font-mono font-bold">IA v2.4</span>
+                                </div>
+                                <p className="text-cyan-400 text-[10px] font-mono uppercase tracking-widest flex items-center gap-1.5 truncate">
                                     <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse shrink-0" />
-                                    Asistente Personal ATOMIC
+                                    Guía Integral ATOMIC
                                 </p>
                             </div>
 
-                            {/* Quick Actions Header Buttons */}
-                            {pathname === "/dashboard/quotes" && (
-                                <button
-                                    onClick={copyTemplate}
-                                    className="px-3 py-1.5 bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-[10px] font-mono font-bold rounded-xl hover:bg-emerald-500/30 transition-all flex items-center gap-1.5"
-                                    title="Copiar formato de cotización rápida"
-                                >
-                                    {copiedIndex === 999 ? <Check size={12} /> : <FileText size={12} />}
-                                    <span>{copiedIndex === 999 ? "¡Copiado!" : "Cotización Rápida"}</span>
-                                </button>
-                            )}
-
                             <button
                                 onClick={() => setIsOpen(false)}
-                                className="w-8 h-8 rounded-xl bg-slate-800/60 flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-700 transition-all shrink-0"
+                                className="w-8 h-8 rounded-xl bg-slate-800/80 flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-700 transition-all shrink-0 cursor-pointer"
                             >
                                 <X size={16} />
                             </button>
                         </div>
 
-                        {/* Messages */}
+                        {/* Messages Area */}
                         <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-slate-700">
                             {isInitializing ? (
-                                <div className="flex items-center justify-center h-full">
-                                    <Loader2 className="text-emerald-400 animate-spin" size={32} />
+                                <div className="flex flex-col items-center justify-center h-full gap-2 text-slate-400">
+                                    <Loader2 className="text-cyan-400 animate-spin" size={32} />
+                                    <span className="text-xs font-mono">Conectando asistente...</span>
                                 </div>
                             ) : (
                                 <>
                                     {messages.map(msg => (
                                         <div key={msg.id} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
                                             {msg.role === "assistant" && (
-                                                <div className="w-7 h-7 rounded-xl bg-gradient-to-br from-cyan-400 to-emerald-600 flex items-center justify-center font-black text-white text-xs mr-2 mt-0.5 shrink-0 shadow-[0_0_10px_rgba(16,185,129,0.4)]">
+                                                <div className="w-7 h-7 rounded-xl bg-gradient-to-br from-cyan-400 to-indigo-600 flex items-center justify-center font-black text-white text-xs mr-2 mt-0.5 shrink-0 shadow-[0_0_10px_rgba(6,182,212,0.4)]">
                                                     {firstLetter}
                                                 </div>
                                             )}
-                                            <div className={`max-w-[85%] ${msg.role === "user" ? "order-1" : ""}`}>
+                                            <div className={`max-w-[88%] ${msg.role === "user" ? "order-1" : ""}`}>
                                                 <div
-                                                    className={`px-4 py-3 rounded-2xl text-sm leading-relaxed ${
+                                                    className={`px-4 py-3 rounded-2xl text-xs sm:text-sm leading-relaxed ${
                                                         msg.role === "user"
-                                                            ? "bg-gradient-to-br from-emerald-600 to-teal-700 text-white rounded-br-sm shadow-[0_0_15px_rgba(16,185,129,0.2)]"
-                                                            : "bg-slate-800/80 text-slate-100 rounded-bl-sm border border-slate-700/50"
+                                                            ? "bg-gradient-to-br from-cyan-600 to-indigo-600 text-white rounded-br-sm shadow-[0_0_15px_rgba(6,182,212,0.3)] font-medium"
+                                                            : "bg-slate-900/90 text-slate-100 rounded-bl-sm border border-slate-800 shadow-md"
                                                     }`}
                                                     dangerouslySetInnerHTML={{ __html: formatContent(msg.content) }}
                                                 />
@@ -274,7 +270,7 @@ export default function PersonalBotBubble() {
                                                             <button
                                                                 key={i}
                                                                 onClick={() => sendMessage(s)}
-                                                                className="px-3 py-1.5 bg-slate-900/80 border border-emerald-500/30 text-emerald-300 rounded-xl text-[10px] font-bold hover:bg-emerald-500/10 hover:border-emerald-400 transition-all text-left"
+                                                                className="px-3 py-1.5 bg-slate-950/80 border border-cyan-500/30 text-cyan-300 rounded-xl text-[10px] font-bold hover:bg-cyan-500/20 hover:border-cyan-400 transition-all text-left cursor-pointer"
                                                             >
                                                                 {s}
                                                             </button>
@@ -287,13 +283,13 @@ export default function PersonalBotBubble() {
 
                                     {isLoading && (
                                         <div className="flex justify-start">
-                                            <div className="w-7 h-7 rounded-xl bg-gradient-to-br from-cyan-400 to-emerald-600 flex items-center justify-center font-black text-white text-xs mr-2 shrink-0">
+                                            <div className="w-7 h-7 rounded-xl bg-gradient-to-br from-cyan-400 to-indigo-600 flex items-center justify-center font-black text-white text-xs mr-2 shrink-0">
                                                 {firstLetter}
                                             </div>
-                                            <div className="bg-slate-800/80 border border-slate-700/50 px-4 py-3 rounded-2xl rounded-bl-sm flex gap-1 items-center">
-                                                <span className="w-2 h-2 bg-emerald-400 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-                                                <span className="w-2 h-2 bg-emerald-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-                                                <span className="w-2 h-2 bg-emerald-400 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+                                            <div className="bg-slate-900/90 border border-slate-800 px-4 py-3 rounded-2xl rounded-bl-sm flex gap-1.5 items-center">
+                                                <span className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                                                <span className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                                                <span className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
                                             </div>
                                         </div>
                                     )}
@@ -302,34 +298,51 @@ export default function PersonalBotBubble() {
                             <div ref={messagesEndRef} />
                         </div>
 
-                        {/* Input */}
-                        <div className="px-4 pb-4 pt-3 border-t border-emerald-500/10"
-                            style={{ background: "rgba(5,13,21,0.9)" }}>
-                            {isNamingBot && (
-                                <p className="text-[10px] text-emerald-400/70 font-mono text-center mb-2">
-                                    ✨ Escribe el nombre que quieres darme
-                                </p>
-                            )}
+                        {/* Interactive Mini Scroll Menu for Modules */}
+                        <div className="px-3 py-2 border-t border-slate-800/80 bg-slate-950/70">
+                            <div className="flex items-center justify-between mb-1.5 px-1">
+                                <span className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                                    <Sparkles size={11} className="text-cyan-400" />
+                                    <span>Módulos del Sistema (Haz clic para consultar)</span>
+                                </span>
+                            </div>
+                            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none custom-scrollbar">
+                                {QUICK_MODULES.map((m) => (
+                                    <button
+                                        key={m.id}
+                                        onClick={() => sendMessage(m.query)}
+                                        className="shrink-0 px-2.5 py-1.5 bg-slate-900/90 hover:bg-cyan-500/20 border border-slate-800 hover:border-cyan-400/50 text-slate-300 hover:text-cyan-200 text-[10px] font-bold rounded-xl flex items-center gap-1.5 transition-all cursor-pointer whitespace-nowrap"
+                                        title={`Preguntar sobre ${m.label}`}
+                                    >
+                                        <span className="text-cyan-400">{m.icon}</span>
+                                        <span>{m.label}</span>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Input Area */}
+                        <div className="px-4 pb-4 pt-2 border-t border-cyan-500/10 bg-slate-950">
                             <div className="flex items-end gap-2">
                                 <textarea
                                     value={input}
                                     onChange={e => setInput(e.target.value)}
                                     onKeyDown={handleKeyDown}
-                                    placeholder={isNamingBot ? "Ej: NEXUS, ARIA, MAX, ATLAS..." : `Mensaje a ${displayName}...`}
+                                    placeholder={`Pregunta a ${displayName} sobre cualquier módulo...`}
                                     rows={1}
-                                    className="flex-1 bg-slate-800/60 border border-slate-700/50 text-white text-sm placeholder:text-slate-500 rounded-2xl px-4 py-3 outline-none resize-none focus:border-emerald-400/50 focus:ring-1 focus:ring-emerald-400/20 transition-all"
-                                    style={{ maxHeight: "100px" }}
+                                    className="flex-1 bg-slate-900 border border-slate-800 text-white text-xs placeholder:text-slate-500 rounded-2xl px-4 py-3 outline-none resize-none focus:border-cyan-400/60 focus:ring-1 focus:ring-cyan-400/30 transition-all"
+                                    style={{ maxHeight: "90px" }}
                                     onInput={(e: any) => {
                                         e.target.style.height = "auto"
-                                        e.target.style.height = Math.min(e.target.scrollHeight, 100) + "px"
+                                        e.target.style.height = Math.min(e.target.scrollHeight, 90) + "px"
                                     }}
                                 />
                                 <button
                                     onClick={() => sendMessage()}
                                     disabled={!input.trim() || isLoading}
-                                    className="w-11 h-11 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center text-white shadow-[0_0_20px_rgba(16,185,129,0.4)] hover:scale-105 disabled:opacity-40 disabled:scale-100 transition-all shrink-0"
+                                    className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-[0_0_20px_rgba(6,182,212,0.4)] hover:scale-105 disabled:opacity-40 disabled:scale-100 transition-all shrink-0 cursor-pointer"
                                 >
-                                    {isLoading ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
+                                    {isLoading ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
                                 </button>
                             </div>
                         </div>

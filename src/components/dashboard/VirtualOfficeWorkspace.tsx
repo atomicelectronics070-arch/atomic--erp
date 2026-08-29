@@ -9,7 +9,10 @@ import {
   Send, ArrowLeft, Loader2
 } from "lucide-react"
 
+import VirtualOffice2D from "@/components/office/VirtualOffice2D"
+
 type OfficeZone = "ventas" | "inventario" | "coordinacion" | "prospeccion"
+type OfficeViewMode = "interactive_2d" | "stations_grid"
 
 const FIXED_PROFILES = [
   {
@@ -70,6 +73,7 @@ const FIXED_PROFILES = [
 ]
 
 export default function VirtualOfficeWorkspace({ currentModule = "ventas" }: { currentModule?: string }) {
+  const [viewMode, setViewMode] = useState<OfficeViewMode>("interactive_2d")
   const [activeZone, setActiveZone] = useState<OfficeZone>("ventas")
   const [avatarPos, setAvatarPos] = useState({ x: 20, y: 25 })
   const [systemUsers, setSystemUsers] = useState<any[]>([])
@@ -105,14 +109,14 @@ export default function VirtualOfficeWorkspace({ currentModule = "ventas" }: { c
     let roleOverride = "SALESPERSON"
     let botNameOverride = "Asesor Ventas"
     if (activeZone === "inventario") {
-      roleOverride = "MANAGEMENT"
-      botNameOverride = "Logística Bot"
+      roleOverride = "LOGISTICS"
+      botNameOverride = "Logística"
     } else if (activeZone === "coordinacion") {
       roleOverride = "COORDINATOR"
-      botNameOverride = "Coordinador Bot"
+      botNameOverride = "Coordinador"
     } else if (activeZone === "prospeccion") {
-      roleOverride = "PROSPECTION_BOT"
-      botNameOverride = "Radar Bot"
+      roleOverride = "RADAR"
+      botNameOverride = "Radar IA"
     }
 
     try {
@@ -178,86 +182,120 @@ export default function VirtualOfficeWorkspace({ currentModule = "ventas" }: { c
       link: "/dashboard/coordinacion",
       icon: ShieldCheck,
       color: "from-pink-600 to-rose-600",
-      glow: "shadow-[0_0_30px_rgba(236,72,153,0.4)]",
+      glow: "shadow-[0_0_30px_rgba(244,63,94,0.4)]",
       badgeColor: "bg-pink-500/10 text-pink-400 border-pink-500/30",
-      avatarEmoji: "👔",
-      avatarRole: "Coordinador General (Avatar)",
-      avatarStatus: "Supervisando Operaciones",
-      stats: "5 Metas Activas",
+      avatarEmoji: "🎯",
+      avatarRole: "Coordinador de Equipo (Avatar)",
+      avatarStatus: "Bitácora en Ejecución",
+      stats: "15 Asesores Activos",
       x: 20,
       y: 75
     },
     prospeccion: {
       code: "STATION-P04",
-      title: "Prospección",
-      desc: "Radar satelital para prospección comercial de nuevos negocios.",
+      title: "Módulo de Prospección",
+      desc: "Radar satelital para captación B2B de clientes en Google Maps.",
       link: "/dashboard/map-prospecting",
       icon: MapPin,
-      color: "from-blue-600 to-indigo-600",
-      glow: "shadow-[0_0_30px_rgba(37,99,235,0.4)]",
-      badgeColor: "bg-blue-500/10 text-blue-400 border-blue-500/30",
-      avatarEmoji: "📡",
-      avatarRole: "Agente de Inteligencia (Avatar)",
+      color: "from-rose-600 to-orange-600",
+      glow: "shadow-[0_0_30px_rgba(249,115,22,0.4)]",
+      badgeColor: "bg-orange-500/10 text-orange-400 border-orange-500/30",
+      avatarEmoji: "🛰️",
+      avatarRole: "Especialista en Prospección (Avatar)",
       avatarStatus: "Radar Escaneando Zona",
-      stats: "+2,200 Prospectos",
+      stats: "1,200 Prospectos Filtrados",
       x: 70,
       y: 75
     }
   }
 
-  const handleSelectZone = (zoneKey: OfficeZone) => {
-    setActiveZone(zoneKey)
-    setAvatarPos({ x: zones[zoneKey].x, y: zones[zoneKey].y })
-    setShowAIChat(false)
-  }
-
   const current = zones[activeZone]
 
+  const handleSelectZone = (key: OfficeZone) => {
+    setActiveZone(key)
+    setAvatarPos({ x: zones[key].x, y: zones[key].y })
+  }
+
   return (
-    <div className="w-full bg-slate-950 text-white rounded-3xl p-6 lg:p-10 border border-slate-800 shadow-2xl relative overflow-hidden space-y-12">
+    <div className="w-full bg-slate-950 text-white rounded-3xl p-6 lg:p-10 border border-slate-800 shadow-2xl relative overflow-hidden space-y-8">
       
       {/* Ambient Glows */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-600/10 rounded-full blur-[140px] pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-600/10 rounded-full blur-[140px] pointer-events-none" />
 
-      {/* SECTION 1: HEADER */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-800">
+      {/* SECTION 1: HEADER & VIEW SWITCHER */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-800 relative z-10">
         <div>
           <div className="inline-flex items-center space-x-2 px-3 py-1 bg-indigo-500/10 border border-indigo-500/30 rounded-xl text-indigo-400 font-mono text-[10px] font-bold uppercase tracking-widest mb-2">
             <span className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse" />
-            <span>Entorno Interactivo Virtual ATOMIC v4.0</span>
+            <span>Oficina Virtual 2.5D & Audio P2P Directo</span>
           </div>
           <h2 className="text-2xl md:text-3xl font-black tracking-tight text-white flex items-center gap-3">
-            <Building2 className="text-indigo-400" />
-            <span>Estaciones de Trabajo</span>
+            <Building2 className="text-cyan-400" />
+            <span>Centro de Trabajo Remoto</span>
           </h2>
         </div>
 
-        {/* Quick Zone Switcher */}
-        <div className="flex items-center gap-2 bg-slate-900 p-1.5 rounded-2xl border border-slate-800">
-          {(Object.keys(zones) as OfficeZone[]).map((key) => {
-            const z = zones[key]
-            const isSelected = activeZone === key
-            return (
-              <button
-                key={key}
-                onClick={() => handleSelectZone(key)}
-                className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-2 ${
-                  isSelected 
-                    ? 'bg-gradient-to-r ' + z.color + ' text-white shadow-lg' 
-                    : 'text-slate-400 hover:text-white hover:bg-slate-800'
-                }`}
-              >
-                <span className="text-sm">{z.avatarEmoji}</span>
-                <span className="hidden sm:inline capitalize">{key}</span>
-              </button>
-            )
-          })}
+        {/* View Mode Toggle Switch */}
+        <div className="flex items-center gap-2 bg-slate-900 p-1.5 rounded-2xl border border-slate-800 shrink-0">
+          <button
+            onClick={() => setViewMode("interactive_2d")}
+            className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer ${
+              viewMode === "interactive_2d"
+                ? "bg-gradient-to-r from-cyan-600 to-indigo-600 text-white shadow-[0_0_15px_rgba(6,182,212,0.3)]"
+                : "text-slate-400 hover:text-white hover:bg-slate-800"
+            }`}
+          >
+            <span>🎮</span>
+            <span>Planta 2D Interactiva</span>
+          </button>
+          <button
+            onClick={() => setViewMode("stations_grid")}
+            className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer ${
+              viewMode === "stations_grid"
+                ? "bg-gradient-to-r from-cyan-600 to-indigo-600 text-white shadow-[0_0_15px_rgba(6,182,212,0.3)]"
+                : "text-slate-400 hover:text-white hover:bg-slate-800"
+            }`}
+          >
+            <span>🏢</span>
+            <span>Estaciones & Perfiles</span>
+          </button>
         </div>
       </div>
 
-      {/* SECTION 2: 2.5D INTERACTIVE FLOORPLAN + ZONE DETAILS */}
-      <div className="grid lg:grid-cols-12 gap-8 items-stretch">
+      {/* VIEW 1: INTERACTIVE 2D PIXEL OFFICE (GATHER.TOWN STYLE) */}
+      {viewMode === "interactive_2d" && (
+        <div className="relative z-10 animate-in fade-in duration-300">
+          <VirtualOffice2D />
+        </div>
+      )}
+
+      {/* VIEW 2: 2.5D STATIONS FLOORPLAN + PROFILES */}
+      {viewMode === "stations_grid" && (
+        <div className="space-y-12 relative z-10 animate-in fade-in duration-300">
+          {/* Quick Zone Switcher */}
+          <div className="flex items-center gap-2 bg-slate-900/60 p-2 rounded-2xl border border-slate-800 overflow-x-auto">
+            {(Object.keys(zones) as OfficeZone[]).map((key) => {
+              const z = zones[key]
+              const isSelected = activeZone === key
+              return (
+                <button
+                  key={key}
+                  onClick={() => handleSelectZone(key)}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-2 shrink-0 cursor-pointer ${
+                    isSelected 
+                      ? 'bg-gradient-to-r ' + z.color + ' text-white shadow-lg' 
+                      : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                  }`}
+                >
+                  <span className="text-sm">{z.avatarEmoji}</span>
+                  <span className="capitalize">{key}</span>
+                </button>
+              )
+            })}
+          </div>
+
+          <div className="grid lg:grid-cols-12 gap-8 items-stretch">
         
         {/* Floorplan (8 Cols) */}
         <div className="lg:col-span-8 bg-slate-900/90 border border-slate-800 rounded-3xl p-6 relative min-h-[440px] flex flex-col justify-between overflow-hidden shadow-inner group">
@@ -593,7 +631,9 @@ export default function VirtualOfficeWorkspace({ currentModule = "ventas" }: { c
           </div>
         )}
       </div>
-
     </div>
-  )
+  )}
+
+</div>
+)
 }
