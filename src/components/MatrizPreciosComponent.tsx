@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo, useRef } from 'react';
 import ProviderSyncStatusWidget from './ProviderSyncStatusWidget';
+import { generateAtomicUnifiedProposalPDF } from '@/lib/pdf/quotePdfGenerator';
 
 interface ProductMatrixItem {
   id: string;
@@ -64,11 +65,11 @@ export default function MatrizPreciosComponent({
   const [quoteQty, setQuoteQty] = useState<number>(1);
   const [quoteDiscount, setQuoteDiscount] = useState<number>(0);
   const [quoteShipping, setQuoteShipping] = useState<number>(0);
-  const [quoteCode, setQuoteCode] = useState('COT-2026-0001');
+  const [quoteCode, setQuoteCode] = useState('PROP-2026-0001');
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
   const openQuoteModalWithProduct = (p?: ProductMatrixItem | null) => {
-    const randomCode = `COT-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+    const randomCode = `PROP-2026-${Math.floor(1000 + Math.random() * 9000)}`;
     setQuoteCode(randomCode);
     if (p) {
       setQuoteProductName(p.name);
@@ -97,8 +98,8 @@ export default function MatrizPreciosComponent({
 
   const buildQuoteText = () => {
     const total = getQuoteTotal();
-    return `*📄 PROFORMA OFICIAL · ATOMIC SOLUTIONS*
-*Cotización N°:* ${quoteCode}
+    return `*📄 PROPUESTA OFICIAL · ATOMIC SOLUTIONS*
+*Propuesta N°:* ${quoteCode}
 *Fecha:* ${new Date().toLocaleDateString('es-EC')}
 
 *👤 Cliente:* ${quoteClient.trim() || 'Estimado/a Cliente'}
@@ -134,268 +135,102 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
     }
     const url = `https://wa.me/${targetNum}?text=${encodeURIComponent(text)}`;
     window.open(url, '_blank');
-    showNotification('📲 Abriendo WhatsApp con la proforma generada...');
+    showNotification('📲 Abriendo WhatsApp con la propuesta generada...');
   };
 
   const handleCopyQuoteText = () => {
     const text = buildQuoteText();
     navigator.clipboard.writeText(text);
-    showNotification('📋 ¡Texto de cotización copiado al portapapeles!');
+    showNotification('📋 ¡Texto de propuesta copiado al portapapeles!');
   };
 
-  // Helper para generar el PDF Oficial con diseño prémium ATOMIC
-  const generateAtomicQuotePDF = async (quoteData: {
-    code: string;
-    client: string;
-    phone: string;
-    location: string;
+  // Colector Central de Cotizaciones: Guarda la cotización en segundo plano en la BD del Admin
+  const saveQuoteToCentralAdmin = async (payload: {
+    quoteNumber: string;
+    clientName: string;
+    clientPhone?: string;
+    clientCity?: string;
     productName: string;
-    specs: string;
+    specs?: string;
     price: number;
     qty: number;
-    discount: number;
-    shipping: number;
+    discount?: number;
+    shipping?: number;
     total: number;
   }) => {
-    const { jsPDF } = await import('jspdf');
-    const doc = new jsPDF({
-      orientation: 'portrait',
-      unit: 'mm',
-      format: 'a4'
-    });
-
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
-
-    // 1. Header Banner
-    doc.setFillColor(15, 23, 42); // #0F172A
-    doc.rect(0, 0, pageWidth, 38, 'F');
-
-    // Accent line
-    doc.setFillColor(37, 99, 235); // #2563EB
-    doc.rect(0, 38, pageWidth, 2.5, 'F');
-
-    // Company Name & Info
-    doc.setTextColor(255, 255, 255);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(20);
-    doc.text('ATOMIC SOLUTIONS', 14, 18);
-
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8.5);
-    doc.setTextColor(203, 213, 225);
-    doc.text('TECNOLOGÍA, ELECTRÓNICA & EQUIPAMIENTO EMPRESARIAL', 14, 24);
-    doc.text('RUC / Registro Oficial · Envíos a Nivel Nacional · WhatsApp: 0969043453', 14, 29);
-
-    // Proforma Badge
-    doc.setFillColor(37, 99, 235);
-    doc.roundedRect(pageWidth - 65, 10, 52, 18, 3, 3, 'F');
-    doc.setTextColor(255, 255, 255);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(10);
-    doc.text('PROFORMA OFICIAL', pageWidth - 39, 17, { align: 'center' });
-    doc.setFontSize(11);
-    doc.text(quoteData.code, pageWidth - 39, 24, { align: 'center' });
-
-    // 2. Info Cards
-    let y = 48;
-
-    // Left Box: Client Info
-    doc.setFillColor(248, 250, 252);
-    doc.setDrawColor(226, 232, 240);
-    doc.roundedRect(14, y, (pageWidth - 34) / 2, 34, 2, 2, 'FD');
-
-    doc.setTextColor(37, 99, 235);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(9);
-    doc.text('DATOS DEL CLIENTE', 18, y + 7);
-
-    doc.setTextColor(30, 41, 59);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(9.5);
-    doc.text(quoteData.client.trim() || 'Cliente General', 18, y + 14);
-
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8.5);
-    doc.setTextColor(100, 116, 139);
-    doc.text(`Tel / WhatsApp: ${quoteData.phone.trim() || 'No especificado'}`, 18, y + 20);
-    doc.text(`Ubicación: ${quoteData.location.trim() || 'Quito / Entrega a Domicilio'}`, 18, y + 26);
-
-    // Right Box: Meta Info
-    const rightBoxX = 14 + (pageWidth - 34) / 2 + 6;
-    doc.setFillColor(248, 250, 252);
-    doc.setDrawColor(226, 232, 240);
-    doc.roundedRect(rightBoxX, y, (pageWidth - 34) / 2, 34, 2, 2, 'FD');
-
-    doc.setTextColor(37, 99, 235);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(9);
-    doc.text('INFORMACIÓN DE EMISIÓN', rightBoxX + 4, y + 7);
-
-    doc.setTextColor(30, 41, 59);
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8.5);
-    doc.text(`Fecha de Emisión: ${new Date().toLocaleDateString('es-EC')}`, rightBoxX + 4, y + 14);
-    doc.text(`Validez de Oferta: 15 días calendario`, rightBoxX + 4, y + 20);
-    doc.text(`Forma de Pago: Transferencia / TC / Efectivo`, rightBoxX + 4, y + 26);
-
-    y += 42;
-
-    // 3. Items Table Header
-    doc.setFillColor(15, 23, 42);
-    doc.rect(14, y, pageWidth - 28, 8, 'F');
-
-    doc.setTextColor(255, 255, 255);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(8.5);
-    doc.text('DESCRIPCIÓN DEL EQUIPAMIENTO / PRODUCTO', 18, y + 5.5);
-    doc.text('CANT.', pageWidth - 80, y + 5.5, { align: 'center' });
-    doc.text('P. UNIT.', pageWidth - 55, y + 5.5, { align: 'center' });
-    doc.text('TOTAL', pageWidth - 20, y + 5.5, { align: 'right' });
-
-    y += 8;
-
-    // Items Table Row
-    const itemTotal = (quoteData.price * quoteData.qty);
-    doc.setFillColor(255, 255, 255);
-    doc.setDrawColor(226, 232, 240);
-    doc.rect(14, y, pageWidth - 28, 20, 'FD');
-
-    doc.setTextColor(15, 23, 42);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(9.5);
-    doc.text(quoteData.productName.trim() || 'Producto Seleccionado', 18, y + 7);
-
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8);
-    doc.setTextColor(100, 116, 139);
-    doc.text('Garantía oficial 1 año · Producto 100% original con soporte técnico', 18, y + 13);
-
-    doc.setTextColor(30, 41, 59);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(9);
-    doc.text(`${quoteData.qty}`, pageWidth - 80, y + 10, { align: 'center' });
-    doc.text(`$${quoteData.price.toFixed(2)}`, pageWidth - 55, y + 10, { align: 'center' });
-    doc.text(`$${itemTotal.toFixed(2)}`, pageWidth - 20, y + 10, { align: 'right' });
-
-    y += 26;
-
-    // 4. Specifications Box
-    if (quoteData.specs && quoteData.specs.trim()) {
-      doc.setFillColor(248, 250, 252);
-      doc.setDrawColor(226, 232, 240);
-      doc.roundedRect(14, y, pageWidth - 28, 28, 2, 2, 'FD');
-
-      doc.setTextColor(37, 99, 235);
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(8.5);
-      doc.text('ESPECIFICACIONES TÉCNICAS & DETALLES ADICIONALES:', 18, y + 6);
-
-      doc.setTextColor(51, 65, 85);
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(8);
-
-      const splitSpecs = doc.splitTextToSize(quoteData.specs.trim(), pageWidth - 36);
-      doc.text(splitSpecs, 18, y + 12);
-
-      y += 34;
+    try {
+      fetch('/api/quotes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          quoteNumber: payload.quoteNumber,
+          clientName: payload.clientName || 'Cliente General',
+          clientPhone: payload.clientPhone || '',
+          clientCity: payload.clientCity || 'Quito / Entrega a Domicilio',
+          city: payload.clientCity || 'Quito / Entrega a Domicilio',
+          quoteSubject: `Propuesta de ${payload.productName}`,
+          subtotal: payload.price * payload.qty,
+          discountAmount: payload.discount || 0,
+          shippingAmount: payload.shipping || 0,
+          total: payload.total,
+          advisorName: 'ASESOR MATRIZ PRECIOS',
+          status: 'PROPUESTA_EMITIDA',
+          items: [
+            {
+              sku: payload.quoteNumber,
+              description: payload.productName,
+              quantity: payload.qty,
+              unitPrice: payload.price,
+              discountAmount: payload.discount || 0,
+              total: payload.total
+            }
+          ],
+          specs: payload.specs || 'Garantía oficial de 1 año'
+        })
+      }).catch(e => console.warn('Central quote save background error:', e));
+    } catch (err) {
+      console.warn('Central quote save background error:', err);
     }
-
-    // 5. Financial Summary Box (Right aligned)
-    const summaryWidth = 80;
-    const summaryX = pageWidth - 14 - summaryWidth;
-
-    doc.setFillColor(248, 250, 252);
-    doc.setDrawColor(226, 232, 240);
-    doc.roundedRect(summaryX, y, summaryWidth, 38, 2, 2, 'FD');
-
-    let subY = y + 7;
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8.5);
-    doc.setTextColor(100, 116, 139);
-    doc.text('Subtotal:', summaryX + 6, subY);
-    doc.setTextColor(30, 41, 59);
-    doc.text(`$${itemTotal.toFixed(2)}`, summaryX + summaryWidth - 6, subY, { align: 'right' });
-
-    if (quoteData.discount > 0) {
-      subY += 6;
-      doc.setTextColor(220, 38, 38);
-      doc.text('Descuento:', summaryX + 6, subY);
-      doc.text(`-$${quoteData.discount.toFixed(2)}`, summaryX + summaryWidth - 6, subY, { align: 'right' });
-    }
-
-    if (quoteData.shipping > 0) {
-      subY += 6;
-      doc.setTextColor(13, 148, 136);
-      doc.text('Envío / Instalación:', summaryX + 6, subY);
-      doc.text(`+$${quoteData.shipping.toFixed(2)}`, summaryX + summaryWidth - 6, subY, { align: 'right' });
-    }
-
-    // Total Row Accent
-    subY += 8;
-    doc.setFillColor(15, 23, 42);
-    doc.roundedRect(summaryX + 3, subY - 4, summaryWidth - 6, 10, 1.5, 1.5, 'F');
-
-    doc.setTextColor(255, 255, 255);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(10);
-    doc.text('TOTAL:', summaryX + 6, subY + 2.5);
-    doc.setFontSize(11);
-    doc.setTextColor(52, 211, 153); // Emerald
-    doc.text(`$${quoteData.total.toFixed(2)} USD`, summaryX + summaryWidth - 6, subY + 2.5, { align: 'right' });
-
-    // 6. Guarantee & Payment Terms (Left aligned)
-    const termsWidth = pageWidth - 28 - summaryWidth - 6;
-    doc.setFillColor(248, 250, 252);
-    doc.setDrawColor(226, 232, 240);
-    doc.roundedRect(14, y, termsWidth, 38, 2, 2, 'FD');
-
-    doc.setTextColor(15, 23, 42);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(8.5);
-    doc.text('TÉRMINOS Y CONDICIONES:', 18, y + 7);
-
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(7.5);
-    doc.setTextColor(71, 85, 105);
-    doc.text('• Garantía de 1 año en defectos de fábrica con repuestos originales.', 18, y + 13);
-    doc.text('• Precios expresados en Dólares Americanos (USD).', 18, y + 18);
-    doc.text('• Despachos seguros a las 24 provincias mediante Servientrega / Transporte.', 18, y + 23);
-    doc.text('• Soporte y asesoría técnica personalizada post-venta.', 18, y + 28);
-
-    // 7. Footer Bar
-    const footerY = pageHeight - 16;
-    doc.setFillColor(15, 23, 42);
-    doc.rect(0, footerY, pageWidth, 16, 'F');
-
-    doc.setTextColor(203, 213, 225);
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8);
-    doc.text('ATOMIC ECUADOR · Ventas y Asesoría Directa: 0969043453 · atomiccotizador.shop', 14, footerY + 6.5);
-    doc.text('Documento Electrónico Generado Automáticamente', pageWidth - 14, footerY + 6.5, { align: 'right' });
-
-    doc.setFontSize(7);
-    doc.setTextColor(148, 163, 184);
-    doc.text('Gracias por su preferencia · Innovación, Tecnología y Respaldo Garantizado', 14, footerY + 11.5);
-
-    const pdfBlob = doc.output('blob');
-    const fileName = `Proforma_${quoteData.code}.pdf`;
-    const file = new File([pdfBlob], fileName, { type: 'application/pdf' });
-
-    return { doc, blob: pdfBlob, file, fileName };
   };
 
   // Handler para compartir PDF a WhatsApp / Share Sheet
   const handleSharePDFQuote = async () => {
     try {
       setIsGeneratingPDF(true);
-      showNotification('⏳ Generando PDF oficial de cotización...');
+      showNotification('⏳ Generando PDF oficial de propuesta...');
       const total = getQuoteTotal();
-      const pdfData = await generateAtomicQuotePDF({
-        code: quoteCode,
-        client: quoteClient,
-        phone: quotePhone,
-        location: quoteLocation,
+      const pdfData = await generateAtomicUnifiedProposalPDF({
+        quoteNumber: quoteCode,
+        clientName: quoteClient || 'Cliente General',
+        clientPhone: quotePhone,
+        clientCity: quoteLocation,
+        deliveryAddress: quoteLocation,
+        quoteSubject: `Propuesta de ${quoteProductName}`,
+        advisorName: 'VENTAS & ASESORÍA',
+        items: [
+          {
+            sku: quoteCode,
+            description: quoteProductName || 'Producto Cotizado',
+            quantity: quoteQty,
+            unitPrice: quotePrice,
+            discountAmount: quoteDiscount,
+            total: total
+          }
+        ],
+        specs: quoteSpecs,
+        subtotal: quotePrice * quoteQty,
+        discountAmount: quoteDiscount,
+        shippingAmount: quoteShipping,
+        total: total,
+        validityDays: 15
+      });
+
+      // Guardar en colector central
+      saveQuoteToCentralAdmin({
+        quoteNumber: quoteCode,
+        clientName: quoteClient,
+        clientPhone: quotePhone,
+        clientCity: quoteLocation,
         productName: quoteProductName,
         specs: quoteSpecs,
         price: quotePrice,
@@ -405,14 +240,16 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
         total: total
       });
 
+      const pdfFile = new File([pdfData.blob], pdfData.fileName, { type: 'application/pdf' });
+
       // Intentar compartir archivo directamente con Web Share API (WhatsApp / Móvil / Desktop soportado)
-      if (typeof navigator !== 'undefined' && navigator.canShare && navigator.canShare({ files: [pdfData.file] })) {
+      if (typeof navigator !== 'undefined' && navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
         await navigator.share({
-          title: `Proforma Oficial ${quoteCode} - ATOMIC`,
-          text: `Hola ${quoteClient.trim() || ''}, adjunto la cotización oficial en PDF de ${quoteProductName} de ATOMIC.`,
-          files: [pdfData.file]
+          title: `Propuesta Oficial ${quoteCode} - ATOMIC`,
+          text: `Hola ${quoteClient.trim() || ''}, adjunto la propuesta oficial en PDF de ${quoteProductName} de ATOMIC.`,
+          files: [pdfFile]
         });
-        showNotification('✅ ¡PDF compartido con éxito!');
+        showNotification('✅ ¡Propuesta PDF compartida con éxito!');
       } else {
         // Fallback: Descargar el PDF en el dispositivo Y abrir WhatsApp con el cliente para que lo adjunte
         pdfData.doc.save(pdfData.fileName);
@@ -425,11 +262,11 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
           targetNum = '593' + targetNum.substring(1);
         }
 
-        const textMsg = `*📄 PROFORMA OFICIAL · ATOMIC SOLUTIONS*\n*Cotización N°:* ${quoteCode}\n*Cliente:* ${quoteClient.trim() || 'Estimado/a Cliente'}\n*Producto:* ${quoteProductName}\n*Total:* $${total.toFixed(2)} USD\n\n*(He descargado la proforma en PDF (${pdfData.fileName}) para adjuntártela en este chat)* 📎`;
+        const textMsg = `*📄 PROPUESTA OFICIAL · ATOMIC SOLUTIONS*\n*Propuesta N°:* ${quoteCode}\n*Cliente:* ${quoteClient.trim() || 'Estimado/a Cliente'}\n*Producto:* ${quoteProductName}\n*Total:* $${total.toFixed(2)} USD\n\n*(He descargado la propuesta en PDF (${pdfData.fileName}) para adjuntártela en este chat)* 📎`;
 
         const waUrl = `https://wa.me/${targetNum}?text=${encodeURIComponent(textMsg)}`;
         window.open(waUrl, '_blank');
-        showNotification('📥 PDF descargado y WhatsApp abierto para adjuntarlo.');
+        showNotification('📥 Propuesta PDF descargada y WhatsApp abierto para adjuntarlo.');
       }
     } catch (err: any) {
       if (err?.name !== 'AbortError') {
@@ -445,13 +282,40 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
   const handleDownloadPDFQuote = async () => {
     try {
       setIsGeneratingPDF(true);
-      showNotification('⏳ Descargando proforma PDF...');
+      showNotification('⏳ Descargando propuesta PDF...');
       const total = getQuoteTotal();
-      const pdfData = await generateAtomicQuotePDF({
-        code: quoteCode,
-        client: quoteClient,
-        phone: quotePhone,
-        location: quoteLocation,
+      const pdfData = await generateAtomicUnifiedProposalPDF({
+        quoteNumber: quoteCode,
+        clientName: quoteClient || 'Cliente General',
+        clientPhone: quotePhone,
+        clientCity: quoteLocation,
+        deliveryAddress: quoteLocation,
+        quoteSubject: `Propuesta de ${quoteProductName}`,
+        advisorName: 'VENTAS & ASESORÍA',
+        items: [
+          {
+            sku: quoteCode,
+            description: quoteProductName || 'Producto Cotizado',
+            quantity: quoteQty,
+            unitPrice: quotePrice,
+            discountAmount: quoteDiscount,
+            total: total
+          }
+        ],
+        specs: quoteSpecs,
+        subtotal: quotePrice * quoteQty,
+        discountAmount: quoteDiscount,
+        shippingAmount: quoteShipping,
+        total: total,
+        validityDays: 15
+      });
+
+      // Guardar en colector central
+      saveQuoteToCentralAdmin({
+        quoteNumber: quoteCode,
+        clientName: quoteClient,
+        clientPhone: quotePhone,
+        clientCity: quoteLocation,
         productName: quoteProductName,
         specs: quoteSpecs,
         price: quotePrice,
@@ -460,8 +324,9 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
         shipping: quoteShipping,
         total: total
       });
+
       pdfData.doc.save(pdfData.fileName);
-      showNotification('✅ ¡Proforma PDF descargada correctamente!');
+      showNotification('✅ ¡Propuesta PDF descargada correctamente!');
     } catch (err) {
       console.error('Error descargando PDF:', err);
       showNotification('⚠️ Error al descargar PDF.');
@@ -473,26 +338,55 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
   // Handler para descargar directamente la proforma PDF oficial de un producto de la tabla
   const handleDirectDownloadProductPDF = async (p: ProductMatrixItem) => {
     try {
-      showNotification(`⏳ Generando Proforma PDF de "${p.name.substring(0, 25)}..."`);
-      const randomCode = `COT-2026-${Math.floor(1000 + Math.random() * 9000)}`;
-      const pdfData = await generateAtomicQuotePDF({
-        code: randomCode,
-        client: 'Cliente General',
-        phone: '',
-        location: 'Quito / Entrega a Domicilio',
+      showNotification(`⏳ Generando Propuesta PDF de "${p.name.substring(0, 25)}..."`);
+      const randomCode = `PROP-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+      const specs = `• SKU / Código: ${p.sku || 'N/A'}\n• Categoría: ${p.category || 'General'}\n• Garantía de 1 año con soporte técnico directo ATOMIC\n• Producto 100% original con entrega garantizada`;
+      const pdfData = await generateAtomicUnifiedProposalPDF({
+        quoteNumber: randomCode,
+        clientName: 'Cliente General',
+        clientPhone: '',
+        clientCity: 'Quito / Entrega a Domicilio',
+        deliveryAddress: 'Quito / Entrega a Domicilio',
+        quoteSubject: `Propuesta de ${p.name}`,
+        advisorName: 'VENTAS & ASESORÍA',
+        items: [
+          {
+            sku: p.sku || 'SKU-GEN',
+            description: p.name,
+            quantity: 1,
+            unitPrice: p.salePrice || 0,
+            discountAmount: 0,
+            total: p.salePrice || 0
+          }
+        ],
+        specs: specs,
+        subtotal: p.salePrice || 0,
+        discountAmount: 0,
+        shippingAmount: 0,
+        total: p.salePrice || 0,
+        validityDays: 15
+      });
+
+      // Guardar en colector central
+      saveQuoteToCentralAdmin({
+        quoteNumber: randomCode,
+        clientName: 'Cliente General',
+        clientPhone: '',
+        clientCity: 'Quito / Entrega a Domicilio',
         productName: p.name,
-        specs: `• SKU / Código: ${p.sku || 'N/A'}\n• Categoría: ${p.category || 'General'}\n• Garantía de 1 año con soporte técnico directo ATOMIC\n• Producto 100% original con entrega garantizada`,
+        specs: specs,
         price: p.salePrice || 0,
         qty: 1,
         discount: 0,
         shipping: 0,
         total: p.salePrice || 0
       });
-      pdfData.doc.save(`Proforma_${(p.sku || 'COT').replace(/\s+/g, '_')}_${randomCode}.pdf`);
-      showNotification(`✅ ¡Proforma PDF de "${p.name.substring(0, 20)}..." descargada con éxito!`);
+
+      pdfData.doc.save(pdfData.fileName);
+      showNotification(`✅ ¡Propuesta PDF de "${p.name.substring(0, 20)}..." descargada con éxito!`);
     } catch (err) {
       console.error('Error generando PDF individual:', err);
-      showNotification('❌ Error al generar proforma PDF');
+      showNotification('❌ Error al generar propuesta PDF');
     }
   };
 
@@ -1631,11 +1525,11 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
             {/* Header */}
             <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-4 shrink-0">
               <div className="flex items-center gap-2.5">
-                <span className="w-3 h-3 rounded-full bg-emerald-400 animate-ping" />
+                <span className="w-3 h-3 rounded-full bg-blue-400 animate-ping" />
                 <h3 className="text-base sm:text-lg font-black uppercase font-heading tracking-wider text-white">
-                  📑 COTIZADOR RÁPIDO OFICIAL
+                  📑 EMISOR DE PROPUESTAS OFICIAL
                 </h3>
-                <span className="bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-[11px] font-mono font-black px-2.5 py-0.5 rounded-full">
+                <span className="bg-blue-500/20 border border-blue-500/40 text-blue-400 text-[11px] font-mono font-black px-2.5 py-0.5 rounded-full">
                   {quoteCode}
                 </span>
               </div>

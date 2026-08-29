@@ -22,8 +22,12 @@ export async function GET(req: Request) {
 
         const quotes = await prisma.quote.findMany({
             where: isAdmin ? {} : { salespersonId: user.id },
-            include: isAdmin ? { salesperson: { select: { name: true, email: true } } } : undefined,
-            orderBy: { createdAt: 'desc' }
+            include: {
+                salesperson: { select: { name: true, email: true } },
+                client: { select: { name: true, phone: true, city: true, email: true } }
+            },
+            orderBy: { createdAt: 'desc' },
+            take: 100
         })
 
         return NextResponse.json(quotes)
@@ -36,32 +40,64 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
     try {
         const session = await getServerSession(authOptions)
-        if (!session || !session.user?.email) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+        let salesperson: any = null
+
+        if (session && session.user?.email) {
+            salesperson = await prisma.user.findUnique({
+                where: { email: session.user.email.toLowerCase() }
+            })
         }
 
-        const salesperson = await prisma.user.findUnique({
-            where: { email: session.user.email.toLowerCase() }
-        })
+        // Si no hay sesión (ej. emitido desde la matriz de precios o enlace público), asignar al Administrador Central
+        if (!salesperson) {
+            salesperson = await prisma.user.findFirst({
+                where: { OR: [{ role: "ADMIN" }, { role: "MANAGEMENT" }] },
+                orderBy: { createdAt: "asc" }
+            })
+            if (!salesperson) {
+                salesperson = await prisma.user.findFirst({ orderBy: { createdAt: "asc" } })
+            }
+        }
 
         if (!salesperson) {
-            return NextResponse.json({ error: "Salesperson not found in DB" }, { status: 404 })
+            return NextResponse.json({ error: "No administrator user found to assign quote" }, { status: 500 })
         }
 
         const body = await req.json()
         const { 
-            quoteNumber, globalQuoteNumber, clientName, clientEmail, clientPhone, city,
-            subtotal, tax, discountPercent, total, items, 
-            deliveryAddress, warrantyComments, advisorName, status, quoteSubject 
+            quoteNumber: rawQuoteNumber, globalQuoteNumber, clientName, clientEmail, clientPhone, city,
+            subtotal, tax, taxAmount, discountPercent, discountAmount, total, items, 
+            deliveryAddress, warrantyComments, advisorName, status, quoteSubject, specs 
         } = body
 
-        // Find or create a client record to satisfy database relations
-        // Search by email OR phone to avoid duplicates
+        // Normalizar número de cotización siempre a prefijo PROP
+        let quoteNumber = rawQuoteNumber || `PROP-2026-${Math.floor(1000 + Math.random() * 9000)}`
+        if (quoteNumber.startsWith("COT-")) {
+            quoteNumber = quoteNumber.replace(/^COT-/, "PROP-")
+        } else if (!quoteNumber.startsWith("PROP-")) {
+            quoteNumber = `PROP-${quoteNumber}`
+        }
+
+        // Si el quoteNumber ya existe en base de datos, evitar conflicto generando uno único
+        const existingQuote = await prisma.quote.findUnique({
+            where: { quoteNumber }
+        })
+        if (existingQuote) {
+            quoteNumber = `PROP-2026-${Math.floor(1000 + Math.random() * 9000)}`
+        }
+
+        const effectiveClientName = (clientName || "Cliente General").trim()
+        const effectivePhone = (clientPhone || "").trim()
+        const effectiveEmail = (clientEmail && clientEmail !== "no@especifica.com") ? clientEmail.trim() : null
+        const effectiveCity = (city || deliveryAddress || "Quito / A Domicilio").trim()
+
+        // Buscar o registrar cliente en CRM
         let client = await prisma.client.findFirst({
             where: {
                 OR: [
-                    { email: clientEmail && clientEmail !== "no@especifica.com" ? clientEmail : undefined },
-                    { phone: clientPhone ? clientPhone : undefined }
+                    { phone: effectivePhone ? effectivePhone : undefined },
+                    { email: effectiveEmail ? effectiveEmail : undefined },
+                    { name: effectiveClientName }
                 ].filter(Boolean) as any
             }
         })
@@ -69,80 +105,88 @@ export async function POST(req: Request) {
         if (!client) {
             client = await prisma.client.create({
                 data: {
-                    name: clientName || "Cliente Generador",
-                    firstName: clientName.split(" ")[0],
-                    lastName: clientName.split(" ").slice(1).join(" "),
-                    email: clientEmail,
-                    phone: clientPhone,
+                    name: effectiveClientName,
+                    firstName: effectiveClientName.split(" ")[0],
+                    lastName: effectiveClientName.split(" ").slice(1).join(" ") || "",
+                    email: effectiveEmail,
+                    phone: effectivePhone,
                     salespersonId: salesperson.id,
-                    source: "COTIZADOR_AUTO",
-                    city: city || "",
-                    requirement: quoteSubject || "Nueva Cotización",
+                    source: "COTIZADOR_UNIFICADO_PROP",
+                    city: effectiveCity,
+                    requirement: quoteSubject || specs || `Cotización ${quoteNumber}`,
                     status: "COTIZANDO"
                 }
             })
         } else {
-            // Update existing client with new activity
             await prisma.client.update({
                 where: { id: client.id },
                 data: {
                     status: "COTIZANDO",
-                    requirement: `${client.requirement}\n---\nRef: ${quoteSubject || quoteNumber}`,
+                    requirement: `${client.requirement || ''}\n---\nRef: ${quoteSubject || quoteNumber}`,
                     updatedAt: new Date()
                 }
             })
         }
 
-        // Save Quote to database
-        const quote = await (prisma as any).quote.create({
+        const finalSubtotal = Number(subtotal) || Number(total) || 0
+        const finalTax = Number(taxAmount) || Number(tax) || 0
+        const finalDiscount = Number(discountAmount) || (discountPercent > 0 ? (finalSubtotal * (discountPercent / 100)) : 0)
+        const finalTotal = Number(total) || (finalSubtotal + finalTax - finalDiscount)
+
+        // Guardar la cotización en el colector central Quote
+        const quote = await prisma.quote.create({
             data: {
                 quoteNumber,
                 globalQuoteNumber,
                 clientId: client.id,
                 salespersonId: salesperson.id,
-                subtotal,
-                tax,
-                discount: discountPercent > 0 ? (subtotal * (discountPercent / 100)) : 0,
-                total,
+                subtotal: finalSubtotal,
+                tax: finalTax,
+                discount: finalDiscount,
+                total: finalTotal,
 
-                // UI Preservation
-                clientName,
-                discountPercent,
-                deliveryAddress,
-                warrantyComments,
-                advisorName,
-                itemsData: JSON.stringify(items),
+                // Metadatos y detalles para renderizado exacto
+                clientName: effectiveClientName,
+                discountPercent: Number(discountPercent) || 0,
+                deliveryAddress: effectiveCity,
+                warrantyComments: specs || warrantyComments || quoteSubject || "Garantía oficial de 1 año",
+                advisorName: advisorName || salesperson.name || "ASESOR ATOMIC",
+                itemsData: typeof items === "string" ? items : JSON.stringify(items || []),
 
-                status: status || "SAVED"
+                status: status || "PROPUESTA_EMITIDA"
             }
         })
 
-        // AUTO-REGISTER IN FINANCE IF CLOSED
-        if (status === "CERRADO") {
-            try {
-                const nextTrx = await (prisma as any).transaction.count() + 1
-                await (prisma as any).transaction.create({
-                    data: {
-                        trxId: `TRX-${nextTrx.toString().padStart(3, '0')}`,
-                        client: clientName,
-                        amount: total, // PVP Inicial
-                        pvp: total,
-                        status: "PENDIENTE", // Requiere aprobación en finanzas
-                        type: "Venta Directa (Cerrada)",
-                        quoteNumber: quoteNumber,
-                        salespersonId: salesperson.id
-                    }
-                })
-            } catch (finErr) {
-                console.error("Finance Auto-Registration failed:", finErr)
+        // Generar siguiente número secuencial si es necesario
+        let nextQuoteNumber = "PROP-00-001"
+        const lastQuote = await prisma.quote.findFirst({
+            orderBy: { createdAt: "desc" },
+            select: { quoteNumber: true }
+        })
+        if (lastQuote?.quoteNumber) {
+            const match = lastQuote.quoteNumber.match(/PROP-(\d+)-(\d+)/)
+            if (match) {
+                const seq = parseInt(match[2]) + 1
+                nextQuoteNumber = `PROP-00-${seq.toString().padStart(3, "0")}`
+            } else {
+                nextQuoteNumber = `PROP-2026-${Math.floor(1000 + Math.random() * 9000)}`
             }
         }
 
-        return NextResponse.json({ success: true, quote })
+        // Obtener historial reciente para actualizar UI en vivo
+        const history = await prisma.quote.findMany({
+            orderBy: { createdAt: "desc" },
+            take: 20
+        })
+
+        return NextResponse.json({
+            success: true,
+            quote,
+            nextQuoteNumber,
+            history
+        })
     } catch (error: any) {
         console.error("Save Quote Error:", error)
         return NextResponse.json({ error: "Failed to save quote", details: error.message }, { status: 500 })
     }
 }
-
-

@@ -12,6 +12,7 @@ import {
 import jsPDF from "jspdf"
 import autoTable from "jspdf-autotable"
 import { calculateDiscountedPrice } from "@/lib/utils/pricing"
+import { generateAtomicUnifiedProposalPDF } from "@/lib/pdf/quotePdfGenerator"
 
 const safeParseArray = (str: any, fallback: any = []) => {
     if (!str) return fallback;
@@ -340,154 +341,45 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
             return
         }
 
-        const doc = new jsPDF()
-        const primaryColor = [15, 23, 42]
-        const accentColor = [79, 70, 229]
-        
-        doc.setFont("helvetica", "bold")
-        doc.setFontSize(26)
-        doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2])
-        doc.text("ATOMIC", 14, 25)
-        
-        doc.setFont("helvetica", "normal")
-        doc.setFontSize(14)
-        doc.setTextColor(accentColor[0], accentColor[1], accentColor[2])
-        doc.text("INDUSTRIES", 57, 25)
-        
-        doc.setFontSize(9)
-        doc.setTextColor(100, 100, 100)
-        doc.text("Soluciones Tecnológicas e Industriales de Alto Rendimiento", 14, 32)
-        doc.text("División Corporativa | Quito, Ecuador", 14, 37)
-        
-        doc.setFontSize(22)
-        doc.setFont("helvetica", "bold")
-        doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2])
-        doc.text("COTIZACIÓN", 195, 25, { align: "right" })
-        
-        doc.setFontSize(10)
-        doc.setFont("helvetica", "normal")
-        doc.setTextColor(100, 100, 100)
-        doc.text(`Doc No.: ${quoteNumber}`, 195, 32, { align: "right" })
-        doc.text(`Fecha: ${new Date().toLocaleDateString()}`, 195, 37, { align: "right" })
-        
-        doc.setDrawColor(220, 220, 220)
-        doc.line(14, 42, 196, 42)
-        
-        doc.setFontSize(10)
-        doc.setFont("helvetica", "bold")
-        doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2])
-        doc.text("PREPARADO PARA:", 14, 52)
-        
-        doc.setFont("helvetica", "normal")
-        doc.setFontSize(9)
-        doc.setTextColor(50, 50, 50)
-        doc.text(clientName.toUpperCase(), 14, 58)
-        doc.text(`Ciudad: ${clientCity}`, 14, 63)
-        doc.text(`Tel: ${clientPhone}`, 14, 68)
-        doc.text(`Email: ${emailNotSpecified ? "No especificado" : clientEmail}`, 14, 73)
-        
-        doc.setFontSize(10)
-        doc.setFont("helvetica", "bold")
-        doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2])
-        doc.text("DETALLES DEL PROYECTO:", 106, 52)
-        
-        doc.setFont("helvetica", "normal")
-        doc.setFontSize(9)
-        doc.setTextColor(50, 50, 50)
-        const splitSubject = doc.splitTextToSize(quoteSubject.toUpperCase(), 85)
-        doc.text(splitSubject, 106, 58)
-        doc.text(`Asesor Comercial: ${advisorName}`, 106, 68 + ((splitSubject.length - 1) * 4))
-        
-        autoTable(doc, {
-            startY: 85,
-            head: [["IMG", "CÓDIGO", "DESCRIPCIÓN", "CANT", "PRECIO", "SUBTOT", "DESC", "TOTAL"]],
-            body: items.map(i => {
-                const sub = i.quantity * i.unitPrice;
-                const desc = sub * ((i.discountPercent || 0) / 100);
-                const tot = sub - desc;
-                return [
-                    '', 
-                    i.productId, 
-                    i.description, 
-                    i.quantity, 
-                    `$${i.unitPrice.toFixed(2)}`, 
-                    `$${sub.toFixed(2)}`,
-                    `-$${desc.toFixed(2)}`,
-                    `$${tot.toFixed(2)}`
-                ]
-            }),
-            theme: 'plain',
-            headStyles: { fillColor: [248, 250, 252], textColor: [15, 23, 42], fontStyle: 'bold', fontSize: 8, lineWidth: 0.1, lineColor: [226, 232, 240] },
-            bodyStyles: { fontSize: 8, textColor: 50, minCellHeight: 14, lineWidth: 0.1, lineColor: [226, 232, 240] },
-            columnStyles: {
-                0: { cellWidth: 12, halign: 'center' },
-                1: { cellWidth: 20 },
-                2: { cellWidth: 60 },
-                3: { cellWidth: 10, halign: 'center' },
-                4: { cellWidth: 20, halign: 'right' },
-                5: { cellWidth: 20, halign: 'right' },
-                6: { cellWidth: 18, halign: 'right', textColor: [220, 38, 38] },
-                7: { cellWidth: 22, halign: 'right', fontStyle: 'bold' }
-            },
-            didDrawCell: function(data) {
-                if (data.column.index === 0 && data.cell.section === 'body') {
-                    const item = items[data.row.index];
-                    let imgToDraw = item.customImage;
-                    
-                    if (!imgToDraw) {
-                        const product = findProduct(item.productId, item.description);
-                        if (product?.images && product.images !== 'null') {
-                            const parsed = safeParseArray(product.images);
-                            if (parsed.length > 0) imgToDraw = parsed[0];
-                        }
-                    }
-
-                    if (imgToDraw) {
-                        try {
-                            doc.addImage(imgToDraw, data.cell.x + 1, data.cell.y + 2, 10, 10);
-                        } catch(e) {}
-                    }
-                }
-            }
-        });
-        
-        const finalY = (doc as any).lastAutoTable.finalY + 10;
-        
-        doc.setFillColor(248, 250, 252)
-        doc.rect(130, finalY, 66, 35, 'F')
-        doc.setDrawColor(226, 232, 240)
-        doc.rect(130, finalY, 66, 35, 'S')
-        
-        doc.setFontSize(10)
-        doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2])
-        doc.setFont("helvetica", "bold")
-        doc.text("Subtotal:", 135, finalY + 8)
-        doc.setFont("helvetica", "normal")
-        doc.text(`$${subtotal.toFixed(2)}`, 190, finalY + 8, { align: "right" })
-        
-        doc.setFont("helvetica", "bold")
-        doc.text("IVA (15%):", 135, finalY + 16)
-        doc.setFont("helvetica", "normal")
-        doc.text(`$${taxAmount.toFixed(2)}`, 190, finalY + 16, { align: "right" })
-        
-        if (totalDiscountAmount > 0) {
-            doc.setFont("helvetica", "bold")
-            doc.setTextColor(220, 38, 38)
-            doc.text(`Descuento:`, 135, finalY + 24)
-            doc.setFont("helvetica", "normal")
-            doc.text(`-$${totalDiscountAmount.toFixed(2)}`, 190, finalY + 24, { align: "right" })
-        }
-        
-        doc.setFont("helvetica", "bold")
-        doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2])
-        doc.setFontSize(12)
-        doc.text("TOTAL USD:", 135, finalY + 31)
-        doc.text(`$${total.toFixed(2)}`, 190, finalY + 31, { align: "right" })
-        
-        doc.save(`${quoteNumber}_${clientName.replace(/\s+/g, "_")}.pdf`)
-
         try {
-            const res = await fetch("/api/quotes/save", {
+            const pdfData = await generateAtomicUnifiedProposalPDF({
+                quoteNumber,
+                clientName,
+                clientPhone,
+                clientEmail: finalEmail,
+                clientCity,
+                deliveryAddress: deliveryAddress || clientCity,
+                quoteSubject,
+                advisorName,
+                items: items.map(i => {
+                    const sub = i.quantity * i.unitPrice;
+                    const desc = sub * ((i.discountPercent || 0) / 100);
+                    const tot = sub - desc;
+                    return {
+                        sku: i.productId || "SKU-GEN",
+                        productId: i.productId,
+                        name: i.description,
+                        description: i.description,
+                        quantity: i.quantity,
+                        unitPrice: i.unitPrice,
+                        discountPercent: i.discountPercent,
+                        discountAmount: desc,
+                        total: tot,
+                        customImage: i.customImage
+                    };
+                }),
+                specs: quoteSubject,
+                warrantyComments: "Garantía oficial de 1 año con soporte técnico y repuestos originales",
+                subtotal,
+                taxAmount,
+                discountAmount: totalDiscountAmount,
+                total,
+                validityDays: 15
+            });
+
+            pdfData.doc.save(pdfData.fileName);
+
+            const res = await fetch("/api/quotes", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -496,23 +388,28 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                     clientEmail: finalEmail,
                     clientPhone,
                     clientCity,
+                    city: clientCity,
                     quoteSubject,
                     subtotal,
                     discountPercent,
-                    totalDiscountAmount,
+                    discountAmount: totalDiscountAmount,
                     taxAmount,
                     total,
                     items,
-                    status
+                    status,
+                    advisorName,
+                    specs: quoteSubject
                 })
-            })
+            });
+
             if (res.ok) {
-                const data = await res.json()
-                if (data.nextQuoteNumber) setQuoteNumber(data.nextQuoteNumber)
-                if (data.history) setQuoteHistory(data.history)
+                const data = await res.json();
+                if (data.nextQuoteNumber) setQuoteNumber(data.nextQuoteNumber);
+                if (data.history) setQuoteHistory(data.history);
             }
-        } catch(e) {
-            console.error("Save error:", e)
+        } catch (e) {
+            console.error("PDF generation or save error:", e);
+            alert("Error al generar o guardar la cotización.");
         }
     }
 
