@@ -100,7 +100,7 @@ export default function AutomatizacionClient() {
               <span className="text-xl font-black tracking-tight text-white">ATOMIC <span className="text-orange-400">SYSTEMS</span></span>
               <span className="hidden sm:inline-block ml-2 text-xs px-2 py-0.5 rounded-full bg-orange-500/10 text-orange-400 border border-orange-500/30">IA & Automatización</span>
             </div>
-          </div>
+          </Link>
 
           <button
             onClick={() => handleActivateBotWhatsApp()}

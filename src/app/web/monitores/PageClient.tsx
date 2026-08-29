@@ -90,7 +90,7 @@ export default function MonitoresClient() {
               <span className="text-xl font-black tracking-tight text-white">DAHUA <span className="text-red-400">DISPLAYS</span></span>
               <span className="hidden sm:inline-block ml-2 text-xs px-2 py-0.5 rounded-full bg-red-500/10 text-red-400 border border-red-500/30">Monitores LED</span>
             </div>
-          </div>
+          </Link>
 
           <Link
             href="/web"

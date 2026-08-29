@@ -38,7 +38,7 @@ export default function TiendaOnlineClient() {
               <span className="text-xl font-black tracking-tight text-white">ATOMIC <span className="text-emerald-400">STUDIO</span></span>
               <span className="hidden sm:inline-block ml-2 text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">Desarrollo Web & Tiendas</span>
             </div>
-          </div>
+          </Link>
 
           <Link
             href="/web"

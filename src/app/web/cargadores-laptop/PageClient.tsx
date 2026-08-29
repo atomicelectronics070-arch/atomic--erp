@@ -89,7 +89,7 @@ export default function CargadoresLaptopClient() {
               <span className="text-xl font-black tracking-tight text-white">ATOMIC <span className="text-cyan-400">PARTS</span></span>
               <span className="hidden sm:inline-block ml-2 text-xs px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">Cargadores & Repuestos</span>
             </div>
-          </div>
+          </Link>
 
           <Link
             href="/web/repuestos"

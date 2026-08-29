@@ -2027,6 +2027,8 @@ export default function PublicWebClient({
             })}
           </div>
         )}
+      </section>
+
       {/* ═══════════ INTERACTIVE CAMPAIGN & LANDING BANNERS ═══════════ */}
       <section className="w-full max-w-7xl mx-auto px-6 py-12 space-y-8">
         
