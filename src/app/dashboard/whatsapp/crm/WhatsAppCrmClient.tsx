@@ -100,6 +100,7 @@ export default function WhatsAppCrmClient() {
     // Media Zoom / Lightbox State
     const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null)
     const [previewVideoUrl, setPreviewVideoUrl] = useState<string | null>(null)
+    const [failedMedia, setFailedMedia] = useState<Record<string, boolean>>({})
 
     // WhatsApp Settings & Profile Modal State
     const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
@@ -615,33 +616,58 @@ export default function WhatsAppCrmClient() {
                                                 {/* 🎬 VIDEO INTERACTIVO CON REPRODUCTOR Y LIGHTBOX */}
                                                 {msg.type === 'video' && msg.mediaUrl && (
                                                     <div className="space-y-2">
-                                                        <div className="relative rounded-xl overflow-hidden border border-white/15 bg-black group">
-                                                            <video 
-                                                                controls 
-                                                                playsInline
-                                                                preload="metadata"
-                                                                src={msg.mediaUrl} 
-                                                                className="max-h-72 w-full object-contain bg-black"
-                                                            />
-                                                        </div>
-                                                        <div className="flex items-center gap-2 pt-1">
-                                                            <button 
-                                                                type="button"
-                                                                onClick={() => setPreviewVideoUrl(msg.mediaUrl || null)}
-                                                                className="flex-1 py-1.5 px-3 bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-[11px] rounded-lg flex items-center justify-center gap-1.5 transition-all shadow cursor-pointer"
-                                                            >
-                                                                <Film size={13} /> <span>Pantalla Completa</span>
-                                                            </button>
-                                                            <a 
-                                                                href={msg.mediaUrl} 
-                                                                target="_blank" 
-                                                                rel="noopener noreferrer"
-                                                                className="py-1.5 px-3 bg-slate-700 hover:bg-slate-600 text-slate-200 font-bold text-[11px] rounded-lg flex items-center justify-center gap-1 transition-all shadow cursor-pointer"
-                                                                title="Descargar video original"
-                                                            >
-                                                                <Download size={13} />
-                                                            </a>
-                                                        </div>
+                                                        {failedMedia[msg.id] ? (
+                                                            <div className="p-3 bg-amber-950/80 border border-amber-500/50 rounded-xl space-y-2 text-amber-200">
+                                                                <div className="flex items-center gap-2 text-xs font-bold text-amber-300">
+                                                                    <AlertCircle size={15} />
+                                                                    <span>Video no disponible · Token no configurado o expirado</span>
+                                                                </div>
+                                                                <p className="text-[10px] text-slate-300 leading-relaxed">
+                                                                    Meta requiere un <strong>Token Permanente</strong> activo para descargar videos entrantes.
+                                                                </p>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => {
+                                                                        setActiveSettingsTab('credentials');
+                                                                        setIsSettingsModalOpen(true);
+                                                                    }}
+                                                                    className="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-black font-black text-[10px] uppercase rounded-lg transition-all flex items-center gap-1.5 cursor-pointer shadow"
+                                                                >
+                                                                    <Key size={12} /> Configurar Token Permanente
+                                                                </button>
+                                                            </div>
+                                                        ) : (
+                                                            <>
+                                                                <div className="relative rounded-xl overflow-hidden border border-white/15 bg-black group">
+                                                                    <video 
+                                                                        controls 
+                                                                        playsInline
+                                                                        preload="metadata"
+                                                                        src={msg.mediaUrl} 
+                                                                        onError={() => setFailedMedia(prev => ({ ...prev, [msg.id]: true }))}
+                                                                        className="max-h-72 w-full object-contain bg-black"
+                                                                    />
+                                                                </div>
+                                                                <div className="flex items-center gap-2 pt-1">
+                                                                    <button 
+                                                                        type="button"
+                                                                        onClick={() => setPreviewVideoUrl(msg.mediaUrl || null)}
+                                                                        className="flex-1 py-1.5 px-3 bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-[11px] rounded-lg flex items-center justify-center gap-1.5 transition-all shadow cursor-pointer"
+                                                                    >
+                                                                        <Film size={13} /> <span>Pantalla Completa</span>
+                                                                    </button>
+                                                                    <a 
+                                                                        href={msg.mediaUrl} 
+                                                                        target="_blank" 
+                                                                        rel="noopener noreferrer"
+                                                                        className="py-1.5 px-3 bg-slate-700 hover:bg-slate-600 text-slate-200 font-bold text-[11px] rounded-lg flex items-center justify-center gap-1 transition-all shadow cursor-pointer"
+                                                                        title="Descargar video original"
+                                                                    >
+                                                                        <Download size={13} />
+                                                                    </a>
+                                                                </div>
+                                                            </>
+                                                        )}
                                                     </div>
                                                 )}
 
