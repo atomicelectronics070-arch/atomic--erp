@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo, useRef } from 'react';
+import { useSession, signIn, signOut } from 'next-auth/react';
 import ProviderSyncStatusWidget from './ProviderSyncStatusWidget';
 import { generateAtomicUnifiedProposalPDF } from '@/lib/pdf/quotePdfGenerator';
 
@@ -33,6 +34,16 @@ export default function MatrizPreciosComponent({
   allowPermanentDelete = true,
   defaultTheme = 'bw-inv'
 }: MatrizPreciosProps) {
+  const { data: session } = useSession();
+  const userRole = (session?.user as any)?.role;
+  const isStaff = userRole === 'ADMIN' || userRole === 'MANAGEMENT' || userRole === 'COORDINATOR' || userRole === 'COORD_ASSISTANT';
+
+  // Dual mode switcher for Staff (Admin/Coordinacion)
+  const [dualMode, setDualMode] = useState<'admin' | 'vendedor'>(isVendedorMode ? 'vendedor' : 'admin');
+
+  // If regular user -> ALWAYS vendedor mode. If staff -> use dualMode toggle.
+  const effectiveVendedorMode = session?.user ? (!isStaff ? true : dualMode === 'vendedor') : isVendedorMode;
+
   const [products, setProducts] = useState<ProductMatrixItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -46,8 +57,44 @@ export default function MatrizPreciosComponent({
   const [totalPages, setTotalPages] = useState(1);
   const [themeMode, setThemeMode] = useState<'bw' | 'bw-inv' | 'green' | 'amber'>(defaultTheme);
 
+  // Quick Login Modal State
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('atomic2026');
+  const [loginError, setLoginError] = useState<string | null>(null);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+
+  const handleQuickLogin = async (targetEmail?: string, targetPass?: string) => {
+    const emailToUse = (targetEmail || loginEmail).trim().toLowerCase();
+    const passToUse = targetPass || loginPassword;
+    if (!emailToUse) {
+      setLoginError('Ingresa un correo');
+      return;
+    }
+    setIsLoggingIn(true);
+    setLoginError(null);
+    try {
+      const res = await signIn('credentials', {
+        redirect: false,
+        email: emailToUse,
+        password: passToUse,
+      });
+      if (res?.error) {
+        setLoginError(res.error);
+      } else {
+        setShowLoginModal(false);
+        showNotification(`✅ Sesión iniciada con ${emailToUse}`);
+        window.location.reload();
+      }
+    } catch (err: any) {
+      setLoginError(err?.message || 'Error al iniciar sesión');
+    } finally {
+      setIsLoggingIn(false);
+    }
+  };
+
   // Edit Mode & Trash Bin state
-  const [isEditMode, setIsEditMode] = useState(!isVendedorMode);
+  const [isEditMode, setIsEditMode] = useState(!effectiveVendedorMode);
   const [viewTrash, setViewTrash] = useState(false);
   const [savingId, setSavingId] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -802,20 +849,58 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
       {/* ================= RETRO TERMINAL HEADER ================= */}
       <div className={`border-2 ${themeClasses.border} p-6 shadow-xl mb-6 ${themeClasses.cardBg} rounded-xl`}>
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
-          <div>
+          <div className="space-y-3">
             <div className="flex items-center gap-3">
               <span className="w-3.5 h-3.5 rounded-full bg-emerald-500 animate-pulse border-2 border-zinc-950" />
               <h1 className="text-xl md:text-2xl font-black uppercase tracking-widest">
-                {title || (isVendedorMode 
+                {title || (effectiveVendedorMode 
                   ? '[ATOMIC_SYSTEM] CATÁLOGO Y MATRIZ DE PRECIOS VENDEDORES V2.0' 
-                  : '[ATOMIC_SYSTEM] DATABASE PRICING & CATEGORY MATRIX v2.0')}
+                  : '[ATOMIC_SYSTEM] DATABASE PRICING & CATEGORY MATRIX v2.0 (ADMIN & COORDINACIÓN)')}
               </h1>
             </div>
             <p className="text-xs font-bold opacity-80 mt-1 uppercase tracking-wider">
-              {subtitle || (isVendedorMode 
-                ? 'LISTA GENERAL DE PRODUCTOS' 
+              {subtitle || (effectiveVendedorMode 
+                ? 'LISTA GENERAL DE PRODUCTOS · PVP Y DESCUENTOS PARA ASESORES COMERCIALES' 
                 : 'MATRIZ GENERAL DE PRODUCTOS · EDICIÓN DIRECTA DE CATEGORÍAS, STOCK, COSTOS Y PRECIOS EN TIEMPO REAL')}
             </p>
+
+            {/* BOTÓN DUAL ADMIN / COORDINACIÓN */}
+            {isStaff && (
+              <div className="inline-flex items-center gap-2 p-1.5 bg-zinc-950 border-2 border-cyan-400 rounded-xl shadow-xl">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDualMode('admin');
+                    setIsEditMode(true);
+                    showNotification('👑 Vista cambiada a: MATRIZ ADMIN (Costos, ROI y Edición)');
+                  }}
+                  className={`px-4 py-2 text-xs font-black uppercase tracking-wider rounded-lg transition-all flex items-center gap-2 cursor-pointer ${
+                    !effectiveVendedorMode
+                      ? 'bg-gradient-to-r from-amber-400 to-orange-500 text-zinc-950 shadow-md ring-2 ring-white/40 font-black'
+                      : 'text-zinc-400 hover:text-white hover:bg-zinc-900'
+                  }`}
+                >
+                  <span>👑</span>
+                  <span>Vista Admin (Costos & ROI)</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDualMode('vendedor');
+                    setIsEditMode(false);
+                    showNotification('🛒 Vista cambiada a: MATRIZ VENDEDORES (PVP y Cotizador)');
+                  }}
+                  className={`px-4 py-2 text-xs font-black uppercase tracking-wider rounded-lg transition-all flex items-center gap-2 cursor-pointer ${
+                    effectiveVendedorMode
+                      ? 'bg-gradient-to-r from-emerald-400 to-teal-500 text-zinc-950 shadow-md ring-2 ring-white/40 font-black'
+                      : 'text-zinc-400 hover:text-white hover:bg-zinc-900'
+                  }`}
+                >
+                  <span>🛒</span>
+                  <span>Vista Vendedores (PVP)</span>
+                </button>
+              </div>
+            )}
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
@@ -861,7 +946,39 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
               <span>{isRefreshing ? 'ACTUALIZANDO...' : 'ACTUALIZAR LISTA'}</span>
             </button>
 
-            {!isVendedorMode && (
+            {/* BOTÓN INICIAR SESIÓN / SESIÓN ACTIVA */}
+            {session?.user ? (
+              <div className="flex items-center gap-1.5 p-1 bg-zinc-900 border-2 border-zinc-700 rounded-lg text-xs">
+                <button
+                  onClick={() => setShowLoginModal(true)}
+                  className="px-2.5 py-1 text-zinc-200 font-bold hover:text-amber-400 text-xs flex items-center gap-1.5 cursor-pointer"
+                  title="Cambiar perfil rápido"
+                >
+                  <span>👤</span>
+                  <span className="truncate max-w-[120px]">{session.user.name || session.user.email}</span>
+                  <span className="text-[9px] bg-zinc-800 text-cyan-400 px-1.5 py-0.5 rounded font-mono font-bold">
+                    {userRole || 'USER'}
+                  </span>
+                </button>
+                <button
+                  onClick={() => signOut({ callbackUrl: '/dashboard/matriz-precios' })}
+                  className="px-2 py-1 bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white font-black text-[10px] uppercase rounded transition-colors cursor-pointer"
+                  title="Cerrar sesión"
+                >
+                  ✕
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setShowLoginModal(true)}
+                className="px-4 py-2.5 border-2 border-zinc-950 bg-gradient-to-r from-amber-400 to-yellow-500 text-zinc-950 hover:from-amber-300 hover:to-yellow-400 font-black text-xs uppercase flex items-center gap-2 rounded-lg shadow-sm transition-all cursor-pointer"
+              >
+                <span>🔑</span>
+                <span>INICIAR SESIÓN</span>
+              </button>
+            )}
+
+            {!effectiveVendedorMode && (
               <>
                 <button
                   onClick={() => setIsEditMode(!isEditMode)}
@@ -950,16 +1067,16 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
         </div>
 
         {/* MONITOR EN VIVO Y SINCRONIZADOR DE PROVEEDORES (SOLO MODO ADMIN) */}
-        {!isVendedorMode && (
+        {!effectiveVendedorMode && (
           <div className="mt-6">
             <ProviderSyncStatusWidget />
           </div>
         )}
 
         {/* CONTROLES DE BÚSQUEDA Y FILTROS EN RECUADROS INDEPENDIENTES */}
-        <div className={`grid grid-cols-1 ${isVendedorMode ? 'md:grid-cols-3' : 'md:grid-cols-4'} gap-4 mt-6 pt-6 border-t-2 border-zinc-950`}>
+        <div className={`grid grid-cols-1 ${effectiveVendedorMode ? 'md:grid-cols-3' : 'md:grid-cols-4'} gap-4 mt-6 pt-6 border-t-2 border-zinc-950`}>
           
-          <div className={`${isVendedorMode ? 'md:col-span-2' : 'md:col-span-2'} space-y-1.5 p-3 border-2 border-zinc-950 bg-white/90 rounded-lg shadow-sm`}>
+          <div className={`${effectiveVendedorMode ? 'md:col-span-2' : 'md:col-span-2'} space-y-1.5 p-3 border-2 border-zinc-950 bg-white/90 rounded-lg shadow-sm`}>
             <label className="text-[10px] uppercase font-black tracking-widest text-zinc-900 block">
               🔍 Escribe en el buscador y encuentra todos los productos para tus clientes
             </label>
@@ -975,7 +1092,7 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
             />
           </div>
 
-          {!isVendedorMode && (
+          {!effectiveVendedorMode && (
             <div className="space-y-1.5 p-3 border-2 border-zinc-950 bg-white/90 rounded-lg shadow-sm">
               <label className="text-[10px] uppercase font-black tracking-widest text-zinc-900 block">
                 🏢 Filtro por Proveedor
@@ -998,7 +1115,7 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
             </div>
           )}
 
-          <div className={`${isVendedorMode ? 'md:col-span-1' : ''} space-y-1.5 p-3 border-2 border-zinc-950 bg-white/90 rounded-lg shadow-sm`}>
+          <div className={`${effectiveVendedorMode ? 'md:col-span-1' : ''} space-y-1.5 p-3 border-2 border-zinc-950 bg-white/90 rounded-lg shadow-sm`}>
             <label className="text-[10px] uppercase font-black tracking-widest text-zinc-900 block">
               📂 Filtro por Categoría
             </label>
@@ -1021,12 +1138,12 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
         </div>
 
         {/* SUMMARY STATS BAR EN RECUADROS INDEPENDIENTES */}
-        <div className={`grid grid-cols-2 ${isVendedorMode ? 'md:grid-cols-2' : 'md:grid-cols-4'} gap-4 mt-6 pt-4 border-t-2 border-zinc-950 text-xs`}>
+        <div className={`grid grid-cols-2 ${effectiveVendedorMode ? 'md:grid-cols-2' : 'md:grid-cols-4'} gap-4 mt-6 pt-4 border-t-2 border-zinc-950 text-xs`}>
           <div className="p-3 border-2 border-zinc-950 bg-white rounded-lg shadow-sm">
             <span className="text-zinc-700 font-bold block text-[10px] uppercase">REGISTROS MOSTRADOS:</span>
             <span className={themeClasses.accent}>{products.length} de {totalProducts} productos</span>
           </div>
-          {!isVendedorMode && (
+          {!effectiveVendedorMode && (
             <div className="p-3 border-2 border-zinc-950 bg-white rounded-lg shadow-sm">
               <span className="text-zinc-700 font-bold block text-[10px] uppercase">VALOR AL COSTO (VISTA):</span>
               <span className={themeClasses.accent}>${stats.totalCostSum.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
@@ -1036,7 +1153,7 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
             <span className="text-zinc-700 font-bold block text-[10px] uppercase">VALOR A LA VENTA (VISTA):</span>
             <span className={themeClasses.accent}>${stats.totalSaleSum.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
           </div>
-          {!isVendedorMode && (
+          {!effectiveVendedorMode && (
             <div className="p-3 border-2 border-zinc-950 bg-white rounded-lg shadow-sm">
               <span className="text-zinc-700 font-bold block text-[10px] uppercase">MARGEN PROMEDIO:</span>
               <span className="text-emerald-700 font-black">+{stats.avgMarginPercent.toFixed(2)}% (${stats.totalProfitSum.toLocaleString('en-US', { minimumFractionDigits: 2 })})</span>
@@ -1062,7 +1179,7 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
         ref={tableContainerRef} 
         className={`border-2 ${themeClasses.border} ${themeClasses.cardBg} overflow-x-auto overflow-y-auto max-h-[75vh] shadow-2xl relative scroll-smooth rounded-xl`}
       >
-        <table className={`w-full ${isVendedorMode ? 'min-w-[1400px]' : 'min-w-[1950px]'} text-left text-xs border-collapse`}>
+        <table className={`w-full ${effectiveVendedorMode ? 'min-w-[1400px]' : 'min-w-[1950px]'} text-left text-xs border-collapse`}>
           <thead 
             ref={tableHeaderRef}
             className="sticky top-0 z-30 shadow-2xl bg-zinc-300 border-b-2 border-zinc-950 cursor-ew-resize select-none"
@@ -1071,27 +1188,27 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
             <tr className={`${themeClasses.headerBg} ${themeClasses.headerText} uppercase font-black tracking-wider`}>
               <th className="py-3.5 px-4 border-r-2 border-zinc-950 w-12 text-center">#</th>
               <th className="py-3.5 px-4 border-r-2 border-zinc-950 w-36">
-                {isVendedorMode ? 'SKU / CÓDIGO' : 'SKU / CÓDIGO (EDITABLE)'}
+                {effectiveVendedorMode ? 'SKU / CÓDIGO' : 'SKU / CÓDIGO (EDITABLE)'}
               </th>
               <th className="py-3.5 px-4 border-r-2 border-zinc-950">
-                {isVendedorMode ? 'DESCRIPCIÓN PRODUCTO' : 'DESCRIPCIÓN PRODUCTO (EDITABLE)'}
+                {effectiveVendedorMode ? 'DESCRIPCIÓN PRODUCTO' : 'DESCRIPCIÓN PRODUCTO (EDITABLE)'}
               </th>
-              {!isVendedorMode && (
+              {!effectiveVendedorMode && (
                 <th className="py-3.5 px-4 border-r-2 border-zinc-950 w-36">PROVEEDOR</th>
               )}
               <th className="py-3.5 px-4 border-r-2 border-zinc-950 w-44">
-                {isVendedorMode ? 'CATEGORÍA' : 'CATEGORÍA (EDITABLE)'}
+                {effectiveVendedorMode ? 'CATEGORÍA' : 'CATEGORÍA (EDITABLE)'}
               </th>
               <th className="py-3.5 px-4 border-r-2 border-zinc-950 text-center w-24">
-                {isVendedorMode ? 'STOCK' : 'STOCK (EDITABLE)'}
+                {effectiveVendedorMode ? 'STOCK' : 'STOCK (EDITABLE)'}
               </th>
-              {!isVendedorMode && (
+              {!effectiveVendedorMode && (
                 <th className="py-3.5 px-4 border-r-2 border-zinc-950 text-right w-32">COSTO ($) EDITABLE</th>
               )}
               <th className="py-3.5 px-4 border-r-2 border-zinc-950 text-right w-36">
-                {isVendedorMode ? 'P. VENTA ($)' : 'P. VENTA ($) EDITABLE'}
+                {effectiveVendedorMode ? 'P. VENTA ($)' : 'P. VENTA ($) EDITABLE'}
               </th>
-              {!isVendedorMode && (
+              {!effectiveVendedorMode && (
                 <>
                   <th className="py-3.5 px-4 border-r-2 border-zinc-950 text-right w-28">MARGEN ($)</th>
                   <th className="py-3.5 px-4 border-r-2 border-zinc-950 text-right w-28">MARGEN (%)</th>
@@ -1100,7 +1217,7 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
               <th className="py-3.5 px-4 border-r-2 border-zinc-950 text-right w-32 bg-amber-300 text-zinc-950 font-black">DESC. MÁX ($)</th>
               <th className="py-3.5 px-4 border-r-2 border-zinc-950 text-right w-32 bg-amber-300 text-zinc-950 font-black">DESC. MÁX (%)</th>
               <th className="py-3.5 px-4 border-r-2 border-zinc-950 text-center w-32">TIENDA EN LÍNEA</th>
-              {!isVendedorMode && (
+              {!effectiveVendedorMode && (
                 <th className="py-3.5 px-4 text-center w-28">ACCIONES</th>
               )}
             </tr>
@@ -1108,13 +1225,13 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
           <tbody className="divide-y divide-zinc-400">
             {loading ? (
               <tr>
-                <td colSpan={isVendedorMode ? 10 : 14} className="py-16 text-center text-sm font-black tracking-widest animate-pulse">
+                <td colSpan={effectiveVendedorMode ? 10 : 14} className="py-16 text-center text-sm font-black tracking-widest animate-pulse">
                   [ PROCESANDO CONSULTA DE BASE DE DATOS... CARGANDO REGISTROS ]
                 </td>
               </tr>
             ) : products.length === 0 ? (
               <tr>
-                <td colSpan={isVendedorMode ? 10 : 14} className="py-16 text-center text-sm font-bold opacity-70 tracking-widest">
+                <td colSpan={effectiveVendedorMode ? 10 : 14} className="py-16 text-center text-sm font-bold opacity-70 tracking-widest">
                   NO SE ENCONTRARON REGISTROS QUE COINCIDAN CON LOS CRITERIOS DE BÚSQUEDA.
                 </td>
               </tr>
@@ -1140,7 +1257,7 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
 
                     {/* SKU / CÓDIGO */}
                     <td className="py-1.5 px-2 border-r border-zinc-400 font-mono text-xs font-bold uppercase">
-                      {!isVendedorMode && isEditMode ? (
+                      {!effectiveVendedorMode && isEditMode ? (
                         <input
                           type="text"
                           defaultValue={p.sku || ''}
@@ -1164,7 +1281,7 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
 
                     {/* DESCRIPCIÓN DEL PRODUCTO (NOMBRE) */}
                     <td className="py-1.5 px-2 border-r border-zinc-400 font-sans text-xs">
-                      {!isVendedorMode && isEditMode ? (
+                      {!effectiveVendedorMode && isEditMode ? (
                         <input
                           type="text"
                           defaultValue={p.name || ''}
@@ -1186,7 +1303,7 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
                       )}
                     </td>
 
-                    {!isVendedorMode && (
+                    {!effectiveVendedorMode && (
                       <td className="py-2.5 px-4 border-r border-zinc-400 font-mono text-[11px] font-bold uppercase text-zinc-800">
                         {p.provider}
                       </td>
@@ -1194,7 +1311,7 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
 
                     {/* CATEGORY */}
                     <td className="py-1.5 px-2 border-r border-zinc-400 font-mono text-[11px] uppercase">
-                      {!isVendedorMode && isEditMode ? (() => {
+                      {!effectiveVendedorMode && isEditMode ? (() => {
                         const matched = categories.find(c => c.id === p.categoryId || c.name.toLowerCase() === (p.category || '').toLowerCase());
                         const selVal = matched ? matched.id : (p.categoryId || '');
                         return (
@@ -1218,7 +1335,7 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
 
                     {/* STOCK */}
                     <td className="py-1.5 px-2 border-r border-zinc-400 text-center font-mono font-black">
-                      {!isVendedorMode && isEditMode ? (
+                      {!effectiveVendedorMode && isEditMode ? (
                         <input
                           type="number"
                           defaultValue={p.stock}
@@ -1243,7 +1360,7 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
                     </td>
 
                     {/* COST PRICE (Solo para Admin / Jefe) */}
-                    {!isVendedorMode && (
+                    {!effectiveVendedorMode && (
                       <td className="py-1.5 px-2 border-r border-zinc-400 text-right font-mono font-bold">
                         {isEditMode ? (
                           <div className="flex items-center justify-end gap-1">
@@ -1274,7 +1391,7 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
 
                     {/* SALE PRICE (PVP) */}
                     <td className="py-1.5 px-2 border-r border-zinc-400 text-right font-mono font-black">
-                      {!isVendedorMode && isEditMode ? (
+                      {!effectiveVendedorMode && isEditMode ? (
                         <div className="flex items-center justify-end gap-1">
                           <span className="opacity-70 text-[10px] font-black">$</span>
                           <input
@@ -1301,7 +1418,7 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
                     </td>
 
                     {/* MARGIN USD */}
-                    {!isVendedorMode && (
+                    {!effectiveVendedorMode && (
                       <>
                         <td className="py-2.5 px-4 border-r border-zinc-400 text-right font-mono font-black">
                           <span className={p.marginUsd >= 0 ? 'text-emerald-700' : 'text-rose-700'}>
@@ -1356,7 +1473,7 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
                     </td>
 
                     {/* ACTIONS (EDIT / TRASH / RESTORE / PERMANENT DELETE) */}
-                    {!isVendedorMode && (
+                    {!effectiveVendedorMode && (
                       <td className="py-2.5 px-2 text-center font-mono">
                         {viewTrash ? (
                           <div className="flex items-center justify-center gap-1">
@@ -1729,6 +1846,121 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* QUICK LOGIN / PROFILE SWITCHER MODAL */}
+      {showLoginModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+          <div className="w-full max-w-md bg-zinc-950 border-2 border-zinc-700 rounded-2xl p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">🔑</span>
+                <h3 className="text-sm font-black text-white uppercase tracking-wider">
+                  Acceso Rápido · ERP ATOMIC
+                </h3>
+              </div>
+              <button
+                onClick={() => setShowLoginModal(false)}
+                className="p-1 rounded-lg text-zinc-400 hover:text-white cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <p className="text-xs text-zinc-400">
+              Selecciona tu rol operativo o ingresa con tus credenciales de <strong>@atomic.com.ec</strong>:
+            </p>
+
+            {/* Selector de perfiles estándar con 1 clic */}
+            <div className="space-y-1.5 max-h-[220px] overflow-y-auto pr-1 custom-scrollbar">
+              {[
+                { name: 'CEO / Gerencia General', email: 'ceo@atomic.com.ec', role: 'ADMIN', badge: '👑 CEO' },
+                { name: 'Coordinación Operativa', email: 'coordinacion@atomic.com.ec', role: 'COORDINATOR', badge: '👥 Coordinación' },
+                { name: 'Asesor Comercial Ventas', email: 'ventas@atomic.com.ec', role: 'SALESPERSON', badge: '💼 Ventas' },
+                { name: 'Desarrollo & Software', email: 'desarrollo@atomic.com.ec', role: 'MANAGEMENT', badge: '💻 Devs' },
+                { name: 'Edición Audiovisual & Media', email: 'edicion@atomic.com.ec', role: 'USER', badge: '🎬 Edición' },
+                { name: 'Supervisor de Calidad', email: 'supervisor@atomic.com.ec', role: 'COORD_ASSISTANT', badge: '🛡️ Supervisor' },
+                { name: 'Contabilidad & Finanzas', email: 'contabilidad@atomic.com.ec', role: 'MANAGEMENT', badge: '📊 Contabilidad' },
+                { name: 'Marketing & Pautas Ads', email: 'marketing@atomic.com.ec', role: 'USER', badge: '📣 Marketing' },
+                { name: 'Investigación & I+D', email: 'investigacion@atomic.com.ec', role: 'USER', badge: '🔬 I+D' },
+              ].map((prof) => (
+                <button
+                  key={prof.email}
+                  type="button"
+                  onClick={() => {
+                    setLoginEmail(prof.email);
+                    setLoginPassword('atomic2026');
+                    handleQuickLogin(prof.email, 'atomic2026');
+                  }}
+                  disabled={isLoggingIn}
+                  className="w-full text-left p-2 rounded-xl bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-800 hover:border-amber-400 transition-all flex items-center justify-between group cursor-pointer"
+                >
+                  <div>
+                    <div className="text-xs font-bold text-zinc-200 group-hover:text-white">{prof.name}</div>
+                    <div className="text-[10px] font-mono text-zinc-500">{prof.email}</div>
+                  </div>
+                  <span className="text-[10px] px-2 py-0.5 rounded bg-zinc-950 border border-zinc-700 text-amber-400 font-black">
+                    {prof.badge}
+                  </span>
+                </button>
+              ))}
+            </div>
+
+            {/* Custom Input Login */}
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleQuickLogin();
+              }}
+              className="space-y-3 pt-2 border-t border-zinc-800"
+            >
+              <div>
+                <label className="text-[10px] font-mono font-bold text-zinc-400 uppercase">Correo:</label>
+                <input
+                  type="email"
+                  value={loginEmail}
+                  onChange={(e) => setLoginEmail(e.target.value)}
+                  placeholder="usuario@atomic.com.ec"
+                  className="w-full p-2.5 bg-zinc-900 border border-zinc-700 rounded-xl text-xs text-white outline-none focus:border-amber-400"
+                />
+              </div>
+
+              <div>
+                <label className="text-[10px] font-mono font-bold text-zinc-400 uppercase">Contraseña:</label>
+                <input
+                  type="password"
+                  value={loginPassword}
+                  onChange={(e) => setLoginPassword(e.target.value)}
+                  placeholder="atomic2026"
+                  className="w-full p-2.5 bg-zinc-900 border border-zinc-700 rounded-xl text-xs text-white outline-none focus:border-amber-400"
+                />
+              </div>
+
+              {loginError && (
+                <div className="p-2 rounded-lg bg-rose-950/50 border border-rose-500/50 text-rose-300 text-xs font-bold">
+                  ⚠️ {loginError}
+                </div>
+              )}
+
+              <div className="flex justify-end gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={() => setShowLoginModal(false)}
+                  className="px-4 py-2 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-xl cursor-pointer"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={isLoggingIn}
+                  className="px-5 py-2 bg-amber-400 hover:bg-amber-300 text-zinc-950 text-xs font-black uppercase rounded-xl transition-all disabled:opacity-50 cursor-pointer"
+                >
+                  {isLoggingIn ? 'Iniciando...' : 'Entrar'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

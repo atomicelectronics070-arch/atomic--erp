@@ -119,10 +119,10 @@ export default function FormulariosClient() {
                         </div>
                         <div>
                             <h1 className="text-2xl md:text-3xl font-black text-white font-mono uppercase tracking-tight">
-                                FORMULARIOS DE CAPTACIÓN
+                                CONTACTOS DE LANDING
                             </h1>
                             <p className="text-xs font-mono text-slate-400">
-                                REGISTRO UNIFICADO DE DATOS CAPTURADOS EN LANDINGS WEB & RECURSOS B2B
+                                REGISTRO UNIFICADO DE LEADS Y CONTACTOS CAPTURADOS EN LANDINGS WEB
                             </p>
                         </div>
                     </div>
@@ -158,7 +158,7 @@ export default function FormulariosClient() {
                         }`}
                     >
                         <BookOpen size={15} />
-                        <span>Guía de Tratos con Proveedores</span>
+                        <span>Contactos de Landing & Campañas</span>
                         <span className="px-2 py-0.5 rounded-md bg-slate-950/60 text-amber-300 text-[10px]">
                             {leads.filter(l => l.source === "MANUAL_NEGOCIACION_PROVEEDORES" || l.source === "LANDING_PROVEEDORES" || (l.requirement && l.requirement.includes("Guía"))).length}
                         </span>
@@ -214,7 +214,7 @@ export default function FormulariosClient() {
                     <div className="flex items-center gap-3">
                         <div className="w-3 h-3 rounded-full bg-amber-400 animate-ping" />
                         <h2 className="text-lg font-black text-white font-mono uppercase tracking-tight flex items-center gap-2">
-                            {activeTab === "guia-proveedores" ? "📑 LEADS: GUÍA DE TRATOS CON PROVEEDORES" : "📋 TODOS LOS REGISTROS DE FORMULARIOS"}
+                            {activeTab === "guia-proveedores" ? "📑 LEADS: CONTACTOS DE LANDING & CAMPAÑAS" : "📋 TODOS LOS REGISTROS DE FORMULARIOS"}
                         </h2>
                     </div>
                     <span className="text-xs font-mono font-bold text-amber-400 bg-amber-500/10 border border-amber-500/30 px-3 py-1 rounded-full">

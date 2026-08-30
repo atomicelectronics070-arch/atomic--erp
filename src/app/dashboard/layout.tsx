@@ -3,7 +3,7 @@
 import { useSession } from "next-auth/react"
 import { useRouter, usePathname } from "next/navigation"
 import Link from "next/link"
-import { Home, Users, FileText, Settings, LogOut, CheckSquare, Sun, Moon, LayoutDashboard, Tag, Database, MessageSquare, ExternalLink, ShoppingBag, Menu, X, Calendar, Edit3, Mail, BrainCircuit, Bot, Globe, BarChart3, GraduationCap, Code2, User, Smartphone, Share2, Map, Layers, DollarSign, ShieldCheck, FileSpreadsheet } from "lucide-react"
+import { Home, Users, FileText, Settings, LogOut, CheckSquare, Sun, Moon, LayoutDashboard, Tag, Database, MessageSquare, ExternalLink, ShoppingBag, Menu, X, Calendar, Edit3, Mail, BrainCircuit, Bot, Globe, BarChart3, GraduationCap, Code2, User, Smartphone, Share2, Map, Layers, DollarSign, ShieldCheck, FileSpreadsheet, Table } from "lucide-react"
 import { useState, useEffect } from "react"
 import { ChevronDown, ChevronRight } from "lucide-react"
 import NotificationBell from "@/components/NotificationBell"
@@ -21,7 +21,7 @@ export default function DashboardLayout({
     const router = useRouter()
     const pathname = usePathname()
     const isDashboard = pathname.startsWith("/dashboard")
-    const isStandalonePage = pathname === "/dashboard/matriz-precios" || pathname === "/dashboard/precios-vendedor" || pathname === "/web/matriz-precios" || pathname === "/dashboard/ecosistema-tomc"
+    const isStandalonePage = pathname === "/dashboard/matriz-precios" || pathname === "/dashboard/shop" || pathname === "/dashboard/precios-vendedor" || pathname === "/web/matriz-precios" || pathname === "/dashboard/ecosistema-tomc"
 
     useEffect(() => {
         if (status === "unauthenticated" && isDashboard) {
@@ -131,14 +131,12 @@ export default function DashboardLayout({
                         Operaciones & Ventas
                     </div>
                     <NavLink href="/dashboard/quotes" icon={<FileText size={16} />} label="Cotizaciones" isActive={pathname.startsWith('/dashboard/quotes')} />
-                    {(role === "ADMIN" || role === "MANAGEMENT" || role === "COORDINATOR" || role === "COORD_ASSISTANT") && (
-                        <NavLink href="/dashboard/shop" icon={<ShoppingBag size={16} />} label="Inventario" isActive={pathname.startsWith('/dashboard/shop')} />
-                    )}
-                    {role === "ADMIN" && (
+                    <NavLink href="/dashboard/matriz-precios" icon={<Table size={16} />} label="Matriz de Precios" isActive={pathname.startsWith('/dashboard/matriz-precios') || pathname.startsWith('/dashboard/shop') || pathname.startsWith('/dashboard/precios-vendedor')} />
+                    {(role === "ADMIN" || role === "COORDINATOR" || role === "MANAGEMENT") && (
                         <NavLink href="/dashboard/coordinacion" icon={<Users size={16} />} label="Coordinación" isActive={pathname.startsWith('/dashboard/coordinacion')} />
                     )}
                     <NavLink href="/dashboard/map-prospecting" icon={<Map size={16} />} label="Prospección" isActive={pathname.startsWith('/dashboard/map-prospecting')} />
-                    <NavLink href="/dashboard/formularios" icon={<FileSpreadsheet size={16} />} label="Tratos Proveedores" isActive={pathname.startsWith('/dashboard/formularios')} />
+                    <NavLink href="/dashboard/formularios" icon={<FileSpreadsheet size={16} />} label="Contactos de Landing" isActive={pathname.startsWith('/dashboard/formularios')} />
                     
                     <div className="pt-4 pb-1 px-3 text-[9px] font-black text-indigo-400/80 uppercase tracking-[0.25em] italic flex items-center gap-2">
                         <span className="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>
@@ -148,13 +146,17 @@ export default function DashboardLayout({
                     <NavLink href="/dashboard/whatsapp/leads" icon={<Users size={16} />} label="Gestión de Leads" isActive={pathname.startsWith('/dashboard/whatsapp/leads')} />
                     <NavLink href="/dashboard/blogs" icon={<Share2 size={16} />} label="Social Command" isActive={pathname.startsWith('/dashboard/blogs')} />
                     
-                    <div className="pt-4 pb-1 px-3 text-[9px] font-black text-emerald-400/80 uppercase tracking-[0.25em] italic flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                        Gestión & Finanzas
-                    </div>
-                    <NavLink href="/dashboard/finance" icon={<DollarSign size={16} />} label="Finanzas" isActive={pathname.startsWith('/dashboard/finance')} />
-                    <NavLink href="/dashboard/marketing" icon={<BarChart3 size={16} />} label="Marketing" isActive={pathname.startsWith('/dashboard/marketing')} />
-                    <NavLink href="/dashboard/benefits" icon={<Tag size={16} />} label="Beneficios" isActive={pathname.startsWith('/dashboard/benefits')} />
+                    {(role === "ADMIN" || role === "MANAGEMENT" || role === "COORDINATOR" || role === "COORD_ASSISTANT") && (
+                        <>
+                            <div className="pt-4 pb-1 px-3 text-[9px] font-black text-emerald-400/80 uppercase tracking-[0.25em] italic flex items-center gap-2">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                                Gestión & Finanzas
+                            </div>
+                            <NavLink href="/dashboard/finance" icon={<DollarSign size={16} />} label="Finanzas" isActive={pathname.startsWith('/dashboard/finance')} />
+                            <NavLink href="/dashboard/marketing" icon={<BarChart3 size={16} />} label="Marketing" isActive={pathname.startsWith('/dashboard/marketing')} />
+                            <NavLink href="/dashboard/benefits" icon={<Tag size={16} />} label="Beneficios" isActive={pathname.startsWith('/dashboard/benefits')} />
+                        </>
+                    )}
                     <NavLink href="/dashboard/storage" icon={<Database size={16} />} label="Nube & Archivos" isActive={pathname.startsWith('/dashboard/storage')} />
                     <NavLink href="/dashboard/documents" icon={<FileText size={16} />} label="Documentos" isActive={pathname.startsWith('/dashboard/documents')} />
                     
@@ -163,13 +165,10 @@ export default function DashboardLayout({
                         Inteligencia & Equipo
                     </div>
                     <NavLink href="/dashboard/coach" icon={<BrainCircuit size={16} />} label="AI Coach" isActive={pathname.startsWith('/dashboard/coach')} />
-                    <NavLink href="/dashboard/academy" icon={<GraduationCap size={16} />} label="Cursos Academy" isActive={pathname.startsWith('/dashboard/academy')} />
+                    <NavLink href="/dashboard/academy" icon={<GraduationCap size={16} />} label="Academia & Admin Central" isActive={pathname.startsWith('/dashboard/academy') || pathname.startsWith('/dashboard/admin')} />
                     <NavLink href="/dashboard/bot-ruta" icon={<Bot size={16} />} label="Bot Ruta" isActive={pathname.startsWith('/dashboard/bot-ruta')} />
                     {(role === "ADMIN" || role === "MANAGEMENT" || role === "COORDINATOR" || role === "COORD_ASSISTANT") && (
                         <NavLink href="/dashboard/evaluations" icon={<Users size={16} />} label="Asesores RRHH" isActive={pathname.startsWith('/dashboard/evaluations')} />
-                    )}
-                    {role === "ADMIN" && (
-                        <NavLink href="/dashboard/admin/personal-management" icon={<ShieldCheck size={16} />} label="Admin Central" isActive={pathname.startsWith('/dashboard/admin')} />
                     )}
                 </nav>
 

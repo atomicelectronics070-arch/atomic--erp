@@ -2,9 +2,11 @@
 
 import { useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
+import Link from "next/link"
 import { 
     Users, Key, Shield, UserPlus, Eye, EyeOff, CheckCircle2, XCircle, 
-    Sparkles, RefreshCw, Layers, Cpu, Search, Bot, MessageSquare, Send, X, Box, Globe2, ShoppingBag, GraduationCap, Code2, Compass
+    Sparkles, RefreshCw, Layers, Cpu, Search, Bot, MessageSquare, Send, X, Box, Globe2, ShoppingBag, GraduationCap, Code2, Compass,
+    BookMarked
 } from "lucide-react"
 
 interface SystemUser {
@@ -235,6 +237,24 @@ export default function PersonalManagementPage() {
     return (
         <div className="min-h-screen bg-[#050914] text-white p-8 space-y-8">
             
+            {/* Unified Module Navigation Switcher */}
+            <div className="flex items-center gap-2 p-1.5 bg-slate-900/90 border border-slate-800 rounded-2xl w-fit">
+                <Link
+                    href="/dashboard/academy"
+                    className="px-5 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center gap-2 text-slate-400 hover:text-white hover:bg-slate-800 cursor-pointer"
+                >
+                    <GraduationCap size={15} />
+                    <span>Cursos Academy</span>
+                </Link>
+                <Link
+                    href="/dashboard/admin/personal-management"
+                    className="px-5 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center gap-2 bg-gradient-to-r from-indigo-500 to-cyan-500 text-white shadow-lg cursor-pointer"
+                >
+                    <BookMarked size={15} />
+                    <span>Admin Central & Permisos</span>
+                </Link>
+            </div>
+
             {/* Header */}
             <div className="bg-slate-900/90 border border-slate-800 p-8 rounded-3xl flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 shadow-2xl relative overflow-hidden">
                 <div className="absolute -right-10 -bottom-10 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />

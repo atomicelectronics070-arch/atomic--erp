@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { 
     X, Send, Sparkles, Loader2, Copy, Check, FileText, 
     ShoppingBag, Users, Map, Smartphone, DollarSign, Palette, 
-    FileSpreadsheet, Bot, GraduationCap, ArrowRight
+    FileSpreadsheet, Bot, GraduationCap, ArrowRight, Table
 } from "lucide-react"
 
 interface BotMessage {
@@ -27,7 +27,7 @@ interface ModuleQuickAction {
 
 const QUICK_MODULES: ModuleQuickAction[] = [
     { id: "quotes", label: "Cotizaciones PROP", icon: <FileText size={12} />, query: "¿Cómo funciona el módulo de cotizaciones y cómo descargo el PDF?", path: "/dashboard/quotes" },
-    { id: "shop", label: "Inventario & Stock", icon: <ShoppingBag size={12} />, query: "¿Cómo consultar el catálogo de inventario y precios?", path: "/dashboard/shop" },
+    { id: "matriz", label: "Matriz de Precios", icon: <Table size={12} />, query: "¿Cómo consultar la matriz de precios, PVP y cotizar productos?", path: "/dashboard/matriz-precios" },
     { id: "coordinacion", label: "Coordinación", icon: <Users size={12} />, query: "¿Cómo asignar leads y usar la bitácora de coordinación?", path: "/dashboard/coordinacion" },
     { id: "prospecting", label: "Radar Prospección", icon: <Map size={12} />, query: "¿Cómo buscar clientes en el radar de prospección en mapa?", path: "/dashboard/map-prospecting" },
     { id: "crm", label: "WhatsApp CRM", icon: <Smartphone size={12} />, query: "¿Cómo gestionar los leads y pautas desde WhatsApp CRM?", path: "/dashboard/whatsapp/crm" },

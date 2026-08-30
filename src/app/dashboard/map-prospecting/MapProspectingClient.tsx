@@ -56,6 +56,7 @@ export default function MapProspectingClient() {
     const [keyword, setKeyword] = useState("conjunto residencial")
     const [loading, setLoading] = useState(false)
     const [mapCenter, setMapCenter] = useState<[number, number]>([-0.180653, -78.467838]) // Quito por defecto
+    const [mapStyle, setMapStyle] = useState<"dark" | "osm" | "satellite">("osm")
 
     useEffect(() => {
         // Cargar sesión del vendedor
@@ -300,16 +301,58 @@ export default function MapProspectingClient() {
 
             {/* Mapa */}
             <div className="flex-1 relative h-[50vh] md:h-full z-0 bg-slate-950">
+                {/* Floating Map Layer Switcher */}
+                <div className="absolute top-4 right-4 z-[1000] flex items-center gap-1.5 p-1 bg-slate-900/90 backdrop-blur-md border border-slate-700 rounded-xl shadow-xl">
+                    <button
+                        onClick={() => setMapStyle("osm")}
+                        className={`px-2.5 py-1 text-[10px] font-black uppercase rounded-lg transition-all cursor-pointer ${
+                            mapStyle === "osm" ? "bg-cyan-500 text-black shadow-md" : "text-slate-300 hover:text-white"
+                        }`}
+                    >
+                        🗺️ Calles
+                    </button>
+                    <button
+                        onClick={() => setMapStyle("dark")}
+                        className={`px-2.5 py-1 text-[10px] font-black uppercase rounded-lg transition-all cursor-pointer ${
+                            mapStyle === "dark" ? "bg-cyan-500 text-black shadow-md" : "text-slate-300 hover:text-white"
+                        }`}
+                    >
+                        🌙 Oscuro
+                    </button>
+                    <button
+                        onClick={() => setMapStyle("satellite")}
+                        className={`px-2.5 py-1 text-[10px] font-black uppercase rounded-lg transition-all cursor-pointer ${
+                            mapStyle === "satellite" ? "bg-cyan-500 text-black shadow-md" : "text-slate-300 hover:text-white"
+                        }`}
+                    >
+                        🛰️ Satélite
+                    </button>
+                </div>
+
                 <MapContainer 
                     center={mapCenter} 
                     zoom={15} 
                     style={{ height: '100%', width: '100%' }}
                     zoomControl={false}
                 >
-                    <TileLayer
-                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                        url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-                    />
+                    {mapStyle === "osm" && (
+                        <TileLayer
+                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        />
+                    )}
+                    {mapStyle === "dark" && (
+                        <TileLayer
+                            attribution='Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ'
+                            url="https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}"
+                        />
+                    )}
+                    {mapStyle === "satellite" && (
+                        <TileLayer
+                            attribution='Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+                            url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+                        />
+                    )}
                     <MapEvents setBounds={setBounds} setDraftPin={setDraftPin} />
                             
                             {/* Draft Pin */}

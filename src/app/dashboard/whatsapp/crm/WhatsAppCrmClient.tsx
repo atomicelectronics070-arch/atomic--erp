@@ -76,7 +76,7 @@ export default function WhatsAppCrmClient() {
 
     // WhatsApp Settings & Profile Modal State
     const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
-    const [activeSettingsTab, setActiveSettingsTab] = useState<'profile' | 'credentials'>('profile')
+    const [activeSettingsTab, setActiveSettingsTab] = useState<'profile' | 'credentials' | 'manual'>('credentials')
     const [settingsSaving, setSettingsSaving] = useState(false)
     const [settingsMessage, setSettingsMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
     
@@ -724,6 +724,16 @@ export default function WhatsAppCrmClient() {
                             >
                                 🔑 Token & Conexión Meta
                             </button>
+                            <button
+                                onClick={() => setActiveSettingsTab('manual')}
+                                className={`px-4 py-2 text-xs font-bold transition-all border-b-2 cursor-pointer ${
+                                    activeSettingsTab === 'manual'
+                                        ? 'border-amber-500 text-amber-400 bg-amber-500/10 rounded-t-lg'
+                                        : 'border-transparent text-slate-400 hover:text-white'
+                                }`}
+                            >
+                                📖 Guía Token Permanente (Meta)
+                            </button>
                         </div>
 
                         {settingsMessage && (
@@ -876,6 +886,74 @@ export default function WhatsAppCrmClient() {
                                             {credTestResult}
                                         </div>
                                     )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* TAB 3: GUÍA PASO A PASO PARA TOKEN PERMANENTE */}
+                        {activeSettingsTab === 'manual' && (
+                            <div className="space-y-4 text-xs">
+                                <div className="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-4">
+                                    <div className="flex items-center gap-2 text-amber-400 font-bold border-b border-slate-800 pb-2">
+                                        <Megaphone size={16} />
+                                        <span>Manual Paso a Paso: Cómo Generar el Token Permanente (Sin Expiración) en Meta</span>
+                                    </div>
+
+                                    <div className="space-y-3 text-slate-300">
+                                        <div className="p-3 bg-slate-900/80 rounded-xl border border-slate-800 space-y-1.5">
+                                            <div className="flex items-center gap-2 font-bold text-cyan-300">
+                                                <span className="w-5 h-5 rounded-full bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-[10px] text-cyan-300">1</span>
+                                                <span>Ingresar a Meta for Developers</span>
+                                            </div>
+                                            <p className="text-[11px] text-slate-400 pl-7">
+                                                Abre <a href="https://business.facebook.com/settings/system-users" target="_blank" rel="noopener noreferrer" className="text-cyan-400 hover:underline font-bold">Meta Business Suite &gt; Configuración del Negocio &gt; Usuarios del Sistema</a>.
+                                            </p>
+                                        </div>
+
+                                        <div className="p-3 bg-slate-900/80 rounded-xl border border-slate-800 space-y-1.5">
+                                            <div className="flex items-center gap-2 font-bold text-cyan-300">
+                                                <span className="w-5 h-5 rounded-full bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-[10px] text-cyan-300">2</span>
+                                                <span>Crear un Usuario del Sistema</span>
+                                            </div>
+                                            <p className="text-[11px] text-slate-400 pl-7">
+                                                Haz clic en <strong>Agregar</strong>, ponle de nombre <code className="bg-slate-950 px-1 py-0.5 rounded text-amber-300 font-mono">Atomic ERP Bot</code> y asígnale el rol de <strong>Administrador</strong>.
+                                            </p>
+                                        </div>
+
+                                        <div className="p-3 bg-slate-900/80 rounded-xl border border-slate-800 space-y-1.5">
+                                            <div className="flex items-center gap-2 font-bold text-cyan-300">
+                                                <span className="w-5 h-5 rounded-full bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-[10px] text-cyan-300">3</span>
+                                                <span>Asignar Activos a la App de WhatsApp</span>
+                                            </div>
+                                            <p className="text-[11px] text-slate-400 pl-7">
+                                                Haz clic en <strong>Asignar activos</strong>, selecciona <strong>Apps</strong> &gt; tu App de WhatsApp Cloud &gt; activa <strong>Control Total / Administrar App</strong> y guarda.
+                                            </p>
+                                        </div>
+
+                                        <div className="p-3 bg-slate-900/80 rounded-xl border border-slate-800 space-y-1.5">
+                                            <div className="flex items-center gap-2 font-bold text-cyan-300">
+                                                <span className="w-5 h-5 rounded-full bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-[10px] text-cyan-300">4</span>
+                                                <span>Generar Token Permanente</span>
+                                            </div>
+                                            <p className="text-[11px] text-slate-400 pl-7">
+                                                Haz clic en el botón <strong>Generar nuevo token</strong>, selecciona tu App y marca estrictamente los siguientes permisos:
+                                            </p>
+                                            <div className="flex flex-wrap gap-1.5 pl-7 pt-1">
+                                                <span className="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-500/40 font-mono text-[10px]">whatsapp_business_management</span>
+                                                <span className="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-500/40 font-mono text-[10px]">whatsapp_business_messaging</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="p-3 bg-slate-900/80 rounded-xl border border-slate-800 space-y-1.5">
+                                            <div className="flex items-center gap-2 font-bold text-cyan-300">
+                                                <span className="w-5 h-5 rounded-full bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-[10px] text-cyan-300">5</span>
+                                                <span>Copiar y Pegar en la pestaña Token</span>
+                                            </div>
+                                            <p className="text-[11px] text-slate-400 pl-7">
+                                                Copia el token generado (<code className="bg-slate-950 px-1 py-0.5 rounded text-emerald-400 font-mono">EAA...</code>) y pégalo en la pestaña <strong>Token & Conexión Meta</strong>. Este token nunca caduca y mantendrá activas todas las fotos, videos, audios y atribución de pautas de forma permanente.
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         )}
