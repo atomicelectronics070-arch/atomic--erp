@@ -48,7 +48,9 @@ interface Chat {
 function parseMessageBody(rawBody: string = '', rawMediaUrl?: string | null, rawType: string = 'text') {
     let cleanText = rawBody || '';
     let referral: ReferralData | null = null;
+    let type = rawType || 'text';
 
+    // 1. Extract [PAUTA_META:...]
     if (cleanText.includes('[PAUTA_META:')) {
         const match = cleanText.match(/\[PAUTA_META:([\s\S]*?)\]\n?/);
         if (match && match[1]) {
@@ -61,7 +63,31 @@ function parseMessageBody(rawBody: string = '', rawMediaUrl?: string | null, raw
         }
     }
 
-    return { cleanText, referral, mediaUrl: rawMediaUrl, type: rawType };
+    // 2. Extract raw JSON if stored directly
+    if (!referral && cleanText.startsWith('{') && cleanText.endsWith('}')) {
+        try {
+            const parsed = JSON.parse(cleanText);
+            if (parsed.headline || parsed.sourceUrl || parsed.sourceType || parsed.imageUrl || parsed.thumbnailUrl) {
+                referral = parsed;
+                cleanText = parsed.body || parsed.headline || '';
+            }
+        } catch (e) {}
+    }
+
+    // 3. Normalize unsupported or empty text
+    if (type === 'unsupported' || cleanText === '[Mensaje unsupported]' || cleanText.includes('[Mensaje unsupported]')) {
+        cleanText = cleanText.replace(/\[Mensaje unsupported\]/g, '').trim();
+        if (!cleanText) {
+            cleanText = '📢 Mensaje interactivo / Botón de anuncio publicitario';
+        }
+    }
+
+    // 4. Default fallback if body is completely empty and no media
+    if (!cleanText && !rawMediaUrl && !referral) {
+        cleanText = '👋 Cliente inició la conversación';
+    }
+
+    return { cleanText, referral, mediaUrl: rawMediaUrl, type };
 }
 
 export default function WhatsAppCrmClient() {
@@ -71,8 +97,9 @@ export default function WhatsAppCrmClient() {
     const [searchQuery, setSearchQuery] = useState("")
     const [loading, setLoading] = useState(true)
 
-    // Image Zoom / Lightbox State
+    // Media Zoom / Lightbox State
     const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null)
+    const [previewVideoUrl, setPreviewVideoUrl] = useState<string | null>(null)
 
     // WhatsApp Settings & Profile Modal State
     const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
@@ -103,7 +130,7 @@ export default function WhatsAppCrmClient() {
                 if (Array.isArray(data)) {
                     const formattedChats: Chat[] = data.map((conv: any) => {
                         const rawMessages = conv.messages || [];
-                        let isFromAd = false;
+                        let isFromAd = conv.status === 'LEAD_PAUTA';
                         let adHeadline = '';
 
                         const parsedMessages: MessageItem[] = rawMessages.map((m: any) => {
@@ -133,6 +160,7 @@ export default function WhatsAppCrmClient() {
                             else if (lastParsed.type === 'audio') lastMessageDisplay = '🎤 Nota de voz';
                             else if (lastParsed.type === 'video') lastMessageDisplay = '🎬 Video';
                             else if (lastParsed.type === 'document') lastMessageDisplay = '📄 Documento';
+                            else if (lastParsed.referral) lastMessageDisplay = `📢 Pauta: ${lastParsed.referral.headline || 'Anuncio Meta'}`;
                             else lastMessageDisplay = lastParsed.cleanText || 'Mensaje';
                         }
 
@@ -459,6 +487,30 @@ export default function WhatsAppCrmClient() {
 
                             {/* Chat Messages */}
                             <div className="flex-1 p-4 overflow-y-auto space-y-4">
+                                {/* 📢 BANNER DESTACADO DE PAUTA PUBLICITARIA SI EL LEAD PROVIENE DE ANUNCIO */}
+                                {activeChat.isFromAd && (
+                                    <div className="p-3.5 bg-gradient-to-r from-blue-950/90 via-indigo-950/90 to-cyan-950/90 border-2 border-blue-500/50 rounded-2xl shadow-xl space-y-2 text-white">
+                                        <div className="flex items-center justify-between border-b border-blue-500/30 pb-2">
+                                            <div className="flex items-center gap-2">
+                                                <div className="p-1.5 rounded-lg bg-blue-500/20 text-cyan-300 border border-blue-400/40">
+                                                    <Megaphone size={14} />
+                                                </div>
+                                                <span className="text-[11px] font-black text-cyan-300 uppercase tracking-wider">
+                                                    LEAD ORIGINADO DE PAUTA FACEBOOK / INSTAGRAM ADS
+                                                </span>
+                                            </div>
+                                            <span className="text-[9px] font-mono bg-blue-600/40 text-blue-200 border border-blue-400/40 px-2 py-0.5 rounded-full font-bold">
+                                                Atribución Meta
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center justify-between gap-3 text-xs">
+                                            <p className="font-bold text-white text-xs">
+                                                {activeChat.adHeadline ? `Campaña: "${activeChat.adHeadline}"` : 'Campaña Click-to-WhatsApp en vivo'}
+                                            </p>
+                                        </div>
+                                    </div>
+                                )}
+
                                 {activeChat.messages.length === 0 ? (
                                     <div className="text-center text-slate-500 text-xs py-10">No hay mensajes en este chat.</div>
                                 ) : (
@@ -467,7 +519,7 @@ export default function WhatsAppCrmClient() {
                                             key={msg.id}
                                             className={`flex ${msg.sender === 'me' ? 'justify-end' : 'justify-start'}`}
                                         >
-                                            <div className={`max-w-[85%] sm:max-w-[75%] rounded-2xl p-3 text-xs space-y-2 ${
+                                            <div className={`max-w-[85%] sm:max-w-[75%] rounded-2xl p-3.5 text-xs space-y-2.5 ${
                                                 msg.sender === 'me'
                                                     ? 'bg-emerald-600 text-white rounded-br-none shadow-md shadow-emerald-950/40'
                                                     : 'bg-slate-800 text-slate-100 border border-slate-700/80 rounded-bl-none shadow-md shadow-black/40'
@@ -475,9 +527,9 @@ export default function WhatsAppCrmClient() {
                                                 
                                                 {/* 📢 PREVIEW CARD: ATRIBUCIÓN DE ANUNCIO FACEBOOK ADS (CLICK TO WHATSAPP) */}
                                                 {msg.referral && (
-                                                    <div className="p-3 bg-gradient-to-r from-blue-950/90 to-indigo-950/90 border-2 border-blue-500/50 rounded-xl space-y-2 text-white">
+                                                    <div className="p-3 bg-gradient-to-r from-blue-950/95 to-indigo-950/95 border-2 border-blue-500/60 rounded-xl space-y-2 text-white shadow-lg">
                                                         <div className="flex items-center justify-between border-b border-blue-500/30 pb-1.5">
-                                                            <span className="flex items-center gap-1 text-[10px] font-black tracking-wider text-cyan-300 uppercase">
+                                                            <span className="flex items-center gap-1.5 text-[10px] font-black tracking-wider text-cyan-300 uppercase">
                                                                 <Megaphone size={12} className="text-cyan-400" /> ANUNCIO DE ORIGEN · {msg.referral.sourceType === 'ad' ? 'FACEBOOK ADS' : 'POST META'}
                                                             </span>
                                                             {msg.referral.sourceId && (
@@ -492,7 +544,7 @@ export default function WhatsAppCrmClient() {
                                                                 <img 
                                                                     src={msg.referral.thumbnailUrl || msg.referral.imageUrl} 
                                                                     alt="Miniatura del Anuncio" 
-                                                                    className="w-16 h-16 rounded-lg object-cover border border-blue-400/40 shrink-0 bg-slate-900"
+                                                                    className="w-16 h-16 rounded-lg object-cover border border-blue-400/40 shrink-0 bg-slate-900 shadow"
                                                                 />
                                                             )}
                                                             <div className="min-w-0 flex-1">
@@ -536,7 +588,7 @@ export default function WhatsAppCrmClient() {
                                                                 loading="lazy"
                                                             />
                                                             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                                                                <span className="bg-black/70 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1">
+                                                                <span className="bg-black/70 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-lg">
                                                                     <Eye size={12} /> Ver en grande
                                                                 </span>
                                                             </div>
@@ -560,15 +612,36 @@ export default function WhatsAppCrmClient() {
                                                     </div>
                                                 )}
 
-                                                {/* 🎬 VIDEO */}
+                                                {/* 🎬 VIDEO INTERACTIVO CON REPRODUCTOR Y LIGHTBOX */}
                                                 {msg.type === 'video' && msg.mediaUrl && (
-                                                    <div className="space-y-1.5">
-                                                        <video 
-                                                            controls 
-                                                            src={msg.mediaUrl} 
-                                                            className="max-h-72 w-full rounded-xl border border-white/10 bg-black"
-                                                            preload="metadata"
-                                                        />
+                                                    <div className="space-y-2">
+                                                        <div className="relative rounded-xl overflow-hidden border border-white/15 bg-black group">
+                                                            <video 
+                                                                controls 
+                                                                playsInline
+                                                                preload="metadata"
+                                                                src={msg.mediaUrl} 
+                                                                className="max-h-72 w-full object-contain bg-black"
+                                                            />
+                                                        </div>
+                                                        <div className="flex items-center gap-2 pt-1">
+                                                            <button 
+                                                                type="button"
+                                                                onClick={() => setPreviewVideoUrl(msg.mediaUrl || null)}
+                                                                className="flex-1 py-1.5 px-3 bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-[11px] rounded-lg flex items-center justify-center gap-1.5 transition-all shadow cursor-pointer"
+                                                            >
+                                                                <Film size={13} /> <span>Pantalla Completa</span>
+                                                            </button>
+                                                            <a 
+                                                                href={msg.mediaUrl} 
+                                                                target="_blank" 
+                                                                rel="noopener noreferrer"
+                                                                className="py-1.5 px-3 bg-slate-700 hover:bg-slate-600 text-slate-200 font-bold text-[11px] rounded-lg flex items-center justify-center gap-1 transition-all shadow cursor-pointer"
+                                                                title="Descargar video original"
+                                                            >
+                                                                <Download size={13} />
+                                                            </a>
+                                                        </div>
                                                     </div>
                                                 )}
 
@@ -591,10 +664,12 @@ export default function WhatsAppCrmClient() {
                                                     </a>
                                                 )}
 
-                                                {/* TEXTO DEL MENSAJE (O CAPTION) */}
-                                                {msg.text && msg.type !== 'document' && (
+                                                {/* TEXTO DEL MENSAJE (O CAPTION O FALLBACK) */}
+                                                {msg.text && msg.type !== 'document' ? (
                                                     <p className="leading-relaxed whitespace-pre-wrap">{msg.text}</p>
-                                                )}
+                                                ) : !msg.mediaUrl && !msg.referral ? (
+                                                    <p className="leading-relaxed text-slate-300 italic">👋 Cliente inició conversación</p>
+                                                ) : null}
 
                                                 {/* TIMESTAMP & STATUS */}
                                                 <div className={`text-[9px] font-mono flex items-center justify-end gap-1 ${msg.sender === 'me' ? 'text-emerald-200' : 'text-slate-400'}`}>
@@ -668,6 +743,53 @@ export default function WhatsAppCrmClient() {
                         >
                             <Download size={14} /> Descargar Imagen Original
                         </a>
+                    </div>
+                </div>
+            )}
+
+            {/* ═════════════════════════════════════════════════════════════ */}
+            {/* 🎬 MODAL: LIGHTBOX / REPRODUCTOR DE VIDEO EN ALTA DEFINICIÓN  */}
+            {/* ═════════════════════════════════════════════════════════════ */}
+            {previewVideoUrl && (
+                <div 
+                    onClick={() => setPreviewVideoUrl(null)}
+                    className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-md flex items-center justify-center p-4 cursor-pointer"
+                >
+                    <div 
+                        onClick={(e) => e.stopPropagation()} 
+                        className="relative max-w-4xl max-h-[90vh] w-full flex flex-col items-center cursor-default"
+                    >
+                        <button
+                            onClick={() => setPreviewVideoUrl(null)}
+                            className="absolute -top-10 right-0 text-white hover:text-rose-400 font-bold text-xs bg-slate-800/90 px-3 py-1.5 rounded-lg flex items-center gap-1 cursor-pointer"
+                        >
+                            <X size={16} /> Cerrar reproductor
+                        </button>
+                        <video 
+                            controls 
+                            autoPlay 
+                            playsInline
+                            src={previewVideoUrl} 
+                            className="max-h-[75vh] w-full object-contain rounded-2xl border border-cyan-500/30 shadow-2xl bg-black"
+                        />
+                        <div className="mt-3 flex items-center gap-3">
+                            <a 
+                                href={previewVideoUrl} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-4 py-2 rounded-xl flex items-center gap-2 shadow-lg"
+                            >
+                                <Download size={14} /> Descargar Video MP4
+                            </a>
+                            <a 
+                                href={previewVideoUrl} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs px-4 py-2 rounded-xl flex items-center gap-2 border border-slate-700 shadow-lg"
+                            >
+                                <ExternalLink size={14} /> Abrir en nueva pestaña
+                            </a>
+                        </div>
                     </div>
                 </div>
             )}

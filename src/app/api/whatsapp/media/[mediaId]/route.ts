@@ -51,8 +51,10 @@ export async function GET(
         const mediaBinary = await axios.get(downloadUrl, {
             responseType: 'arraybuffer',
             headers: {
-                Authorization: `Bearer ${token}`
-            }
+                Authorization: `Bearer ${token}`,
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+            },
+            maxRedirects: 5
         });
 
         // 3. Return the media buffer with correct content type and caching
@@ -61,6 +63,7 @@ export async function GET(
             headers: {
                 'Content-Type': mimeType,
                 'Content-Length': mediaBinary.data.byteLength.toString(),
+                'Content-Disposition': 'inline',
                 'Cache-Control': 'public, max-age=86400, immutable',
                 'Accept-Ranges': 'bytes'
             }
@@ -68,6 +71,9 @@ export async function GET(
 
     } catch (error: any) {
         console.error('Error fetching WhatsApp media:', error?.response?.data || error.message);
-        return new NextResponse(`Error proxying media: ${error.message}`, { status: 502 });
+        return new NextResponse(JSON.stringify({ error: error.message }), { 
+            status: 502,
+            headers: { 'Content-Type': 'application/json' }
+        });
     }
 }
