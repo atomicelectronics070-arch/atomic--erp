@@ -405,12 +405,12 @@ const CoverflowGallery = dynamic(() => import("@/components/CoverflowGallery"), 
         <span>Cargando Catálogo 3D Coverflow de Productos IA...</span>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 w-full max-w-4xl opacity-90">
-        <img src="/images/hero-3d/slide-1.png" alt="Producto IA 1" className="w-full h-24 object-cover rounded-xl border border-white/10" />
-        <img src="/images/hero-3d/slide-2.jpg" alt="Producto IA 2" className="w-full h-24 object-cover rounded-xl border border-white/10" />
-        <img src="/images/hero-3d/slide-3.jpg" alt="Producto IA 3" className="w-full h-24 object-cover rounded-xl border border-white/10" />
-        <img src="/images/hero-3d/slide-4.jpg" alt="Producto IA 4" className="w-full h-24 object-cover rounded-xl border border-white/10" />
-        <img src="/images/hero-3d/slide-5.jpg" alt="Producto IA 5" className="w-full h-24 object-cover rounded-xl border border-white/10" />
-        <img src="/images/hero-3d/slide-6.jpg" alt="Producto IA 6" className="w-full h-24 object-cover rounded-xl border border-white/10" />
+        <img src="/images/categories/tecnologia-residencial.jpg" alt="Tecnología Residencial" className="w-full h-24 object-cover rounded-xl border border-white/10" />
+        <img src="/images/categories/electronica.jpg" alt="Electrónica" className="w-full h-24 object-cover rounded-xl border border-white/10" />
+        <img src="/images/categories/hogar.jpg" alt="Hogar" className="w-full h-24 object-cover rounded-xl border border-white/10" />
+        <img src="/images/categories/industria.jpg" alt="Industria" className="w-full h-24 object-cover rounded-xl border border-white/10" />
+        <img src="/images/categories/entretenimiento.jpg" alt="Entretenimiento" className="w-full h-24 object-cover rounded-xl border border-white/10" />
+        <img src="/images/categories/computacion.jpg" alt="Computación" className="w-full h-24 object-cover rounded-xl border border-white/10" />
       </div>
     </div>
   )
@@ -1764,7 +1764,7 @@ export default function PublicWebClient({
               title: 'TECNOLOGÍA RESIDENCIAL',
               subtitle: 'DOMÓTICA & SEGURIDAD SMART',
               description: 'Cámaras IP con audio bidireccional, reconocimiento facial 3D, porteros inteligentes y control de accesos.',
-              image: '/images/hero-3d/slide-2.jpg',
+              image: '/images/categories/tecnologia-residencial.jpg',
               badge: 'SEGURIDAD SMART',
               query: 'camara',
             },
@@ -1773,7 +1773,7 @@ export default function PublicWebClient({
               title: 'ELECTRÓNICA',
               subtitle: 'AUDIO, GADGETS & PERIFÉRICOS',
               description: 'Equipos de audio de alta fidelidad, iluminación inteligente, periféricos para creadores y componentes electrónicos.',
-              image: '/images/hero-3d/slide-6.jpg',
+              image: '/images/categories/electronica.jpg',
               badge: 'AUDIO & GADGETS',
               query: 'electronica',
             },
@@ -1782,7 +1782,7 @@ export default function PublicWebClient({
               title: 'HOGAR',
               subtitle: 'COCINA PREMIUM & CONFORT',
               description: 'Encimeras a gas de alta eficiencia, hornos empotrables de acero inoxidable y electrodomésticos modernos para el hogar.',
-              image: '/images/hero-3d/slide-4.jpg',
+              image: '/images/categories/hogar.jpg',
               badge: 'LÍNEA HOGAR',
               query: 'cocina',
             },
@@ -1791,7 +1791,7 @@ export default function PublicWebClient({
               title: 'INDUSTRIA',
               subtitle: 'MAQUINARIA & PLANTAS DE BLOQUES',
               description: 'Plantas automáticas de bloques de hormigón, mezcladoras de concreto reforzado y automatización pesada.',
-              image: '/images/hero-3d/slide-5.jpg',
+              image: '/images/categories/industria.jpg',
               badge: 'INDUSTRIAL',
               query: 'bloque',
             },
@@ -1800,7 +1800,7 @@ export default function PublicWebClient({
               title: 'ENTRETENIMIENTO',
               subtitle: 'GAMING, CONSOLAS & MANDOS',
               description: 'Mandos DualSense inalámbricos para PS5, consolas Nintendo Switch, Xbox Series X|S y PlayStation Portal.',
-              image: '/images/hero-3d/slide-1.png',
+              image: '/images/categories/entretenimiento.jpg',
               badge: 'GAMING',
               query: 'mando',
             },
@@ -1809,7 +1809,7 @@ export default function PublicWebClient({
               title: 'COMPUTACIÓN',
               subtitle: 'LAPTOPS, PCS & PROCESADORES',
               description: 'Portátiles de alto rendimiento, estaciones de trabajo All-in-One Dell, CPUs Intel/AMD y almacenamiento ultrarrápido.',
-              image: '/images/hero-3d/slide-3.jpg',
+              image: '/images/categories/computacion.jpg',
               badge: 'HARDWARE',
               query: 'laptop',
             },
@@ -1818,7 +1818,7 @@ export default function PublicWebClient({
               title: 'TELEFONÍA',
               subtitle: 'SMARTPHONES, TABLETS & REDES',
               description: 'Dispositivos móviles de última generación, tablets para productividad, accesorios de carga rápida y conectividad.',
-              image: '/images/hero-3d/slide-2.jpg',
+              image: '/images/categories/telefonia.jpg',
               badge: 'MÓVIL',
               query: 'telefono',
             },
@@ -1827,7 +1827,7 @@ export default function PublicWebClient({
               title: 'SOFTWARE & SERVICIOS',
               subtitle: 'ERP, CRM & AUTOMATIZACIÓN IA',
               description: 'Sistemas de gestión empresarial integral, cotizadores automáticos, asesoría tecnológica y desarrollo a medida.',
-              image: '/images/hero-3d/slide-6.jpg',
+              image: '/images/categories/software-servicios.jpg',
               badge: 'CLOUD & IA',
               query: 'software',
             },

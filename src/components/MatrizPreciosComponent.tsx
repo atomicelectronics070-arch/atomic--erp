@@ -864,8 +864,8 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
                 : 'MATRIZ GENERAL DE PRODUCTOS · EDICIÓN DIRECTA DE CATEGORÍAS, STOCK, COSTOS Y PRECIOS EN TIEMPO REAL')}
             </p>
 
-            {/* BOTÓN DUAL ADMIN / COORDINACIÓN */}
-            {isStaff && (
+            {/* BOTÓN DUAL ADMIN / COORDINACIÓN CON PROTECCIÓN DE LOGIN */}
+            {isStaff ? (
               <div className="inline-flex items-center gap-2 p-1.5 bg-zinc-950 border-2 border-cyan-400 rounded-xl shadow-xl">
                 <button
                   type="button"
@@ -898,6 +898,22 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
                 >
                   <span>🛒</span>
                   <span>Vista Vendedores (PVP)</span>
+                </button>
+              </div>
+            ) : (
+              <div className="inline-flex flex-wrap items-center gap-2 p-1.5 bg-zinc-950 border-2 border-zinc-800 rounded-xl shadow-xl">
+                <div className="px-3.5 py-1.5 bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 rounded-lg text-xs font-black uppercase tracking-wider flex items-center gap-1.5">
+                  <span>🛒</span>
+                  <span>VISTA VENDEDORES (PVP)</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowLoginModal(true)}
+                  className="px-3.5 py-1.5 bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-zinc-950 rounded-lg text-xs font-black uppercase tracking-wider flex items-center gap-1.5 transition-all shadow cursor-pointer active:scale-98"
+                  title="Inicia sesión con tu cuenta Admin/Coordinación para desbloquear costos y márgenes ROI"
+                >
+                  <span>🔒</span>
+                  <span>DESBLOQUEAR MODO ADMIN (LOGIN)</span>
                 </button>
               </div>
             )}
