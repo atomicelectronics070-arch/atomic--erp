@@ -41,8 +41,8 @@ export default function MatrizPreciosComponent({
   // Dual mode switcher for Staff (Admin/Coordinacion)
   const [dualMode, setDualMode] = useState<'admin' | 'vendedor'>(isVendedorMode ? 'vendedor' : 'admin');
 
-  // If regular user -> ALWAYS vendedor mode. If staff -> use dualMode toggle.
-  const effectiveVendedorMode = session?.user ? (!isStaff ? true : dualMode === 'vendedor') : isVendedorMode;
+  // EL LOGIN ES CONDICIONANTE: Solo staff autenticado puede ver modo admin. Si no hay sesión o es vendedor -> 100% Vendedor PVP.
+  const effectiveVendedorMode = isStaff ? (dualMode === 'vendedor') : true;
 
   const [products, setProducts] = useState<ProductMatrixItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -864,59 +864,49 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
                 : 'MATRIZ GENERAL DE PRODUCTOS · EDICIÓN DIRECTA DE CATEGORÍAS, STOCK, COSTOS Y PRECIOS EN TIEMPO REAL')}
             </p>
 
-            {/* BOTÓN DUAL ADMIN / COORDINACIÓN CON PROTECCIÓN DE LOGIN */}
-            {isStaff ? (
-              <div className="inline-flex items-center gap-2 p-1.5 bg-zinc-950 border-2 border-cyan-400 rounded-xl shadow-xl">
-                <button
-                  type="button"
-                  onClick={() => {
+            {/* SELECTOR DUAL UNIFICADO Y CONDICIONANTE (ADMIN / VENDEDORES) */}
+            <div className="inline-flex items-center gap-2 p-1.5 bg-zinc-950 border-2 border-cyan-400/80 rounded-xl shadow-xl">
+              <button
+                type="button"
+                onClick={() => {
+                  if (isStaff) {
                     setDualMode('admin');
                     setIsEditMode(true);
                     showNotification('👑 Vista cambiada a: MATRIZ ADMIN (Costos, ROI y Edición)');
-                  }}
-                  className={`px-4 py-2 text-xs font-black uppercase tracking-wider rounded-lg transition-all flex items-center gap-2 cursor-pointer ${
-                    !effectiveVendedorMode
-                      ? 'bg-gradient-to-r from-amber-400 to-orange-500 text-zinc-950 shadow-md ring-2 ring-white/40 font-black'
-                      : 'text-zinc-400 hover:text-white hover:bg-zinc-900'
-                  }`}
-                >
-                  <span>👑</span>
-                  <span>Vista Admin (Costos & ROI)</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setDualMode('vendedor');
-                    setIsEditMode(false);
-                    showNotification('🛒 Vista cambiada a: MATRIZ VENDEDORES (PVP y Cotizador)');
-                  }}
-                  className={`px-4 py-2 text-xs font-black uppercase tracking-wider rounded-lg transition-all flex items-center gap-2 cursor-pointer ${
-                    effectiveVendedorMode
-                      ? 'bg-gradient-to-r from-emerald-400 to-teal-500 text-zinc-950 shadow-md ring-2 ring-white/40 font-black'
-                      : 'text-zinc-400 hover:text-white hover:bg-zinc-900'
-                  }`}
-                >
-                  <span>🛒</span>
-                  <span>Vista Vendedores (PVP)</span>
-                </button>
-              </div>
-            ) : (
-              <div className="inline-flex flex-wrap items-center gap-2 p-1.5 bg-zinc-950 border-2 border-zinc-800 rounded-xl shadow-xl">
-                <div className="px-3.5 py-1.5 bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 rounded-lg text-xs font-black uppercase tracking-wider flex items-center gap-1.5">
-                  <span>🛒</span>
-                  <span>VISTA VENDEDORES (PVP)</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setShowLoginModal(true)}
-                  className="px-3.5 py-1.5 bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-zinc-950 rounded-lg text-xs font-black uppercase tracking-wider flex items-center gap-1.5 transition-all shadow cursor-pointer active:scale-98"
-                  title="Inicia sesión con tu cuenta Admin/Coordinación para desbloquear costos y márgenes ROI"
-                >
-                  <span>🔒</span>
-                  <span>DESBLOQUEAR MODO ADMIN (LOGIN)</span>
-                </button>
-              </div>
-            )}
+                  } else {
+                    setLoginError('🔒 Acceso restringido: Inicia sesión con una cuenta de Administración o Coordinación para acceder a Costos, ROI y Edición.');
+                    setShowLoginModal(true);
+                  }
+                }}
+                className={`px-4 py-2 text-xs font-black uppercase tracking-wider rounded-lg transition-all flex items-center gap-2 cursor-pointer ${
+                  !effectiveVendedorMode
+                    ? 'bg-gradient-to-r from-amber-400 to-orange-500 text-zinc-950 shadow-md ring-2 ring-white/40 font-black'
+                    : 'text-zinc-400 hover:text-white hover:bg-zinc-900'
+                }`}
+                title={isStaff ? 'Ver matriz de costos internos, ROI y edición' : 'Requiere iniciar sesión como Administrador o Coordinador'}
+              >
+                <span>👑</span>
+                <span>Vista Admin (Costos & ROI)</span>
+                {!isStaff && <span className="text-[10px] opacity-70">🔒</span>}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setDualMode('vendedor');
+                  setIsEditMode(false);
+                  showNotification('🛒 Vista cambiada a: MATRIZ VENDEDORES (PVP y Cotizador)');
+                }}
+                className={`px-4 py-2 text-xs font-black uppercase tracking-wider rounded-lg transition-all flex items-center gap-2 cursor-pointer ${
+                  effectiveVendedorMode
+                    ? 'bg-gradient-to-r from-emerald-400 to-teal-500 text-zinc-950 shadow-md ring-2 ring-white/40 font-black'
+                    : 'text-zinc-400 hover:text-white hover:bg-zinc-900'
+                }`}
+              >
+                <span>🛒</span>
+                <span>Vista Vendedores (PVP)</span>
+              </button>
+            </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
