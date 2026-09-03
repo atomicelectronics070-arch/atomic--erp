@@ -613,7 +613,7 @@ export default function SupervisionClient({ session }: { session: any }) {
                                         <YAxis domain={[0, 10]} tick={{ fill: "#64748b", fontSize: 10, fontFamily: "monospace" }} />
                                         <Tooltip
                                             contentStyle={{ background: "#0f172a", border: "1px solid #1e293b", borderRadius: "12px", color: "#fff", fontSize: "11px" }}
-                                            formatter={(val: any, name: string) => [`${Number(val).toFixed(1)}/10`, "Calificación"]}
+                                            formatter={(val: any) => [`${Number(val).toFixed(1)}/10`, "Calificación"]}
                                         />
                                         <ReferenceLine y={10} stroke="#10b981" strokeDasharray="4 4" strokeOpacity={0.5} label={{ value: "10 ✓", fill: "#10b981", fontSize: 9 }} />
                                         <ReferenceLine y={8} stroke="#f59e0b" strokeDasharray="4 4" strokeOpacity={0.3} />

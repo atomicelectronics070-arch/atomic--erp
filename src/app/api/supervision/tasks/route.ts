@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from "next/navigation"
+import { NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 
 // Global in-memory storage for directed tasks and employee deliveries
-let tasksStore = [
+let tasksStore: any[] = [
     {
         id: 'task-101',
         title: 'Creación de 3 Reels para Campaña Cerraduras Smart Yale & BP',

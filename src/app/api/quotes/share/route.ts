@@ -28,9 +28,10 @@ export async function POST(req: NextRequest) {
                     await prisma.notification.create({
                         data: {
                             userId: u.id,
+                            title: 'Cotización Compartida',
                             type: 'QUOTE_SHARED',
                             message: notifMessage,
-                            data: notifData,
+                            relatedId: quote.id,
                             isRead: false
                         }
                     })
@@ -46,9 +47,10 @@ export async function POST(req: NextRequest) {
             await prisma.notification.create({
                 data: {
                     userId: targetUser.id,
+                    title: 'Cotización Compartida',
                     type: 'QUOTE_SHARED',
                     message: notifMessage,
-                    data: notifData,
+                    relatedId: quote.id,
                     isRead: false
                 }
             })

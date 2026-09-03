@@ -251,11 +251,10 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                 advisorName: session?.user?.name?.toUpperCase() || 'ATOMIC',
                 items: parsedItems,
                 subtotal: rawSubtotal,
-                tax,
+                taxAmount: tax,
+                taxPercent: 15,
+                discountAmount: itemDiscount + globalDisc,
                 total: q.total || (taxable + tax),
-                discountPercent: q.discountPercent || 0,
-                totalDiscountAmount: itemDiscount + globalDisc,
-                status: q.status || 'PENDIENTE',
                 deliveryAddress: q.deliveryAddress || ''
             })
         } catch (e) { console.error('PDF download error:', e) }
@@ -627,84 +626,7 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
         doc.save(`TICKET_${quoteNumber}_${clientName.replace(/\s+/g, "_")}.pdf`)
     }
 
-    const handleShareQuote = async (quote: any) => {
-        if (!shareTarget || isSharingQuote) return
-        setIsSharingQuote(true)
-        try {
-            const res = await fetch('/api/quotes/share', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    quoteId: quote.id,
-                    targetEmail: shareTarget,
-                    senderName: session?.user?.name || 'Atomic'
-                })
-            })
-            const data = await res.json()
-            if (data.success) {
-                setShareModalOpen(null)
-                setShareTarget('')
-            }
-        } catch (e) { console.error(e) } finally { setIsSharingQuote(false) }
-    }
 
-    const handleLoadQuoteMode = (q: any, mode: 'full' | 'name_only' | 'products_only') => {
-        if (mode === 'full' || mode === 'name_only') {
-            setClientName(q.clientName || '')
-            setClientCity(q.city || '')
-            setClientPhone(q.clientPhone || '')
-            setClientEmail(q.clientEmail || '')
-            setEmailNotSpecified(!q.clientEmail || q.clientEmail === 'no@especifica.com')
-            setQuoteSubject(q.quoteSubject || '')
-            setDeliveryAddress(q.deliveryAddress || '')
-            setDiscountPercent(q.discountPercent || 0)
-        }
-        if (mode === 'full' || mode === 'products_only') {
-            if (q.items) {
-                const parsedItems = safeParseArray(q.items)
-                if (parsedItems.length > 0) setItems(parsedItems)
-            }
-        }
-        setIsHistoryOpen(false)
-        setQuoteMenuOpen(null)
-    }
-
-    const handleDownloadPDF = async (q: any) => {
-        setQuoteMenuOpen(null)
-        try {
-            const parsedItems = safeParseArray(q.items)
-            await generateAtomicUnifiedProposalPDF({
-                quoteNumber: q.quoteNumber,
-                clientName: q.clientName || '',
-                clientPhone: q.clientPhone || '',
-                clientCity: q.city || '',
-                clientEmail: q.clientEmail || '',
-                quoteSubject: q.quoteSubject || '',
-                advisorName: session?.user?.name?.toUpperCase() || 'ATOMIC',
-                items: parsedItems,
-                subtotal: q.subtotal || q.total || 0,
-                tax: q.tax || 0,
-                total: q.total || 0,
-                discountPercent: q.discountPercent || 0,
-                totalDiscountAmount: 0,
-                status: q.status || 'PENDIENTE',
-                deliveryAddress: q.deliveryAddress || ''
-            })
-        } catch (e) { console.error('PDF Error:', e) }
-    }
-
-    const handleOSShare = (q: any) => {
-        setQuoteMenuOpen(null)
-        if (navigator.share) {
-            navigator.share({
-                title: `Cotización ${q.quoteNumber} - ${q.clientName}`,
-                text: `Propuesta Comercial Atomic: ${q.quoteNumber} para ${q.clientName} | Total: $${q.total?.toFixed(2)}`,
-                url: window.location.href
-            }).catch(() => {})
-        } else {
-            navigator.clipboard.writeText(`Cotización ${q.quoteNumber} | Cliente: ${q.clientName} | Total: $${q.total?.toFixed(2)}`)
-        }
-    }
 
     return (
         <div className="min-h-screen bg-[#030712] text-slate-100 font-sans pb-32 space-y-8 p-6 lg:p-10 rounded-3xl border border-slate-800/80 shadow-2xl relative overflow-hidden">

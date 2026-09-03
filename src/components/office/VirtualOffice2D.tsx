@@ -6,7 +6,8 @@ import { motion, AnimatePresence } from "framer-motion"
 import { 
     Users, MessageSquare, Phone, PhoneOff, Mic, MicOff, 
     StickyNote, Sparkles, Send, X, Shield, Plus, Check,
-    Coffee, Monitor, Award, Radio, MapPin, Volume2, Info
+    Coffee, Monitor, Award, Radio, MapPin, Volume2, Info,
+    Trash2, Megaphone, Bell, Image as ImageIcon
 } from "lucide-react"
 
 interface AvatarUser {
@@ -475,11 +476,16 @@ export default function VirtualOffice2D() {
                         </div>
                     )}
 
-                    {/* Proximity Instant Chat */}
+                    {/* Proximity Instant Chat - HABLAR EN VOZ ALTA */}
                     <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-4 flex flex-col h-[340px] shadow-xl">
-                        <div className="flex items-center gap-2 pb-3 border-b border-slate-800 text-xs font-black text-cyan-400 uppercase tracking-wider">
-                            <MessageSquare size={16} />
-                            <span>Canal de Oficina</span>
+                        <div className="pb-2.5 border-b border-slate-800">
+                            <div className="flex items-center gap-2 text-xs font-black text-cyan-400 uppercase tracking-wider">
+                                <MessageSquare size={16} />
+                                <span>HABLAR EN VOZ ALTA</span>
+                            </div>
+                            <p className="text-[10px] text-slate-400 mt-1 leading-snug font-sans">
+                                📢 Canal público en vivo: Escribe aquí para comunicarte en voz alta con todos los compañeros conectados.
+                            </p>
                         </div>
 
                         <div className="flex-1 overflow-y-auto py-3 space-y-2.5 text-xs custom-scrollbar">
@@ -500,7 +506,7 @@ export default function VirtualOffice2D() {
                                 value={chatInput}
                                 onChange={e => setChatInput(e.target.value)}
                                 onKeyDown={e => e.key === "Enter" && sendChatMessage()}
-                                placeholder="Escribe al canal..."
+                                placeholder="Escribe para hablar en voz alta..."
                                 className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-cyan-400"
                             />
                             <button
@@ -512,28 +518,45 @@ export default function VirtualOffice2D() {
                         </div>
                     </div>
 
-                    {/* Desk Notes List */}
+                    {/* Desk Notes List - CARTELERA */}
                     <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-4 space-y-3 shadow-xl">
                         <div className="flex items-center justify-between text-xs font-black text-amber-400 uppercase tracking-wider">
                             <div className="flex items-center gap-2">
                                 <StickyNote size={16} />
-                                <span>Notas en Escritorios</span>
+                                <span>CARTELERA</span>
                             </div>
                             <span className="px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-[10px] font-mono">
-                                {deskNotes.length}
+                                {deskNotes.length} avisos
                             </span>
                         </div>
+                        <p className="text-[10px] text-slate-400 leading-snug font-sans">
+                            Notas generales y anuncios de la empresa. Puedes descartar notas usando la papelera 🗑️.
+                        </p>
 
                         <div className="space-y-2 max-h-[160px] overflow-y-auto custom-scrollbar">
                             {deskNotes.map((n) => (
-                                <div key={n.id} className="p-2.5 rounded-xl bg-amber-950/20 border border-amber-500/30 text-xs space-y-1">
+                                <div key={n.id} className="p-2.5 rounded-xl bg-amber-950/20 border border-amber-500/30 text-xs space-y-1 relative group">
                                     <div className="flex items-center justify-between text-[10px] font-mono text-amber-300">
-                                        <span>📍 Para: {n.targetDesk}</span>
-                                        <span className="text-slate-500">{n.createdAt}</span>
+                                        <span>📌 Para: {n.targetDesk}</span>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-slate-500">{n.createdAt}</span>
+                                            <button
+                                                onClick={() => setDeskNotes(prev => prev.filter(x => x.id !== n.id))}
+                                                className="opacity-0 group-hover:opacity-100 text-rose-400 hover:text-rose-300 p-1 transition-all"
+                                                title="Quitar / Mover a papelera"
+                                            >
+                                                <Trash2 size={12} />
+                                            </button>
+                                        </div>
                                     </div>
                                     <p className="text-slate-200 italic font-medium">"{n.message}"</p>
                                 </div>
                             ))}
+                            {deskNotes.length === 0 && (
+                                <p className="text-[10px] font-mono text-slate-500 text-center py-2">
+                                    Cartelera limpia. No hay notas pendientes.
+                                </p>
+                            )}
                         </div>
                     </div>
 
