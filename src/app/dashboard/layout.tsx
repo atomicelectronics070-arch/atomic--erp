@@ -170,6 +170,9 @@ export default function DashboardLayout({
                     {(role === "ADMIN" || role === "MANAGEMENT" || role === "COORDINATOR" || role === "COORD_ASSISTANT") && (
                         <NavLink href="/dashboard/evaluations" icon={<Users size={16} />} label="Asesores RRHH" isActive={pathname.startsWith('/dashboard/evaluations')} />
                     )}
+                    {(role === "ADMIN" || role === "COORDINATOR" || role === "COORD_ASSISTANT") && (
+                        <NavLink href="/dashboard/supervision" icon={<ShieldCheck size={16} />} label="Supervisión" isActive={pathname.startsWith('/dashboard/supervision')} />
+                    )}
                 </nav>
 
                 <div className="p-6 shrink-0 border-t border-slate-800/50 bg-slate-950/50">

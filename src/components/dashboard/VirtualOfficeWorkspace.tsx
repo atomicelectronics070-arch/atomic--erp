@@ -1,639 +1,615 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import Link from "next/link"
-import { motion } from "framer-motion"
-import { 
-  Building2, Users, ShoppingBag, ShieldCheck, FileText, 
-  MapPin, Sparkles, ArrowRight, Activity, Cpu, Key, UserCheck, Bot,
-  Send, ArrowLeft, Loader2
+import { useState, useEffect, useRef } from "react"
+import { motion, AnimatePresence } from "framer-motion"
+import {
+    X, Send, Loader2, Building2, MessageSquare, Wrench, Brain,
+    Phone, MapPin, Calendar, Users, Star, ChevronRight, Printer,
+    FileText, Upload, Zap, ShieldCheck
 } from "lucide-react"
+import { generateAtomicUnifiedProposalPDF } from "@/lib/pdf/quotePdfGenerator"
 
-import VirtualOffice2D from "@/components/office/VirtualOffice2D"
+// ─────────────────────────────────────────────────────────────────────────────
+// Types
+// ─────────────────────────────────────────────────────────────────────────────
+interface Props {
+    currentModule?: string
+    session?: any
+    recentQuotes?: any[]
+}
 
-type OfficeZone = "ventas" | "inventario" | "coordinacion" | "prospeccion"
-type OfficeViewMode = "interactive_2d" | "stations_grid"
+type ActiveRoom = "printer" | "meeting" | "ceo" | "marketing" | "coordinacion" | "supervision" | "workshop" | "counseling" | null
 
-const FIXED_PROFILES = [
-  {
-    role: "ADMIN",
-    title: "ADMINISTRACIÓN CENTRAL",
-    email: "atomic@administrador.com",
-    emoji: "🛡️",
-    badge: "Visión 360° • Supervisión Maestro",
-    color: "from-rose-500 to-pink-600",
-    glow: "border-rose-500/50 shadow-[0_0_20px_rgba(244,63,94,0.3)]",
-    tag: "ADMIN_ROOT",
-    area: "Directiva",
-  },
-  {
-    role: "TECHMAN",
-    title: "JEFE DE TECNOLOGÍA",
-    email: "atomic@techman.com",
-    emoji: "💻",
-    badge: "Hardware & Redes • Servidores",
-    color: "from-purple-500 to-indigo-600",
-    glow: "border-purple-500/50 shadow-[0_0_20px_rgba(168,85,247,0.3)]",
-    tag: "TECH_LEAD",
-    area: "Tecnología",
-  },
-  {
-    role: "SOFTMAN",
-    title: "JEFE DE SISTEMAS & IA",
-    email: "atomic@softman.com",
-    emoji: "⚙️",
-    badge: "Desarrollo ERP • Automatizaciones",
-    color: "from-cyan-500 to-blue-600",
-    glow: "border-cyan-500/50 shadow-[0_0_20px_rgba(6,182,212,0.3)]",
-    tag: "SYS_LEAD",
-    area: "Sistemas",
-  },
-  {
-    role: "COORDINATOR",
-    title: "DEPARTAMENTO DE COORDINACIÓN",
-    email: "atomic@cordinacion.com",
-    emoji: "🎯",
-    badge: "Supervisión Asesores • Leads",
-    color: "from-amber-500 to-orange-600",
-    glow: "border-amber-500/50 shadow-[0_0_20px_rgba(245,158,11,0.3)]",
-    tag: "COORD_LEAD",
-    area: "Coordinación",
-  },
-  {
-    role: "MEDIA",
-    title: "DEPARTAMENTO DE EDICIÓN & MEDIA",
-    email: "atomic@media.com",
-    emoji: "📢",
-    badge: "Contenido • Blogs • Redes",
-    color: "from-emerald-500 to-teal-600",
-    glow: "border-emerald-500/50 shadow-[0_0_20px_rgba(16,185,129,0.3)]",
-    tag: "MEDIA_LEAD",
-    area: "Marketing",
-  },
-]
+// ─────────────────────────────────────────────────────────────────────────────
+// NPC Avatar component — bounces gently
+// ─────────────────────────────────────────────────────────────────────────────
+function NPC({ emoji, label, x, y, delay = 0 }: { emoji: string; label: string; x: string; y: string; delay?: number }) {
+    return (
+        <motion.div
+            className="absolute flex flex-col items-center gap-0.5 pointer-events-none select-none"
+            style={{ left: x, top: y }}
+            animate={{ y: [0, -6, 0] }}
+            transition={{ duration: 2.5, repeat: Infinity, delay, ease: "easeInOut" }}
+        >
+            <div className="text-2xl drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">{emoji}</div>
+            <span className="text-[8px] font-mono font-bold text-slate-400 bg-slate-950/80 px-1.5 py-0.5 rounded-full border border-slate-800 whitespace-nowrap">{label}</span>
+        </motion.div>
+    )
+}
 
-export default function VirtualOfficeWorkspace({ currentModule = "ventas" }: { currentModule?: string }) {
-  const [viewMode, setViewMode] = useState<OfficeViewMode>("interactive_2d")
-  const [activeZone, setActiveZone] = useState<OfficeZone>("ventas")
-  const [avatarPos, setAvatarPos] = useState({ x: 20, y: 25 })
-  const [systemUsers, setSystemUsers] = useState<any[]>([])
-  const [showAIChat, setShowAIChat] = useState(false)
-  const [chatInput, setChatInput] = useState("")
-  const [isChatLoading, setIsChatLoading] = useState(false)
-  const [zoneChats, setZoneChats] = useState<Record<string, {sender: "user" | "bot", text: string}[]>>({
-    ventas: [{ sender: "bot", text: "¡Hola! Soy tu asistente de ventas. ¿Necesitas un guión para cerrar una venta de NFC, o ayuda estructurando una cotización?" }],
-    inventario: [{ sender: "bot", text: "Hola, estoy listo para ayudarte con el inventario, control de stock y fichas técnicas de nuestros productos." }],
-    coordinacion: [{ sender: "bot", text: "Saludos. Supervisemos juntos las metas semanales y organicemos las bitácoras diarias." }],
-    prospeccion: [{ sender: "bot", text: "Radar activo. Escríbeme qué buscar o cómo calificar los leads de Google Maps." }]
-  })
+// ─────────────────────────────────────────────────────────────────────────────
+// Room Tile component
+// ─────────────────────────────────────────────────────────────────────────────
+function RoomTile({ id, emoji, label, sublabel, color, glow, onClick, isActive }: {
+    id: string; emoji: string; label: string; sublabel: string
+    color: string; glow: string; onClick: () => void; isActive: boolean
+}) {
+    return (
+        <motion.div
+            whileHover={{ scale: 1.05, y: -3 }}
+            whileTap={{ scale: 0.97 }}
+            onClick={onClick}
+            className={`relative cursor-pointer rounded-2xl border p-4 flex flex-col items-center gap-2 overflow-hidden transition-all duration-300 ${
+                isActive ? `${color} ${glow} border-white/20` : "bg-slate-900/90 border-slate-700/80 hover:border-slate-500"
+            }`}
+            style={{ transform: "perspective(600px) rotateX(8deg)" }}
+        >
+            {/* Shimmer line on top */}
+            <div className={`absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent ${isActive ? "via-white/50" : "via-slate-500/30"} to-transparent`} />
+            {/* Floor reflection */}
+            <div className="absolute bottom-0 left-0 w-full h-3 bg-gradient-to-t from-black/30 to-transparent" />
 
-  useEffect(() => {
-    fetch("/api/admin/manage-users")
-      .then(r => r.json())
-      .then(d => {
-        if (d.users) setSystemUsers(d.users)
-      })
-      .catch(() => {})
-  }, [])
+            <motion.div
+                className="text-3xl z-10"
+                animate={{ scale: isActive ? [1, 1.12, 1] : 1 }}
+                transition={{ duration: 1.5, repeat: isActive ? Infinity : 0 }}
+            >
+                {emoji}
+            </motion.div>
+            <div className="z-10 text-center">
+                <p className="text-[10px] font-black text-white uppercase tracking-wider leading-tight">{label}</p>
+                <p className="text-[8px] font-mono text-slate-400 mt-0.5">{sublabel}</p>
+            </div>
+            {isActive && (
+                <div className="absolute inset-0 bg-white/5 animate-pulse pointer-events-none" />
+            )}
+        </motion.div>
+    )
+}
 
-  const handleSendZoneMessage = async () => {
-    const text = chatInput.trim()
-    if (!text || isChatLoading) return
+// ─────────────────────────────────────────────────────────────────────────────
+// Decorative element
+// ─────────────────────────────────────────────────────────────────────────────
+function Decor({ emoji, label, x, y, wobble = false }: { emoji: string; label: string; x: string; y: string; wobble?: boolean }) {
+    return (
+        <motion.div
+            className="absolute flex flex-col items-center gap-0.5 pointer-events-none select-none z-10"
+            style={{ left: x, top: y }}
+            animate={wobble ? { rotate: [-2, 2, -2] } : {}}
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+        >
+            <span className="text-xl drop-shadow-md">{emoji}</span>
+            <span className="text-[7px] font-mono text-slate-600 whitespace-nowrap">{label}</span>
+        </motion.div>
+    )
+}
 
-    const updatedChats = { ...zoneChats }
-    updatedChats[activeZone] = [...(updatedChats[activeZone] || []), { sender: "user", text }]
-    setZoneChats(updatedChats)
-    setChatInput("")
-    setIsChatLoading(true)
+// ─────────────────────────────────────────────────────────────────────────────
+// Main Component
+// ─────────────────────────────────────────────────────────────────────────────
+export default function VirtualOfficeWorkspace({ currentModule = "ventas", session, recentQuotes = [] }: Props) {
+    const [activeRoom, setActiveRoom] = useState<ActiveRoom>(null)
+    const [avatarPos, setAvatarPos] = useState({ x: "45%", y: "60%" })
+    const [isActive, setIsActive] = useState(false)
+    const [fullscreen, setFullscreen] = useState(false)
+    const [chatMessages, setChatMessages] = useState<{ sender: "user" | "bot"; text: string }[]>([
+        { sender: "bot", text: "¡Hola! Soy tu consejero y guía. Cuéntame, ¿qué puedo hacer por ti? Te daré una guía, cuéntame qué habilidades te faltan, cómo podemos ayudarte, ¿qué puedes hacer para mejorar? ¡Te daré un plan para mejorar ahora mismo!" }
+    ])
+    const [chatInput, setChatInput] = useState("")
+    const [isChatLoading, setIsChatLoading] = useState(false)
+    const [ceoMessage, setCeoMessage] = useState("")
+    const [meetingTopic, setMeetingTopic] = useState("")
+    const [meetingUrgency, setMeetingUrgency] = useState("NORMAL")
+    const [meetingLead, setMeetingLead] = useState("")
+    const [isSending, setIsSending] = useState(false)
+    const [printerQuotes, setPrinterQuotes] = useState<any[]>(recentQuotes)
+    const [designFiles, setDesignFiles] = useState<string[]>([])
+    const [techVisitForm, setTechVisitForm] = useState({ client: "", address: "", description: "" })
+    const [techConsult, setTechConsult] = useState("")
+    const [systemUsers, setSystemUsers] = useState<any[]>([])
+    const chatEndRef = useRef<HTMLDivElement>(null)
 
-    let roleOverride = "SALESPERSON"
-    let botNameOverride = "Asesor Ventas"
-    if (activeZone === "inventario") {
-      roleOverride = "LOGISTICS"
-      botNameOverride = "Logística"
-    } else if (activeZone === "coordinacion") {
-      roleOverride = "COORDINATOR"
-      botNameOverride = "Coordinador"
-    } else if (activeZone === "prospeccion") {
-      roleOverride = "RADAR"
-      botNameOverride = "Radar IA"
+    const WA_NUMBER = "593999000000"
+    const WA_BASE = `https://wa.me/${WA_NUMBER}?text=`
+
+    useEffect(() => {
+        fetch("/api/admin/manage-users").then(r => r.json()).then(d => { if (d.users) setSystemUsers(d.users) }).catch(() => {})
+        if (recentQuotes.length === 0) {
+            fetch("/api/quotes?limit=5").then(r => r.json()).then(d => { if (d.quotes) setPrinterQuotes(d.quotes.slice(0, 5)) }).catch(() => {})
+        }
+    }, [])
+
+    useEffect(() => {
+        chatEndRef.current?.scrollIntoView({ behavior: "smooth" })
+    }, [chatMessages])
+
+    const openRoom = (room: ActiveRoom, pos: { x: string; y: string }) => {
+        setActiveRoom(room)
+        setAvatarPos(pos)
     }
 
-    try {
-      const res = await fetch("/api/personal-bot", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          message: text,
-          isNamingBot: false,
-          currentPath: zones[activeZone].link,
-          roleOverride,
-          botNameOverride
+    const closeRoom = () => setActiveRoom(null)
+
+    const handleSendCounselorMessage = async () => {
+        const text = chatInput.trim()
+        if (!text || isChatLoading) return
+        const msgs = [...chatMessages, { sender: "user" as const, text }]
+        setChatMessages(msgs)
+        setChatInput("")
+        setIsChatLoading(true)
+        try {
+            const res = await fetch("/api/personal-bot", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: text, roleOverride: "COUNSELOR", botNameOverride: "Consejero Atomic", isNamingBot: false, currentPath: "/dashboard" })
+            })
+            const data = await res.json()
+            setChatMessages([...msgs, { sender: "bot", text: data.text || "Déjame pensar en eso un momento..." }])
+        } catch {
+            setChatMessages([...msgs, { sender: "bot", text: "Hubo un error al conectar con el consejero. ¡Intenta de nuevo!" }])
+        } finally { setIsChatLoading(false) }
+    }
+
+    const handleSendCEOMessage = async () => {
+        if (!ceoMessage.trim() || isSending) return
+        setIsSending(true)
+        try {
+            const ceo = systemUsers.find(u => u.role === "ADMIN")
+            if (ceo) {
+                await fetch("/api/messages", { method: "POST", headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ receiverId: ceo.id, content: `📩 Mensaje para CEO desde la Oficina Virtual:\n\n${ceoMessage}` }) })
+            }
+            setCeoMessage("")
+            closeRoom()
+        } catch (e) { console.error(e) } finally { setIsSending(false) }
+    }
+
+    const handleSuggestMeeting = async () => {
+        if (!meetingTopic.trim() || isSending) return
+        setIsSending(true)
+        try {
+            await fetch("/api/supervision", { method: "POST", headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ action: "DELEGATE_CLIENT", payload: {
+                    clientName: `[REUNIÓN] ${meetingTopic}`,
+                    phone: "—", assignedTo: meetingLead || "coordinacion@atomic.com.ec",
+                    objective: `Urgencia: ${meetingUrgency}`, requirementText: meetingTopic
+                }})
+            })
+            setMeetingTopic(""); setMeetingUrgency("NORMAL"); setMeetingLead("")
+            closeRoom()
+        } catch (e) { console.error(e) } finally { setIsSending(false) }
+    }
+
+    const handleDownloadFromPrinter = async (q: any) => {
+        try {
+            const safeParseArray = (str: any) => { try { return Array.isArray(str) ? str : JSON.parse(str || "[]") } catch { return [] } }
+            const parsedItems = safeParseArray(q.items)
+            const rawSub = parsedItems.reduce((a: number, i: any) => a + i.quantity * i.unitPrice, 0)
+            const tax = rawSub * 0.15
+            await generateAtomicUnifiedProposalPDF({
+                quoteNumber: q.quoteNumber, clientName: q.clientName || "",
+                clientPhone: q.clientPhone || "", clientCity: q.city || "",
+                clientEmail: q.clientEmail || "", quoteSubject: q.quoteSubject || "",
+                advisorName: session?.user?.name?.toUpperCase() || "ATOMIC",
+                items: parsedItems, subtotal: rawSub, tax, total: q.total || rawSub + tax,
+                discountPercent: q.discountPercent || 0, totalDiscountAmount: 0,
+                status: q.status || "PENDIENTE", deliveryAddress: q.deliveryAddress || ""
+            })
+        } catch (e) { console.error(e) }
+    }
+
+    const handleDesignUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files
+        if (!files) return
+        Array.from(files).forEach(file => {
+            const reader = new FileReader()
+            reader.onload = ev => { if (ev.target?.result) setDesignFiles(prev => [...prev, ev.target!.result as string]) }
+            reader.readAsDataURL(file)
         })
-      })
-      const data = await res.json()
-      updatedChats[activeZone] = [...updatedChats[activeZone], { sender: "bot", text: data.text || "Sin respuesta." }]
-      setZoneChats({ ...updatedChats })
-    } catch (err) {
-      updatedChats[activeZone] = [...updatedChats[activeZone], { sender: "bot", text: "Error conectando con la IA de la estación." }]
-      setZoneChats({ ...updatedChats })
-    } finally {
-      setIsChatLoading(false)
     }
-  }
 
-  const zones = {
-    ventas: {
-      code: "STATION-V01",
-      title: "Módulo de Ventas",
-      desc: "Emisión acelerada de PDF con cálculo de impuestos y firma digital.",
-      link: "/dashboard/quotes",
-      icon: FileText,
-      color: "from-indigo-600 to-purple-600",
-      glow: "shadow-[0_0_30px_rgba(99,102,241,0.4)]",
-      badgeColor: "bg-indigo-500/10 text-indigo-400 border-indigo-500/30",
-      avatarEmoji: "👨‍💼",
-      avatarRole: "Asesor Comercial (Avatar)",
-      avatarStatus: "Enfocado en Cierre de Ventas",
-      stats: "Sistema de Cotizaciones Activo",
-      x: 20,
-      y: 25
-    },
-    inventario: {
-      code: "STATION-I02",
-      title: "Módulo de Inventario",
-      desc: "Catálogo completo con precios, stock en tiempo real y fichas técnicas.",
-      link: "/dashboard/shop",
-      icon: ShoppingBag,
-      color: "from-purple-600 to-pink-600",
-      glow: "shadow-[0_0_30px_rgba(168,85,247,0.4)]",
-      badgeColor: "bg-purple-500/10 text-purple-400 border-purple-500/30",
-      avatarEmoji: "📦",
-      avatarRole: "Encargado de Logística (Avatar)",
-      avatarStatus: "Stock Actualizado al 100%",
-      stats: "2,480 Productos Listados",
-      x: 70,
-      y: 25
-    },
-    coordinacion: {
-      code: "STATION-C03",
-      title: "Módulo de Coordinación",
-      desc: "Asignación de tareas, seguimiento de metas y supervisión diaria.",
-      link: "/dashboard/coordinacion",
-      icon: ShieldCheck,
-      color: "from-pink-600 to-rose-600",
-      glow: "shadow-[0_0_30px_rgba(244,63,94,0.4)]",
-      badgeColor: "bg-pink-500/10 text-pink-400 border-pink-500/30",
-      avatarEmoji: "🎯",
-      avatarRole: "Coordinador de Equipo (Avatar)",
-      avatarStatus: "Bitácora en Ejecución",
-      stats: "15 Asesores Activos",
-      x: 20,
-      y: 75
-    },
-    prospeccion: {
-      code: "STATION-P04",
-      title: "Módulo de Prospección",
-      desc: "Radar satelital para captación B2B de clientes en Google Maps.",
-      link: "/dashboard/map-prospecting",
-      icon: MapPin,
-      color: "from-rose-600 to-orange-600",
-      glow: "shadow-[0_0_30px_rgba(249,115,22,0.4)]",
-      badgeColor: "bg-orange-500/10 text-orange-400 border-orange-500/30",
-      avatarEmoji: "🛰️",
-      avatarRole: "Especialista en Prospección (Avatar)",
-      avatarStatus: "Radar Escaneando Zona",
-      stats: "1,200 Prospectos Filtrados",
-      x: 70,
-      y: 75
-    }
-  }
+    // ── ROOMS CONFIG ──────────────────────────────────────────────────────────
+    const rooms = [
+        { id: "ceo" as const, emoji: "🏛️", label: "Despacho CEO", sublabel: "Dejar mensaje", color: "bg-gradient-to-br from-rose-900/80 to-pink-900/60", glow: "shadow-[0_0_20px_rgba(244,63,94,0.4)]", pos: { x: "5%", y: "12%" } },
+        { id: "coordinacion" as const, emoji: "🎯", label: "Coordinación", sublabel: "Chat & Plan", color: "bg-gradient-to-br from-amber-900/80 to-orange-900/60", glow: "shadow-[0_0_20px_rgba(245,158,11,0.4)]", pos: { x: "24%", y: "12%" } },
+        { id: "supervision" as const, emoji: "🛡️", label: "Supervisión", sublabel: "Lista de precios", color: "bg-gradient-to-br from-emerald-900/80 to-teal-900/60", glow: "shadow-[0_0_20px_rgba(16,185,129,0.4)]", pos: { x: "43%", y: "12%" } },
+        { id: "workshop" as const, emoji: "🔧", label: "Taller Técnico", sublabel: "Visita / Consulta", color: "bg-gradient-to-br from-blue-900/80 to-cyan-900/60", glow: "shadow-[0_0_20px_rgba(59,130,246,0.4)]", pos: { x: "62%", y: "12%" } },
+        { id: "meeting" as const, emoji: "🤝", label: "Sala de Reuniones", sublabel: "Sugerir reunión", color: "bg-gradient-to-br from-indigo-900/80 to-purple-900/60", glow: "shadow-[0_0_20px_rgba(99,102,241,0.4)]", pos: { x: "81%", y: "12%" } },
+        { id: "marketing" as const, emoji: "📣", label: "Marketing", sublabel: "Almanaque Diseños", color: "bg-gradient-to-br from-purple-900/80 to-pink-900/60", glow: "shadow-[0_0_20px_rgba(168,85,247,0.4)]", pos: { x: "5%", y: "55%" } },
+        { id: "counseling" as const, emoji: "🧠", label: "Consejería", sublabel: "Chat con consejero IA", color: "bg-gradient-to-br from-teal-900/80 to-cyan-900/60", glow: "shadow-[0_0_20px_rgba(20,184,166,0.4)]", pos: { x: "43%", y: "55%" } },
+        { id: "printer" as const, emoji: "🖨️", label: "Impresora", sublabel: "Imprimir cotizaciones", color: "bg-gradient-to-br from-slate-800/80 to-slate-700/60", glow: "shadow-[0_0_20px_rgba(148,163,184,0.3)]", pos: { x: "81%", y: "55%" } },
+    ]
 
-  const current = zones[activeZone]
-
-  const handleSelectZone = (key: OfficeZone) => {
-    setActiveZone(key)
-    setAvatarPos({ x: zones[key].x, y: zones[key].y })
-  }
-
-  return (
-    <div className="w-full bg-slate-950 text-white rounded-3xl p-6 lg:p-10 border border-slate-800 shadow-2xl relative overflow-hidden space-y-8">
-      
-      {/* Ambient Glows */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-600/10 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-600/10 rounded-full blur-[140px] pointer-events-none" />
-
-      {/* SECTION 1: HEADER & VIEW SWITCHER */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-800 relative z-10">
-        <div>
-          <div className="inline-flex items-center space-x-2 px-3 py-1 bg-indigo-500/10 border border-indigo-500/30 rounded-xl text-indigo-400 font-mono text-[10px] font-bold uppercase tracking-widest mb-2">
-            <span className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse" />
-            <span>Oficina Virtual 2.5D & Audio P2P Directo</span>
-          </div>
-          <h2 className="text-2xl md:text-3xl font-black tracking-tight text-white flex items-center gap-3">
-            <Building2 className="text-cyan-400" />
-            <span>Centro de Trabajo Remoto</span>
-          </h2>
-        </div>
-
-        {/* View Mode Toggle Switch */}
-        <div className="flex items-center gap-2 bg-slate-900 p-1.5 rounded-2xl border border-slate-800 shrink-0">
-          <button
-            onClick={() => setViewMode("interactive_2d")}
-            className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer ${
-              viewMode === "interactive_2d"
-                ? "bg-gradient-to-r from-cyan-600 to-indigo-600 text-white shadow-[0_0_15px_rgba(6,182,212,0.3)]"
-                : "text-slate-400 hover:text-white hover:bg-slate-800"
-            }`}
-          >
-            <span>🎮</span>
-            <span>Planta 2D Interactiva</span>
-          </button>
-          <button
-            onClick={() => setViewMode("stations_grid")}
-            className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer ${
-              viewMode === "stations_grid"
-                ? "bg-gradient-to-r from-cyan-600 to-indigo-600 text-white shadow-[0_0_15px_rgba(6,182,212,0.3)]"
-                : "text-slate-400 hover:text-white hover:bg-slate-800"
-            }`}
-          >
-            <span>🏢</span>
-            <span>Estaciones & Perfiles</span>
-          </button>
-        </div>
-      </div>
-
-      {/* VIEW 1: INTERACTIVE 2D PIXEL OFFICE (GATHER.TOWN STYLE) */}
-      {viewMode === "interactive_2d" && (
-        <div className="relative z-10 animate-in fade-in duration-300">
-          <VirtualOffice2D />
-        </div>
-      )}
-
-      {/* VIEW 2: 2.5D STATIONS FLOORPLAN + PROFILES */}
-      {viewMode === "stations_grid" && (
-        <div className="space-y-12 relative z-10 animate-in fade-in duration-300">
-          {/* Quick Zone Switcher */}
-          <div className="flex items-center gap-2 bg-slate-900/60 p-2 rounded-2xl border border-slate-800 overflow-x-auto">
-            {(Object.keys(zones) as OfficeZone[]).map((key) => {
-              const z = zones[key]
-              const isSelected = activeZone === key
-              return (
-                <button
-                  key={key}
-                  onClick={() => handleSelectZone(key)}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-2 shrink-0 cursor-pointer ${
-                    isSelected 
-                      ? 'bg-gradient-to-r ' + z.color + ' text-white shadow-lg' 
-                      : 'text-slate-400 hover:text-white hover:bg-slate-800'
-                  }`}
-                >
-                  <span className="text-sm">{z.avatarEmoji}</span>
-                  <span className="capitalize">{key}</span>
-                </button>
-              )
-            })}
-          </div>
-
-          <div className="grid lg:grid-cols-12 gap-8 items-stretch">
-        
-        {/* Floorplan (8 Cols) */}
-        <div className="lg:col-span-8 bg-slate-900/90 border border-slate-800 rounded-3xl p-6 relative min-h-[440px] flex flex-col justify-between overflow-hidden shadow-inner group">
-          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none" />
-
-          <div className="relative z-10 flex justify-between items-center text-[11px] font-mono text-slate-400 uppercase tracking-widest border-b border-slate-800/80 pb-3">
-            <span className="flex items-center gap-2">
-              <Activity size={14} className="text-emerald-400 animate-pulse" />
-              <span>Mapa Laboral</span>
-            </span>
-            <span className="text-indigo-400 font-bold">Estaciones Operativas</span>
-          </div>
-
-          <div className="relative z-10 grid grid-cols-2 gap-6 my-auto py-6">
-            {(Object.keys(zones) as OfficeZone[]).map((key) => {
-              const z = zones[key]
-              const Icon = z.icon
-              const isActive = activeZone === key
-
-              return (
-                <div
-                  key={key}
-                  onClick={() => handleSelectZone(key)}
-                  className={`relative p-6 rounded-2xl border transition-all duration-500 cursor-pointer overflow-hidden group ${
-                    isActive 
-                      ? 'bg-gradient-to-br from-slate-800 to-slate-900 border-indigo-500 ' + z.glow
-                      : 'bg-slate-950/70 border-slate-800/80 hover:border-slate-700 hover:bg-slate-900/50'
-                  }`}
-                >
-                  {isActive && (
-                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-indigo-500 to-transparent animate-pulse" />
-                  )}
-
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <div className={`p-3 rounded-xl border ${z.badgeColor}`}>
-                        <Icon size={18} />
-                      </div>
-                      <div className="w-9 h-9 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-lg shadow-md group-hover:scale-110 transition-transform">
-                        {z.avatarEmoji}
-                      </div>
-                    </div>
-                    <span className="font-mono text-[10px] text-slate-500">{z.code}</span>
-                  </div>
-
-                  <h3 className={`font-black text-sm md:text-base mb-1 transition-colors ${isActive ? 'text-white' : 'text-slate-300 group-hover:text-white'}`}>
-                    {z.title.split('Módulo de ')[1] || z.title}
-                  </h3>
-                  
-                  <p className="text-[10px] text-emerald-400 font-mono font-bold flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-                    {z.avatarStatus}
-                  </p>
-
-                  <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-[10px]">
-                    <span className="text-slate-400 font-mono">
-                      {z.avatarRole.split(' (')[0]}
-                    </span>
-                    <span className="text-indigo-400 font-bold group-hover:translate-x-1 transition-transform">Ir a Estación →</span>
-                  </div>
+    return (
+        <div className={`relative ${fullscreen ? "fixed inset-0 z-[999] bg-[#030305]" : "w-full"}`}>
+            {/* ── OFFICE HEADER ──────────────────────────────────────── */}
+            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-800/60 bg-slate-950/80 backdrop-blur-xl">
+                <div className="flex items-center gap-3">
+                    <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
+                    <span className="text-xs font-black text-white uppercase tracking-widest">🎮 Oficina Virtual Atomic</span>
+                    <span className="text-[9px] font-mono text-slate-500">RPG-Mode 2.5D</span>
                 </div>
-              )
-            })}
-          </div>
-
-          <motion.div 
-            animate={{ x: `${avatarPos.x}%`, y: `${avatarPos.y}%` }}
-            transition={{ type: "spring", stiffness: 100, damping: 15 }}
-            className="absolute top-1/2 left-1/2 w-10 h-10 -ml-5 -mt-5 z-30 pointer-events-none flex flex-col items-center"
-          >
-            <div className="w-9 h-9 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 border-2 border-white flex items-center justify-center text-black font-black text-sm shadow-[0_0_25px_rgba(245,158,11,0.9)] animate-bounce">
-              👾
+                <div className="flex items-center gap-3">
+                    {/* Mantenerse Activo */}
+                    <label className="flex items-center gap-2 cursor-pointer">
+                        <div onClick={() => setIsActive(!isActive)}
+                            className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${isActive ? "bg-emerald-500 border-emerald-500" : "border-slate-600"}`}>
+                            {isActive && <span className="text-white text-[10px] font-black">✓</span>}
+                        </div>
+                        <span className="text-[10px] font-mono text-slate-400 select-none">Mantenerse Activo</span>
+                    </label>
+                    {/* Entrar a la Oficina */}
+                    <motion.button
+                        whileHover={{ scale: 1.03 }}
+                        whileTap={{ scale: 0.97 }}
+                        onClick={() => setFullscreen(!fullscreen)}
+                        className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-black rounded-xl text-xs uppercase tracking-wider shadow-[0_0_15px_rgba(16,185,129,0.4)]"
+                    >
+                        <Zap size={12} />
+                        {fullscreen ? "Salir" : "¿Entrar a la Oficina?"}
+                    </motion.button>
+                </div>
             </div>
-            <span className="px-2 py-0.5 bg-black/90 text-[9px] font-mono font-bold text-amber-400 rounded-full border border-amber-500/40 whitespace-nowrap -mt-1 shadow-md">
-              Tú (Operador)
-            </span>
-          </motion.div>
-        </div>
 
-        {/* Details Card (4 Cols) */}
-        <div className="lg:col-span-4 bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800 rounded-3xl p-6 flex flex-col justify-between shadow-xl relative overflow-hidden min-h-[440px]">
-          {showAIChat ? (
-            <div className="flex flex-col h-full justify-between space-y-4">
-              {/* Chat Header */}
-              <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                <div className="flex items-center gap-2">
-                  <button 
-                    onClick={() => setShowAIChat(false)}
-                    className="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 transition-colors"
-                  >
-                    <ArrowLeft size={14} />
-                  </button>
-                  <div>
-                    <h4 className="text-xs font-bold text-white flex items-center gap-1.5">
-                      <span>{current.avatarEmoji}</span>
-                      <span>IA de {current.title.split('Módulo de ')[1] || current.title}</span>
-                    </h4>
-                    <p className="text-[9px] font-mono text-emerald-400">En Línea</p>
-                  </div>
+            {/* ── OFFICE FLOOR ───────────────────────────────────────── */}
+            <div className={`relative overflow-hidden bg-[#070710] ${fullscreen ? "h-[calc(100vh-56px)]" : "h-[560px]"}`}>
+                {/* Graph paper grid */}
+                <div className="absolute inset-0 bg-[linear-gradient(rgba(99,102,241,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(99,102,241,0.04)_1px,transparent_1px)] bg-[size:48px_48px]" />
+                {/* Corner ambient glow */}
+                <div className="absolute top-0 left-1/4 w-64 h-64 bg-indigo-600/8 rounded-full blur-[80px] pointer-events-none" />
+                <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-emerald-600/8 rounded-full blur-[80px] pointer-events-none" />
+
+                {/* ── ROOM TILES GRID ──────────────────────────────── */}
+                <div className="absolute inset-x-4 top-4 grid grid-cols-5 gap-3" style={{ maxWidth: "calc(100% - 2rem)" }}>
+                    {rooms.map(room => (
+                        <RoomTile
+                            key={room.id}
+                            id={room.id}
+                            emoji={room.emoji}
+                            label={room.label}
+                            sublabel={room.sublabel}
+                            color={room.color}
+                            glow={room.glow}
+                            isActive={activeRoom === room.id}
+                            onClick={() => {
+                                if (activeRoom === room.id) closeRoom()
+                                else openRoom(room.id, room.pos)
+                            }}
+                        />
+                    ))}
                 </div>
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              </div>
 
-              {/* Chat Messages scroll window */}
-              <div className="flex-1 overflow-y-auto space-y-3 pr-1 max-h-[260px] min-h-[240px] text-xs font-sans scrollbar-thin scrollbar-thumb-slate-800">
-                {(zoneChats[activeZone] || []).map((msg, i) => (
-                  <div key={i} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`p-3 rounded-2xl max-w-[85%] leading-relaxed ${
-                      msg.sender === 'user' 
-                        ? 'bg-gradient-to-br from-emerald-600 to-teal-700 text-white rounded-br-none shadow-[0_0_10px_rgba(16,185,129,0.15)]'
-                        : 'bg-slate-950 border border-slate-800/80 text-slate-100 rounded-bl-none'
-                    }`}>
-                      {msg.text}
-                    </div>
-                  </div>
-                ))}
-                {isChatLoading && (
-                  <div className="flex justify-start">
-                    <div className="bg-slate-950 border border-slate-800/80 px-3 py-2 rounded-2xl rounded-bl-none flex gap-1 items-center">
-                      <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                      <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                      <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-                    </div>
-                  </div>
-                )}
-              </div>
+                {/* ── DECORATIONS ──────────────────────────────────── */}
+                <Decor emoji="🪴" label="Planta de la suerte" x="2%" y="78%" wobble />
+                <Decor emoji="☕" label="Cafecito caliente" x="16%" y="82%" />
+                <Decor emoji="🦆" label="Pato de debugging" x="35%" y="80%" wobble />
+                <Decor emoji="📎" label="Papers perdidos" x="55%" y="78%" />
+                <Decor emoji="💾" label="Floppy antiguo" x="70%" y="82%" />
+                <Decor emoji="📡" label="Antena" x="88%" y="75%" wobble />
+                <Decor emoji="🖥️" label="Monitor activo" x="78%" y="80%" />
+                <Decor emoji="🃏" label="Tarjeta NFC" x="45%" y="83%" />
 
-              {/* Chat Input */}
-              <div className="flex gap-2 items-center pt-2 border-t border-slate-800/60">
-                <input
-                  type="text"
-                  value={chatInput}
-                  onChange={e => setChatInput(e.target.value)}
-                  onKeyDown={e => e.key === "Enter" && handleSendZoneMessage()}
-                  placeholder={`Preguntar a ${current.avatarRole.split(' (')[0]}...`}
-                  className="flex-1 bg-slate-950 border border-slate-800 p-2.5 rounded-xl text-xs text-white placeholder-slate-500 outline-none focus:border-emerald-400"
-                />
-                <button
-                  onClick={handleSendZoneMessage}
-                  disabled={!chatInput.trim() || isChatLoading}
-                  className="bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white p-2.5 rounded-xl transition-all shadow-[0_0_10px_rgba(16,185,129,0.2)]"
+                {/* ── NPCS ──────────────────────────────────────────── */}
+                <NPC emoji="👨‍💼" label="Asesor" x="28%" y="72%" delay={0} />
+                <NPC emoji="👩‍🎨" label="Editora" x="52%" y="74%" delay={0.8} />
+                <NPC emoji="🧑‍💻" label="Dev" x="67%" y="70%" delay={1.4} />
+
+                {/* ── YOUR AVATAR ──────────────────────────────────── */}
+                <motion.div
+                    animate={{ left: avatarPos.x, top: avatarPos.y }}
+                    transition={{ type: "spring", stiffness: 80, damping: 18 }}
+                    className="absolute flex flex-col items-center gap-0.5 z-30 pointer-events-none"
                 >
-                  <Send size={14} />
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="flex flex-col h-full justify-between">
-              <div>
-                <div className="flex items-center justify-between mb-6">
-                  <span className={`px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase border ${current.badgeColor}`}>
-                    {current.code}
-                  </span>
-                  <span className="text-[10px] text-slate-500 font-mono">Estación Activa</span>
-                </div>
-
-                <div className="flex items-center space-x-4 mb-6 p-4 bg-slate-950/80 rounded-2xl border border-slate-800">
-                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 flex items-center justify-center text-2xl shadow-md">
-                    {current.avatarEmoji}
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-black text-white">{current.avatarRole}</h4>
-                    <p className="text-[11px] text-emerald-400 font-mono font-bold">{current.avatarStatus}</p>
-                  </div>
-                </div>
-
-                <h3 className="text-xl font-black text-white mb-3 leading-tight">{current.title}</h3>
-                <p className="text-slate-400 text-xs font-light leading-relaxed mb-6">{current.desc}</p>
-
-                <div className="p-4 bg-slate-950/80 rounded-2xl border border-slate-800/80 mb-6 space-y-2">
-                  <span className="text-[10px] font-mono uppercase text-slate-500 block">Estadística de Operación</span>
-                  <p className="text-xs font-bold text-emerald-400 flex items-center gap-2">
-                    <Sparkles size={14} />
-                    <span>{current.stats}</span>
-                  </p>
-                </div>
-              </div>
-
-              {/* Redirection / AI Chat buttons */}
-              <div className="flex gap-2.5">
-                <button
-                  onClick={() => setShowAIChat(true)}
-                  className="flex-1 py-3.5 bg-slate-950 hover:bg-slate-800 border border-slate-800 rounded-2xl font-black text-[10px] uppercase tracking-wider text-slate-200 hover:text-white transition-all flex items-center justify-center gap-1.5 shadow-md"
-                >
-                  <Bot size={13} className="text-emerald-400" />
-                  <span>Hablar con IA</span>
-                </button>
-                <Link
-                  href={current.link}
-                  className={`flex-1 py-3.5 rounded-2xl font-black text-[10px] uppercase tracking-wider text-white bg-gradient-to-r ${current.color} shadow-lg hover:scale-[1.02] transition-all flex items-center justify-center gap-1.5 group`}
-                >
-                  <span>Ir a Área</span>
-                  <ArrowRight size={13} className="group-hover:translate-x-0.5 transition-transform" />
-                </Link>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* SECTION 3: DEPARTAMENTOS Y CUENTAS MATRIZ FIJAS */}
-      <div className="space-y-6 pt-6 border-t border-slate-800">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-xl font-black text-white flex items-center gap-2">
-              <Cpu className="text-cyan-400" />
-              <span>Departamentos Fijos & Conexión Directa a Bots Matriz</span>
-            </h3>
-            <p className="text-xs font-mono text-slate-400 mt-0.5">
-              Cuentas corporativas fijas con etiqueta única e Inteligencia Artificial individual en la base de datos
-            </p>
-          </div>
-          <span className="px-3 py-1 bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-[10px] font-mono font-bold rounded-full">
-            5 Cuentas Matrices Conectadas
-          </span>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-          {FIXED_PROFILES.map((prof) => {
-            const matchedUser = systemUsers.find(u => u.email === prof.email)
-            const botName = matchedUser?.personalBot?.botName || "Bot Activo"
-
-            return (
-              <div 
-                key={prof.email}
-                className={`bg-slate-900/90 border p-5 rounded-2xl flex flex-col justify-between space-y-4 hover:scale-[1.02] transition-all ${prof.glow}`}
-              >
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="w-10 h-10 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center text-xl">
-                      {prof.emoji}
-                    </div>
-                    <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded bg-slate-950 text-slate-400 border border-slate-800">
-                      {prof.tag}
+                    <motion.div
+                        animate={{ y: [0, -5, 0] }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                        className="text-3xl drop-shadow-[0_4px_16px_rgba(245,158,11,0.9)]"
+                    >
+                        👾
+                    </motion.div>
+                    <span className="text-[8px] font-mono font-bold text-amber-400 bg-black/80 px-2 py-0.5 rounded-full border border-amber-500/40 whitespace-nowrap shadow-[0_0_10px_rgba(245,158,11,0.5)]">
+                        TÚ ({session?.user?.name?.split(" ")[0] || "Operador"})
                     </span>
-                  </div>
+                </motion.div>
 
-                  <div>
-                    <h4 className="font-black text-white text-xs leading-snug">{prof.title}</h4>
-                    <p className="text-[10px] font-mono text-slate-400 truncate mt-0.5">{prof.email}</p>
-                  </div>
+                {/* ── ROOM PANEL (right side) ───────────────────────── */}
+                <AnimatePresence>
+                    {activeRoom && (
+                        <motion.div
+                            initial={{ opacity: 0, x: 40 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: 40 }}
+                            transition={{ type: "spring", damping: 22, stiffness: 200 }}
+                            className="absolute top-4 right-4 w-80 bg-[#0a0a14]/95 border border-slate-700/80 rounded-3xl shadow-2xl backdrop-blur-xl z-40 overflow-hidden flex flex-col max-h-[calc(100%-2rem)]"
+                        >
+                            {/* Panel Header */}
+                            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-800/80">
+                                <div className="flex items-center gap-2">
+                                    <span className="text-xl">{rooms.find(r => r.id === activeRoom)?.emoji}</span>
+                                    <div>
+                                        <p className="text-xs font-black text-white">{rooms.find(r => r.id === activeRoom)?.label}</p>
+                                        <p className="text-[9px] font-mono text-slate-400">{rooms.find(r => r.id === activeRoom)?.sublabel}</p>
+                                    </div>
+                                </div>
+                                <button onClick={closeRoom} className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors">
+                                    <X size={14} />
+                                </button>
+                            </div>
 
-                  <p className="text-[10px] text-slate-300 font-medium leading-relaxed bg-slate-950/60 p-2.5 rounded-xl border border-slate-800/80">
-                    {prof.badge}
-                  </p>
-                </div>
+                            {/* Panel Content */}
+                            <div className="flex-1 overflow-y-auto p-4 space-y-3">
 
-                <div className="pt-3 border-t border-slate-800 space-y-2">
-                  <div className="flex items-center justify-between text-[10px] font-mono">
-                    <span className="text-slate-400 flex items-center gap-1">
-                      <Bot size={12} className="text-emerald-400" /> IA Personal:
-                    </span>
-                    <span className="text-emerald-400 font-bold">{botName}</span>
-                  </div>
-                  <Link
-                    href="/dashboard/admin/personal-management"
-                    className="w-full py-2 bg-slate-950 hover:bg-slate-800 border border-slate-800 rounded-xl text-[10px] font-mono font-bold text-center block text-slate-200 hover:text-white transition-colors"
-                  >
-                    Ver IA & Reporte →
-                  </Link>
-                </div>
-              </div>
-            )
-          })}
-        </div>
-      </div>
+                                {/* ── PRINTER ──────────────────────── */}
+                                {activeRoom === "printer" && (
+                                    <div className="space-y-3">
+                                        <p className="text-[10px] font-mono text-slate-400 uppercase tracking-widest">Cotizaciones Recientes</p>
+                                        {printerQuotes.length === 0 && (
+                                            <p className="text-[10px] font-mono text-slate-500 text-center py-4">Sin cotizaciones disponibles</p>
+                                        )}
+                                        {printerQuotes.map((q: any) => (
+                                            <div key={q.id} className="p-3 bg-slate-900 border border-slate-800 rounded-2xl">
+                                                <div className="flex justify-between items-start mb-2">
+                                                    <span className="text-[9px] font-bold text-cyan-300 bg-cyan-500/10 border border-cyan-500/30 px-2 py-0.5 rounded-full">{q.quoteNumber}</span>
+                                                    <span className="text-emerald-400 text-xs font-black">${q.total?.toFixed(2)}</span>
+                                                </div>
+                                                <p className="text-[10px] font-bold text-white truncate mb-2">{q.clientName}</p>
+                                                <button onClick={() => handleDownloadFromPrinter(q)}
+                                                    className="w-full py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 text-[10px] font-bold rounded-xl flex items-center justify-center gap-1.5 transition-colors">
+                                                    <Printer size={10} /> Imprimir PDF
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
 
-      {/* SECTION 4: RED DE VENDEDORES & ASESORES DEL SISTEMA */}
-      <div className="space-y-6 pt-6 border-t border-slate-800">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-xl font-black text-white flex items-center gap-2">
-              <Users className="text-emerald-400" />
-              <span>Vendedores & Asesores Registrados en el Sistema</span>
-            </h3>
-            <p className="text-xs font-mono text-slate-400 mt-0.5">
-              Tarjetas dinámicas de todo el personal con indicador de bot asignado y rendimiento
-            </p>
-          </div>
-          <span className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] font-mono font-bold rounded-full">
-            {systemUsers.length} Usuarios Registrados
-          </span>
-        </div>
+                                {/* ── MEETING ROOM ─────────────────── */}
+                                {activeRoom === "meeting" && (
+                                    <div className="space-y-3">
+                                        <div>
+                                            <label className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest block mb-1">Tema de la Reunión *</label>
+                                            <textarea value={meetingTopic} onChange={e => setMeetingTopic(e.target.value)} rows={2} placeholder="¿De qué trata la reunión?"
+                                                className="w-full bg-slate-900 border border-slate-700 text-white p-2.5 rounded-xl text-xs resize-none outline-none focus:border-indigo-500/50" />
+                                        </div>
+                                        <div>
+                                            <label className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest block mb-1">Urgencia</label>
+                                            <div className="grid grid-cols-3 gap-1.5">
+                                                {["URGENTE", "NORMAL", "PLANIFICADA"].map(u => (
+                                                    <button key={u} onClick={() => setMeetingUrgency(u)}
+                                                        className={`py-1.5 rounded-xl text-[9px] font-bold border transition-all ${meetingUrgency === u ? "bg-indigo-500/20 border-indigo-500/40 text-indigo-300" : "bg-slate-900 border-slate-700 text-slate-400"}`}>
+                                                        {u === "URGENTE" ? "🔴" : u === "NORMAL" ? "🟡" : "🟢"} {u}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest block mb-1">¿Quién debería llevarla?</label>
+                                            <select value={meetingLead} onChange={e => setMeetingLead(e.target.value)}
+                                                className="w-full bg-slate-900 border border-slate-700 text-white p-2 rounded-xl text-xs font-bold outline-none">
+                                                <option value="">Seleccionar responsable...</option>
+                                                {systemUsers.map((u: any) => <option key={u.id} value={u.email}>{u.name || u.email}</option>)}
+                                            </select>
+                                        </div>
+                                        <button onClick={handleSuggestMeeting} disabled={!meetingTopic || isSending}
+                                            className="w-full py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-black rounded-xl text-xs flex items-center justify-center gap-2 disabled:opacity-50">
+                                            {isSending ? <Loader2 size={12} className="animate-spin" /> : <Calendar size={12} />}
+                                            Sugerir Reunión
+                                        </button>
+                                    </div>
+                                )}
 
-        {systemUsers.length === 0 ? (
-          <div className="text-center py-8 bg-slate-900/40 rounded-2xl border border-slate-800 text-xs font-mono text-slate-500">
-            Cargando vendedores y asesores...
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {systemUsers.map((usr) => {
-              const days = Math.floor((Date.now() - new Date(usr.createdAt).getTime()) / 86400000)
-              const botName = usr.personalBot?.botName
+                                {/* ── CEO OFFICE ───────────────────── */}
+                                {activeRoom === "ceo" && (
+                                    <div className="space-y-3">
+                                        <p className="text-[10px] font-mono text-slate-400">Deja un mensaje privado al CEO. Recibirá una notificación interna.</p>
+                                        <textarea value={ceoMessage} onChange={e => setCeoMessage(e.target.value)} rows={4} placeholder="Escribe tu mensaje al CEO..."
+                                            className="w-full bg-slate-900 border border-rose-500/20 text-white p-2.5 rounded-xl text-xs resize-none outline-none focus:border-rose-500/40" />
+                                        <button onClick={handleSendCEOMessage} disabled={!ceoMessage.trim() || isSending}
+                                            className="w-full py-2.5 bg-gradient-to-r from-rose-600 to-pink-600 text-white font-black rounded-xl text-xs flex items-center justify-center gap-2 disabled:opacity-50">
+                                            {isSending ? <Loader2 size={12} className="animate-spin" /> : <Send size={12} />}
+                                            Enviar al CEO
+                                        </button>
+                                    </div>
+                                )}
 
-              return (
-                <div 
-                  key={usr.id}
-                  className="bg-slate-900/70 border border-slate-800 hover:border-slate-700 p-4 rounded-2xl flex items-center justify-between gap-3 shadow-md hover:scale-[1.01] transition-all"
-                >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center font-black text-emerald-400 text-sm shrink-0">
-                      {(usr.name?.[0] || usr.email[0]).toUpperCase()}
-                    </div>
-                    <div className="min-w-0">
-                      <p className="font-bold text-white text-xs truncate">
-                        {usr.name} {usr.lastName || ""}
-                      </p>
-                      <p className="text-[10px] font-mono text-slate-400 truncate">{usr.email}</p>
-                      <div className="flex items-center gap-2 mt-1">
-                        <span className="text-[9px] font-mono text-indigo-400 font-bold">
-                          {usr.role}
-                        </span>
-                        <span className="text-slate-600">•</span>
-                        <span className="text-[9px] font-mono text-slate-400">
-                          {days}d en ATOMIC
-                        </span>
-                      </div>
-                    </div>
-                  </div>
+                                {/* ── MARKETING ROOM ───────────────── */}
+                                {activeRoom === "marketing" && (
+                                    <div className="space-y-3">
+                                        <div>
+                                            <label className="text-[9px] font-mono font-bold text-purple-400 uppercase tracking-widest block mb-2">📅 Almanaque de Diseños</label>
+                                            {(session?.user?.role === "ADMIN" || session?.user?.role === "USER") && (
+                                                <label className="w-full py-2 bg-purple-500/10 border border-dashed border-purple-500/40 text-purple-300 text-[10px] font-bold rounded-xl flex items-center justify-center gap-2 cursor-pointer hover:bg-purple-500/15 transition-colors">
+                                                    <Upload size={12} /> Subir Diseños
+                                                    <input type="file" accept="image/*" multiple className="hidden" onChange={handleDesignUpload} />
+                                                </label>
+                                            )}
+                                        </div>
+                                        {designFiles.length > 0 ? (
+                                            <div className="grid grid-cols-3 gap-1.5">
+                                                {designFiles.map((src, i) => (
+                                                    <div key={i} className="aspect-square rounded-xl overflow-hidden border border-slate-700">
+                                                        <img src={src} alt={`Diseño ${i + 1}`} className="w-full h-full object-cover" />
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <div className="py-6 text-center">
+                                                <p className="text-3xl mb-2">🎨</p>
+                                                <p className="text-[9px] font-mono text-slate-500">El equipo de edición sube los diseños aquí</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
 
-                  <div className="shrink-0 text-right space-y-1">
-                    {botName ? (
-                      <span className="inline-flex items-center gap-1 text-[9px] font-mono font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/30">
-                        <Bot size={10} /> {botName}
-                      </span>
-                    ) : (
-                      <span className="text-[9px] font-mono text-slate-500 block">Sin bot</span>
+                                {/* ── COORDINACIÓN ──────────────────── */}
+                                {activeRoom === "coordinacion" && (
+                                    <div className="space-y-2">
+                                        <p className="text-[10px] font-mono text-slate-400 mb-3">Departamento de Coordinación — opciones rápidas:</p>
+                                        <button
+                                            onClick={() => window.open(`${WA_BASE}${encodeURIComponent("Hola Coordinación, solicito mi plan laboral actualizado por favor.")}`, "_blank")}
+                                            className="w-full py-2.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 hover:bg-emerald-500/20 rounded-xl text-xs font-bold flex items-center gap-2 px-3 transition-colors">
+                                            📋 Solicitar Plan Laboral (WhatsApp)
+                                        </button>
+                                        <button
+                                            onClick={() => window.open(`${WA_BASE}${encodeURIComponent("Hola Coordinación, necesito hablar contigo directamente.")}`, "_blank")}
+                                            className="w-full py-2.5 bg-amber-500/10 border border-amber-500/30 text-amber-300 hover:bg-amber-500/20 rounded-xl text-xs font-bold flex items-center gap-2 px-3 transition-colors">
+                                            💬 Chat Directo (WhatsApp)
+                                        </button>
+                                        <button
+                                            onClick={() => window.open(`/dashboard/coordinacion`, "_self")}
+                                            className="w-full py-2.5 bg-blue-500/10 border border-blue-500/30 text-blue-300 hover:bg-blue-500/20 rounded-xl text-xs font-bold flex items-center gap-2 px-3 transition-colors">
+                                            🎯 Ir al Módulo de Coordinación
+                                            <ChevronRight size={12} className="ml-auto" />
+                                        </button>
+                                    </div>
+                                )}
+
+                                {/* ── SUPERVISIÓN ──────────────────── */}
+                                {activeRoom === "supervision" && (
+                                    <div className="space-y-2">
+                                        <p className="text-[10px] font-mono text-slate-400 mb-3">Supervisión Operativa — acciones rápidas:</p>
+                                        <button
+                                            onClick={() => window.open(`${WA_BASE}${encodeURIComponent("Hola Supervisión, solicito la lista de precios actualizada.")}`, "_blank")}
+                                            className="w-full py-2.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 hover:bg-emerald-500/20 rounded-xl text-xs font-bold flex items-center gap-2 px-3 transition-colors">
+                                            💲 Solicitar Lista de Precios (WhatsApp)
+                                        </button>
+                                        <button
+                                            onClick={() => window.open(`${WA_BASE}${encodeURIComponent("Hola Supervisión, solicito mi plan laboral.")}`, "_blank")}
+                                            className="w-full py-2.5 bg-blue-500/10 border border-blue-500/30 text-blue-300 hover:bg-blue-500/20 rounded-xl text-xs font-bold flex items-center gap-2 px-3 transition-colors">
+                                            📅 Solicitar Plan Laboral (WhatsApp)
+                                        </button>
+                                        <button
+                                            onClick={() => window.open(`${WA_BASE}${encodeURIComponent("Hola, necesito hablar contigo directamente.")}`, "_blank")}
+                                            className="w-full py-2.5 bg-amber-500/10 border border-amber-500/30 text-amber-300 hover:bg-amber-500/20 rounded-xl text-xs font-bold flex items-center gap-2 px-3 transition-colors">
+                                            💬 Chat Directo (WhatsApp)
+                                        </button>
+                                        <button
+                                            onClick={() => window.open(`/dashboard/supervision`, "_self")}
+                                            className="w-full py-2.5 bg-purple-500/10 border border-purple-500/30 text-purple-300 hover:bg-purple-500/20 rounded-xl text-xs font-bold flex items-center gap-2 px-3 transition-colors">
+                                            <ShieldCheck size={12} /> Ir al Módulo de Supervisión
+                                            <ChevronRight size={12} className="ml-auto" />
+                                        </button>
+                                    </div>
+                                )}
+
+                                {/* ── TECHNICAL WORKSHOP ───────────── */}
+                                {activeRoom === "workshop" && (
+                                    <div className="space-y-3">
+                                        <p className="text-[10px] font-mono text-slate-400">Taller Técnico — elige una opción:</p>
+                                        {/* Visita Técnica */}
+                                        <div className="p-3 bg-blue-500/5 border border-blue-500/20 rounded-2xl space-y-2">
+                                            <p className="text-[9px] font-mono font-bold text-blue-400 uppercase">📍 Adjuntar Visita Técnica</p>
+                                            <input value={techVisitForm.client} onChange={e => setTechVisitForm(p => ({ ...p, client: e.target.value }))} placeholder="Nombre del cliente"
+                                                className="w-full bg-slate-900 border border-slate-700 text-white p-2 rounded-xl text-xs outline-none focus:border-blue-500/50" />
+                                            <input value={techVisitForm.address} onChange={e => setTechVisitForm(p => ({ ...p, address: e.target.value }))} placeholder="Dirección / Sector"
+                                                className="w-full bg-slate-900 border border-slate-700 text-white p-2 rounded-xl text-xs outline-none focus:border-blue-500/50" />
+                                            <textarea value={techVisitForm.description} onChange={e => setTechVisitForm(p => ({ ...p, description: e.target.value }))} rows={2} placeholder="Descripción técnica del requerimiento..."
+                                                className="w-full bg-slate-900 border border-slate-700 text-white p-2 rounded-xl text-xs resize-none outline-none focus:border-blue-500/50" />
+                                            <button
+                                                onClick={() => window.open(`${WA_BASE}${encodeURIComponent(`🔧 VISITA TÉCNICA\nCliente: ${techVisitForm.client}\nDirección: ${techVisitForm.address}\nDetalle: ${techVisitForm.description}`)}`, "_blank")}
+                                                className="w-full py-1.5 bg-blue-500/20 border border-blue-500/30 text-blue-300 rounded-xl text-[10px] font-bold flex items-center justify-center gap-1">
+                                                <MapPin size={10} /> Enviar por WhatsApp
+                                            </button>
+                                        </div>
+                                        {/* Consulta Técnica */}
+                                        <div className="p-3 bg-emerald-500/5 border border-emerald-500/20 rounded-2xl space-y-2">
+                                            <p className="text-[9px] font-mono font-bold text-emerald-400 uppercase">💡 Consulta Técnica</p>
+                                            <textarea value={techConsult} onChange={e => setTechConsult(e.target.value)} rows={2} placeholder="Describe la consulta técnica..."
+                                                className="w-full bg-slate-900 border border-slate-700 text-white p-2 rounded-xl text-xs resize-none outline-none focus:border-emerald-500/50" />
+                                            <button
+                                                onClick={() => window.open(`${WA_BASE}${encodeURIComponent(`💡 CONSULTA TÉCNICA:\n${techConsult}`)}`, "_blank")}
+                                                className="w-full py-1.5 bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 rounded-xl text-[10px] font-bold flex items-center justify-center gap-1">
+                                                <Send size={10} /> Enviar Consulta
+                                            </button>
+                                        </div>
+                                        {/* Llamada Técnica */}
+                                        <button
+                                            onClick={() => window.open(`${WA_BASE}${encodeURIComponent("Hola, necesito una llamada técnica urgente.")}`, "_blank")}
+                                            className="w-full py-2.5 bg-rose-500/10 border border-rose-500/30 text-rose-300 hover:bg-rose-500/20 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-colors">
+                                            <Phone size={12} /> Solicitar Llamada Técnica (WhatsApp)
+                                        </button>
+                                    </div>
+                                )}
+
+                                {/* ── COUNSELING (AI CHATBOT) ──────── */}
+                                {activeRoom === "counseling" && (
+                                    <div className="flex flex-col h-full space-y-3">
+                                        <div className="flex-1 space-y-2 max-h-72 overflow-y-auto">
+                                            {chatMessages.map((msg, i) => (
+                                                <div key={i} className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}>
+                                                    <div className={`max-w-[85%] px-3 py-2 rounded-2xl text-xs leading-relaxed ${
+                                                        msg.sender === "user"
+                                                            ? "bg-teal-600/30 border border-teal-500/30 text-teal-100"
+                                                            : "bg-slate-800 border border-slate-700 text-slate-200"
+                                                    }`}>
+                                                        {msg.sender === "bot" && <span className="text-[8px] font-mono font-bold text-teal-400 block mb-0.5">🧠 Consejero Atomic</span>}
+                                                        {msg.text}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                            {isChatLoading && (
+                                                <div className="flex justify-start">
+                                                    <div className="px-3 py-2 bg-slate-800 border border-slate-700 rounded-2xl">
+                                                        <div className="flex gap-1">
+                                                            <div className="w-1.5 h-1.5 bg-teal-400 rounded-full animate-bounce" />
+                                                            <div className="w-1.5 h-1.5 bg-teal-400 rounded-full animate-bounce" style={{ animationDelay: "0.15s" }} />
+                                                            <div className="w-1.5 h-1.5 bg-teal-400 rounded-full animate-bounce" style={{ animationDelay: "0.3s" }} />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                            <div ref={chatEndRef} />
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <input
+                                                value={chatInput}
+                                                onChange={e => setChatInput(e.target.value)}
+                                                onKeyDown={e => e.key === "Enter" && handleSendCounselorMessage()}
+                                                placeholder="Cuéntame algo..."
+                                                className="flex-1 bg-slate-900 border border-slate-700 text-white p-2 rounded-xl text-xs outline-none focus:border-teal-500/50"
+                                            />
+                                            <button onClick={handleSendCounselorMessage} disabled={isChatLoading || !chatInput.trim()}
+                                                className="p-2 bg-teal-600 hover:bg-teal-500 text-white rounded-xl disabled:opacity-50 transition-colors">
+                                                <Send size={14} />
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </motion.div>
                     )}
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        )}
-      </div>
-    </div>
-  )}
+                </AnimatePresence>
 
-</div>
-)
+                {/* ── STEAM over coffee ──────────────────────────────── */}
+                <motion.div
+                    className="absolute pointer-events-none"
+                    style={{ left: "16.5%", top: "76%" }}
+                    animate={{ opacity: [0, 0.6, 0], y: [-4, -12, -4] }}
+                    transition={{ duration: 3, repeat: Infinity }}
+                >
+                    <span className="text-[8px] text-slate-500">~</span>
+                </motion.div>
+
+                {/* Click anywhere on floor hint */}
+                {!activeRoom && (
+                    <motion.div
+                        className="absolute bottom-4 left-1/2 -translate-x-1/2 pointer-events-none"
+                        animate={{ opacity: [0.5, 1, 0.5] }}
+                        transition={{ duration: 2.5, repeat: Infinity }}
+                    >
+                        <p className="text-[9px] font-mono text-slate-600">← Haz clic en una habitación para interactuar →</p>
+                    </motion.div>
+                )}
+            </div>
+        </div>
+    )
 }

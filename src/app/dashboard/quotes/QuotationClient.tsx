@@ -7,7 +7,8 @@ import {
     User, ShieldCheck, Mail, Phone, MapPin, 
     MessageSquare, History, X, ChevronRight,
     Briefcase, Save, Clock, Search, CheckCircle2,
-    FileText, Zap, Building2, Tag, Percent, ShoppingCart, Wand2, Upload, AlertTriangle, Download, Sparkles
+    FileText, Zap, Building2, Tag, Percent, ShoppingCart, Wand2, Upload, AlertTriangle, Download, Sparkles,
+    Send, Loader2
 } from "lucide-react"
 import jsPDF from "jspdf"
 import autoTable from "jspdf-autotable"
@@ -71,6 +72,8 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
         const urlSubject = params.get('subject');
         if (urlClient) setClientName(urlClient);
         if (urlSubject) setQuoteSubject(urlSubject);
+        // Fetch system users for the share modal
+        fetch('/api/admin/manage-users').then(r => r.json()).then(d => { if (d.users) setSystemUsers(d.users) }).catch(() => {})
     }, []);
     const [advisorName, setAdvisorName] = useState(session.user?.name?.toUpperCase() || "ASESOR ATOMIC")
 
@@ -174,6 +177,14 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
     const [isHistoryOpen, setIsHistoryOpen] = useState(false)
     const [showProductList, setShowProductList] = useState<string | null>(null)
 
+    // 3-dot context menu & share modal state
+    const [quoteMenuOpen, setQuoteMenuOpen] = useState<string | null>(null)
+    const [shareModalOpen, setShareModalOpen] = useState<any>(null)
+    const [shareTarget, setShareTarget] = useState<string>('')
+    const [systemUsers, setSystemUsers] = useState<any[]>([])
+    const [shareMessage, setShareMessage] = useState<string>('')
+    const [isSharingQuote, setIsSharingQuote] = useState(false)
+
     // Quick Generator States
     const [quickText, setQuickText] = useState("")
     const [quickImage, setQuickImage] = useState<string | null>(null)
@@ -190,6 +201,93 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
     const taxableAmount = subtotal - totalDiscountAmount
     const taxAmount = taxableAmount * taxRate
     const total = taxableAmount + taxAmount
+
+    // Load system users for quote sharing
+    useEffect(() => {
+        fetch('/api/admin/manage-users')
+            .then(r => r.json())
+            .then(d => { if (d.users) setSystemUsers(d.users) })
+            .catch(() => {})
+    }, [])
+
+    // ── QUOTE 3-DOT MENU HELPERS ────────────────────────────────────────
+    const handleLoadQuoteMode = (q: any, mode: 'full' | 'name_only' | 'products_only') => {
+        if (mode === 'full' || mode === 'name_only') {
+            setClientName(q.clientName || '')
+            setClientCity(q.city || '')
+            setClientPhone(q.clientPhone || '')
+            setClientEmail(q.clientEmail || '')
+            setEmailNotSpecified(!q.clientEmail || q.clientEmail === 'no@especifica.com')
+            setQuoteSubject(q.quoteSubject || '')
+            setDeliveryAddress(q.deliveryAddress || '')
+            setDiscountPercent(q.discountPercent || 0)
+        }
+        if (mode === 'full' || mode === 'products_only') {
+            if (q.items) {
+                const parsedItems = safeParseArray(q.items)
+                if (parsedItems.length > 0) setItems(parsedItems)
+            }
+        }
+        setIsHistoryOpen(false)
+        setQuoteMenuOpen(null)
+    }
+
+    const handleDownloadQuotePDF = async (q: any) => {
+        setQuoteMenuOpen(null)
+        try {
+            const parsedItems = safeParseArray(q.items)
+            const itemDiscount = parsedItems.reduce((acc: number, item: any) => acc + (item.quantity * item.unitPrice * ((item.discountPercent || 0) / 100)), 0)
+            const rawSubtotal = parsedItems.reduce((acc: number, item: any) => acc + (item.quantity * item.unitPrice), 0)
+            const globalDisc = (rawSubtotal - itemDiscount) * ((q.discountPercent || 0) / 100)
+            const taxable = rawSubtotal - itemDiscount - globalDisc
+            const tax = taxable * 0.15
+            await generateAtomicUnifiedProposalPDF({
+                quoteNumber: q.quoteNumber,
+                clientName: q.clientName || '',
+                clientPhone: q.clientPhone || '',
+                clientCity: q.city || '',
+                clientEmail: q.clientEmail || '',
+                quoteSubject: q.quoteSubject || '',
+                advisorName: session?.user?.name?.toUpperCase() || 'ATOMIC',
+                items: parsedItems,
+                subtotal: rawSubtotal,
+                tax,
+                total: q.total || (taxable + tax),
+                discountPercent: q.discountPercent || 0,
+                totalDiscountAmount: itemDiscount + globalDisc,
+                status: q.status || 'PENDIENTE',
+                deliveryAddress: q.deliveryAddress || ''
+            })
+        } catch (e) { console.error('PDF download error:', e) }
+    }
+
+    const handleOSShareQuote = (q: any) => {
+        setQuoteMenuOpen(null)
+        const text = `Cotización ${q.quoteNumber} | Cliente: ${q.clientName} | Total: $${q.total?.toFixed(2)} | Estado: ${q.status}`
+        if (typeof navigator !== 'undefined' && navigator.share) {
+            navigator.share({ title: `Cotización ${q.quoteNumber} – Atomic`, text, url: window.location.href }).catch(() => {})
+        } else if (typeof navigator !== 'undefined' && navigator.clipboard) {
+            navigator.clipboard.writeText(text).then(() => alert('📋 Copiado al portapapeles')).catch(() => {})
+        }
+    }
+
+    const handleShareQuote = async (quote: any) => {
+        if (!shareTarget || isSharingQuote) return
+        setIsSharingQuote(true)
+        try {
+            const res = await fetch('/api/quotes/share', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ quoteId: quote.id, targetEmail: shareTarget, senderName: session?.user?.name || 'Atomic' })
+            })
+            const data = await res.json()
+            if (data.success) {
+                setShareModalOpen(null)
+                setShareTarget('')
+            }
+        } catch (e) { console.error(e) } finally { setIsSharingQuote(false) }
+    }
+
 
     const handleAddItem = () => {
         setItems([...items, { id: Date.now().toString(), productId: "", description: "", quantity: 1, unitPrice: 0 }])
@@ -527,6 +625,85 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
         doc.text("impresa de un comprobante de entrega.", 40, currY, { align: "center" });
 
         doc.save(`TICKET_${quoteNumber}_${clientName.replace(/\s+/g, "_")}.pdf`)
+    }
+
+    const handleShareQuote = async (quote: any) => {
+        if (!shareTarget || isSharingQuote) return
+        setIsSharingQuote(true)
+        try {
+            const res = await fetch('/api/quotes/share', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    quoteId: quote.id,
+                    targetEmail: shareTarget,
+                    senderName: session?.user?.name || 'Atomic'
+                })
+            })
+            const data = await res.json()
+            if (data.success) {
+                setShareModalOpen(null)
+                setShareTarget('')
+            }
+        } catch (e) { console.error(e) } finally { setIsSharingQuote(false) }
+    }
+
+    const handleLoadQuoteMode = (q: any, mode: 'full' | 'name_only' | 'products_only') => {
+        if (mode === 'full' || mode === 'name_only') {
+            setClientName(q.clientName || '')
+            setClientCity(q.city || '')
+            setClientPhone(q.clientPhone || '')
+            setClientEmail(q.clientEmail || '')
+            setEmailNotSpecified(!q.clientEmail || q.clientEmail === 'no@especifica.com')
+            setQuoteSubject(q.quoteSubject || '')
+            setDeliveryAddress(q.deliveryAddress || '')
+            setDiscountPercent(q.discountPercent || 0)
+        }
+        if (mode === 'full' || mode === 'products_only') {
+            if (q.items) {
+                const parsedItems = safeParseArray(q.items)
+                if (parsedItems.length > 0) setItems(parsedItems)
+            }
+        }
+        setIsHistoryOpen(false)
+        setQuoteMenuOpen(null)
+    }
+
+    const handleDownloadPDF = async (q: any) => {
+        setQuoteMenuOpen(null)
+        try {
+            const parsedItems = safeParseArray(q.items)
+            await generateAtomicUnifiedProposalPDF({
+                quoteNumber: q.quoteNumber,
+                clientName: q.clientName || '',
+                clientPhone: q.clientPhone || '',
+                clientCity: q.city || '',
+                clientEmail: q.clientEmail || '',
+                quoteSubject: q.quoteSubject || '',
+                advisorName: session?.user?.name?.toUpperCase() || 'ATOMIC',
+                items: parsedItems,
+                subtotal: q.subtotal || q.total || 0,
+                tax: q.tax || 0,
+                total: q.total || 0,
+                discountPercent: q.discountPercent || 0,
+                totalDiscountAmount: 0,
+                status: q.status || 'PENDIENTE',
+                deliveryAddress: q.deliveryAddress || ''
+            })
+        } catch (e) { console.error('PDF Error:', e) }
+    }
+
+    const handleOSShare = (q: any) => {
+        setQuoteMenuOpen(null)
+        if (navigator.share) {
+            navigator.share({
+                title: `Cotización ${q.quoteNumber} - ${q.clientName}`,
+                text: `Propuesta Comercial Atomic: ${q.quoteNumber} para ${q.clientName} | Total: $${q.total?.toFixed(2)}`,
+                url: window.location.href
+            }).catch(() => {})
+        } else {
+            navigator.clipboard.writeText(`Cotización ${q.quoteNumber} | Cliente: ${q.clientName} | Total: $${q.total?.toFixed(2)}`)
+        }
     }
 
     return (
@@ -1026,6 +1203,7 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                 </div>
             </div>
 
+
             {/* Sidebar History (Slide-over) */}
             <AnimatePresence>
                 {isHistoryOpen && (
@@ -1033,7 +1211,7 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                         <motion.div 
                             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                             className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50"
-                            onClick={() => setIsHistoryOpen(false)}
+                            onClick={() => { setIsHistoryOpen(false); setQuoteMenuOpen(null) }}
                         />
                         <motion.div 
                             initial={{ x: "100%" }}
@@ -1050,38 +1228,57 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                             </div>
                             <div className="p-6 overflow-y-auto h-full space-y-4 font-mono bg-slate-950">
                                 {quoteHistory.map((q: any) => (
-                                    <div key={q.id} className="p-4 bg-slate-900 border border-slate-800 rounded-2xl shadow-xl hover:border-cyan-500/40 transition-all cursor-pointer group">
+                                    <div key={q.id} className="p-4 bg-slate-900 border border-slate-800 rounded-2xl shadow-xl hover:border-cyan-500/40 transition-all group relative">
                                         <div className="flex justify-between items-start mb-3">
                                             <span className="text-[10px] font-bold text-cyan-300 bg-cyan-500/10 border border-cyan-500/30 px-2 py-0.5 rounded-full">{q.quoteNumber}</span>
-                                            <span className="text-[9px] text-slate-400 font-bold">{new Date(q.createdAt).toLocaleDateString()}</span>
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-[9px] text-slate-400 font-bold">{new Date(q.createdAt).toLocaleDateString()}</span>
+                                                {/* ⋮ 3-DOT MENU */}
+                                                <div className="relative">
+                                                    <button
+                                                        onClick={(e) => { e.stopPropagation(); setQuoteMenuOpen(quoteMenuOpen === q.id ? null : q.id) }}
+                                                        className="p-1.5 rounded-lg hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
+                                                    >
+                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                                            <circle cx="12" cy="5" r="2.2"/><circle cx="12" cy="12" r="2.2"/><circle cx="12" cy="19" r="2.2"/>
+                                                        </svg>
+                                                    </button>
+                                                    {quoteMenuOpen === q.id && (
+                                                        <AnimatePresence>
+                                                            <motion.div
+                                                                initial={{ opacity: 0, scale: 0.9, y: -5 }}
+                                                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                                                exit={{ opacity: 0, scale: 0.9 }}
+                                                                className="absolute right-0 top-8 w-60 bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl z-50 overflow-hidden"
+                                                                onClick={(e) => e.stopPropagation()}
+                                                            >
+                                                                <div className="px-3 py-2 border-b border-slate-800">
+                                                                    <p className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest">Opciones de Cotización</p>
+                                                                </div>
+                                                                {[
+                                                                    { icon: '⬇️', label: 'Descargar PDF', action: () => handleDownloadQuotePDF(q) },
+                                                                    { icon: '📤', label: 'Compartir (apps externas)', action: () => handleOSShareQuote(q) },
+                                                                    { icon: '👤', label: 'Compartir a Perfil…', action: () => { setShareModalOpen(q); setQuoteMenuOpen(null) } },
+                                                                    { icon: '✏️', label: 'Editar (nombre + productos)', action: () => handleLoadQuoteMode(q, 'full') },
+                                                                    { icon: '🏷️', label: 'Editar (solo nombre del cliente)', action: () => handleLoadQuoteMode(q, 'name_only') },
+                                                                    { icon: '📦', label: 'Editar (solo productos)', action: () => handleLoadQuoteMode(q, 'products_only') },
+                                                                ].map((opt, i) => (
+                                                                    <button key={i} onClick={opt.action}
+                                                                        className="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-300 hover:bg-slate-800 hover:text-white transition-colors flex items-center gap-2.5">
+                                                                        <span className="text-sm">{opt.icon}</span>
+                                                                        <span>{opt.label}</span>
+                                                                    </button>
+                                                                ))}
+                                                            </motion.div>
+                                                        </AnimatePresence>
+                                                    )}
+                                                </div>
+                                            </div>
                                         </div>
                                         <p className="text-xs font-bold text-white uppercase tracking-tight line-clamp-1 mb-2 font-sans">{q.clientName}</p>
                                         <div className="flex justify-between items-end mt-4">
                                             <span className="text-[10px] font-bold px-2.5 py-1 bg-slate-950 text-slate-300 rounded-full border border-slate-800">{q.status}</span>
-                                            <div className="flex flex-col items-end gap-2">
-                                                <p className="text-base font-black text-emerald-400">${q.total.toFixed(2)}</p>
-                                                <button 
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        setClientName(q.clientName || "");
-                                                        setClientCity(q.city || "");
-                                                        setClientPhone(q.clientPhone || "");
-                                                        setClientEmail(q.clientEmail || "");
-                                                        setEmailNotSpecified(!q.clientEmail || q.clientEmail === "no@especifica.com");
-                                                        setQuoteSubject(q.quoteSubject || "");
-                                                        setDeliveryAddress(q.deliveryAddress || "");
-                                                        setDiscountPercent(q.discountPercent || 0);
-                                                        if (q.items) {
-                                                            const parsedItems = safeParseArray(q.items);
-                                                            if (parsedItems.length > 0) setItems(parsedItems);
-                                                        }
-                                                        setIsHistoryOpen(false);
-                                                    }}
-                                                    className="px-3 py-1 bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/20 font-bold text-[10px] rounded-xl uppercase tracking-widest transition-colors flex items-center gap-1"
-                                                >
-                                                    <Briefcase size={10} /> Clonar
-                                                </button>
-                                            </div>
+                                            <p className="text-base font-black text-emerald-400">${q.total?.toFixed(2)}</p>
                                         </div>
                                     </div>
                                 ))}
@@ -1090,6 +1287,62 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                     </>
                 )}
             </AnimatePresence>
+
+            {/* Share Quote Modal */}
+            <AnimatePresence>
+                {shareModalOpen && (
+                    <>
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[70]"
+                            onClick={() => setShareModalOpen(null)} />
+                        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
+                            className="fixed inset-0 z-[80] flex items-center justify-center p-4">
+                            <div className="bg-[#0a0a0f] border border-slate-700 rounded-3xl p-6 shadow-2xl max-w-sm w-full">
+                                <div className="flex justify-between items-center mb-4">
+                                    <h3 className="font-black text-white text-sm flex items-center gap-2">
+                                        <span>👤</span> Compartir Cotización
+                                    </h3>
+                                    <button onClick={() => setShareModalOpen(null)} className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400"><X size={16}/></button>
+                                </div>
+                                <p className="text-[11px] font-mono text-slate-400 mb-4">
+                                    Enviar <span className="text-cyan-400 font-bold">{shareModalOpen?.quoteNumber}</span> al historial de otro perfil
+                                </p>
+                                <div className="space-y-3 mb-5">
+                                    <button onClick={() => setShareTarget('todos')}
+                                        className={`w-full py-2.5 px-4 rounded-2xl text-xs font-bold transition-all border ${shareTarget === 'todos' ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300' : 'bg-slate-900 border-slate-700 text-slate-300 hover:border-slate-600'}`}>
+                                        📢 Enviar a TODOS los perfiles
+                                    </button>
+                                    <div className="border-t border-slate-800 pt-3">
+                                        <p className="text-[10px] font-mono font-bold text-slate-400 mb-2 uppercase tracking-widest">O enviar a perfil específico</p>
+                                        <div className="space-y-1.5 max-h-44 overflow-y-auto">
+                                            {systemUsers.filter((u: any) => u.email !== session?.user?.email).map((u: any) => (
+                                                <button key={u.id} onClick={() => setShareTarget(u.email)}
+                                                    className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-all border ${shareTarget === u.email ? 'bg-blue-500/20 border-blue-500/40 text-blue-300' : 'bg-slate-900 border-slate-800 text-slate-300 hover:border-slate-700'}`}>
+                                                    <span className="text-slate-500 mr-1.5 text-[9px]">{u.role}</span>
+                                                    {u.name || u.email}
+                                                </button>
+                                            ))}
+                                            {systemUsers.length === 0 && (
+                                                <p className="text-[10px] font-mono text-slate-500 py-2 text-center">Cargando perfiles...</p>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                                <button onClick={() => handleShareQuote(shareModalOpen)} disabled={!shareTarget || isSharingQuote}
+                                    className="w-full py-3 bg-gradient-to-r from-cyan-600 to-indigo-600 text-white font-black rounded-2xl text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                                    {isSharingQuote ? <Loader2 size={16} className="animate-spin"/> : <Send size={16}/>}
+                                    {isSharingQuote ? 'Compartiendo...' : 'Compartir Cotización'}
+                                </button>
+                            </div>
+                        </motion.div>
+                    </>
+                )}
+            </AnimatePresence>
         </div>
     )
 }
+
+// ─────────────────────────────────────────────────────────────────────────
+// Helper functions (injected into component scope via module-level)
+// These are referenced inside the component via closures
+// ─────────────────────────────────────────────────────────────────────────
