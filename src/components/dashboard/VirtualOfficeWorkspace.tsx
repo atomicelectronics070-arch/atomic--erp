@@ -1,20 +1,18 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import React, { useState, useEffect, useRef, useMemo } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import {
-    X, Send, Loader2, Building2, MessageSquare, Wrench, Brain,
-    Phone, MapPin, Calendar, Users, Star, ChevronRight, Printer,
-    FileText, Upload, Zap, ShieldCheck, Check, Clock, AlertCircle,
-    UserCheck, Trash2, StickyNote, Image as ImageIcon, Sparkles,
-    Laptop, Briefcase, Bell, ChevronDown, CheckCircle2, User, Eye,
-    Share2, Compass, Radio, Activity, Award
+    X, Send, Loader2, Sparkles, Phone, MapPin, Calendar, Users, Star,
+    ChevronRight, Printer, FileText, Upload, Zap, ShieldCheck, Check,
+    Clock, AlertCircle, UserCheck, Trash2, StickyNote, Image as ImageIcon,
+    Volume2, Compass, Shield, Sword, Scroll, Coins, Heart, MessageSquare
 } from "lucide-react"
 import { generateAtomicUnifiedProposalPDF } from "@/lib/pdf/quotePdfGenerator"
 import { RealisticAvatar } from "@/components/office/RealisticAvatars"
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Types
+// TYPES
 // ─────────────────────────────────────────────────────────────────────────────
 interface Props {
     currentModule?: string
@@ -22,295 +20,598 @@ interface Props {
     recentQuotes?: any[]
 }
 
-type ActiveDepartment = 
-    | "ventas"
-    | "visitas" 
-    | "reuniones" 
-    | "ceo" 
-    | "coordinacion" 
-    | "supervision" 
-    | "taller" 
-    | "multimedia" 
-    | "marketing"
-    | "counseling" 
-    | "printer" 
-    | "cartelera" 
-    | null
-
-interface ClientAppointment {
-    id: string
-    clientName: string
-    scheduledTime: string
-    scheduledDate: string
-    purpose: string
-    phone: string
-    status: "SCHEDULED" | "WAITING" | "ATTENDED" | "CANCELLED"
-    createdByName: string
-    attentionData?: any
-}
-
-interface TeamMember {
+interface RPGEntity {
     id: string
     name: string
-    role: string
-    department: string
-    email: string
-    avatarType: "carlos" | "ceo" | "coordinador" | "ventas" | "desarrollo" | "edicion" | "supervisor" | "contabilidad" | "marketing" | "investigacion" | "custom"
-    status: "online" | "busy" | "calling" | "waiting"
-    deskNote?: string
-    phone?: string
+    title: string
+    type: "npc" | "quest_client" | "portal" | "chest" | "board" | "throne" | "oracle" | "forge"
+    x: number
+    y: number
+    avatarType: any
+    level: number
+    questStatus?: "available" | "in_progress" | "completed"
+    dialogue: string
+    icon: string
+    color: string
 }
 
-const REAL_TEAM: TeamMember[] = [
-    { id: "tm-carlos", name: "Carlos Mendoza", role: "Cliente VIP", department: "Recepción / Visitas", email: "cliente.carlos@vip.com", avatarType: "carlos", status: "waiting", deskNote: "Esperando atención para propuesta de CCTV 4K", phone: "+593998765432" },
-    { id: "tm-ceo", name: "Ing. Santiago (CEO)", role: "Director General", department: "Dirección", email: "ceo@atomic.com.ec", avatarType: "ceo", status: "online", deskNote: "Estrategia de expansión nacional 2026", phone: "+593991112233" },
-    { id: "tm-coord", name: "Luis G.", role: "Coordinador General", department: "Coordinación & Logística", email: "coordinacion@atomic.com.ec", avatarType: "coordinador", status: "online", deskNote: "Despachos y asignación de prospectos", phone: "+593992223344" },
-    { id: "tm-ventas", name: "Milorieta", role: "Asesora Senior", department: "Piso de Ventas", email: "ventas@atomic.com.ec", avatarType: "ventas", status: "online", deskNote: "Cerrando cotización de cerraduras inteligentes", phone: "+593993334455" },
-    { id: "tm-sup", name: "Supervisor QC", role: "Auditor de Operaciones", department: "Supervisión 6:00 AM", email: "supervisor@atomic.com.ec", avatarType: "supervisor", status: "online", deskNote: "Calificación de asistencia y finanzas", phone: "+593994445566" },
-    { id: "tm-edicion", name: "Ian Editor", role: "Creativo Multimedia", department: "Estudio de Edición", email: "edicion@atomic.com.ec", avatarType: "edicion", status: "busy", deskNote: "Renderizando reels comerciales en 4K", phone: "+593995556677" },
-    { id: "tm-dev", name: "Nicolás", role: "Ingeniero de Software", department: "Desarrollo & Sistemas", email: "desarrollo@atomic.com.ec", avatarType: "desarrollo", status: "online", deskNote: "Optimizando arquitectura de Atomic ERP", phone: "+593996667788" },
-    { id: "tm-mkt", name: "Facu Marketing", role: "Traffic Manager", department: "Marketing Digital", email: "marketing@atomic.com.ec", avatarType: "marketing", status: "online", deskNote: "Escalando pauta en Meta Ads & TikTok", phone: "+593997778899" },
-    { id: "tm-conta", name: "Contabilidad", role: "Finanzas Corporativas", department: "Contabilidad", email: "contabilidad@atomic.com.ec", avatarType: "contabilidad", status: "online", deskNote: "Conciliación bancaria y comisiones", phone: "+593998889900" }
-]
+interface Particle {
+    x: number
+    y: number
+    vx: number
+    vy: number
+    alpha: number
+    size: number
+    color: string
+}
 
 export default function VirtualOfficeWorkspace({ currentModule = "ventas", session, recentQuotes = [] }: Props) {
-    const [activeDept, setActiveDept] = useState<ActiveDepartment>(null)
-    const [fullscreen, setFullscreen] = useState(false)
-    const [isActive, setIsActive] = useState(true)
-    const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null)
+    const canvasRef = useRef<HTMLCanvasElement | null>(null)
 
-    // Appointments & Client Waiting Room state
-    const [appointments, setAppointments] = useState<ClientAppointment[]>([
-        {
-            id: "apt-carlos",
-            clientName: "Carlos Mendoza (CCTV & Smart Locks)",
-            scheduledTime: "11:00",
-            scheduledDate: new Date().toISOString().split("T")[0],
-            purpose: "Cotización de 16 Cámaras 4K y 4 Cerraduras Biométricas para Edificio",
-            phone: "+593998765432",
-            status: "WAITING",
-            createdByName: "Coordinación Atomic"
-        }
-    ])
-    const [selectedAptToAttend, setSelectedAptToAttend] = useState<ClientAppointment | null>(null)
+    // Player position and movement in world
+    const [playerPos, setPlayerPos] = useState({ x: 420, y: 360 })
+    const [targetPos, setTargetPos] = useState<{ x: number; y: number } | null>(null)
+    const [playerFacing, setPlayerFacing] = useState<"left" | "right">("right")
+    const [clickMarker, setClickMarker] = useState<{ x: number; y: number; time: number } | null>(null)
+
+    // UI state
+    const [activeEntity, setActiveEntity] = useState<RPGEntity | null>(null)
+    const [activeModal, setActiveModal] = useState<"quest_carlos" | "atencion" | "cartelera" | "impresora" | "oraculo" | "perfil" | "nueva_cita" | null>(null)
+    const [fullscreen, setFullscreen] = useState(false)
+
+    // Attention / Quest Form for Carlos
+    const [attentionSummary, setAttentionSummary] = useState("")
+    const [attentionNeed, setAttentionNeed] = useState("16 Cámaras IP 4K + 4 Cerraduras Biométricas con App Móvil")
+    const [attentionUrgency, setAttentionUrgency] = useState("ALTA")
+    const [attentionBudget, setAttentionBudget] = useState("3800")
+    const [isSavingAttention, setIsSavingAttention] = useState(false)
+    const [questCompleted, setQuestCompleted] = useState(false)
+
+    // New Client Appointment Form
     const [newClientName, setNewClientName] = useState("")
-    const [newClientTime, setNewClientTime] = useState("10:30")
+    const [newClientTime, setNewClientTime] = useState("11:30")
     const [newClientPhone, setNewClientPhone] = useState("")
     const [newClientPurpose, setNewClientPurpose] = useState("")
-    const [isCreatingApt, setIsCreatingApt] = useState(false)
 
-    // Attention Form State
-    const [attentionSummary, setAttentionSummary] = useState("")
-    const [attentionNeed, setAttentionNeed] = useState("")
-    const [attentionUrgency, setAttentionUrgency] = useState("ALTA")
-    const [attentionBudget, setAttentionBudget] = useState("3500")
-    const [attentionRecontact, setAttentionRecontact] = useState(true)
-    const [isSavingAttention, setIsSavingAttention] = useState(false)
-
-    // Profile Persistent Modal (Every 30 min)
-    const [showProfilePrompt, setShowProfilePrompt] = useState(false)
-    const [profileName, setProfileName] = useState("")
-    const [profilePhone, setProfilePhone] = useState("")
-    const [profileHasPC, setProfileHasPC] = useState(true)
-    const [profileCity, setProfileCity] = useState("Quito, Ecuador")
-    const [profileSchedule, setProfileSchedule] = useState("08:00 - 17:00")
-    const [profileHasResume, setProfileHasResume] = useState(false)
-    const [profileResumeUrl, setProfileResumeUrl] = useState("")
-    const [isSavingProfile, setIsSavingProfile] = useState(false)
-    const [profilesMap, setProfilesMap] = useState<Record<string, any>>({})
-
-    // Avatar Customizer
-    const [showAvatarModal, setShowAvatarModal] = useState(false)
-    const [avatarGender, setAvatarGender] = useState<"hombre" | "mujer">("hombre")
-    const [myAvatarType, setMyAvatarType] = useState<any>("ceo")
-
-    // Cartelera (Notes & News) State
-    const [carteleraNotes, setCarteleraNotes] = useState<any[]>([])
-    const [newNoteTitle, setNewNoteTitle] = useState("")
-    const [newNoteMessage, setNewNoteMessage] = useState("")
-    const [newNoteImage, setNewNoteImage] = useState<string | null>(null)
-    const [isSavingNote, setIsSavingNote] = useState(false)
-
-    // Public Chat (Hablar en Voz Alta)
+    // General Chat (Hablar en Voz Alta)
     const [chatMessages, setChatMessages] = useState<any[]>([
-        { id: "1", from: "Luis G.", text: "¡Hola a todos! El piso de ventas está 100% activo hoy. Tenemos a Carlos Mendoza en recepción.", time: "09:00" },
-        { id: "2", from: "Milorieta", text: "Listo, ya preparo la propuesta unificada de cámaras IP para presentársela en la Sala de Reuniones.", time: "09:05" }
+        { id: "1", from: "Luis G. [Coordinador]", text: "¡Por la Alianza de ATOMIC! El emisario Carlos Mendoza aguarda en la Sala de Visitas.", time: "09:00", channel: "General" },
+        { id: "2", from: "Milorieta [Ventas]", text: "Tengo los pergaminos de propuesta listos para forjar el contrato.", time: "09:05", channel: "Gremio" },
+        { id: "3", from: "Supervisor QC", text: "Registro de guardia matutina a las 6:00 AM completado con honor.", time: "09:10", channel: "General" }
     ])
     const [chatInput, setChatInput] = useState("")
+    const [chatChannel, setChatChannel] = useState<"General" | "Gremio">("General")
     const chatEndRef = useRef<HTMLDivElement>(null)
 
-    // Counselor AI
-    const [counselorMsgs, setCounselorMsgs] = useState([
-        { sender: "bot", text: "¡Hola! Soy tu consejero y guía de ATOMIC. Cuéntame, ¿qué habilidad deseas reforzar hoy o qué meta de ventas tienes? Te daré un plan paso a paso ahora mismo." }
+    // Cartelera / Edictos del Reino
+    const [carteleraNotes, setCarteleraNotes] = useState<any[]>([
+        { id: "n-1", title: "📜 Misión Principal: Cierre Carlos Mendoza", message: "Concretar la propuesta de CCTV 4K para el Condominio Central hoy antes de las 18:00.", from: "Luis G.", time: "Hace 20 min" },
+        { id: "n-2", title: "🛡️ Edicto de Guardia 6:00 AM", message: "Supervisión calificada 10/10 en el plano cartesiano por ingreso anticipado.", from: "Supervisor QC", time: "Hace 1 hora" }
     ])
-    const [counselorInput, setCounselorInput] = useState("")
-    const [isCounselorLoading, setIsCounselorLoading] = useState(false)
+    const [newNoteTitle, setNewNoteTitle] = useState("")
+    const [newNoteMessage, setNewNoteMessage] = useState("")
 
-    // Quotes for Printer
+    // Oracle / Consejero IA
+    const [oracleQuery, setOracleQuery] = useState("")
+    const [oracleReplies, setOracleReplies] = useState<{ sender: "user" | "oracle"; text: string }[]>([
+        { sender: "oracle", text: "¡Saludos, paladín de ATOMIC! Soy el Oráculo Arcano. Pregúntame sobre técnicas de persuasión, objeciones de clientes o cómo forjar tu camino al rango Maestro." }
+    ])
+    const [isOracleLoading, setIsOracleLoading] = useState(false)
+
+    // Quotes for Printer Chest
     const [printerQuotes, setPrinterQuotes] = useState<any[]>(recentQuotes)
+
+    // Profile Setup (Insistent)
+    const [profileName, setProfileName] = useState(session?.user?.name || "Campeón")
+    const [profilePhone, setProfilePhone] = useState("")
+    const [profileCity, setProfileCity] = useState("Quito, Ecuador")
+    const [profileSchedule, setProfileSchedule] = useState("08:00 - 17:00")
+    const [profileHasPC, setProfileHasPC] = useState(true)
 
     const defaultWhatsApp = "593992223344"
     const getWAUrl = (phone?: string, text?: string) => {
-        const cleanPhone = (phone || defaultWhatsApp).replace(/\D/g, "")
-        return `https://wa.me/${cleanPhone}?text=${encodeURIComponent(text || "Hola, me comunico desde la oficina virtual de ATOMIC.")}`
+        const clean = (phone || defaultWhatsApp).replace(/\D/g, "")
+        return `https://wa.me/${clean}?text=${encodeURIComponent(text || "Saludos desde el Reino de ATOMIC.")}`
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // Lifecycle
-    // ─────────────────────────────────────────────────────────────────────────
+    // ─────────────────────────────────────────────────────────────────────────────
+    // RPG WORLD ENTITIES (Warcraft Guild Fortress layout)
+    // ─────────────────────────────────────────────────────────────────────────────
+    const entities: RPGEntity[] = useMemo(() => [
+        {
+            id: "carlos_npc",
+            name: "Carlos Mendoza",
+            title: "Emisario VIP • Buscador de Seguridad",
+            type: "quest_client",
+            x: 220,
+            y: 280,
+            avatarType: "carlos",
+            level: 70,
+            questStatus: questCompleted ? "completed" : "available",
+            dialogue: "¡Saludos, aventurero de ATOMIC! He viajado desde lejos para equipar mi fortaleza con un sistema defensivo de 16 cámaras 4K y cerraduras biométricas. ¿Deseas negociar los términos?",
+            icon: "👑",
+            color: "#F59E0B"
+        },
+        {
+            id: "ceo_throne",
+            name: "Trono del Gran Maestre (CEO)",
+            title: "Ing. Santiago • Liderazgo Supremo",
+            type: "throne",
+            x: 480,
+            y: 130,
+            avatarType: "ceo",
+            level: 100,
+            dialogue: "Has entrado a la cámara presidencial. Toda decisión aquí forja el destino comercial y tecnológico de ATOMIC en la región.",
+            icon: "🏛️",
+            color: "#EF4444"
+        },
+        {
+            id: "milorieta_npc",
+            name: "Milorieta",
+            title: "Archimaga de Ventas & Negociación",
+            type: "npc",
+            x: 360,
+            y: 380,
+            avatarType: "ventas",
+            level: 85,
+            dialogue: "¡Por el honor de la venta! Tengo el inventario de cámaras y cerraduras listo. Si Carlos necesita cotización, yo misma redacto el pergamino.",
+            icon: "💼",
+            color: "#10B981"
+        },
+        {
+            id: "luis_npc",
+            name: "Luis G.",
+            title: "Comandante de Rutas & Logística",
+            type: "npc",
+            x: 620,
+            y: 290,
+            avatarType: "coordinador",
+            level: 82,
+            dialogue: "Nuestros mensajeros y técnicos están desplegados en Quito y Guayaquil. Cualquier orden será despachada con la velocidad del rayo.",
+            icon: "🎯",
+            color: "#0D9488"
+        },
+        {
+            id: "supervisor_npc",
+            name: "Supervisor de Calidad",
+            title: "Alto Inquisidor • Guardia 6:00 AM",
+            type: "npc",
+            x: 640,
+            y: 430,
+            avatarType: "supervisor",
+            level: 90,
+            dialogue: "Mi reloj solar no perdona un segundo. Quien ingresa a las 6:00 AM recibe la bendición 10/10 en el plano de honor.",
+            icon: "🛡️",
+            color: "#3B82F6"
+        },
+        {
+            id: "ian_npc",
+            name: "Ian Editor",
+            title: "Mago de Ilusiones 4K & Multimedia",
+            type: "npc",
+            x: 740,
+            y: 230,
+            avatarType: "edicion",
+            level: 80,
+            dialogue: "Estoy renderizando los hechizos visuales y spots publicitarios que deslumbrarán a los clientes en Meta y TikTok.",
+            icon: "🎬",
+            color: "#8B5CF6"
+        },
+        {
+            id: "chest_printer",
+            name: "Cofre de Pergaminos (Impresora)",
+            title: "Archivo de Cotizaciones Formales",
+            type: "chest",
+            x: 480,
+            y: 440,
+            avatarType: "custom",
+            level: 1,
+            dialogue: "Un antiguo cofre rúnico donde reposan las propuestas comerciales unificadas listas para imprimir y firmar.",
+            icon: "🖨️",
+            color: "#06B6D4"
+        },
+        {
+            id: "quest_board",
+            name: "Tablón de Edictos (Cartelera)",
+            title: "Noticias, Edictos & Misiones Generales",
+            type: "board",
+            x: 140,
+            y: 420,
+            avatarType: "custom",
+            level: 1,
+            dialogue: "El tablón central de madera donde el gremio publica anuncios, avisos urgentes y metas de la campaña.",
+            icon: "📌",
+            color: "#D97706"
+        },
+        {
+            id: "oracle_sphere",
+            name: "Oráculo de Sabiduría (Consejero IA)",
+            title: "Esfera Arcana de Inteligencia",
+            type: "oracle",
+            x: 280,
+            y: 160,
+            avatarType: "custom",
+            level: 99,
+            dialogue: "Las energías místicas de ATOMIC responden tus dudas y te entregan planes de acción inmediatos para elevar tu poder.",
+            icon: "🔮",
+            color: "#14B8A6"
+        }
+    ], [questCompleted])
+
+    // Load initial external state
     useEffect(() => {
         fetch("/api/office/notes").then(r => r.json()).then(d => { if (d.notes) setCarteleraNotes(d.notes) }).catch(() => {})
-        fetch("/api/supervision/appointments").then(r => r.json()).then(d => { if (d.appointments?.length) setAppointments(d.appointments) }).catch(() => {})
-        fetch("/api/profile/setup").then(r => r.json()).then(d => {
-            if (d.allProfiles) setProfilesMap(d.allProfiles)
-            if (d.profile) {
-                setProfileName(d.profile.fullName || session?.user?.name || "")
-                setProfilePhone(d.profile.phone || "")
-                setProfileCity(d.profile.city || "Quito, Ecuador")
-                setProfileSchedule(d.profile.schedule || "08:00 - 17:00")
-            }
-        }).catch(() => {})
-
         if (recentQuotes.length === 0) {
             fetch("/api/quotes?limit=5").then(r => r.json()).then(d => { if (d.quotes) setPrinterQuotes(d.quotes.slice(0, 5)) }).catch(() => {})
         }
-
-        const lastPrompt = localStorage.getItem("atomic_profile_prompt_ts")
-        const now = Date.now()
-        if (!lastPrompt || now - parseInt(lastPrompt) > 30 * 60 * 1000) {
-            const timer = setTimeout(() => setShowProfilePrompt(true), 2000)
-            return () => clearTimeout(timer)
-        }
-    }, [recentQuotes, session])
+    }, [recentQuotes])
 
     useEffect(() => {
         chatEndRef.current?.scrollIntoView({ behavior: "smooth" })
     }, [chatMessages])
 
+    // ─────────────────────────────────────────────────────────────────────────────
+    // CANVAS GAME ENGINE (Isometric Warcraft Fortress)
+    // ─────────────────────────────────────────────────────────────────────────────
+    useEffect(() => {
+        const canvas = canvasRef.current
+        if (!canvas) return
+        const ctx = canvas.getContext("2d")
+        if (!ctx) return
+
+        let animationFrameId: number
+        let particles: Particle[] = []
+
+        // Spawn atmospheric golden mana motes & torch embers
+        for (let i = 0; i < 40; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                vx: (Math.random() - 0.5) * 0.4,
+                vy: -Math.random() * 0.8 - 0.2,
+                alpha: Math.random() * 0.7 + 0.2,
+                size: Math.random() * 2.5 + 1,
+                color: Math.random() > 0.4 ? "#F59E0B" : "#10B981"
+            })
+        }
+
+        const render = () => {
+            // Smooth movement towards targetPos
+            setPlayerPos(current => {
+                if (!targetPos) return current
+                const dx = targetPos.x - current.x
+                const dy = targetPos.y - current.y
+                const dist = Math.hypot(dx, dy)
+
+                if (dist < 4) {
+                    setTargetPos(null)
+                    return current
+                }
+
+                if (dx < 0) setPlayerFacing("left")
+                else if (dx > 0) setPlayerFacing("right")
+
+                const speed = 3.5
+                return {
+                    x: current.x + (dx / dist) * speed,
+                    y: current.y + (dy / dist) * speed
+                }
+            })
+
+            // Clear Canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+            // 1. BASE STONE / MARBLE FORTRESS FLOOR
+            const tileSize = 48
+            for (let x = 0; x < canvas.width; x += tileSize) {
+                for (let y = 0; y < canvas.height; y += tileSize) {
+                    const isAlt = ((x / tileSize) + (y / tileSize)) % 2 === 0
+                    ctx.fillStyle = isAlt ? "#0B1120" : "#090E1A"
+                    ctx.fillRect(x, y, tileSize, tileSize)
+
+                    // Subtle stone joint borders
+                    ctx.strokeStyle = "rgba(30, 41, 59, 0.4)"
+                    ctx.lineWidth = 1
+                    ctx.strokeRect(x, y, tileSize, tileSize)
+                }
+            }
+
+            // 2. CENTRAL ROYAL CARPET (Warcraft Guild Hall Runner)
+            const carpetGrad = ctx.createLinearGradient(0, 80, 0, canvas.height)
+            carpetGrad.addColorStop(0, "#7F1D1D")
+            carpetGrad.addColorStop(0.5, "#991B1B")
+            carpetGrad.addColorStop(1, "#7F1D1D")
+
+            ctx.fillStyle = carpetGrad
+            ctx.fillRect(400, 80, 160, canvas.height - 120)
+
+            // Carpet Gold Filigree Borders
+            ctx.strokeStyle = "#F59E0B"
+            ctx.lineWidth = 3
+            ctx.strokeRect(402, 82, 156, canvas.height - 124)
+
+            // Golden Runes on Carpet
+            ctx.fillStyle = "rgba(245, 158, 11, 0.15)"
+            for (let gy = 140; gy < canvas.height - 100; gy += 90) {
+                ctx.beginPath()
+                ctx.arc(480, gy, 28, 0, Math.PI * 2)
+                ctx.fill()
+                ctx.strokeStyle = "rgba(245, 158, 11, 0.3)"
+                ctx.stroke()
+            }
+
+            // 3. ARCHITECTURAL WALLS & CHAMBERS (Physical room boundaries)
+            const drawWall = (x: number, y: number, w: number, h: number, label: string, accentColor: string) => {
+                // Wall Foundation
+                ctx.fillStyle = "#030712"
+                ctx.fillRect(x, y, w, h)
+
+                // Outer Wall Border with Glowing Runes
+                ctx.strokeStyle = accentColor
+                ctx.lineWidth = 2.5
+                ctx.strokeRect(x, y, w, h)
+
+                // Room Header Name Banner
+                ctx.fillStyle = "rgba(15, 23, 42, 0.95)"
+                ctx.fillRect(x + 10, y - 10, w - 20, 20)
+                ctx.strokeStyle = accentColor
+                ctx.lineWidth = 1.5
+                ctx.strokeRect(x + 10, y - 10, w - 20, 20)
+
+                ctx.fillStyle = "#FFFFFF"
+                ctx.font = "bold 9px 'Cinzel', 'Trajan Pro', serif, sans-serif"
+                ctx.textAlign = "center"
+                ctx.fillText(label.toUpperCase(), x + w / 2, y + 4)
+            }
+
+            // Draw Rooms / Zones
+            // Top Left: Taberna de Visitas & Recepción VIP (Carlos)
+            drawWall(60, 60, 310, 260, "🏰 Salón de Visitas & Emisarios VIP", "#F59E0B")
+
+            // Top Center: Cámara del Trono (CEO)
+            drawWall(410, 40, 140, 150, "👑 Trono Presidencial", "#EF4444")
+
+            // Top Right: Estudio Arcano Multimedia & I+D
+            drawWall(590, 60, 310, 210, "⚡ Estudio de Artífices & Edición 4K", "#8B5CF6")
+
+            // Bottom Left: Tablón del Gremio & Bazar Comercial
+            drawWall(60, 350, 310, 180, "📜 Edictos & Showroom de Ventas", "#10B981")
+
+            // Bottom Right: Bastión de Coordinación & Guardia 6:00 AM
+            drawWall(590, 300, 310, 230, "🛡️ Guardia Operativa 6:00 AM", "#3B82F6")
+
+            // 4. CLICK RETICULE (Warcraft Golden Target Circle)
+            if (clickMarker && Date.now() - clickMarker.time < 900) {
+                const age = (Date.now() - clickMarker.time) / 900
+                const radius = 10 + age * 18
+                ctx.save()
+                ctx.beginPath()
+                ctx.arc(clickMarker.x, clickMarker.y, radius, 0, Math.PI * 2)
+                ctx.strokeStyle = `rgba(245, 158, 11, ${1 - age})`
+                ctx.lineWidth = 3
+                ctx.stroke()
+
+                // Crosshairs
+                ctx.beginPath()
+                ctx.moveTo(clickMarker.x - 6, clickMarker.y)
+                ctx.lineTo(clickMarker.x + 6, clickMarker.y)
+                ctx.moveTo(clickMarker.x, clickMarker.y - 6)
+                ctx.lineTo(clickMarker.x, clickMarker.y + 6)
+                ctx.stroke()
+                ctx.restore()
+            }
+
+            // 5. ATMOSPHERIC PARTICLES (Embers & Mana)
+            particles.forEach(p => {
+                p.x += p.vx
+                p.y += p.vy
+                if (p.y < 0) {
+                    p.y = canvas.height
+                    p.x = Math.random() * canvas.width
+                }
+                ctx.fillStyle = p.color
+                ctx.globalAlpha = p.alpha
+                ctx.beginPath()
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2)
+                ctx.fill()
+            })
+            ctx.globalAlpha = 1.0
+
+            // 6. DRAW ALL ENTITIES & NPCS
+            entities.forEach(ent => {
+                ctx.save()
+
+                // Highlight circle beneath entity
+                const entGrad = ctx.createRadialGradient(ent.x, ent.y + 16, 4, ent.x, ent.y + 16, 24)
+                entGrad.addColorStop(0, ent.color + "66")
+                entGrad.addColorStop(1, "transparent")
+                ctx.fillStyle = entGrad
+                ctx.beginPath()
+                ctx.arc(ent.x, ent.y + 16, 24, 0, Math.PI * 2)
+                ctx.fill()
+
+                // Special Warcraft Quest Marker for Carlos Mendoza!
+                if (ent.id === "carlos_npc") {
+                    const bounce = Math.sin(Date.now() / 250) * 4
+                    ctx.fillStyle = ent.questStatus === "completed" ? "#10B981" : "#F59E0B"
+                    ctx.font = "bold 26px sans-serif"
+                    ctx.textAlign = "center"
+                    ctx.shadowColor = "#F59E0B"
+                    ctx.shadowBlur = 12
+                    ctx.fillText(ent.questStatus === "completed" ? "✓" : "!", ent.x, ent.y - 32 + bounce)
+                    ctx.shadowBlur = 0
+                }
+
+                // Entity Pedestal / Base
+                ctx.fillStyle = "rgba(15, 23, 42, 0.9)"
+                ctx.beginPath()
+                ctx.ellipse(ent.x, ent.y + 16, 18, 8, 0, 0, Math.PI * 2)
+                ctx.fill()
+                ctx.strokeStyle = ent.color
+                ctx.lineWidth = 1.5
+                ctx.stroke()
+
+                // Entity Name & Level Tag (Warcraft Unit Style)
+                ctx.fillStyle = "rgba(0, 0, 0, 0.85)"
+                ctx.fillRect(ent.x - 55, ent.y - 24, 110, 16)
+                ctx.strokeStyle = ent.color
+                ctx.lineWidth = 1
+                ctx.strokeRect(ent.x - 55, ent.y - 24, 110, 16)
+
+                ctx.fillStyle = "#F8FAFC"
+                ctx.font = "bold 8.5px sans-serif"
+                ctx.textAlign = "center"
+                ctx.fillText(`[Lv.${ent.level}] ${ent.name.split(" ")[0]}`, ent.x, ent.y - 12)
+
+                ctx.restore()
+            })
+
+            // 7. DRAW PLAYER CHARACTER (Your Champion)
+            ctx.save()
+            const pX = playerPos.x
+            const pY = playerPos.y
+
+            // Player Aura & Foot Shadow
+            const auraGrad = ctx.createRadialGradient(pX, pY + 16, 4, pX, pY + 16, 26)
+            auraGrad.addColorStop(0, "rgba(59, 130, 246, 0.6)")
+            auraGrad.addColorStop(1, "transparent")
+            ctx.fillStyle = auraGrad
+            ctx.beginPath()
+            ctx.arc(pX, pY + 16, 26, 0, Math.PI * 2)
+            ctx.fill()
+
+            // Player Nameplate (Golden Dragon Style Tag)
+            ctx.fillStyle = "rgba(10, 15, 30, 0.9)"
+            ctx.fillRect(pX - 60, pY - 32, 120, 18)
+            ctx.strokeStyle = "#F59E0B"
+            ctx.lineWidth = 1.5
+            ctx.strokeRect(pX - 60, pY - 32, 120, 18)
+
+            ctx.fillStyle = "#FBBF24"
+            ctx.font = "bold 9px 'Cinzel', serif, sans-serif"
+            ctx.textAlign = "center"
+            ctx.fillText(`[Lv.85 Campeón] ${profileName.split(" ")[0]} (Tú)`, pX, pY - 20)
+
+            // Health Bar above player
+            ctx.fillStyle = "#0F172A"
+            ctx.fillRect(pX - 40, pY - 12, 80, 4)
+            ctx.fillStyle = "#22C55E"
+            ctx.fillRect(pX - 40, pY - 12, 80, 4)
+
+            ctx.restore()
+
+            animationFrameId = requestAnimationFrame(render)
+        }
+
+        render()
+
+        return () => {
+            cancelAnimationFrame(animationFrameId)
+        }
+    }, [targetPos, clickMarker, entities, profileName])
+
+    // Handle Canvas Click (Walk or Interact)
+    const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
+        const canvas = canvasRef.current
+        if (!canvas) return
+        const rect = canvas.getBoundingClientRect()
+        const clickX = ((e.clientX - rect.left) / rect.width) * canvas.width
+        const clickY = ((e.clientY - rect.top) / rect.height) * canvas.height
+
+        setClickMarker({ x: clickX, y: clickY, time: Date.now() })
+        setTargetPos({ x: clickX, y: clickY })
+
+        // Check if clicked an entity
+        const clicked = entities.find(ent => Math.hypot(ent.x - clickX, ent.y - clickY) < 36)
+        if (clicked) {
+            setActiveEntity(clicked)
+            if (clicked.id === "carlos_npc") setActiveModal("quest_carlos")
+            else if (clicked.id === "chest_printer") setActiveModal("impresora")
+            else if (clicked.id === "quest_board") setActiveModal("cartelera")
+            else if (clicked.id === "oracle_sphere") setActiveModal("oraculo")
+            else if (clicked.id === "ceo_throne") setActiveEntity(clicked)
+        }
+    }
+
     // Handlers
+    const handleAcceptCarlosQuest = () => {
+        setActiveModal("atencion")
+    }
+
+    const handleCompleteAttention = async () => {
+        setIsSavingAttention(true)
+        try {
+            await fetch("/api/supervision/appointments", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    action: "ATTEND_CLIENT",
+                    payload: {
+                        appointmentId: "apt-carlos",
+                        summary: attentionSummary || "Atención presencial en la fortaleza comercial.",
+                        need: attentionNeed,
+                        urgency: attentionUrgency,
+                        budget: attentionBudget,
+                        recontact: true
+                    }
+                })
+            })
+            setQuestCompleted(true)
+            setActiveModal(null)
+            alert("✨ ¡MISIÓN CUMPLIDA! Carlos Mendoza ha sido atendido con éxito. Propuesta comercial registrada en el ERP.")
+        } catch (e) {
+            console.error(e)
+        } finally {
+            setIsSavingAttention(false)
+        }
+    }
+
     const handleSendPublicChat = () => {
         if (!chatInput.trim()) return
         const now = new Date()
         const timeStr = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`
         setChatMessages(prev => [...prev, {
             id: Date.now().toString(),
-            from: session?.user?.name?.split(" ")[0] || "Tú",
+            from: `${profileName.split(" ")[0]} [Tú]`,
             text: chatInput.trim(),
-            time: timeStr
+            time: timeStr,
+            channel: chatChannel
         }])
         setChatInput("")
     }
 
-    const handleCreateAppointment = async () => {
-        if (!newClientName.trim()) return
-        setIsCreatingApt(true)
-        try {
-            const payload = {
-                clientName: newClientName,
-                scheduledTime: newClientTime,
-                scheduledDate: new Date().toISOString().split("T")[0],
-                purpose: newClientPurpose || "Atención comercial de sistemas de seguridad",
-                phone: newClientPhone
-            }
-            const res = await fetch("/api/supervision/appointments", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ action: "CREATE_APPOINTMENT", payload })
-            })
-            const data = await res.json()
-            if (data.success) {
-                setAppointments(prev => [data.appointment, ...prev])
-                setNewClientName("")
-                setNewClientPurpose("")
-                setNewClientPhone("")
-                alert("🔔 Cita registrada exitosamente. Notificación con campanazo enviada a todos!")
-            }
-        } catch (e) { console.error(e) } finally { setIsCreatingApt(false) }
-    }
-
-    const handleSaveAttention = async () => {
-        if (!selectedAptToAttend) return
-        setIsSavingAttention(true)
-        try {
-            const payload = {
-                appointmentId: selectedAptToAttend.id,
-                summary: attentionSummary,
-                need: attentionNeed,
-                urgency: attentionUrgency,
-                budget: attentionBudget,
-                recontact: attentionRecontact
-            }
-            const res = await fetch("/api/supervision/appointments", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ action: "ATTEND_CLIENT", payload })
-            })
-            const data = await res.json()
-            if (data.success) {
-                setAppointments(prev => prev.map(a => a.id === selectedAptToAttend.id ? data.appointment : a))
-                setSelectedAptToAttend(null)
-                setAttentionSummary("")
-                setAttentionNeed("")
-            }
-        } catch (e) { console.error(e) } finally { setIsSavingAttention(false) }
-    }
-
-    const handleSaveProfile = async () => {
-        setIsSavingProfile(true)
-        try {
-            const payload = {
-                fullName: profileName,
-                phone: profilePhone,
-                hasComputer: profileHasPC,
-                city: profileCity,
-                schedule: profileSchedule,
-                hasResume: profileHasResume,
-                resumeUrl: profileResumeUrl
-            }
-            const res = await fetch("/api/profile/setup", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload)
-            })
-            const data = await res.json()
-            if (data.success) {
-                if (data.allProfiles) setProfilesMap(data.allProfiles)
-                localStorage.setItem("atomic_profile_prompt_ts", Date.now().toString())
-                setShowProfilePrompt(false)
-            }
-        } catch (e) { console.error(e) } finally { setIsSavingProfile(false) }
-    }
-
-    const handleSendCounselor = async () => {
-        const text = counselorInput.trim()
-        if (!text || isCounselorLoading) return
-        const msgs = [...counselorMsgs, { sender: "user", text }]
-        setCounselorMsgs(msgs)
-        setCounselorInput("")
-        setIsCounselorLoading(true)
+    const handleAskOracle = async () => {
+        const text = oracleQuery.trim()
+        if (!text || isOracleLoading) return
+        const msgs = [...oracleReplies, { sender: "user" as const, text }]
+        setOracleReplies(msgs)
+        setOracleQuery("")
+        setIsOracleLoading(true)
         try {
             const res = await fetch("/api/personal-bot", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ message: text, roleOverride: "COUNSELOR", botNameOverride: "Consejero Atomic" })
+                body: JSON.stringify({ message: text, roleOverride: "COUNSELOR", botNameOverride: "Oráculo de ATOMIC" })
             })
             const data = await res.json()
-            setCounselorMsgs([...msgs, { sender: "bot", text: data.text || "Aquí tienes las pautas para tu plan de mejora..." }])
+            setOracleReplies([...msgs, { sender: "oracle", text: data.text || "Las runas revelan un camino de prosperidad comercial..." }])
         } catch {
-            setCounselorMsgs([...msgs, { sender: "bot", text: "Conexión lista. Cuéntame qué aspecto comercial o técnico deseas repasar." }])
-        } finally { setIsCounselorLoading(false) }
+            setOracleReplies([...msgs, { sender: "oracle", text: "La energía arcana se renueva. Pregúntame sobre tus metas y te mostraré el sendero." }])
+        } finally {
+            setIsOracleLoading(false)
+        }
     }
 
-    const handleDownloadFromPrinter = async (q: any) => {
+    const handleDownloadProposal = async (q: any) => {
         try {
             const safeParseArray = (str: any) => { try { return Array.isArray(str) ? str : JSON.parse(str || "[]") } catch { return [] } }
             const parsedItems = safeParseArray(q.items)
             const rawSub = parsedItems.reduce((a: number, i: any) => a + i.quantity * i.unitPrice, 0)
             const tax = rawSub * 0.15
             await generateAtomicUnifiedProposalPDF({
-                quoteNumber: q.quoteNumber, clientName: q.clientName || "",
-                clientPhone: q.clientPhone || "", clientCity: q.city || "",
-                clientEmail: q.clientEmail || "", quoteSubject: q.quoteSubject || "",
+                quoteNumber: q.quoteNumber, clientName: q.clientName || "Carlos Mendoza",
+                clientPhone: q.clientPhone || "", clientCity: q.city || "Quito",
+                clientEmail: q.clientEmail || "", quoteSubject: q.quoteSubject || "Propuesta CCTV 4K & Seguridad",
                 advisorName: session?.user?.name?.toUpperCase() || "ATOMIC",
                 items: parsedItems, subtotal: rawSub, taxAmount: tax, taxPercent: 15,
                 discountAmount: 0, total: q.total || rawSub + tax,
@@ -319,476 +620,331 @@ export default function VirtualOfficeWorkspace({ currentModule = "ventas", sessi
         } catch (e) { console.error(e) }
     }
 
-    const waitingClients = appointments.filter(a => a.status === "WAITING" || a.status === "SCHEDULED")
-
     return (
-        <div className={`relative ${fullscreen ? "fixed inset-0 z-[999] bg-[#02040a]" : "w-full"}`}>
+        <div className={`relative ${fullscreen ? "fixed inset-0 z-[999] bg-[#020409]" : "w-full"} select-none font-sans text-slate-100`}>
             
-            {/* ── HEADER DE CONTROL ARQUITECTÓNICO ──────────────────── */}
-            <div className="flex flex-wrap items-center justify-between px-5 py-3.5 border-b border-slate-800 bg-[#080d1a]/95 backdrop-blur-xl gap-3">
-                <div className="flex items-center gap-3.5">
-                    <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-teal-600/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.3)]">
-                        <Building2 size={20} />
+            {/* ── WARCRAFT TOP HUD (Unit Frame & Realm Stats) ─────────── */}
+            <div className="flex items-center justify-between px-5 py-2.5 bg-gradient-to-r from-[#0a0f1d] via-[#111827] to-[#0a0f1d] border-b-2 border-amber-500/50 shadow-2xl relative z-30">
+                
+                {/* Player Dragon Frame (Top Left) */}
+                <div className="flex items-center gap-3">
+                    <div className="relative">
+                        <div className="w-14 h-14 rounded-full ring-4 ring-amber-500/80 shadow-[0_0_20px_rgba(245,158,11,0.5)] overflow-hidden bg-slate-900 border-2 border-amber-300">
+                            <RealisticAvatar type="carlos" size={56} showBadge={false} />
+                        </div>
+                        <span className="absolute -bottom-1 -right-1 px-1.5 py-0.2 rounded-full bg-amber-500 text-slate-950 font-black text-[9px] border border-black shadow">
+                            Lv.85
+                        </span>
                     </div>
+
                     <div>
                         <div className="flex items-center gap-2">
-                            <h2 className="text-sm font-black text-white uppercase tracking-wider">PISO DE VENTAS & INFRAESTRUCTURA REAL</h2>
-                            <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[9px] font-mono font-bold flex items-center gap-1">
-                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                                OPERATIVO EN VIVO
+                            <span className="text-xs font-black tracking-wider text-amber-300 font-serif">
+                                {profileName}
+                            </span>
+                            <span className="text-[9px] font-mono px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/40 uppercase">
+                                Paladín de Ventas
                             </span>
                         </div>
-                        <p className="text-[10px] text-slate-400 font-mono">Arquitectura comercial dividida por departamentos reales • Avatares realistas estilo Carlos</p>
+
+                        {/* Health & Mana Bars */}
+                        <div className="space-y-1 mt-1 w-44">
+                            <div className="h-2 rounded bg-slate-950 border border-slate-700 overflow-hidden relative">
+                                <div className="h-full bg-gradient-to-r from-emerald-600 to-green-500 w-[100%]" />
+                                <span className="absolute inset-0 flex items-center justify-center text-[7px] font-mono font-bold text-white drop-shadow">
+                                    HP 100 / 100
+                                </span>
+                            </div>
+                            <div className="h-2 rounded bg-slate-950 border border-slate-700 overflow-hidden relative">
+                                <div className="h-full bg-gradient-to-r from-blue-600 to-cyan-500 w-[100%]" />
+                                <span className="absolute inset-0 flex items-center justify-center text-[7px] font-mono font-bold text-white drop-shadow">
+                                    MANA 100 / 100
+                                </span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-2.5 flex-wrap">
-                    {/* Botón Mi Perfil & Avatar */}
-                    <motion.button
-                        whileHover={{ scale: 1.03 }}
-                        whileTap={{ scale: 0.97 }}
-                        onClick={() => setShowAvatarModal(true)}
-                        className="flex items-center gap-2 px-3 py-1.5 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 rounded-xl text-xs font-bold transition-all shadow-md"
-                    >
-                        <RealisticAvatar type={myAvatarType} size={22} showBadge={false} />
-                        <span>Mi Avatar & Perfil</span>
-                    </motion.button>
+                {/* Realm Title & Quest Status */}
+                <div className="hidden md:flex flex-col items-center">
+                    <div className="flex items-center gap-2">
+                        <Shield className="text-amber-400 animate-pulse" size={16} />
+                        <h1 className="text-sm font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-200 to-amber-400 font-serif uppercase">
+                            BASTIÓN COMERCIAL DE ATOMIC • RPG WORLD
+                        </h1>
+                        <Shield className="text-amber-400 animate-pulse" size={16} />
+                    </div>
+                    <p className="text-[10px] font-mono text-slate-400">
+                        Misión Activa: {questCompleted ? "✓ Carlos Mendoza Atendido" : "⚠️ Emisario Carlos Mendoza en Espera de Atención"}
+                    </p>
+                </div>
 
-                    {/* Botón Datos Insistentes */}
+                {/* Quick Action Buttons */}
+                <div className="flex items-center gap-2">
                     <button
-                        onClick={() => setShowProfilePrompt(true)}
-                        className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 text-blue-300 rounded-xl text-xs font-bold transition-all"
+                        onClick={() => setActiveModal("nueva_cita")}
+                        className="px-3 py-1.5 bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 text-slate-950 font-black rounded-xl text-[11px] uppercase tracking-wider shadow-lg flex items-center gap-1.5 border border-amber-300 cursor-pointer"
                     >
-                        <UserCheck size={13} />
-                        <span>Completar Ficha (30 min)</span>
+                        <span>🛎️ Agendar Cita</span>
                     </button>
 
-                    {/* Checkbox Mantenerse Activo */}
-                    <label className="flex items-center gap-2 cursor-pointer bg-slate-900/90 px-3 py-1.5 rounded-xl border border-slate-800">
-                        <div onClick={() => setIsActive(!isActive)}
-                            className={`w-4 h-4 rounded border flex items-center justify-center transition-all ${isActive ? "bg-emerald-500 border-emerald-500" : "border-slate-600"}`}>
-                            {isActive && <Check size={10} className="text-white" />}
-                        </div>
-                        <span className="text-[10px] font-mono text-slate-300 select-none">En Turno Activo</span>
-                    </label>
-
-                    {/* Botón Pantalla Completa */}
-                    <motion.button
-                        whileHover={{ scale: 1.03 }}
-                        whileTap={{ scale: 0.97 }}
-                        onClick={() => setFullscreen(!fullscreen)}
-                        className="flex items-center gap-1.5 px-3.5 py-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-black rounded-xl text-xs uppercase tracking-wider shadow-[0_0_20px_rgba(16,185,129,0.4)]"
+                    <button
+                        onClick={() => setActiveModal("perfil")}
+                        className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 border border-amber-500/40 text-amber-300 rounded-xl text-[11px] font-bold flex items-center gap-1.5 cursor-pointer"
                     >
-                        <Zap size={13} />
-                        <span>{fullscreen ? "Salir de Pantalla Completa" : "¿Entrar al Piso de Ventas?"}</span>
-                    </motion.button>
+                        <UserCheck size={13} />
+                        <span>Ficha (30m)</span>
+                    </button>
+
+                    <button
+                        onClick={() => setFullscreen(!fullscreen)}
+                        className="p-2 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 rounded-xl cursor-pointer"
+                        title="Pantalla Completa"
+                    >
+                        <Zap size={14} className="text-amber-400" />
+                    </button>
                 </div>
             </div>
 
-            {/* ── PLANO ARQUITECTÓNICO DEL PISO DE VENTAS REAL ─────────── */}
-            <div className={`relative overflow-hidden bg-[#040814] ${fullscreen ? "h-[calc(100vh-65px)]" : "h-[740px]"}`}>
+            {/* ── RPG WORLD CANVAS STAGE ─────────────────────────────── */}
+            <div className="relative overflow-hidden bg-black" style={{ height: fullscreen ? "calc(100vh - 120px)" : "620px" }}>
                 
-                {/* Patrón de piso tecnológico de parqué oscuro & rejilla estructural */}
-                <div className="absolute inset-0 bg-[linear-gradient(to_right,#0f172a_1px,transparent_1px),linear-gradient(to_bottom,#0f172a_1px,transparent_1px)] bg-[size:32px_32px] opacity-40" />
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgba(16,185,129,0.06),transparent_60%)]" />
+                {/* HTML5 Game Canvas */}
+                <canvas
+                    ref={canvasRef}
+                    width={960}
+                    height={580}
+                    onClick={handleCanvasClick}
+                    className="w-full h-full object-cover cursor-crosshair"
+                />
 
-                {/* ── CONTENEDOR DE SALAS & PAREDES ARQUITECTÓNICAS ──── */}
-                <div className="absolute inset-4 overflow-auto custom-scrollbar p-2">
-                    <div className="min-w-[960px] grid grid-cols-12 gap-3 h-full">
-
-                        {/* ─────────────────────────────────────────────────────────────
-                            FILA SUPERIOR: SALA DE VISITAS (CARLOS) + SALA DE REUNIONES + CEO
-                        ───────────────────────────────────────────────────────────── */}
-                        
-                        {/* 1. SALA DE VISITAS & RECEPCIÓN VIP (DONDE ESTÁ CARLOS) */}
-                        <motion.div
-                            whileHover={{ scale: 1.01 }}
-                            onClick={() => setActiveDept("visitas")}
-                            className="col-span-4 bg-gradient-to-br from-slate-900/95 via-slate-950/95 to-amber-950/30 border-2 border-amber-500/40 rounded-3xl p-4 relative shadow-2xl overflow-hidden cursor-pointer group flex flex-col justify-between"
-                        >
-                            {/* Fachada de cristal y marco arquitectónico */}
-                            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-600" />
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                    <span className="p-1.5 bg-amber-500/20 text-amber-300 rounded-lg text-sm">🛎️</span>
-                                    <div>
-                                        <h3 className="text-xs font-black text-white uppercase tracking-wider">Sala de Visitas & Recepción</h3>
-                                        <p className="text-[9px] font-mono text-amber-400">Atención a Clientes & Citas</p>
-                                    </div>
+                {/* Overlaid Animated Avatars over Entities for 100% Realism */}
+                {entities.map(ent => (
+                    <div
+                        key={ent.id}
+                        className="absolute pointer-events-none -translate-x-1/2 -translate-y-1/2"
+                        style={{
+                            left: `${(ent.x / 960) * 100}%`,
+                            top: `${(ent.y / 580) * 100}%`
+                        }}
+                    >
+                        <div className="relative cursor-pointer pointer-events-auto group" onClick={() => {
+                            setActiveEntity(ent)
+                            if (ent.id === "carlos_npc") setActiveModal("quest_carlos")
+                            else if (ent.id === "chest_printer") setActiveModal("impresora")
+                            else if (ent.id === "quest_board") setActiveModal("cartelera")
+                            else if (ent.id === "oracle_sphere") setActiveModal("oraculo")
+                        }}>
+                            {/* Realistic Corporate Avatar Character */}
+                            {ent.avatarType !== "custom" ? (
+                                <RealisticAvatar type={ent.avatarType} size={46} status={ent.questStatus === "available" ? "waiting" : "online"} />
+                            ) : (
+                                <div className="w-11 h-11 rounded-2xl bg-slate-900/90 border-2 border-amber-400 flex items-center justify-center text-xl shadow-[0_0_15px_rgba(245,158,11,0.5)]">
+                                    {ent.icon}
                                 </div>
-                                <span className="px-2 py-0.5 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 text-[9px] font-mono font-bold">
-                                    {waitingClients.length} en espera
-                                </span>
-                            </div>
+                            )}
 
-                            {/* Escena realista de espera de Carlos Mendoza */}
-                            <div className="my-3 p-3 bg-slate-950/80 border border-amber-500/30 rounded-2xl flex items-center justify-between gap-3 shadow-inner">
-                                <div className="flex items-center gap-3">
-                                    <RealisticAvatar type="carlos" size={48} status="waiting" />
-                                    <div>
-                                        <div className="flex items-center gap-1.5">
-                                            <p className="text-xs font-black text-white">Carlos Mendoza</p>
-                                            <span className="text-[8px] font-mono bg-rose-500/20 text-rose-300 border border-rose-500/40 px-1 rounded">VIP</span>
-                                        </div>
-                                        <p className="text-[10px] font-mono text-amber-300">⏱️ Cita: 11:00 AM • Esperando</p>
-                                        <p className="text-[9px] text-slate-400 line-clamp-1">Revisión de Cámaras 4K & Cerraduras Smart</p>
-                                    </div>
-                                </div>
-
-                                <button
-                                    onClick={(e) => {
-                                        e.stopPropagation()
-                                        setSelectedAptToAttend(appointments[0])
-                                    }}
-                                    className="px-3 py-1.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black font-black rounded-xl text-[10px] uppercase tracking-wider shadow-lg flex items-center gap-1 shrink-0 animate-pulse"
-                                >
-                                    <span>Atender</span>
-                                    <ChevronRight size={12} />
-                                </button>
-                            </div>
-
-                            <div className="flex items-center justify-between text-[9px] font-mono text-slate-400 border-t border-slate-800/80 pt-2">
-                                <span>🛋️ Sillón de espera VIP</span>
-                                <span className="text-amber-400 underline font-bold group-hover:text-amber-300">+ Registrar nueva cita</span>
-                            </div>
-                        </motion.div>
-
-                        {/* 2. SALA DE REUNIONES & NEGOCIACIÓN CORPORATIVA (BOARDROOM) */}
-                        <motion.div
-                            whileHover={{ scale: 1.01 }}
-                            onClick={() => setActiveDept("reuniones")}
-                            className="col-span-5 bg-gradient-to-br from-slate-900/95 via-slate-950/95 to-indigo-950/30 border-2 border-indigo-500/40 rounded-3xl p-4 relative shadow-2xl overflow-hidden cursor-pointer group flex flex-col justify-between"
-                        >
-                            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-indigo-500 via-blue-400 to-purple-600" />
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                    <span className="p-1.5 bg-indigo-500/20 text-indigo-300 rounded-lg text-sm">🤝</span>
-                                    <div>
-                                        <h3 className="text-xs font-black text-white uppercase tracking-wider">Sala de Reuniones Ejecutiva</h3>
-                                        <p className="text-[9px] font-mono text-indigo-400">Mesa de Negociación & Pantalla 4K</p>
-                                    </div>
-                                </div>
-                                <span className="text-[9px] font-mono text-slate-400 bg-slate-950 px-2 py-0.5 rounded-full border border-slate-800">
-                                    Proyector Activo
-                                </span>
-                            </div>
-
-                            {/* Representación realista de la gran mesa de juntas con participantes */}
-                            <div className="my-2 p-3 bg-slate-950/90 border border-slate-800 rounded-2xl relative flex flex-col items-center justify-center">
-                                {/* Pantalla 4K en pared */}
-                                <div className="w-full py-1 px-3 bg-indigo-950/60 border border-indigo-500/30 rounded-lg text-center mb-2">
-                                    <span className="text-[9px] font-mono text-indigo-300 font-bold flex items-center justify-center gap-1.5">
-                                        <Activity size={11} className="animate-pulse" />
-                                        PROPUESTA COMERCIAL UNIFICADA • ATOMIC 2026
-                                    </span>
-                                </div>
-
-                                {/* Gran mesa ovalada con sillas y avatares realistas */}
-                                <div className="w-full h-16 bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 rounded-full border border-slate-600 shadow-xl flex items-center justify-around px-4 relative">
-                                    <RealisticAvatar type="ventas" size={32} showBadge={false} />
-                                    <div className="text-center">
-                                        <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest block">MESA DE CIERRE</span>
-                                        <span className="text-[8px] font-mono text-emerald-400">Atendiendo clientes</span>
-                                    </div>
-                                    <RealisticAvatar type="coordinador" size={32} showBadge={false} />
-                                </div>
-                            </div>
-
-                            <div className="flex items-center justify-between text-[9px] font-mono text-slate-400 border-t border-slate-800/80 pt-2">
-                                <span>📺 Pantalla 4K con Dashboard</span>
-                                <span className="text-indigo-400 underline font-bold group-hover:text-indigo-300">Sugerir nueva reunión →</span>
-                            </div>
-                        </motion.div>
-
-                        {/* 3. DESPACHO PRESIDENCIAL CEO */}
-                        <motion.div
-                            whileHover={{ scale: 1.01 }}
-                            onClick={() => setActiveDept("ceo")}
-                            className="col-span-3 bg-gradient-to-br from-slate-900/95 via-slate-950/95 to-rose-950/30 border-2 border-rose-500/40 rounded-3xl p-4 relative shadow-2xl overflow-hidden cursor-pointer group flex flex-col justify-between"
-                        >
-                            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-rose-500 via-pink-400 to-red-600" />
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                    <span className="p-1.5 bg-rose-500/20 text-rose-300 rounded-lg text-sm">👑</span>
-                                    <div>
-                                        <h3 className="text-xs font-black text-white uppercase tracking-wider">Despacho CEO</h3>
-                                        <p className="text-[9px] font-mono text-rose-400">Gerencia General</p>
-                                    </div>
-                                </div>
-                                <span className="w-2 h-2 rounded-full bg-rose-400 animate-pulse" />
-                            </div>
-
-                            <div className="my-2 p-2.5 bg-slate-950/80 border border-slate-800 rounded-2xl flex items-center gap-3">
-                                <RealisticAvatar type="ceo" size={44} status="online" />
-                                <div>
-                                    <p className="text-xs font-black text-white">Ing. Santiago</p>
-                                    <p className="text-[9px] font-mono text-rose-300">CEO & Fundador</p>
-                                    <p className="text-[8px] text-slate-400">Despacho Ejecutivo</p>
-                                </div>
-                            </div>
-
-                            <div className="flex items-center justify-between text-[9px] font-mono text-slate-400 border-t border-slate-800/80 pt-2">
-                                <span>🔒 Línea Confidencial</span>
-                                <span className="text-rose-400 underline font-bold group-hover:text-rose-300">Dejar mensaje</span>
-                            </div>
-                        </motion.div>
-
-                        {/* ─────────────────────────────────────────────────────────────
-                            FILA INTERMEDIA: PISO PRINCIPAL DE VENTAS & SHOWROOM (GRAN ÁREA)
-                        ───────────────────────────────────────────────────────────── */}
-                        <div className="col-span-8 bg-gradient-to-br from-slate-900/90 to-emerald-950/20 border-2 border-emerald-500/30 rounded-3xl p-4 relative shadow-2xl flex flex-col justify-between">
-                            <div className="flex items-center justify-between border-b border-slate-800 pb-2.5 mb-3">
-                                <div className="flex items-center gap-2.5">
-                                    <div className="w-7 h-7 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
-                                        <Briefcase size={15} />
-                                    </div>
-                                    <div>
-                                        <h3 className="text-xs font-black text-white uppercase tracking-wider">Showroom Comercial & Estaciones de Venta</h3>
-                                        <p className="text-[9px] font-mono text-slate-400">Exhibición física de cámaras, cerraduras smart y puestos de asesoras</p>
-                                    </div>
-                                </div>
-
-                                <div className="flex items-center gap-2">
-                                    <button
-                                        onClick={() => setActiveDept("printer")}
-                                        className="px-2.5 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-[10px] font-mono flex items-center gap-1.5 transition-colors"
-                                    >
-                                        <Printer size={11} className="text-cyan-400" />
-                                        <span>🖨️ Impresora de Cotizaciones</span>
-                                    </button>
-                                </div>
-                            </div>
-
-                            {/* Puestos de asesoría con avatares realistas */}
-                            <div className="grid grid-cols-4 gap-2.5 mb-3">
-                                {[
-                                    { member: REAL_TEAM[3], title: "Showroom Cámaras 4K", desc: "Milorieta en asesoría", icon: "📹" },
-                                    { member: REAL_TEAM[2], title: "Despachos & Rutas", desc: "Luis G. Coordinación", icon: "📦" },
-                                    { member: REAL_TEAM[4], title: "Auditoría en Vivo", desc: "Supervisor Calidad", icon: "📊" },
-                                    { member: REAL_TEAM[6], title: "Sistemas & Cotizador", desc: "Nicolás Soporte IT", icon: "💻" }
-                                ].map((station, idx) => (
-                                    <div
-                                        key={idx}
-                                        onClick={() => setSelectedMember(station.member)}
-                                        className="p-2.5 bg-slate-950/90 border border-slate-800 hover:border-emerald-500/40 rounded-2xl cursor-pointer transition-all hover:scale-105 shadow-md group"
-                                    >
-                                        <div className="flex items-center gap-2 mb-1.5">
-                                            <RealisticAvatar type={station.member.avatarType} size={34} status={station.member.status} />
-                                            <div className="min-w-0 flex-1">
-                                                <p className="text-[10px] font-black text-white truncate group-hover:text-emerald-300">{station.member.name}</p>
-                                                <p className="text-[8px] font-mono text-slate-400 truncate">{station.member.role}</p>
-                                            </div>
-                                        </div>
-                                        <div className="px-2 py-1 bg-slate-900 rounded-xl border border-slate-800/80 text-[8px] font-mono text-slate-300 truncate">
-                                            {station.icon} {station.title}
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-
-                            {/* Stands de exhibición de productos reales */}
-                            <div className="grid grid-cols-3 gap-2 pt-2 border-t border-slate-800/80 text-[9px] font-mono text-slate-400">
-                                <div className="p-2 bg-slate-950/60 rounded-xl border border-slate-800/60 flex items-center gap-2">
-                                    <span className="text-base">📹</span>
-                                    <div>
-                                        <p className="text-white font-bold">Stand CCTV & Alarmas</p>
-                                        <p className="text-slate-500 text-[8px]">Hikvision / Dahua 4K</p>
-                                    </div>
-                                </div>
-                                <div className="p-2 bg-slate-950/60 rounded-xl border border-slate-800/60 flex items-center gap-2">
-                                    <span className="text-base">🔐</span>
-                                    <div>
-                                        <p className="text-white font-bold">Display Cerraduras Smart</p>
-                                        <p className="text-slate-500 text-[8px]">Biometría & App Tuya</p>
-                                    </div>
-                                </div>
-                                <div className="p-2 bg-slate-950/60 rounded-xl border border-slate-800/60 flex items-center gap-2">
-                                    <span className="text-base">🚧</span>
-                                    <div>
-                                        <p className="text-white font-bold">Barreras Vehiculares</p>
-                                        <p className="text-slate-500 text-[8px]">Control RFID / Tags</p>
-                                    </div>
-                                </div>
+                            {/* Hover tooltip */}
+                            <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 rounded bg-slate-950/95 border border-amber-500/60 text-[9px] font-mono text-white whitespace-nowrap shadow-xl z-30">
+                                Click para interactuar con {ent.name}
                             </div>
                         </div>
-
-                        {/* ─────────────────────────────────────────────────────────────
-                            COLUMNA DERECHA: SUPERVISIÓN & COORDINACIÓN & CONSEJERÍA
-                        ───────────────────────────────────────────────────────────── */}
-                        <div className="col-span-4 space-y-3">
-                            {/* Supervisión y Calidad */}
-                            <motion.div
-                                whileHover={{ scale: 1.01 }}
-                                onClick={() => setActiveDept("supervision")}
-                                className="p-3.5 bg-gradient-to-br from-slate-900/95 to-blue-950/30 border-2 border-blue-500/40 rounded-3xl shadow-xl cursor-pointer"
-                            >
-                                <div className="flex items-center justify-between mb-2">
-                                    <div className="flex items-center gap-2">
-                                        <RealisticAvatar type="supervisor" size={32} status="online" />
-                                        <div>
-                                            <h4 className="text-xs font-black text-white uppercase">Supervisión Operativa</h4>
-                                            <p className="text-[9px] font-mono text-blue-400">Ingreso 6:00 AM • Plano Cartesiano</p>
-                                        </div>
-                                    </div>
-                                    <span className="text-[9px] font-mono text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/30">10/10</span>
-                                </div>
-                                <p className="text-[9px] text-slate-400 leading-snug">Auditoría de asistencia, finanzas empresa, tareas dirigidas y ciclos laborales.</p>
-                            </motion.div>
-
-                            {/* Estudio Multimedia & Marketing */}
-                            <motion.div
-                                whileHover={{ scale: 1.01 }}
-                                onClick={() => setActiveDept("multimedia")}
-                                className="p-3.5 bg-gradient-to-br from-slate-900/95 to-purple-950/30 border-2 border-purple-500/40 rounded-3xl shadow-xl cursor-pointer"
-                            >
-                                <div className="flex items-center justify-between mb-2">
-                                    <div className="flex items-center gap-2">
-                                        <RealisticAvatar type="edicion" size={32} status="busy" />
-                                        <div>
-                                            <h4 className="text-xs font-black text-white uppercase">Estudio Multimedia 4K</h4>
-                                            <p className="text-[9px] font-mono text-purple-400">Ian Editor • Almanaque</p>
-                                        </div>
-                                    </div>
-                                    <span className="text-[8px] font-mono bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded">Render</span>
-                                </div>
-                                <p className="text-[9px] text-slate-400 leading-snug">Producción de videos comerciales, reels y banco de creatividades para campañas.</p>
-                            </motion.div>
-
-                            {/* Consejería IA */}
-                            <motion.div
-                                whileHover={{ scale: 1.01 }}
-                                onClick={() => setActiveDept("counseling")}
-                                className="p-3.5 bg-gradient-to-br from-slate-900/95 to-teal-950/30 border-2 border-teal-500/40 rounded-3xl shadow-xl cursor-pointer flex items-center justify-between"
-                            >
-                                <div className="flex items-center gap-2.5">
-                                    <span className="text-2xl">🧠</span>
-                                    <div>
-                                        <h4 className="text-xs font-black text-white uppercase">Consejero Atomic IA</h4>
-                                        <p className="text-[9px] font-mono text-teal-400">Plan de mejora personalizado en vivo</p>
-                                    </div>
-                                </div>
-                                <ChevronRight size={16} className="text-teal-400" />
-                            </motion.div>
-                        </div>
-
-                        {/* ─────────────────────────────────────────────────────────────
-                            FILA INFERIOR: CARTELERA DE AVISOS + HABLAR EN VOZ ALTA + TALLER
-                        ───────────────────────────────────────────────────────────── */}
-                        
-                        {/* Cartelera con papelera interactiva */}
-                        <div className="col-span-6 bg-slate-900/90 border border-slate-800 rounded-3xl p-3.5 shadow-xl flex flex-col justify-between">
-                            <div className="flex items-center justify-between border-b border-slate-800 pb-2 mb-2">
-                                <div className="flex items-center gap-2">
-                                    <span className="text-amber-400">📌</span>
-                                    <span className="text-xs font-black text-white uppercase tracking-wider">Cartelera del Piso de Ventas</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <button
-                                        onClick={() => setActiveDept("cartelera")}
-                                        className="text-[9px] font-mono text-amber-400 hover:underline font-bold"
-                                    >
-                                        + Publicar aviso
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-2 text-xs">
-                                <div className="p-2.5 bg-amber-950/20 border border-amber-500/30 rounded-2xl space-y-1">
-                                    <div className="flex items-center justify-between text-[9px] font-mono text-amber-300">
-                                        <span>📍 Meta del Día</span>
-                                        <span>09:00 AM</span>
-                                    </div>
-                                    <p className="text-slate-200 text-[11px] font-medium leading-snug">"Priorizar cierre de propuesta CCTV de Carlos Mendoza hoy."</p>
-                                </div>
-
-                                <div className="p-2.5 bg-slate-950 border border-slate-800 rounded-2xl space-y-1">
-                                    <div className="flex items-center justify-between text-[9px] font-mono text-slate-400">
-                                        <span>🛡️ Supervisión</span>
-                                        <span>06:00 AM</span>
-                                    </div>
-                                    <p className="text-slate-300 text-[11px] leading-snug">"Registro puntual completado. Asesoras en sus estaciones."</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Canal Hablar en Voz Alta (Chat en vivo del piso) */}
-                        <div className="col-span-6 bg-slate-900/90 border border-slate-800 rounded-3xl p-3.5 shadow-xl flex flex-col justify-between">
-                            <div className="flex items-center justify-between border-b border-slate-800 pb-2 mb-2">
-                                <div className="flex items-center gap-2">
-                                    <span className="text-cyan-400">📢</span>
-                                    <span className="text-xs font-black text-cyan-300 uppercase tracking-wider">Hablar en Voz Alta</span>
-                                    <span className="text-[9px] font-mono text-slate-400">(Intercomunicador general)</span>
-                                </div>
-                            </div>
-
-                            <div className="space-y-1.5 max-h-16 overflow-y-auto custom-scrollbar mb-2 text-xs">
-                                {chatMessages.slice(-2).map(m => (
-                                    <div key={m.id} className="p-1.5 bg-slate-950/80 rounded-xl border border-slate-800/80 text-[11px] flex items-center justify-between">
-                                        <div>
-                                            <span className="font-bold text-cyan-300 mr-2">{m.from}:</span>
-                                            <span className="text-slate-200">{m.text}</span>
-                                        </div>
-                                        <span className="text-[9px] font-mono text-slate-500 shrink-0 ml-2">{m.time}</span>
-                                    </div>
-                                ))}
-                            </div>
-
-                            <div className="flex gap-2">
-                                <input
-                                    value={chatInput}
-                                    onChange={e => setChatInput(e.target.value)}
-                                    onKeyDown={e => e.key === "Enter" && handleSendPublicChat()}
-                                    placeholder="Escribe para hablar en voz alta a todo el piso..."
-                                    className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-white outline-none focus:border-cyan-400 font-sans"
-                                />
-                                <button
-                                    onClick={handleSendPublicChat}
-                                    className="px-3 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer"
-                                >
-                                    <Send size={12} />
-                                </button>
-                            </div>
-                        </div>
-
                     </div>
+                ))}
+
+                {/* Overlaid Player Avatar */}
+                <div
+                    className="absolute pointer-events-none -translate-x-1/2 -translate-y-1/2 z-20"
+                    style={{
+                        left: `${(playerPos.x / 960) * 100}%`,
+                        top: `${(playerPos.y / 580) * 100}%`,
+                        transform: `translate(-50%, -50%) scaleX(${playerFacing === "left" ? -1 : 1})`
+                    }}
+                >
+                    <RealisticAvatar type="carlos" size={48} showBadge={false} />
+                </div>
+
+                {/* ── WARCRAFT BOTTOM-LEFT CHAT (Hablar en Voz Alta) ──── */}
+                <div className="absolute bottom-3 left-4 w-88 max-w-[42vw] bg-slate-950/85 border border-amber-500/40 rounded-2xl p-2.5 backdrop-blur-md shadow-2xl z-20 flex flex-col h-44">
+                    <div className="flex items-center justify-between border-b border-slate-800 pb-1.5 mb-1.5">
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => setChatChannel("General")}
+                                className={`text-[9px] font-black font-mono px-2 py-0.5 rounded transition-all ${
+                                    chatChannel === "General" ? "bg-amber-500 text-black font-bold" : "text-slate-400 hover:text-white"
+                                }`}
+                            >
+                                [1. Voz Alta]
+                            </button>
+                            <button
+                                onClick={() => setChatChannel("Gremio")}
+                                className={`text-[9px] font-black font-mono px-2 py-0.5 rounded transition-all ${
+                                    chatChannel === "Gremio" ? "bg-emerald-500 text-black font-bold" : "text-slate-400 hover:text-white"
+                                }`}
+                            >
+                                [2. Gremio]
+                            </button>
+                        </div>
+                        <span className="text-[8px] font-mono text-slate-500">Público para el bastión</span>
+                    </div>
+
+                    <div className="flex-1 overflow-y-auto space-y-1.5 custom-scrollbar pr-1 text-[10px]">
+                        {chatMessages.map(m => (
+                            <div key={m.id} className="leading-snug">
+                                <span className={`font-black mr-1 ${m.channel === "Gremio" ? "text-emerald-400" : "text-amber-400"}`}>
+                                    [{m.channel}] {m.from}:
+                                </span>
+                                <span className="text-slate-200">{m.text}</span>
+                            </div>
+                        ))}
+                        <div ref={chatEndRef} />
+                    </div>
+
+                    <div className="flex gap-1.5 pt-1.5 border-t border-slate-800">
+                        <input
+                            value={chatInput}
+                            onChange={e => setChatInput(e.target.value)}
+                            onKeyDown={e => e.key === "Enter" && handleSendPublicChat()}
+                            placeholder="Escribe al chat del reino..."
+                            className="flex-1 bg-slate-900 border border-slate-700 text-white rounded-lg px-2 py-1 text-[10px] outline-none focus:border-amber-400"
+                        />
+                        <button
+                            onClick={handleSendPublicChat}
+                            className="p-1 bg-amber-500 hover:bg-amber-400 text-black rounded-lg"
+                        >
+                            <Send size={11} />
+                        </button>
+                    </div>
+                </div>
+
+                {/* ── WARCRAFT BOTTOM ACTION BAR (Hotbar) ─────────────── */}
+                <div className="absolute bottom-3 right-4 flex items-center gap-1.5 bg-slate-950/90 border-2 border-amber-500/50 rounded-2xl p-1.5 shadow-2xl backdrop-blur-md z-20">
+                    {[
+                        { label: "[1] Atender Cita", icon: "🛎️", action: () => { setActiveModal("quest_carlos") } },
+                        { label: "[2] Cofre PDF", icon: "🖨️", action: () => { setActiveModal("impresora") } },
+                        { label: "[3] Edictos", icon: "📌", action: () => { setActiveModal("cartelera") } },
+                        { label: "[4] Oráculo", icon: "🔮", action: () => { setActiveModal("oraculo") } },
+                        { label: "[5] Ficha Perfil", icon: "📜", action: () => { setActiveModal("perfil") } }
+                    ].map((btn, idx) => (
+                        <button
+                            key={idx}
+                            onClick={btn.action}
+                            className="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 hover:border-amber-400 transition-all flex flex-col items-center gap-0.5 group cursor-pointer"
+                        >
+                            <span className="text-lg group-hover:scale-110 transition-transform">{btn.icon}</span>
+                            <span className="text-[7.5px] font-mono text-slate-400 group-hover:text-amber-300">{btn.label}</span>
+                        </button>
+                    ))}
+                </div>
+
+                {/* Movement hint */}
+                <div className="absolute top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-slate-950/80 border border-amber-500/40 text-[9px] font-mono text-amber-300 pointer-events-none z-10 shadow-lg">
+                    ⚔️ Click en el terreno para caminar • Click en Carlos o personajes para interactuar
                 </div>
 
             </div>
 
             {/* ─────────────────────────────────────────────────────────────────
-                MODAL 1: ATENDER A CARLOS MENDOZA O CUALQUIER CLIENTE (ESTADO DE ATENCIÓN)
+                MODAL 1: QUEST DE CARLOS MENDOZA (WARCRAFT QUEST DIALOGUE)
             ───────────────────────────────────────────────────────────────── */}
             <AnimatePresence>
-                {selectedAptToAttend && (
+                {activeModal === "quest_carlos" && (
                     <>
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                            className="fixed inset-0 bg-black/85 backdrop-blur-md z-[120]" onClick={() => setSelectedAptToAttend(null)} />
-                        <motion.div initial={{ opacity: 0, scale: 0.93 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.93 }}
+                            className="fixed inset-0 bg-black/80 backdrop-blur-md z-[120]" onClick={() => setActiveModal(null)} />
+                        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
                             className="fixed inset-0 z-[130] flex items-center justify-center p-4">
-                            <div className="bg-[#0b0f19] border-2 border-amber-500/50 rounded-3xl p-6 shadow-2xl max-w-md w-full space-y-4">
-                                <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                            <div className="bg-[#0e1322] border-2 border-amber-500 rounded-3xl p-6 shadow-2xl max-w-lg w-full space-y-4 relative overflow-hidden">
+                                <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-amber-500 via-yellow-300 to-amber-600" />
+                                
+                                <div className="flex items-start justify-between border-b border-slate-800 pb-3">
                                     <div className="flex items-center gap-3">
-                                        <RealisticAvatar type="carlos" size={46} status="waiting" />
+                                        <RealisticAvatar type="carlos" size={54} status="waiting" />
                                         <div>
-                                            <h3 className="text-sm font-black text-white uppercase tracking-wider">¿Atender al Cliente?</h3>
-                                            <p className="text-[11px] font-mono text-amber-400 font-bold">{selectedAptToAttend.clientName}</p>
-                                            <p className="text-[9px] font-mono text-slate-400">Hora de Cita: {selectedAptToAttend.scheduledTime}</p>
+                                            <span className="text-[9px] font-mono bg-amber-500/20 text-amber-300 border border-amber-500/40 px-1.5 py-0.5 rounded uppercase">
+                                                Misión Comercial • Grado VIP
+                                            </span>
+                                            <h3 className="text-base font-black text-amber-300 font-serif tracking-wide mt-0.5">
+                                                Encomienda de Carlos Mendoza
+                                            </h3>
+                                            <p className="text-[10px] font-mono text-slate-400">Emisario de Edificio Central • Cita 11:00 AM</p>
                                         </div>
                                     </div>
-                                    <button onClick={() => setSelectedAptToAttend(null)} className="text-slate-400 hover:text-white p-1">
+                                    <button onClick={() => setActiveModal(null)} className="text-slate-400 hover:text-white p-1">
+                                        <X size={18} />
+                                    </button>
+                                </div>
+
+                                {/* Warcraft Lore / Quest Text */}
+                                <div className="p-4 bg-slate-950/80 border border-amber-500/30 rounded-2xl space-y-2 text-xs text-slate-200 leading-relaxed font-serif">
+                                    <p className="italic text-amber-200">
+                                        "¡Saludos, honorable paladín de ATOMIC! He viajado para asegurar la fortaleza de mi comunidad. Requerimos un sistema de 16 cámaras 4K de alta precisión y 4 cerraduras biométricas con control por aplicación móvil."
+                                    </p>
+                                    <div className="pt-2 border-t border-slate-800 text-[10px] font-mono text-slate-400 flex items-center justify-between">
+                                        <span>Recompensa de Victoria: Venta Cerrada ($3,800)</span>
+                                        <span className="text-emerald-400 font-bold">Comisión Garantizada</span>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <button
+                                        onClick={handleAcceptCarlosQuest}
+                                        className="w-full py-3 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-black rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(245,158,11,0.5)] border border-yellow-200 cursor-pointer"
+                                    >
+                                        <Sword size={14} />
+                                        <span>Aceptar Misión & Abrir Registro de Atención</span>
+                                    </button>
+
+                                    <button
+                                        onClick={() => {
+                                            const txt = `🔔 *ENCOMIENDA DE CARLOS MENDOZA*\nCliente VIP en espera de propuesta CCTV 4K.\nHora: 11:00 AM\nCelular: +593998765432`
+                                            window.open(getWAUrl(defaultWhatsApp, txt), "_blank")
+                                        }}
+                                        className="w-full py-2.5 bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/40 text-emerald-300 font-bold rounded-xl text-xs flex items-center justify-center gap-2 cursor-pointer"
+                                    >
+                                        <Phone size={13} />
+                                        <span>Enviar Cuervo / WhatsApp a Coordinación</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </>
+                )}
+            </AnimatePresence>
+
+            {/* ─────────────────────────────────────────────────────────────────
+                MODAL 2: FORMULARIO DE ESTADO DE ATENCIÓN (ATENDER CLIENTE)
+            ───────────────────────────────────────────────────────────────── */}
+            <AnimatePresence>
+                {activeModal === "atencion" && (
+                    <>
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                            className="fixed inset-0 bg-black/80 backdrop-blur-md z-[120]" onClick={() => setActiveModal(null)} />
+                        <motion.div initial={{ opacity: 0, scale: 0.92 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.92 }}
+                            className="fixed inset-0 z-[130] flex items-center justify-center p-4">
+                            <div className="bg-[#0b101f] border-2 border-emerald-500/60 rounded-3xl p-6 shadow-2xl max-w-md w-full space-y-4">
+                                <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                                    <div className="flex items-center gap-2.5">
+                                        <RealisticAvatar type="carlos" size={42} showBadge={false} />
+                                        <div>
+                                            <h3 className="text-sm font-black text-white uppercase tracking-wider font-serif">REGISTRAR ATENCIÓN COMERCIAL</h3>
+                                            <p className="text-[10px] font-mono text-emerald-400">Cliente: Carlos Mendoza • Presupuesto: ${attentionBudget}</p>
+                                        </div>
+                                    </div>
+                                    <button onClick={() => setActiveModal(null)} className="text-slate-400 hover:text-white p-1">
                                         <X size={16} />
                                     </button>
                                 </div>
 
                                 <div className="space-y-3">
                                     <div>
-                                        <label className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest block mb-1">Resumen de la Atención *</label>
+                                        <label className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest block mb-1">Resumen del Diálogo *</label>
                                         <textarea
                                             rows={2}
                                             value={attentionSummary}
                                             onChange={e => setAttentionSummary(e.target.value)}
-                                            placeholder="Detalla qué se acordó con Carlos en la Sala de Reuniones..."
-                                            className="w-full bg-slate-900 border border-slate-700 text-white p-2.5 rounded-xl text-xs resize-none outline-none focus:border-amber-500/60 font-sans"
+                                            placeholder="Detalla lo acordado en la sesión de negociación..."
+                                            className="w-full bg-slate-900 border border-slate-700 text-white p-2.5 rounded-xl text-xs resize-none outline-none focus:border-emerald-400 font-sans"
                                         />
                                     </div>
 
@@ -797,8 +953,7 @@ export default function VirtualOfficeWorkspace({ currentModule = "ventas", sessi
                                         <input
                                             value={attentionNeed}
                                             onChange={e => setAttentionNeed(e.target.value)}
-                                            placeholder="Ej: 16 Cámaras IP 4K Dahua + 4 Cerraduras Smart..."
-                                            className="w-full bg-slate-900 border border-slate-700 text-white p-2.5 rounded-xl text-xs outline-none focus:border-amber-500/60"
+                                            className="w-full bg-slate-900 border border-slate-700 text-white p-2.5 rounded-xl text-xs outline-none focus:border-emerald-400"
                                         />
                                     </div>
 
@@ -810,9 +965,9 @@ export default function VirtualOfficeWorkspace({ currentModule = "ventas", sessi
                                                 onChange={e => setAttentionUrgency(e.target.value)}
                                                 className="w-full bg-slate-900 border border-slate-700 text-white p-2 rounded-xl text-xs font-bold outline-none"
                                             >
-                                                <option value="ALTA">🔴 Alta (Cierre inmediato)</option>
-                                                <option value="MEDIA">🟡 Media (Esta semana)</option>
-                                                <option value="BAJA">🟢 Baja (En análisis)</option>
+                                                <option value="ALTA">🔴 Alta (Cierre Inmediato)</option>
+                                                <option value="MEDIA">🟡 Media (Esta Semana)</option>
+                                                <option value="BAJA">🟢 Baja (Exploratorio)</option>
                                             </select>
                                         </div>
                                         <div>
@@ -820,39 +975,25 @@ export default function VirtualOfficeWorkspace({ currentModule = "ventas", sessi
                                             <input
                                                 value={attentionBudget}
                                                 onChange={e => setAttentionBudget(e.target.value)}
-                                                placeholder="$3,500"
                                                 className="w-full bg-slate-900 border border-slate-700 text-white p-2 rounded-xl text-xs font-mono outline-none"
                                             />
                                         </div>
                                     </div>
 
-                                    <div className="flex items-center gap-2 pt-1">
-                                        <input
-                                            type="checkbox"
-                                            id="chk-recontact"
-                                            checked={attentionRecontact}
-                                            onChange={e => setAttentionRecontact(e.target.checked)}
-                                            className="accent-amber-500"
-                                        />
-                                        <label htmlFor="chk-recontact" className="text-xs text-slate-300 font-bold cursor-pointer select-none">
-                                            Requiere llamada de seguimiento de Coordinación
-                                        </label>
-                                    </div>
-
                                     <div className="flex gap-2 pt-2">
                                         <button
-                                            onClick={() => setSelectedAptToAttend(null)}
+                                            onClick={() => setActiveModal(null)}
                                             className="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl text-xs cursor-pointer"
                                         >
-                                            Cerrar
+                                            Cancelar
                                         </button>
                                         <button
-                                            onClick={handleSaveAttention}
+                                            onClick={handleCompleteAttention}
                                             disabled={isSavingAttention}
-                                            className="flex-1 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-black rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-lg cursor-pointer"
+                                            className="flex-1 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-black rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-lg cursor-pointer"
                                         >
-                                            {isSavingAttention ? <Loader2 size={13} className="animate-spin" /> : <CheckCircle2 size={13} />}
-                                            <span>Guardar Estado de Atención</span>
+                                            {isSavingAttention ? <Loader2 size={13} className="animate-spin" /> : <Check size={13} />}
+                                            <span>Guardar en el ERP</span>
                                         </button>
                                     </div>
                                 </div>
@@ -863,194 +1004,46 @@ export default function VirtualOfficeWorkspace({ currentModule = "ventas", sessi
             </AnimatePresence>
 
             {/* ─────────────────────────────────────────────────────────────────
-                MODAL 2: DETALLES DE UN COLABORADOR (AVATAR REALISTA & ACCIONES)
+                MODAL 3: COFRE DE PERGAMINOS (IMPRESORA DE COTIZACIONES)
             ───────────────────────────────────────────────────────────────── */}
             <AnimatePresence>
-                {selectedMember && (
+                {activeModal === "impresora" && (
                     <>
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                            className="fixed inset-0 bg-black/80 backdrop-blur-md z-[120]" onClick={() => setSelectedMember(null)} />
-                        <motion.div initial={{ opacity: 0, scale: 0.93 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.93 }}
-                            className="fixed inset-0 z-[130] flex items-center justify-center p-4">
-                            <div className="bg-[#0c101d] border border-slate-700 rounded-3xl p-6 shadow-2xl max-w-sm w-full space-y-4">
-                                <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                                    <div className="flex items-center gap-3">
-                                        <RealisticAvatar type={selectedMember.avatarType} size={48} status={selectedMember.status} />
-                                        <div>
-                                            <h3 className="text-xs font-black text-white uppercase">{selectedMember.name}</h3>
-                                            <p className="text-[9px] font-mono text-emerald-400">{selectedMember.role}</p>
-                                            <p className="text-[8px] font-mono text-slate-400">{selectedMember.department}</p>
-                                        </div>
-                                    </div>
-                                    <button onClick={() => setSelectedMember(null)} className="text-slate-400 hover:text-white p-1">
-                                        <X size={15} />
-                                    </button>
-                                </div>
-
-                                <div className="space-y-2">
-                                    <div className="p-2.5 bg-slate-900 border border-slate-800 rounded-xl text-xs space-y-1">
-                                        <span className="text-[9px] font-mono text-slate-400 block uppercase">Estado en Puesto de Ventas</span>
-                                        <p className="text-slate-200 font-medium">"{selectedMember.deskNote}"</p>
-                                    </div>
-
-                                    {/* Iniciar WhatsApp */}
-                                    <button
-                                        onClick={() => window.open(getWAUrl(selectedMember.phone, `Hola ${selectedMember.name}, me comunico contigo desde el piso de ventas de ATOMIC.`), "_blank")}
-                                        className="w-full py-2.5 px-3 bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/40 text-emerald-300 font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-all cursor-pointer"
-                                    >
-                                        <Phone size={13} />
-                                        <span>Llamar / Chat WhatsApp ({selectedMember.phone})</span>
-                                    </button>
-
-                                    {/* Programar Reunión */}
-                                    <button
-                                        onClick={() => {
-                                            setActiveDept("reuniones")
-                                            setSelectedMember(null)
-                                        }}
-                                        className="w-full py-2.5 px-3 bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/40 text-indigo-300 font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-all cursor-pointer"
-                                    >
-                                        <Calendar size={13} />
-                                        <span>Convocar a Sala de Reuniones</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </motion.div>
-                    </>
-                )}
-            </AnimatePresence>
-
-            {/* ─────────────────────────────────────────────────────────────────
-                MODAL 3: FICHA DE PERFIL INSISTENTE (Cada 30 min)
-            ───────────────────────────────────────────────────────────────── */}
-            <AnimatePresence>
-                {showProfilePrompt && (
-                    <>
-                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                            className="fixed inset-0 bg-black/85 backdrop-blur-md z-[120]" onClick={() => setShowProfilePrompt(false)} />
+                            className="fixed inset-0 bg-black/80 backdrop-blur-md z-[120]" onClick={() => setActiveModal(null)} />
                         <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
                             className="fixed inset-0 z-[130] flex items-center justify-center p-4">
-                            <div className="bg-[#0b0f1a] border-2 border-blue-500/50 rounded-3xl p-6 shadow-2xl max-w-lg w-full space-y-4">
+                            <div className="bg-[#0b101f] border-2 border-cyan-500/50 rounded-3xl p-6 shadow-2xl max-w-md w-full space-y-4">
                                 <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                                    <div className="flex items-center gap-3">
-                                        <RealisticAvatar type="supervisor" size={40} showBadge={false} />
+                                    <div className="flex items-center gap-2.5">
+                                        <span className="text-2xl">🖨️</span>
                                         <div>
-                                            <h3 className="text-sm font-black text-white uppercase tracking-wider">REGISTRO DE DATOS DEL PERFIL</h3>
-                                            <p className="text-[10px] font-mono text-blue-400">Insistente cada 30 min • Piso de Ventas ATOMIC</p>
+                                            <h3 className="text-sm font-black text-white uppercase tracking-wider font-serif">COFRE DE PERGAMINOS FORMALES</h3>
+                                            <p className="text-[10px] font-mono text-cyan-400">Emisión de Propuestas Unificadas en PDF</p>
                                         </div>
                                     </div>
-                                    <button onClick={() => setShowProfilePrompt(false)} className="text-slate-400 hover:text-white p-1">
+                                    <button onClick={() => setActiveModal(null)} className="text-slate-400 hover:text-white p-1">
                                         <X size={16} />
                                     </button>
                                 </div>
 
-                                <div className="space-y-3 max-h-[60vh] overflow-y-auto custom-scrollbar pr-1">
-                                    <div className="grid grid-cols-2 gap-2.5">
-                                        <div>
-                                            <label className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest block mb-1">Nombres y Apellidos *</label>
-                                            <input
-                                                value={profileName}
-                                                onChange={e => setProfileName(e.target.value)}
-                                                placeholder="Tu nombre completo..."
-                                                className="w-full bg-slate-900 border border-slate-700 text-white p-2.5 rounded-xl text-xs font-bold outline-none focus:border-blue-500"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest block mb-1">Teléfono Celular *</label>
-                                            <input
-                                                value={profilePhone}
-                                                onChange={e => setProfilePhone(e.target.value)}
-                                                placeholder="+593 9..."
-                                                className="w-full bg-slate-900 border border-slate-700 text-white p-2.5 rounded-xl text-xs font-mono outline-none focus:border-blue-500"
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div className="grid grid-cols-2 gap-2.5">
-                                        <div>
-                                            <label className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest block mb-1">¿Disponibilidad de Computadora? *</label>
-                                            <div className="grid grid-cols-2 gap-1.5">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setProfileHasPC(true)}
-                                                    className={`py-2 rounded-xl text-xs font-bold border transition-all ${
-                                                        profileHasPC ? "bg-emerald-500/20 border-emerald-500 text-emerald-300" : "bg-slate-900 border-slate-700 text-slate-400"
-                                                    }`}
-                                                >
-                                                    💻 SÍ
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setProfileHasPC(false)}
-                                                    className={`py-2 rounded-xl text-xs font-bold border transition-all ${
-                                                        !profileHasPC ? "bg-rose-500/20 border-rose-500 text-rose-300" : "bg-slate-900 border-slate-700 text-slate-400"
-                                                    }`}
-                                                >
-                                                    ❌ NO
-                                                </button>
+                                <div className="space-y-2.5 max-h-72 overflow-y-auto custom-scrollbar pr-1">
+                                    {printerQuotes.map(q => (
+                                        <div key={q.id} className="p-3 bg-slate-900 border border-slate-800 rounded-2xl space-y-2">
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-[9px] font-mono text-cyan-300 font-bold bg-cyan-500/10 px-2 py-0.5 rounded">{q.quoteNumber}</span>
+                                                <span className="text-emerald-400 font-black">${q.total?.toFixed(2)}</span>
                                             </div>
+                                            <p className="text-[11px] font-bold text-white truncate">{q.clientName}</p>
+                                            <button
+                                                onClick={() => handleDownloadProposal(q)}
+                                                className="w-full py-1.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-xl text-[10px] font-black uppercase flex items-center justify-center gap-1.5 cursor-pointer shadow"
+                                            >
+                                                <Scroll size={12} />
+                                                <span>Imprimir / Descargar Propuesta PDF</span>
+                                            </button>
                                         </div>
-                                        <div>
-                                            <label className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest block mb-1">Ciudad de Residencia</label>
-                                            <input
-                                                value={profileCity}
-                                                onChange={e => setProfileCity(e.target.value)}
-                                                placeholder="Quito, Guayaquil, etc..."
-                                                className="w-full bg-slate-900 border border-slate-700 text-white p-2.5 rounded-xl text-xs outline-none focus:border-blue-500"
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <label className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest block mb-1">Horario Disponible en Ventas</label>
-                                        <input
-                                            value={profileSchedule}
-                                            onChange={e => setProfileSchedule(e.target.value)}
-                                            placeholder="08:00 - 17:00 / Horario Completo..."
-                                            className="w-full bg-slate-900 border border-slate-700 text-white p-2.5 rounded-xl text-xs outline-none focus:border-blue-500"
-                                        />
-                                    </div>
-
-                                    <div className="p-3 bg-slate-900 border border-slate-800 rounded-2xl space-y-2">
-                                        <div className="flex items-center gap-2 cursor-pointer" onClick={() => setProfileHasResume(!profileHasResume)}>
-                                            <div className={`w-4 h-4 rounded border flex items-center justify-center transition-all ${
-                                                profileHasResume ? "bg-blue-500 border-blue-500" : "border-slate-600"
-                                            }`}>
-                                                {profileHasResume && <Check size={10} className="text-white" />}
-                                            </div>
-                                            <span className="text-xs font-bold text-slate-200">Adjuntar Hoja de Vida (Opcional)</span>
-                                        </div>
-
-                                        {profileHasResume && (
-                                            <input
-                                                value={profileResumeUrl}
-                                                onChange={e => setProfileResumeUrl(e.target.value)}
-                                                placeholder="Enlace a tu CV en Drive o PDF..."
-                                                className="w-full bg-slate-950 border border-slate-700 text-white p-2 rounded-xl text-xs font-mono outline-none"
-                                            />
-                                        )}
-                                    </div>
-                                </div>
-
-                                <div className="flex items-center justify-between gap-3 pt-2 border-t border-slate-800">
-                                    <button
-                                        onClick={() => {
-                                            localStorage.setItem("atomic_profile_prompt_ts", Date.now().toString())
-                                            setShowProfilePrompt(false)
-                                        }}
-                                        className="px-4 py-2.5 text-xs text-slate-400 hover:text-white font-mono"
-                                    >
-                                        Recordarme en 30 min
-                                    </button>
-
-                                    <button
-                                        onClick={handleSaveProfile}
-                                        disabled={!profileName.trim() || isSavingProfile}
-                                        className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black rounded-xl text-xs uppercase tracking-wider flex items-center gap-2 shadow-lg cursor-pointer disabled:opacity-50"
-                                    >
-                                        {isSavingProfile ? <Loader2 size={13} className="animate-spin" /> : <Check size={13} />}
-                                        <span>Guardar en el Sistema</span>
-                                    </button>
+                                    ))}
                                 </div>
                             </div>
                         </motion.div>
@@ -1059,61 +1052,51 @@ export default function VirtualOfficeWorkspace({ currentModule = "ventas", sessi
             </AnimatePresence>
 
             {/* ─────────────────────────────────────────────────────────────────
-                MODAL 4: PERSONALIZACIÓN DE AVATAR (ESTILO CARLOS)
+                MODAL 4: ORÁCULO DE SABIDURÍA (CONSEJERO IA)
             ───────────────────────────────────────────────────────────────── */}
             <AnimatePresence>
-                {showAvatarModal && (
+                {activeModal === "oraculo" && (
                     <>
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                            className="fixed inset-0 bg-black/85 backdrop-blur-md z-[120]" onClick={() => setShowAvatarModal(false)} />
+                            className="fixed inset-0 bg-black/80 backdrop-blur-md z-[120]" onClick={() => setActiveModal(null)} />
                         <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
                             className="fixed inset-0 z-[130] flex items-center justify-center p-4">
-                            <div className="bg-[#0b0f1a] border border-cyan-500/40 rounded-3xl p-6 shadow-2xl max-w-sm w-full space-y-4">
+                            <div className="bg-[#0b141d] border-2 border-teal-500/50 rounded-3xl p-6 shadow-2xl max-w-md w-full space-y-4">
                                 <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                                    <div className="flex items-center gap-3">
-                                        <RealisticAvatar type={myAvatarType} size={44} showBadge={false} />
+                                    <div className="flex items-center gap-2.5">
+                                        <span className="text-2xl">🔮</span>
                                         <div>
-                                            <h3 className="text-xs font-black text-white uppercase tracking-wider">Tu Avatar Realista</h3>
-                                            <p className="text-[9px] font-mono text-cyan-400">Identidad en el piso de ventas</p>
+                                            <h3 className="text-sm font-black text-white uppercase tracking-wider font-serif">ORÁCULO ARCANO DE ATOMIC</h3>
+                                            <p className="text-[10px] font-mono text-teal-400">Sabiduría Comercial & Planes de Crecimiento</p>
                                         </div>
                                     </div>
-                                    <button onClick={() => setShowAvatarModal(false)} className="text-slate-400 hover:text-white p-1">
-                                        <X size={15} />
+                                    <button onClick={() => setActiveModal(null)} className="text-slate-400 hover:text-white p-1">
+                                        <X size={16} />
                                     </button>
                                 </div>
 
-                                <div className="space-y-3">
-                                    <div>
-                                        <label className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest block mb-1.5">Seleccionar Tipo de Personaje</label>
-                                        <div className="grid grid-cols-2 gap-2">
-                                            {[
-                                                { id: "carlos", label: "Carlos (Ejecutivo VIP)", type: "carlos" as const },
-                                                { id: "ceo", label: "Dirección (CEO)", type: "ceo" as const },
-                                                { id: "ventas", label: "Asesora Comercial", type: "ventas" as const },
-                                                { id: "coordinador", label: "Coordinador", type: "coordinador" as const },
-                                                { id: "supervisor", label: "Supervisor QC", type: "supervisor" as const },
-                                                { id: "edicion", label: "Multimedia 4K", type: "edicion" as const }
-                                            ].map(av => (
-                                                <button
-                                                    key={av.id}
-                                                    onClick={() => setMyAvatarType(av.type)}
-                                                    className={`p-2 rounded-xl text-left border flex items-center gap-2 transition-all ${
-                                                        myAvatarType === av.type ? "bg-cyan-500/20 border-cyan-500 text-cyan-200" : "bg-slate-900 border-slate-800 text-slate-400"
-                                                    }`}
-                                                >
-                                                    <RealisticAvatar type={av.type} size={28} showBadge={false} />
-                                                    <span className="text-[10px] font-bold leading-tight">{av.label}</span>
-                                                </button>
-                                            ))}
+                                <div className="space-y-2 max-h-64 overflow-y-auto custom-scrollbar pr-1 text-xs">
+                                    {oracleReplies.map((m, idx) => (
+                                        <div key={idx} className={`p-3 rounded-2xl ${m.sender === "user" ? "bg-teal-600/30 text-teal-100 ml-6" : "bg-slate-900 border border-slate-800 text-slate-200 mr-6"}`}>
+                                            {m.text}
                                         </div>
-                                    </div>
+                                    ))}
+                                </div>
 
+                                <div className="flex gap-2">
+                                    <input
+                                        value={oracleQuery}
+                                        onChange={e => setOracleQuery(e.target.value)}
+                                        onKeyDown={e => e.key === "Enter" && handleAskOracle()}
+                                        placeholder="Consulta al Oráculo..."
+                                        className="flex-1 bg-slate-900 border border-slate-700 text-white rounded-xl px-3 py-2 text-xs outline-none focus:border-teal-400"
+                                    />
                                     <button
-                                        onClick={() => setShowAvatarModal(false)}
-                                        className="w-full py-2.5 bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-black rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-lg cursor-pointer"
+                                        onClick={handleAskOracle}
+                                        disabled={isOracleLoading}
+                                        className="px-3 py-2 bg-teal-600 hover:bg-teal-500 text-white rounded-xl text-xs font-bold"
                                     >
-                                        <Check size={13} />
-                                        <span>Guardar Avatar Realista</span>
+                                        <Send size={13} />
                                     </button>
                                 </div>
                             </div>
@@ -1123,64 +1106,124 @@ export default function VirtualOfficeWorkspace({ currentModule = "ventas", sessi
             </AnimatePresence>
 
             {/* ─────────────────────────────────────────────────────────────────
-                PANEL DESLIZANTE PARA DETALLES DE CADA SALA / DEPARTAMENTO
+                MODAL 5: TABLÓN DE EDICTOS & CARTELERA
             ───────────────────────────────────────────────────────────────── */}
             <AnimatePresence>
-                {activeDept && (
-                    <motion.div
-                        initial={{ opacity: 0, x: 60 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: 60 }}
-                        transition={{ type: "spring", damping: 24, stiffness: 220 }}
-                        className="absolute top-3 right-3 w-92 max-w-[94vw] bg-[#090d1a]/98 border border-slate-700 rounded-3xl shadow-2xl backdrop-blur-2xl z-50 overflow-hidden flex flex-col max-h-[calc(100%-1.5rem)]"
-                    >
-                        {/* Header */}
-                        <div className="flex items-center justify-between px-4 py-3 border-b border-slate-800 bg-slate-950">
-                            <div className="flex items-center gap-2">
-                                <span className="text-lg">
-                                    {activeDept === "visitas" ? "🛎️" : activeDept === "reuniones" ? "🤝" : activeDept === "ceo" ? "👑" : activeDept === "printer" ? "🖨️" : activeDept === "counseling" ? "🧠" : "🏢"}
-                                </span>
-                                <div>
-                                    <h4 className="text-xs font-black text-white uppercase">
-                                        {activeDept === "visitas" ? "Sala de Visitas & Citas" : activeDept === "reuniones" ? "Sala de Reuniones Ejecutiva" : activeDept === "ceo" ? "Despacho Presidencial CEO" : activeDept === "printer" ? "Impresora de Cotizaciones" : activeDept === "counseling" ? "Consejero IA" : "Departamento Comercial"}
-                                    </h4>
-                                    <p className="text-[9px] font-mono text-slate-400">Piso de Ventas ATOMIC</p>
+                {activeModal === "cartelera" && (
+                    <>
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                            className="fixed inset-0 bg-black/80 backdrop-blur-md z-[120]" onClick={() => setActiveModal(null)} />
+                        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
+                            className="fixed inset-0 z-[130] flex items-center justify-center p-4">
+                            <div className="bg-[#111626] border-2 border-amber-500/60 rounded-3xl p-6 shadow-2xl max-w-lg w-full space-y-4">
+                                <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                                    <div className="flex items-center gap-2.5">
+                                        <span className="text-2xl">📌</span>
+                                        <div>
+                                            <h3 className="text-sm font-black text-white uppercase tracking-wider font-serif">TABLÓN DE EDICTOS DEL GREMIO</h3>
+                                            <p className="text-[10px] font-mono text-amber-400">Cartelera General de Noticias & Metas</p>
+                                        </div>
+                                    </div>
+                                    <button onClick={() => setActiveModal(null)} className="text-slate-400 hover:text-white p-1">
+                                        <X size={16} />
+                                    </button>
+                                </div>
+
+                                <div className="space-y-2.5 max-h-72 overflow-y-auto custom-scrollbar pr-1">
+                                    {carteleraNotes.map(n => (
+                                        <div key={n.id} className="p-3 bg-slate-950 border border-amber-500/30 rounded-2xl space-y-1 relative group">
+                                            <div className="flex items-center justify-between text-[10px]">
+                                                <span className="font-bold text-amber-300 font-serif">{n.title}</span>
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-slate-500 font-mono">{n.time}</span>
+                                                    <button
+                                                        onClick={() => setCarteleraNotes(prev => prev.filter(x => x.id !== n.id))}
+                                                        className="text-slate-600 hover:text-rose-400 transition-colors"
+                                                        title="Eliminar Edicto"
+                                                    >
+                                                        <Trash2 size={12} />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <p className="text-xs text-slate-200">{n.message}</p>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div className="p-3 bg-slate-900 border border-slate-800 rounded-2xl space-y-2">
+                                    <input
+                                        value={newNoteTitle}
+                                        onChange={e => setNewNoteTitle(e.target.value)}
+                                        placeholder="Título del nuevo edicto..."
+                                        className="w-full bg-slate-950 border border-slate-700 text-white rounded-xl p-2 text-xs outline-none focus:border-amber-400"
+                                    />
+                                    <textarea
+                                        rows={2}
+                                        value={newNoteMessage}
+                                        onChange={e => setNewNoteMessage(e.target.value)}
+                                        placeholder="Contenido del anuncio..."
+                                        className="w-full bg-slate-950 border border-slate-700 text-white rounded-xl p-2 text-xs outline-none focus:border-amber-400 resize-none"
+                                    />
+                                    <button
+                                        onClick={() => {
+                                            if (!newNoteMessage.trim()) return
+                                            setCarteleraNotes(prev => [{
+                                                id: Date.now().toString(),
+                                                title: newNoteTitle || "Aviso Oficial",
+                                                message: newNoteMessage,
+                                                time: "Justo ahora"
+                                            }, ...prev])
+                                            setNewNoteTitle("")
+                                            setNewNoteMessage("")
+                                        }}
+                                        className="w-full py-2 bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 font-black rounded-xl text-xs uppercase"
+                                    >
+                                        Fijar Edicto en el Tablón
+                                    </button>
                                 </div>
                             </div>
-                            <button onClick={() => setActiveDept(null)} className="p-1 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white">
-                                <X size={15} />
-                            </button>
-                        </div>
+                        </motion.div>
+                    </>
+                )}
+            </AnimatePresence>
 
-                        {/* Contenido según el departamento */}
-                        <div className="p-4 overflow-y-auto custom-scrollbar space-y-3 flex-1 text-xs">
-                            
-                            {/* SALA DE VISITAS */}
-                            {activeDept === "visitas" && (
+            {/* ─────────────────────────────────────────────────────────────────
+                MODAL 6: AGENDAR NUEVA CITA CON EMISARIO
+            ───────────────────────────────────────────────────────────────── */}
+            <AnimatePresence>
+                {activeModal === "nueva_cita" && (
+                    <>
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                            className="fixed inset-0 bg-black/80 backdrop-blur-md z-[120]" onClick={() => setActiveModal(null)} />
+                        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
+                            className="fixed inset-0 z-[130] flex items-center justify-center p-4">
+                            <div className="bg-[#0b101f] border-2 border-amber-500/50 rounded-3xl p-6 shadow-2xl max-w-md w-full space-y-4">
+                                <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                                    <h3 className="text-sm font-black text-white uppercase tracking-wider font-serif">AGENDAR NUEVA CITA DE CLIENTE</h3>
+                                    <button onClick={() => setActiveModal(null)} className="text-slate-400 hover:text-white p-1">
+                                        <X size={16} />
+                                    </button>
+                                </div>
+
                                 <div className="space-y-3">
-                                    <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-2xl">
-                                        <p className="font-bold text-amber-300 mb-1">🛎️ Adjuntar Cita Concretada</p>
-                                        <p className="text-[10px] text-slate-400">Registra una visita para que el cliente aparezca esperando en recepción con notificación instantánea al equipo.</p>
-                                    </div>
-
                                     <input
                                         value={newClientName}
                                         onChange={e => setNewClientName(e.target.value)}
-                                        placeholder="Nombre del cliente..."
-                                        className="w-full bg-slate-900 border border-slate-700 text-white p-2.5 rounded-xl text-xs outline-none focus:border-amber-500"
+                                        placeholder="Nombre del Cliente..."
+                                        className="w-full bg-slate-900 border border-slate-700 text-white rounded-xl p-2.5 text-xs outline-none focus:border-amber-400"
                                     />
                                     <div className="grid grid-cols-2 gap-2">
                                         <input
                                             type="time"
                                             value={newClientTime}
                                             onChange={e => setNewClientTime(e.target.value)}
-                                            className="w-full bg-slate-900 border border-slate-700 text-white p-2 rounded-xl text-xs font-mono outline-none"
+                                            className="w-full bg-slate-900 border border-slate-700 text-white rounded-xl p-2 text-xs font-mono outline-none"
                                         />
                                         <input
                                             value={newClientPhone}
                                             onChange={e => setNewClientPhone(e.target.value)}
                                             placeholder="Celular..."
-                                            className="w-full bg-slate-900 border border-slate-700 text-white p-2 rounded-xl text-xs font-mono outline-none"
+                                            className="w-full bg-slate-900 border border-slate-700 text-white rounded-xl p-2 text-xs font-mono outline-none"
                                         />
                                     </div>
                                     <textarea
@@ -1188,80 +1231,36 @@ export default function VirtualOfficeWorkspace({ currentModule = "ventas", sessi
                                         value={newClientPurpose}
                                         onChange={e => setNewClientPurpose(e.target.value)}
                                         placeholder="Motivo de la cita..."
-                                        className="w-full bg-slate-900 border border-slate-700 text-white p-2 rounded-xl text-xs outline-none resize-none"
+                                        className="w-full bg-slate-900 border border-slate-700 text-white rounded-xl p-2 text-xs outline-none resize-none"
                                     />
-
                                     <button
-                                        onClick={handleCreateAppointment}
-                                        disabled={!newClientName.trim() || isCreatingApt}
-                                        className="w-full py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 text-black font-black rounded-xl text-xs uppercase cursor-pointer"
-                                    >
-                                        {isCreatingApt ? "Guardando..." : "Guardar Cita & Notificar"}
-                                    </button>
-
-                                    <button
-                                        onClick={() => {
-                                            const txt = `🔔 *CITA CONCRETADA EN OFICINA*\nCliente: ${newClientName || "Carlos Mendoza"}\nHora: ${newClientTime}\nMotivo: ${newClientPurpose || "Consulta de sistemas"}`
-                                            window.open(getWAUrl(defaultWhatsApp, txt), "_blank")
+                                        onClick={async () => {
+                                            if (!newClientName.trim()) return
+                                            await fetch("/api/supervision/appointments", {
+                                                method: "POST",
+                                                headers: { "Content-Type": "application/json" },
+                                                body: JSON.stringify({
+                                                    action: "CREATE_APPOINTMENT",
+                                                    payload: {
+                                                        clientName: newClientName,
+                                                        scheduledTime: newClientTime,
+                                                        scheduledDate: new Date().toISOString().split("T")[0],
+                                                        purpose: newClientPurpose,
+                                                        phone: newClientPhone
+                                                    }
+                                                })
+                                            })
+                                            alert("🔔 Cita registrada exitosamente con aviso a todo el equipo.")
+                                            setActiveModal(null)
                                         }}
-                                        className="w-full py-2 bg-emerald-600/20 border border-emerald-500/40 text-emerald-300 font-bold rounded-xl text-xs flex items-center justify-center gap-2"
+                                        className="w-full py-2.5 bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 font-black rounded-xl text-xs uppercase cursor-pointer"
                                     >
-                                        <Phone size={12} />
-                                        <span>Notificar a Coordinación por WhatsApp</span>
+                                        Registrar Cita & Enviar Campanazo
                                     </button>
                                 </div>
-                            )}
-
-                            {/* IMPRESORA */}
-                            {activeDept === "printer" && (
-                                <div className="space-y-3">
-                                    <p className="text-[10px] font-mono text-slate-400 uppercase tracking-widest">Cotizaciones Recientes</p>
-                                    {printerQuotes.map(q => (
-                                        <div key={q.id} className="p-3 bg-slate-900 border border-slate-800 rounded-2xl space-y-2">
-                                            <div className="flex items-center justify-between">
-                                                <span className="text-[9px] font-mono text-cyan-300 font-bold bg-cyan-500/10 px-2 py-0.5 rounded">{q.quoteNumber}</span>
-                                                <span className="text-emerald-400 font-black">${q.total?.toFixed(2)}</span>
-                                            </div>
-                                            <p className="text-[10px] font-bold text-white truncate">{q.clientName}</p>
-                                            <button
-                                                onClick={() => handleDownloadFromPrinter(q)}
-                                                className="w-full py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-[10px] font-bold flex items-center justify-center gap-1.5"
-                                            >
-                                                <Printer size={11} />
-                                                <span>Imprimir Propuesta PDF</span>
-                                            </button>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-
-                            {/* CONSEJERO IA */}
-                            {activeDept === "counseling" && (
-                                <div className="space-y-3 flex flex-col h-full">
-                                    <div className="space-y-2 max-h-72 overflow-y-auto custom-scrollbar pr-1">
-                                        {counselorMsgs.map((m, i) => (
-                                            <div key={i} className={`p-2.5 rounded-2xl text-xs ${m.sender === "user" ? "bg-teal-600/30 text-teal-100 ml-6" : "bg-slate-900 text-slate-200 mr-6 border border-slate-800"}`}>
-                                                {m.text}
-                                            </div>
-                                        ))}
-                                    </div>
-                                    <div className="flex gap-2">
-                                        <input
-                                            value={counselorInput}
-                                            onChange={e => setCounselorInput(e.target.value)}
-                                            onKeyDown={e => e.key === "Enter" && handleSendCounselor()}
-                                            placeholder="Escribe tu consulta..."
-                                            className="flex-1 bg-slate-900 border border-slate-700 text-white p-2 rounded-xl text-xs outline-none"
-                                        />
-                                        <button onClick={handleSendCounselor} className="p-2 bg-teal-600 text-white rounded-xl">
-                                            <Send size={13} />
-                                        </button>
-                                    </div>
-                                </div>
-                            )}
-
-                        </div>
-                    </motion.div>
+                            </div>
+                        </motion.div>
+                    </>
                 )}
             </AnimatePresence>
 
