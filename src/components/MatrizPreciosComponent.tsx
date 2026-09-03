@@ -864,49 +864,45 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
                 : 'MATRIZ GENERAL DE PRODUCTOS · EDICIÓN DIRECTA DE CATEGORÍAS, STOCK, COSTOS Y PRECIOS EN TIEMPO REAL')}
             </p>
 
-            {/* SELECTOR DUAL UNIFICADO Y CONDICIONANTE (ADMIN / VENDEDORES) */}
-            <div className="inline-flex items-center gap-2 p-1.5 bg-zinc-950 border-2 border-cyan-400/80 rounded-xl shadow-xl">
-              <button
-                type="button"
-                onClick={() => {
-                  if (isStaff) {
+            {/* SELECTOR DUAL EXCLUSIVO DEL PERFIL ADMIN / COORDINACIÓN */}
+            {isStaff && (
+              <div className="inline-flex items-center gap-2 p-1.5 bg-zinc-950 border-2 border-cyan-400/80 rounded-xl shadow-xl">
+                <button
+                  type="button"
+                  onClick={() => {
                     setDualMode('admin');
                     setIsEditMode(true);
                     showNotification('👑 Vista cambiada a: MATRIZ ADMIN (Costos, ROI y Edición)');
-                  } else {
-                    setLoginError('🔒 Acceso restringido: Inicia sesión con una cuenta de Administración o Coordinación para acceder a Costos, ROI y Edición.');
-                    setShowLoginModal(true);
-                  }
-                }}
-                className={`px-4 py-2 text-xs font-black uppercase tracking-wider rounded-lg transition-all flex items-center gap-2 cursor-pointer ${
-                  !effectiveVendedorMode
-                    ? 'bg-gradient-to-r from-amber-400 to-orange-500 text-zinc-950 shadow-md ring-2 ring-white/40 font-black'
-                    : 'text-zinc-400 hover:text-white hover:bg-zinc-900'
-                }`}
-                title={isStaff ? 'Ver matriz de costos internos, ROI y edición' : 'Requiere iniciar sesión como Administrador o Coordinador'}
-              >
-                <span>👑</span>
-                <span>Vista Admin (Costos & ROI)</span>
-                {!isStaff && <span className="text-[10px] opacity-70">🔒</span>}
-              </button>
+                  }}
+                  className={`px-4 py-2 text-xs font-black uppercase tracking-wider rounded-lg transition-all flex items-center gap-2 cursor-pointer ${
+                    !effectiveVendedorMode
+                      ? 'bg-gradient-to-r from-amber-400 to-orange-500 text-zinc-950 shadow-md ring-2 ring-white/40 font-black'
+                      : 'text-zinc-400 hover:text-white hover:bg-zinc-900'
+                  }`}
+                  title="Ver matriz de costos internos, ROI y edición"
+                >
+                  <span>👑</span>
+                  <span>Vista Admin (Costos & ROI)</span>
+                </button>
 
-              <button
-                type="button"
-                onClick={() => {
-                  setDualMode('vendedor');
-                  setIsEditMode(false);
-                  showNotification('🛒 Vista cambiada a: MATRIZ VENDEDORES (PVP y Cotizador)');
-                }}
-                className={`px-4 py-2 text-xs font-black uppercase tracking-wider rounded-lg transition-all flex items-center gap-2 cursor-pointer ${
-                  effectiveVendedorMode
-                    ? 'bg-gradient-to-r from-emerald-400 to-teal-500 text-zinc-950 shadow-md ring-2 ring-white/40 font-black'
-                    : 'text-zinc-400 hover:text-white hover:bg-zinc-900'
-                }`}
-              >
-                <span>🛒</span>
-                <span>Vista Vendedores (PVP)</span>
-              </button>
-            </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDualMode('vendedor');
+                    setIsEditMode(false);
+                    showNotification('🛒 Vista cambiada a: MATRIZ VENDEDORES (PVP y Cotizador)');
+                  }}
+                  className={`px-4 py-2 text-xs font-black uppercase tracking-wider rounded-lg transition-all flex items-center gap-2 cursor-pointer ${
+                    effectiveVendedorMode
+                      ? 'bg-gradient-to-r from-emerald-400 to-teal-500 text-zinc-950 shadow-md ring-2 ring-white/40 font-black'
+                      : 'text-zinc-400 hover:text-white hover:bg-zinc-900'
+                  }`}
+                >
+                  <span>🛒</span>
+                  <span>Vista Vendedores (PVP)</span>
+                </button>
+              </div>
+            )}
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
