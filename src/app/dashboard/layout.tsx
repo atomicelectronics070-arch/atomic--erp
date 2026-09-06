@@ -3,9 +3,15 @@
 import { useSession } from "next-auth/react"
 import { useRouter, usePathname } from "next/navigation"
 import Link from "next/link"
-import { Home, Users, FileText, Settings, LogOut, CheckSquare, Sun, Moon, LayoutDashboard, Tag, Database, MessageSquare, ExternalLink, ShoppingBag, Menu, X, Calendar, Edit3, Mail, BrainCircuit, Bot, Globe, BarChart3, GraduationCap, Code2, User, Smartphone, Share2, Map, Layers, DollarSign, ShieldCheck, FileSpreadsheet, Table } from "lucide-react"
+import {
+    Home, Users, FileText, Settings, LogOut, CheckSquare,
+    LayoutDashboard, Tag, Database, MessageSquare, ExternalLink,
+    ShoppingBag, Menu, X, Calendar, Edit3, Mail, BrainCircuit,
+    Bot, Globe, BarChart3, GraduationCap, Code2, User, Smartphone,
+    Share2, Map, Layers, DollarSign, ShieldCheck, FileSpreadsheet,
+    Table, Bell, Lock, Hexagon, ChevronDown, Sparkles
+} from "lucide-react"
 import { useState, useEffect } from "react"
-import { ChevronDown, ChevronRight } from "lucide-react"
 import NotificationBell from "@/components/NotificationBell"
 import PersonalBotBubble from "@/components/PersonalBotBubble"
 import { motion, AnimatePresence } from "framer-motion"
@@ -68,16 +74,17 @@ export default function DashboardLayout({
 
     if (status === "loading" || !session) {
         return (
-            <div className="h-screen w-screen flex flex-col items-center justify-center bg-slate-950 gap-8 relative overflow-hidden">
-                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-slate-950 z-0"></div>
+            <div className="h-screen w-screen flex flex-col items-center justify-center bg-[#070a14] gap-8 relative overflow-hidden">
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-950/30 via-[#070a14] to-[#070a14] z-0"></div>
                 <div className="relative z-10">
-                    <div className="w-32 h-32 border border-cyan-500/30 rounded-full animate-[spin_3s_linear_infinite] shadow-[0_0_15px_rgba(6,182,212,0.3)]"></div>
+                    <div className="w-28 h-28 border border-cyan-500/30 rounded-full animate-[spin_3s_linear_infinite] shadow-[0_0_25px_rgba(6,182,212,0.3)]"></div>
                     <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-16 h-16 border-2 border-indigo-500 rounded-full animate-[spin_1.5s_linear_infinite_reverse] shadow-[0_0_20px_rgba(99,102,241,0.5)]"></div>
+                        <div className="w-14 h-14 border-2 border-indigo-500 rounded-full animate-[spin_1.5s_linear_infinite_reverse] shadow-[0_0_20px_rgba(99,102,241,0.5)]"></div>
                     </div>
                 </div>
-                <div className="flex flex-col items-center gap-2 z-10">
-                    <div className="font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-500 uppercase tracking-[0.5em] animate-pulse text-[10px] italic drop-shadow-[0_0_10px_rgba(6,182,212,0.5)]">Sincronización Operativa</div>
+                <div className="flex flex-col items-center gap-2 z-10 font-sans">
+                    <span className="text-white/90 text-sm tracking-[2px] font-normal">atomic.ai</span>
+                    <span className="text-cyan-400/80 text-[10px] tracking-widest font-mono uppercase">Cargando Ecosistema...</span>
                 </div>
             </div>
         )
@@ -86,171 +93,198 @@ export default function DashboardLayout({
     const role = session.user?.role
 
     return (
-        <div className="flex h-screen bg-slate-950 text-slate-200 overflow-x-hidden font-sans relative selection:bg-cyan-500/30 selection:text-white">
+        <div className="flex h-screen bg-[#070a14] text-white/95 overflow-hidden font-sans relative selection:bg-cyan-500/30 selection:text-white">
             
-            <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-900/20 via-slate-950 to-slate-950 pointer-events-none z-0"></div>
+            {/* Background Ambient Depth */}
+            <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-950/25 via-[#070a14] to-[#070a14] pointer-events-none z-0"></div>
             
-            {/* Sidebar Overlay for Mobile */}
+            {/* Mobile Overlay */}
             <AnimatePresence>
                 {sidebarOpen && (
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="fixed inset-0 bg-[black]/40 backdrop-blur-sm z-30 lg:hidden"
+                        className="fixed inset-0 bg-black/60 backdrop-blur-md z-40 lg:hidden"
                         onClick={() => setSidebarOpen(false)}
                     />
                 )}
             </AnimatePresence>
 
-            {/* Floating Personal AI Bot Bubble with Memory */}
+            {/* Floating Personal AI Bot Bubble */}
             <PersonalBotBubble />
 
-            {/* Sidebar - Executive White/Navy */}
+            {/* ═══════════════════════════════════════════════════════════
+                AI GLASS FLOATING SIDEBAR (QUBE.AI / FIGMA STYLE)
+            ═══════════════════════════════════════════════════════════ */}
             <aside className={`
-                fixed inset-y-0 left-0 w-64 flex flex-col bg-slate-900/80 backdrop-blur-xl border-r border-slate-800 z-40
-                transition-transform duration-500 ease-out shadow-[4px_0_24px_rgba(0,0,0,0.5)]
-                ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0
+                fixed top-4 left-4 bottom-4 w-[270px] z-50 flex flex-col
+                rounded-[34px] border-[2px] border-white/[0.08]
+                bg-[#090d1e]/70 backdrop-blur-[32px]
+                shadow-[0_20px_60px_rgba(0,0,0,0.7)]
+                transition-all duration-400 ease-out
+                ${sidebarOpen ? 'translate-x-0' : '-translate-x-[calc(100%+24px)]'} lg:translate-x-0
             `}>
-                <div className="h-24 flex flex-col items-center justify-center px-6 border-b border-slate-800/50 relative group">
-                    <Link href="/web" target="_blank" className="flex flex-col items-center relative z-10 transition-transform duration-700 group-hover:scale-105 cursor-pointer">
-                        <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 bg-cyan-400 rounded-full shadow-[0_0_8px_rgba(34,211,238,0.8)]"></div>
-                            <span className="text-base font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-400 uppercase tracking-[0.3em] italic drop-shadow-[0_0_10px_rgba(56,189,248,0.3)]">ATOMIC</span>
+                {/* ── HEADER: LOGO + ATOMIC.AI ──────────────────────── */}
+                <header className="h-[72px] px-5 flex items-center justify-between shrink-0 border-b border-white/[0.06]">
+                    <Link href="/dashboard" className="flex items-center gap-3 group">
+                        {/* Hexagon AI Logo mark */}
+                        <div className="w-9 h-9 rounded-2xl bg-white/[0.08] border border-white/[0.12] flex items-center justify-center text-white shadow-inner group-hover:scale-105 transition-transform">
+                            <Hexagon size={20} className="text-cyan-300 stroke-[1.8]" />
                         </div>
-                        <span className="text-[7px] font-black text-indigo-400/70 uppercase tracking-[0.5em] italic mt-1">SOLUTIONS</span>
+                        <h1 className="text-[17px] font-normal tracking-[1px] text-white/95 font-sans leading-none">
+                            atomic<span className="text-cyan-400">.ai</span>
+                        </h1>
                     </Link>
-                </div>
 
-                <nav className="flex-1 overflow-y-auto px-3 py-6 space-y-1 custom-scrollbar relative">
-                    <NavLink href="/dashboard" icon={<Globe size={16} />} label="Dashboard" isActive={pathname === '/dashboard'} />
-                    <NavLink href="/dashboard/analytics" icon={<LayoutDashboard size={16} />} label="Análisis" isActive={pathname === '/dashboard/analytics'} />
+                    <button
+                        onClick={() => setSidebarOpen(false)}
+                        className="p-1.5 text-white/70 hover:text-white rounded-xl hover:bg-white/[0.06] transition-colors lg:hidden"
+                    >
+                        <X size={18} />
+                    </button>
                     
-                    <div className="pt-4 pb-1 px-3 text-[9px] font-black text-cyan-400/80 uppercase tracking-[0.25em] italic flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+                    <div className="hidden lg:flex items-center text-white/40">
+                        <Menu size={18} />
+                    </div>
+                </header>
+
+                {/* ── NAV ITEMS (FIXED / ALL VISIBLE / NO COLLAPSE) ─── */}
+                <nav className="flex-1 overflow-y-auto px-3.5 py-4 space-y-1 custom-scrollbar">
+                    
+                    {/* General */}
+                    <GlassNavItem href="/dashboard" icon={<Home size={18} strokeWidth={1.8} />} label="Home" isActive={pathname === '/dashboard'} />
+                    <GlassNavItem href="/dashboard/analytics" icon={<BarChart3 size={18} strokeWidth={1.8} />} label="Analytics" isActive={pathname === '/dashboard/analytics'} />
+                    
+                    {/* Operaciones & Ventas */}
+                    <div className="pt-3 pb-1 px-3.5 text-[11px] font-normal tracking-[0.5px] text-white/40">
                         Operaciones & Ventas
                     </div>
-                    <NavLink href="/dashboard/quotes" icon={<FileText size={16} />} label="Cotizaciones" isActive={pathname.startsWith('/dashboard/quotes')} />
-                    <NavLink href="/dashboard/matriz-precios" icon={<Table size={16} />} label="Matriz de Precios" isActive={pathname.startsWith('/dashboard/matriz-precios') || pathname.startsWith('/dashboard/shop') || pathname.startsWith('/dashboard/precios-vendedor')} />
+                    <GlassNavItem href="/dashboard/quotes" icon={<FileText size={18} strokeWidth={1.8} />} label="Cotizaciones" isActive={pathname.startsWith('/dashboard/quotes')} />
+                    <GlassNavItem href="/dashboard/matriz-precios" icon={<Table size={18} strokeWidth={1.8} />} label="Matriz de Precios" isActive={pathname.startsWith('/dashboard/matriz-precios') || pathname.startsWith('/dashboard/shop') || pathname.startsWith('/dashboard/precios-vendedor')} />
                     {(role === "ADMIN" || role === "COORDINATOR" || role === "MANAGEMENT") && (
-                        <NavLink href="/dashboard/coordinacion" icon={<Users size={16} />} label="Coordinación" isActive={pathname.startsWith('/dashboard/coordinacion')} />
+                        <GlassNavItem href="/dashboard/coordinacion" icon={<Users size={18} strokeWidth={1.8} />} label="Coordinación" isActive={pathname.startsWith('/dashboard/coordinacion')} />
                     )}
-                    <NavLink href="/dashboard/map-prospecting" icon={<Map size={16} />} label="Prospección" isActive={pathname.startsWith('/dashboard/map-prospecting')} />
-                    <NavLink href="/dashboard/formularios" icon={<FileSpreadsheet size={16} />} label="Contactos de Landing" isActive={pathname.startsWith('/dashboard/formularios')} />
+                    <GlassNavItem href="/dashboard/map-prospecting" icon={<Map size={18} strokeWidth={1.8} />} label="Prospección" isActive={pathname.startsWith('/dashboard/map-prospecting')} />
+                    <GlassNavItem href="/dashboard/formularios" icon={<FileSpreadsheet size={18} strokeWidth={1.8} />} label="Contactos Web" isActive={pathname.startsWith('/dashboard/formularios')} />
                     
-                    <div className="pt-4 pb-1 px-3 text-[9px] font-black text-indigo-400/80 uppercase tracking-[0.25em] italic flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>
-                        WhatsApp & CRM
+                    {/* WhatsApp & CRM */}
+                    <div className="pt-3 pb-1 px-3.5 text-[11px] font-normal tracking-[0.5px] text-white/40">
+                        WhatsApp & Leads
                     </div>
-                    <NavLink href="/dashboard/whatsapp/crm" icon={<Smartphone size={16} />} label="CRM WhatsApp" isActive={pathname.startsWith('/dashboard/whatsapp/crm')} />
-                    <NavLink href="/dashboard/whatsapp/leads" icon={<Users size={16} />} label="Gestión de Leads" isActive={pathname.startsWith('/dashboard/whatsapp/leads')} />
-                    <NavLink href="/dashboard/blogs" icon={<Share2 size={16} />} label="Social Command" isActive={pathname.startsWith('/dashboard/blogs')} />
+                    <GlassNavItem href="/dashboard/whatsapp/crm" icon={<Smartphone size={18} strokeWidth={1.8} />} label="CRM WhatsApp" isActive={pathname.startsWith('/dashboard/whatsapp/crm')} />
+                    <GlassNavItem href="/dashboard/whatsapp/leads" icon={<Users size={18} strokeWidth={1.8} />} label="Gestión Leads" isActive={pathname.startsWith('/dashboard/whatsapp/leads')} />
+                    <GlassNavItem href="/dashboard/blogs" icon={<Share2 size={18} strokeWidth={1.8} />} label="Social Command" isActive={pathname.startsWith('/dashboard/blogs')} />
                     
+                    {/* Gestión & Finanzas */}
                     {(role === "ADMIN" || role === "MANAGEMENT" || role === "COORDINATOR" || role === "COORD_ASSISTANT") && (
                         <>
-                            <div className="pt-4 pb-1 px-3 text-[9px] font-black text-emerald-400/80 uppercase tracking-[0.25em] italic flex items-center gap-2">
-                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                            <div className="pt-3 pb-1 px-3.5 text-[11px] font-normal tracking-[0.5px] text-white/40">
                                 Gestión & Finanzas
                             </div>
-                            <NavLink href="/dashboard/finance" icon={<DollarSign size={16} />} label="Finanzas" isActive={pathname.startsWith('/dashboard/finance')} />
-                            <NavLink href="/dashboard/marketing" icon={<BarChart3 size={16} />} label="Marketing" isActive={pathname.startsWith('/dashboard/marketing')} />
-                            <NavLink href="/dashboard/benefits" icon={<Tag size={16} />} label="Beneficios" isActive={pathname.startsWith('/dashboard/benefits')} />
+                            <GlassNavItem href="/dashboard/finance" icon={<DollarSign size={18} strokeWidth={1.8} />} label="Finanzas" isActive={pathname.startsWith('/dashboard/finance')} />
+                            <GlassNavItem href="/dashboard/marketing" icon={<BarChart3 size={18} strokeWidth={1.8} />} label="Marketing" isActive={pathname.startsWith('/dashboard/marketing')} />
+                            <GlassNavItem href="/dashboard/benefits" icon={<Tag size={18} strokeWidth={1.8} />} label="Beneficios" isActive={pathname.startsWith('/dashboard/benefits')} />
                         </>
                     )}
-                    <NavLink href="/dashboard/storage" icon={<Database size={16} />} label="Nube & Archivos" isActive={pathname.startsWith('/dashboard/storage')} />
-                    <NavLink href="/dashboard/documents" icon={<FileText size={16} />} label="Documentos" isActive={pathname.startsWith('/dashboard/documents')} />
-                    
-                    <div className="pt-4 pb-1 px-3 text-[9px] font-black text-purple-400/80 uppercase tracking-[0.25em] italic flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-purple-400"></span>
+                    <GlassNavItem href="/dashboard/storage" icon={<Database size={18} strokeWidth={1.8} />} label="Nube & Archivos" isActive={pathname.startsWith('/dashboard/storage')} />
+                    <GlassNavItem href="/dashboard/documents" icon={<FileText size={18} strokeWidth={1.8} />} label="Documentos" isActive={pathname.startsWith('/dashboard/documents')} />
+
+                    {/* Inteligencia & Equipo */}
+                    <div className="pt-3 pb-1 px-3.5 text-[11px] font-normal tracking-[0.5px] text-white/40">
                         Inteligencia & Equipo
                     </div>
-                    <NavLink href="/dashboard/coach" icon={<BrainCircuit size={16} />} label="AI Coach" isActive={pathname.startsWith('/dashboard/coach')} />
-                    <NavLink href="/dashboard/academy" icon={<GraduationCap size={16} />} label="Academia & Admin Central" isActive={pathname.startsWith('/dashboard/academy') || pathname.startsWith('/dashboard/admin')} />
-                    <NavLink href="/dashboard/bot-ruta" icon={<Bot size={16} />} label="Bot Ruta" isActive={pathname.startsWith('/dashboard/bot-ruta')} />
-                    {(role === "ADMIN" || role === "MANAGEMENT" || role === "COORDINATOR" || role === "COORD_ASSISTANT") && (
-                        <NavLink href="/dashboard/evaluations" icon={<Users size={16} />} label="Asesores RRHH" isActive={pathname.startsWith('/dashboard/evaluations')} />
-                    )}
+                    <GlassNavItem href="/dashboard/coach" icon={<BrainCircuit size={18} strokeWidth={1.8} />} label="AI Coach" isActive={pathname.startsWith('/dashboard/coach')} />
+                    <GlassNavItem href="/dashboard/academy" icon={<GraduationCap size={18} strokeWidth={1.8} />} label="Academia Atomic" isActive={pathname.startsWith('/dashboard/academy') || pathname.startsWith('/dashboard/admin')} />
+                    <GlassNavItem href="/dashboard/bot-ruta" icon={<Bot size={18} strokeWidth={1.8} />} label="Bot Ruta" isActive={pathname.startsWith('/dashboard/bot-ruta')} />
                     {(role === "ADMIN" || role === "COORDINATOR" || role === "COORD_ASSISTANT") && (
-                        <NavLink href="/dashboard/supervision" icon={<ShieldCheck size={16} />} label="Supervisión" isActive={pathname.startsWith('/dashboard/supervision')} />
+                        <GlassNavItem href="/dashboard/supervision" icon={<ShieldCheck size={18} strokeWidth={1.8} />} label="Supervisión" isActive={pathname.startsWith('/dashboard/supervision')} />
+                    )}
+                    {(role === "ADMIN" || role === "MANAGEMENT" || role === "COORDINATOR" || role === "COORD_ASSISTANT") && (
+                        <GlassNavItem href="/dashboard/evaluations" icon={<Users size={18} strokeWidth={1.8} />} label="Asesores RRHH" isActive={pathname.startsWith('/dashboard/evaluations')} />
                     )}
                 </nav>
 
-                <div className="p-6 shrink-0 border-t border-slate-800/50 bg-slate-950/50">
-                    <div className="flex items-center space-x-4 mb-6 px-2">
-                        <div className="w-10 h-10 rounded-full border border-slate-700 flex items-center justify-center font-black text-sm text-slate-300 italic overflow-hidden bg-slate-800 shadow-[0_0_15px_rgba(0,0,0,0.5)]">
-                            {(session?.user as any)?.profilePicture ? (
-                                <img src={(session?.user as any).profilePicture} alt="U" className="w-full h-full object-cover" />
-                            ) : (
-                                session.user?.name?.[0] || "U"
-                            )}
-                        </div>
-                        <div className="flex-1 overflow-hidden">
-                            <p className="text-[10px] font-black text-slate-200 truncate uppercase italic">{session.user?.name}</p>
-                            <p className="text-[8px] font-black text-indigo-400 uppercase tracking-widest truncate italic drop-shadow-[0_0_5px_rgba(99,102,241,0.5)]">
-                                {role}
-                            </p>
-                        </div>
-                    </div>
-                    <Link href="/api/auth/signout" className="flex items-center justify-center space-x-3 px-4 py-3 text-[9px] font-black text-slate-400 hover:text-red-400 hover:bg-red-950/30 rounded-xl transition-all group italic border border-slate-800 hover:border-red-500/50 hover:shadow-[0_0_15px_rgba(239,68,68,0.2)]">
-                        <LogOut size={14} className="group-hover:scale-110 transition-transform" />
-                        <span className="uppercase tracking-widest">Cerrar Sesión</span>
+                {/* ── FOOTER: ACCOUNT & SETTINGS (EXACT QUBE.AI STYLE) ─ */}
+                <div className="p-3 border-t border-white/[0.06] bg-black/20 shrink-0 space-y-1">
+                    <GlassNavItem
+                        href="/dashboard/profile"
+                        icon={<User size={18} strokeWidth={1.8} />}
+                        label="Account"
+                        isActive={pathname.startsWith('/dashboard/profile')}
+                    />
+                    <GlassNavItem
+                        href="/dashboard/admin"
+                        icon={<Settings size={18} strokeWidth={1.8} />}
+                        label="Settings"
+                        isActive={pathname.startsWith('/dashboard/admin')}
+                    />
+                    
+                    <Link
+                        href="/api/auth/signout"
+                        className="flex items-center gap-3.5 h-[44px] w-full px-4 rounded-[14px] text-rose-400/80 hover:text-rose-300 hover:bg-rose-500/10 transition-all text-[14px] font-normal"
+                    >
+                        <LogOut size={16} strokeWidth={1.8} />
+                        <span className="truncate">Cerrar Sesión</span>
                     </Link>
                 </div>
             </aside>
 
-            {/* Main Content */}
-            <main className={`flex-1 flex flex-col h-full overflow-y-auto overflow-x-hidden relative z-10 transition-all duration-500 lg:ml-64`}>
-                {/* Header */}
-                <header className="h-16 lg:h-20 bg-slate-900/80 backdrop-blur-md border-b border-slate-800 flex items-center justify-between px-6 lg:px-10 shrink-0 z-50 shadow-[0_4px_30px_rgba(0,0,0,0.5)] relative">
-                    <div className="absolute inset-x-0 bottom-0 h-[1px] bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent"></div>
-                    <div className="flex items-center space-x-6">
+            {/* ═══════════════════════════════════════════════════════════
+                MAIN CONTENT CANVAS (ADAPTED FOR FLOATING SIDEBAR)
+            ═══════════════════════════════════════════════════════════ */}
+            <main className="flex-1 flex flex-col h-full overflow-y-auto overflow-x-hidden relative z-10 transition-all duration-300 lg:pl-[306px]">
+                
+                {/* Modern Glass Navbar Header */}
+                <header className="h-16 lg:h-20 bg-transparent flex items-center justify-between px-6 lg:px-10 shrink-0 z-40 relative">
+                    <div className="flex items-center gap-4">
                         <button
                             onClick={() => setSidebarOpen(!sidebarOpen)}
-                            className="p-3 bg-slate-800/50 rounded-xl text-slate-400 hover:text-cyan-400 hover:bg-slate-800 transition-all lg:hidden"
+                            className="p-2.5 bg-white/[0.06] border border-white/[0.1] rounded-2xl text-white/80 hover:text-white hover:bg-white/[0.1] transition-all lg:hidden shadow-lg"
                         >
                             <Menu size={20} />
                         </button>
-                        <div className="hidden sm:flex flex-col">
-                            <div className="flex items-center gap-2">
-                                <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full shadow-[0_0_8px_rgba(99,102,241,0.8)] animate-pulse"></div>
-                                <span className="text-[10px] font-black text-slate-200 uppercase tracking-[0.3em] italic drop-shadow-[0_0_5px_rgba(255,255,255,0.2)]">ATOMIC INDUSTRIAS</span>
-                            </div>
+                        
+                        <div className="hidden sm:flex items-center gap-2.5">
+                            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_10px_rgba(52,211,153,0.8)]" />
+                            <span className="text-xs font-medium text-white/80 tracking-wide">Ecosistema Atomic ERP</span>
                         </div>
+
                         <Link 
                             href="/web" 
                             target="_blank"
-                            className="hidden md:flex items-center space-x-2 px-4 py-2 border border-slate-700 rounded-lg hover:border-cyan-500/50 text-slate-400 hover:text-cyan-400 hover:bg-slate-800/50 transition-all hover:shadow-[0_0_15px_rgba(6,182,212,0.2)]"
+                            className="hidden md:flex items-center gap-2 px-3.5 py-1.5 bg-white/[0.05] border border-white/[0.08] rounded-xl hover:bg-white/[0.1] text-white/70 hover:text-white transition-all text-xs font-normal"
                         >
-                            <ExternalLink size={12} />
-                            <span className="text-[8px] font-black uppercase tracking-widest italic">Visitar Web</span>
+                            <ExternalLink size={13} />
+                            <span>Visitar Tienda</span>
                         </Link>
                     </div>
                     
-                    <div className="flex items-center space-x-6">
-                        <div className="flex items-center gap-4 pr-6 border-r border-slate-800">
+                    <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-3 pr-4 border-r border-white/[0.08]">
                             <NotificationBell />
                         </div>
                         
-                        <Link href="/dashboard/profile" className="flex items-center gap-3 p-1.5 bg-slate-900/50 rounded-full border border-slate-700 hover:border-indigo-500/50 transition-all group pr-4 hover:shadow-[0_0_15px_rgba(99,102,241,0.2)]">
-                            <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-slate-300 overflow-hidden border border-slate-700">
+                        {/* User pill */}
+                        <Link href="/dashboard/profile" className="flex items-center gap-3 p-1 rounded-full bg-white/[0.05] border border-white/[0.08] hover:bg-white/[0.1] transition-all pr-3.5">
+                            <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-white/90 overflow-hidden text-xs font-bold">
                                 {(session?.user as any)?.profilePicture ? (
                                     <img src={(session?.user as any).profilePicture} alt="P" className="w-full h-full object-cover" />
                                 ) : (
-                                    <User size={14} />
+                                    session.user?.name?.[0]?.toUpperCase() || "A"
                                 )}
                             </div>
-                            <Settings size={14} className="text-slate-400 group-hover:text-indigo-400 group-hover:rotate-45 transition-all" />
+                            <div className="hidden sm:flex flex-col text-left leading-none">
+                                <span className="text-xs font-medium text-white/90 truncate max-w-[120px]">{session.user?.name}</span>
+                                <span className="text-[10px] text-cyan-400/80 mt-0.5">{role}</span>
+                            </div>
                         </Link>
-
-                        <div className="hidden lg:flex flex-col items-end border-l border-slate-800 pl-6">
-                             <span className="text-[9px] font-black text-cyan-400 uppercase tracking-tighter italic leading-none drop-shadow-[0_0_5px_rgba(34,211,238,0.5)]">SISTEMA ACTIVO</span>
-                             <span className="text-[7px] text-slate-500 font-black uppercase tracking-widest mt-1">v7.0.0 Neon</span>
-                        </div>
                     </div>
                 </header>
 
-                <div className="flex-1 overflow-y-auto relative z-0 scrollbar-hide">
-                    <div className="mx-auto max-w-[1800px] p-4 lg:p-8 min-h-full">
+                {/* Dashboard Page View */}
+                <div className="flex-1 overflow-y-auto relative z-0">
+                    <div className="mx-auto max-w-[1700px] p-4 lg:p-8 min-h-full">
                         {children}
                     </div>
                 </div>
@@ -259,24 +293,47 @@ export default function DashboardLayout({
     )
 }
 
-function NavLink({ href, icon, label, isActive }: { href: string; icon: React.ReactNode; label: string; isActive?: boolean }) {
+// ─────────────────────────────────────────────────────────────────────────────
+// EXACT QUBE.AI STYLE GLASS NAV ITEM
+// ─────────────────────────────────────────────────────────────────────────────
+function GlassNavItem({
+    href,
+    icon,
+    label,
+    isActive
+}: {
+    href: string
+    icon: React.ReactNode
+    label: string
+    isActive?: boolean
+}) {
     return (
         <Link
             href={href}
+            aria-current={isActive ? "page" : undefined}
             className={`
-                flex items-center space-x-3.5 px-4 py-2.5 rounded-xl transition-all duration-300 group relative mx-1
+                relative flex items-center gap-3.5 h-[46px] w-full px-4 rounded-[14px]
+                font-sans text-[15px] font-normal leading-none tracking-normal
+                transition-all duration-200 group
                 ${isActive 
-                    ? 'bg-gradient-to-r from-cyan-500/20 via-indigo-500/10 to-transparent text-cyan-300 border-l-2 border-cyan-400 shadow-[inset_0_0_20px_rgba(6,182,212,0.15)] font-bold' 
-                    : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 hover:shadow-[inset_0_0_15px_rgba(0,0,0,0.4)]'}
+                    ? 'bg-white/[0.12] text-white shadow-[inset_0_1px_1px_rgba(255,255,255,0.15)] backdrop-blur-md' 
+                    : 'text-white/85 hover:text-white hover:bg-white/[0.06]'}
             `}
         >
-            <span className={`transition-all duration-300 ${isActive ? 'text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.8)] scale-110' : 'text-slate-500 group-hover:text-indigo-400 group-hover:scale-110'}`}>
+            {/* Left Icon */}
+            <span className={`transition-colors shrink-0 ${isActive ? 'text-cyan-300' : 'text-white/80 group-hover:text-white'}`}>
                 {icon}
             </span>
-            <span className={`text-[10.5px] font-black uppercase tracking-[0.15em] italic transition-all duration-300 ${isActive ? 'translate-x-1 text-cyan-100' : 'group-hover:translate-x-1'}`}>
+            
+            {/* Label */}
+            <span className="truncate flex-1 text-left">
                 {label}
             </span>
+
+            {/* Active Subtle Indicator */}
+            {isActive && (
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.8)] shrink-0" />
+            )}
         </Link>
     )
 }
-
