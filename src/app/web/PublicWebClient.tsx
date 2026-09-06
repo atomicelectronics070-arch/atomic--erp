@@ -13,6 +13,7 @@ import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
 import dynamic from "next/dynamic"
 import { calculateDiscountedPrice } from "@/lib/utils/pricing"
+import FuturisticParallaxSection from "@/components/web/FuturisticParallaxSection"
 
 const OFERTAS_COVERFLOW_SLIDES = [
   { 
@@ -2139,6 +2140,9 @@ export default function PublicWebClient({
         </div>
 
       </section>
+ 
+      {/* ═══════════ FUTURISTIC PURE CSS PARALLAX BANNER (MARS COLONY & ROCKETS) ═══════════ */}
+      <FuturisticParallaxSection />
 
       {/* ═══════════ BOTTOM BRANDING & CONFIDENCE (APPIT BENTO CARDS) ═══════════ */}
       <section className="w-full max-w-7xl mx-auto px-6 pt-12 pb-20 border-t border-white/[0.06] mt-12">
