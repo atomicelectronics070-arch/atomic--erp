@@ -1,23 +1,39 @@
 "use client"
 
-import { useState } from "react"
+import React, { useState } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { Mail, Lock, ArrowRight, Loader2, Users, ShoppingBag, GraduationCap } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
+import {
+    User, Mail, Lock, Eye, EyeOff, ArrowRight, Loader2,
+    CheckCircle2, AlertCircle, ShieldCheck, Sparkles, CreditCard,
+    Phone, Users, ShoppingBag, GraduationCap
+} from "lucide-react"
 
 export default function LoginPage() {
     const router = useRouter()
+    const [mode, setMode] = useState<"login" | "signup">("login")
+
+    // Form fields
+    const [name, setName] = useState("")
+    const [lastName, setLastName] = useState("")
+    const [cedula, setCedula] = useState("")
+    const [phone, setPhone] = useState("")
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
-    const [section, setSection] = useState("VENDEDOR")
-    const [error, setError] = useState("")
-    const [loading, setLoading] = useState(false)
-    const [showReset, setShowReset] = useState(false)
-    const [success, setSuccess] = useState("")
+    const [showPassword, setShowPassword] = useState(false)
+    const [role, setRole] = useState("VENDEDOR")
 
+    // State
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState("")
+    const [success, setSuccess] = useState("")
+    const [showReset, setShowReset] = useState(false)
+
+    // Password reset
     const handleResetRequest = async () => {
-        if (!email) return setError("Ingrese su email para continuar")
+        if (!email) return setError("Ingresa tu correo electrónico para continuar")
         setLoading(true)
         setError("")
         try {
@@ -34,16 +50,17 @@ export default function LoginPage() {
                 setError(data.error || "Error al procesar la solicitud")
             }
         } catch {
-            setError("Error de conexión")
+            setError("Error de conexión al servidor")
         } finally {
             setLoading(false)
         }
     }
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    // Login Submit
+    const handleLoginSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         if (!email || !password) {
-            setError("Complete todos los campos")
+            setError("Por favor completa todos los campos")
             return
         }
         setLoading(true)
@@ -60,237 +77,382 @@ export default function LoginPage() {
             if (result?.error) {
                 const errMap: Record<string, string> = {
                     "Credenciales inválidas": "Email o contraseña incorrectos.",
-                    "Su cuenta está pendiente de aprobación.": "Cuenta pendiente de aprobación.",
-                    "Su cuenta ha sido desactivada por administración.": "Cuenta desactivada.",
-                    "Credenciales incompletas": "Campos incompletos.",
+                    "Su cuenta está pendiente de aprobación.": "Tu cuenta está pendiente de aprobación por el administrador.",
+                    "Su cuenta ha sido desactivada por administración.": "Tu cuenta ha sido desactivada.",
+                    "Credenciales incompletas": "Por favor llena todos los campos.",
                 }
                 setError(errMap[result.error] || result.error || "Credenciales inválidas.")
             } else if (result?.ok) {
                 let targetPath = "/dashboard"
-                if (section === "CONSUMIDOR") targetPath = "/web"
-                else if (section === "CURSOS") targetPath = "/dashboard/academy"
+                if (role === "CONSUMIDOR") targetPath = "/web"
+                else if (role === "CURSOS") targetPath = "/dashboard/academy"
                 else targetPath = "/dashboard"
                 router.push(targetPath)
                 router.refresh()
             } else {
-                setError("Error inesperado.")
+                setError("Ocurrió un error inesperado.")
             }
         } catch {
-            setError("Error de conexión.")
+            setError("Error de conexión con el servidor.")
         } finally {
             setLoading(false)
         }
     }
 
-    const roles = [
-        { id: "VENDEDOR", label: "Vendedor", icon: <Users size={14} /> },
-        { id: "CONSUMIDOR", label: "Cliente", icon: <ShoppingBag size={14} /> },
-        { id: "CURSOS", label: "Academia", icon: <GraduationCap size={14} /> },
-    ]
+    // Sign Up Submit
+    const handleSignUpSubmit = async (e: React.FormEvent) => {
+        e.preventDefault()
+        if (!name || !email || !password) {
+            setError("Por favor completa los campos requeridos")
+            return
+        }
+        setLoading(true)
+        setError("")
+        setSuccess("")
+
+        try {
+            const res = await fetch("/api/auth/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    name: name.trim(),
+                    lastName: lastName.trim() || name.trim(),
+                    cedula: cedula.trim() || "0000000000",
+                    email: email.trim().toLowerCase(),
+                    password,
+                    role: role === "CONSUMIDOR" ? "CONSUMIDOR" : "SALESPERSON",
+                    phone: phone.trim()
+                })
+            })
+
+            const data = await res.json()
+            if (!res.ok) {
+                setError(data.error || "Error al crear la cuenta")
+            } else {
+                setSuccess(data.message || "¡Cuenta creada exitosamente! Iniciando sesión...")
+                setTimeout(async () => {
+                    const loginRes = await signIn("credentials", {
+                        redirect: false,
+                        email: email.trim().toLowerCase(),
+                        password,
+                    })
+                    if (loginRes?.ok) {
+                        router.push(role === "CONSUMIDOR" ? "/web" : "/dashboard")
+                        router.refresh()
+                    } else {
+                        setMode("login")
+                    }
+                }, 1200)
+            }
+        } catch {
+            setError("Error de conexión al registrar usuario")
+        } finally {
+            setLoading(false)
+        }
+    }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-white text-black overflow-hidden relative font-sans selection:bg-black/10">
+        <div className="min-h-screen w-full flex items-center justify-center bg-[#0d0c1d] p-4 sm:p-6 font-sans text-slate-100 relative overflow-hidden selection:bg-purple-500/30">
+            
+            {/* Background Ambient Glows */}
+            <div className="absolute top-1/4 -left-32 w-96 h-96 bg-blue-600/15 rounded-full blur-[120px] pointer-events-none" />
+            <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-purple-600/15 rounded-full blur-[120px] pointer-events-none" />
 
-            {/* Subtle background texture */}
-            <div className="fixed inset-0 z-0 pointer-events-none">
-                <div className="absolute inset-0 opacity-[0.025]"
-                    style={{
-                        backgroundImage: `linear-gradient(to right, #000 1px, transparent 1px),
-                                         linear-gradient(to bottom, #000 1px, transparent 1px)`,
-                        backgroundSize: `80px 80px`
-                    }}
-                />
-            </div>
-
-            <div className="relative z-10 w-full max-w-md px-6 py-10 flex flex-col items-center">
-
-                {/* Logo */}
-                <div className="flex flex-col items-center mb-8">
-                    <div className="mb-4">
-                        <AtomLogo />
+            {/* Main Phone/App Style Card matching user's reference */}
+            <motion.div
+                initial={{ opacity: 0, y: 20, scale: 0.96 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+                className="w-full max-w-[390px] rounded-[36px] bg-[#14132b] border border-white/[0.08] shadow-[0_25px_80px_rgba(0,0,0,0.85)] overflow-hidden flex flex-col relative"
+            >
+                {/* ── TOP STYLIZED ATOMIC LOGO ──────────────────────── */}
+                <div className="pt-10 pb-4 flex flex-col items-center justify-center">
+                    <div className="relative group cursor-pointer">
+                        {/* Stylized Glowing "A" lettermark */}
+                        <div className="w-18 h-18 flex items-center justify-center relative">
+                            <svg width="68" height="68" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <defs>
+                                    <linearGradient id="atomicGrad" x1="10" y1="10" x2="90" y2="90" gradientUnits="userSpaceOnUse">
+                                        <stop offset="0%" stopColor="#38bdf8" />
+                                        <stop offset="50%" stopColor="#818cf8" />
+                                        <stop offset="100%" stopColor="#c084fc" />
+                                    </linearGradient>
+                                    <filter id="atomicGlow" x="-20%" y="-20%" width="140%" height="140%">
+                                        <feGaussianBlur stdDeviation="6" result="blur" />
+                                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                                    </filter>
+                                </defs>
+                                
+                                {/* Orbital Ring */}
+                                <ellipse cx="50" cy="50" rx="42" ry="16" stroke="url(#atomicGrad)" strokeWidth="3" opacity="0.35" transform="rotate(-25 50 50)" />
+                                
+                                {/* Bold Curved "A" Lettermark matching reference curved style */}
+                                <path
+                                    d="M 50 14 C 44 14 39 19 36 26 L 18 70 C 15 77 19 84 27 84 C 32 84 37 80 39 74 L 43 64 L 57 64 L 61 74 C 63 80 68 84 73 84 C 81 84 85 77 82 70 L 64 26 C 61 19 56 14 50 14 Z M 50 36 L 54 52 L 46 52 Z"
+                                    fill="url(#atomicGrad)"
+                                    filter="url(#atomicGlow)"
+                                />
+                            </svg>
+                        </div>
                     </div>
-                    <span className="text-2xl font-black text-black tracking-[0.15em] uppercase leading-none">
-                        ATOMIC
-                    </span>
-                    <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest mt-2">
-                        Acceso Seguro
+
+                    <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-cyan-300 font-bold mt-2">
+                        Atomic Electronics
                     </span>
                 </div>
 
-                {/* Card */}
-                <div className="bg-white border border-zinc-200 rounded-2xl w-full p-8 shadow-2xl shadow-black/5">
+                {/* ── TAB SWITCHER: LOGIN vs SIGN UP ─────────────────── */}
+                <div className="flex items-center justify-center gap-10 border-b border-white/[0.06] px-8 pt-2 pb-3 relative">
+                    <button
+                        type="button"
+                        onClick={() => { setMode("login"); setError(""); setSuccess("") }}
+                        className={`text-base font-bold transition-all relative pb-2 ${
+                            mode === "login" ? "text-white" : "text-slate-500 hover:text-slate-300"
+                        }`}
+                    >
+                        Login
+                        {mode === "login" && (
+                            <motion.div
+                                layoutId="activeTabUnderline"
+                                className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 rounded-full shadow-[0_0_10px_rgba(56,189,248,0.8)]"
+                            />
+                        )}
+                    </button>
+
+                    <button
+                        type="button"
+                        onClick={() => { setMode("signup"); setError(""); setSuccess("") }}
+                        className={`text-base font-bold transition-all relative pb-2 ${
+                            mode === "signup" ? "text-white" : "text-slate-500 hover:text-slate-300"
+                        }`}
+                    >
+                        Sign Up
+                        {mode === "signup" && (
+                            <motion.div
+                                layoutId="activeTabUnderline"
+                                className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 rounded-full shadow-[0_0_10px_rgba(56,189,248,0.8)]"
+                            />
+                        )}
+                    </button>
+                </div>
+
+                {/* ── FORM CONTENT ───────────────────────────────────── */}
+                <div className="px-7 py-6 flex-1 flex flex-col justify-between">
                     
-                    <div className="mb-8 text-center">
-                        <h1 className="text-xl font-black text-black uppercase tracking-[0.1em] mb-1">
-                            Iniciar Sesión
-                        </h1>
-                        <p className="text-[10px] font-medium text-zinc-400 uppercase tracking-widest">Seleccione perfil</p>
+                    {/* Alerts */}
+                    <AnimatePresence mode="wait">
+                        {error && (
+                            <motion.div
+                                initial={{ opacity: 0, y: -8 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0 }}
+                                className="mb-4 p-3 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs font-medium flex items-center gap-2"
+                            >
+                                <AlertCircle size={14} className="shrink-0 text-rose-400" />
+                                <span>{error}</span>
+                            </motion.div>
+                        )}
+                        {success && (
+                            <motion.div
+                                initial={{ opacity: 0, y: -8 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0 }}
+                                className="mb-4 p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-medium flex items-center gap-2"
+                            >
+                                <CheckCircle2 size={14} className="shrink-0 text-emerald-400" />
+                                <span>{success}</span>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+
+                    {/* Role Selector Pill */}
+                    <div className="flex items-center justify-center gap-1.5 mb-5 p-1 rounded-2xl bg-[#1d1c38] border border-white/[0.05]">
+                        {[
+                            { id: "VENDEDOR", label: "Vendedor", icon: <Users size={12} /> },
+                            { id: "CONSUMIDOR", label: "Cliente", icon: <ShoppingBag size={12} /> },
+                            { id: "CURSOS", label: "Academia", icon: <GraduationCap size={12} /> },
+                        ].map(r => (
+                            <button
+                                key={r.id}
+                                type="button"
+                                onClick={() => setRole(r.id)}
+                                className={`flex-1 py-1.5 px-2 rounded-xl text-[10px] font-bold uppercase tracking-wider flex items-center justify-center gap-1 transition-all ${
+                                    role === r.id
+                                        ? "bg-gradient-to-r from-cyan-500 to-indigo-500 text-white shadow-md font-black"
+                                        : "text-slate-400 hover:text-white"
+                                }`}
+                            >
+                                {r.icon}
+                                <span>{r.label}</span>
+                            </button>
+                        ))}
                     </div>
 
-                    {/* Alerts */}
-                    {error && (
-                        <div className="mb-5 p-3 bg-red-50/50 border border-red-100 text-red-600 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 rounded-xl">
-                            <span className="w-1.5 h-1.5 bg-red-500 rounded-full flex-shrink-0" />
-                            {error}
-                        </div>
-                    )}
-                    {success && (
-                        <div className="mb-5 p-3 bg-emerald-50/50 border border-emerald-100 text-emerald-600 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 rounded-xl">
-                            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full flex-shrink-0" />
-                            {success}
-                        </div>
-                    )}
-
-                    <form onSubmit={handleSubmit} noValidate className="space-y-5">
-                        {/* Role selector */}
-                        <div className="grid grid-cols-3 gap-2">
-                            {roles.map((role) => (
-                                <button
-                                    key={role.id}
-                                    type="button"
-                                    onClick={() => setSection(role.id)}
-                                    className={`flex flex-col items-center justify-center gap-2 py-3 rounded-xl border transition-all text-[9px] font-black uppercase tracking-widest
-                                        ${section === role.id 
-                                            ? 'bg-black border-black text-white' 
-                                            : 'bg-zinc-50 border-zinc-200 text-zinc-400 hover:bg-zinc-100 hover:text-black'}`}
-                                >
-                                    {role.icon} {role.label}
-                                </button>
-                            ))}
-                        </div>
-
-                        {/* Email */}
-                        <div className="space-y-2">
-                            <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-widest ml-1">
-                                Correo
-                            </label>
-                            <div className="relative group">
-                                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-300 group-focus-within:text-black transition-colors">
-                                    <Mail size={16} />
-                                </div>
-                                <input
-                                    id="login-email"
-                                    type="email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    required
-                                    autoComplete="email"
-                                    className="w-full pl-12 pr-4 py-4 rounded-xl border border-zinc-200 bg-zinc-50 text-black text-sm font-bold focus:border-black focus:bg-white transition-all outline-none placeholder:text-zinc-300"
-                                    placeholder="usuario@atomic.com"
-                                />
-                            </div>
-                        </div>
-
-                        {/* Password */}
-                        <div className="space-y-2">
-                            <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-widest ml-1">
-                                Contraseña
-                            </label>
-                            <div className="relative group">
-                                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-300 group-focus-within:text-black transition-colors">
-                                    <Lock size={16} />
-                                </div>
-                                <input
-                                    id="login-password"
-                                    type="password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    required
-                                    autoComplete="current-password"
-                                    className="w-full pl-12 pr-4 py-4 rounded-xl border border-zinc-200 bg-zinc-50 text-black text-sm font-bold focus:border-black focus:bg-white transition-all outline-none placeholder:text-zinc-300"
-                                    placeholder="••••••••••••"
-                                />
-                            </div>
-                        </div>
-
-                        {/* Submit */}
-                        <button
-                            id="login-submit"
-                            type="submit"
-                            disabled={loading}
-                            className="w-full py-4 px-6 rounded-xl bg-black hover:bg-zinc-800 text-white font-black text-[11px] uppercase tracking-[0.25em] transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-60 disabled:hover:scale-100 flex items-center justify-center gap-3"
-                        >
-                            {loading ? (
-                                <>
-                                    <Loader2 className="animate-spin" size={16} />
-                                    <span>Verificando</span>
-                                </>
-                            ) : (
-                                <>
-                                    <span>Acceder</span>
-                                    <ArrowRight size={16} />
-                                </>
-                            )}
-                        </button>
-                    </form>
-
-                    {/* Footer links */}
-                    <div className="mt-8 pt-6 border-t border-zinc-100 space-y-4">
-                        {!showReset ? (
-                            <button
-                                onClick={() => { setShowReset(true); setError(""); setSuccess("") }}
-                                className="w-full text-[10px] font-black text-zinc-300 uppercase tracking-widest hover:text-black transition-colors text-center"
+                    {/* Form */}
+                    <form onSubmit={mode === "login" ? handleLoginSubmit : handleSignUpSubmit} className="space-y-4">
+                        
+                        {/* Name Field (In Sign Up Mode) */}
+                        {mode === "signup" && (
+                            <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: "auto" }}
+                                exit={{ opacity: 0, height: 0 }}
+                                className="space-y-1"
                             >
-                                ¿Olvidó su contraseña?
+                                <div className="relative flex items-center">
+                                    <div className="absolute left-4 text-cyan-400">
+                                        <User size={18} />
+                                    </div>
+                                    <input
+                                        type="text"
+                                        value={name}
+                                        onChange={e => setName(e.target.value)}
+                                        placeholder="Nombre y Apellidos"
+                                        required={mode === "signup"}
+                                        className="w-full bg-[#1e1d3b] hover:bg-[#232244] focus:bg-[#232244] border border-white/[0.06] focus:border-cyan-400/80 text-white rounded-2xl pl-12 pr-4 py-3.5 text-xs font-medium outline-none transition-all placeholder:text-slate-500"
+                                    />
+                                </div>
+                            </motion.div>
+                        )}
+
+                        {/* Email Field */}
+                        <div className="relative flex items-center">
+                            <div className="absolute left-4 text-cyan-400">
+                                <Mail size={18} />
+                            </div>
+                            <input
+                                type="email"
+                                value={email}
+                                onChange={e => setEmail(e.target.value)}
+                                placeholder="Email"
+                                required
+                                autoComplete="email"
+                                className="w-full bg-[#1e1d3b] hover:bg-[#232244] focus:bg-[#232244] border border-white/[0.06] focus:border-cyan-400/80 text-white rounded-2xl pl-12 pr-4 py-3.5 text-xs font-medium outline-none transition-all placeholder:text-slate-500"
+                            />
+                        </div>
+
+                        {/* Password Field */}
+                        <div className="relative flex items-center">
+                            <div className="absolute left-4 text-cyan-400">
+                                <Lock size={18} />
+                            </div>
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                value={password}
+                                onChange={e => setPassword(e.target.value)}
+                                placeholder="Password"
+                                required
+                                autoComplete={mode === "login" ? "current-password" : "new-password"}
+                                className="w-full bg-[#1e1d3b] hover:bg-[#232244] focus:bg-[#232244] border border-white/[0.06] focus:border-cyan-400/80 text-white rounded-2xl pl-12 pr-11 py-3.5 text-xs font-medium outline-none transition-all placeholder:text-slate-500"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-3.5 text-slate-400 hover:text-white transition-colors p-1"
+                            >
+                                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                             </button>
-                        ) : (
-                            <div className="space-y-3 bg-zinc-50 p-4 rounded-xl border border-zinc-100">
-                                <p className="text-[9px] font-black text-black uppercase tracking-widest">Reseteo de Clave</p>
+                        </div>
+
+                        {/* Forgot password link in Login */}
+                        {mode === "login" && !showReset && (
+                            <div className="flex justify-end pt-1">
+                                <button
+                                    type="button"
+                                    onClick={() => { setShowReset(true); setError(""); setSuccess("") }}
+                                    className="text-[11px] text-slate-400 hover:text-cyan-300 transition-colors"
+                                >
+                                    ¿Olvidaste tu contraseña?
+                                </button>
+                            </div>
+                        )}
+
+                        {/* Password Reset Box */}
+                        {showReset && (
+                            <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: "auto" }}
+                                className="p-3 bg-[#1e1d3b] border border-cyan-500/30 rounded-2xl space-y-2"
+                            >
+                                <span className="text-[10px] font-mono text-cyan-300 font-bold uppercase block">
+                                    Recuperar Contraseña
+                                </span>
                                 <div className="flex gap-2">
                                     <input
                                         type="email"
-                                        placeholder="Confirme su correo..."
+                                        placeholder="Confirma tu correo..."
                                         value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        className="flex-1 bg-white border border-zinc-200 rounded-lg px-3 py-2 text-[10px] font-bold text-black outline-none focus:border-black"
+                                        onChange={e => setEmail(e.target.value)}
+                                        className="flex-1 bg-black/40 border border-white/10 rounded-xl px-3 py-1.5 text-xs text-white outline-none focus:border-cyan-400"
                                     />
                                     <button
+                                        type="button"
                                         onClick={handleResetRequest}
                                         disabled={loading}
-                                        className="bg-black rounded-lg px-4 py-2 text-[10px] font-black text-white uppercase disabled:opacity-50"
+                                        className="px-3 py-1.5 bg-cyan-500 text-black font-black text-[10px] uppercase rounded-xl"
                                     >
                                         Enviar
                                     </button>
                                 </div>
                                 <button
+                                    type="button"
                                     onClick={() => setShowReset(false)}
-                                    className="text-[8px] font-black text-zinc-400 uppercase tracking-widest hover:text-black transition-colors"
+                                    className="text-[9px] text-slate-400 hover:text-white"
                                 >
                                     Cancelar
                                 </button>
-                            </div>
+                            </motion.div>
                         )}
 
-                        <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest text-center">
-                            ¿Sin acceso?{" "}
-                            <Link href="/register" className="text-black hover:underline font-black ml-1">
-                                Solicitar Registro
+                        {/* Main Action Button */}
+                        <div className="pt-2">
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className="w-full py-4 rounded-2xl bg-[#262447] hover:bg-[#312e5c] border border-indigo-500/30 text-white font-bold text-sm transition-all duration-200 active:scale-[0.98] shadow-lg shadow-black/40 flex items-center justify-center gap-2 cursor-pointer group"
+                            >
+                                {loading ? (
+                                    <>
+                                        <Loader2 className="animate-spin text-cyan-400" size={16} />
+                                        <span>Procesando...</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <span>{mode === "login" ? "Login" : "Sign Up"}</span>
+                                        <ArrowRight size={14} className="text-cyan-400 group-hover:translate-x-1 transition-transform" />
+                                    </>
+                                )}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                {/* ── BOTTOM DECORATIVE CURVED GRADIENT WAVE ─────────── */}
+                <div className="relative mt-auto overflow-hidden">
+                    {/* Curved Wave Background */}
+                    <div
+                        className="w-full pt-10 pb-6 px-6 bg-gradient-to-r from-[#1d4ed8] via-[#6366f1] to-[#a855f7] relative"
+                        style={{
+                            borderTopLeftRadius: "60% 30px",
+                            borderTopRightRadius: "60% 30px"
+                        }}
+                    >
+                        <p className="text-[10px] text-center text-white/90 leading-relaxed font-sans max-w-xs mx-auto drop-shadow">
+                            By using this software program you agree to our{" "}
+                            <Link href="/web" className="underline font-semibold hover:text-white">
+                                privacy policy
+                            </Link>{" "}
+                            and{" "}
+                            <Link href="/web" className="underline font-semibold hover:text-white">
+                                terms of use
                             </Link>
+                            .
                         </p>
                     </div>
                 </div>
 
-                {/* Footer */}
-                <div className="mt-8 text-center flex flex-col items-center gap-2">
-                    <div className="text-[9px] font-bold text-zinc-300 uppercase tracking-[0.3em]">
-                        &copy; 2026 ATOMIC INDUSTRIAS
-                    </div>
-                </div>
-            </div>
-        </div>
-    )
-}
+            </motion.div>
 
-function AtomLogo() {
-    return (
-        <svg width="48" height="48" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="36" cy="36" r="5" fill="#000" />
-            <ellipse cx="36" cy="36" rx="30" ry="10" stroke="#000" strokeWidth="1.5" fill="none" />
-            <ellipse cx="36" cy="36" rx="30" ry="10" stroke="#000" strokeWidth="1.5" fill="none" transform="rotate(60 36 36)" />
-            <ellipse cx="36" cy="36" rx="30" ry="10" stroke="#000" strokeWidth="1.5" fill="none" transform="rotate(120 36 36)" />
-            <circle cx="66" cy="36" r="2.5" fill="#000" />
-            <circle cx="21" cy="10.5" r="2.5" fill="#000" />
-            <circle cx="21" cy="61.5" r="2.5" fill="#000" />
-        </svg>
+        </div>
     )
 }
