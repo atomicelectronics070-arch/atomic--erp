@@ -16,7 +16,7 @@ git add -A
 
 echo.
 echo [3/4] Creando commit de version oficial...
-git commit -m "feat: CRM Mis Leads y WhatsApp general, asignacion de asesores por rol, alertas sonoras, audio streaming y oficina virtual con perfiles reales"
+git commit -m "feat: CRM pestanas Mis Leads + WhatsApp, asignacion asesores, alertas sonoras, audio 206, oficina virtual - deploy 2026-09-07"
 
 echo.
 echo [4/4] Subiendo a GitHub en ramas MAIN y MASTER (Vercel Produccion)...
