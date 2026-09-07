@@ -38,7 +38,19 @@ export async function POST(req: Request) {
                 let mediaUrl: string | null = null;
 
                 // 1. Check for Facebook/Instagram Ads Referral (Click to WhatsApp Ads)
-                const referral = msg.referral || msg.context?.referral;
+                const referral = msg.referral || msg.context?.referral || (msg.context?.referred_product ? {
+                    source_url: '',
+                    source_type: 'product_catalog',
+                    source_id: msg.context.referred_product.catalog_id || '',
+                    headline: 'Producto de Catálogo Meta',
+                    body: `ID de Retailer: ${msg.context.referred_product.product_retailer_id || ''}`,
+                    media_type: 'image',
+                    image_url: '',
+                    thumbnail_url: '',
+                    video_url: '',
+                    ctwa_clid: ''
+                } : null);
+
                 let referralPrefix = '';
                 if (referral) {
                     const referralData = {
@@ -94,6 +106,17 @@ export async function POST(req: Request) {
                         break;
                     default:
                         msgBody = msg.text?.body || `[Mensaje ${msgType}]`;
+                }
+
+                // Ensure message body is never blank, especially for pauta leads or media
+                if (!msgBody || msgBody.trim() === '' || msgBody === '[Mensaje unsupported]') {
+                    if (referral) {
+                        msgBody = `📢 Lead originado de Pauta: ${referral.headline || referral.source_url || 'Anuncio de Meta'}`;
+                    } else if (msgType === 'unsupported') {
+                        msgBody = '📢 Interacción de anuncio publicitario';
+                    } else if (mediaUrl) {
+                        msgBody = msgType === 'image' ? '📷 Imagen' : msgType === 'audio' ? '🎵 Audio' : msgType === 'video' ? '🎬 Video' : '📄 Documento';
+                    }
                 }
 
                 const finalBody = referralPrefix + msgBody;

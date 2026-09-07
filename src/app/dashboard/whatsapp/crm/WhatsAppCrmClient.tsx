@@ -1,11 +1,13 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
+import { useSession } from "next-auth/react"
 import { 
     MessageSquare, Send, Search, User, Phone, CheckCheck, 
     Sparkles, Plus, ExternalLink, ShieldCheck, Tag, RefreshCw, ChevronLeft,
     Settings, Image as ImageIcon, ShoppingBag, Download, Check, Save, X, Globe, Mail, MapPin,
-    Volume2, Mic, Film, FileText, Megaphone, Eye, Key, AlertCircle, Copy
+    Volume2, Mic, Film, FileText, Megaphone, Eye, Key, AlertCircle, Copy, Paperclip, Loader2,
+    UserCheck, UserPlus, Lock, Users, Filter, CheckCircle2
 } from "lucide-react"
 
 interface ReferralData {
@@ -42,6 +44,8 @@ interface Chat {
     status: string
     isFromAd?: boolean
     adHeadline?: string
+    ownerId?: string | null
+    ownerName?: string | null
     messages: MessageItem[]
 }
 
@@ -82,7 +86,14 @@ function parseMessageBody(rawBody: string = '', rawMediaUrl?: string | null, raw
         }
     }
 
-    // 4. Default fallback if body is completely empty and no media
+    // 4. If message originated from an ad referral and cleanText is blank, supply descriptive text
+    if (referral && !cleanText) {
+        cleanText = referral.headline 
+            ? `📢 Lead de Pauta: ${referral.headline}` 
+            : '📢 Lead originado de Pauta de Meta';
+    }
+
+    // 5. Default fallback if body is completely empty and no media
     if (!cleanText && !rawMediaUrl && !referral) {
         cleanText = '👋 Cliente inició la conversación';
     }
@@ -91,16 +102,140 @@ function parseMessageBody(rawBody: string = '', rawMediaUrl?: string | null, raw
 }
 
 export default function WhatsAppCrmClient() {
+    const { data: session } = useSession()
     const [chats, setChats] = useState<Chat[]>([])
     const [activeChatId, setActiveChatId] = useState<string>("")
     const [inputText, setInputText] = useState("")
     const [searchQuery, setSearchQuery] = useState("")
     const [loading, setLoading] = useState(true)
 
+    // Auto-scroll refs
+    const messagesEndRef = useRef<HTMLDivElement>(null)
+    const messagesContainerRef = useRef<HTMLDivElement>(null)
+    const prevMessagesCountRef = useRef<number>(0)
+    const hasInteractedRef = useRef<boolean>(false)
+
+    // Synthesized Sound Alerts via Web Audio API (Zero external assets needed)
+    const playIncomingSound = useCallback(() => {
+        try {
+            const AudioCtx = window.AudioContext || (window as any).webkitAudioContext
+            if (!AudioCtx) return
+            const ctx = new AudioCtx()
+            if (ctx.state === 'suspended') {
+                ctx.resume().catch(() => {})
+            }
+
+            const now = ctx.currentTime
+            // Tone 1
+            const osc1 = ctx.createOscillator()
+            const gain1 = ctx.createGain()
+            osc1.type = 'sine'
+            osc1.frequency.setValueAtTime(587.33, now) // D5
+            osc1.frequency.exponentialRampToValueAtTime(880, now + 0.12) // A5
+            gain1.gain.setValueAtTime(0.15, now)
+            gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.25)
+            osc1.connect(gain1)
+            gain1.connect(ctx.destination)
+            osc1.start(now)
+            osc1.stop(now + 0.25)
+
+            // Tone 2 (pleasant bell chime)
+            const osc2 = ctx.createOscillator()
+            const gain2 = ctx.createGain()
+            osc2.type = 'sine'
+            osc2.frequency.setValueAtTime(1174.66, now + 0.1) // D6
+            gain2.gain.setValueAtTime(0.12, now + 0.1)
+            gain2.gain.exponentialRampToValueAtTime(0.0001, now + 0.35)
+            osc2.connect(gain2)
+            gain2.connect(ctx.destination)
+            osc2.start(now + 0.1)
+            osc2.stop(now + 0.35)
+        } catch (e) {
+            // Audio context not allowed until user interacts
+        }
+    }, [])
+
+    const playOutgoingSound = useCallback(() => {
+        try {
+            const AudioCtx = window.AudioContext || (window as any).webkitAudioContext
+            if (!AudioCtx) return
+            const ctx = new AudioCtx()
+            if (ctx.state === 'suspended') {
+                ctx.resume().catch(() => {})
+            }
+
+            const now = ctx.currentTime
+            const osc = ctx.createOscillator()
+            const gain = ctx.createGain()
+            osc.type = 'triangle'
+            osc.frequency.setValueAtTime(440, now) // A4
+            osc.frequency.exponentialRampToValueAtTime(880, now + 0.15) // A5
+            gain.gain.setValueAtTime(0.12, now)
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18)
+            osc.connect(gain)
+            gain.connect(ctx.destination)
+            osc.start(now)
+            osc.stop(now + 0.18)
+        } catch (e) {
+            // Audio context
+        }
+    }, [])
+
+    // Track user gesture to permit Web Audio autoplay
+    useEffect(() => {
+        const unlockAudio = () => {
+            hasInteractedRef.current = true
+            window.removeEventListener('click', unlockAudio)
+            window.removeEventListener('keydown', unlockAudio)
+        }
+        window.addEventListener('click', unlockAudio)
+        window.addEventListener('keydown', unlockAudio)
+        return () => {
+            window.removeEventListener('click', unlockAudio)
+            window.removeEventListener('keydown', unlockAudio)
+        }
+    }, [])
+
+    // CRM Tabs Filter: "MY_LEADS" | "ALL_WHATSAPP"
+    const [activeCrmTab, setActiveCrmTab] = useState<'MY_LEADS' | 'ALL_WHATSAPP'>('MY_LEADS')
+    const [systemAdvisors, setSystemAdvisors] = useState<any[]>([])
+
+    // Roles permitted to assign leads: SUPERVISOR, COORDINADOR, CEO (ADMIN), JEFE TECNICO
+    const userRole = (session?.user as any)?.role?.toUpperCase() || ''
+    const userArea = ((session?.user as any)?.area || '').toUpperCase()
+    const canAssignLeads = 
+        userRole === 'ADMIN' || 
+        userRole === 'SUPERVISOR' || 
+        userRole === 'COORDINATOR' || 
+        userRole === 'COORDINADOR' ||
+        userRole === 'JEFE_TECNICO' ||
+        userRole === 'JEFE TECNICO' ||
+        userRole === 'TECHNICAL_CHIEF' ||
+        userRole === 'TALLER' ||
+        userArea.includes('SUPERVIS') ||
+        userArea.includes('COORD') ||
+        userArea.includes('TECNIC')
+
+    // Advisor Assignment State
+    const [assignModalOpen, setAssignModalOpen] = useState(false)
+    const [chatToAssign, setChatToAssign] = useState<Chat | null>(null)
+    const [advisorInput, setAdvisorInput] = useState("")
+    const [assigningLoading, setAssigningLoading] = useState(false)
+
     // Media Zoom / Lightbox State
     const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null)
     const [previewVideoUrl, setPreviewVideoUrl] = useState<string | null>(null)
     const [failedMedia, setFailedMedia] = useState<Record<string, boolean>>({})
+
+    // Media Outbound Attachment State
+    const fileInputRef = useRef<HTMLInputElement>(null)
+    const [pendingAttachment, setPendingAttachment] = useState<{
+        url: string;
+        mediaType: 'image' | 'audio' | 'video' | 'document';
+        filename: string;
+        size?: number;
+    } | null>(null)
+    const [isUploadingAttachment, setIsUploadingAttachment] = useState(false)
 
     // WhatsApp Settings & Profile Modal State
     const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
@@ -113,6 +248,11 @@ export default function WhatsAppCrmClient() {
     const [credToken, setCredToken] = useState('')
     const [credStatus, setCredStatus] = useState<'IDLE' | 'TESTING' | 'SUCCESS' | 'ERROR'>('IDLE')
     const [credTestResult, setCredTestResult] = useState<string | null>(null)
+
+    // Credentials Protection (Contraseña Maestra 123456)
+    const [isCredentialsUnlocked, setIsCredentialsUnlocked] = useState(false)
+    const [credentialsPinInput, setCredentialsPinInput] = useState('')
+    const [credentialsPinError, setCredentialsPinError] = useState(false)
 
     const [profileData, setProfileData] = useState({
         about: 'Tecnología, Industria y Hogar',
@@ -175,6 +315,8 @@ export default function WhatsAppCrmClient() {
                             status: conv.status || 'NEW',
                             isFromAd: isFromAd || conv.status === 'LEAD_PAUTA',
                             adHeadline: adHeadline,
+                            ownerId: conv.ownerId || conv.owner?.id || null,
+                            ownerName: conv.owner?.name || null,
                             messages: parsedMessages
                         };
                     });
@@ -230,28 +372,142 @@ export default function WhatsAppCrmClient() {
         }
     };
 
+    const fetchAdvisors = async () => {
+        try {
+            const res = await fetch('/api/whatsapp/assign');
+            if (res.ok) {
+                const data = await res.json();
+                if (data.advisors) setSystemAdvisors(data.advisors);
+            }
+        } catch (e) {
+            console.error('Error fetching advisors:', e);
+        }
+    };
+
     useEffect(() => {
         fetchConversations();
         fetchWhatsAppProfile();
         fetchCredentials();
+        fetchAdvisors();
         const interval = setInterval(fetchConversations, 3500);
         return () => clearInterval(interval);
     }, [fetchConversations]);
 
     const activeChat = chats.find(c => c.id === activeChatId) || null;
 
+    // Auto-scroll to latest message when conversation opens or new message arrives
+    useEffect(() => {
+        const scrollToBottom = (behavior: ScrollBehavior = 'auto') => {
+            if (messagesContainerRef.current) {
+                messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+            }
+            if (messagesEndRef.current) {
+                messagesEndRef.current.scrollIntoView({ behavior });
+            }
+        };
+
+        const currentMsgCount = activeChat?.messages?.length || 0;
+        
+        // If message count increased
+        if (currentMsgCount > prevMessagesCountRef.current) {
+            // Check if last message was inbound from client
+            const lastMsg = activeChat?.messages?.[currentMsgCount - 1];
+            if (prevMessagesCountRef.current > 0 && lastMsg && lastMsg.sender === 'them') {
+                playIncomingSound();
+            }
+            scrollToBottom(prevMessagesCountRef.current === 0 ? 'auto' : 'smooth');
+        } else {
+            scrollToBottom('auto');
+        }
+
+        prevMessagesCountRef.current = currentMsgCount;
+    }, [activeChatId, activeChat?.messages?.length, playIncomingSound]);
+
+    // Handle chat selection and conditional advisor assignment prompt
+    const handleSelectChat = (chat: Chat) => {
+        setActiveChatId(chat.id);
+        if (!chat.ownerName) {
+            setChatToAssign(chat);
+            setAdvisorInput(session?.user?.name || "");
+            setAssignModalOpen(true);
+        }
+    };
+
+    // Confirm advisor assignment in DB
+    const handleConfirmAssign = async () => {
+        if (!chatToAssign || !advisorInput.trim()) return;
+        setAssigningLoading(true);
+        try {
+            const res = await fetch('/api/whatsapp/assign', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    conversationId: chatToAssign.id,
+                    action: 'ASSIGN',
+                    advisorName: advisorInput.trim()
+                })
+            });
+            if (res.ok) {
+                setAssignModalOpen(false);
+                fetchConversations();
+            } else {
+                alert('⚠️ Error al asignar el asesor al chat.');
+            }
+        } catch (e: any) {
+            console.error('Error assigning chat:', e);
+            alert(`⚠️ Error de red al asignar: ${e.message}`);
+        } finally {
+            setAssigningLoading(false);
+        }
+    };
+
+    const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        setIsUploadingAttachment(true);
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+            const res = await fetch('/api/whatsapp/media/upload', { method: 'POST', body: formData });
+            if (res.ok) {
+                const data = await res.json();
+                setPendingAttachment({ url: data.url, mediaType: data.mediaType, filename: data.filename, size: data.size });
+            } else {
+                alert('⚠️ Error al subir el archivo. Intenta de nuevo.');
+            }
+        } catch (err: any) {
+            alert(`⚠️ Error: ${err.message}`);
+        } finally {
+            setIsUploadingAttachment(false);
+            if (fileInputRef.current) fileInputRef.current.value = '';
+        }
+    };
+
     const handleSendMessage = async () => {
-        if (!inputText.trim() || !activeChat) return;
+        if ((!inputText.trim() && !pendingAttachment) || !activeChat) return;
         const text = inputText;
+        const attachment = pendingAttachment;
         setInputText("");
+        setPendingAttachment(null);
 
         try {
+            const body: any = { conversationId: activeChat.id };
+            if (attachment) {
+                body.mediaUrl = attachment.url;
+                body.type = attachment.mediaType;
+                body.filename = attachment.filename;
+                if (text.trim()) body.text = text;
+            } else {
+                body.text = text;
+                body.type = 'text';
+            }
             const res = await fetch('/api/whatsapp/messages', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ conversationId: activeChat.id, text })
+                body: JSON.stringify(body)
             });
             if (res.ok) {
+                playOutgoingSound();
                 fetchConversations();
             } else {
                 const errorData = await res.json();
@@ -295,7 +551,22 @@ export default function WhatsAppCrmClient() {
         }
     };
 
+    const handleUnlockCredentials = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (credentialsPinInput.trim() === '123456') {
+            setIsCredentialsUnlocked(true);
+            setCredentialsPinError(false);
+            setCredentialsPinInput('');
+        } else {
+            setCredentialsPinError(true);
+        }
+    };
+
     const handleSaveCredentials = async () => {
+        if (!isCredentialsUnlocked) {
+            alert('⚠️ Debes desbloquear con la contraseña de seguridad (123456) para guardar cambios.');
+            return;
+        }
         setSettingsSaving(true);
         setSettingsMessage(null);
         try {
@@ -340,11 +611,39 @@ export default function WhatsAppCrmClient() {
         }
     };
 
-    const filteredChats = chats.filter(c => 
-        c.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-        c.phone.includes(searchQuery) ||
-        (c.adHeadline && c.adHeadline.toLowerCase().includes(searchQuery.toLowerCase()))
-    );
+    // Current user identification for "MIS LEADS"
+    const currentUserId = (session?.user as any)?.id || ''
+    const currentUserName = session?.user?.name || ''
+
+    const isMyLead = (chat: Chat) => {
+        // Chat directly assigned to me
+        if (chat.ownerId && chat.ownerId === currentUserId) return true
+        if (chat.ownerName && currentUserName && chat.ownerName.trim().toLowerCase() === currentUserName.trim().toLowerCase()) return true
+        // Or if I have replied in this chat (contains outbound message sent by me)
+        const hasMyReply = chat.messages.some(m => m.sender === 'me')
+        if (hasMyReply) return true
+        return false
+    }
+
+    const myLeadsCount = chats.filter(c => isMyLead(c)).length
+    const allWhatsAppCount = chats.length
+
+    const filteredChats = chats.filter(c => {
+        // Tab filter
+        if (activeCrmTab === 'MY_LEADS' && !isMyLead(c)) {
+            return false
+        }
+        // Search query filter
+        const q = searchQuery.toLowerCase().trim()
+        if (!q) return true
+        return (
+            c.name.toLowerCase().includes(q) || 
+            c.phone.includes(q) ||
+            (c.ownerName && c.ownerName.toLowerCase().includes(q)) ||
+            (c.adHeadline && c.adHeadline.toLowerCase().includes(q)) ||
+            c.messages.some(m => m.text && m.text.toLowerCase().includes(q))
+        )
+    });
 
     return (
         <div className="w-full h-[calc(100vh-4rem)] bg-[#050505] text-white flex flex-col font-sans">
@@ -395,15 +694,56 @@ export default function WhatsAppCrmClient() {
                 {/* Left Sidebar: Chat List */}
                 <div className={`w-full md:w-80 lg:w-96 border-r border-slate-800 bg-slate-900/90 flex flex-col shrink-0 ${activeChatId ? 'hidden md:flex' : 'flex'}`}>
                     
+                    {/* CRM View Tabs: MIS LEADS vs WHATSAPP */}
+                    <div className="p-2.5 bg-slate-950/90 border-b border-slate-800/80">
+                        <div className="grid grid-cols-2 gap-1.5 p-1 bg-slate-900/90 rounded-2xl border border-slate-800">
+                            <button
+                                type="button"
+                                onClick={() => setActiveCrmTab('MY_LEADS')}
+                                className={`py-2 px-3 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                                    activeCrmTab === 'MY_LEADS'
+                                        ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-950/50'
+                                        : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                                }`}
+                            >
+                                <UserCheck size={13} className={activeCrmTab === 'MY_LEADS' ? 'text-white' : 'text-emerald-400'} />
+                                <span>Mis Leads</span>
+                                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold ${
+                                    activeCrmTab === 'MY_LEADS' ? 'bg-black/40 text-emerald-200' : 'bg-slate-800 text-slate-400'
+                                }`}>
+                                    {myLeadsCount}
+                                </span>
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={() => setActiveCrmTab('ALL_WHATSAPP')}
+                                className={`py-2 px-3 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                                    activeCrmTab === 'ALL_WHATSAPP'
+                                        ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-950/50'
+                                        : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                                }`}
+                            >
+                                <MessageSquare size={13} className={activeCrmTab === 'ALL_WHATSAPP' ? 'text-white' : 'text-cyan-400'} />
+                                <span>WhatsApp</span>
+                                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold ${
+                                    activeCrmTab === 'ALL_WHATSAPP' ? 'bg-black/40 text-cyan-200' : 'bg-slate-800 text-slate-400'
+                                }`}>
+                                    {allWhatsAppCount}
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+
                     {/* Search Bar */}
-                    <div className="p-3 md:p-4 border-b border-slate-800 bg-slate-950">
+                    <div className="p-3 md:p-3.5 border-b border-slate-800 bg-slate-950">
                         <div className="relative">
                             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                             <input 
                                 type="text"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                placeholder="Buscar por cliente, teléfono o pauta..."
+                                placeholder={activeCrmTab === 'MY_LEADS' ? "Buscar en Mis Leads..." : "Buscar en todo WhatsApp..."}
                                 className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition-colors"
                             />
                         </div>
@@ -414,12 +754,24 @@ export default function WhatsAppCrmClient() {
                         {loading && chats.length === 0 ? (
                             <div className="p-8 text-center text-slate-500 text-xs font-mono">Cargando conversaciones...</div>
                         ) : filteredChats.length === 0 ? (
-                            <div className="p-8 text-center text-slate-500 text-xs">No hay conversaciones registradas.</div>
+                            <div className="p-8 text-center space-y-2">
+                                <div className="w-10 h-10 rounded-2xl bg-slate-800/80 border border-slate-700/80 flex items-center justify-center mx-auto text-slate-500">
+                                    {activeCrmTab === 'MY_LEADS' ? <UserCheck size={20} /> : <MessageSquare size={20} />}
+                                </div>
+                                <p className="text-xs text-slate-300 font-bold">
+                                    {activeCrmTab === 'MY_LEADS' ? 'No tienes leads asignados o respondidos aún' : 'No hay conversaciones registradas'}
+                                </p>
+                                {activeCrmTab === 'MY_LEADS' && (
+                                    <p className="text-[10px] text-slate-500 max-w-[200px] mx-auto">
+                                        Ve a la pestaña <strong>WhatsApp</strong> para responder o asignarte una conversación entrante.
+                                    </p>
+                                )}
+                            </div>
                         ) : (
                             filteredChats.map(chat => (
                                 <button
                                     key={chat.id}
-                                    onClick={() => setActiveChatId(chat.id)}
+                                    onClick={() => handleSelectChat(chat)}
                                     className={`w-full p-3.5 text-left transition-all flex items-start gap-3 hover:bg-slate-800/50 cursor-pointer ${activeChatId === chat.id ? 'bg-slate-800/80 border-l-4 border-emerald-500' : ''}`}
                                 >
                                     <div className="relative shrink-0">
@@ -439,13 +791,37 @@ export default function WhatsAppCrmClient() {
                                             <span className="text-[10px] font-mono text-slate-400 shrink-0">{chat.time}</span>
                                         </div>
 
-                                        {chat.isFromAd && (
-                                            <div className="flex items-center gap-1 mb-1">
-                                                <span className="text-[9px] font-black uppercase px-1.5 py-0.2 rounded bg-blue-950 text-blue-300 border border-blue-500/40 truncate max-w-[200px]">
+                                        <div className="flex items-center gap-1.5 flex-wrap mb-1">
+                                            {chat.isFromAd && (
+                                                <span className="text-[9px] font-black uppercase px-1.5 py-0.2 rounded bg-blue-950 text-blue-300 border border-blue-500/40 truncate max-w-[140px]">
                                                     📢 {chat.adHeadline || 'Pauta FB Ads'}
                                                 </span>
-                                            </div>
-                                        )}
+                                            )}
+                                            {chat.ownerName ? (
+                                                <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 flex items-center gap-0.5 truncate max-w-[140px]">
+                                                    <UserCheck size={9} className="shrink-0" /> {chat.ownerName}
+                                                </span>
+                                            ) : (
+                                                <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30 flex items-center gap-0.5 shrink-0">
+                                                    ⚡ Sin Asignar
+                                                </span>
+                                            )}
+
+                                            {canAssignLeads && (
+                                                <span
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setChatToAssign(chat);
+                                                        setAdvisorInput(chat.ownerName || "");
+                                                        setAssignModalOpen(true);
+                                                    }}
+                                                    className="ml-auto text-[9px] font-bold text-slate-400 hover:text-cyan-300 hover:bg-slate-800 px-1.5 py-0.5 rounded transition-colors"
+                                                    title="Asignar o reasignar asesor a este lead"
+                                                >
+                                                    ⚙️ Asignar
+                                                </span>
+                                            )}
+                                        </div>
 
                                         <p className="text-[11px] text-slate-400 truncate">{chat.lastMessage}</p>
                                     </div>
@@ -473,12 +849,57 @@ export default function WhatsAppCrmClient() {
                                         {activeChat.name.charAt(0).toUpperCase()}
                                     </div>
                                     <div>
-                                        <div className="flex items-center gap-2">
+                                        <div className="flex items-center gap-2 flex-wrap">
                                             <h2 className="font-bold text-sm text-white">{activeChat.name}</h2>
                                             {activeChat.isFromAd && (
                                                 <span className="bg-blue-500/20 text-blue-400 border border-blue-500/40 text-[9px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
                                                     <Megaphone size={10} /> Lead de Anuncio
                                                 </span>
+                                            )}
+                                            {activeChat.ownerName ? (
+                                                <div className="flex items-center gap-1.5">
+                                                    <span className="bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 text-[9px] font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                                                        <UserCheck size={10} /> Asignado a: {activeChat.ownerName}
+                                                    </span>
+                                                    {canAssignLeads && (
+                                                        <button
+                                                            onClick={() => {
+                                                                setChatToAssign(activeChat);
+                                                                setAdvisorInput(activeChat.ownerName || "");
+                                                                setAssignModalOpen(true);
+                                                            }}
+                                                            className="text-[10px] text-cyan-400 hover:text-cyan-200 bg-cyan-950/60 hover:bg-cyan-900/80 border border-cyan-500/30 px-2 py-0.5 rounded-lg transition-colors cursor-pointer font-bold flex items-center gap-1"
+                                                            title="Reasignar lead a otro asesor"
+                                                        >
+                                                            <Users size={11} /> Reasignar Asesor
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            ) : (
+                                                <div className="flex items-center gap-2">
+                                                    <button
+                                                        onClick={() => {
+                                                            setChatToAssign(activeChat);
+                                                            setAdvisorInput(session?.user?.name || "");
+                                                            setAssignModalOpen(true);
+                                                        }}
+                                                        className="bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[9px] font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1 hover:bg-amber-500/30 cursor-pointer animate-pulse"
+                                                    >
+                                                        <UserPlus size={10} /> ⚠️ Sin Asignar - Atender
+                                                    </button>
+                                                    {canAssignLeads && (
+                                                        <button
+                                                            onClick={() => {
+                                                                setChatToAssign(activeChat);
+                                                                setAdvisorInput("");
+                                                                setAssignModalOpen(true);
+                                                            }}
+                                                            className="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white text-[9px] font-black px-2.5 py-1 rounded-lg flex items-center gap-1 cursor-pointer shadow-sm transition-all"
+                                                        >
+                                                            <Users size={11} /> Asignar a Asesor
+                                                        </button>
+                                                    )}
+                                                </div>
                                             )}
                                         </div>
                                         <p className="text-[10px] font-mono text-slate-400">{activeChat.phone}</p>
@@ -487,7 +908,7 @@ export default function WhatsAppCrmClient() {
                             </div>
 
                             {/* Chat Messages */}
-                            <div className="flex-1 p-4 overflow-y-auto space-y-4">
+                            <div ref={messagesContainerRef} className="flex-1 p-4 overflow-y-auto space-y-4 scroll-smooth">
                                 {/* 📢 BANNER DESTACADO DE PAUTA PUBLICITARIA SI EL LEAD PROVIENE DE ANUNCIO */}
                                 {activeChat.isFromAd && (
                                     <div className="p-3.5 bg-gradient-to-r from-blue-950/90 via-indigo-950/90 to-cyan-950/90 border-2 border-blue-500/50 rounded-2xl shadow-xl space-y-2 text-white">
@@ -541,22 +962,32 @@ export default function WhatsAppCrmClient() {
                                                         </div>
 
                                                         <div className="flex gap-2.5 items-start">
-                                                            {(msg.referral.thumbnailUrl || msg.referral.imageUrl) && (
+                                                            {(msg.referral.thumbnailUrl || msg.referral.imageUrl) ? (
                                                                 <img 
                                                                     src={msg.referral.thumbnailUrl || msg.referral.imageUrl} 
                                                                     alt="Miniatura del Anuncio" 
+                                                                    referrerPolicy="no-referrer"
+                                                                    onError={(e) => {
+                                                                        (e.target as HTMLElement).style.display = 'none';
+                                                                    }}
                                                                     className="w-16 h-16 rounded-lg object-cover border border-blue-400/40 shrink-0 bg-slate-900 shadow"
                                                                 />
+                                                            ) : (
+                                                                <div className="w-12 h-12 rounded-lg bg-blue-900/50 border border-blue-400/30 flex items-center justify-center shrink-0 text-cyan-300">
+                                                                    <Megaphone size={18} />
+                                                                </div>
                                                             )}
                                                             <div className="min-w-0 flex-1">
-                                                                {msg.referral.headline && (
-                                                                    <h4 className="font-black text-xs text-white leading-snug">
-                                                                        {msg.referral.headline}
-                                                                    </h4>
-                                                                )}
-                                                                {msg.referral.body && (
+                                                                <h4 className="font-black text-xs text-white leading-snug">
+                                                                    {msg.referral.headline || 'Campaña Publicitaria de Meta'}
+                                                                </h4>
+                                                                {msg.referral.body ? (
                                                                     <p className="text-[10px] text-slate-300 line-clamp-2 mt-0.5">
                                                                         {msg.referral.body}
+                                                                    </p>
+                                                                ) : (
+                                                                    <p className="text-[10px] text-blue-300/80 italic mt-0.5">
+                                                                        Lead captado vía Click-to-WhatsApp
                                                                     </p>
                                                                 )}
                                                             </div>
@@ -599,17 +1030,32 @@ export default function WhatsAppCrmClient() {
 
                                                 {/* 🎤 AUDIO / NOTA DE VOZ */}
                                                 {msg.type === 'audio' && msg.mediaUrl && (
-                                                    <div className="p-2.5 bg-black/40 border border-white/10 rounded-xl space-y-1.5">
-                                                        <div className="flex items-center gap-2 text-[10px] font-bold text-emerald-400">
-                                                            <Mic size={14} />
-                                                            <span>Nota de Voz / Audio de WhatsApp</span>
+                                                    <div className="p-3 bg-black/50 border border-white/10 rounded-xl space-y-2">
+                                                        <div className="flex items-center justify-between text-[10px] font-bold text-emerald-400">
+                                                            <div className="flex items-center gap-1.5">
+                                                                <Mic size={14} />
+                                                                <span>Nota de Voz de WhatsApp</span>
+                                                            </div>
+                                                            <a 
+                                                                href={msg.mediaUrl} 
+                                                                target="_blank" 
+                                                                rel="noopener noreferrer"
+                                                                className="text-slate-400 hover:text-emerald-400 transition-colors p-1 rounded hover:bg-white/5 flex items-center gap-1"
+                                                                title="Descargar audio"
+                                                            >
+                                                                <Download size={12} />
+                                                            </a>
                                                         </div>
                                                         <audio 
                                                             controls 
-                                                            src={msg.mediaUrl} 
-                                                            className="w-full h-8 rounded-lg accent-emerald-500"
+                                                            className="w-full h-9 rounded-lg accent-emerald-500"
                                                             preload="metadata"
-                                                        />
+                                                        >
+                                                            <source src={msg.mediaUrl} type="audio/ogg; codecs=opus" />
+                                                            <source src={msg.mediaUrl} type="audio/aac" />
+                                                            <source src={msg.mediaUrl} type="audio/mpeg" />
+                                                            Tu navegador no soporta reproducción directa de audio.
+                                                        </audio>
                                                     </div>
                                                 )}
 
@@ -707,21 +1153,92 @@ export default function WhatsAppCrmClient() {
                                         </div>
                                     ))
                                 )}
+                                <div ref={messagesEndRef} />
                             </div>
+
+                            {/* Attachment Preview Chip */}
+                            {pendingAttachment && (
+                                <div className="px-4 py-2 bg-slate-900 border-t border-slate-800 flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        {pendingAttachment.mediaType === 'image' ? (
+                                            <img src={pendingAttachment.url} alt="Adjunto" className="w-9 h-9 rounded-lg object-cover border border-emerald-500/40" />
+                                        ) : (
+                                            <div className="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                                                <FileText size={18} />
+                                            </div>
+                                        )}
+                                        <div>
+                                            <p className="text-xs font-bold text-white truncate max-w-[200px]">{pendingAttachment.filename}</p>
+                                            <p className="text-[10px] text-emerald-400 font-semibold uppercase">{pendingAttachment.mediaType}</p>
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={() => setPendingAttachment(null)}
+                                        className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-rose-400 transition-colors"
+                                        title="Quitar archivo"
+                                    >
+                                        <X size={14} />
+                                    </button>
+                                </div>
+                            )}
 
                             {/* Chat Input Bar */}
                             <div className="p-3 border-t border-slate-800 bg-slate-950 flex items-center gap-2">
+                                <input 
+                                    type="file" 
+                                    ref={fileInputRef} 
+                                    onChange={handleFileSelect} 
+                                    className="hidden" 
+                                    accept="image/*,video/*,audio/*,.pdf,.doc,.docx"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => fileInputRef.current?.click()}
+                                    disabled={isUploadingAttachment}
+                                    className="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-cyan-400 transition-all cursor-pointer disabled:opacity-50"
+                                    title="Adjuntar imagen, audio o documento"
+                                >
+                                    {isUploadingAttachment ? <Loader2 size={16} className="animate-spin text-cyan-400" /> : <Paperclip size={16} />}
+                                </button>
                                 <input
                                     type="text"
                                     value={inputText}
+                                    onClick={() => {
+                                        if (!activeChat.ownerName) {
+                                            setChatToAssign(activeChat);
+                                            setAdvisorInput(session?.user?.name || "");
+                                            setAssignModalOpen(true);
+                                        }
+                                    }}
                                     onChange={(e) => setInputText(e.target.value)}
-                                    onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                                    placeholder="Escribe tu mensaje a través de WhatsApp API..."
+                                    onKeyDown={(e) => {
+                                        if (!activeChat.ownerName) {
+                                            e.preventDefault();
+                                            setChatToAssign(activeChat);
+                                            setAdvisorInput(session?.user?.name || "");
+                                            setAssignModalOpen(true);
+                                            return;
+                                        }
+                                        if (e.key === 'Enter') handleSendMessage();
+                                    }}
+                                    placeholder={
+                                        !activeChat.ownerName 
+                                            ? "⚠️ Clic para indicar asesor que atiende y escribir..." 
+                                            : (pendingAttachment ? "Añadir un pie de foto / mensaje..." : "Escribe tu mensaje a través de WhatsApp API...")
+                                    }
                                     className="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
                                 />
                                 <button
-                                    onClick={handleSendMessage}
-                                    disabled={!inputText.trim()}
+                                    onClick={() => {
+                                        if (!activeChat.ownerName) {
+                                            setChatToAssign(activeChat);
+                                            setAdvisorInput(session?.user?.name || "");
+                                            setAssignModalOpen(true);
+                                            return;
+                                        }
+                                        handleSendMessage();
+                                    }}
+                                    disabled={(!inputText.trim() && !pendingAttachment) || isUploadingAttachment}
                                     className="p-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white transition-all shadow-md cursor-pointer"
                                 >
                                     <Send size={16} />
@@ -826,7 +1343,13 @@ export default function WhatsAppCrmClient() {
             {isSettingsModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-3">
                     <div 
-                        onClick={() => setIsSettingsModalOpen(false)} 
+                        onClick={() => {
+                            setIsSettingsModalOpen(false);
+                            setIsCredentialsUnlocked(false);
+                            setCredentialsPinInput('');
+                            setCredentialsPinError(false);
+                            setSettingsMessage(null);
+                        }} 
                         className="absolute inset-0 bg-black/80 backdrop-blur-sm"
                     />
 
@@ -843,7 +1366,13 @@ export default function WhatsAppCrmClient() {
                                 </div>
                             </div>
                             <button
-                                onClick={() => setIsSettingsModalOpen(false)}
+                                onClick={() => {
+                                    setIsSettingsModalOpen(false);
+                                    setIsCredentialsUnlocked(false);
+                                    setCredentialsPinInput('');
+                                    setCredentialsPinError(false);
+                                    setSettingsMessage(null);
+                                }}
                                 className="p-1.5 rounded-full bg-slate-800 text-slate-400 hover:text-white cursor-pointer"
                             >
                                 <X size={16} />
@@ -968,73 +1497,125 @@ export default function WhatsAppCrmClient() {
                             </form>
                         )}
 
-                        {/* TAB 2: CREDENCIALES & TOKEN */}
+                        {/* TAB 2: CREDENCIALES & TOKEN (PROTEGIDO CON CONTRASEÑA 123456) */}
                         {activeSettingsTab === 'credentials' && (
                             <div className="space-y-4 text-xs">
-                                <div className="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-3">
-                                    <div className="flex items-center gap-2 text-emerald-400 font-bold">
-                                        <Key size={16} />
-                                        <span>Configuración de Tokens & Identificador Meta</span>
-                                    </div>
-                                    <p className="text-[11px] text-slate-400">
-                                        Pega aquí tu <strong>Token Temporal (24 horas)</strong> o tu <strong>Token Permanente de Usuario del Sistema</strong>.
-                                    </p>
-
-                                    <div>
-                                        <label className="block text-[11px] text-slate-300 font-bold mb-1">
-                                            📱 WHATSAPP PHONE NUMBER ID:
-                                        </label>
-                                        <input 
-                                            type="text"
-                                            value={credPhoneId}
-                                            onChange={(e) => setCredPhoneId(e.target.value)}
-                                            placeholder="Ej. 1215685301622222"
-                                            className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs font-mono text-white"
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-[11px] text-slate-300 font-bold mb-1">
-                                            🔑 WHATSAPP ACCESS TOKEN (Bearer Token):
-                                        </label>
-                                        <textarea 
-                                            rows={3}
-                                            value={credToken}
-                                            onChange={(e) => setCredToken(e.target.value)}
-                                            placeholder="EAA..."
-                                            className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs font-mono text-emerald-300"
-                                        />
-                                    </div>
-
-                                    <div className="flex flex-wrap gap-2 pt-2">
-                                        <button
-                                            type="button"
-                                            onClick={handleSaveCredentials}
-                                            disabled={settingsSaving}
-                                            className="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl flex items-center justify-center gap-2 cursor-pointer"
-                                        >
-                                            <Save size={14} /> <span>Guardar Credenciales</span>
-                                        </button>
-
-                                        <button
-                                            type="button"
-                                            onClick={handleTestConnection}
-                                            disabled={credStatus === 'TESTING'}
-                                            className="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl flex items-center justify-center gap-2 cursor-pointer"
-                                        >
-                                            <RefreshCw size={14} className={credStatus === 'TESTING' ? 'animate-spin' : ''} />
-                                            <span>Probar Conexión</span>
-                                        </button>
-                                    </div>
-
-                                    {credTestResult && (
-                                        <div className={`p-3 rounded-xl text-xs font-mono font-bold ${
-                                            credStatus === 'SUCCESS' ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-500/40' : 'bg-rose-950/80 text-rose-300 border border-rose-500/40'
-                                        }`}>
-                                            {credTestResult}
+                                {!isCredentialsUnlocked ? (
+                                    <form onSubmit={handleUnlockCredentials} className="p-6 bg-slate-950 rounded-2xl border border-slate-800 text-center space-y-4 max-w-md mx-auto my-4 shadow-xl">
+                                        <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center mx-auto shadow-inner">
+                                            <Lock size={24} />
                                         </div>
-                                    )}
-                                </div>
+                                        <div>
+                                            <h4 className="text-sm font-black text-white uppercase tracking-wider">Acceso Protegido con Contraseña</h4>
+                                            <p className="text-[11px] text-slate-400 mt-1">
+                                                Introduce la contraseña de seguridad para visualizar, cambiar o probar el Token de WhatsApp:
+                                            </p>
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <input 
+                                                type="password"
+                                                value={credentialsPinInput}
+                                                onChange={(e) => {
+                                                    setCredentialsPinInput(e.target.value);
+                                                    setCredentialsPinError(false);
+                                                }}
+                                                placeholder="Introduce la contraseña (ej. 123456)"
+                                                className={`w-full bg-slate-900 border rounded-xl px-4 py-2.5 text-center text-sm font-mono tracking-widest text-white placeholder-slate-500 focus:outline-none transition-colors ${
+                                                    credentialsPinError ? 'border-rose-500 ring-1 ring-rose-500' : 'border-slate-800 focus:border-amber-500'
+                                                }`}
+                                                autoFocus
+                                            />
+                                            {credentialsPinError && (
+                                                <p className="text-[10px] text-rose-400 font-bold">
+                                                    ⚠️ Contraseña incorrecta. Acceso denegado.
+                                                </p>
+                                            )}
+                                        </div>
+
+                                        <button
+                                            type="submit"
+                                            className="w-full py-2.5 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-slate-950 font-black rounded-xl text-xs flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-amber-950/40"
+                                        >
+                                            <Key size={14} /> <span>Desbloquear Configuración</span>
+                                        </button>
+                                    </form>
+                                ) : (
+                                    <div className="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-3 animate-in fade-in duration-200">
+                                        <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                                            <div className="flex items-center gap-2 text-emerald-400 font-bold">
+                                                <Key size={16} />
+                                                <span>Configuración de Tokens & Identificador Meta (Desbloqueado)</span>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={() => setIsCredentialsUnlocked(false)}
+                                                className="text-[10px] text-slate-400 hover:text-white flex items-center gap-1 cursor-pointer bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-800"
+                                                title="Volver a bloquear pestaña"
+                                            >
+                                                <Lock size={12} /> Bloquear
+                                            </button>
+                                        </div>
+                                        <p className="text-[11px] text-slate-400">
+                                            Token Permanente de Usuario del Sistema vinculado a Meta Cloud API.
+                                        </p>
+
+                                        <div>
+                                            <label className="block text-[11px] text-slate-300 font-bold mb-1">
+                                                📱 WHATSAPP PHONE NUMBER ID:
+                                            </label>
+                                            <input 
+                                                type="text"
+                                                value={credPhoneId}
+                                                onChange={(e) => setCredPhoneId(e.target.value)}
+                                                placeholder="Ej. 1215685301622232"
+                                                className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs font-mono text-white"
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-[11px] text-slate-300 font-bold mb-1">
+                                                🔑 WHATSAPP ACCESS TOKEN (Bearer Token):
+                                            </label>
+                                            <textarea 
+                                                rows={3}
+                                                value={credToken}
+                                                onChange={(e) => setCredToken(e.target.value)}
+                                                placeholder="EAA..."
+                                                className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs font-mono text-emerald-300"
+                                            />
+                                        </div>
+
+                                        <div className="flex flex-wrap gap-2 pt-2">
+                                            <button
+                                                type="button"
+                                                onClick={handleSaveCredentials}
+                                                disabled={settingsSaving}
+                                                className="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl flex items-center justify-center gap-2 cursor-pointer"
+                                            >
+                                                <Save size={14} /> <span>Guardar Credenciales</span>
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                onClick={handleTestConnection}
+                                                disabled={credStatus === 'TESTING'}
+                                                className="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl flex items-center justify-center gap-2 cursor-pointer"
+                                            >
+                                                <RefreshCw size={14} className={credStatus === 'TESTING' ? 'animate-spin' : ''} />
+                                                <span>Probar Conexión</span>
+                                            </button>
+                                        </div>
+
+                                        {credTestResult && (
+                                            <div className={`p-3 rounded-xl text-xs font-mono font-bold ${
+                                                credStatus === 'SUCCESS' ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-500/40' : 'bg-rose-950/80 text-rose-300 border border-rose-500/40'
+                                            }`}>
+                                                {credTestResult}
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
                             </div>
                         )}
 
@@ -1106,6 +1687,110 @@ export default function WhatsAppCrmClient() {
                             </div>
                         )}
 
+                    </div>
+                </div>
+            )}
+
+            {/* ═════════════════════════════════════════════════════════════ */}
+            {/* 👤 MODAL: ASIGNACIÓN DE ASESOR A LA CONVERSACIÓN            */}
+            {/* ═════════════════════════════════════════════════════════════ */}
+            {assignModalOpen && chatToAssign && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div 
+                        onClick={() => setAssignModalOpen(false)} 
+                        className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+                    />
+                    <div className="relative z-10 w-full max-w-md bg-slate-900 border border-slate-700 rounded-3xl p-6 shadow-2xl space-y-4 text-white">
+                        <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                            <div className="flex items-center gap-2 text-cyan-400 font-black text-sm">
+                                <UserCheck size={18} />
+                                <span>Asignar Asesor para Atención</span>
+                            </div>
+                            <button 
+                                onClick={() => setAssignModalOpen(false)}
+                                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 cursor-pointer"
+                            >
+                                <X size={16} />
+                            </button>
+                        </div>
+
+                        <p className="text-xs text-slate-300 leading-relaxed">
+                            Para responder a <span className="font-bold text-white">{chatToAssign.name}</span> ({chatToAssign.phone}), indica o edita el nombre del asesor responsable de esta atención:
+                        </p>
+
+                        <div className="space-y-3">
+                            {/* Selector rápido si existen asesores registrados en el sistema */}
+                            {systemAdvisors.length > 0 && (
+                                <div className="space-y-1.5">
+                                    <label className="text-[10px] font-bold uppercase tracking-wider text-cyan-400 flex items-center justify-between">
+                                        <span>Seleccionar Asesor del Equipo</span>
+                                        <span className="text-[9px] text-slate-500 font-normal">({systemAdvisors.length} disponibles)</span>
+                                    </label>
+                                    <div className="grid grid-cols-2 gap-1.5 max-h-36 overflow-y-auto p-1 bg-slate-950 rounded-xl border border-slate-800">
+                                        {systemAdvisors.map((adv: any) => {
+                                            const isSelected = advisorInput.trim().toLowerCase() === (adv.name || adv.email).trim().toLowerCase()
+                                            return (
+                                                <button
+                                                    key={adv.id}
+                                                    type="button"
+                                                    onClick={() => setAdvisorInput(adv.name || adv.email)}
+                                                    className={`p-2 rounded-lg text-left text-[11px] font-bold transition-all flex items-center gap-1.5 cursor-pointer border ${
+                                                        isSelected
+                                                            ? 'bg-cyan-500/20 border-cyan-500 text-cyan-200'
+                                                            : 'bg-slate-900 border-slate-800 text-slate-300 hover:border-slate-700 hover:text-white'
+                                                    }`}
+                                                >
+                                                    <div className="w-5 h-5 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-[9px] text-cyan-400 shrink-0 font-bold">
+                                                        {(adv.name || 'A').charAt(0).toUpperCase()}
+                                                    </div>
+                                                    <div className="min-w-0 flex-1">
+                                                        <p className="truncate leading-tight">{adv.name || adv.email}</p>
+                                                        <p className="text-[8px] text-slate-500 font-mono truncate">{adv.role || 'VENTAS'}</p>
+                                                    </div>
+                                                </button>
+                                            )
+                                        })}
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className="space-y-1.5">
+                                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                                    O escribe el nombre manualmente
+                                </label>
+                                <input
+                                    type="text"
+                                    value={advisorInput}
+                                    onChange={(e) => setAdvisorInput(e.target.value)}
+                                    onKeyDown={(e) => e.key === 'Enter' && handleConfirmAssign()}
+                                    placeholder="Ej: Carlos Mendoza / Stefany Álvarez"
+                                    className="w-full bg-slate-950 border border-slate-700 focus:border-cyan-500 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none font-medium"
+                                    autoFocus
+                                />
+                                <p className="text-[10px] text-slate-500 leading-snug">
+                                    💡 Este chat quedará registrado y en los demás perfiles se mostrará la etiqueta <strong>"Asignado a: {advisorInput || '...'}"</strong> en tiempo real.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="flex gap-2.5 pt-2">
+                            <button
+                                type="button"
+                                onClick={() => setAssignModalOpen(false)}
+                                className="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition-all cursor-pointer"
+                            >
+                                Cancelar / Solo Ver
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleConfirmAssign}
+                                disabled={!advisorInput.trim() || assigningLoading}
+                                className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-cyan-600 to-emerald-600 hover:from-cyan-500 hover:to-emerald-500 text-white text-xs font-bold transition-all shadow-lg shadow-cyan-950/50 cursor-pointer disabled:opacity-50 flex items-center justify-center gap-1.5"
+                            >
+                                {assigningLoading ? <Loader2 size={14} className="animate-spin" /> : <Check size={14} />}
+                                <span>{canAssignLeads ? 'Asignar Lead' : 'Confirmar y Atender'}</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

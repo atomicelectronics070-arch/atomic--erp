@@ -16,7 +16,7 @@ git add -A
 
 echo.
 echo [3/4] Creando commit de version oficial...
-git commit -m "feat: release oficial produccion 21 landings y coverflow completo"
+git commit -m "feat: CRM Mis Leads y WhatsApp general, asignacion de asesores por rol, alertas sonoras, audio streaming y oficina virtual con perfiles reales"
 
 echo.
 echo [4/4] Subiendo a GitHub en ramas MAIN y MASTER (Vercel Produccion)...
@@ -29,4 +29,4 @@ echo   EXITO: Todos los cambios han sido subidos a MASTER y MAIN!
 echo   Vercel esta compilando la version en https://atomiccotizador.shop
 echo ====================================================================
 echo.
-pause
+REM pause

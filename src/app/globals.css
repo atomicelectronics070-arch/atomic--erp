@@ -85,6 +85,75 @@ html {
   --appit-gray-dark: rgb(40, 40, 44);
   --appit-gray-mid: rgb(98, 100, 108);
   --appit-gray-light: rgb(228, 228, 230);
+
+  /* Dynamic Theme Fallbacks */
+  --theme-primary: #06B6D4;
+  --theme-accent: #6366F1;
+  --theme-glow: rgba(6, 182, 212, 0.45);
+  --theme-border: rgba(6, 182, 212, 0.35);
+  --theme-bg-subtle: rgba(6, 182, 212, 0.08);
+}
+
+/* ══════════════════════════════════════════════════════════════ */
+/* 🎨 ATOMIC ECOSISTEMA: SISTEMA DE 5 TEMAS DINÁMICOS GLOBALES   */
+/* ══════════════════════════════════════════════════════════════ */
+
+html[data-theme="cyber-neon"] {
+  --theme-primary: #06B6D4;
+  --theme-accent: #6366F1;
+  --theme-glow: rgba(6, 182, 212, 0.45);
+  --theme-border: rgba(6, 182, 212, 0.35);
+  --theme-bg-subtle: rgba(6, 182, 212, 0.08);
+}
+
+html[data-theme="emerald-matrix"] {
+  --theme-primary: #10B981;
+  --theme-accent: #059669;
+  --theme-glow: rgba(16, 185, 129, 0.45);
+  --theme-border: rgba(16, 185, 129, 0.35);
+  --theme-bg-subtle: rgba(16, 185, 129, 0.08);
+}
+
+html[data-theme="midnight-purple"] {
+  --theme-primary: #A855F7;
+  --theme-accent: #7C3AED;
+  --theme-glow: rgba(168, 85, 247, 0.45);
+  --theme-border: rgba(168, 85, 247, 0.35);
+  --theme-bg-subtle: rgba(168, 85, 247, 0.08);
+}
+
+html[data-theme="solar-amber"] {
+  --theme-primary: #F59E0B;
+  --theme-accent: #D97706;
+  --theme-glow: rgba(245, 158, 11, 0.45);
+  --theme-border: rgba(245, 158, 11, 0.35);
+  --theme-bg-subtle: rgba(245, 158, 11, 0.08);
+}
+
+html[data-theme="oled-black"] {
+  --theme-primary: #F1F5F9;
+  --theme-accent: #94A3B8;
+  --theme-glow: rgba(241, 245, 249, 0.3);
+  --theme-border: rgba(255, 255, 255, 0.25);
+  --theme-bg-subtle: rgba(255, 255, 255, 0.05);
+}
+
+/* Theme-reactive utility classes */
+.theme-dot {
+  background-color: var(--theme-primary) !important;
+  box-shadow: 0 0 10px var(--theme-glow) !important;
+}
+
+.theme-text {
+  color: var(--theme-primary) !important;
+}
+
+.theme-border {
+  border-color: var(--theme-border) !important;
+}
+
+.theme-glow {
+  box-shadow: 0 0 25px var(--theme-glow) !important;
 }
 
 body {

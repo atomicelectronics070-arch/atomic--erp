@@ -447,9 +447,10 @@ export default function ProfilePage() {
                                     onClick={() => handleApplyTheme(t.id)}
                                     className={`p-6 rounded-2xl border transition-all cursor-pointer relative overflow-hidden flex flex-col justify-between space-y-4 ${
                                         isSelected
-                                            ? `bg-slate-950 ${t.borderClass} shadow-[0_0_30px_rgba(6,182,212,0.15)] ring-2 ring-cyan-400/40`
+                                            ? `bg-slate-950/90 ring-2`
                                             : "bg-slate-950/60 border-slate-800 hover:border-slate-700 hover:bg-slate-950"
                                     }`}
+                                    style={isSelected ? { borderColor: t.primaryColor, boxShadow: `0 0 25px ${t.primaryColor}33`, outlineColor: t.primaryColor } : {}}
                                 >
                                     <div className="space-y-3">
                                         <div className="flex items-center justify-between">
@@ -464,7 +465,10 @@ export default function ProfilePage() {
                                                 />
                                             </div>
                                             {isSelected && (
-                                                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-cyan-400 text-black flex items-center gap-1">
+                                                <span 
+                                                    className="px-2.5 py-0.5 rounded-full text-[10px] font-black text-black flex items-center gap-1 shadow"
+                                                    style={{ backgroundColor: t.primaryColor }}
+                                                >
                                                     <Check size={12} /> ACTIVO
                                                 </span>
                                             )}

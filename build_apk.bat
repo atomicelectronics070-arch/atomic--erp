@@ -26,7 +26,7 @@ if %ERRORLEVEL% NEQ 0 (
 echo Copying APK file...
 set "OUTPUT_APK=app\build\outputs\apk\debug\app-debug.apk"
 set "DEST_DOWNLOADS=C:\Users\SANTIAGO\Downloads\atomic_erp.apk"
-set "DEST_BRAIN=C:\Users\SANTIAGO\.gemini\antigravity\brain\77fc2104-3877-4fa1-8aba-c0f973653e6e\atomic_erp.apk"
+set "DEST_BRAIN=C:\Users\SANTIAGO\.gemini\antigravity\brain\822bc056-41d7-46e7-9671-e288c81bfcb9\atomic_erp.apk"
 
 if exist "%OUTPUT_APK%" (
     copy /y "%OUTPUT_APK%" "%DEST_DOWNLOADS%"

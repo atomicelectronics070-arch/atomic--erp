@@ -130,10 +130,10 @@ export default function DashboardLayout({
                     <Link href="/dashboard" className="flex items-center gap-3 group">
                         {/* Hexagon AI Logo mark */}
                         <div className="w-9 h-9 rounded-2xl bg-white/[0.08] border border-white/[0.12] flex items-center justify-center text-white shadow-inner group-hover:scale-105 transition-transform">
-                            <Hexagon size={20} className="text-cyan-300 stroke-[1.8]" />
+                            <Hexagon size={20} className="stroke-[1.8]" style={{ color: 'var(--theme-primary)' }} />
                         </div>
                         <h1 className="text-[17px] font-normal tracking-[1px] text-white/95 font-sans leading-none">
-                            atomic<span className="text-cyan-400">.ai</span>
+                            atomic<span style={{ color: 'var(--theme-primary)' }}>.ai</span>
                         </h1>
                     </Link>
 
@@ -321,7 +321,10 @@ function GlassNavItem({
             `}
         >
             {/* Left Icon */}
-            <span className={`transition-colors shrink-0 ${isActive ? 'text-cyan-300' : 'text-white/80 group-hover:text-white'}`}>
+            <span 
+                className={`transition-colors shrink-0 ${isActive ? 'theme-text' : 'text-white/80 group-hover:text-white'}`}
+                style={isActive ? { color: 'var(--theme-primary)' } : {}}
+            >
                 {icon}
             </span>
             
@@ -332,7 +335,10 @@ function GlassNavItem({
 
             {/* Active Subtle Indicator */}
             {isActive && (
-                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.8)] shrink-0" />
+                <span 
+                    className="w-1.5 h-1.5 rounded-full shrink-0 theme-dot" 
+                    style={{ backgroundColor: 'var(--theme-primary)', boxShadow: '0 0 10px var(--theme-glow)' }}
+                />
             )}
         </Link>
     )

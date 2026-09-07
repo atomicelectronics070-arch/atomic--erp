@@ -3,13 +3,13 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { sendWhatsAppMessage, sanitizeToE164 } from '@/lib/whatsapp/service';
+import { sendWhatsAppMessage, sendWhatsAppMedia, sanitizeToE164 } from '@/lib/whatsapp/service';
 
 export async function POST(req: Request) {
     try {
         const session = await getServerSession(authOptions);
         const body = await req.json();
-        const { conversationId, text } = body;
+        const { conversationId, text = '', type = 'text', mediaUrl, filename } = body;
 
         const conversation = await prisma.wAConversation.findUnique({
             where: { id: conversationId },
@@ -34,12 +34,16 @@ export async function POST(req: Request) {
             }
         }
 
-        // 1. Send via Meta API
+        // 1. Send via Meta API (either rich media or text)
         let waMsgId = `out-${Date.now()}`;
         let metaResponsePayload: any = null;
 
         try {
-            metaResponsePayload = await sendWhatsAppMessage(e164Phone, text);
+            if (mediaUrl) {
+                metaResponsePayload = await sendWhatsAppMedia(e164Phone, mediaUrl, type, text, filename);
+            } else {
+                metaResponsePayload = await sendWhatsAppMessage(e164Phone, text);
+            }
             if (metaResponsePayload?.messages?.[0]?.id) waMsgId = metaResponsePayload.messages[0].id;
         } catch (err: any) {
             console.error('Failed to send via Meta Cloud API:', err.message);
@@ -52,8 +56,9 @@ export async function POST(req: Request) {
                 conversationId,
                 whatsappMessageId: waMsgId,
                 direction: 'OUTBOUND',
-                type: 'text',
-                body: text,
+                type: type || 'text',
+                body: text || (type === 'image' ? '📷 Imagen' : type === 'audio' ? '🎵 Audio' : type === 'video' ? '🎬 Video' : '📄 Documento'),
+                mediaUrl: mediaUrl || null,
                 senderId: session?.user?.id || null,
                 status: 'SENT'
             }

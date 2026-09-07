@@ -50,6 +50,18 @@ export default function RootLayout({
 
         {/* ── Appit Real Design Token CSS (extracted from Originkit template) ── */}
         <link rel="stylesheet" href="/appit-theme.css" />
+
+        {/* ── Immediate Theme Initialization (Zero Flash) ── */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                var theme = localStorage.getItem('atomic_theme') || 'cyber-neon';
+                document.documentElement.setAttribute('data-theme', theme);
+              } catch (e) {}
+            `,
+          }}
+        />
       </head>
       <body
         className="antialiased selection:bg-blue-500/20 selection:text-blue-300"

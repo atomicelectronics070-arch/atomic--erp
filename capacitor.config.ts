@@ -5,9 +5,10 @@ const config: CapacitorConfig = {
   appName: 'Atomic ERP',
   webDir: 'out',
   server: {
-    // Enlace de producción mediante IP Local
-    url: 'http://192.168.0.105:3000',
-    cleartext: true,
+    // Enlace de producción en vivo — Actualizaciones instantáneas automáticas
+    url: 'https://atomiccotizador.shop',
+    cleartext: false,
+    androidScheme: 'https'
   },
 };
 
