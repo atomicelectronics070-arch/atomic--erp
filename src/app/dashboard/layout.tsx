@@ -68,7 +68,18 @@ export default function DashboardLayout({
         }
     }, [session, isDashboard])
 
+    // Dynamic Theme Listener
+    const [, setThemeState] = useState('cyber-neon')
+    useEffect(() => {
+        const handleThemeChange = (e: any) => {
+            setThemeState(e.detail || localStorage.getItem('atomic_theme') || 'cyber-neon')
+        }
+        window.addEventListener('theme-changed', handleThemeChange)
+        return () => window.removeEventListener('theme-changed', handleThemeChange)
+    }, [])
+
     if (!isDashboard) {
+
         return <>{children}</>
     }
 
