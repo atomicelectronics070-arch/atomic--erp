@@ -58,6 +58,12 @@ export default function Presence01() {
 
         <div className="flex items-center gap-3 text-xs font-bold tracking-wider uppercase font-mono">
           <Link 
+            href="/portafolio" 
+            className="text-white hover:text-blue-400 transition-colors flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10"
+          >
+            <span>Portafolio</span>
+          </Link>
+          <Link 
             href="/web" 
             className="text-white hover:text-blue-400 transition-colors flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600/20 border border-blue-500/30 hover:bg-blue-600/30"
           >

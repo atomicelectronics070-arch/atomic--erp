@@ -1,15 +1,15 @@
 "use client"
 
-import React from "react"
+import React, { Suspense } from "react"
 import Link from "next/link"
 import { usePathname, useSearchParams } from "next/navigation"
 import { MessageSquare, Table, Plus, User, Palette } from "lucide-react"
 import { motion } from "framer-motion"
 
-export default function MobileBottomDock() {
+function MobileBottomDockInner() {
     const pathname = usePathname()
     const searchParams = useSearchParams()
-    const currentTab = searchParams.get("tab")
+    const currentTab = searchParams ? searchParams.get("tab") : null
 
     const isCrmActive = pathname.startsWith("/dashboard/whatsapp")
     const isPricesActive = pathname.startsWith("/dashboard/matriz-precios") || pathname.startsWith("/dashboard/shop") || pathname.startsWith("/dashboard/precios-vendedor")
@@ -103,5 +103,13 @@ export default function MobileBottomDock() {
                 </Link>
             </div>
         </nav>
+    )
+}
+
+export default function MobileBottomDock() {
+    return (
+        <Suspense fallback={null}>
+            <MobileBottomDockInner />
+        </Suspense>
     )
 }

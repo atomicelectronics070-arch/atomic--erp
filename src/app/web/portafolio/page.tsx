@@ -1,1 +1,1 @@
-export { default, metadata, dynamic } from '../../portafolio/page';
+export { default, metadata, dynamic, revalidate } from '../../portafolio/page';
