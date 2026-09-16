@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import PortafolioClient from './PortafolioClient';
 
 export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export const metadata: Metadata = {
   title: 'Portafolio Atomic | Soluciones de Ingeniería, Tecnología y Hogar',
