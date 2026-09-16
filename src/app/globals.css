@@ -104,6 +104,9 @@ html[data-theme="cyber-neon"] {
   --theme-glow: rgba(6, 182, 212, 0.45);
   --theme-border: rgba(6, 182, 212, 0.35);
   --theme-bg-subtle: rgba(6, 182, 212, 0.08);
+  --theme-bg-ambient: radial-gradient(ellipse at top right, rgba(6, 182, 212, 0.22), #070a14 70%);
+  --theme-sidebar-bg: rgba(9, 13, 30, 0.75);
+  --theme-button-gradient: linear-gradient(135deg, #0891b2, #4f46e5);
 }
 
 html[data-theme="emerald-matrix"] {
@@ -112,6 +115,9 @@ html[data-theme="emerald-matrix"] {
   --theme-glow: rgba(16, 185, 129, 0.45);
   --theme-border: rgba(16, 185, 129, 0.35);
   --theme-bg-subtle: rgba(16, 185, 129, 0.08);
+  --theme-bg-ambient: radial-gradient(ellipse at top right, rgba(16, 185, 129, 0.25), #04120c 70%);
+  --theme-sidebar-bg: rgba(4, 20, 14, 0.8);
+  --theme-button-gradient: linear-gradient(135deg, #059669, #0d9488);
 }
 
 html[data-theme="midnight-purple"] {
@@ -120,6 +126,9 @@ html[data-theme="midnight-purple"] {
   --theme-glow: rgba(168, 85, 247, 0.45);
   --theme-border: rgba(168, 85, 247, 0.35);
   --theme-bg-subtle: rgba(168, 85, 247, 0.08);
+  --theme-bg-ambient: radial-gradient(ellipse at top right, rgba(168, 85, 247, 0.25), #0f071c 70%);
+  --theme-sidebar-bg: rgba(18, 9, 32, 0.8);
+  --theme-button-gradient: linear-gradient(135deg, #9333ea, #6366f1);
 }
 
 html[data-theme="solar-amber"] {
@@ -128,6 +137,9 @@ html[data-theme="solar-amber"] {
   --theme-glow: rgba(245, 158, 11, 0.45);
   --theme-border: rgba(245, 158, 11, 0.35);
   --theme-bg-subtle: rgba(245, 158, 11, 0.08);
+  --theme-bg-ambient: radial-gradient(ellipse at top right, rgba(245, 158, 11, 0.25), #170d04 70%);
+  --theme-sidebar-bg: rgba(25, 14, 4, 0.8);
+  --theme-button-gradient: linear-gradient(135deg, #d97706, #ea580c);
 }
 
 html[data-theme="oled-black"] {
@@ -136,6 +148,9 @@ html[data-theme="oled-black"] {
   --theme-glow: rgba(241, 245, 249, 0.3);
   --theme-border: rgba(255, 255, 255, 0.25);
   --theme-bg-subtle: rgba(255, 255, 255, 0.05);
+  --theme-bg-ambient: radial-gradient(ellipse at top right, rgba(255, 255, 255, 0.08), #000000 85%);
+  --theme-sidebar-bg: rgba(10, 10, 10, 0.9);
+  --theme-button-gradient: linear-gradient(135deg, #334155, #1e293b);
 }
 
 /* Theme-reactive utility classes */
@@ -154,6 +169,20 @@ html[data-theme="oled-black"] {
 
 .theme-glow {
   box-shadow: 0 0 25px var(--theme-glow) !important;
+}
+
+.theme-ambient-bg {
+  background: var(--theme-bg-ambient, radial-gradient(ellipse at top right, rgba(6, 182, 212, 0.22), #070a14 70%)) !important;
+}
+
+.theme-sidebar {
+  background-color: var(--theme-sidebar-bg, rgba(9, 13, 30, 0.75)) !important;
+  border-color: var(--theme-border, rgba(255, 255, 255, 0.08)) !important;
+}
+
+.theme-btn-primary {
+  background: var(--theme-button-gradient) !important;
+  box-shadow: 0 0 20px var(--theme-glow) !important;
 }
 
 body {

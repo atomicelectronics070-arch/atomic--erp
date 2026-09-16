@@ -11,6 +11,22 @@ export async function middleware(req: NextRequest) {
 
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
 
+  // Rutas de Matriz de Precios y Catálogo: Acceso estrictamente con login
+  if (
+    path.startsWith("/web/matriz-precios") ||
+    path.startsWith("/precios-internos") ||
+    path.startsWith("/dashboard/matriz-precios") ||
+    path.startsWith("/dashboard/precios-vendedor") ||
+    path.startsWith("/dashboard/shop") ||
+    path.startsWith("/dashboard/prices")
+  ) {
+    if (!token) {
+      const loginUrl = new URL("/login", req.url)
+      loginUrl.searchParams.set("callbackUrl", path)
+      return NextResponse.redirect(loginUrl)
+    }
+  }
+
   if (path.startsWith("/admin") && token?.role !== "ADMIN") {
     return NextResponse.redirect(new URL("/login?error=Unauthorized", req.url))
   }
@@ -33,6 +49,8 @@ export const config = {
   matcher: [
     "/web",
     "/web/:path*",
+    "/precios-internos",
+    "/precios-internos/:path*",
     "/dashboard/:path*",
     "/admin/:path*",
     "/academy/:path*",
@@ -42,3 +60,4 @@ export const config = {
     "/api/crm/:path*",
   ],
 }
+

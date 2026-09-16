@@ -17,7 +17,10 @@ interface ProductMatrixItem {
   salePrice: number;
   marginUsd: number;
   marginPercent: number;
+  maxDiscountUsd?: number;
+  maxDiscountPercent?: number;
 }
+
 
 interface MatrizPreciosProps {
   isVendedorMode?: boolean;
@@ -36,13 +39,16 @@ export default function MatrizPreciosComponent({
 }: MatrizPreciosProps) {
   const { data: session } = useSession();
   const userRole = (session?.user as any)?.role;
-  const isStaff = userRole === 'ADMIN' || userRole === 'MANAGEMENT' || userRole === 'COORDINATOR' || userRole === 'COORD_ASSISTANT';
+  // Acceso a vista de Admin (Proveedores, Costos y ROI): estrictamente restringido a ADMIN y COORDINATOR
+  const canAccessAdminView = userRole === 'ADMIN' || userRole === 'COORDINATOR';
+
 
   // Dual mode switcher for Staff (Admin/Coordinacion)
   const [dualMode, setDualMode] = useState<'admin' | 'vendedor'>(isVendedorMode ? 'vendedor' : 'admin');
 
-  // EL LOGIN ES CONDICIONANTE: Solo staff autenticado puede ver modo admin. Si no hay sesión o es vendedor -> 100% Vendedor PVP.
-  const effectiveVendedorMode = isStaff ? (dualMode === 'vendedor') : true;
+  // EL LOGIN Y ROL SON CONDICIONANTES: Solo ADMIN o COORDINATOR pueden ver modo admin. Si es Vendedor o cualquier otro rol -> 100% Vendedor PVP siempre.
+  const effectiveVendedorMode = canAccessAdminView && !isVendedorMode ? (dualMode === 'vendedor') : true;
+
 
   const [products, setProducts] = useState<ProductMatrixItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -477,6 +483,12 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
         showDeleted: viewTrash ? 'true' : 'false',
       });
       const res = await fetch(`/api/public/matriz-precios?${query.toString()}`);
+      if (res.status === 401) {
+        if (typeof window !== 'undefined') {
+          window.location.href = `/login?callbackUrl=${encodeURIComponent(window.location.pathname)}`;
+        }
+        return;
+      }
       const data = await res.json();
       if (data.success) {
         setProducts(data.products || []);
@@ -487,6 +499,7 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
       }
     } catch (err) {
       console.error('Error al cargar matriz de precios:', err);
+
     } finally {
       setLoading(false);
     }
@@ -648,18 +661,39 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
 
   const exportToCSV = () => {
     if (!products.length) return;
-    const headers = ['SKU', 'NOMBRE PRODUCTO', 'PROVEEDOR', 'CATEGORIA', 'STOCK', 'COSTO ($)', 'VENTA ($)', 'MARGEN ($)', 'MARGEN (%)'];
-    const rows = products.map((p) => [
-      `"${p.sku}"`,
-      `"${p.name.replace(/"/g, '""')}"`,
-      `"${p.provider}"`,
-      `"${p.category}"`,
-      p.stock,
-      p.costPrice.toFixed(2),
-      p.salePrice.toFixed(2),
-      p.marginUsd.toFixed(2),
-      `${p.marginPercent.toFixed(2)}%`,
-    ]);
+    const headers = effectiveVendedorMode
+      ? ['SKU', 'NOMBRE PRODUCTO', 'CATEGORIA', 'STOCK', 'PVP VENTA ($)', 'DESC MAX ($)', 'DESC MAX (%)']
+      : ['SKU', 'NOMBRE PRODUCTO', 'PROVEEDOR', 'CATEGORIA', 'STOCK', 'COSTO ($)', 'VENTA ($)', 'MARGEN ($)', 'MARGEN (%)'];
+    
+    const rows = products.map((p) => {
+      const maxDiscountUsd = p.maxDiscountUsd !== undefined ? p.maxDiscountUsd : (p.marginUsd > 0 ? p.marginUsd / 2 : 0);
+      const maxDiscountPercent = p.maxDiscountPercent !== undefined ? p.maxDiscountPercent : (p.salePrice > 0 && maxDiscountUsd > 0 ? (maxDiscountUsd / p.salePrice) * 100 : 0);
+
+
+      if (effectiveVendedorMode) {
+        return [
+          `"${p.sku}"`,
+          `"${p.name.replace(/"/g, '""')}"`,
+          `"${p.category}"`,
+          p.stock,
+          p.salePrice.toFixed(2),
+          maxDiscountUsd.toFixed(2),
+          `${maxDiscountPercent.toFixed(2)}%`,
+        ];
+      }
+
+      return [
+        `"${p.sku}"`,
+        `"${p.name.replace(/"/g, '""')}"`,
+        `"${p.provider}"`,
+        `"${p.category}"`,
+        p.stock,
+        p.costPrice.toFixed(2),
+        p.salePrice.toFixed(2),
+        p.marginUsd.toFixed(2),
+        `${p.marginPercent.toFixed(2)}%`,
+      ];
+    });
 
     const csvContent = [headers.join(','), ...rows.map((e) => e.join(','))].join('\n');
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -671,6 +705,7 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
     link.click();
     document.body.removeChild(link);
   };
+
 
   const exportToPDF = async () => {
     if (!products.length) {
@@ -865,8 +900,9 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
             </p>
 
             {/* SELECTOR DUAL EXCLUSIVO DEL PERFIL ADMIN / COORDINACIÓN */}
-            {isStaff && (
+            {canAccessAdminView && !isVendedorMode && (
               <div className="inline-flex items-center gap-2 p-1.5 bg-zinc-950 border-2 border-cyan-400/80 rounded-xl shadow-xl">
+
                 <button
                   type="button"
                   onClick={() => {
@@ -963,7 +999,7 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
                   </span>
                 </button>
                 <button
-                  onClick={() => signOut({ callbackUrl: '/dashboard/matriz-precios' })}
+                  onClick={() => signOut({ callbackUrl: '/login' })}
                   className="px-2 py-1 bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white font-black text-[10px] uppercase rounded transition-colors cursor-pointer"
                   title="Cerrar sesión"
                 >
@@ -971,14 +1007,15 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
                 </button>
               </div>
             ) : (
-              <button
-                onClick={() => setShowLoginModal(true)}
+              <a
+                href="/login?callbackUrl=/dashboard/matriz-precios"
                 className="px-4 py-2.5 border-2 border-zinc-950 bg-gradient-to-r from-amber-400 to-yellow-500 text-zinc-950 hover:from-amber-300 hover:to-yellow-400 font-black text-xs uppercase flex items-center gap-2 rounded-lg shadow-sm transition-all cursor-pointer"
               >
                 <span>🔑</span>
                 <span>INICIAR SESIÓN</span>
-              </button>
+              </a>
             )}
+
 
             {!effectiveVendedorMode && (
               <>
@@ -1242,11 +1279,12 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
                 const globalIndex = (page - 1) * limit + idx + 1;
                 const isSaving = savingId === p.id;
 
-                // Descuento máximo en USD = 50% del margen de ganancia USD (si margen > 0)
-                const maxDiscountUsd = p.marginUsd > 0 ? p.marginUsd / 2 : 0;
+                // Descuento máximo en USD = precalculado por backend o 50% de margen
+                const maxDiscountUsd = p.maxDiscountUsd !== undefined ? p.maxDiscountUsd : (p.marginUsd > 0 ? p.marginUsd / 2 : 0);
 
                 // Porcentaje que representa ese descuento sobre el PVP (salePrice)
-                const maxDiscountPercent = p.salePrice > 0 && maxDiscountUsd > 0 ? (maxDiscountUsd / p.salePrice) * 100 : 0;
+                const maxDiscountPercent = p.maxDiscountPercent !== undefined ? p.maxDiscountPercent : (p.salePrice > 0 && maxDiscountUsd > 0 ? (maxDiscountUsd / p.salePrice) * 100 : 0);
+
 
                 return (
                   <tr
@@ -1878,15 +1916,17 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
             {/* Selector de perfiles estándar con 1 clic */}
             <div className="space-y-1.5 max-h-[220px] overflow-y-auto pr-1 custom-scrollbar">
               {[
-                { name: 'CEO / Gerencia General', email: 'ceo@atomic.com.ec', role: 'ADMIN', badge: '👑 CEO' },
-                { name: 'Coordinación Operativa', email: 'coordinacion@atomic.com.ec', role: 'COORDINATOR', badge: '👥 Coordinación' },
                 { name: 'Asesor Comercial Ventas', email: 'ventas@atomic.com.ec', role: 'SALESPERSON', badge: '💼 Ventas' },
-                { name: 'Desarrollo & Software', email: 'desarrollo@atomic.com.ec', role: 'MANAGEMENT', badge: '💻 Devs' },
-                { name: 'Edición Audiovisual & Media', email: 'edicion@atomic.com.ec', role: 'USER', badge: '🎬 Edición' },
-                { name: 'Supervisor de Calidad', email: 'supervisor@atomic.com.ec', role: 'COORD_ASSISTANT', badge: '🛡️ Supervisor' },
-                { name: 'Contabilidad & Finanzas', email: 'contabilidad@atomic.com.ec', role: 'MANAGEMENT', badge: '📊 Contabilidad' },
                 { name: 'Marketing & Pautas Ads', email: 'marketing@atomic.com.ec', role: 'USER', badge: '📣 Marketing' },
+                { name: 'Edición Audiovisual & Media', email: 'edicion@atomic.com.ec', role: 'USER', badge: '🎬 Edición' },
                 { name: 'Investigación & I+D', email: 'investigacion@atomic.com.ec', role: 'USER', badge: '🔬 I+D' },
+                ...(canAccessAdminView ? [
+                  { name: 'CEO / Gerencia General', email: 'ceo@atomic.com.ec', role: 'ADMIN', badge: '👑 CEO' },
+                  { name: 'Coordinación Operativa', email: 'coordinacion@atomic.com.ec', role: 'COORDINATOR', badge: '👥 Coordinación' },
+                  { name: 'Desarrollo & Software', email: 'desarrollo@atomic.com.ec', role: 'MANAGEMENT', badge: '💻 Devs' },
+                  { name: 'Supervisor de Calidad', email: 'supervisor@atomic.com.ec', role: 'COORD_ASSISTANT', badge: '🛡️ Supervisor' },
+                  { name: 'Contabilidad & Finanzas', email: 'contabilidad@atomic.com.ec', role: 'MANAGEMENT', badge: '📊 Contabilidad' },
+                ] : []),
               ].map((prof) => (
                 <button
                   key={prof.email}
@@ -1909,6 +1949,7 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
                 </button>
               ))}
             </div>
+
 
             {/* Custom Input Login */}
             <form

@@ -278,7 +278,8 @@ export default function VirtualOfficeWorkspace({ currentModule = "ventas" }: Pro
             </div>
 
             {/* ── ESCENARIO TOP-DOWN 2D (ESTILO GATHER.TOWN / IMAGEN REAL) ─── */}
-            <div className="relative w-full h-[620px] overflow-hidden bg-[#b88c5d] select-none">
+            <div className="w-full overflow-x-auto custom-scrollbar">
+                <div className="relative min-w-[760px] w-full h-[620px] overflow-hidden bg-[#b88c5d] select-none">
                 
                 {/* 1. SUELO: CORREDOR DE BALDOSAS GRISES CHECKERBOARD (A LA IZQUIERDA) */}
                 <div 
@@ -388,15 +389,15 @@ export default function VirtualOfficeWorkspace({ currentModule = "ventas" }: Pro
                             >
                                 {/* 🏷️ ETIQUETA FLOTANTE CON ESTADO Y NOMBRE (IGUAL A LA IMAGEN) */}
                                 <div className="flex flex-col items-center mb-1 transition-transform group-hover:-translate-y-1">
-                                    <div className={`px-2.5 py-0.5 rounded-full text-[10px] font-black shadow-lg border flex items-center gap-1.5 whitespace-nowrap ${
+                                    <div className={`px-2 py-0.5 rounded-full text-[9px] font-black shadow-lg border flex items-center gap-1 max-w-[130px] whitespace-nowrap overflow-hidden text-ellipsis ${
                                         member.status === "online" 
-                                            ? "bg-slate-950/90 text-white border-emerald-500/60 shadow-emerald-950/40" 
-                                            : "bg-slate-950/90 text-white border-amber-500/60 shadow-amber-950/40"
+                                            ? "bg-slate-950/95 text-white border-emerald-500/60 shadow-emerald-950/40" 
+                                            : "bg-slate-950/95 text-white border-amber-500/60 shadow-amber-950/40"
                                     }`}>
-                                        <span className={`w-2 h-2 rounded-full ${member.status === "online" ? "bg-emerald-400" : "bg-rose-400"} animate-pulse`} />
-                                        <span className="font-bold">{member.name}</span>
+                                        <span className={`w-1.5 h-1.5 shrink-0 rounded-full ${member.status === "online" ? "bg-emerald-400" : "bg-rose-400"} animate-pulse`} />
+                                        <span className="font-bold truncate">{member.name}</span>
                                     </div>
-                                    <span className="text-[8px] font-bold uppercase tracking-wider text-[#3d2716] font-mono mt-0.2">
+                                    <span className="text-[7.5px] font-bold uppercase tracking-wider text-[#3d2716] font-mono mt-0.2 max-w-[120px] truncate text-center">
                                         {member.roleName}
                                     </span>
                                 </div>
@@ -448,6 +449,7 @@ export default function VirtualOfficeWorkspace({ currentModule = "ventas" }: Pro
                         )
                     })}
                 </div>
+            </div>
             </div>
 
             {/* ── MODAL: FICHA / CONTACTO RÁPIDO DEL MIEMBRO DE LA OFICINA ── */}

@@ -2,7 +2,7 @@
 
 import React, { useState } from "react"
 import { signIn } from "next-auth/react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import {
@@ -13,7 +13,10 @@ import {
 
 export default function LoginPage() {
     const router = useRouter()
+    const searchParams = useSearchParams()
+    const callbackUrl = searchParams.get("callbackUrl")
     const [mode, setMode] = useState<"login" | "signup">("login")
+
 
     // Form fields
     const [name, setName] = useState("")
@@ -83,10 +86,12 @@ export default function LoginPage() {
                 }
                 setError(errMap[result.error] || result.error || "Credenciales inválidas.")
             } else if (result?.ok) {
-                let targetPath = "/dashboard"
-                if (role === "CONSUMIDOR") targetPath = "/web"
-                else if (role === "CURSOS") targetPath = "/dashboard/academy"
-                else targetPath = "/dashboard"
+                let targetPath = callbackUrl && callbackUrl.startsWith("/") ? callbackUrl : "/dashboard"
+                if (!callbackUrl) {
+                    if (role === "CONSUMIDOR") targetPath = "/web"
+                    else if (role === "CURSOS") targetPath = "/dashboard/academy"
+                    else targetPath = "/dashboard"
+                }
                 router.push(targetPath)
                 router.refresh()
             } else {
@@ -120,7 +125,7 @@ export default function LoginPage() {
                     cedula: cedula.trim() || "0000000000",
                     email: email.trim().toLowerCase(),
                     password,
-                    role: role === "CONSUMIDOR" ? "CONSUMIDOR" : "SALESPERSON",
+                    role: "SALESPERSON",
                     phone: phone.trim()
                 })
             })
@@ -137,12 +142,14 @@ export default function LoginPage() {
                         password,
                     })
                     if (loginRes?.ok) {
-                        router.push(role === "CONSUMIDOR" ? "/web" : "/dashboard")
+                        const targetPath = callbackUrl && callbackUrl.startsWith("/") ? callbackUrl : (role === "CONSUMIDOR" ? "/web" : "/dashboard")
+                        router.push(targetPath)
                         router.refresh()
                     } else {
                         setMode("login")
                     }
                 }, 1200)
+
             }
         } catch {
             setError("Error de conexión al registrar usuario")
@@ -266,27 +273,41 @@ export default function LoginPage() {
                     </AnimatePresence>
 
                     {/* Role Selector Pill */}
-                    <div className="flex items-center justify-center gap-1.5 mb-5 p-1 rounded-2xl bg-[#1d1c38] border border-white/[0.05]">
-                        {[
-                            { id: "VENDEDOR", label: "Vendedor", icon: <Users size={12} /> },
-                            { id: "CONSUMIDOR", label: "Cliente", icon: <ShoppingBag size={12} /> },
-                            { id: "CURSOS", label: "Academia", icon: <GraduationCap size={12} /> },
-                        ].map(r => (
-                            <button
-                                key={r.id}
-                                type="button"
-                                onClick={() => setRole(r.id)}
-                                className={`flex-1 py-1.5 px-2 rounded-xl text-[10px] font-bold uppercase tracking-wider flex items-center justify-center gap-1 transition-all ${
-                                    role === r.id
-                                        ? "bg-gradient-to-r from-cyan-500 to-indigo-500 text-white shadow-md font-black"
-                                        : "text-slate-400 hover:text-white"
-                                }`}
-                            >
-                                {r.icon}
-                                <span>{r.label}</span>
-                            </button>
-                        ))}
-                    </div>
+                    {mode === "login" ? (
+                        <div className="flex items-center justify-center gap-1.5 mb-5 p-1 rounded-2xl bg-[#1d1c38] border border-white/[0.05]">
+                            {[
+                                { id: "VENDEDOR", label: "Vendedor", icon: <Users size={12} /> },
+                                { id: "CONSUMIDOR", label: "Cliente", icon: <ShoppingBag size={12} /> },
+                                { id: "CURSOS", label: "Academia", icon: <GraduationCap size={12} /> },
+                            ].map(r => (
+                                <button
+                                    key={r.id}
+                                    type="button"
+                                    onClick={() => setRole(r.id)}
+                                    className={`flex-1 py-1.5 px-2 rounded-xl text-[10px] font-bold uppercase tracking-wider flex items-center justify-center gap-1 transition-all ${
+                                        role === r.id
+                                            ? "bg-gradient-to-r from-cyan-500 to-indigo-500 text-white shadow-md font-black"
+                                            : "text-slate-400 hover:text-white"
+                                    }`}
+                                >
+                                    {r.icon}
+                                    <span>{r.label}</span>
+                                </button>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="mb-4 p-2.5 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-between px-4">
+                            <div className="flex items-center gap-2">
+                                <Users size={14} className="text-cyan-400" />
+                                <span className="text-[11px] font-bold text-cyan-300 uppercase tracking-wide">
+                                    Perfil: Asesor de Ventas
+                                </span>
+                            </div>
+                            <span className="text-[9px] font-mono font-bold bg-cyan-500/20 text-cyan-200 px-2 py-0.5 rounded-full border border-cyan-500/30">
+                                OFICIAL
+                            </span>
+                        </div>
+                    )}
 
                     {/* Form */}
                     <form onSubmit={mode === "login" ? handleLoginSubmit : handleSignUpSubmit} className="space-y-4">

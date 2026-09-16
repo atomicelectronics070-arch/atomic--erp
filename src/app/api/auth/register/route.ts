@@ -7,19 +7,21 @@ import { sendWhatsAppMessage } from "@/lib/whatsapp/service"
 export async function POST(req: Request) {
     try {
         const body: any = await req.json()
-        const { name, lastName, cedula, password, role, referredBy, phone } = body
+        const { name, lastName, password, referredBy, phone } = body
         const email = body.email?.trim().toLowerCase()
+        const role = (body.role || "SALESPERSON").toUpperCase()
+        const cedula = body.cedula?.trim() || `ID-${Date.now().toString().slice(-8)}`
 
-        if (!name || !lastName || !cedula || !email || !password || !role) {
-            return NextResponse.json({ error: "Faltan campos obligatorios" }, { status: 400 })
+        if (!name || !email || !password) {
+            return NextResponse.json({ error: "Nombre, email y contraseña son obligatorios" }, { status: 400 })
         }
 
-        // Check if user already exists by email or cedula
+        // Check if user already exists by email
         const existingUser = await prisma.user.findFirst({
             where: {
                 OR: [
                     { email },
-                    { cedula }
+                    ...(body.cedula ? [{ cedula: body.cedula.trim() }] : [])
                 ]
             },
         })
@@ -31,19 +33,19 @@ export async function POST(req: Request) {
 
         const passwordHash = await bcrypt.hash(password, 10)
 
-        const roleUpper = role.toUpperCase()
-        const isAutoApprove = roleUpper === "CONSUMIDOR" || roleUpper === "SALESPERSON" || roleUpper === "AFILIADO"
-        const initialStatus = isAutoApprove ? "APPROVED" : "PENDING"
+        // Sellers and clients are auto-approved
+        const initialStatus = "APPROVED"
 
         const user = await prisma.user.create({
             data: {
                 name,
-                lastName,
+                lastName: lastName || "",
                 cedula,
                 email,
                 passwordHash,
                 status: initialStatus,
-                role: roleUpper,
+                role: role === "CONSUMIDOR" ? "CONSUMIDOR" : "SALESPERSON",
+                phoneNumber: phone || null,
                 profileData: body.profileData || `Celular: ${phone || 'N/A'} | Referido por: ${referredBy || 'N/A'}`,
             },
         })
@@ -52,12 +54,12 @@ export async function POST(req: Request) {
         try {
             await sendWhatsAppMessage(
                 process.env.ADMIN_PHONE || "593984252528",
-                `🔔 *NUEVO REGISTRO ATOMIC*\n\n👤 *Usuario:* ${name} ${lastName}\n📧 *Email:* ${email}\n🎭 *Rol Solicitado:* ${role}\n🆔 *Cédula:* ${cedula}\n\nEstado asignado: ${initialStatus === 'APPROVED' ? '✅ APROBADO AUTOMÁTICAMENTE' : '⏳ PENDIENTE DE APROBACIÓN'}.`
+                `🔔 *NUEVO REGISTRO ATOMIC*\n\n👤 *Usuario:* ${name} ${lastName || ''}\n📧 *Email:* ${email}\n🎭 *Rol:* ${user.role}\n📱 *Teléfono:* ${phone || 'N/A'}\n\nEstado asignado: ✅ APROBADO AUTOMÁTICAMENTE.`
             )
         } catch (e) { console.error("WhatsApp Admin Notify Error", e) }
 
         return NextResponse.json({
-            message: isAutoApprove ? "¡Cuenta creada y aprobada exitosamente! Ya puede iniciar sesión." : "Solicitud enviada exitosamente. Un administrador revisará su cuenta.",
+            message: "¡Cuenta creada y aprobada exitosamente! Ya puede iniciar sesión.",
             user: { id: user.id, email: user.email, name: user.name, status: initialStatus },
         }, { status: 201 })
     } catch (error: any) {

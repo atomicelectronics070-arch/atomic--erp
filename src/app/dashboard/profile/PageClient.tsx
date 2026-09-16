@@ -101,6 +101,11 @@ export default function ProfilePage() {
         if (typeof window !== "undefined") {
             const savedTheme = localStorage.getItem("atomic_theme") || "cyber-neon"
             setCurrentTheme(savedTheme)
+            const urlParams = new URLSearchParams(window.location.search)
+            const tab = urlParams.get("tab")
+            if (tab === "themes" || tab === "security" || tab === "info") {
+                setActiveTab(tab as any)
+            }
         }
         fetchProfile()
     }, [])

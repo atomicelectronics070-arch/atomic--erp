@@ -1,3 +1,6 @@
+import { getServerSession } from 'next-auth';
+import { redirect } from 'next/navigation';
+import { authOptions } from '@/lib/auth';
 import MatrizPreciosComponent from '@/components/MatrizPreciosComponent';
 
 export const dynamic = 'force-dynamic';
@@ -6,6 +9,12 @@ export const metadata = {
   title: 'Matriz de Precios ERP | ATOMIC System',
 };
 
-export default function DashboardMatrizPreciosPage() {
+export default async function DashboardMatrizPreciosPage() {
+  const session = await getServerSession(authOptions);
+  if (!session?.user) {
+    redirect('/login?callbackUrl=/dashboard/matriz-precios');
+  }
+
   return <MatrizPreciosComponent />;
 }
+

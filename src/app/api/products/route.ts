@@ -28,9 +28,11 @@ export async function GET() {
 export async function POST(req: Request) {
     try {
         const session = await getServerSession(authOptions)
-        if (!isStaff(session)) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
+        const userRole = (session?.user as any)?.role
+        if (userRole !== 'ADMIN' && userRole !== 'COORDINATOR') {
+            return NextResponse.json({ error: "Unauthorized. Solo Administradores y Coordinación pueden crear productos." }, { status: 403 })
         }
+
 
         const data = await req.json()
         

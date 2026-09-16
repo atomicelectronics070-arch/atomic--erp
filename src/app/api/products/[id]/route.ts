@@ -1,9 +1,17 @@
 export const dynamic = 'force-dynamic';
 import { NextResponse } from "next/server"
+import { getServerSession } from "next-auth/next"
+import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
+        const session = await getServerSession(authOptions)
+        const userRole = (session?.user as any)?.role
+        if (userRole !== 'ADMIN' && userRole !== 'COORDINATOR') {
+            return NextResponse.json({ error: "No autorizado. Solo Administradores y Coordinación pueden editar productos." }, { status: 403 })
+        }
+
         const data = await req.json()
         const resolvedParams = await params
         const updateData: any = {}
@@ -35,6 +43,12 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 
 export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
+        const session = await getServerSession(authOptions)
+        const userRole = (session?.user as any)?.role
+        if (userRole !== 'ADMIN' && userRole !== 'COORDINATOR') {
+            return NextResponse.json({ error: "No autorizado. Solo Administradores y Coordinación pueden eliminar productos." }, { status: 403 })
+        }
+
         const resolvedParams = await params
         const { searchParams } = new URL(req.url)
         const permanent = searchParams.get('permanent') === 'true'
@@ -61,3 +75,4 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
         return NextResponse.json({ error: "Failed to delete product" }, { status: 500 })
     }
 }
+

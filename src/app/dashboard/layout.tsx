@@ -14,6 +14,7 @@ import {
 import { useState, useEffect } from "react"
 import NotificationBell from "@/components/NotificationBell"
 import PersonalBotBubble from "@/components/PersonalBotBubble"
+import MobileBottomDock from "@/components/dashboard/MobileBottomDock"
 import { motion, AnimatePresence } from "framer-motion"
 
 export default function DashboardLayout({
@@ -107,7 +108,10 @@ export default function DashboardLayout({
         <div className="flex h-screen bg-[#070a14] text-white/95 overflow-hidden font-sans relative selection:bg-cyan-500/30 selection:text-white">
             
             {/* Background Ambient Depth */}
-            <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-950/25 via-[#070a14] to-[#070a14] pointer-events-none z-0"></div>
+            <div className="fixed inset-0 theme-ambient-bg bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-950/25 via-[#070a14] to-[#070a14] pointer-events-none z-0"></div>
+            
+            {/* Mobile Bottom Dock (Cotizar, Precios, CRM, Perfil, Temas) */}
+            <MobileBottomDock />
             
             {/* Mobile Overlay */}
             <AnimatePresence>
@@ -171,6 +175,8 @@ export default function DashboardLayout({
                     <div className="pt-3 pb-1 px-3.5 text-[11px] font-normal tracking-[0.5px] text-white/40">
                         Operaciones & Ventas
                     </div>
+                    <GlassNavItem href="/dashboard/asistencia" icon={<CheckSquare size={18} strokeWidth={1.8} />} label="Asistencia & Metas" isActive={pathname.startsWith('/dashboard/asistencia')} />
+                    <GlassNavItem href="/dashboard/contactos-historicos" icon={<Users size={18} strokeWidth={1.8} />} label="Contactos Históricos" isActive={pathname.startsWith('/dashboard/contactos-historicos')} />
                     <GlassNavItem href="/dashboard/quotes" icon={<FileText size={18} strokeWidth={1.8} />} label="Cotizaciones" isActive={pathname.startsWith('/dashboard/quotes')} />
                     <GlassNavItem href="/dashboard/matriz-precios" icon={<Table size={18} strokeWidth={1.8} />} label="Matriz de Precios" isActive={pathname.startsWith('/dashboard/matriz-precios') || pathname.startsWith('/dashboard/shop') || pathname.startsWith('/dashboard/precios-vendedor')} />
                     {(role === "ADMIN" || role === "COORDINATOR" || role === "MANAGEMENT") && (

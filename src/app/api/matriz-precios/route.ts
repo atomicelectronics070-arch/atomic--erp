@@ -1,27 +1,41 @@
 export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
 export async function GET(req: NextRequest) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user) {
+      return NextResponse.json({ error: 'No autorizado. Se requiere inicio de sesión.' }, { status: 401 });
+    }
+
+    const userRole = (session.user as any)?.role;
+    const canSeeProvidersAndCosts = userRole === 'ADMIN' || userRole === 'COORDINATOR';
+
     const { searchParams } = new URL(req.url);
     const search = searchParams.get('search')?.trim() || '';
-    const provider = searchParams.get('provider')?.trim() || '';
+    const providerParam = searchParams.get('provider')?.trim() || '';
+    const provider = canSeeProvidersAndCosts ? providerParam : '';
     const categoryId = searchParams.get('categoryId')?.trim() || '';
     const page = parseInt(searchParams.get('page') || '1', 10);
-    const limit = parseInt(searchParams.get('limit') || '100', 10); // por defecto 100 por página para carga ultra rápida
+    const limit = parseInt(searchParams.get('limit') || '100', 10);
 
     const where: any = {
       isDeleted: false,
     };
 
     if (search) {
-      where.OR = [
+      const conditions: any[] = [
         { name: { contains: search, mode: 'insensitive' } },
         { sku: { contains: search, mode: 'insensitive' } },
-        { provider: { contains: search, mode: 'insensitive' } },
         { specs: { contains: search, mode: 'insensitive' } },
       ];
+      if (canSeeProvidersAndCosts) {
+        conditions.push({ provider: { contains: search, mode: 'insensitive' } });
+      }
+      where.OR = conditions;
     }
 
     if (provider && provider !== 'ALL') {
@@ -41,9 +55,9 @@ export async function GET(req: NextRequest) {
         sku: true,
         name: true,
         price: true,
-        compareAtPrice: true,
+        compareAtPrice: canSeeProvidersAndCosts,
         stock: true,
-        provider: true,
+        provider: canSeeProvidersAndCosts,
         category: {
           select: {
             id: true,
@@ -59,38 +73,44 @@ export async function GET(req: NextRequest) {
     // Mapeo con cálculo exacto de costo, precio y margen
     const formattedProducts = products.map((p) => {
       const salePrice = p.price || 0;
-      // Si compareAtPrice existe y es diferente, se usa como costo base o referencia; si no, se estima el costo con margen del 15% (costo = venta / 1.15)
       let costPrice = 0;
-      if (p.compareAtPrice && p.compareAtPrice > 0 && p.compareAtPrice < salePrice) {
-        costPrice = p.compareAtPrice;
-      } else {
-        costPrice = Math.round((salePrice / 1.15) * 100) / 100;
-      }
+      let marginUsd = 0;
+      let marginPercent = 0;
 
-      const marginUsd = Math.round((salePrice - costPrice) * 100) / 100;
-      const marginPercent = costPrice > 0 ? Math.round(((salePrice - costPrice) / costPrice) * 10000) / 100 : 15.0;
+      if (canSeeProvidersAndCosts) {
+        if (p.compareAtPrice && p.compareAtPrice > 0 && p.compareAtPrice < salePrice) {
+          costPrice = p.compareAtPrice;
+        } else {
+          costPrice = Math.round((salePrice / 1.15) * 100) / 100;
+        }
+        marginUsd = Math.round((salePrice - costPrice) * 100) / 100;
+        marginPercent = costPrice > 0 ? Math.round(((salePrice - costPrice) / costPrice) * 10000) / 100 : 15.0;
+      }
 
       return {
         id: p.id,
         sku: p.sku || 'SIN-SKU',
         name: p.name,
-        provider: p.provider || 'Atomic',
+        provider: canSeeProvidersAndCosts ? (p.provider || 'Atomic') : '',
         category: p.category?.name || 'General',
         stock: p.stock ?? 0,
-        costPrice,
+        costPrice: canSeeProvidersAndCosts ? costPrice : 0,
         salePrice,
-        marginUsd,
-        marginPercent,
+        marginUsd: canSeeProvidersAndCosts ? marginUsd : 0,
+        marginPercent: canSeeProvidersAndCosts ? marginPercent : 0,
       };
     });
 
-    // Obtener lista de proveedores únicos para los filtros
-    const providersRaw = await prisma.product.findMany({
-      where: { isDeleted: false },
-      select: { provider: true },
-      distinct: ['provider'],
-    });
-    const providers = providersRaw.map((p) => p.provider).filter(Boolean);
+    // Obtener lista de proveedores únicos solo para admin/coordinador
+    let providers: string[] = [];
+    if (canSeeProvidersAndCosts) {
+      const providersRaw = await prisma.product.findMany({
+        where: { isDeleted: false },
+        select: { provider: true },
+        distinct: ['provider'],
+      });
+      providers = providersRaw.map((p) => p.provider).filter(Boolean) as string[];
+    }
 
     // Obtener categorías únicas para los filtros
     const categories = await prisma.category.findMany({
@@ -107,6 +127,7 @@ export async function GET(req: NextRequest) {
       products: formattedProducts,
       providers,
       categories,
+      canSeeProvidersAndCosts,
     });
   } catch (err: any) {
     console.error('Error fetching matriz precios:', err);
