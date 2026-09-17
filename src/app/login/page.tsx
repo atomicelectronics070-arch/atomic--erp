@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, Suspense } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
@@ -11,7 +11,7 @@ import {
     Phone, Users, ShoppingBag, GraduationCap
 } from "lucide-react"
 
-export default function LoginPage() {
+function LoginForm() {
     const router = useRouter()
     const searchParams = useSearchParams()
     const callbackUrl = searchParams.get("callbackUrl")
@@ -475,5 +475,17 @@ export default function LoginPage() {
             </motion.div>
 
         </div>
+    )
+}
+
+export default function LoginPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen w-full flex items-center justify-center bg-[#0d0c1d] text-cyan-400">
+                <Loader2 className="animate-spin" size={36} />
+            </div>
+        }>
+            <LoginForm />
+        </Suspense>
     )
 }
