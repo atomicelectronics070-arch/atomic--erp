@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import {
     User, Mail, Lock, Eye, EyeOff, ArrowRight, Loader2,
     CheckCircle2, AlertCircle, ShieldCheck, Sparkles, CreditCard,
-    Phone, Users, ShoppingBag, GraduationCap
+    Phone, Users, ShoppingBag, GraduationCap, Briefcase, ChevronDown
 } from "lucide-react"
 
 function LoginForm() {
@@ -26,7 +26,7 @@ function LoginForm() {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [showPassword, setShowPassword] = useState(false)
-    const [role, setRole] = useState("VENDEDOR")
+    const [profileType, setProfileType] = useState<"empleado" | "comprador">("empleado")
 
     // State
     const [loading, setLoading] = useState(false)
@@ -134,7 +134,7 @@ function LoginForm() {
                     cedula: cedula.trim() || "0000000000",
                     email: email.trim().toLowerCase(),
                     password,
-                    role: "SALESPERSON",
+                    role: profileType === "empleado" ? "SALESPERSON" : "CONSUMIDOR",
                     phone: phone.trim()
                 })
             })
@@ -151,7 +151,9 @@ function LoginForm() {
                         password,
                     })
                     if (loginRes?.ok) {
-                        const targetPath = callbackUrl && callbackUrl.startsWith("/") ? callbackUrl : (role === "CONSUMIDOR" ? "/web" : "/dashboard")
+                        const targetPath = callbackUrl && callbackUrl.startsWith("/") 
+                            ? callbackUrl 
+                            : (profileType === "comprador" ? "/web" : "/dashboard/asistencia")
                         router.push(targetPath)
                         router.refresh()
                     } else {
@@ -282,11 +284,52 @@ function LoginForm() {
                     </AnimatePresence>
 
                     {/* Subtítulo institucional */}
-                    <p className="text-[11px] text-center text-slate-400 mb-5 font-medium">
+                    <p className="text-[11px] text-center text-slate-400 mb-4 font-medium">
                         {mode === "login" 
                             ? "Ingresa tus credenciales para acceder a tu plataforma"
-                            : "Crea tu cuenta para acceder a la plataforma institucional"}
+                            : "Selecciona tu tipo de perfil y crea tu cuenta"}
                     </p>
+
+                    {/* ── DROPDOWN SELECTOR DE PERFIL (EN MODO SIGN UP) ── */}
+                    {mode === "signup" && (
+                        <div className="space-y-2 mb-4">
+                            <label className="block text-[10px] font-mono font-bold uppercase tracking-wider text-cyan-400">
+                                Tipo de Perfil / Cuenta:
+                            </label>
+                            <div className="relative">
+                                <select
+                                    value={profileType}
+                                    onChange={e => setProfileType(e.target.value as "empleado" | "comprador")}
+                                    className="w-full bg-[#1e1d3b] hover:bg-[#232244] border border-white/[0.08] focus:border-cyan-400 text-white rounded-2xl px-4 py-3 text-xs font-bold uppercase tracking-wider outline-none appearance-none cursor-pointer"
+                                >
+                                    <option value="empleado">🏢 EMPLEADO (ASESOR DE VENTAS)</option>
+                                    <option value="comprador">🛍️ COMPRADOR (CLIENTE TIENDA)</option>
+                                </select>
+                                <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-cyan-400 pointer-events-none" />
+                            </div>
+
+                            {/* Badge contextual según selección */}
+                            {profileType === "empleado" ? (
+                                <div className="p-2.5 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-between px-3.5">
+                                    <div className="flex items-center gap-2">
+                                        <Briefcase size={14} className="text-cyan-400" />
+                                        <span className="text-[10px] sm:text-[11px] font-bold text-cyan-300 uppercase tracking-wide">
+                                            Registro Oficial de Asesores ATOMIC Ventas
+                                        </span>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="p-2.5 rounded-2xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-between px-3.5">
+                                    <div className="flex items-center gap-2">
+                                        <ShoppingBag size={14} className="text-blue-400" />
+                                        <span className="text-[10px] sm:text-[11px] font-bold text-blue-300 uppercase tracking-wide">
+                                            Portal Oficial de Clientes & Compradores
+                                        </span>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
 
                     {/* Form */}
                     <form onSubmit={mode === "login" ? handleLoginSubmit : handleSignUpSubmit} className="space-y-4">
@@ -418,7 +461,11 @@ function LoginForm() {
                                     </>
                                 ) : (
                                     <>
-                                        <span>{mode === "login" ? "Login" : "Sign Up"}</span>
+                                        <span>
+                                            {mode === "login" 
+                                                ? "Login" 
+                                                : (profileType === "empleado" ? "Registrar como Asesor" : "Registrar como Comprador")}
+                                        </span>
                                         <ArrowRight size={14} className="text-cyan-400 group-hover:translate-x-1 transition-transform" />
                                     </>
                                 )}

@@ -92,7 +92,7 @@ function VendedorRegisterForm() {
                 {/* Header */}
                 <div className="text-center mb-6">
                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-[10px] font-mono font-bold uppercase tracking-wider mb-3">
-                        <Briefcase size={12} /> Registro Oficial de Asesores
+                        <Briefcase size={12} /> Registro Oficial de Asesores ATOMIC Ventas
                     </div>
                     <h1 className="text-2xl font-black tracking-tight text-white uppercase">
                         ATOMIC <span className="text-cyan-400">VENTAS</span>
