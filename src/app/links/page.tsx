@@ -33,6 +33,61 @@ export default function DirectoryLinksPage() {
   // Categorías fijas de Landings, Banners y Presentaciones principales
   const staticSections = [
     {
+      category: '🔐 SISTEMA DE AUTENTICACIÓN & ACCESOS (4 ECOSISTEMAS)',
+      items: [
+        {
+          title: 'Portal Compradores & Clientes (Login)',
+          url: '/login/comprador',
+          desc: 'Acceso dedicado para clientes de la tienda online: compras, descuentos y cotizaciones.',
+        },
+        {
+          title: 'Registro de Compradores & Clientes (Tienda)',
+          url: '/register/comprador',
+          desc: 'Registro directo con rol CONSUMIDOR para clientes de tienda en línea.',
+        },
+        {
+          title: 'Login General Inteligente',
+          url: '/login',
+          desc: 'Acceso universal institucional con detección inteligente de rol y redirección automática.',
+        },
+        {
+          title: 'Login Asesores de Ventas',
+          url: '/login/vendedor',
+          desc: 'Acceso comercial exclusivo para equipo de ventas y asesores.',
+        },
+        {
+          title: 'Registro Oficial de Asesores ATOMIC Ventas',
+          url: '/register/vendedor',
+          desc: 'Registro oficial para asesores comerciales vinculados al plan laboral.',
+        },
+        {
+          title: 'Login Técnicos e Instaladores',
+          url: '/login/tecnico',
+          desc: 'Acceso para personal técnico, soporte e instalaciones en campo.',
+        },
+        {
+          title: 'Registro de Técnicos e Instaladores',
+          url: '/register/tecnico',
+          desc: 'Registro oficial para técnicos e instaladores certificados.',
+        },
+        {
+          title: 'Login Academia Digital',
+          url: '/login/academico',
+          desc: 'Acceso de estudiantes a cursos y certificaciones técnicas.',
+        },
+        {
+          title: 'Registro Academia Digital',
+          url: '/register/academico',
+          desc: 'Inscripción oficial de alumnos a la plataforma educativa.',
+        },
+        {
+          title: 'Registro General con Selector Empleado / Comprador',
+          url: '/register',
+          desc: 'Formulario con menú desplegable dinámico entre perfil Empleado y Comprador.',
+        },
+      ],
+    },
+    {
       category: '💼 PORTAFOLIO CORPORATIVO & CONTRATACIONES',
       items: [
         {
@@ -44,11 +99,6 @@ export default function DirectoryLinksPage() {
           title: 'Plan Oficial de Contratación Comercial (Plan 30 Días)',
           url: '/contrataciones',
           desc: 'Convocatoria oficial para asesores comerciales: 7 actividades ordinarias, 2h/día, escala $100 a $450 y matriz de entrega.',
-        },
-        {
-          title: 'Registro Exclusivo de Vendedores (Plan 30 Días)',
-          url: '/register/vendedor',
-          desc: 'Enlace directo para postulantes comerciales asignados al plan laboral de 30 días.',
         },
       ],
     },

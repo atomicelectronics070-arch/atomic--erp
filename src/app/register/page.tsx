@@ -24,9 +24,16 @@ function RegisterForm() {
     const [success, setSuccess] = useState<string | boolean>(false)
 
     useEffect(() => {
-        const roleParam = searchParams.get("role")
+        const roleParam = searchParams.get("role") || searchParams.get("type")
         if (roleParam) {
-            setFormData(prev => ({ ...prev, role: roleParam.toUpperCase() }))
+            const r = roleParam.toLowerCase()
+            if (r.includes("emplead") || r.includes("vendedor") || r.includes("sales")) {
+                setFormData(prev => ({ ...prev, role: "SALESPERSON" }))
+            } else if (r.includes("comprad") || r.includes("client") || r.includes("consum")) {
+                setFormData(prev => ({ ...prev, role: "CONSUMIDOR" }))
+            } else {
+                setFormData(prev => ({ ...prev, role: roleParam.toUpperCase() }))
+            }
         }
     }, [searchParams])
 
@@ -199,11 +206,20 @@ function RegisterForm() {
                                         <Briefcase className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-[#1E3A8A] transition-colors" size={18} />
                                         <select name="role" value={formData.role} onChange={handleChange}
                                             className="w-full bg-slate-50 border border-slate-200 px-12 py-5 text-[#0F172A] text-xs font-black uppercase tracking-widest focus:border-[#1E3A8A] transition-all outline-none appearance-none cursor-pointer italic">
-                                            <option value="CONSUMIDOR">CONSUMIDOR FINAL (PERSONA COMÚN)</option>
-                                            <option value="AFILIADO">AFILIADO (SOCIO 15% DESC)</option>
-                                            <option value="SALESPERSON">VENDEDOR / DISTRIBUIDOR (SOCIO 20% DESC)</option>
-                                            <option value="CURSOS">ESTUDIANTE (PLATAFORMA CURSOS)</option>
+                                            <option value="SALESPERSON">EMPLEADO (ASESOR DE VENTAS)</option>
+                                            <option value="CONSUMIDOR">COMPRADOR (CLIENTE TIENDA ONLINE)</option>
                                         </select>
+                                    </div>
+                                    <div className="mt-2">
+                                        {formData.role === "SALESPERSON" ? (
+                                            <span className="text-[10px] font-black text-cyan-800 bg-cyan-50 px-3 py-1 border border-cyan-200 uppercase tracking-widest inline-block">
+                                                ✓ REGISTRO OFICIAL DE ASESORES ATOMIC VENTAS
+                                            </span>
+                                        ) : (
+                                            <span className="text-[10px] font-black text-blue-800 bg-blue-50 px-3 py-1 border border-blue-200 uppercase tracking-widest inline-block">
+                                                ✓ PORTAL OFICIAL DE CLIENTES & COMPRADORES
+                                            </span>
+                                        )}
                                     </div>
                                 </div>
                                 <div className="space-y-3">

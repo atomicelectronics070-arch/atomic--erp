@@ -2,11 +2,13 @@
 
 // Version: 3.0.0 — ATOMIC × Appit Theme Integration (Inter Tight + Instrument Sans, real Appit CSS tokens)
 import { useState, useRef, useEffect, useMemo } from "react"
+import { useRouter } from "next/navigation"
+import { signIn } from "next-auth/react"
 import {
   ShoppingBag, ChevronRight, ArrowRight, Shield, Zap, Truck,
   ChevronLeft, Hexagon, Star, X, Smartphone, Sparkles, Code, Bot,
   Search, ImageOff, Home, Building, Factory, Cpu, Gamepad2, Utensils, Laptop, Award, User, Settings, ChevronDown, Package, LogIn, Menu,
-  Wrench, Clock, ShieldCheck
+  Wrench, Clock, ShieldCheck, Mail, Lock, Eye, EyeOff, AlertCircle, CheckCircle2, Briefcase, Loader2
 } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
@@ -556,8 +558,60 @@ export default function PublicWebClient({
   const [liveMatches, setLiveMatches] = useState<any[]>([])
   const searchContainerRef = useRef<HTMLDivElement>(null)
   const searchDebounce = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const router = useRouter()
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
   const [activeUserModal, setActiveUserModal] = useState<string | null>(null)
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
+  const [authProfileType, setAuthProfileType] = useState<"empleado" | "comprador">("comprador")
+  const [authEmail, setAuthEmail] = useState("")
+  const [authPassword, setAuthPassword] = useState("")
+  const [showAuthPassword, setShowAuthPassword] = useState(false)
+  const [authLoading, setAuthLoading] = useState(false)
+  const [authError, setAuthError] = useState("")
+
+  const handleQuickLogin = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!authEmail || !authPassword) {
+      setAuthError("Ingresa tu correo y contraseña")
+      return
+    }
+    setAuthLoading(true)
+    setAuthError("")
+    try {
+      const res = await signIn("credentials", {
+        redirect: false,
+        email: authEmail.trim().toLowerCase(),
+        password: authPassword,
+      })
+      if (res?.error) {
+        setAuthError("Email o contraseña incorrectos")
+      } else if (res?.ok) {
+        try {
+          const resRole = await fetch(`/api/auth/user-role?email=${encodeURIComponent(authEmail.trim().toLowerCase())}`)
+          const dataRole = await resRole.json()
+          const role = (dataRole?.role || "SALESPERSON").toUpperCase()
+          if (role === "CONSUMIDOR") {
+            setIsAuthModalOpen(false)
+            router.refresh()
+          } else if (role === "ACADEMIA") {
+            router.push("/web/academy")
+          } else if (role === "TECNICO") {
+            router.push("/dashboard")
+          } else if (role === "SALESPERSON" || role === "VENDEDOR") {
+            router.push("/dashboard/asistencia")
+          } else {
+            router.push("/dashboard")
+          }
+        } catch {
+          router.push("/dashboard")
+        }
+      }
+    } catch {
+      setAuthError("Error de conexión con el servidor")
+    } finally {
+      setAuthLoading(false)
+    }
+  }
   const userMenuRef = useRef<HTMLDivElement>(null)
   const [activeTab, setActiveTab] = useState<string | null>(null)
   const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false)
@@ -810,15 +864,16 @@ export default function PublicWebClient({
               <span className="text-amber-400">→</span>
             </a>
 
-            {/* INICIAR SESIÓN (ICONO SOLAMENTE) */}
-            <Link
-              href="/login"
-              className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white text-black hover:bg-neutral-200 flex items-center justify-center shadow-md transition-all active:scale-95 shrink-0"
-              title="Iniciar Sesión"
+            {/* INICIAR SESIÓN / SELECTOR DE ACCESO */}
+            <button
+              type="button"
+              onClick={() => setIsAuthModalOpen(true)}
+              className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white text-black hover:bg-neutral-200 flex items-center justify-center shadow-md transition-all active:scale-95 shrink-0 cursor-pointer"
+              title="Iniciar Sesión / Acceso"
               aria-label="Iniciar Sesión"
             >
               <LogIn size={13} className="text-black" />
-            </Link>
+            </button>
 
             {/* USER (ICONO SOLAMENTE) */}
             <div className="relative z-50" ref={userMenuRef}>
@@ -838,12 +893,26 @@ export default function PublicWebClient({
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 8, scale: 0.95 }}
                     transition={{ duration: 0.15 }}
-                    className="absolute right-0 mt-2 w-52 bg-[#0c101c]/95 border border-blue-500/30 rounded-2xl shadow-2xl backdrop-blur-2xl p-2 z-50 overflow-hidden"
+                    className="absolute right-0 mt-2 w-56 bg-[#0c101c]/95 border border-cyan-500/30 rounded-2xl shadow-2xl backdrop-blur-2xl p-2 z-50 overflow-hidden"
                   >
                     <div className="px-3 py-2 border-b border-white/10 mb-1">
-                      <p className="text-[10px] font-mono text-blue-400 uppercase font-bold tracking-widest">Cuenta Activa</p>
+                      <p className="text-[10px] font-mono text-cyan-400 uppercase font-bold tracking-widest">Cuenta Activa</p>
                       <p className="text-xs font-bold text-white truncate">Usuario ATOMIC</p>
                     </div>
+
+                    {/* BOTÓN INGRESO DIRECTO / SELECTOR */}
+                    <button
+                      onClick={() => { setIsAuthModalOpen(true); setIsUserMenuOpen(false); }}
+                      className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-gradient-to-r from-blue-600/30 to-cyan-500/30 hover:from-blue-600/50 hover:to-cyan-500/50 border border-cyan-500/30 text-white text-xs font-bold transition-all text-left group cursor-pointer mb-1.5"
+                    >
+                      <div className="w-7 h-7 rounded-lg bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center text-cyan-300 group-hover:scale-110 transition-transform">
+                        <LogIn size={13} />
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-[11px] font-black uppercase text-white">Ingreso / Registro</span>
+                        <span className="text-[9px] text-cyan-300 font-mono">Empleado o Comprador</span>
+                      </div>
+                    </button>
 
                     <button
                       onClick={() => { setActiveUserModal('perfil'); setIsUserMenuOpen(false); }}
@@ -2284,6 +2353,208 @@ export default function PublicWebClient({
               >
                 Cerrar
               </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ═══════════ MODAL SELECTOR: EMPLEADO O COMPRADOR ═══════════ */}
+      <AnimatePresence>
+        {isAuthModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xl flex items-center justify-center p-4"
+            onClick={() => setIsAuthModalOpen(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.94, opacity: 0, y: 15 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.94, opacity: 0, y: 15 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-md bg-[#0c1220] border border-cyan-500/30 rounded-3xl p-6 sm:p-7 shadow-[0_20px_70px_rgba(0,0,0,0.8)] relative text-white"
+            >
+              {/* Botón cerrar */}
+              <button
+                type="button"
+                onClick={() => setIsAuthModalOpen(false)}
+                className="absolute top-5 right-5 w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-slate-400 hover:text-white transition-all cursor-pointer"
+              >
+                <X size={16} />
+              </button>
+
+              {/* Header */}
+              <div className="text-center mb-5">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[10px] font-mono font-bold uppercase tracking-widest mb-2">
+                  <ShieldCheck size={12} /> Acceso al Ecosistema ATOMIC
+                </div>
+                <h3 className="text-xl font-black uppercase tracking-tight text-white">
+                  Identificación de Cuenta
+                </h3>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Selecciona tu perfil de usuario para ingresar
+                </p>
+              </div>
+
+              {/* ── MENÚ DESPLEGABLE: EMPLEADO O COMPRADOR ── */}
+              <div className="mb-5 space-y-2">
+                <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-cyan-400">
+                  Tipo de Perfil:
+                </label>
+                <div className="relative">
+                  <select
+                    value={authProfileType}
+                    onChange={(e) => setAuthProfileType(e.target.value as "empleado" | "comprador")}
+                    className="w-full bg-[#141d33] border border-cyan-500/40 focus:border-cyan-400 text-white rounded-2xl px-4 py-3 text-xs font-bold uppercase tracking-wider outline-none appearance-none cursor-pointer"
+                  >
+                    <option value="comprador">🛍️ COMPRADOR (CLIENTE TIENDA EN LÍNEA)</option>
+                    <option value="empleado">🏢 EMPLEADO (ASESOR DE VENTAS)</option>
+                  </select>
+                  <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-cyan-400 pointer-events-none" />
+                </div>
+
+                {/* Alternador Rápido en Pestañas */}
+                <div className="grid grid-cols-2 gap-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => setAuthProfileType("empleado")}
+                    className={`py-2 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 border ${
+                      authProfileType === "empleado"
+                        ? "bg-cyan-500/20 border-cyan-400 text-cyan-300 shadow-[0_0_12px_rgba(6,182,212,0.25)]"
+                        : "bg-white/5 border-white/5 text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    <Briefcase size={13} />
+                    <span>Empleado</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setAuthProfileType("comprador")}
+                    className={`py-2 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 border ${
+                      authProfileType === "comprador"
+                        ? "bg-blue-500/20 border-blue-400 text-blue-300 shadow-[0_0_12px_rgba(59,130,246,0.25)]"
+                        : "bg-white/5 border-white/5 text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    <ShoppingBag size={13} />
+                    <span>Comprador</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Indicador Contextual */}
+              <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10 mb-5">
+                {authProfileType === "empleado" ? (
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-mono font-black text-cyan-300 uppercase tracking-wider block">
+                      ✓ REGISTRO OFICIAL DE ASESORES ATOMIC VENTAS
+                    </span>
+                    <p className="text-[11px] text-slate-400 leading-relaxed">
+                      Acceso al portal comercial de asesores, comisiones, asistencia y cotizador interno.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-mono font-black text-blue-300 uppercase tracking-wider block">
+                      ✓ PORTAL OFICIAL DE CLIENTES & COMPRADORES
+                    </span>
+                    <p className="text-[11px] text-slate-400 leading-relaxed">
+                      Acceso a compras, precios preferenciales, pedidos y cotizaciones de la tienda online.
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Alerta de Error */}
+              {authError && (
+                <div className="mb-4 p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs font-medium flex items-center gap-2">
+                  <AlertCircle size={14} className="shrink-0 text-rose-400" />
+                  <span>{authError}</span>
+                </div>
+              )}
+
+              {/* Formulario Rápido de Login */}
+              <form onSubmit={handleQuickLogin} className="space-y-3">
+                <div className="relative">
+                  <Mail size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-cyan-400" />
+                  <input
+                    type="email"
+                    required
+                    value={authEmail}
+                    onChange={(e) => setAuthEmail(e.target.value)}
+                    placeholder="Correo electrónico"
+                    className="w-full bg-[#131b2e] border border-white/10 rounded-xl pl-10 pr-3 py-2.5 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-400"
+                  />
+                </div>
+
+                <div className="relative">
+                  <Lock size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-cyan-400" />
+                  <input
+                    type={showAuthPassword ? "text" : "password"}
+                    required
+                    value={authPassword}
+                    onChange={(e) => setAuthPassword(e.target.value)}
+                    placeholder="Contraseña"
+                    className="w-full bg-[#131b2e] border border-white/10 rounded-xl pl-10 pr-10 py-2.5 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-400"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowAuthPassword(!showAuthPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white cursor-pointer"
+                  >
+                    {showAuthPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+                  </button>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={authLoading}
+                  className="w-full py-3 rounded-xl bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-500 hover:from-blue-500 hover:to-cyan-400 text-white font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-cyan-500/20"
+                >
+                  {authLoading ? (
+                    <>
+                      <Loader2 className="animate-spin" size={14} /> Identificando perfil...
+                    </>
+                  ) : (
+                    <>
+                      <span>Iniciar Sesión ({authProfileType === "empleado" ? "Empleado" : "Comprador"})</span>
+                      <ArrowRight size={14} />
+                    </>
+                  )}
+                </button>
+              </form>
+
+              {/* Enlaces a Registros y Logins Dedicados */}
+              <div className="mt-5 pt-4 border-t border-white/10 flex flex-col gap-2">
+                <div className="flex items-center justify-between text-[11px]">
+                  <span className="text-slate-400">¿No tienes cuenta?</span>
+                  <Link
+                    href={authProfileType === "empleado" ? "/register/vendedor" : "/register/comprador"}
+                    onClick={() => setIsAuthModalOpen(false)}
+                    className="font-bold text-cyan-400 hover:underline"
+                  >
+                    {authProfileType === "empleado" ? "Registrar como Empleado →" : "Registrar como Comprador →"}
+                  </Link>
+                </div>
+
+                <div className="flex items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-white/5">
+                  <Link
+                    href={authProfileType === "empleado" ? "/login" : "/login/comprador"}
+                    onClick={() => setIsAuthModalOpen(false)}
+                    className="hover:text-slate-300 underline"
+                  >
+                    Página completa de {authProfileType === "empleado" ? "Login Empleado" : "Login Comprador"}
+                  </Link>
+                  <Link
+                    href="/register"
+                    onClick={() => setIsAuthModalOpen(false)}
+                    className="hover:text-slate-300 underline"
+                  >
+                    Registro General
+                  </Link>
+                </div>
+              </div>
             </motion.div>
           </motion.div>
         )}
