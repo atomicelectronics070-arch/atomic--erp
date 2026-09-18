@@ -36,6 +36,13 @@ export async function POST(req: Request) {
         // Sellers and clients are auto-approved
         const initialStatus = "APPROVED"
 
+        const validRoles = ["SALESPERSON", "CONSUMIDOR", "ACADEMIA", "TECNICO", "VENDEDOR"]
+        let assignedRole = "SALESPERSON"
+        if (role === "CONSUMIDOR") assignedRole = "CONSUMIDOR"
+        else if (role === "ACADEMIA" || role === "ACADEMICO") assignedRole = "ACADEMIA"
+        else if (role === "TECNICO") assignedRole = "TECNICO"
+        else assignedRole = "SALESPERSON"
+
         const user = await prisma.user.create({
             data: {
                 name,
@@ -44,7 +51,7 @@ export async function POST(req: Request) {
                 email,
                 passwordHash,
                 status: initialStatus,
-                role: role === "CONSUMIDOR" ? "CONSUMIDOR" : "SALESPERSON",
+                role: assignedRole,
                 phoneNumber: phone || null,
                 profileData: body.profileData || `Celular: ${phone || 'N/A'} | Referido por: ${referredBy || 'N/A'}`,
             },

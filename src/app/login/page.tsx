@@ -86,11 +86,20 @@ function LoginForm() {
                 }
                 setError(errMap[result.error] || result.error || "Credenciales inválidas.")
             } else if (result?.ok) {
-                let targetPath = callbackUrl && callbackUrl.startsWith("/") ? callbackUrl : "/dashboard"
-                if (!callbackUrl) {
-                    if (role === "CONSUMIDOR") targetPath = "/web"
-                    else if (role === "CURSOS") targetPath = "/dashboard/academy"
-                    else targetPath = "/dashboard"
+                let targetPath = callbackUrl && callbackUrl.startsWith("/") ? callbackUrl : ""
+                if (!targetPath) {
+                    try {
+                        const resRole = await fetch(`/api/auth/user-role?email=${encodeURIComponent(email.trim().toLowerCase())}`)
+                        const dataRole = await resRole.json()
+                        const uRole = (dataRole?.role || "SALESPERSON").toUpperCase()
+                        if (uRole === "CONSUMIDOR") targetPath = "/web"
+                        else if (uRole === "ACADEMIA" || uRole === "CURSOS") targetPath = "/web/academy"
+                        else if (uRole === "TECNICO") targetPath = "/dashboard"
+                        else if (uRole === "SALESPERSON" || uRole === "VENDEDOR") targetPath = "/dashboard/asistencia"
+                        else targetPath = "/dashboard"
+                    } catch {
+                        targetPath = "/dashboard"
+                    }
                 }
                 router.push(targetPath)
                 router.refresh()
@@ -272,29 +281,11 @@ function LoginForm() {
                         )}
                     </AnimatePresence>
 
-                    {/* Role Selector Pill */}
+                    {/* Subtítulo institucional / Badge de registro */}
                     {mode === "login" ? (
-                        <div className="flex items-center justify-center gap-1.5 mb-5 p-1 rounded-2xl bg-[#1d1c38] border border-white/[0.05]">
-                            {[
-                                { id: "VENDEDOR", label: "Vendedor", icon: <Users size={12} /> },
-                                { id: "CONSUMIDOR", label: "Cliente", icon: <ShoppingBag size={12} /> },
-                                { id: "CURSOS", label: "Academia", icon: <GraduationCap size={12} /> },
-                            ].map(r => (
-                                <button
-                                    key={r.id}
-                                    type="button"
-                                    onClick={() => setRole(r.id)}
-                                    className={`flex-1 py-1.5 px-2 rounded-xl text-[10px] font-bold uppercase tracking-wider flex items-center justify-center gap-1 transition-all ${
-                                        role === r.id
-                                            ? "bg-gradient-to-r from-cyan-500 to-indigo-500 text-white shadow-md font-black"
-                                            : "text-slate-400 hover:text-white"
-                                    }`}
-                                >
-                                    {r.icon}
-                                    <span>{r.label}</span>
-                                </button>
-                            ))}
-                        </div>
+                        <p className="text-[11px] text-center text-slate-400 mb-5 font-medium">
+                            Ingresa tus credenciales para acceder a tu plataforma
+                        </p>
                     ) : (
                         <div className="mb-4 p-2.5 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-between px-4">
                             <div className="flex items-center gap-2">
@@ -304,7 +295,7 @@ function LoginForm() {
                                 </span>
                             </div>
                             <span className="text-[9px] font-mono font-bold bg-cyan-500/20 text-cyan-200 px-2 py-0.5 rounded-full border border-cyan-500/30">
-                                OFICIAL
+                                PLAN 30 DÍAS
                             </span>
                         </div>
                     )}

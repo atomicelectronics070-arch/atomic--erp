@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import ContratacionesClient from '@/app/contrataciones/ContratacionesClient';
+import ContratacionesClient from './ContratacionesClient';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -14,6 +14,6 @@ export const metadata: Metadata = {
   },
 };
 
-export default function WebContratacionesPage() {
+export default function ContratacionesPage() {
   return <ContratacionesClient />;
 }

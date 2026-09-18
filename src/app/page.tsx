@@ -5,7 +5,7 @@
 import React from "react";
 import Globe from "@/components/originkit/ui/globe";
 import OrbitControls from "@/components/originkit/ui/orbit-controls";
-import { LogIn, ShoppingBag, ArrowRight, MessageCircle, Globe as GlobeIcon } from "lucide-react";
+import { LogIn, ShoppingBag, ArrowRight, MessageCircle, Globe as GlobeIcon, Briefcase } from "lucide-react";
 import Link from "next/link";
 
 const METRICS = [
@@ -59,9 +59,16 @@ export default function Presence01() {
         <div className="flex items-center gap-3 text-xs font-bold tracking-wider uppercase font-mono">
           <Link 
             href="/portafolio" 
-            className="text-white hover:text-blue-400 transition-colors flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10"
+            className="text-white hover:text-blue-400 transition-colors flex items-center gap-2 px-3 sm:px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10"
           >
             <span>Portafolio</span>
+          </Link>
+          <Link 
+            href="/contrataciones" 
+            className="text-cyan-300 hover:text-cyan-200 transition-colors flex items-center gap-2 px-3 sm:px-4 py-2.5 rounded-xl bg-cyan-950/40 border border-cyan-500/30 hover:bg-cyan-900/40"
+          >
+            <Briefcase size={14} className="text-cyan-400" />
+            <span>Empleo</span>
           </Link>
           <Link 
             href="/web" 

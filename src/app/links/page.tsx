@@ -33,6 +33,26 @@ export default function DirectoryLinksPage() {
   // Categorías fijas de Landings, Banners y Presentaciones principales
   const staticSections = [
     {
+      category: '💼 PORTAFOLIO CORPORATIVO & CONTRATACIONES',
+      items: [
+        {
+          title: 'Portafolio Atomic - Soluciones de Ingeniería, Tecnología y Hogar',
+          url: '/portafolio',
+          desc: 'Presentación corporativa de alto nivel: Tecnología Residencial, Hogar, Electrónica, Software, Servicios y 4 referencias en video.',
+        },
+        {
+          title: 'Plan Oficial de Contratación Comercial (Plan 30 Días)',
+          url: '/contrataciones',
+          desc: 'Convocatoria oficial para asesores comerciales: 7 actividades ordinarias, 2h/día, escala $100 a $450 y matriz de entrega.',
+        },
+        {
+          title: 'Registro Exclusivo de Vendedores (Plan 30 Días)',
+          url: '/register/vendedor',
+          desc: 'Enlace directo para postulantes comerciales asignados al plan laboral de 30 días.',
+        },
+      ],
+    },
+    {
       category: '🏗️ MAQUINARIA PESADA & BLOQUERAS',
       items: [
         {
