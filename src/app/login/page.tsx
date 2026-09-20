@@ -26,7 +26,7 @@ function LoginForm() {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [showPassword, setShowPassword] = useState(false)
-    const [profileType, setProfileType] = useState<"empleado" | "comprador">("empleado")
+    const [profileType, setProfileType] = useState<"empleado" | "comprador" | "tecnico" | "academia" | "admin">("empleado")
 
     // State
     const [loading, setLoading] = useState(false)
@@ -88,17 +88,29 @@ function LoginForm() {
             } else if (result?.ok) {
                 let targetPath = callbackUrl && callbackUrl.startsWith("/") ? callbackUrl : ""
                 if (!targetPath) {
-                    try {
-                        const resRole = await fetch(`/api/auth/user-role?email=${encodeURIComponent(email.trim().toLowerCase())}`)
-                        const dataRole = await resRole.json()
-                        const uRole = (dataRole?.role || "SALESPERSON").toUpperCase()
-                        if (uRole === "CONSUMIDOR") targetPath = "/web"
-                        else if (uRole === "ACADEMIA" || uRole === "CURSOS") targetPath = "/web/academy"
-                        else if (uRole === "TECNICO") targetPath = "/dashboard"
-                        else if (uRole === "SALESPERSON" || uRole === "VENDEDOR") targetPath = "/dashboard/asistencia"
-                        else targetPath = "/dashboard"
-                    } catch {
+                    if (profileType === "comprador") {
+                        targetPath = "/web"
+                    } else if (profileType === "academia") {
+                        targetPath = "/web/academy"
+                    } else if (profileType === "tecnico") {
                         targetPath = "/dashboard"
+                    } else if (profileType === "admin") {
+                        targetPath = "/dashboard"
+                    } else if (profileType === "empleado") {
+                        targetPath = "/dashboard/asistencia"
+                    } else {
+                        try {
+                            const resRole = await fetch(`/api/auth/user-role?email=${encodeURIComponent(email.trim().toLowerCase())}`)
+                            const dataRole = await resRole.json()
+                            const uRole = (dataRole?.role || "SALESPERSON").toUpperCase()
+                            if (uRole === "CONSUMIDOR") targetPath = "/web"
+                            else if (uRole === "ACADEMIA" || uRole === "CURSOS") targetPath = "/web/academy"
+                            else if (uRole === "TECNICO") targetPath = "/dashboard"
+                            else if (uRole === "SALESPERSON" || uRole === "VENDEDOR") targetPath = "/dashboard/asistencia"
+                            else targetPath = "/dashboard"
+                        } catch {
+                            targetPath = "/dashboard"
+                        }
                     }
                 }
                 router.push(targetPath)
@@ -124,6 +136,14 @@ function LoginForm() {
         setError("")
         setSuccess("")
 
+        const roleToAssign = profileType === "comprador" 
+            ? "CONSUMIDOR" 
+            : profileType === "tecnico" 
+            ? "TECNICO" 
+            : profileType === "academia" 
+            ? "ACADEMIA" 
+            : "SALESPERSON"
+
         try {
             const res = await fetch("/api/auth/register", {
                 method: "POST",
@@ -134,7 +154,7 @@ function LoginForm() {
                     cedula: cedula.trim() || "0000000000",
                     email: email.trim().toLowerCase(),
                     password,
-                    role: profileType === "empleado" ? "SALESPERSON" : "CONSUMIDOR",
+                    role: roleToAssign,
                     phone: phone.trim()
                 })
             })
@@ -151,9 +171,13 @@ function LoginForm() {
                         password,
                     })
                     if (loginRes?.ok) {
-                        const targetPath = callbackUrl && callbackUrl.startsWith("/") 
-                            ? callbackUrl 
-                            : (profileType === "comprador" ? "/web" : "/dashboard/asistencia")
+                        let targetPath = callbackUrl && callbackUrl.startsWith("/") ? callbackUrl : ""
+                        if (!targetPath) {
+                            if (profileType === "comprador") targetPath = "/web"
+                            else if (profileType === "academia") targetPath = "/web/academy"
+                            else if (profileType === "tecnico") targetPath = "/dashboard"
+                            else targetPath = "/dashboard/asistencia"
+                        }
                         router.push(targetPath)
                         router.refresh()
                     } else {
@@ -214,8 +238,8 @@ function LoginForm() {
                         </div>
                     </div>
 
-                    <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-cyan-300 font-bold mt-2">
-                        Atomic Electronics
+                    <span className="text-xs font-mono uppercase tracking-[0.3em] text-cyan-300 font-bold mt-2">
+                        ATOMIC
                     </span>
                 </div>
 
@@ -290,46 +314,76 @@ function LoginForm() {
                             : "Selecciona tu tipo de perfil y crea tu cuenta"}
                     </p>
 
-                    {/* ── DROPDOWN SELECTOR DE PERFIL (EN MODO SIGN UP) ── */}
-                    {mode === "signup" && (
-                        <div className="space-y-2 mb-4">
-                            <label className="block text-[10px] font-mono font-bold uppercase tracking-wider text-cyan-400">
-                                Tipo de Perfil / Cuenta:
-                            </label>
-                            <div className="relative">
-                                <select
-                                    value={profileType}
-                                    onChange={e => setProfileType(e.target.value as "empleado" | "comprador")}
-                                    className="w-full bg-[#1e1d3b] hover:bg-[#232244] border border-white/[0.08] focus:border-cyan-400 text-white rounded-2xl px-4 py-3 text-xs font-bold uppercase tracking-wider outline-none appearance-none cursor-pointer"
-                                >
-                                    <option value="empleado">🏢 EMPLEADO (ASESOR DE VENTAS)</option>
-                                    <option value="comprador">🛍️ COMPRADOR (CLIENTE TIENDA)</option>
-                                </select>
-                                <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-cyan-400 pointer-events-none" />
-                            </div>
-
-                            {/* Badge contextual según selección */}
-                            {profileType === "empleado" ? (
-                                <div className="p-2.5 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-between px-3.5">
-                                    <div className="flex items-center gap-2">
-                                        <Briefcase size={14} className="text-cyan-400" />
-                                        <span className="text-[10px] sm:text-[11px] font-bold text-cyan-300 uppercase tracking-wide">
-                                            Registro Oficial de Asesores ATOMIC Ventas
-                                        </span>
-                                    </div>
-                                </div>
-                            ) : (
-                                <div className="p-2.5 rounded-2xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-between px-3.5">
-                                    <div className="flex items-center gap-2">
-                                        <ShoppingBag size={14} className="text-blue-400" />
-                                        <span className="text-[10px] sm:text-[11px] font-bold text-blue-300 uppercase tracking-wide">
-                                            Portal Oficial de Clientes & Compradores
-                                        </span>
-                                    </div>
-                                </div>
-                            )}
+                    {/* ── SELECTOR DE ROL / PERFIL (LOGIN & SIGN UP) ── */}
+                    <div className="space-y-1.5 mb-4">
+                        <label className="block text-[10px] font-mono font-bold uppercase tracking-wider text-cyan-400">
+                            {mode === "login" ? "Acceder como Rol / Perfil:" : "Registrarse como Rol / Perfil:"}
+                        </label>
+                        <div className="relative">
+                            <select
+                                value={profileType}
+                                onChange={e => setProfileType(e.target.value as any)}
+                                className="w-full bg-[#1e1d3b] hover:bg-[#232244] border border-white/[0.08] focus:border-cyan-400 text-white rounded-2xl px-4 py-3 text-xs font-bold uppercase tracking-wider outline-none appearance-none cursor-pointer"
+                            >
+                                <option value="empleado">🏢 ASESOR DE VENTAS (COMERCIAL)</option>
+                                <option value="comprador">🛍️ COMPRADOR (CLIENTE TIENDA)</option>
+                                <option value="tecnico">🔧 SERVICIO TÉCNICO / INSTALADOR</option>
+                                <option value="academia">🎓 ACADEMIA / ESTUDIANTE</option>
+                                {mode === "login" && (
+                                    <option value="admin">🎯 COORDINACIÓN / ADMINISTRACIÓN</option>
+                                )}
+                            </select>
+                            <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-cyan-400 pointer-events-none" />
                         </div>
-                    )}
+
+                        {/* Badge contextual según selección */}
+                        {profileType === "empleado" ? (
+                            <div className="p-2 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-between px-3">
+                                <div className="flex items-center gap-2">
+                                    <Briefcase size={13} className="text-cyan-400" />
+                                    <span className="text-[10px] font-bold text-cyan-300 uppercase tracking-wide">
+                                        Asesor Comercial &bull; Dashboard y Asistencia
+                                    </span>
+                                </div>
+                            </div>
+                        ) : profileType === "comprador" ? (
+                            <div className="p-2 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-between px-3">
+                                <div className="flex items-center gap-2">
+                                    <ShoppingBag size={13} className="text-blue-400" />
+                                    <span className="text-[10px] font-bold text-blue-300 uppercase tracking-wide">
+                                        Cliente Tienda Online &bull; atomic.shop/web
+                                    </span>
+                                </div>
+                            </div>
+                        ) : profileType === "tecnico" ? (
+                            <div className="p-2 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between px-3">
+                                <div className="flex items-center gap-2">
+                                    <ShieldCheck size={13} className="text-amber-400" />
+                                    <span className="text-[10px] font-bold text-amber-300 uppercase tracking-wide">
+                                        Módulo Técnico &bull; Soporte & Instalaciones
+                                    </span>
+                                </div>
+                            </div>
+                        ) : profileType === "academia" ? (
+                            <div className="p-2 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-between px-3">
+                                <div className="flex items-center gap-2">
+                                    <GraduationCap size={13} className="text-purple-400" />
+                                    <span className="text-[10px] font-bold text-purple-300 uppercase tracking-wide">
+                                        Academia ATOMIC &bull; Certificaciones y Cursos
+                                    </span>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between px-3">
+                                <div className="flex items-center gap-2">
+                                    <Sparkles size={13} className="text-emerald-400" />
+                                    <span className="text-[10px] font-bold text-emerald-300 uppercase tracking-wide">
+                                        Dirección y Coordinación General
+                                    </span>
+                                </div>
+                            </div>
+                        )}
+                    </div>
 
                     {/* Form */}
                     <form onSubmit={mode === "login" ? handleLoginSubmit : handleSignUpSubmit} className="space-y-4">

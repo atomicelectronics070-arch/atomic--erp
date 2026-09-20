@@ -4,33 +4,52 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 
-// GET /api/user/profile
 export async function GET() {
     try {
         const session = await getServerSession(authOptions)
         if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
-        const user = await prisma.user.findUnique({
-            where: { id: session.user.id },
-            select: {
-                id: true,
-                name: true,
-                lastName: true,
-                email: true,
-                phoneNumber: true,
-                residenceSector: true,
-                profilePicture: true,
-                role: true
+        const [user, clientsCount, quotesCount, transactions] = await Promise.all([
+            prisma.user.findUnique({
+                where: { id: session.user.id },
+                select: {
+                    id: true,
+                    name: true,
+                    lastName: true,
+                    email: true,
+                    phoneNumber: true,
+                    residenceSector: true,
+                    profilePicture: true,
+                    role: true,
+                    profileData: true,
+                    area: true
+                }
+            }),
+            prisma.client.count({ where: { salespersonId: session.user.id } }),
+            prisma.quote.count({ where: { userId: session.user.id } }),
+            prisma.transaction.findMany({
+                where: { userId: session.user.id, status: { in: ['APROBADO', 'FACTURADO', 'PAGADO'] } },
+                select: { amount: true, profit: true }
+            })
+        ])
+
+        const salesAmount = transactions.reduce((acc, t) => acc + (t.amount || 0), 0)
+        const commissionsAmount = transactions.reduce((acc, t) => acc + (t.profit || 0), 0)
+
+        return NextResponse.json({
+            ...user,
+            stats: {
+                clientsCount,
+                quotesCount,
+                salesAmount,
+                commissionsAmount
             }
         })
-
-        return NextResponse.json(user)
     } catch (e) {
         return NextResponse.json({ error: "Internal server error" }, { status: 500 })
     }
 }
 
-// PATCH /api/user/profile
 export async function PATCH(req: Request) {
     try {
         const session = await getServerSession(authOptions)

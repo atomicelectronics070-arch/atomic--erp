@@ -38,9 +38,9 @@ export default function MatrizPreciosComponent({
   defaultTheme = 'bw-inv'
 }: MatrizPreciosProps) {
   const { data: session } = useSession();
-  const userRole = (session?.user as any)?.role;
-  // Acceso a vista de Admin (Proveedores, Costos y ROI): estrictamente restringido a ADMIN y COORDINATOR
-  const canAccessAdminView = userRole === 'ADMIN' || userRole === 'COORDINATOR';
+  const userRole = String((session?.user as any)?.role || '').toUpperCase();
+  // Acceso a vista de Admin (Proveedores, Costos y ROI): estrictamente restringido a ADMIN y COORDINATOR (o roles múltiples)
+  const canAccessAdminView = userRole.includes('ADMIN') || userRole.includes('COORDINATOR') || userRole.includes('MANAGEMENT');
 
 
   // Dual mode switcher for Staff (Admin/Coordinacion)

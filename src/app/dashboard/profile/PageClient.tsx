@@ -76,12 +76,57 @@ const SYSTEM_THEMES: ThemeOption[] = [
     }
 ]
 
+interface SurfaceOption {
+    id: string
+    name: string
+    desc: string
+    tag: string
+    fillPreview: string
+    borderPreview: string
+}
+
+const SURFACE_THEMES: SurfaceOption[] = [
+    {
+        id: "cyber-glass",
+        name: "Cyber Glass (Translúcido & Neón)",
+        desc: "Superficies acrílicas de alto desenfoque con líneas cyan sutiles y reflejos dinámicos",
+        tag: "TRANSLÚCIDO + BLUR",
+        fillPreview: "bg-slate-900/60 backdrop-blur-xl",
+        borderPreview: "border-cyan-500/40 text-cyan-300"
+    },
+    {
+        id: "slate-dark",
+        name: "Slate Oscuro (Mate Sólido)",
+        desc: "Acabado mate sobrio sin transparencia, máxima legibilidad y líneas limpias #334155",
+        tag: "MATE CORPORATIVO",
+        fillPreview: "bg-slate-900",
+        borderPreview: "border-slate-700 text-slate-300"
+    },
+    {
+        id: "oled-puro",
+        name: "OLED Puro (Negro Azabache)",
+        desc: "Negro absoluto #000000 para contraste infinito, ahorro energético y bordes ultrafinos",
+        tag: "OLED ZERO-LIGHT",
+        fillPreview: "bg-black",
+        borderPreview: "border-zinc-800 text-zinc-300"
+    },
+    {
+        id: "grafito-tech",
+        name: "Grafito Tecnológico (Metálico)",
+        desc: "Superficies metálicas oscuras de grafito con líneas de separación técnicas",
+        tag: "METÁLICO TECH",
+        fillPreview: "bg-zinc-900",
+        borderPreview: "border-zinc-600 text-zinc-300"
+    }
+]
+
 export default function ProfilePage() {
     const { data: session, update } = useSession()
     const [loading, setLoading] = useState(true)
     const [saving, setSaving] = useState(false)
     const [activeTab, setActiveTab] = useState<"info" | "themes" | "security">("info")
     const [currentTheme, setCurrentTheme] = useState("cyber-neon")
+    const [currentSurfaceTheme, setCurrentSurfaceTheme] = useState("cyber-glass")
     
     const [formData, setFormData] = useState({
         name: "",
@@ -97,10 +142,16 @@ export default function ProfilePage() {
     const [requestRole, setRequestRole] = useState("")
 
     useEffect(() => {
-        // Load saved theme
+        // Load saved theme and surface
         if (typeof window !== "undefined") {
             const savedTheme = localStorage.getItem("atomic_theme") || "cyber-neon"
             setCurrentTheme(savedTheme)
+            document.documentElement.setAttribute("data-theme", savedTheme)
+
+            const savedSurface = localStorage.getItem("atomic_surface_theme") || "cyber-glass"
+            setCurrentSurfaceTheme(savedSurface)
+            document.documentElement.setAttribute("data-surface", savedSurface)
+
             const urlParams = new URLSearchParams(window.location.search)
             const tab = urlParams.get("tab")
             if (tab === "themes" || tab === "security" || tab === "info") {
@@ -170,6 +221,15 @@ export default function ProfilePage() {
             localStorage.setItem("atomic_theme", themeId)
             document.documentElement.setAttribute("data-theme", themeId)
             window.dispatchEvent(new CustomEvent("theme-changed", { detail: themeId }))
+        }
+    }
+
+    const handleApplySurfaceTheme = (surfaceId: string) => {
+        setCurrentSurfaceTheme(surfaceId)
+        if (typeof window !== "undefined") {
+            localStorage.setItem("atomic_surface_theme", surfaceId)
+            document.documentElement.setAttribute("data-surface", surfaceId)
+            window.dispatchEvent(new CustomEvent("surface-theme-changed", { detail: surfaceId }))
         }
     }
 
@@ -430,85 +490,159 @@ export default function ProfilePage() {
 
             {/* TAB 2: Apartado de Temas */}
             {activeTab === "themes" && (
-                <div className="bg-slate-900/70 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6 shadow-xl backdrop-blur-xl">
+                <div className="bg-slate-900/70 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-10 shadow-xl backdrop-blur-xl">
                     <div className="border-b border-slate-800 pb-4">
                         <div className="flex items-center gap-3">
                             <Palette size={22} className="text-cyan-400" />
                             <h3 className="text-lg font-black text-white uppercase tracking-wider">
-                                Personalización de Temas del Sistema
+                                Personalización Visual de ATOMIC ERP
                             </h3>
                         </div>
                         <p className="text-xs text-slate-400 mt-1">
-                            Elige la paleta visual que mejor se adapte a tu estilo de trabajo. Los cambios se aplican de inmediato en toda la plataforma.
+                            Ajusta el color de acento lumínico y la textura de rellenos y líneas. Los cambios se sincronizan en tiempo real en todo tu entorno.
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {SYSTEM_THEMES.map((t) => {
-                            const isSelected = currentTheme === t.id
-                            return (
-                                <div
-                                    key={t.id}
-                                    onClick={() => handleApplyTheme(t.id)}
-                                    className={`p-6 rounded-2xl border transition-all cursor-pointer relative overflow-hidden flex flex-col justify-between space-y-4 ${
-                                        isSelected
-                                            ? `bg-slate-950/90 ring-2`
-                                            : "bg-slate-950/60 border-slate-800 hover:border-slate-700 hover:bg-slate-950"
-                                    }`}
-                                    style={isSelected ? { borderColor: t.primaryColor, boxShadow: `0 0 25px ${t.primaryColor}33`, outlineColor: t.primaryColor } : {}}
-                                >
-                                    <div className="space-y-3">
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-2.5">
-                                                <div 
-                                                    className="w-5 h-5 rounded-full shadow-md" 
-                                                    style={{ backgroundColor: t.primaryColor }} 
-                                                />
-                                                <div 
-                                                    className="w-3.5 h-3.5 rounded-full opacity-70" 
-                                                    style={{ backgroundColor: t.accentColor }} 
-                                                />
+                    {/* SECCIÓN 1: Color de Acento */}
+                    <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                            <h4 className="text-xs font-black uppercase text-cyan-400 tracking-wider flex items-center gap-2">
+                                <span>1. Paleta de Color de Acento & Neón</span>
+                            </h4>
+                            <span className="text-[10px] font-mono text-slate-400">5 Paletas Oficiales</span>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                            {SYSTEM_THEMES.map((t) => {
+                                const isSelected = currentTheme === t.id
+                                return (
+                                    <div
+                                        key={t.id}
+                                        onClick={() => handleApplyTheme(t.id)}
+                                        className={`p-5 rounded-2xl border transition-all cursor-pointer relative overflow-hidden flex flex-col justify-between space-y-4 ${
+                                            isSelected
+                                                ? `bg-slate-950/90 ring-2`
+                                                : "bg-slate-950/60 border-slate-800 hover:border-slate-700 hover:bg-slate-950"
+                                        }`}
+                                        style={isSelected ? { borderColor: t.primaryColor, boxShadow: `0 0 25px ${t.primaryColor}33`, outlineColor: t.primaryColor } : {}}
+                                    >
+                                        <div className="space-y-3">
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-2.5">
+                                                    <div 
+                                                        className="w-5 h-5 rounded-full shadow-md" 
+                                                        style={{ backgroundColor: t.primaryColor }} 
+                                                    />
+                                                    <div 
+                                                        className="w-3.5 h-3.5 rounded-full opacity-70" 
+                                                        style={{ backgroundColor: t.accentColor }} 
+                                                    />
+                                                </div>
+                                                {isSelected && (
+                                                    <span 
+                                                        className="px-2.5 py-0.5 rounded-full text-[10px] font-black text-black flex items-center gap-1 shadow"
+                                                        style={{ backgroundColor: t.primaryColor }}
+                                                    >
+                                                        <Check size={12} /> ACTIVO
+                                                    </span>
+                                                )}
                                             </div>
-                                            {isSelected && (
-                                                <span 
-                                                    className="px-2.5 py-0.5 rounded-full text-[10px] font-black text-black flex items-center gap-1 shadow"
-                                                    style={{ backgroundColor: t.primaryColor }}
-                                                >
-                                                    <Check size={12} /> ACTIVO
+
+                                            <div>
+                                                <h4 className="text-sm font-black text-white uppercase tracking-wide">
+                                                    {t.name}
+                                                </h4>
+                                                <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                                                    {t.desc}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        {/* Preview mini bar */}
+                                        <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between text-[11px] font-mono">
+                                            <span className="text-slate-500">Preview:</span>
+                                            <span className={`px-2.5 py-1 rounded-lg text-[10px] font-black ${t.badgeBg}`}>
+                                                ATOMIC ERP
+                                            </span>
+                                        </div>
+                                    </div>
+                                )
+                            })}
+                        </div>
+                    </div>
+
+                    {/* SECCIÓN 2: Tema de Rellenos, Superficies y Líneas */}
+                    <div className="space-y-4 pt-6 border-t border-slate-800">
+                        <div className="flex items-center justify-between">
+                            <h4 className="text-xs font-black uppercase text-indigo-400 tracking-wider flex items-center gap-2">
+                                <span>2. Tema de Rellenos, Superficies y Líneas</span>
+                            </h4>
+                            <span className="text-[10px] font-mono text-slate-400">4 Estilos de Textura</span>
+                        </div>
+                        <p className="text-xs text-slate-400">
+                            Define la opacidad de los fondos, el desenfoque acrílico y la nitidez de las líneas y separadores de las tarjetas del sistema.
+                        </p>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            {SURFACE_THEMES.map((s) => {
+                                const isSelected = currentSurfaceTheme === s.id
+                                return (
+                                    <div
+                                        key={s.id}
+                                        onClick={() => handleApplySurfaceTheme(s.id)}
+                                        className={`p-5 rounded-2xl border transition-all cursor-pointer relative overflow-hidden flex flex-col justify-between space-y-4 ${
+                                            isSelected
+                                                ? `bg-slate-950/90 ring-2 ring-indigo-500 border-indigo-400 shadow-[0_0_20px_rgba(99,102,241,0.3)]`
+                                                : "bg-slate-950/60 border-slate-800 hover:border-slate-700 hover:bg-slate-950"
+                                        }`}
+                                    >
+                                        <div className="space-y-3">
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-[9px] font-mono font-black uppercase px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
+                                                    {s.tag}
                                                 </span>
-                                            )}
+                                                {isSelected && (
+                                                    <span className="px-2 py-0.5 rounded-full text-[9px] font-black bg-indigo-500 text-white flex items-center gap-1 shadow">
+                                                        <Check size={11} /> ACTIVO
+                                                    </span>
+                                                )}
+                                            </div>
+
+                                            <div>
+                                                <h5 className="text-xs font-black text-white uppercase tracking-wide">
+                                                    {s.name}
+                                                </h5>
+                                                <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">
+                                                    {s.desc}
+                                                </p>
+                                            </div>
                                         </div>
 
-                                        <div>
-                                            <h4 className="text-sm font-black text-white uppercase tracking-wide">
-                                                {t.name}
-                                            </h4>
-                                            <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                                                {t.desc}
-                                            </p>
+                                        {/* Surface sample card */}
+                                        <div className={`p-3 rounded-xl border ${s.fillPreview} ${s.borderPreview} text-center`}>
+                                            <span className="text-[10px] font-mono uppercase font-bold tracking-wider">
+                                                Muestra de Línea & Relleno
+                                            </span>
                                         </div>
                                     </div>
-
-                                    {/* Preview mini bar */}
-                                    <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between text-[11px] font-mono">
-                                        <span className="text-slate-500">Preview:</span>
-                                        <span className={`px-2.5 py-1 rounded-lg text-[10px] font-black ${t.badgeBg}`}>
-                                            ATOMIC ERP
-                                        </span>
-                                    </div>
-                                </div>
-                            )
-                        })}
+                                )
+                            })}
+                        </div>
                     </div>
 
                     <div className="p-4 bg-slate-950 border border-slate-800 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400">
-                        <span>💡 El tema seleccionado se sincroniza automáticamente en tu navegador.</span>
-                        <button
-                            onClick={() => handleApplyTheme("cyber-neon")}
-                            className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl font-bold uppercase text-[10px] transition-colors cursor-pointer"
-                        >
-                            Restablecer Predeterminado
-                        </button>
+                        <span>💡 Las preferencias se guardan de forma persistente en tu perfil local.</span>
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={() => {
+                                    handleApplyTheme("cyber-neon")
+                                    handleApplySurfaceTheme("cyber-glass")
+                                }}
+                                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl font-bold uppercase text-[10px] transition-colors cursor-pointer"
+                            >
+                                Restablecer Todo a Predeterminado
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

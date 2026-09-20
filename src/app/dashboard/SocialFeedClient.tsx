@@ -149,14 +149,14 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
                 <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto">
                     <button
                         onClick={() => setMasterMode("area_trabajo")}
-                        className={`flex-1 sm:flex-initial px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all flex items-center justify-center space-x-2 ${
+                        className={`flex-1 sm:flex-initial px-5 py-2.5 rounded-full font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center space-x-2 cursor-pointer ${
                             masterMode === 'area_trabajo' 
-                                ? 'bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white shadow-[0_0_25px_rgba(99,102,241,0.4)] scale-105' 
+                                ? 'bg-cyan-500 text-black shadow-[0_0_20px_rgba(6,182,212,0.4)]' 
                                 : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
                         }`}
                     >
-                        <Globe size={16} className="text-cyan-400" />
-                        <span>ESTACIONES DE TRABAJO</span>
+                        <Globe size={15} className={masterMode === 'area_trabajo' ? 'text-black' : 'text-cyan-400'} />
+                        <span>OFICINA VIRTUAL</span>
                     </button>
                     
                     <button

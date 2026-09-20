@@ -6,18 +6,20 @@ import { prisma } from "@/lib/prisma"
 import bcrypt from "bcryptjs"
 
 // PATCH /api/admin/users/[id]
-// Toggle status, update info or reset password
+// Toggle status, update info, roles, permissions or reset password
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
         const { id } = await params
         const session = await getServerSession(authOptions)
         
-        if (!session || (session.user.role !== 'ADMIN' && session.user.role !== 'MANAGEMENT')) {
+        const userRole = (session.user as any)?.role || ""
+        const isAuthorized = userRole === 'ADMIN' || userRole === 'MANAGEMENT' || userRole.includes('ADMIN') || userRole.includes('COORDINAT') || userRole.includes('MANAGEMENT')
+        if (!session || !isAuthorized) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
         }
 
         const body = await req.json()
-        const { isActive, name, email, role, approveReset, status } = body
+        const { isActive, name, email, role, approveReset, status, profileData, area } = body
 
         const updateData: any = {}
         
@@ -26,6 +28,20 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
         if (email) updateData.email = email
         if (role) updateData.role = role
         if (status) updateData.status = status
+        
+        let mergedProfileData: any = null
+        if (profileData !== undefined || area !== undefined) {
+            try {
+                const existing = await prisma.user.findUnique({ where: { id }, select: { profileData: true } })
+                const existingParsed = existing?.profileData ? JSON.parse(existing.profileData) : {}
+                const newParsed = typeof profileData === 'string' ? JSON.parse(profileData) : (profileData || {})
+                mergedProfileData = { ...existingParsed, ...newParsed }
+                if (area !== undefined) mergedProfileData.area = area
+                updateData.profileData = JSON.stringify(mergedProfileData)
+            } catch (e) {
+                updateData.profileData = typeof profileData === 'string' ? profileData : JSON.stringify(profileData || {})
+            }
+        }
 
         // Generation of Emergency Temp Code
         if (approveReset) {

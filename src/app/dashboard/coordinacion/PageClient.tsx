@@ -7,6 +7,7 @@ import {
     Clock, CheckSquare, Save, Users, Calendar, 
     Video, MessageSquare, AlertCircle, FileText, Send, DollarSign, Download, Check, X, ChevronUp, ChevronDown, Sparkles, Filter, Database, UserCheck, ShieldCheck
 } from "lucide-react"
+import AdvisorsTabContent from "@/components/coordinacion/AdvisorsTabContent"
 
 export default function CoordinacionPage() {
     const { data: session, status } = useSession()
@@ -14,13 +15,13 @@ export default function CoordinacionPage() {
     
     const [loading, setLoading] = useState(true)
     const [dailyData, setDailyData] = useState<any>(null)
-    const [advisors, setAdvisors] = useState<{id: string, name: string}[]>([])
+    const [advisors, setAdvisors] = useState<any[]>([])
     const [quotes, setQuotes] = useState<any[]>([])
     const [quotesLoading, setQuotesLoading] = useState(false)
     const [quotesError, setQuotesError] = useState<string | null>(null)
     const [quoteFilter, setQuoteFilter] = useState<"ALL" | "DRAFT" | "APPROVED" | "REJECTED">("ALL")
     
-    const [activeTab, setActiveTab] = useState<"BITACORA" | "COTIZACIONES" | "SCRAPER">("BITACORA")
+    const [activeTab, setActiveTab] = useState<"ASESORES" | "BITACORA" | "COTIZACIONES" | "SCRAPER">("ASESORES")
     
     const [notices, setNotices] = useState("")
     const [publishToSocial, setPublishToSocial] = useState(false)
@@ -149,7 +150,9 @@ export default function CoordinacionPage() {
 
     useEffect(() => {
         if (status === "loading") return
-        if (!session || session.user.role !== "ADMIN") {
+        const userRole = (session?.user as any)?.role || ""
+        const isAllowed = userRole === "ADMIN" || userRole === "MANAGEMENT" || userRole.includes("ADMIN") || userRole.includes("COORDINAT") || userRole.includes("MANAGEMENT")
+        if (!session || !isAllowed) {
             router.push("/dashboard")
             return
         }
@@ -198,7 +201,7 @@ export default function CoordinacionPage() {
 
     const fetchAdvisors = async () => {
         try {
-            const res = await fetch("/api/admin/users?role=SALESPERSON")
+            const res = await fetch("/api/admin/users?status=ALL")
             if(res.ok) {
                 const data = await res.json()
                 setAdvisors(data.users || [])
@@ -359,6 +362,21 @@ export default function CoordinacionPage() {
             {/* Navigation Tabs Switcher */}
             <div className="flex items-center gap-3 bg-slate-900/90 border border-slate-800 p-2 rounded-2xl w-full sm:w-auto overflow-x-auto">
                 <button
+                    onClick={() => setActiveTab("ASESORES")}
+                    className={`flex-1 sm:flex-initial px-6 py-3 rounded-xl font-mono font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 ${
+                        activeTab === "ASESORES"
+                            ? "bg-gradient-to-r from-blue-500 via-indigo-600 to-cyan-500 text-white shadow-[0_0_20px_rgba(59,130,246,0.4)] scale-105"
+                            : "text-slate-400 hover:text-white hover:bg-slate-800/60"
+                    }`}
+                >
+                    <Users size={16} />
+                    <span>ASESORES & CONTRATOS</span>
+                    <span className="w-5 h-5 bg-cyan-400/20 text-cyan-300 text-[10px] font-black rounded-full flex items-center justify-center border border-cyan-400/40">
+                        {advisors.length}
+                    </span>
+                </button>
+
+                <button
                     onClick={() => setActiveTab("BITACORA")}
                     className={`flex-1 sm:flex-initial px-6 py-3 rounded-xl font-mono font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 ${
                         activeTab === "BITACORA"
@@ -399,6 +417,14 @@ export default function CoordinacionPage() {
                     <span>SCRAPER & PROSPECCIÓN</span>
                 </button>
             </div>
+
+            {/* ── TAB 0: ASESORES & CONTRATOS ── */}
+            {activeTab === "ASESORES" && (
+                <AdvisorsTabContent 
+                    advisors={advisors} 
+                    onRefreshAdvisors={fetchAdvisors} 
+                />
+            )}
 
             {/* ── TAB 1: BITÁCORA DIARIA ── */}
             {activeTab === "BITACORA" && (

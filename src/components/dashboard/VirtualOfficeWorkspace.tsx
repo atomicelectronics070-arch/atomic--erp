@@ -7,7 +7,8 @@ import {
     Users, ShieldCheck, Settings, Plus, Trash2, Check, X, Phone,
     MessageSquare, ExternalLink, Sparkles, Monitor, Wrench, Code2,
     Video, Briefcase, Coffee, Search, UserPlus, Crown, Laptop,
-    CheckCircle2, AlertCircle, RefreshCw
+    CheckCircle2, AlertCircle, RefreshCw, ChevronLeft, ChevronRight,
+    Smartphone, LayoutGrid, Mail
 } from "lucide-react"
 
 interface Props {
@@ -44,6 +45,8 @@ export default function VirtualOfficeWorkspace({ currentModule = "ventas" }: Pro
     const [systemUsers, setSystemUsers] = useState<SystemUser[]>([])
     const [loadingUsers, setLoadingUsers] = useState(false)
     const [searchSeller, setSearchSeller] = useState("")
+    const [mobileIndex, setMobileIndex] = useState(0)
+    const [viewMode, setViewMode] = useState<"auto" | "single" | "plan">("auto")
 
     // Current 3 sales advisors assigned to desks
     const [activeSellers, setActiveSellers] = useState<Array<{ id: string; name: string; email?: string }>>([
@@ -52,7 +55,7 @@ export default function VirtualOfficeWorkspace({ currentModule = "ventas" }: Pro
         { id: "s3", name: "Yolanda Chango", email: "yoly91ch@gmail.com" }
     ])
 
-    // Load saved sellers from localStorage
+    // Load saved sellers or automatically fetch real advisors from API
     useEffect(() => {
         try {
             const saved = localStorage.getItem("atomic_office_sellers")
@@ -60,9 +63,32 @@ export default function VirtualOfficeWorkspace({ currentModule = "ventas" }: Pro
                 const parsed = JSON.parse(saved)
                 if (Array.isArray(parsed) && parsed.length > 0) {
                     setActiveSellers(parsed)
+                    return
                 }
             }
         } catch (e) {}
+
+        fetch("/api/users")
+            .then(res => res.json())
+            .then(data => {
+                if (Array.isArray(data)) {
+                    const sellers = data.filter((u: any) => 
+                        u.role?.includes("SALESPERSON") || 
+                        u.role?.includes("VENDEDOR") ||
+                        u.status === "APPROVED"
+                    )
+                    if (sellers.length > 0) {
+                        const top3 = sellers.slice(0, 3).map((s: any) => ({
+                            id: s.id,
+                            name: s.name || s.email,
+                            email: s.email,
+                            phone: s.phoneNumber || s.phone
+                        }))
+                        setActiveSellers(top3)
+                    }
+                }
+            })
+            .catch(() => {})
     }, [])
 
     // Fetch real system users when manage modal opens
@@ -269,188 +295,404 @@ export default function VirtualOfficeWorkspace({ currentModule = "ventas" }: Pro
                         </button>
                     )}
 
+                    {/* Selector de Modo de Vista (Adaptativo / 1 Estación Celular / Plano) */}
+                    <div className="flex items-center bg-slate-900 border border-slate-800 rounded-xl p-0.5 text-[10px] font-bold">
+                        <button
+                            type="button"
+                            onClick={() => setViewMode("auto")}
+                            className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
+                                viewMode === "auto" ? "bg-cyan-500 text-black shadow" : "text-slate-400 hover:text-white"
+                            }`}
+                            title="Modo Inteligente: Tarjeta en Celular y Plano en Computadora"
+                        >
+                            Adaptativo
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setViewMode("single")}
+                            className={`px-2.5 py-1 rounded-lg flex items-center gap-1 transition-all cursor-pointer ${
+                                viewMode === "single" ? "bg-cyan-500 text-black shadow" : "text-slate-400 hover:text-white"
+                            }`}
+                            title="Ver sólo 1 estación a la vez (Especial celulares)"
+                        >
+                            <Smartphone size={11} />
+                            <span>1 Estación</span>
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setViewMode("plan")}
+                            className={`px-2.5 py-1 rounded-lg flex items-center gap-1 transition-all cursor-pointer ${
+                                viewMode === "plan" ? "bg-cyan-500 text-black shadow" : "text-slate-400 hover:text-white"
+                            }`}
+                            title="Ver plano completo 2D"
+                        >
+                            <LayoutGrid size={11} />
+                            <span>Plano</span>
+                        </button>
+                    </div>
+
                     <div className="px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-[10px] font-mono text-slate-400 flex items-center gap-2">
-                        <span>👥 {allMembers.length} Personas</span>
-                        <span>•</span>
-                        <span className="text-emerald-400">8 Roles Oficiales</span>
+                        <span>👥 {allMembers.length} Puestos</span>
                     </div>
                 </div>
             </div>
 
-            {/* ── ESCENARIO TOP-DOWN 2D (ESTILO GATHER.TOWN / IMAGEN REAL) ─── */}
-            <div className="w-full overflow-x-auto custom-scrollbar">
-                <div className="relative min-w-[760px] w-full h-[620px] overflow-hidden bg-[#b88c5d] select-none">
-                
-                {/* 1. SUELO: CORREDOR DE BALDOSAS GRISES CHECKERBOARD (A LA IZQUIERDA) */}
-                <div 
-                    className="absolute left-0 top-0 bottom-0 w-[24%] border-r-4 border-[#5a3e2b]"
-                    style={{
-                        backgroundColor: "#c5c9d1",
-                        backgroundImage: `
-                            linear-gradient(45deg, #a0a6b2 25%, transparent 25%), 
-                            linear-gradient(-45deg, #a0a6b2 25%, transparent 25%), 
-                            linear-gradient(45deg, transparent 75%, #a0a6b2 75%), 
-                            linear-gradient(-45deg, transparent 75%, #a0a6b2 75%)
-                        `,
-                        backgroundSize: "28px 28px",
-                        backgroundPosition: "0 0, 0 14px, 14px -14px, -14px 0px"
-                    }}
-                >
-                    {/* Comedor / Sala de estar lateral */}
-                    <div className="absolute top-10 left-4 right-4 p-3 bg-[#6e462d] rounded-2xl border-2 border-[#422919] shadow-lg flex flex-col items-center gap-3">
-                        <span className="text-[9px] font-black uppercase text-[#e9d2b8] tracking-widest flex items-center gap-1">
-                            <Coffee size={12} /> Cafetería & Break
-                        </span>
-                        {/* Mesa de madera con sillas */}
-                        <div className="w-16 h-28 bg-[#8d5836] rounded-xl border-2 border-[#4b2f1b] shadow flex flex-col justify-around items-center py-2">
-                            <div className="w-2.5 h-2.5 rounded-full bg-white/80" title="Taza de café" />
-                            <div className="w-3 h-3 rounded-full bg-amber-400/90" title="Snack" />
+            {/* ── 📱 VISTA MÓVIL: 1 ESTACIÓN A LA VEZ (SIN CORTES) ─────────── */}
+            {(viewMode === "single" || viewMode === "auto") && (
+                <div className={`p-4 sm:p-6 bg-[#0a0d14] ${viewMode === "auto" ? "block md:hidden" : "block"}`}>
+                    {/* Navigation Buttons Header */}
+                    <div className="flex items-center justify-between gap-3 mb-4">
+                        <button
+                            type="button"
+                            onClick={() => setMobileIndex((prev) => (prev > 0 ? prev - 1 : allMembers.length - 1))}
+                            className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold flex items-center gap-1 transition-all cursor-pointer active:scale-95"
+                        >
+                            <ChevronLeft size={16} />
+                            <span>Anterior</span>
+                        </button>
+
+                        <div className="text-center">
+                            <span className="text-[10px] font-mono text-cyan-400 font-bold uppercase tracking-wider block">
+                                Estación {mobileIndex + 1} de {allMembers.length}
+                            </span>
+                            <span className="text-xs font-bold text-slate-300">
+                                {allMembers[mobileIndex]?.name}
+                            </span>
                         </div>
+
+                        <button
+                            type="button"
+                            onClick={() => setMobileIndex((prev) => (prev < allMembers.length - 1 ? prev + 1 : 0))}
+                            className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold flex items-center gap-1 transition-all cursor-pointer active:scale-95"
+                        >
+                            <span>Siguiente</span>
+                            <ChevronRight size={16} />
+                        </button>
                     </div>
 
-                    {/* Planta decorativa en el pasillo */}
-                    <div className="absolute bottom-16 left-6 flex flex-col items-center">
-                        <div className="w-8 h-8 rounded-full bg-emerald-600 border-2 border-emerald-800 shadow-md flex items-center justify-center text-xs">
-                            🪴
-                        </div>
-                        <div className="w-5 h-4 bg-[#8b5a36] rounded-b-md border border-[#52331c] -mt-1" />
-                    </div>
-                </div>
-
-                {/* 2. SUELO PRINCIPAL: PARQUET DE MADERA CÁLIDA (A LA DERECHA) */}
-                <div 
-                    className="absolute left-[24%] right-0 top-0 bottom-0"
-                    style={{
-                        backgroundColor: "#b88c5d",
-                        backgroundImage: `
-                            linear-gradient(to bottom, rgba(0,0,0,0.05) 1px, transparent 1px),
-                            linear-gradient(to right, rgba(0,0,0,0.04) 1px, transparent 1px)
-                        `,
-                        backgroundSize: "80px 30px"
-                    }}
-                >
-                    {/* ALFOMBRA ROJA EJECUTIVA EN DIRECCIÓN (SUPERIOR) */}
-                    <div className="absolute top-5 left-[34%] w-[38%] h-24 bg-[#991b1b]/80 rounded-2xl border border-[#7f1d1d] shadow-inner" />
-
-                    {/* ALFOMBRA DE MARKETING EN EL CENTRO */}
-                    <div className="absolute top-[44%] left-[28%] w-[42%] h-28 bg-[#1e293b]/40 rounded-2xl border border-dashed border-[#475569]/50" />
-
-                    {/* RÓTULOS DE ÁREAS IMPRESOS EN EL SUELO (IGUAL A LA IMAGEN) */}
-                    <div className="absolute top-2 left-6 text-[#523521] font-black text-xs uppercase tracking-widest opacity-80">
-                        🏛️ Alta Dirección & Supervisión
-                    </div>
-
-                    <div className="absolute top-[38%] left-[45%] text-[#4b3322] font-black text-base uppercase tracking-widest opacity-70">
-                        Marketing & Ventas
-                    </div>
-
-                    <div className="absolute bottom-4 left-6 text-[#523521] font-black text-xs uppercase tracking-widest opacity-80">
-                        🛠️ Ingeniería, Software & Taller Técnico
-                    </div>
-
-                    {/* SILLÓN BALÓN DE BALONCESTO (DELUXE - COMO EN LA FOTO DEL CLIENTE) */}
-                    <div 
-                        className="absolute top-[48%] left-[16%] flex flex-col items-center group cursor-pointer"
-                        title="Sillón Balón de Baloncesto ATOMIC Relax"
-                    >
-                        <div className="w-14 h-14 rounded-full bg-gradient-to-br from-orange-500 via-orange-600 to-orange-700 border-2 border-black shadow-xl relative overflow-hidden flex items-center justify-center group-hover:scale-105 transition-transform">
-                            {/* Líneas de baloncesto */}
-                            <div className="absolute inset-0 border-t-2 border-b-2 border-black/80 my-auto h-0" />
-                            <div className="absolute inset-0 border-l-2 border-r-2 border-black/80 mx-auto w-0" />
-                            <div className="absolute w-12 h-12 rounded-full border border-black/70" />
-                        </div>
-                        <span className="text-[8px] font-black text-[#4b301c] bg-[#e4be95] px-1.5 py-0.2 rounded-full mt-1 border border-[#8d5e39]">
-                            Lounge
-                        </span>
-                    </div>
-
-                    {/* PLANTA PALMERA CORPORATIVA EN MACETA BLANCA */}
-                    <div className="absolute top-4 left-4 flex flex-col items-center">
-                        <div className="text-3xl filter drop-shadow-md select-none">🌴</div>
-                        <div className="w-6 h-5 bg-white rounded-b-lg border-2 border-slate-300 shadow -mt-2" />
-                    </div>
-
-                    {/* FLORERO ELEGANTE DE MESA */}
-                    <div className="absolute top-8 right-8 flex flex-col items-center">
-                        <div className="w-10 h-10 rounded-full bg-emerald-100 border-2 border-emerald-300 flex items-center justify-center text-base shadow">
-                            💐
-                        </div>
-                    </div>
-
-                    {/* ── RENDER DE CADA PUESTO DE TRABAJO Y PERSONAJE (2D TOP-DOWN) ── */}
-                    {allMembers.map(member => {
-                        const isSelected = selectedMember?.id === member.id
-                        return (
-                            <div
-                                key={member.id}
-                                onClick={() => setSelectedMember(member)}
-                                className="absolute -translate-x-1/2 -translate-y-1/2 cursor-pointer z-20 group"
-                                style={{ left: `${member.x}%`, top: `${member.y}%` }}
+                    {/* Quick Station Navigation Pills */}
+                    <div className="flex items-center gap-1.5 overflow-x-auto pb-3 custom-scrollbar mb-4">
+                        {allMembers.map((m, idx) => (
+                            <button
+                                key={m.id}
+                                type="button"
+                                onClick={() => setMobileIndex(idx)}
+                                className={`px-2.5 py-1 rounded-full text-[10px] font-bold whitespace-nowrap transition-all shrink-0 cursor-pointer ${
+                                    idx === mobileIndex 
+                                        ? "bg-cyan-500 text-black shadow-md shadow-cyan-500/20" 
+                                        : "bg-slate-900 border border-slate-800 text-slate-400 hover:text-white"
+                                }`}
                             >
-                                {/* 🏷️ ETIQUETA FLOTANTE CON ESTADO Y NOMBRE (IGUAL A LA IMAGEN) */}
-                                <div className="flex flex-col items-center mb-1 transition-transform group-hover:-translate-y-1">
-                                    <div className={`px-2 py-0.5 rounded-full text-[9px] font-black shadow-lg border flex items-center gap-1 max-w-[130px] whitespace-nowrap overflow-hidden text-ellipsis ${
-                                        member.status === "online" 
-                                            ? "bg-slate-950/95 text-white border-emerald-500/60 shadow-emerald-950/40" 
-                                            : "bg-slate-950/95 text-white border-amber-500/60 shadow-amber-950/40"
-                                    }`}>
-                                        <span className={`w-1.5 h-1.5 shrink-0 rounded-full ${member.status === "online" ? "bg-emerald-400" : "bg-rose-400"} animate-pulse`} />
-                                        <span className="font-bold truncate">{member.name}</span>
-                                    </div>
-                                    <span className="text-[7.5px] font-bold uppercase tracking-wider text-[#3d2716] font-mono mt-0.2 max-w-[120px] truncate text-center">
-                                        {member.roleName}
+                                {m.name.split(" ")[0]}
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* Active Station Card RPG Display */}
+                    {(() => {
+                        const m = allMembers[mobileIndex] || allMembers[0]
+                        return (
+                            <motion.div
+                                key={m.id}
+                                initial={{ opacity: 0, scale: 0.97 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ duration: 0.2 }}
+                                className="rounded-3xl bg-gradient-to-b from-[#161a26] to-[#0f121a] border border-cyan-500/30 p-5 sm:p-6 shadow-2xl relative overflow-hidden space-y-5"
+                            >
+                                {/* Glow ambient */}
+                                <div 
+                                    className="absolute -top-12 -right-12 w-36 h-36 rounded-full blur-3xl opacity-20 pointer-events-none"
+                                    style={{ backgroundColor: m.deskColor }}
+                                />
+
+                                {/* Department Banner */}
+                                <div className="flex items-center justify-between">
+                                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-slate-900/90 border border-slate-700 text-cyan-300">
+                                        {m.category === "ceo" ? "🏛️ Dirección General" :
+                                         m.category === "supervision" ? "🛡️ Supervisión & CRM" :
+                                         m.category === "coordinacion" ? "🎯 Coordinación Operativa" :
+                                         m.category === "ventas" ? "💼 Puesto Asesor Comercial" :
+                                         m.category === "edicion" ? "🎨 Media & Marketing" :
+                                         m.category === "jefe_tecnico" ? "👨‍💻 Jefatura Técnica" :
+                                         m.category === "software" ? "💻 Desarrollo & ERP" : "🔧 Taller de Mantenimiento"}
+                                    </span>
+                                    <span className="text-[10px] font-bold text-emerald-400 flex items-center gap-1.5 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                                        <span>EN VIVO</span>
                                     </span>
                                 </div>
 
-                                {/* 🧑‍💼 SPRITE DEL PERSONAJE Y ESCRITORIO CON MONITORES */}
-                                <div className="relative flex flex-col items-center">
-                                    
-                                    {/* CABEZA / AVATAR DEL PERSONAJE EN SU SILLA */}
-                                    <div className="relative z-10 w-9 h-9 rounded-full bg-slate-900 border-2 border-white/80 shadow-md flex items-center justify-center group-hover:scale-110 transition-transform overflow-hidden">
-                                        {member.spriteType === "executive" ? (
-                                            <span className="text-base">🧑‍💼</span>
-                                        ) : member.spriteType === "creative" ? (
-                                            <span className="text-base">🎨</span>
-                                        ) : member.spriteType === "tech" ? (
-                                            <span className="text-base">👨‍💻</span>
-                                        ) : member.spriteType === "taller" ? (
-                                            <span className="text-base">🔧</span>
-                                        ) : (
-                                            <span className="text-base">💼</span>
-                                        )}
-                                    </div>
-
-                                    {/* SILLA ERGONÓMICA DE OFICINA DETRÁS */}
-                                    <div className="w-10 h-7 rounded-t-xl bg-[#1e293b] border border-slate-700 -mt-6 z-0 shadow" />
-
-                                    {/* 🖥️ ESCRITORIO CORPORATIVO CON PANTALLAS */}
+                                {/* RPG Desk & Avatar Stage */}
+                                <div className="p-6 rounded-2xl bg-[#090b10] border border-slate-800/80 flex flex-col items-center justify-center relative overflow-hidden">
+                                    {/* Floor Grid simulation */}
                                     <div 
-                                        className="w-20 h-11 rounded-lg border-2 shadow-xl flex items-center justify-around px-1.5 mt-0.5 relative z-10"
-                                        style={{ 
-                                            backgroundColor: "#222734",
-                                            borderColor: member.deskColor
+                                        className="absolute inset-0 opacity-15 pointer-events-none"
+                                        style={{
+                                            backgroundImage: "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)",
+                                            backgroundSize: "20px 20px"
                                         }}
+                                    />
+
+                                    {/* Avatar Sprite */}
+                                    <div className="relative z-10 w-16 h-16 rounded-full bg-slate-900 border-2 border-white/80 shadow-xl flex items-center justify-center text-3xl">
+                                        {m.spriteType === "executive" ? "🧑‍💼" :
+                                         m.spriteType === "creative" ? "🎨" :
+                                         m.spriteType === "tech" ? "👨‍💻" :
+                                         m.spriteType === "taller" ? "🔧" : "💼"}
+                                    </div>
+                                    {/* Chair back */}
+                                    <div className="w-14 h-8 rounded-t-2xl bg-slate-800 border border-slate-700 -mt-7 z-0" />
+
+                                    {/* Desk with Glowing Monitors */}
+                                    <div 
+                                        className="w-44 h-14 rounded-xl border-2 shadow-2xl flex items-center justify-around px-3 mt-1 relative z-10"
+                                        style={{ backgroundColor: "#1c2130", borderColor: m.deskColor }}
                                     >
-                                        {/* Monitor 1 (Glow pantalla encendida) */}
-                                        <div className="w-7 h-4 rounded bg-sky-400 border border-white/60 shadow-[0_0_8px_rgba(56,189,248,0.8)] flex items-center justify-center">
-                                            <div className="w-4 h-0.5 bg-white/60 rounded-full" />
+                                        <div className="w-12 h-6 rounded bg-sky-400 border border-white/60 shadow-[0_0_12px_rgba(56,189,248,0.9)] flex items-center justify-center">
+                                            <div className="w-6 h-0.5 bg-white rounded-full" />
                                         </div>
-
-                                        {/* Teclado */}
-                                        <div className="w-3 h-2 bg-slate-800 rounded-xs border border-slate-600" />
-
-                                        {/* Monitor 2 */}
-                                        <div className="w-7 h-4 rounded bg-cyan-300 border border-white/60 shadow-[0_0_8px_rgba(34,211,238,0.8)] flex items-center justify-center">
-                                            <div className="w-4 h-0.5 bg-slate-900 rounded-full" />
+                                        <div className="w-6 h-3 bg-slate-900 rounded border border-slate-700 flex items-center justify-center text-[7px] text-slate-500">
+                                            ⌨️
+                                        </div>
+                                        <div className="w-12 h-6 rounded bg-cyan-300 border border-white/60 shadow-[0_0_12px_rgba(34,211,238,0.9)] flex items-center justify-center">
+                                            <div className="w-6 h-0.5 bg-slate-950 rounded-full" />
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+
+                                {/* Identity info */}
+                                <div className="space-y-1 text-center">
+                                    <h4 className="text-lg font-black text-white">{m.name}</h4>
+                                    <p className="text-xs text-slate-400 font-mono">{m.roleName}</p>
+                                    {m.email && (
+                                        <p className="text-[11px] text-slate-500 font-mono">{m.email}</p>
+                                    )}
+                                </div>
+
+                                {/* Action Buttons */}
+                                <div className="grid grid-cols-2 gap-2.5 pt-2">
+                                    {m.phone ? (
+                                        <a
+                                            href={`https://wa.me/${m.phone.replace(/\D/g, '')}?text=Hola%20${encodeURIComponent(m.name)},%20te%20contacto%20desde%20la%20Oficina%20Virtual%20ATOMIC.`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="py-3 px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-emerald-950/50 cursor-pointer"
+                                        >
+                                            <MessageSquare size={15} />
+                                            <span>WhatsApp</span>
+                                        </a>
+                                    ) : (
+                                        <button
+                                            type="button"
+                                            onClick={() => alert(`Notificación enviada a ${m.name}`)}
+                                            className="py-3 px-4 rounded-2xl bg-slate-800 hover:bg-slate-700 text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer"
+                                        >
+                                            <Phone size={15} />
+                                            <span>Notificar</span>
+                                        </button>
+                                    )}
+
+                                    {m.email ? (
+                                        <a
+                                            href={`mailto:${m.email}`}
+                                            className="py-3 px-4 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-indigo-950/50 cursor-pointer"
+                                        >
+                                            <Mail size={15} />
+                                            <span>Correo</span>
+                                        </a>
+                                    ) : (
+                                        <button
+                                            type="button"
+                                            onClick={() => setSelectedMember(m)}
+                                            className="py-3 px-4 rounded-2xl bg-slate-800 hover:bg-slate-700 text-cyan-300 font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer"
+                                        >
+                                            <ExternalLink size={15} />
+                                            <span>Ver Ficha</span>
+                                        </button>
+                                    )}
+                                </div>
+                            </motion.div>
                         )
-                    })}
+                    })()}
                 </div>
-            </div>
-            </div>
+            )}
+
+            {/* ── 🗺️ VISTA COMPLETA: PLANO TOP-DOWN 2D (ESCRITORIO O TOGGLE) ─── */}
+            {(viewMode === "plan" || viewMode === "auto") && (
+                <div className={`w-full overflow-x-auto custom-scrollbar ${viewMode === "auto" ? "hidden md:block" : "block"}`}>
+                    <div className="relative min-w-[760px] w-full h-[620px] overflow-hidden bg-[#b88c5d] select-none">
+                    
+                    {/* 1. SUELO: CORREDOR DE BALDOSAS GRISES CHECKERBOARD (A LA IZQUIERDA) */}
+                    <div 
+                        className="absolute left-0 top-0 bottom-0 w-[24%] border-r-4 border-[#5a3e2b]"
+                        style={{
+                            backgroundColor: "#c5c9d1",
+                            backgroundImage: `
+                                linear-gradient(45deg, #a0a6b2 25%, transparent 25%), 
+                                linear-gradient(-45deg, #a0a6b2 25%, transparent 25%), 
+                                linear-gradient(45deg, transparent 75%, #a0a6b2 75%), 
+                                linear-gradient(-45deg, transparent 75%, #a0a6b2 75%)
+                            `,
+                            backgroundSize: "28px 28px",
+                            backgroundPosition: "0 0, 0 14px, 14px -14px, -14px 0px"
+                        }}
+                    >
+                        {/* Comedor / Sala de estar lateral */}
+                        <div className="absolute top-10 left-4 right-4 p-3 bg-[#6e462d] rounded-2xl border-2 border-[#422919] shadow-lg flex flex-col items-center gap-3">
+                            <span className="text-[9px] font-black uppercase text-[#e9d2b8] tracking-widest flex items-center gap-1">
+                                <Coffee size={12} /> Cafetería & Break
+                            </span>
+                            {/* Mesa de madera con sillas */}
+                            <div className="w-16 h-28 bg-[#8d5836] rounded-xl border-2 border-[#4b2f1b] shadow flex flex-col justify-around items-center py-2">
+                                <div className="w-2.5 h-2.5 rounded-full bg-white/80" title="Taza de café" />
+                                <div className="w-3 h-3 rounded-full bg-amber-400/90" title="Snack" />
+                            </div>
+                        </div>
+
+                        {/* Planta decorativa en el pasillo */}
+                        <div className="absolute bottom-16 left-6 flex flex-col items-center">
+                            <div className="w-8 h-8 rounded-full bg-emerald-600 border-2 border-emerald-800 shadow-md flex items-center justify-center text-xs">
+                                🪴
+                            </div>
+                            <div className="w-5 h-4 bg-[#8b5a36] rounded-b-md border border-[#52331c] -mt-1" />
+                        </div>
+                    </div>
+
+                    {/* 2. SUELO PRINCIPAL: PARQUET DE MADERA CÁLIDA (A LA DERECHA) */}
+                    <div 
+                        className="absolute left-[24%] right-0 top-0 bottom-0"
+                        style={{
+                            backgroundColor: "#b88c5d",
+                            backgroundImage: `
+                                linear-gradient(to bottom, rgba(0,0,0,0.05) 1px, transparent 1px),
+                                linear-gradient(to right, rgba(0,0,0,0.04) 1px, transparent 1px)
+                            `,
+                            backgroundSize: "80px 30px"
+                        }}
+                    >
+                        {/* ALFOMBRA ROJA EJECUTIVA EN DIRECCIÓN (SUPERIOR) */}
+                        <div className="absolute top-5 left-[34%] w-[38%] h-24 bg-[#991b1b]/80 rounded-2xl border border-[#7f1d1d] shadow-inner" />
+
+                        {/* ALFOMBRA DE MARKETING EN EL CENTRO */}
+                        <div className="absolute top-[44%] left-[28%] w-[42%] h-28 bg-[#1e293b]/40 rounded-2xl border border-dashed border-[#475569]/50" />
+
+                        {/* RÓTULOS DE ÁREAS IMPRESOS EN EL SUELO (IGUAL A LA IMAGEN) */}
+                        <div className="absolute top-2 left-6 text-[#523521] font-black text-xs uppercase tracking-widest opacity-80">
+                            🏛️ Alta Dirección & Supervisión
+                        </div>
+
+                        <div className="absolute top-[38%] left-[45%] text-[#4b3322] font-black text-base uppercase tracking-widest opacity-70">
+                            Marketing & Ventas
+                        </div>
+
+                        <div className="absolute bottom-4 left-6 text-[#523521] font-black text-xs uppercase tracking-widest opacity-80">
+                            🛠️ Ingeniería, Software & Taller Técnico
+                        </div>
+
+                        {/* SILLÓN BALÓN DE BALONCESTO (DELUXE - COMO EN LA FOTO DEL CLIENTE) */}
+                        <div 
+                            className="absolute top-[48%] left-[16%] flex flex-col items-center group cursor-pointer"
+                            title="Sillón Balón de Baloncesto ATOMIC Relax"
+                        >
+                            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-orange-500 via-orange-600 to-orange-700 border-2 border-black shadow-xl relative overflow-hidden flex items-center justify-center group-hover:scale-105 transition-transform">
+                                {/* Líneas de baloncesto */}
+                                <div className="absolute inset-0 border-t-2 border-b-2 border-black/80 my-auto h-0" />
+                                <div className="absolute inset-0 border-l-2 border-r-2 border-black/80 mx-auto w-0" />
+                                <div className="absolute w-12 h-12 rounded-full border border-black/70" />
+                            </div>
+                            <span className="text-[8px] font-black text-[#4b301c] bg-[#e4be95] px-1.5 py-0.2 rounded-full mt-1 border border-[#8d5e39]">
+                                Lounge
+                            </span>
+                        </div>
+
+                        {/* PLANTA PALMERA CORPORATIVA EN MACETA BLANCA */}
+                        <div className="absolute top-4 left-4 flex flex-col items-center">
+                            <div className="text-3xl filter drop-shadow-md select-none">🌴</div>
+                            <div className="w-6 h-5 bg-white rounded-b-lg border-2 border-slate-300 shadow -mt-2" />
+                        </div>
+
+                        {/* FLORERO ELEGANTE DE MESA */}
+                        <div className="absolute top-8 right-8 flex flex-col items-center">
+                            <div className="w-10 h-10 rounded-full bg-emerald-100 border-2 border-emerald-300 flex items-center justify-center text-base shadow">
+                                💐
+                            </div>
+                        </div>
+
+                        {/* ── RENDER DE CADA PUESTO DE TRABAJO Y PERSONAJE (2D TOP-DOWN) ── */}
+                        {allMembers.map(member => {
+                            const isSelected = selectedMember?.id === member.id
+                            return (
+                                <div
+                                    key={member.id}
+                                    onClick={() => setSelectedMember(member)}
+                                    className="absolute -translate-x-1/2 -translate-y-1/2 cursor-pointer z-20 group"
+                                    style={{ left: `${member.x}%`, top: `${member.y}%` }}
+                                >
+                                    {/* 🏷️ ETIQUETA FLOTANTE CON ESTADO Y NOMBRE */}
+                                    <div className="flex flex-col items-center mb-1 transition-transform group-hover:-translate-y-1">
+                                        <div className={`px-2 py-0.5 rounded-full text-[9px] font-black shadow-lg border flex items-center gap-1 max-w-[130px] whitespace-nowrap overflow-hidden text-ellipsis ${
+                                            member.status === "online" 
+                                                ? "bg-slate-950/95 text-white border-emerald-500/60 shadow-emerald-950/40" 
+                                                : "bg-slate-950/95 text-white border-amber-500/60 shadow-amber-950/40"
+                                        }`}>
+                                            <span className={`w-1.5 h-1.5 shrink-0 rounded-full ${member.status === "online" ? "bg-emerald-400" : "bg-rose-400"} animate-pulse`} />
+                                            <span className="font-bold truncate">{member.name}</span>
+                                        </div>
+                                        <span className="text-[7.5px] font-bold uppercase tracking-wider text-[#3d2716] font-mono mt-0.2 max-w-[120px] truncate text-center">
+                                            {member.roleName}
+                                        </span>
+                                    </div>
+
+                                    {/* 🧑‍💼 SPRITE DEL PERSONAJE Y ESCRITORIO CON MONITORES */}
+                                    <div className="relative flex flex-col items-center">
+                                        
+                                        {/* CABEZA / AVATAR DEL PERSONAJE EN SU SILLA */}
+                                        <div className="relative z-10 w-9 h-9 rounded-full bg-slate-900 border-2 border-white/80 shadow-md flex items-center justify-center group-hover:scale-110 transition-transform overflow-hidden">
+                                            {member.spriteType === "executive" ? (
+                                                <span className="text-base">🧑‍💼</span>
+                                            ) : member.spriteType === "creative" ? (
+                                                <span className="text-base">🎨</span>
+                                            ) : member.spriteType === "tech" ? (
+                                                <span className="text-base">👨‍💻</span>
+                                            ) : member.spriteType === "taller" ? (
+                                                <span className="text-base">🔧</span>
+                                            ) : (
+                                                <span className="text-base">💼</span>
+                                            )}
+                                        </div>
+
+                                        {/* SILLA ERGONÓMICA DE OFICINA DETRÁS */}
+                                        <div className="w-10 h-7 rounded-t-xl bg-[#1e293b] border border-slate-700 -mt-6 z-0 shadow" />
+
+                                        {/* 🖥️ ESCRITORIO CORPORATIVO CON PANTALLAS */}
+                                        <div 
+                                            className="w-20 h-11 rounded-lg border-2 shadow-xl flex items-center justify-around px-1.5 mt-0.5 relative z-10"
+                                            style={{ 
+                                                backgroundColor: "#222734",
+                                                borderColor: member.deskColor
+                                            }}
+                                        >
+                                            {/* Monitor 1 (Glow pantalla encendida) */}
+                                            <div className="w-7 h-4 rounded bg-sky-400 border border-white/60 shadow-[0_0_8px_rgba(56,189,248,0.8)] flex items-center justify-center">
+                                                <div className="w-4 h-0.5 bg-white/60 rounded-full" />
+                                            </div>
+
+                                            {/* Teclado */}
+                                            <div className="w-3 h-2 bg-slate-800 rounded-xs border border-slate-600" />
+
+                                            {/* Monitor 2 */}
+                                            <div className="w-7 h-4 rounded bg-cyan-300 border border-white/60 shadow-[0_0_8px_rgba(34,211,238,0.8)] flex items-center justify-center">
+                                                <div className="w-4 h-0.5 bg-slate-900 rounded-full" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )
+                        })}
+                    </div>
+                </div>
+                </div>
+            )}
 
             {/* ── MODAL: FICHA / CONTACTO RÁPIDO DEL MIEMBRO DE LA OFICINA ── */}
             {selectedMember && (

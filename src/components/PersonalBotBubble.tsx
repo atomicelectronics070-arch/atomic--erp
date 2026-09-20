@@ -69,30 +69,34 @@ export default function PersonalBotBubble() {
                             id: m.id,
                             role: m.role,
                             content: m.content,
-                        }))
-                        setMessages(loaded)
-                    } else {
-                        setMessages([{
-                            id: "welcome",
-                            role: "assistant",
-                            content: `👋 ¡Hola **${session.user.name?.split(" ")[0] || "Asesor"}**! Soy tu asistente personal de **ATOMIC Industries**.\n\nTengo acceso a todos los módulos: Cotizaciones \`PROP\`, Inventario, Coordinación, Radar de Prospección y más.\n\n✨ Usa el **menú deslizable** abajo o escribe cualquier consulta para comenzar.`,
-                        }])
-                    }
+                if (memory && memory.messages?.length > 0) {
+                    const loaded: BotMessage[] = memory.messages.map((m: any) => ({
+                        id: m.id,
+                        role: m.role,
+                        content: m.content,
+                    }))
+                    setMessages(loaded)
                 } else {
                     setMessages([{
                         id: "welcome",
                         role: "assistant",
-                        content: `👋 ¡Hola **${session.user.name?.split(" ")[0] || "Asesor"}**! Soy tu asistente personal de **ATOMIC Industries**.\n\n¿Sobre qué módulo o tarea deseas que te asista hoy?`,
+                        content: `👋 ¡Hola **${session.user.name?.split(" ")[0] || "Asesor"}**! Hola, soy el **Guía de ATOMIC**, estoy para enseñarte el sistema nada más.\n\nTengo acceso a todos los módulos: Cotizaciones \`PROP\`, Inventario, Coordinación, Radar de Prospección y más.\n\n✨ Haz clic en cualquier botón del **menú inferior** o escribe tu duda para aprender a usar ATOMIC.`,
                     }])
                 }
             })
-            .catch(console.error)
+            .catch(() => {
+                setMessages([{
+                    id: "welcome",
+                    role: "assistant",
+                    content: `👋 ¡Hola **${session.user.name?.split(" ")[0] || "Asesor"}**! Hola, soy el **Guía de ATOMIC**, estoy para enseñarte el sistema nada más.\n\n¿Qué módulo o herramienta del ERP deseas aprender a usar hoy?`,
+                }])
+            })
             .finally(() => setIsInitializing(false))
     }, [session])
 
     // Contextual pop notification on route change
     useEffect(() => {
-        if (!botName || isInitializing) return
+        if (isInitializing) return
 
         let popupText = ""
         if (pathname === "/dashboard") {
@@ -102,9 +106,9 @@ export default function PersonalBotBubble() {
         } else if (pathname === "/dashboard/shop") {
             popupText = `📍 **Estás en Inventario**: Consulta el catálogo de más de 9,700 artículos, precios y proveedores.`
         } else if (pathname === "/dashboard/coordinacion") {
-            popupText = `📍 **Estás en Coordinación**: Planifica metas de leads, bitácoras y supervisión de propuestas.`
+            popupText = `📍 **Estás en Coordinación**: Gestiona asesores comerciales, contratos laborales y bitácoras de seguimiento.`
         } else if (pathname === "/dashboard/profile") {
-            popupText = `📍 **Estás en tu Perfil**: Puedes actualizar tus datos personales y seleccionar entre los **5 Temas Globales** del sistema.`
+            popupText = `📍 **Estás en tu Perfil**: Puedes actualizar tus datos y alternar entre los **Temas Globales** y temas de Relleno/Superficie.`
         }
 
         if (popupText) {
@@ -113,62 +117,72 @@ export default function PersonalBotBubble() {
                 if (last && last.content.startsWith(popupText.substring(0, 25))) return prev
                 return [...prev, { id: Date.now().toString(), role: "assistant", content: popupText }]
             })
-            setHasNewMessage(true)
         }
-    }, [pathname, botName, isInitializing])
+    }, [pathname, isInitializing])
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-    }, [messages])
+    }, [messages, isOpen])
 
-    const sendMessage = async (text?: string) => {
-        const msgText = text || input.trim()
-        if (!msgText || isLoading) return
+    const sendMessage = async (customText?: string) => {
+        const textToSend = customText || input
+        if (!textToSend.trim() || isLoading) return
 
-        const userMsg: BotMessage = { id: Date.now().toString(), role: "user", content: msgText }
-        setMessages(prev => [...prev, userMsg])
-        setInput("")
+        const userMsg: BotMessage = {
+            id: Date.now().toString(),
+            role: "user",
+            content: textToSend.trim(),
+        }
+
+        const newMessages = [...messages, userMsg]
+        setMessages(newMessages)
+        if (!customText) setInput("")
         setIsLoading(true)
 
         try {
             const res = await fetch("/api/personal-bot", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ message: msgText, isNamingBot, currentPath: pathname })
+                body: JSON.stringify({
+                    messages: newMessages.map(m => ({ role: m.role, content: m.content })),
+                    currentPath: pathname,
+                })
             })
+
             const data = await res.json()
-
-            if (data.botName) {
-                setBotName(data.botName)
-                setIsNamingBot(false)
-                setOnboardingDone(true)
+            if (data.reply) {
+                const assistantMsg: BotMessage = {
+                    id: (Date.now() + 1).toString(),
+                    role: "assistant",
+                    content: data.reply,
+                    suggestions: data.suggestions,
+                }
+                setMessages(prev => [...prev, assistantMsg])
+                if (!isOpen) setHasNewMessage(true)
             }
-
-            const botMsg: BotMessage = {
+        } catch (err) {
+            console.error(err)
+            setMessages(prev => [...prev, {
                 id: (Date.now() + 1).toString(),
                 role: "assistant",
-                content: data.text || "Estoy listo para ayudarte con cualquier módulo de ATOMIC.",
-                suggestions: data.suggestions || []
-            }
-            setMessages(prev => [...prev, botMsg])
-
-            if (!isOpen) setHasNewMessage(true)
-        } catch (err) {
-            setMessages(prev => [...prev, {
-                id: (Date.now() + 2).toString(),
-                role: "assistant",
-                content: "⚠️ Hubo un breve problema de conexión. Puedes elegir cualquier módulo del menú inferior para consultarme directamente."
+                content: "Lo siento, tuve un problema de conexión al consultar las directivas del sistema. Intenta de nuevo.",
             }])
         } finally {
             setIsLoading(false)
         }
     }
 
-    const handleKeyDown = (e: React.KeyboardEvent) => {
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault()
             sendMessage()
         }
+    }
+
+    const copyToClipboard = (text: string, index: number) => {
+        navigator.clipboard.writeText(text)
+        setCopiedIndex(index)
+        setTimeout(() => setCopiedIndex(null), 2000)
     }
 
     const formatContent = (text: string) => {
@@ -181,23 +195,24 @@ export default function PersonalBotBubble() {
 
     if (!session?.user) return null
 
-    const displayName = botName || "Alfred"
-    const firstLetter = displayName[0].toUpperCase()
+    const displayName = "Guía de ATOMIC"
 
     return (
         <>
-            {/* Floating Bubble */}
+            {/* Floating Bubble - Repositioned to bottom-28 on mobile to not block bottom dock */}
             <motion.button
                 onClick={() => { setIsOpen(true); setHasNewMessage(false) }}
-                className="fixed bottom-6 right-6 z-50 w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(6,182,212,0.4)] group cursor-pointer"
+                className="fixed bottom-28 lg:bottom-10 right-5 z-40 w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center shadow-[0_0_35px_rgba(6,182,212,0.55)] group cursor-pointer border border-cyan-400/40"
                 whileHover={{ scale: 1.08 }}
                 whileTap={{ scale: 0.95 }}
+                title="Abrir Guía de ATOMIC"
                 style={{ display: isOpen ? "none" : "flex" }}
             >
                 <div className="absolute inset-0 rounded-full bg-cyan-500 opacity-25 animate-ping" />
                 <div className="absolute inset-1 rounded-full bg-gradient-to-br from-cyan-400 via-indigo-600 to-teal-500 shadow-[0_0_30px_rgba(6,182,212,0.6)]" />
-                <div className="relative z-10 flex flex-col items-center justify-center">
-                    <span className="text-white font-black text-xl italic">{firstLetter}</span>
+                <div className="relative z-10 flex flex-col items-center justify-center text-white">
+                    <Bot size={26} className="drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] group-hover:scale-110 transition-transform" />
+                    <span className="text-[8px] font-mono font-black uppercase tracking-tighter text-cyan-200 -mt-0.5">GUÍA</span>
                     {hasNewMessage && (
                         <div className="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 rounded-full border-2 border-slate-950 animate-bounce" />
                     )}
@@ -212,22 +227,22 @@ export default function PersonalBotBubble() {
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
                         transition={{ type: "spring", damping: 20, stiffness: 300 }}
-                        className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50 w-[92vw] sm:w-[440px] h-[85vh] sm:h-[650px] flex flex-col rounded-3xl overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.9)] border border-cyan-500/30"
+                        className="fixed bottom-24 lg:bottom-10 right-4 sm:right-6 z-50 w-[92vw] sm:w-[440px] h-[78vh] sm:h-[640px] flex flex-col rounded-3xl overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.9)] border border-cyan-500/30"
                         style={{ background: "linear-gradient(145deg, #090e1a 0%, #0d1527 50%, #060a12 100%)" }}
                     >
                         {/* Header */}
-                        <div className="flex items-center gap-3 px-5 py-4 border-b border-cyan-500/20 bg-slate-950/60 backdrop-blur-md">
-                            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-cyan-400 to-indigo-600 flex items-center justify-center font-black text-white text-lg shadow-[0_0_15px_rgba(6,182,212,0.5)]">
-                                {firstLetter}
+                        <div className="flex items-center gap-3 px-5 py-4 border-b border-cyan-500/20 bg-slate-950/70 backdrop-blur-md">
+                            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-cyan-400 to-indigo-600 flex items-center justify-center text-white shadow-[0_0_15px_rgba(6,182,212,0.5)]">
+                                <Bot size={22} />
                             </div>
                             <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2">
-                                    <h3 className="text-white font-black text-sm tracking-wide truncate">{displayName}</h3>
-                                    <span className="px-1.5 py-0.5 rounded-full bg-cyan-400/15 text-cyan-300 text-[9px] font-mono font-bold">IA v2.4</span>
+                                    <h3 className="text-white font-black text-sm tracking-wide truncate">Guía de ATOMIC</h3>
+                                    <span className="px-1.5 py-0.5 rounded-full bg-cyan-400/15 text-cyan-300 text-[9px] font-mono font-bold">Tutorial</span>
                                 </div>
                                 <p className="text-cyan-400 text-[10px] font-mono uppercase tracking-widest flex items-center gap-1.5 truncate">
                                     <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse shrink-0" />
-                                    Guía Integral ATOMIC
+                                    Estoy para enseñarte el sistema
                                 </p>
                             </div>
 

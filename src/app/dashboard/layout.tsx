@@ -14,6 +14,7 @@ import {
 import { useState, useEffect } from "react"
 import NotificationBell from "@/components/NotificationBell"
 import PersonalBotBubble from "@/components/PersonalBotBubble"
+import PersonalSalesBotModal from "@/components/bot/PersonalSalesBotModal"
 import MobileBottomDock from "@/components/dashboard/MobileBottomDock"
 import { motion, AnimatePresence } from "framer-motion"
 
@@ -24,11 +25,36 @@ export default function DashboardLayout({
 }) {
     const { data: session, status } = useSession()
     const [sidebarOpen, setSidebarOpen] = useState(false)
+    const [showSalesBot, setShowSalesBot] = useState(false)
     const [unreadCount, setUnreadCount] = useState(0)
     const router = useRouter()
     const pathname = usePathname()
     const isDashboard = pathname.startsWith("/dashboard")
     const isStandalonePage = pathname === "/dashboard/matriz-precios" || pathname === "/dashboard/shop" || pathname === "/dashboard/precios-vendedor" || pathname === "/web/matriz-precios" || pathname === "/dashboard/ecosistema-tomc"
+
+    // Role definitions
+    const role = (session?.user as any)?.role || "SALESPERSON"
+    const rolesList = role.split(",").map((r: string) => r.trim()).filter(Boolean)
+    const primaryRole = rolesList[0] || "SALESPERSON"
+
+    const [showRoleStats, setShowRoleStats] = useState(false)
+    const [userStats, setUserStats] = useState({
+        clientsCount: 0,
+        quotesCount: 0,
+        salesAmount: 0,
+        commissionsAmount: 0
+    })
+
+    useEffect(() => {
+        if (session?.user?.id && isDashboard) {
+            fetch("/api/user/profile")
+                .then(r => r.json())
+                .then(d => {
+                    if (d?.stats) setUserStats(d.stats)
+                })
+                .catch(() => {})
+        }
+    }, [session?.user?.id, isDashboard])
 
     useEffect(() => {
         if (status === "unauthenticated" && isDashboard) {
@@ -126,8 +152,25 @@ export default function DashboardLayout({
                 )}
             </AnimatePresence>
 
-            {/* Floating Personal AI Bot Bubble */}
+            {/* Dual AI Bots: Bot 1 (Guía de ATOMIC) and Bot 2 (Bot Personal de Ventas con Voz) */}
             <PersonalBotBubble />
+
+            <motion.button
+                onClick={() => setShowSalesBot(true)}
+                className="fixed bottom-44 lg:bottom-28 right-5 z-40 w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center shadow-[0_0_35px_rgba(168,85,247,0.55)] group cursor-pointer border border-purple-400/40"
+                whileHover={{ scale: 1.08 }}
+                whileTap={{ scale: 0.95 }}
+                title="Abrir Bot Personal de Ventas con Voz"
+            >
+                <div className="absolute inset-0 rounded-full bg-purple-500 opacity-25 animate-ping" />
+                <div className="absolute inset-1 rounded-full bg-gradient-to-br from-purple-500 via-indigo-600 to-pink-500 shadow-[0_0_30px_rgba(168,85,247,0.6)]" />
+                <div className="relative z-10 flex flex-col items-center justify-center text-white">
+                    <Sparkles size={24} className="drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] group-hover:scale-110 transition-transform" />
+                    <span className="text-[8px] font-mono font-black uppercase tracking-tighter text-purple-200 -mt-0.5">VENTAS</span>
+                </div>
+            </motion.button>
+
+            <PersonalSalesBotModal isOpen={showSalesBot} onClose={() => setShowSalesBot(false)} />
 
             {/* ═══════════════════════════════════════════════════════════
                 AI GLASS FLOATING SIDEBAR (QUBE.AI / FIGMA STYLE)
@@ -277,8 +320,80 @@ export default function DashboardLayout({
                         </Link>
                     </div>
                     
-                    <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-3 pr-4 border-r border-white/[0.08]">
+                    <div className="flex items-center gap-3 sm:gap-4">
+                        
+                        {/* ── RECUADRO FIJO DE INSIGNIA DE ROL & ESTADÍSTICAS PERSONALES ── */}
+                        <div className="relative">
+                            <button
+                                type="button"
+                                onClick={() => setShowRoleStats(!showRoleStats)}
+                                className="flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 transition-all cursor-pointer shadow-[0_0_15px_rgba(6,182,212,0.15)]"
+                                title="Ver roles activos y métricas del perfil"
+                            >
+                                <div className="flex items-center gap-1.5">
+                                    <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+                                    <span className="text-[11px] font-mono font-black uppercase tracking-wider text-cyan-300">
+                                        {primaryRole === "SALESPERSON" ? "VENDEDOR" : primaryRole}
+                                    </span>
+                                    {rolesList.length > 1 && (
+                                        <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-cyan-400 text-black">
+                                            +{rolesList.length - 1}
+                                        </span>
+                                    )}
+                                </div>
+                                <ChevronDown size={13} className="text-cyan-400" />
+                            </button>
+
+                            {/* Dropdown de Métricas y Roles */}
+                            {showRoleStats && (
+                                <div className="absolute right-0 top-full mt-2 w-72 p-4 rounded-3xl bg-[#0c0f1d]/95 border border-cyan-500/30 shadow-2xl backdrop-blur-xl z-50 space-y-3 animate-in fade-in zoom-in-95 duration-150">
+                                    <div className="border-b border-slate-800 pb-2.5">
+                                        <span className="text-[10px] font-mono font-bold uppercase text-slate-400">Roles Asignados</span>
+                                        <div className="flex flex-wrap gap-1 mt-1.5">
+                                            {rolesList.map((r: string) => (
+                                                <span key={r} className="px-2 py-0.5 rounded-lg bg-cyan-950/80 border border-cyan-500/30 text-cyan-300 text-[10px] font-bold">
+                                                    {r === "SALESPERSON" ? "VENDEDOR" : r}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <span className="text-[10px] font-mono font-bold uppercase text-slate-400">Estadísticas del Perfil</span>
+                                        <div className="grid grid-cols-2 gap-2 mt-1.5 text-xs">
+                                            <div className="p-2.5 rounded-2xl bg-slate-950/90 border border-slate-800">
+                                                <span className="text-[9px] text-slate-500 block uppercase font-bold">Clientes</span>
+                                                <span className="font-bold text-white text-sm">{userStats.clientsCount}</span>
+                                            </div>
+                                            <div className="p-2.5 rounded-2xl bg-slate-950/90 border border-slate-800">
+                                                <span className="text-[9px] text-slate-500 block uppercase font-bold">Ventas Hechas</span>
+                                                <span className="font-bold text-emerald-400 text-sm">${userStats.salesAmount}</span>
+                                            </div>
+                                            <div className="p-2.5 rounded-2xl bg-slate-950/90 border border-slate-800">
+                                                <span className="text-[9px] text-slate-500 block uppercase font-bold">Proformas</span>
+                                                <span className="font-bold text-cyan-400 text-sm">{userStats.quotesCount}</span>
+                                            </div>
+                                            <div className="p-2.5 rounded-2xl bg-slate-950/90 border border-slate-800">
+                                                <span className="text-[9px] text-slate-500 block uppercase font-bold">Comisiones</span>
+                                                <span className="font-bold text-indigo-400 text-sm">${userStats.commissionsAmount}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="pt-2 border-t border-slate-800/80 text-center">
+                                        <Link 
+                                            href="/dashboard/profile" 
+                                            onClick={() => setShowRoleStats(false)}
+                                            className="text-[10px] text-cyan-400 hover:text-cyan-300 font-bold uppercase tracking-wider"
+                                        >
+                                            Ver Perfil Completo &rarr;
+                                        </Link>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="flex items-center gap-3 pr-2 sm:pr-4 border-r border-white/[0.08]">
                             <NotificationBell />
                         </div>
                         
@@ -293,7 +408,7 @@ export default function DashboardLayout({
                             </div>
                             <div className="hidden sm:flex flex-col text-left leading-none">
                                 <span className="text-xs font-medium text-white/90 truncate max-w-[120px]">{session.user?.name}</span>
-                                <span className="text-[10px] text-cyan-400/80 mt-0.5">{role}</span>
+                                <span className="text-[10px] text-cyan-400/80 mt-0.5">{primaryRole}</span>
                             </div>
                         </Link>
                     </div>

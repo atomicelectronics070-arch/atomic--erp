@@ -185,6 +185,56 @@ html[data-theme="oled-black"] {
   box-shadow: 0 0 20px var(--theme-glow) !important;
 }
 
+/* ══════════════════════════════════════════════════════════════ */
+/* 📐 ATOMIC ECOSISTEMA: SISTEMA DE RELLENOS Y LÍNEAS (SUPERFICIES) */
+/* ══════════════════════════════════════════════════════════════ */
+
+:root {
+  --surface-fill: rgba(14, 14, 18, 0.75);
+  --surface-border: rgba(255, 255, 255, 0.08);
+  --surface-backdrop: blur(16px);
+  --surface-divider: rgba(255, 255, 255, 0.06);
+}
+
+html[data-surface="cyber-glass"] {
+  --surface-fill: rgba(13, 17, 34, 0.65);
+  --surface-border: rgba(56, 189, 248, 0.25);
+  --surface-backdrop: blur(20px);
+  --surface-divider: rgba(56, 189, 248, 0.15);
+}
+
+html[data-surface="slate-dark"] {
+  --surface-fill: #0f172a;
+  --surface-border: #1e293b;
+  --surface-backdrop: none;
+  --surface-divider: #334155;
+}
+
+html[data-surface="oled-puro"] {
+  --surface-fill: #000000;
+  --surface-border: #18181b;
+  --surface-backdrop: none;
+  --surface-divider: #27272a;
+}
+
+html[data-surface="grafito-tech"] {
+  --surface-fill: #18181b;
+  --surface-border: #3f3f46;
+  --surface-backdrop: blur(8px);
+  --surface-divider: #52525b;
+}
+
+.surface-card {
+  background: var(--surface-fill) !important;
+  border-color: var(--surface-border) !important;
+  backdrop-filter: var(--surface-backdrop) !important;
+  -webkit-backdrop-filter: var(--surface-backdrop) !important;
+}
+
+.surface-divider {
+  border-color: var(--surface-divider) !important;
+}
+
 body {
   background-color: #09090A !important;
   color: #FFFFFF;

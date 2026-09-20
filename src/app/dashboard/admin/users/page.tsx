@@ -24,6 +24,10 @@ export default async function AdminUsersPage() {
             role: true,
             status: true,
             createdAt: true,
+            profileData: true,
+            phoneNumber: true,
+            cedula: true,
+            profilePicture: true,
             transactions: {
                 select: {
                     profit: true,
