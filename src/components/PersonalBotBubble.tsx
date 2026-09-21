@@ -62,20 +62,20 @@ export default function PersonalBotBubble() {
             .then(data => {
                 const memory = data.memory
                 if (memory) {
-                    setBotName(memory.botName || "Alfred")
-                    setOnboardingDone(memory.onboardingDone)
                     if (memory.messages?.length > 0) {
                         const loaded: BotMessage[] = memory.messages.map((m: any) => ({
                             id: m.id,
                             role: m.role,
                             content: m.content,
-                if (memory && memory.messages?.length > 0) {
-                    const loaded: BotMessage[] = memory.messages.map((m: any) => ({
-                        id: m.id,
-                        role: m.role,
-                        content: m.content,
-                    }))
-                    setMessages(loaded)
+                        }))
+                        setMessages(loaded)
+                    } else {
+                        setMessages([{
+                            id: "welcome",
+                            role: "assistant",
+                            content: `👋 ¡Hola **${session.user.name?.split(" ")[0] || "Asesor"}**! Hola, soy el **Guía de ATOMIC**, estoy para enseñarte el sistema nada más.\n\nTengo acceso a todos los módulos: Cotizaciones \`PROP\`, Inventario, Coordinación, Radar de Prospección y más.\n\n✨ Haz clic en cualquier botón del **menú inferior** o escribe tu duda para aprender a usar ATOMIC.`,
+                        }])
+                    }
                 } else {
                     setMessages([{
                         id: "welcome",

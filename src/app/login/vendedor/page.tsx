@@ -10,8 +10,6 @@ import {
     AlertCircle, Briefcase, ArrowLeft, ShieldCheck
 } from "lucide-react"
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
 
 function VendedorLoginForm() {
     const router = useRouter()

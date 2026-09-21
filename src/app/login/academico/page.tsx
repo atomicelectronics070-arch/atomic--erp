@@ -10,8 +10,6 @@ import {
     AlertCircle, GraduationCap, ArrowLeft
 } from "lucide-react"
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
 
 function AcademicoLoginForm() {
     const router = useRouter()

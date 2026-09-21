@@ -5,8 +5,6 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { User, Mail, Lock, ShoppingBag, ArrowRight, Loader2, Phone, CheckCircle2, ArrowLeft, ShieldCheck } from "lucide-react"
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
 
 function CompradorRegisterForm() {
     const router = useRouter()

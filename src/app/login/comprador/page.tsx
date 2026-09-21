@@ -11,8 +11,6 @@ import {
     Sparkles, ShieldCheck, Heart, PackageCheck
 } from "lucide-react"
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
 
 function CompradorLoginForm() {
     const router = useRouter()

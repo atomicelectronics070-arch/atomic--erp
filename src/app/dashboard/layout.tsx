@@ -128,8 +128,6 @@ export default function DashboardLayout({
         )
     }
 
-    const role = session.user?.role
-
     return (
         <div className="flex h-screen bg-[#070a14] text-white/95 overflow-hidden font-sans relative selection:bg-cyan-500/30 selection:text-white">
             

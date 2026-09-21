@@ -10,8 +10,6 @@ import {
     AlertCircle, Wrench, ArrowLeft
 } from "lucide-react"
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
 
 function TecnicoLoginForm() {
     const router = useRouter()

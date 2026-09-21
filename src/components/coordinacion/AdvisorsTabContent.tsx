@@ -704,8 +704,8 @@ export default function AdvisorsTabContent({
                                         }}
                                         className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-white outline-none focus:border-cyan-400"
                                     >
-                                        <option value="FIJO_30_DIAS">Plan Fijo 30 Días ($100 -> $450 - 7 Actividades)</option>
-                                        <option value="FREELANCE">Freelance Bajo Comisión (Asistencia >4x/sem)</option>
+                                        <option value="FIJO_30_DIAS">{"Plan Fijo 30 Días ($100 -> $450 - 7 Actividades)"}</option>
+                                        <option value="FREELANCE">{"Freelance Bajo Comisión (Asistencia > 4x/sem)"}</option>
                                     </select>
                                 </div>
 
