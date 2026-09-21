@@ -8,7 +8,6 @@ import {
     Bell, CheckSquare, Calculator, Bot, Copy, Check, MessageSquare, 
     FileDown, ExternalLink, Plus, RefreshCw, Trash2, ArrowRight
 } from "lucide-react"
-import { downloadAtomicProposalPDF } from "@/lib/pdf/quotePdfGenerator"
 
 interface Bot2Message {
     id: string
