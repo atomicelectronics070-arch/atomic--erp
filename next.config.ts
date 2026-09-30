@@ -3,6 +3,15 @@ import path from "path";
 
 const nextConfig: NextConfig = {
   outputFileTracingRoot: path.join(__dirname),
+  outputFileTracingExcludes: {
+    '*': [
+      'public/video/**/*',
+      'public/docs/**/*',
+      'scratch/**/*',
+      'android/**/*',
+      'ios/**/*',
+    ],
+  },
   typescript: {
     ignoreBuildErrors: true,
   },
