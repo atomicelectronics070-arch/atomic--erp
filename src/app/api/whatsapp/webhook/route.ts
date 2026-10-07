@@ -1,6 +1,7 @@
 export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { handleIncomingWhatsAppBot } from '@/lib/whatsapp/ai-bot';
 
 const VERIFY_TOKEN = process.env.WHATSAPP_VERIFY_TOKEN || 'atomic_whatsapp_verify_token_2026';
 
@@ -169,6 +170,15 @@ export async function POST(req: Request) {
                     where: { id: conversation.id },
                     data: { updatedAt: new Date(), lastMessageAt: new Date() }
                 });
+
+                // 7. Auto-respuesta Inteligente con IA (NVIDIA 90B Vision)
+                handleIncomingWhatsAppBot({
+                    whatsappId: from,
+                    contactName,
+                    messageText: finalBody,
+                    mediaUrl,
+                    conversationId: conversation.id
+                }).catch(err => console.error('[BOT_AUTO_REPLY_ERROR]', err));
             }
         }
 
