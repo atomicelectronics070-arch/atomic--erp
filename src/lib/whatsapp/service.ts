@@ -18,14 +18,21 @@ export function sanitizeToE164(phone: string): string {
 }
 
 async function getWhatsAppCredentials() {
-    let token = process.env.WHATSAPP_TOKEN;
+    let token = process.env.WHATSAPP_TOKEN || 
+                process.env.WHATSAPP_ACCESS_TOKEN || 
+                process.env.META_WHATSAPP_TOKEN || 
+                process.env.WHATSAPP_CLOUD_API_TOKEN;
     let phoneId = process.env.WHATSAPP_PHONE_NUMBER_ID || REAL_PHONE_NUMBER_ID_FALLBACK;
 
     try {
-        const dbPhoneId = await prisma.systemSetting.findUnique({ where: { key: 'WHATSAPP_PHONE_NUMBER_ID' } });
+        const dbPhoneId = await prisma.systemSetting.findFirst({
+            where: { key: { in: ['WHATSAPP_PHONE_NUMBER_ID', 'PHONE_NUMBER_ID'] } }
+        });
         if (dbPhoneId?.value) phoneId = dbPhoneId.value;
 
-        const dbToken = await prisma.systemSetting.findUnique({ where: { key: 'WHATSAPP_TOKEN' } });
+        const dbToken = await prisma.systemSetting.findFirst({
+            where: { key: { in: ['WHATSAPP_TOKEN', 'WHATSAPP_ACCESS_TOKEN', 'META_WHATSAPP_TOKEN'] } }
+        });
         if (dbToken?.value) token = dbToken.value;
     } catch (e) {
         // Fallback to env or constant

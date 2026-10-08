@@ -251,7 +251,14 @@ export default function PersonalManagementPage() {
                     className="px-5 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center gap-2 bg-gradient-to-r from-indigo-500 to-cyan-500 text-white shadow-lg cursor-pointer"
                 >
                     <BookMarked size={15} />
-                    <span>Admin Central & Permisos</span>
+                    <span>Admin Central & Personal</span>
+                </Link>
+                <Link
+                    href="/dashboard/superadmin"
+                    className="px-5 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center gap-2 text-rose-300 hover:text-white hover:bg-rose-500/20 cursor-pointer border border-rose-500/30"
+                >
+                    <Shield size={15} />
+                    <span>Super Admin & Permisos</span>
                 </Link>
             </div>
 

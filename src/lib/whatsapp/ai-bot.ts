@@ -282,28 +282,64 @@ METODOLOGÍA DE VENTA CONSULTIVA Y REGLAS DE ORO:
         const botReply = completion.data.choices?.[0]?.message?.content?.trim();
 
         if (botReply) {
-            // 4. Enviar mensaje por WhatsApp Cloud API
-            await sendWhatsAppMessage(whatsappId, botReply);
+            try {
+                // 4. Enviar mensaje por WhatsApp Cloud API
+                await sendWhatsAppMessage(whatsappId, botReply);
 
-            // 5. Guardar el mensaje OUTBOUND en la base de datos
-            await prisma.wAMessage.create({
-                data: {
-                    conversationId,
-                    whatsappMessageId: `bot-${Date.now()}`,
-                    direction: 'OUTBOUND',
-                    type: 'text',
-                    body: botReply,
-                    status: 'SENT',
-                    senderId: 'BOT_NEMOTRON_90B'
-                }
-            });
+                // 5. Guardar el mensaje OUTBOUND en la base de datos
+                await prisma.wAMessage.create({
+                    data: {
+                        conversationId,
+                        whatsappMessageId: `bot-${Date.now()}`,
+                        direction: 'OUTBOUND',
+                        type: 'text',
+                        body: botReply,
+                        status: 'SENT',
+                        senderId: 'BOT_NEMOTRON_90B'
+                    }
+                });
 
-            console.log(`[BOT_SUCCESS] Respondió automáticamente a ${whatsappId}`);
+                console.log(`[BOT_SUCCESS] Respondió automáticamente a ${whatsappId}`);
+            } catch (sendErr: any) {
+                const errMsg = sendErr?.response?.data?.error?.message || sendErr.message || 'Error al entregar por WhatsApp';
+                console.error(`[BOT_SEND_FAILED] Recipiente: ${whatsappId}. Detalle:`, errMsg);
+
+                // Registrar en BD el mensaje fallido con su causa exacta para que el admin lo vea en CRM
+                await prisma.wAMessage.create({
+                    data: {
+                        conversationId,
+                        whatsappMessageId: `bot-failed-${Date.now()}`,
+                        direction: 'OUTBOUND',
+                        type: 'text',
+                        body: `⚠️ [ERROR DE ENVÍO META]: ${botReply}\n\nMotivo del fallo: ${errMsg}`,
+                        status: 'FAILED',
+                        errorMessage: errMsg,
+                        senderId: 'BOT_NEMOTRON_90B'
+                    }
+                }).catch(() => {});
+            }
         }
 
         return botReply;
     } catch (error: any) {
-        console.error('[BOT_PROCESSING_ERROR]', error.response?.data || error.message);
+        const errorDetail = error.response?.data || error.message;
+        console.error('[BOT_PROCESSING_ERROR]', errorDetail);
+
+        try {
+            await prisma.wAMessage.create({
+                data: {
+                    conversationId,
+                    whatsappMessageId: `bot-err-${Date.now()}`,
+                    direction: 'OUTBOUND',
+                    type: 'text',
+                    body: `⚠️ [FALLO DE IA / PROCESO]: No se pudo procesar la respuesta automática.`,
+                    status: 'FAILED',
+                    errorMessage: String(errorDetail),
+                    senderId: 'BOT_SYSTEM'
+                }
+            });
+        } catch (_) {}
+
         return null;
     }
 }

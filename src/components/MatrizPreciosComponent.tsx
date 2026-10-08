@@ -27,7 +27,7 @@ interface MatrizPreciosProps {
   title?: string;
   subtitle?: string;
   allowPermanentDelete?: boolean;
-  defaultTheme?: 'bw' | 'bw-inv' | 'green' | 'amber';
+  defaultTheme?: 'cyber' | 'emerald' | 'amber' | 'oled' | 'bw' | 'bw-inv';
 }
 
 export default function MatrizPreciosComponent({ 
@@ -35,7 +35,7 @@ export default function MatrizPreciosComponent({
   title,
   subtitle,
   allowPermanentDelete = true,
-  defaultTheme = 'bw-inv'
+  defaultTheme = 'cyber'
 }: MatrizPreciosProps) {
   const { data: session } = useSession();
   const userRole = String((session?.user as any)?.role || '').toUpperCase();
@@ -60,8 +60,18 @@ export default function MatrizPreciosComponent({
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(150);
   const [totalProducts, setTotalProducts] = useState(0);
-  const [totalPages, setTotalPages] = useState(1);
-  const [themeMode, setThemeMode] = useState<'bw' | 'bw-inv' | 'green' | 'amber'>(defaultTheme);
+  const [themeMode, setThemeMode] = useState<'cyber' | 'emerald' | 'amber' | 'oled' | 'bw' | 'bw-inv'>(defaultTheme);
+
+  // Sync with global ATOMIC theme
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedTheme = localStorage.getItem('atomic_theme');
+      if (savedTheme === 'emerald-matrix') setThemeMode('emerald');
+      else if (savedTheme === 'solar-amber') setThemeMode('amber');
+      else if (savedTheme === 'oled-black') setThemeMode('oled');
+      else if (savedTheme === 'cyber-neon') setThemeMode('cyber');
+    }
+  }, []);
 
   // Quick Login Modal State
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -817,59 +827,97 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
   };
 
   const themeClasses = {
+    cyber: {
+      bg: 'bg-[#050914]',
+      text: 'text-slate-100',
+      border: 'border border-cyan-500/30',
+      cardBg: 'bg-[#070b18]/90 backdrop-blur-xl',
+      headerBg: 'bg-slate-900/90',
+      headerText: 'text-cyan-300 font-bold',
+      accent: 'text-cyan-400 font-black',
+      highlight: 'bg-cyan-500/10',
+      inputBg: 'bg-slate-950 text-white border border-slate-800 focus:border-cyan-400',
+      badge: 'border border-cyan-500/30 text-cyan-300 bg-cyan-500/10',
+      cellInput: 'bg-slate-900 text-white border border-slate-700 focus:border-cyan-400',
+    },
+    emerald: {
+      bg: 'bg-[#020b06]',
+      text: 'text-emerald-100',
+      border: 'border border-emerald-500/30',
+      cardBg: 'bg-[#04140a]/90 backdrop-blur-xl',
+      headerBg: 'bg-emerald-950/90',
+      headerText: 'text-emerald-300 font-bold',
+      accent: 'text-emerald-400 font-black',
+      highlight: 'bg-emerald-500/10',
+      inputBg: 'bg-black text-emerald-200 border border-emerald-800 focus:border-emerald-400',
+      badge: 'border border-emerald-500/30 text-emerald-300 bg-emerald-500/10',
+      cellInput: 'bg-emerald-950 text-emerald-200 border border-emerald-800 focus:border-emerald-400',
+    },
+    amber: {
+      bg: 'bg-[#0f0a02]',
+      text: 'text-amber-100',
+      border: 'border border-amber-500/30',
+      cardBg: 'bg-[#181104]/90 backdrop-blur-xl',
+      headerBg: 'bg-amber-950/90',
+      headerText: 'text-amber-300 font-bold',
+      accent: 'text-amber-400 font-black',
+      highlight: 'bg-amber-500/10',
+      inputBg: 'bg-black text-amber-200 border border-amber-800 focus:border-amber-400',
+      badge: 'border border-amber-500/30 text-amber-300 bg-amber-500/10',
+      cellInput: 'bg-amber-950 text-amber-200 border border-amber-800 focus:border-amber-400',
+    },
+    oled: {
+      bg: 'bg-black',
+      text: 'text-slate-100',
+      border: 'border border-zinc-800',
+      cardBg: 'bg-zinc-950',
+      headerBg: 'bg-zinc-900',
+      headerText: 'text-white font-bold',
+      accent: 'text-white font-bold',
+      highlight: 'bg-zinc-900',
+      inputBg: 'bg-black text-white border border-zinc-800 focus:border-white',
+      badge: 'border border-zinc-800 text-zinc-300 bg-zinc-900',
+      cellInput: 'bg-zinc-900 text-white border border-zinc-700 focus:border-white',
+    },
     bw: {
       bg: 'bg-black',
       text: 'text-zinc-100',
-      border: 'border-2 border-zinc-800',
+      border: 'border border-zinc-800',
       cardBg: 'bg-zinc-950',
       headerBg: 'bg-zinc-900',
       headerText: 'text-zinc-300',
       accent: 'text-white font-bold',
       highlight: 'bg-zinc-900/80',
-      inputBg: 'bg-black text-white border-2 border-zinc-700 focus:border-white',
-      badge: 'border-2 border-zinc-700 text-zinc-300 bg-zinc-900',
+      inputBg: 'bg-black text-white border border-zinc-700 focus:border-white',
+      badge: 'border border-zinc-700 text-zinc-300 bg-zinc-900',
       cellInput: 'bg-zinc-900 text-white border border-zinc-700 focus:border-white',
     },
     'bw-inv': {
-      bg: 'bg-slate-200',
-      text: 'text-zinc-950',
-      border: 'border-2 border-zinc-950',
-      cardBg: 'bg-white',
-      headerBg: 'bg-zinc-300',
-      headerText: 'text-zinc-950 font-black',
-      accent: 'text-zinc-950 font-black',
-      highlight: 'bg-zinc-200/90',
-      inputBg: 'bg-white text-zinc-950 border-2 border-zinc-950 focus:border-black font-bold',
-      badge: 'border-2 border-zinc-950 text-zinc-950 bg-white font-bold',
-      cellInput: 'bg-white text-zinc-950 border-2 border-zinc-800 focus:border-black font-bold',
+      bg: 'bg-[#050914]',
+      text: 'text-slate-100',
+      border: 'border border-cyan-500/30',
+      cardBg: 'bg-[#070b18]/90',
+      headerBg: 'bg-slate-900',
+      headerText: 'text-cyan-300 font-bold',
+      accent: 'text-cyan-400 font-bold',
+      highlight: 'bg-cyan-500/10',
+      inputBg: 'bg-slate-950 text-white border border-slate-800 focus:border-cyan-400',
+      badge: 'border border-cyan-500/30 text-cyan-300 bg-cyan-500/10',
+      cellInput: 'bg-slate-900 text-white border border-slate-700 focus:border-cyan-400',
     },
-    green: {
-      bg: 'bg-[#030d04]',
-      text: 'text-emerald-400',
-      border: 'border-2 border-emerald-800',
-      cardBg: 'bg-[#061508]',
-      headerBg: 'bg-emerald-950',
-      headerText: 'text-emerald-300',
-      accent: 'text-emerald-200 font-bold',
-      highlight: 'bg-emerald-950/60',
-      inputBg: 'bg-black text-emerald-300 border-2 border-emerald-800 focus:border-emerald-400',
-      badge: 'border-2 border-emerald-800 text-emerald-400 bg-emerald-950',
-      cellInput: 'bg-emerald-950 text-emerald-300 border border-emerald-800 focus:border-emerald-400',
-    },
-    amber: {
-      bg: 'bg-[#0f0a02]',
-      text: 'text-amber-400',
-      border: 'border-2 border-amber-800',
-      cardBg: 'bg-[#181104]',
-      headerBg: 'bg-amber-950',
-      headerText: 'text-amber-300',
-      accent: 'text-amber-200 font-bold',
-      highlight: 'bg-amber-950/60',
-      inputBg: 'bg-black text-amber-300 border-2 border-amber-800 focus:border-amber-400',
-      badge: 'border-2 border-amber-800 text-amber-400 bg-amber-950',
-      cellInput: 'bg-amber-950 text-amber-300 border border-amber-800 focus:border-amber-400',
-    },
-  }[themeMode];
+  }[(themeMode as any) || 'cyber'] || {
+    bg: 'bg-[#050914]',
+    text: 'text-slate-100',
+    border: 'border border-cyan-500/30',
+    cardBg: 'bg-[#070b18]/90 backdrop-blur-xl',
+    headerBg: 'bg-slate-900/90',
+    headerText: 'text-cyan-300 font-bold',
+    accent: 'text-cyan-400 font-black',
+    highlight: 'bg-cyan-500/10',
+    inputBg: 'bg-slate-950 text-white border border-slate-800 focus:border-cyan-400',
+    badge: 'border border-cyan-500/30 text-cyan-300 bg-cyan-500/10',
+    cellInput: 'bg-slate-900 text-white border border-slate-700 focus:border-cyan-400',
+  };
 
   return (
     <div className={`min-h-screen ${themeClasses.bg} ${themeClasses.text} font-mono p-4 md:p-8 selection:bg-zinc-700 selection:text-white relative`}>
@@ -881,27 +929,27 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
         </div>
       )}
 
-      {/* ================= RETRO TERMINAL HEADER ================= */}
-      <div className={`border-2 ${themeClasses.border} p-6 shadow-xl mb-6 ${themeClasses.cardBg} rounded-xl`}>
+      {/* ================= ATOMIC MATRIX HEADER ================= */}
+      <div className={`${themeClasses.border} p-6 sm:p-8 shadow-2xl mb-6 ${themeClasses.cardBg} rounded-3xl relative overflow-hidden backdrop-blur-2xl`}>
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
           <div className="space-y-3">
             <div className="flex items-center gap-3">
-              <span className="w-3.5 h-3.5 rounded-full bg-emerald-500 animate-pulse border-2 border-zinc-950" />
-              <h1 className="text-xl md:text-2xl font-black uppercase tracking-widest">
+              <span className="w-3.5 h-3.5 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_12px_rgba(6,182,212,0.8)]" />
+              <h1 className="text-xl md:text-2xl font-black uppercase tracking-tight text-white">
                 {title || (effectiveVendedorMode 
-                  ? '[ATOMIC_SYSTEM] CATÁLOGO Y MATRIZ DE PRECIOS VENDEDORES V2.0' 
-                  : '[ATOMIC_SYSTEM] DATABASE PRICING & CATEGORY MATRIX v2.0 (ADMIN & COORDINACIÓN)')}
+                  ? 'Catálogo & Matriz de Precios Vendedores' 
+                  : 'Matriz Maestra de Precios & Inventario ERP (Admin & Coordinación)')}
               </h1>
             </div>
-            <p className="text-xs font-bold opacity-80 mt-1 uppercase tracking-wider">
+            <p className="text-xs font-mono text-cyan-400/80 font-bold uppercase tracking-wider">
               {subtitle || (effectiveVendedorMode 
-                ? 'LISTA GENERAL DE PRODUCTOS · PVP Y DESCUENTOS PARA ASESORES COMERCIALES' 
-                : 'MATRIZ GENERAL DE PRODUCTOS · EDICIÓN DIRECTA DE CATEGORÍAS, STOCK, COSTOS Y PRECIOS EN TIEMPO REAL')}
+                ? 'Lista General de Productos · PVP Oficial y Descuentos para Asesores Comerciales' 
+                : 'Control Central de Productos · PVP, Márgenes, Stock y Costos en Tiempo Real')}
             </p>
 
             {/* SELECTOR DUAL EXCLUSIVO DEL PERFIL ADMIN / COORDINACIÓN */}
             {canAccessAdminView && !isVendedorMode && (
-              <div className="inline-flex items-center gap-2 p-1.5 bg-zinc-950 border-2 border-cyan-400/80 rounded-xl shadow-xl">
+              <div className="inline-flex items-center gap-2 p-1.5 bg-slate-950/80 border border-white/10 rounded-2xl shadow-xl">
 
                 <button
                   type="button"
@@ -1044,39 +1092,55 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
               </>
             )}
 
-            <div className="flex items-center border-2 border-zinc-950 p-1 text-xs bg-white rounded-lg shadow-sm">
-              <span className="px-2 uppercase opacity-80 text-[10px] font-black">TEMA:</span>
+            <div className="flex items-center border border-white/10 p-1 text-xs bg-slate-900/90 rounded-xl shadow-lg backdrop-blur-md">
+              <span className="px-2 uppercase opacity-80 text-[10px] font-black text-slate-400">TEMA:</span>
               <button
-                onClick={() => setThemeMode('bw')}
-                className={`px-3 py-1 text-xs uppercase font-black transition-colors rounded ${
-                  themeMode === 'bw' ? 'bg-zinc-950 text-white' : 'hover:bg-zinc-200'
+                type="button"
+                onClick={() => {
+                  setThemeMode('cyber');
+                  if (typeof window !== 'undefined') localStorage.setItem('atomic_theme', 'cyber-neon');
+                }}
+                className={`px-3 py-1 text-xs uppercase font-black transition-all rounded-lg cursor-pointer ${
+                  themeMode === 'cyber' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-sm' : 'text-slate-400 hover:text-white'
                 }`}
               >
-                B/N Oscuro
+                Cyber Neon
               </button>
               <button
-                onClick={() => setThemeMode('bw-inv')}
-                className={`px-3 py-1 text-xs uppercase font-black transition-colors rounded ${
-                  themeMode === 'bw-inv' ? 'bg-zinc-950 text-white' : 'hover:bg-zinc-200 text-zinc-950'
+                type="button"
+                onClick={() => {
+                  setThemeMode('emerald');
+                  if (typeof window !== 'undefined') localStorage.setItem('atomic_theme', 'emerald-matrix');
+                }}
+                className={`px-3 py-1 text-xs uppercase font-black transition-all rounded-lg cursor-pointer ${
+                  themeMode === 'emerald' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm' : 'text-slate-400 hover:text-white'
                 }`}
               >
-                Invertido B/N
+                Esmeralda
               </button>
               <button
-                onClick={() => setThemeMode('green')}
-                className={`px-3 py-1 text-xs uppercase font-black transition-colors rounded ${
-                  themeMode === 'green' ? 'bg-emerald-600 text-white' : 'hover:bg-zinc-200'
+                type="button"
+                onClick={() => {
+                  setThemeMode('amber');
+                  if (typeof window !== 'undefined') localStorage.setItem('atomic_theme', 'solar-amber');
+                }}
+                className={`px-3 py-1 text-xs uppercase font-black transition-all rounded-lg cursor-pointer ${
+                  themeMode === 'amber' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm' : 'text-slate-400 hover:text-white'
                 }`}
               >
-                Verde VT100
+                Ámbar
               </button>
               <button
-                onClick={() => setThemeMode('amber')}
-                className={`px-3 py-1 text-xs uppercase font-black transition-colors rounded ${
-                  themeMode === 'amber' ? 'bg-amber-500 text-zinc-950' : 'hover:bg-zinc-200'
+                type="button"
+                onClick={() => {
+                  setThemeMode('oled');
+                  if (typeof window !== 'undefined') localStorage.setItem('atomic_theme', 'oled-black');
+                }}
+                className={`px-3 py-1 text-xs uppercase font-black transition-all rounded-lg cursor-pointer ${
+                  themeMode === 'oled' ? 'bg-slate-800 text-white border border-slate-700 shadow-sm' : 'text-slate-400 hover:text-white'
                 }`}
               >
-                Ámbar CRT
+                OLED
               </button>
             </div>
 

@@ -151,6 +151,28 @@ export default function Presence01() {
         </ul>
 
       </section>
+
+      {/* ═══════════ MOBILE QUICK ACCESS BAR (HOME VERSION) ═══════════ */}
+      <div className="sm:hidden fixed bottom-3 inset-x-3 z-40">
+        <div className="bg-[#090d1e]/95 backdrop-blur-2xl border border-white/10 rounded-2xl px-2 py-2 flex items-center justify-between shadow-[0_10px_35px_rgba(0,0,0,0.8)] text-[9px] font-mono font-bold">
+          <Link href="/web" className="flex-1 flex flex-col items-center gap-1 text-slate-400 hover:text-cyan-400">
+            <ShoppingBag size={16} />
+            <span>Tienda</span>
+          </Link>
+          <Link href="/contrataciones" className="flex-1 flex flex-col items-center gap-1 text-cyan-300">
+            <Briefcase size={16} />
+            <span>Empleo</span>
+          </Link>
+          <a href="https://wa.me/593969043453" target="_blank" rel="noreferrer" className="flex-1 flex flex-col items-center gap-1 text-emerald-400">
+            <MessageCircle size={16} />
+            <span>WhatsApp</span>
+          </a>
+          <Link href="/login" className="flex-1 flex flex-col items-center gap-1 text-slate-300">
+            <LogIn size={16} />
+            <span>Acceso ERP</span>
+          </Link>
+        </div>
+      </div>
     </main>
   );
 }
