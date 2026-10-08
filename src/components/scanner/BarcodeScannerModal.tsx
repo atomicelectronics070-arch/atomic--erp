@@ -69,8 +69,11 @@ export default function BarcodeScannerModal({
 
     // Beep synthesizer
     const playScanBeep = useCallback(() => {
+        if (typeof window === "undefined") return
         try {
-            const ctx = new (window.AudioContext || (window as any).webkitAudioContext)()
+            const AudioCtx = window.AudioContext || (window as any).webkitAudioContext
+            if (!AudioCtx) return
+            const ctx = new AudioCtx()
             const osc = ctx.createOscillator()
             const gain = ctx.createGain()
             osc.type = "sine"

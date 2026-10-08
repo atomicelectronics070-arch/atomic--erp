@@ -86,20 +86,32 @@ export async function POST(req: Request) {
         const parsedPrice = parseFloat(price) || 0;
         const parsedStock = parseInt(stock) || 1;
 
-        // Check if category exists or create it if categoryName is provided
+        // Check if category exists or create it safely if categoryName is provided
         let categoryId: string | null = null;
         if (categoryName && categoryName.trim()) {
             const catSlug = categoryName.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-');
-            const cat = await prisma.category.upsert({
-                where: { slug: catSlug },
-                update: {},
-                create: {
-                    name: categoryName.trim(),
-                    slug: catSlug,
-                    isVisible: true
+            let cat = await prisma.category.findFirst({
+                where: {
+                    OR: [
+                        { slug: catSlug },
+                        { name: { equals: categoryName.trim(), mode: 'insensitive' } }
+                    ]
                 }
             });
-            categoryId = cat.id;
+            if (!cat) {
+                try {
+                    cat = await prisma.category.create({
+                        data: {
+                            name: categoryName.trim(),
+                            slug: catSlug,
+                            isVisible: true
+                        }
+                    });
+                } catch {
+                    cat = await prisma.category.findFirst();
+                }
+            }
+            categoryId = cat ? cat.id : null;
         }
 
         // Check if product with this SKU already exists

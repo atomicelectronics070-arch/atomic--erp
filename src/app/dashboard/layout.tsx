@@ -30,6 +30,7 @@ export default function DashboardLayout({
     const router = useRouter()
     const pathname = usePathname()
     const isStandalonePage = pathname === "/dashboard/ecosistema-tomc" || pathname === "/web/matriz-precios"
+    const isDashboard = Boolean(pathname && pathname.startsWith("/dashboard") && !isStandalonePage)
 
     // Role definitions
     const role = (session?.user as any)?.role || "SALESPERSON"
