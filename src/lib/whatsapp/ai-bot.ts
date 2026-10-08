@@ -9,10 +9,132 @@ const HR_GROUP_LINK = "https://chat.whatsapp.com/EYwCyfg0mF99nmNEhBPCFt";
 const HR_PAGE_LINK = "https://atomiccotizador.shop/web/contrataciones";
 
 /**
+ * Matriz de Conocimiento Oficial de ATOMIC Electronics / ATOMIC Industrias
+ * Contiene las líneas bandera, modelos, precios de referencia y casos de uso.
+ */
+const CATALOGO_MAESTRO_ATOMIC = `
+PORTAFOLIO OFICIAL Y LÍNEAS PRINCIPALES DE ATOMIC ECUADOR:
+
+1. VIDEOPORTEROS Y CITOFONÍA (Residencial y Edificios):
+- Portero de Video Residencial 2 Pantallas HD: $285.00 (Incluye frente exterior HD + 2 monitores interiores a color + ¡Envío Gratis!). Para casas y oficinas.
+- Kit Videoportero Hikvision DS-KIS212: $92.40 + IVA (Monitor LCD 7", audio supresión de ruido, calidad HD TVI, botón apertura).
+- Kit Citofonía KOCOM 3 Departamentos: $149.00 (Frente metálico exterior + 3 citófonos KDP-601A originales KOCOM).
+- Centrales Colectivas INTELBRAS Collective (Edificios y Condominios):
+  * Collective 4i (4 deptos): $121.81 + IVA
+  * Collective 8i (8 deptos): $134.20 + IVA
+  * Collective 12 (12 deptos): $104.50 + IVA
+  * Collective 12i (12 deptos): $143.00 + IVA
+  * Collective 16i (16 deptos): $155.38 + IVA
+  * Collective 20i (20 deptos): $176.46 + IVA
+  * Collective 24i (24 deptos): $190.18 + IVA
+  * Accesorios: Citófono CT-A1 ($11.55), TDMI 300 2 hilos ($15.40), Tags doble frecuencia ($3.85). Desvío a celular y apertura remota.
+
+2. CONTROL DE ACCESO Y PEATONAL (Torniquetes y Biometría):
+- Biométrico ZKTeco SenseFace 2A con Videoportero por App: $175.00 (Reconocimiento facial ultra rápido, huella dactilar, tarjetas RFID, PIN, videollamada a App móvil, WiFi 100% inalámbrico).
+- Torniquete Trípode ZKTeco TS1000 Pro: $720.00 (Acero inoxidable 304, paso bidireccional, compatible con huella y facial).
+- Torniquete Flap Barrier ZKTeco FBL4000 Pro: $1,850.00 (Aletas retráctiles de alta gama en acrílico/vidrio, paso fluido y elegante).
+- Torniquete Molinete Cuerpo Entero ZKTeco FHT2300: $2,950.00 (Máxima seguridad industrial, reja rotativa anti-intrusión).
+- Torniquete Horizontal 2 Puertas de Vidrio: $1,650.00 (Control peatonal para lobbies corporativos).
+- Torniquete Swing Speed de Cristal: $2,100.00 (Puertas batientes de vidrio templado de alta velocidad).
+
+3. SEGURIDAD PERIMETRAL Y CERCOS ELÉCTRICOS:
+- Kit Plata JFL (Cód 15023): $89.00 + IVA (Electrificador JFL, control remoto, batería 12V 4Ah, sirena 20W, letrero peligro).
+- Kit Oro JFL (Cód 11207): $109.00 + IVA (Electrificador JFL, control, batería, sirena 20W con caja metálica protectora).
+- Kit Platino JFL con App Móvil (Cód 11208): $137.00 + IVA (Electrificador JFL, módulo Ethernet ME-05 para armar/desarmar desde celular, sirena 30W con caja, batería).
+- Kit Platino Hagroy i8: $98.00 + IVA (Electrificador Hagroy i8 alto voltaje, control, batería, sirena 20W).
+- Kit Hagroy Yanex: $90.00 + IVA (Electrificador Yanex, control, batería, sirena 20W).
+
+4. CÁMARAS DE SEGURIDAD INTELIGENTES (CCTV y Smart Home):
+- Cámara Robótica IMOU 360° WiFi: $45.40 + IVA (Full HD 1080p, audio bidireccional, visión nocturna 24/7, alertas a celular, garantía 3 años).
+- Cámara IMOU PT Ranger 360° Mini 3MP: $95.00 + IVA (Sensor 3MP nítido, infrarrojo inteligente 30m, audio bidireccional, almacenamiento SD y nube, ¡Envío Gratis!).
+- Sistemas CCTV Hikvision y Dahua completos (Kits de 4, 8 y 16 cámaras IP / HD).
+
+5. SEGURIDAD COMERCIAL ANTIHURTO Y SALIDAS DE EMERGENCIA:
+- Par de Antenas de Seguridad RF Mono Dahua Mercury (ANT-RS5003TR): $499.96 + IVA (Detección antihurto: 70cm etiquetas / 95cm tags duros. Tubo de alta resistencia. Ideal para boutiques, farmacias y minimarkets).
+- Cerradura Barra Antipánico Reforzada Marca Americana: $98.00 + IVA (Acero inoxidable certificado para salidas de emergencia en edificios, centros comerciales, hospitales. 10 años durabilidad, ¡Envío Gratis!).
+
+6. TECNOLOGÍA GLOBAL Y COMPUTACIÓN:
+- Más de 9,000 productos en catálogo: Smartphones de alta gama (Honor Magic 7, etc.), Laptops y repuestos, UPS y respaldo eléctrico Powest/APC, Domótica y cerraduras digitales inteligentes.
+- Tienda y catálogo completo en línea: https://atomiccotizador.shop/web
+- Envíos a todo el Ecuador con entrega rápida y garantía oficial.
+`;
+
+const STOP_WORDS = new Set([
+  'hola', 'buenas', 'buenos', 'tardes', 'dias', 'noches', 'precio', 'precios', 
+  'tienen', 'costo', 'cotizar', 'amigo', 'para', 'cuanto', 'vale', 'quiero', 
+  'necesito', 'busco', 'con', 'una', 'uno', 'unos', 'unas', 'casa', 'empresa', 
+  'oficina', 'local', 'favor', 'informacion', 'info', 'gracias', 'mas', 'menos'
+]);
+
+const SYNONYMS: Record<string, string[]> = {
+  'torniquete': ['torniquete', 'molinete', 'ts1000', 'fbl4000', 'fht2300'],
+  'torniquetes': ['torniquete', 'molinete', 'ts1000', 'fbl4000', 'fht2300'],
+  'timbre': ['videoportero', 'portero', 'kocom', 'ds-kis212'],
+  'citofono': ['citofono', 'citofonía', 'kocom', 'collective'],
+  'citofonos': ['citofono', 'citofonía', 'kocom', 'collective'],
+  'videoportero': ['videoportero', 'kocom', 'hikvision', 'collective'],
+  'videoporteros': ['videoportero', 'kocom', 'hikvision', 'collective'],
+  'camara': ['imou', 'hikvision', 'ranger', '1080p'],
+  'camaras': ['imou', 'hikvision', 'ranger', '1080p'],
+  'cámara': ['imou', 'hikvision', 'ranger', '1080p'],
+  'cámaras': ['imou', 'hikvision', 'ranger', '1080p'],
+  'cerco': ['cerco', 'jfl', 'hagroy', 'electrificador'],
+  'cercos': ['cerco', 'jfl', 'hagroy', 'electrificador'],
+  'barra': ['antipanico', 'panico'],
+  'antipanico': ['antipanico', 'barra', 'emergencia'],
+  'antipánico': ['antipanico', 'barra', 'emergencia'],
+  'biometrico': ['senseface', 'zkteco', 'facial'],
+  'biométrico': ['senseface', 'zkteco', 'facial'],
+  'antena': ['mercury', 'antihurto', 'rf mono', 'dahua'],
+  'antenas': ['mercury', 'antihurto', 'rf mono', 'dahua'],
+  'antihurto': ['mercury', 'antihurto', 'rf mono']
+};
+
+async function searchLiveProducts(text: string) {
+    const rawWords = text.toLowerCase().replace(/[^a-záéíóúüñ0-9\s]/gi, '').split(/\s+/).filter(w => w.length > 2);
+    const keywords: string[] = [];
+
+    for (const w of rawWords) {
+        if (STOP_WORDS.has(w)) continue;
+        if (SYNONYMS[w]) {
+            keywords.push(...SYNONYMS[w]);
+        } else {
+            keywords.push(w);
+        }
+    }
+
+    const uniqueKeywords = Array.from(new Set(keywords));
+    if (uniqueKeywords.length === 0) return [];
+
+    try {
+        const products = await prisma.product.findMany({
+            where: {
+                isActive: true,
+                price: { gt: 5 },
+                OR: uniqueKeywords.map(term => ({
+                    name: { contains: term, mode: 'insensitive' }
+                }))
+            },
+            take: 6,
+            orderBy: { price: 'desc' },
+            select: {
+                id: true,
+                sku: true,
+                name: true,
+                price: true,
+                stock: true,
+                description: true
+            }
+        });
+        return products;
+    } catch (e) {
+        return [];
+    }
+}
+
+/**
  * Motor Autónomo de Inteligencia Artificial para WhatsApp Cloud API
- * Discierne con precisión quirúrgica entre:
- * 1) Aspirantes a Empleo / Reclutamiento de Asesores Comerciales
- * 2) Clientes de Compra / Consultas de Catálogo y Cotizaciones
+ * Asesor Comercial Senior Consultivo + Reclutamiento de Talento
  */
 export async function handleIncomingWhatsAppBot(params: {
     whatsappId: string;
@@ -24,7 +146,7 @@ export async function handleIncomingWhatsAppBot(params: {
     try {
         const { whatsappId, contactName, messageText, mediaUrl, conversationId } = params;
 
-        // 1. Obtener los últimos 6 mensajes para contexto conversacional
+        // 1. Historial reciente para contexto
         const recentMessages = await prisma.wAMessage.findMany({
             where: { conversationId },
             orderBy: { createdAt: 'desc' },
@@ -60,7 +182,6 @@ export async function handleIncomingWhatsAppBot(params: {
             );
 
         let systemPrompt = "";
-        let relevantProductsContext = "";
 
         if (isRecruitment) {
             // === MUNDO RECLUTAMIENTO / RECURSOS HUMANOS ===
@@ -86,61 +207,56 @@ INSTRUCCIÓN CLAVE DE RESPUESTA:
 5. Mantén un tono motivador, seguro y sumamente humano (usa emojis sobrios como 💼, 🚀, 📲).
 `;
         } else {
-            // === MUNDO COMERCIAL / VENTAS DE PRODUCTOS ===
-            // Búsqueda en vivo de productos en la base de datos de Supabase
-            const queryWords = textLower
-                .replace(/[^a-záéíóúüñ0-9\s]/gi, '')
-                .split(/\s+/)
-                .filter(w => w.length > 3 && !['hola', 'buenas', 'precio', 'tienen', 'costo', 'cotizar', 'amigo'].includes(w));
+            // === MUNDO COMERCIAL: ASESOR CONSULTIVO EXPERTO DE VENTAS ===
+            const dbProducts = await searchLiveProducts(messageText);
+            let liveInventorySnippet = "";
 
-            let matchedProducts: any[] = [];
-            if (queryWords.length > 0) {
-                matchedProducts = await prisma.product.findMany({
-                    where: {
-                        isActive: true,
-                        isDeleted: false,
-                        OR: queryWords.map(word => ({
-                            OR: [
-                                { name: { contains: word, mode: 'insensitive' } },
-                                { description: { contains: word, mode: 'insensitive' } }
-                            ]
-                        }))
-                    },
-                    take: 5,
-                    select: {
-                        id: true,
-                        sku: true,
-                        name: true,
-                        price: true,
-                        stock: true,
-                        description: true
-                    }
-                });
-            }
-
-            if (matchedProducts.length > 0) {
-                relevantProductsContext = `
-INVENTARIO ENCONTRADO EN TIEMPO REAL:
-${matchedProducts.map(p => `- ${p.name} (SKU: ${p.sku || 'N/A'}) | Precio: $${p.price.toFixed(2)} USD | Stock: ${p.stock} unidades | Link: https://atomiccotizador.shop/web/product/${p.id}`).join('\n')}
+            if (dbProducts.length > 0) {
+                liveInventorySnippet = `
+PRODUCTOS DESTACADOS ENCONTRADOS EN LA BASE DE DATOS:
+${dbProducts.map(p => `- ${p.name} (SKU: ${p.sku || 'N/A'}) | Precio: $${p.price.toFixed(2)} USD | Stock: ${p.stock} | Link: https://atomiccotizador.shop/web/product/${p.id}`).join('\n')}
 `;
             }
 
             systemPrompt = `
-Eres el Asesor Comercial Senior de ATOMIC Electronics Ecuador (especialistas en tecnología, torniquetes peatonales, barreras, seguridad, laptops y soluciones residenciales e industriales).
-Tu objetivo es asesorar con precisión técnica, empatía y efectividad comercial para cerrar ventas o cotizaciones.
+Eres el Asesor Comercial Senior de ATOMIC Electronics Ecuador (también conocidos como ATOMIC Industrias).
+Eres un profesional de ventas consultivo de élite: sumamente conocedor de todo nuestro catálogo, educado, empático, directo, persuasivo y con excelente cierre comercial.
 
-${relevantProductsContext}
+${CATALOGO_MAESTRO_ATOMIC}
 
-PAUTAS DE RESPUESTA:
-1. Responde de forma concisa, educada y profesional.
-2. Si el cliente pregunta por un producto que está en el inventario anterior, da el precio exacto en dólares ($USD), resalta su disponibilidad y beneficios.
-3. Si requiere cotización formal o envío, indica que realizamos envíos a todo Ecuador y asesoría técnica.
-4. Si no tenemos el producto exacto, ofrece una alternativa cercana de la tienda o invita a revisar https://atomiccotizador.shop/web.
-5. Invita siempre a dar el siguiente paso de compra o cotización formal.
+${liveInventorySnippet}
+
+METODOLOGÍA DE VENTA CONSULTIVA Y REGLAS DE ORO:
+1. DEMUESTRA CONOCIMIENTO TOTAL DE INMEDIATO:
+   - Si el cliente saluda o pregunta de forma general ("Hola", "Buenas tardes", "¿Qué venden?", "Busco seguridad"):
+     * Salúdalo con calidez y energía.
+     * Cuéntale de forma breve y atractiva qué tenemos en ATOMIC (Videoporteros/citofonía para casas y edificios, Control de acceso/torniquetes ZKTeco, Cercos eléctricos JFL/Hagroy, Cámaras inteligentes IMOU/Hikvision, Antenas antihurto y Barras antipánico).
+     * Haz la primera pregunta consultiva natural: "¿Para qué tipo de espacio o proyecto lo estás buscando? (¿Una casa, un edificio/conjunto residencial, un local comercial o una empresa?)"
+
+2. DESCUBRIMIENTO PROGRESIVO (NO AGRESIVO):
+   - Nunca hagas un interrogatorio pesado. Pregunta 1 o máximo 2 detalles clave por mensaje de forma conversacional:
+     a) NECESIDAD EXACTA: ¿Qué espacio buscan proteger o equipar? (¿Cuántos departamentos, cuántas puertas, qué quieren resolver?).
+     b) UBICACIÓN: "¿En qué ciudad o provincia te encuentras para confirmarte el tiempo de despacho e instalación?".
+     c) PRESUPUESTO / ENFOQUE: "¿Tienes en mente un modelo específico o un presupuesto aproximado para recomendarte la alternativa que mejor se ajuste?".
+
+3. RECOMIENDA Y DA SUGERENCIAS CON ARGUMENTOS DE VALOR:
+   - Sé proactivo: no esperes a que el cliente adivine. Si te da una pista, sugiérele la solución exacta:
+     * Si es conjunto o edificio: recomiéndale la Central Intelbras Collective o Citofonía Kocom, explicando que es estable y desvía llamadas a celulares.
+     * Si es tienda o boutique con pérdidas: recomiéndale las Antenas Antihurto RF Dahua ($499.96) que detectan etiquetas blandas y tags duros.
+     * Si es casa o departamento: recomiéndale el Videoportero de 2 Pantallas ($285 con envío gratis) o la Cámara IMOU 360° ($45.40).
+     * Si es control de personal u oficina: recomiéndale el ZKTeco SenseFace 2A ($175) con reconocimiento facial y WiFi.
+     * Si es control de acceso masivo: recomiéndale nuestros torniquetes peatonales ZKTeco.
+
+4. ESTILO DE COMUNICACIÓN EN WHATSAPP:
+   - Respuestas directas, ágiles y eficaces (evita bloques enormes de texto).
+   - Usa párrafos cortos (2 a 3 líneas), viñetas limpias y emojis sobrios (🏢, 🔒, 📦, 📲, ✅).
+   - Precios claros en dólares americanos ($USD).
+   - Recuerda que hacemos envíos a todo el Ecuador y brindamos asesoría técnica.
+   - Termina SIEMPRE con una pregunta abierta o un llamado a la acción concreto (ej: "¿Te preparo una cotización formal detallada en PDF o prefieres ver las fotos y ficha técnica?").
 `;
         }
 
-        // 3. Consulta al modelo NVIDIA Llama-3.2-90B Vision
+        // 3. Consulta a NVIDIA Llama-3.2-90B Vision
         const completion = await axios.post(
             "https://integrate.api.nvidia.com/v1/chat/completions",
             {
@@ -153,7 +269,7 @@ PAUTAS DE RESPUESTA:
                     }
                 ],
                 temperature: 0.6,
-                max_tokens: 350
+                max_tokens: 380
             },
             {
                 headers: {
