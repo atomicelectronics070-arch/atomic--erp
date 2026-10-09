@@ -10,6 +10,7 @@ import {
     CheckCircle2, AlertCircle, RefreshCw, ChevronLeft, ChevronRight,
     Smartphone, LayoutGrid, Mail
 } from "lucide-react"
+import AtomicMeetModal from "@/components/video/AtomicMeetModal"
 
 interface Props {
     currentModule?: string
@@ -41,6 +42,7 @@ interface SystemUser {
 export default function VirtualOfficeWorkspace({ currentModule = "ventas" }: Props) {
     const { data: session } = useSession()
     const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null)
+    const [meetMember, setMeetMember] = useState<TeamMember | null>(null)
     const [isManageModalOpen, setIsManageModalOpen] = useState(false)
     const [systemUsers, setSystemUsers] = useState<SystemUser[]>([])
     const [loadingUsers, setLoadingUsers] = useState(false)
@@ -264,20 +266,23 @@ export default function VirtualOfficeWorkspace({ currentModule = "ventas" }: Pro
             {/* ── BARRA SUPERIOR DE CONTROL DE LA OFICINA ─────────────────── */}
             <div className="px-6 py-4 bg-[#0d1017] border-b border-slate-800 flex flex-wrap items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 shadow-inner">
-                        <Users size={20} />
+                    <div className="w-10 h-10 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shadow-inner">
+                        <Sparkles size={20} />
                     </div>
                     <div>
                         <div className="flex items-center gap-2">
                             <h3 className="font-black text-sm uppercase tracking-wider text-white">
-                                Oficina Virtual Remota • ATOMIC HQ
+                                OFICINA VIRTUAL · NIVEL 6 (GPT ASTRA)
                             </h3>
-                            <span className="px-2 py-0.5 rounded-full text-[9px] font-black bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
-                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> EN VIVO
+                            <span className="px-2 py-0.5 rounded-full text-[9px] font-black bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 flex items-center gap-1">
+                                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" /> TELEMETRÍA CUÁNTICA
+                            </span>
+                            <span className="hidden sm:inline-block px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                                ZOOM ILIMITADO
                             </span>
                         </div>
-                        <p className="text-[11px] text-slate-400 mt-0.5">
-                            Puestos de mando corporativo y asesores de ventas activos en tiempo real
+                        <p className="text-[11px] text-slate-400 mt-0.5 font-mono">
+                            Puestos de mando holográfico, estaciones departamentales y videollamadas directas en tiempo real
                         </p>
                     </div>
                 </div>
@@ -470,46 +475,57 @@ export default function VirtualOfficeWorkspace({ currentModule = "ventas" }: Pro
                                 </div>
 
                                 {/* Action Buttons */}
-                                <div className="grid grid-cols-2 gap-2.5 pt-2">
-                                    {m.phone ? (
-                                        <a
-                                            href={`https://wa.me/${m.phone.replace(/\D/g, '')}?text=Hola%20${encodeURIComponent(m.name)},%20te%20contacto%20desde%20la%20Oficina%20Virtual%20ATOMIC.`}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="py-3 px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-emerald-950/50 cursor-pointer"
-                                        >
-                                            <MessageSquare size={15} />
-                                            <span>WhatsApp</span>
-                                        </a>
-                                    ) : (
-                                        <button
-                                            type="button"
-                                            onClick={() => alert(`Notificación enviada a ${m.name}`)}
-                                            className="py-3 px-4 rounded-2xl bg-slate-800 hover:bg-slate-700 text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer"
-                                        >
-                                            <Phone size={15} />
-                                            <span>Notificar</span>
-                                        </button>
-                                    )}
+                                <div className="space-y-2 pt-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => setMeetMember(m)}
+                                        className="w-full py-3 px-4 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-black font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(6,182,212,0.4)] cursor-pointer transition-all active:scale-95"
+                                    >
+                                        <Video size={16} />
+                                        <span>Videollamada Zoom Interno</span>
+                                    </button>
 
-                                    {m.email ? (
-                                        <a
-                                            href={`mailto:${m.email}`}
-                                            className="py-3 px-4 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-indigo-950/50 cursor-pointer"
-                                        >
-                                            <Mail size={15} />
-                                            <span>Correo</span>
-                                        </a>
-                                    ) : (
-                                        <button
-                                            type="button"
-                                            onClick={() => setSelectedMember(m)}
-                                            className="py-3 px-4 rounded-2xl bg-slate-800 hover:bg-slate-700 text-cyan-300 font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer"
-                                        >
-                                            <ExternalLink size={15} />
-                                            <span>Ver Ficha</span>
-                                        </button>
-                                    )}
+                                    <div className="grid grid-cols-2 gap-2.5">
+                                        {m.phone ? (
+                                            <a
+                                                href={`https://wa.me/${m.phone.replace(/\D/g, '')}?text=Hola%20${encodeURIComponent(m.name)},%20te%20contacto%20desde%20la%20Oficina%20Virtual%20ATOMIC.`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="py-3 px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-emerald-950/50 cursor-pointer"
+                                            >
+                                                <MessageSquare size={15} />
+                                                <span>WhatsApp</span>
+                                            </a>
+                                        ) : (
+                                            <button
+                                                type="button"
+                                                onClick={() => alert(`Notificación enviada a ${m.name}`)}
+                                                className="py-3 px-4 rounded-2xl bg-slate-800 hover:bg-slate-700 text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer"
+                                            >
+                                                <Phone size={15} />
+                                                <span>Notificar</span>
+                                            </button>
+                                        )}
+
+                                        {m.email ? (
+                                            <a
+                                                href={`mailto:${m.email}`}
+                                                className="py-3 px-4 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-indigo-950/50 cursor-pointer"
+                                            >
+                                                <Mail size={15} />
+                                                <span>Correo</span>
+                                            </a>
+                                        ) : (
+                                            <button
+                                                type="button"
+                                                onClick={() => setSelectedMember(m)}
+                                                className="py-3 px-4 rounded-2xl bg-slate-800 hover:bg-slate-700 text-cyan-300 font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer"
+                                            >
+                                                <ExternalLink size={15} />
+                                                <span>Ver Ficha</span>
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
                             </motion.div>
                         )
@@ -742,31 +758,45 @@ export default function VirtualOfficeWorkspace({ currentModule = "ventas" }: Pro
                             </div>
                         </div>
 
-                        <div className="flex gap-2 pt-2">
-                            {selectedMember.phone ? (
-                                <a
-                                    href={`https://wa.me/${selectedMember.phone.replace(/\D/g, '')}?text=Hola%20${encodeURIComponent(selectedMember.name)},%20te%20escribo%20desde%20la%20Oficina%20Virtual%20Atomic.`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-lg"
-                                >
-                                    <MessageSquare size={14} /> <span>WhatsApp</span>
-                                </a>
-                            ) : (
-                                <button
-                                    onClick={() => alert(`Enviando notificación interna a ${selectedMember.name}...`)}
-                                    className="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs flex items-center justify-center gap-1.5"
-                                >
-                                    <Phone size={14} /> <span>Llamar / Notificar</span>
-                                </button>
-                            )}
-
+                        <div className="space-y-2 pt-2">
                             <button
-                                onClick={() => setSelectedMember(null)}
-                                className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs"
+                                type="button"
+                                onClick={() => {
+                                    setMeetMember(selectedMember)
+                                    setSelectedMember(null)
+                                }}
+                                className="w-full py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(6,182,212,0.4)] cursor-pointer transition-all active:scale-95"
                             >
-                                Cerrar
+                                <Video size={15} />
+                                <span>Videollamada Zoom Interno</span>
                             </button>
+
+                            <div className="flex gap-2">
+                                {selectedMember.phone ? (
+                                    <a
+                                        href={`https://wa.me/${selectedMember.phone.replace(/\D/g, '')}?text=Hola%20${encodeURIComponent(selectedMember.name)},%20te%20escribo%20desde%20la%20Oficina%20Virtual%20Atomic.`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-lg"
+                                    >
+                                        <MessageSquare size={14} /> <span>WhatsApp</span>
+                                    </a>
+                                ) : (
+                                    <button
+                                        onClick={() => alert(`Enviando notificación interna a ${selectedMember.name}...`)}
+                                        className="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs flex items-center justify-center gap-1.5"
+                                    >
+                                        <Phone size={14} /> <span>Llamar / Notificar</span>
+                                    </button>
+                                )}
+
+                                <button
+                                    onClick={() => setSelectedMember(null)}
+                                    className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs"
+                                >
+                                    Cerrar
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -912,6 +942,13 @@ export default function VirtualOfficeWorkspace({ currentModule = "ventas" }: Pro
                     </div>
                 </div>
             )}
+
+            {/* Atomic Meet Modal (Zoom Interno Ilimitado) */}
+            <AtomicMeetModal
+                isOpen={!!meetMember}
+                onClose={() => setMeetMember(null)}
+                targetMember={meetMember}
+            />
         </div>
     )
 }

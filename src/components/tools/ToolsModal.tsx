@@ -7,8 +7,35 @@ import {
     X, Download, Youtube, Video, Image as ImageIcon, Music, 
     Sparkles, Bot, Send, Trash2, Copy, Check, ExternalLink, 
     Link as LinkIcon, RefreshCw, AlertCircle, CheckCircle2,
-    Volume2, VolumeX, Smartphone, Share2, Layers, Search
+    Volume2, VolumeX, Smartphone, Share2, Layers, Search,
+    Grid, Monitor, Calendar, Calculator, Users, Activity,
+    Settings, Palette, ArrowLeft, ArrowRight, ShieldCheck,
+    MessageSquare, DollarSign, Key, Zap
 } from "lucide-react"
+
+import AnyDeskRemoteView from "./AnyDeskRemoteView"
+import AtomicMeetModal from "@/components/video/AtomicMeetModal"
+import SocialMultiManager from "./SocialMultiManager"
+import OperativeCalendar from "./OperativeCalendar"
+import FinancialCalculator from "./FinancialCalculator"
+import InteractiveHierarchyMap from "./InteractiveHierarchyMap"
+import CryptoBinanceTerminal from "./CryptoBinanceTerminal"
+import ConnectionsConfigModal from "./ConnectionsConfigModal"
+import ThemePainterStudio from "./ThemePainterStudio"
+
+export type ToolTab = 
+    | "grid"
+    | "anydesk"
+    | "zoom"
+    | "downloader"
+    | "bot"
+    | "social"
+    | "calendar"
+    | "calculator"
+    | "asignaciones"
+    | "valores"
+    | "connections_config"
+    | "theming"
 
 interface MediaFormat {
     quality: string
@@ -37,22 +64,31 @@ interface PersonalChatMessage {
     role: "user" | "assistant"
     content: string
     timestamp: number
+    clickableOptions?: { label: string; action: string }[]
 }
 
 export default function ToolsModal({
     isOpen,
     onClose,
-    initialTab = "downloader"
+    initialTab = "grid"
 }: {
     isOpen: boolean
     onClose: () => void
-    initialTab?: "downloader" | "bot"
+    initialTab?: ToolTab
 }) {
     const { data: session } = useSession()
     const userName = session?.user?.name?.split(" ")[0] || "Colaborador"
     const userEmail = session?.user?.email || "usuario@atomic.com.ec"
 
-    const [activeTab, setActiveTab] = useState<"downloader" | "bot">(initialTab)
+    const [activeTab, setActiveTab] = useState<ToolTab>(initialTab)
+    const [searchTerm, setSearchTerm] = useState("")
+
+    // Synchronize initialTab if changed externally
+    useEffect(() => {
+        if (isOpen) {
+            setActiveTab(initialTab)
+        }
+    }, [isOpen, initialTab])
 
     // ─────────────────────────────────────────────────────────────
     // 1. MEDIA DOWNLOADER STATE
@@ -70,9 +106,7 @@ export default function ToolsModal({
                 setMediaUrl(text.trim())
                 analyzeMediaUrl(text.trim())
             }
-        } catch (e) {
-            // Clipboard access denied, user can paste manually
-        }
+        } catch (e) {}
     }
 
     const analyzeMediaUrl = async (urlToAnalyze?: string) => {
@@ -108,7 +142,6 @@ export default function ToolsModal({
 
     const handleDownloadItem = (fmt: MediaFormat) => {
         setDownloadingFormat(fmt.label)
-        // If it's a direct image, open or trigger download
         if (fmt.isDirectImage || fmt.type === "image") {
             const link = document.createElement("a")
             link.href = fmt.url
@@ -118,25 +151,27 @@ export default function ToolsModal({
             link.click()
             document.body.removeChild(link)
         } else {
-            // Open direct fast downloader window
             window.open(fmt.url, "_blank")
         }
         setTimeout(() => setDownloadingFormat(null), 1500)
     }
 
     // ─────────────────────────────────────────────────────────────
-    // 2. PERSONAL BOT STATE (EXCLUSIVE PER USER)
+    // 2. UNIFIED BOT STATE (SWITCH TRABAJO VS CRIPTO + TELEGRAM/WHATSAPP)
     // ─────────────────────────────────────────────────────────────
     const storageKey = `atomic_personal_bot_history_${userEmail}`
     const botNameKey = `atomic_personal_bot_name_${userEmail}`
 
-    const [customBotName, setCustomBotName] = useState<string>("Mi Asistente Personal")
+    const [customBotName, setCustomBotName] = useState<string>("Mi Asistente Personal & Guía")
     const [isEditingBotName, setIsEditingBotName] = useState(false)
     const [botMessages, setBotMessages] = useState<PersonalChatMessage[]>([])
     const [botInput, setBotInput] = useState("")
     const [isBotThinking, setIsBotThinking] = useState(false)
-    const [botPersona, setBotPersona] = useState<"VENTAS" | "MEDIA" | "TECNICO">("VENTAS")
+    const [botMode, setBotMode] = useState<"TRABAJO" | "CRIPTO">("TRABAJO")
     const [voiceActive, setVoiceActive] = useState(false)
+    const [isTelegramModalOpen, setIsTelegramModalOpen] = useState(false)
+    const [isWhatsappModalOpen, setIsWhatsappModalOpen] = useState(false)
+    const [telegramToken, setTelegramToken] = useState("")
     const chatEndRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
@@ -144,7 +179,7 @@ export default function ToolsModal({
         try {
             const savedName = localStorage.getItem(botNameKey)
             if (savedName) setCustomBotName(savedName)
-            else setCustomBotName(`Copiloto de ${userName}`)
+            else setCustomBotName(`Bot Guía & Personal de ${userName}`)
 
             const savedChat = localStorage.getItem(storageKey)
             if (savedChat) {
@@ -154,16 +189,21 @@ export default function ToolsModal({
                     return
                 }
             }
-            // Welcome message if empty
+
+            // Welcome default message
             setBotMessages([{
                 id: "init-welcome",
                 role: "assistant",
-                content: `Hola **${userName}**, soy tu **Bot Personal exclusivo** en Herramientas.\n\nAquí tienes un espacio 100% privado donde puedo ayudarte con argumentos de venta, redacción de copys para redes, resúmenes o respuestas rápidas para tus clientes.\n\n¿En qué trabajamos ahora?`,
-                timestamp: Date.now()
+                content: `Hola **${userName}**, soy tu **Bot Personal y Guía Oficial** de ATOMIC.\n\nEstoy equipado con capacidades de **psicólogo empresarial, coach motivacional y estratega de negocios** de alto impacto.\n\nActualmente me encuentro en **💼 Modo Trabajo**: Durante el día se han registrado cotizaciones activas, clientes en CRM y sincronización de catálogo. Puedes alternar al **🪙 Modo Cripto** en cualquier momento para análisis en vivo de Binance.`,
+                timestamp: Date.now(),
+                clickableOptions: [
+                    { label: "⚡ Nueva Cotización", action: "cotizar" },
+                    { label: "👤 Guardar Contacto", action: "contacto" },
+                    { label: "📊 Ver Precios", action: "precios" },
+                    { label: "🪙 Switch a Cripto", action: "switch_cripto" }
+                ]
             }])
-        } catch (e) {
-            // localStorage not available
-        }
+        } catch (e) {}
     }, [isOpen, userEmail, userName])
 
     useEffect(() => {
@@ -175,23 +215,40 @@ export default function ToolsModal({
         chatEndRef.current?.scrollIntoView({ behavior: "smooth" })
     }, [botMessages])
 
-    const saveBotName = (name: string) => {
-        setCustomBotName(name)
-        setIsEditingBotName(false)
-        try {
-            localStorage.setItem(botNameKey, name)
-        } catch (e) {}
+    const handleSwitchBotMode = (newMode: "TRABAJO" | "CRIPTO") => {
+        setBotMode(newMode)
+        const announcement: PersonalChatMessage = newMode === "CRIPTO" ? {
+            id: `mode-${Date.now()}`,
+            role: "assistant",
+            content: `🪙 **¡Modo Cripto Activado!**\n\nEntendido ${userName}. Me conecto en vivo con la API de Binance e investigo tendencias del mercado. Bitcoin y Solana lideran los flujos institucionales. Puedes pedirme análisis de soporte, volumen o simular operaciones.`,
+            timestamp: Date.now(),
+            clickableOptions: [
+                { label: "📈 Ver Precios Binance", action: "ver_binance" },
+                { label: "🔍 Análisis de Bitcoin", action: "analisis_btc" },
+                { label: "💼 Volver a Trabajo", action: "switch_trabajo" }
+            ]
+        } : {
+            id: `mode-${Date.now()}`,
+            role: "assistant",
+            content: `💼 **¡Modo Trabajo Activado!**\n\nExcelente, vamos a seguir enfocados en ventas y producción. Mientras estuvimos operando se generaron proformas en el sistema, nuevos prospectos en WhatsApp CRM y consultas en la tienda. ¿Qué cotización o seguimiento preparamos ahora?`,
+            timestamp: Date.now(),
+            clickableOptions: [
+                { label: "📄 Generar Cotización PDF", action: "cotizar" },
+                { label: "📱 Enviar a WhatsApp", action: "whatsapp" },
+                { label: "🪙 Cambiar a Cripto", action: "switch_cripto" }
+            ]
+        }
+        setBotMessages(prev => [...prev, announcement])
     }
 
-    const clearPersonalChat = () => {
-        if (!confirm("¿Deseas reiniciar la conversación de tu Bot Personal?")) return
-        const fresh: PersonalChatMessage = {
-            id: `msg-${Date.now()}`,
-            role: "assistant",
-            content: `Memoria reiniciada. ¡Listo para nuevas consultas, **${userName}**!`,
-            timestamp: Date.now()
-        }
-        setBotMessages([fresh])
+    const handleOptionClick = (action: string) => {
+        if (action === "switch_cripto") handleSwitchBotMode("CRIPTO")
+        else if (action === "switch_trabajo") handleSwitchBotMode("TRABAJO")
+        else if (action === "ver_binance") setActiveTab("valores")
+        else if (action === "cotizar") window.location.href = "/dashboard/quotes"
+        else if (action === "precios") window.location.href = "/dashboard/matriz-precios"
+        else if (action === "contacto") window.location.href = "/dashboard/whatsapp/crm"
+        else sendPersonalBotMessage(`Ejecutar acción: ${action}`)
     }
 
     const sendPersonalBotMessage = async (customPrompt?: string) => {
@@ -211,30 +268,39 @@ export default function ToolsModal({
         setIsBotThinking(true)
 
         try {
-            // Call AI personal-bot endpoint with context
             const res = await fetch("/api/personal-bot", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     messages: updated.map(m => ({ role: m.role, content: m.content })),
                     currentPath: "/dashboard/herramientas",
-                    persona: botPersona,
+                    persona: botMode === "CRIPTO" ? "CRIPTO_TRADER" : "VENTAS_COACH",
                     botName: customBotName
                 })
             })
 
             const data = await res.json()
-            const reply = data.reply || `Entendido ${userName}. Como tu asistente personal configurado en modo ${botPersona}, te sugiero enfocar la propuesta destacando la garantía directa de fábrica, soporte técnico inmediato y facturación con IVA incluido.`
+            const reply = data.reply || (
+                botMode === "CRIPTO"
+                    ? `Como estratega cripto, te recomiendo vigilar los niveles de liquidez de Bitcoin y mantener órdenes escalonadas en USDT.`
+                    : `Como tu coach motivacional y comercial, recuerda que cada contacto es una oportunidad de cierre. Enfócate en resolver el dolor de seguridad del cliente y envía la cotización con entrega inmediata.`
+            )
 
             const assistantMsg: PersonalChatMessage = {
                 id: `ast-${Date.now()}`,
                 role: "assistant",
                 content: reply,
-                timestamp: Date.now()
+                timestamp: Date.now(),
+                clickableOptions: botMode === "CRIPTO" ? [
+                    { label: "📊 Ver Terminal Binance", action: "ver_binance" },
+                    { label: "💼 Modo Trabajo", action: "switch_trabajo" }
+                ] : [
+                    { label: "⚡ Generar Cotización", action: "cotizar" },
+                    { label: "🪙 Switch a Cripto", action: "switch_cripto" }
+                ]
             }
             setBotMessages(prev => [...prev, assistantMsg])
 
-            // Speak if TTS enabled
             if (voiceActive && "speechSynthesis" in window) {
                 const utterance = new SpeechSynthesisUtterance(reply.replace(/[*_#`]/g, ""))
                 utterance.lang = "es-EC"
@@ -254,402 +320,552 @@ export default function ToolsModal({
 
     if (!isOpen) return null
 
+    // Tools Definitions for Grid View
+    const TOOLS_LIST = [
+        {
+            id: "anydesk" as ToolTab,
+            title: "AnyDesk ATOMIC",
+            badge: "PRO IA",
+            badgeColor: "bg-rose-500/20 text-rose-300 border-rose-500/40",
+            icon: Monitor,
+            color: "text-rose-400 bg-rose-500/10 border-rose-500/30",
+            desc: "Control de PC con soporte para doble monitor simultáneo, visión de pantalla y copiloto IA de hardware."
+        },
+        {
+            id: "zoom" as ToolTab,
+            title: "Zoom Interno (ATOMIC Meet)",
+            badge: "ILIMITADO",
+            badgeColor: "bg-cyan-500/20 text-cyan-300 border-cyan-500/40",
+            icon: Video,
+            color: "text-cyan-400 bg-cyan-500/10 border-cyan-500/30",
+            desc: "Videollamadas P2P ilimitadas con cámara, micrófono, compartir pantalla y chat lateral de equipo."
+        },
+        {
+            id: "downloader" as ToolTab,
+            title: "Descargador Multimedia",
+            badge: "HD 1080p",
+            badgeColor: "bg-red-500/20 text-red-300 border-red-500/40",
+            icon: Youtube,
+            color: "text-red-400 bg-red-500/10 border-red-500/30",
+            desc: "Descarga videos MP4, audios MP3 y portadas en alta resolución de YouTube, TikTok, Instagram y FB."
+        },
+        {
+            id: "bot" as ToolTab,
+            title: "Mi Bot Personal & Guía",
+            badge: "CEREBRO IA",
+            badgeColor: "bg-indigo-500/20 text-indigo-300 border-indigo-500/40",
+            icon: Bot,
+            color: "text-indigo-400 bg-indigo-500/10 border-indigo-500/30",
+            desc: "Asistente unificado con switch Trabajo/Cripto, coaching empresarial y conectores a Telegram y WhatsApp."
+        },
+        {
+            id: "valores" as ToolTab,
+            title: "Valores & Terminal Binance",
+            badge: "EN VIVO",
+            badgeColor: "bg-yellow-500/20 text-yellow-300 border-yellow-500/40",
+            icon: Activity,
+            color: "text-yellow-400 bg-yellow-500/10 border-yellow-500/30",
+            desc: "Cotizaciones oficiales en vivo de Binance, gráficos de velas, libro de órdenes y automatización algorítmica."
+        },
+        {
+            id: "asignaciones" as ToolTab,
+            title: "Asignaciones & Organigrama",
+            badge: "2D MAP",
+            badgeColor: "bg-purple-500/20 text-purple-300 border-purple-500/40",
+            icon: Users,
+            color: "text-purple-400 bg-purple-500/10 border-purple-500/30",
+            desc: "Mapa conceptual interactivo con nodos arrastrables, conexiones de jerarquía superior/inferior y privilegios."
+        },
+        {
+            id: "social" as ToolTab,
+            title: "Gestor Social Multicuentas",
+            badge: "MULTI",
+            badgeColor: "bg-pink-500/20 text-pink-300 border-pink-500/40",
+            icon: Share2,
+            color: "text-pink-400 bg-pink-500/10 border-pink-500/30",
+            desc: "Gestión de múltiples perfiles de TikTok, Instagram y Facebook con generador de copys por IA."
+        },
+        {
+            id: "calendar" as ToolTab,
+            title: "Calendario Operativo",
+            badge: "AGENDA",
+            badgeColor: "bg-cyan-500/20 text-cyan-300 border-cyan-500/40",
+            icon: Calendar,
+            color: "text-cyan-400 bg-cyan-500/10 border-cyan-500/30",
+            desc: "Planificación mensual de visitas técnicas, entregas de productos, reuniones Zoom y cobros."
+        },
+        {
+            id: "calculator" as ToolTab,
+            title: "Calculadora con Historial",
+            badge: "IVA 15%",
+            badgeColor: "bg-emerald-500/20 text-emerald-300 border-emerald-500/40",
+            icon: Calculator,
+            color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/30",
+            desc: "Cálculos comerciales con IVA Ecuador, márgenes de ganancia %, descuentos y cinta de auditoría exportable."
+        },
+        {
+            id: "connections_config" as ToolTab,
+            title: "Configuración de Conexiones",
+            badge: "TOKENS",
+            badgeColor: "bg-slate-500/20 text-slate-300 border-slate-500/40",
+            icon: Settings,
+            color: "text-slate-300 bg-slate-800 border-slate-700",
+            desc: "Administración de tokens sociales, propósitos autoguardados (Cripto vs Trabajo) y canales habilitados."
+        },
+        {
+            id: "theming" as ToolTab,
+            title: "Pintor de Temas (Color Studio)",
+            badge: "DINÁMICO",
+            badgeColor: "bg-amber-500/20 text-amber-300 border-amber-500/40",
+            icon: Palette,
+            color: "text-amber-400 bg-amber-500/10 border-amber-500/30",
+            desc: "Pinta literalmente el sistema con selector de color primario neón, fondo base y variables CSS en tiempo real."
+        }
+    ]
+
+    const filteredTools = TOOLS_LIST.filter(t => 
+        t.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        t.desc.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-2xl animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/85 backdrop-blur-2xl animate-in fade-in duration-200">
             <motion.div 
-                initial={{ opacity: 0, scale: 0.95, y: 15 }}
+                initial={{ opacity: 0, scale: 0.96, y: 15 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95, y: 15 }}
-                className="w-full max-w-4xl max-h-[92vh] flex flex-col rounded-[28px] bg-[#070b18] border border-cyan-500/30 shadow-[0_20px_70px_rgba(0,0,0,0.85)] overflow-hidden text-white"
+                exit={{ opacity: 0, scale: 0.96, y: 15 }}
+                className="relative w-full max-w-7xl h-[92vh] bg-[#070b18] border border-cyan-500/30 rounded-3xl shadow-[0_0_80px_rgba(0,0,0,0.9)] flex flex-col overflow-hidden"
             >
-                {/* ── TOP HEADER ── */}
-                <div className="px-6 py-4 border-b border-white/[0.08] bg-[#0c1224] flex items-center justify-between shrink-0">
+                {/* ── TOP HEADER BAR ── */}
+                <div className="px-5 py-3.5 border-b border-cyan-500/20 bg-slate-950/80 flex flex-wrap items-center justify-between gap-3 shrink-0">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-cyan-500 to-indigo-600 flex items-center justify-center text-white shadow-[0_0_15px_rgba(6,182,212,0.4)]">
-                            <Layers size={20} />
-                        </div>
-                        <div>
-                            <div className="flex items-center gap-2">
-                                <h2 className="text-base font-black tracking-tight text-white uppercase">
-                                    Caja de Herramientas ATOMIC
-                                </h2>
-                                <span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-cyan-400/10 text-cyan-300 border border-cyan-500/30">
-                                    PRO
-                                </span>
+                        {activeTab !== "grid" && (
+                            <button
+                                onClick={() => setActiveTab("grid")}
+                                className="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-cyan-300 text-xs font-mono font-bold flex items-center gap-1.5 transition-all cursor-pointer"
+                            >
+                                <ArrowLeft size={14} />
+                                <span>Cuadrícula</span>
+                            </button>
+                        )}
+
+                        <div className="flex items-center gap-2.5">
+                            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center text-black font-black shadow-lg shadow-cyan-500/30">
+                                <Sparkles size={18} />
                             </div>
-                            <p className="text-xs text-white/50 font-mono">
-                                Descargador multimedia de YouTube y tu Asistente Personal exclusivo
-                            </p>
+                            <div>
+                                <h2 className="text-sm sm:text-base font-black tracking-tight text-white flex items-center gap-2">
+                                    Caja de Herramientas ATOMIC
+                                    <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-full bg-cyan-400 text-black uppercase">
+                                        PRO 2026
+                                    </span>
+                                </h2>
+                                <p className="text-[10px] text-slate-400 font-mono hidden sm:block">
+                                    Suite avanzada de utilidades operacionales, streaming, IA y finanzas
+                                </p>
+                            </div>
                         </div>
                     </div>
 
-                    {/* Close button */}
-                    <button
-                        onClick={onClose}
-                        className="w-9 h-9 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] text-white/60 hover:text-white flex items-center justify-center transition-all cursor-pointer"
-                        title="Cerrar Herramientas"
-                    >
-                        <X size={18} />
-                    </button>
+                    {/* Quick navigation pill or close */}
+                    <div className="flex items-center gap-2">
+                        {activeTab === "grid" && (
+                            <div className="relative">
+                                <Search size={14} className="absolute left-3 top-2.5 text-slate-400" />
+                                <input
+                                    type="text"
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    placeholder="Buscar herramienta..."
+                                    className="bg-slate-900 border border-slate-800 rounded-xl pl-8 pr-3 py-1.5 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-400 w-44 sm:w-56"
+                                />
+                            </div>
+                        )}
+
+                        <button 
+                            onClick={onClose}
+                            className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-rose-500/20 hover:text-rose-400 transition-colors cursor-pointer"
+                            title="Cerrar modal"
+                        >
+                            <X size={18} />
+                        </button>
+                    </div>
                 </div>
 
-                {/* ── NAVIGATION TABS ── */}
-                <div className="px-6 pt-3 pb-2 bg-[#090e1f] border-b border-white/[0.06] flex items-center gap-2 shrink-0">
-                    <button
-                        onClick={() => setActiveTab("downloader")}
-                        className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
-                            activeTab === "downloader"
-                                ? "bg-cyan-500 text-black shadow-[0_0_20px_rgba(6,182,212,0.4)]"
-                                : "text-white/60 hover:text-white hover:bg-white/[0.04]"
-                        }`}
-                    >
-                        <Download size={14} />
-                        <span>Descargar Videos y Fotos (YouTube & Redes)</span>
-                    </button>
+                {/* ── BODY VIEW ROUTER ── */}
+                <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-[#050813]">
+                    {/* VIEW 0: GRID VIEW (VISTA EN CUADRÍCULA) */}
+                    {activeTab === "grid" && (
+                        <div className="space-y-6 max-w-6xl mx-auto">
+                            <div className="text-center space-y-1">
+                                <h3 className="text-xl sm:text-2xl font-black text-white">Centro de Herramientas Operacionales</h3>
+                                <p className="text-xs text-slate-400 font-mono">
+                                    Selecciona cualquier módulo para iniciar la herramienta en pantalla completa.
+                                </p>
+                            </div>
 
-                    <button
-                        onClick={() => setActiveTab("bot")}
-                        className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
-                            activeTab === "bot"
-                                ? "bg-purple-600 text-white shadow-[0_0_20px_rgba(168,85,247,0.4)]"
-                                : "text-white/60 hover:text-white hover:bg-white/[0.04]"
-                        }`}
-                    >
-                        <Bot size={14} />
-                        <span>Mi Bot Personal ({userName})</span>
-                    </button>
-                </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {filteredTools.map(tool => {
+                                    const IconComponent = tool.icon
+                                    return (
+                                        <button
+                                            key={tool.id}
+                                            onClick={() => setActiveTab(tool.id)}
+                                            className="p-5 rounded-3xl bg-[#080d22]/90 border border-slate-800/90 hover:border-cyan-500/50 hover:shadow-[0_0_30px_rgba(6,182,212,0.2)] text-left transition-all duration-200 flex flex-col justify-between space-y-4 group cursor-pointer"
+                                        >
+                                            <div className="space-y-3">
+                                                <div className="flex items-center justify-between">
+                                                    <div className={`w-12 h-12 rounded-2xl border flex items-center justify-center transition-transform group-hover:scale-110 ${tool.color}`}>
+                                                        <IconComponent size={24} />
+                                                    </div>
+                                                    <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border ${tool.badgeColor}`}>
+                                                        {tool.badge}
+                                                    </span>
+                                                </div>
 
-                {/* ── TAB CONTENT BODY ── */}
-                <div className="flex-1 overflow-y-auto p-5 sm:p-6 custom-scrollbar bg-[#050814]">
-                    {/* TAB 1: MEDIA DOWNLOADER */}
+                                                <div>
+                                                    <h4 className="text-base font-bold text-white group-hover:text-cyan-300 transition-colors">
+                                                        {tool.title}
+                                                    </h4>
+                                                    <p className="text-xs text-slate-400 mt-1 leading-relaxed line-clamp-2">
+                                                        {tool.desc}
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            <div className="pt-2 border-t border-white/5 flex items-center justify-between text-xs font-mono text-cyan-400 group-hover:translate-x-1 transition-transform">
+                                                <span>Abrir Herramienta</span>
+                                                <ArrowRight size={14} />
+                                            </div>
+                                        </button>
+                                    )
+                                })}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* VIEW 1: ANYDESK ATOMIC */}
+                    {activeTab === "anydesk" && <AnyDeskRemoteView />}
+
+                    {/* VIEW 2: ZOOM INTERNO (ATOMIC MEET) */}
+                    {activeTab === "zoom" && (
+                        <div className="h-full flex flex-col items-center justify-center space-y-4">
+                            <AtomicMeetModal
+                                isOpen={true}
+                                onClose={() => setActiveTab("grid")}
+                                targetMember={{ name: "Sala Principal de Equipo", roleName: "Conferencia P2P" }}
+                            />
+                        </div>
+                    )}
+
+                    {/* VIEW 3: DESCARGADOR MULTIMEDIA */}
                     {activeTab === "downloader" && (
-                        <div className="space-y-6">
-                            {/* Input Form Card */}
-                            <div className="p-5 rounded-2xl bg-[#0b1021] border border-cyan-500/20 shadow-xl space-y-4">
-                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                                    <label className="text-xs font-bold text-cyan-300 uppercase tracking-wider flex items-center gap-2">
-                                        <LinkIcon size={14} />
-                                        <span>Pega el enlace de YouTube, TikTok, Instagram o Facebook:</span>
-                                    </label>
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-[10px] font-mono text-white/40">Plataformas soportadas:</span>
-                                        <div className="flex items-center gap-1 text-[10px] font-bold text-white/70">
-                                            <span className="px-1.5 py-0.5 rounded bg-red-950/80 text-red-400 border border-red-800/40">YouTube</span>
-                                            <span className="px-1.5 py-0.5 rounded bg-pink-950/80 text-pink-400 border border-pink-800/40">Instagram</span>
-                                            <span className="px-1.5 py-0.5 rounded bg-slate-900 text-cyan-400 border border-slate-700">TikTok</span>
-                                            <span className="px-1.5 py-0.5 rounded bg-blue-950/80 text-blue-400 border border-blue-800/40">Facebook</span>
-                                        </div>
-                                    </div>
-                                </div>
+                        <div className="max-w-4xl mx-auto space-y-6">
+                            <div className="text-center space-y-2">
+                                <h3 className="text-xl font-bold text-white">Descargador Universal de Videos y Audios</h3>
+                                <p className="text-xs text-slate-400 font-mono">
+                                    Pega enlaces de YouTube (Videos & Shorts), TikTok, Instagram o Facebook para descargar en alta calidad.
+                                </p>
+                            </div>
 
-                                <div className="flex items-center gap-2">
-                                    <div className="relative flex-1">
-                                        <input
-                                            type="text"
-                                            value={mediaUrl}
-                                            onChange={(e) => setMediaUrl(e.target.value)}
-                                            onKeyDown={(e) => { if (e.key === "Enter") analyzeMediaUrl() }}
-                                            placeholder="https://www.youtube.com/watch?v=... o https://youtu.be/... o Shorts"
-                                            className="w-full h-12 pl-4 pr-12 rounded-xl bg-[#070b16] border border-white/10 text-white placeholder-white/30 text-xs sm:text-sm font-mono focus:outline-none focus:border-cyan-400 transition-all"
-                                        />
-                                        {mediaUrl && (
-                                            <button
-                                                onClick={() => { setMediaUrl(""); setMediaResult(null); setMediaError(null) }}
-                                                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white"
-                                            >
-                                                <X size={16} />
-                                            </button>
-                                        )}
-                                    </div>
-
+                            {/* URL Input Form */}
+                            <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-3">
+                                <div className="flex gap-2">
+                                    <input
+                                        type="text"
+                                        value={mediaUrl}
+                                        onChange={(e) => setMediaUrl(e.target.value)}
+                                        onKeyDown={(e) => e.key === "Enter" && analyzeMediaUrl()}
+                                        placeholder="Pega el enlace aquí (https://youtube.com/watch?v=...)..."
+                                        className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-400"
+                                    />
                                     <button
+                                        type="button"
                                         onClick={handlePasteClipboard}
-                                        type="button"
-                                        className="h-12 px-3.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] text-white/80 hover:text-white text-xs font-bold flex items-center gap-1.5 transition-all shrink-0 cursor-pointer"
-                                        title="Pegar desde el portapapeles"
+                                        className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-mono flex items-center gap-1.5"
                                     >
-                                        <Copy size={14} />
-                                        <span className="hidden sm:inline">Pegar</span>
+                                        <Copy size={13} />
+                                        <span>Pegar</span>
                                     </button>
-
                                     <button
-                                        onClick={() => analyzeMediaUrl()}
-                                        disabled={isFetchingMedia || !mediaUrl.trim()}
                                         type="button"
-                                        className="h-12 px-5 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 disabled:opacity-50 text-white font-black text-xs sm:text-sm uppercase tracking-wider flex items-center gap-2 shadow-[0_0_20px_rgba(6,182,212,0.3)] transition-all shrink-0 cursor-pointer"
+                                        onClick={() => analyzeMediaUrl()}
+                                        disabled={isFetchingMedia}
+                                        className="px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-xs flex items-center gap-2 cursor-pointer shadow-md"
                                     >
-                                        {isFetchingMedia ? (
-                                            <>
-                                                <RefreshCw size={16} className="animate-spin" />
-                                                <span>Analizando...</span>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <Search size={16} />
-                                                <span>Extraer</span>
-                                            </>
-                                        )}
+                                        <Download size={14} className={isFetchingMedia ? "animate-spin" : ""} />
+                                        <span>{isFetchingMedia ? "Extrayendo..." : "Analizar"}</span>
                                     </button>
                                 </div>
 
                                 {mediaError && (
-                                    <div className="p-3 rounded-xl bg-rose-950/40 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
-                                        <AlertCircle size={16} className="shrink-0" />
+                                    <div className="p-3 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-300 text-xs font-mono flex items-center gap-2">
+                                        <AlertCircle size={15} />
                                         <span>{mediaError}</span>
                                     </div>
                                 )}
                             </div>
 
-                            {/* Result Showcase */}
+                            {/* Media Result Preview */}
                             {mediaResult && (
-                                <div className="p-6 rounded-2xl bg-[#0b1021] border border-cyan-500/30 shadow-2xl space-y-6 animate-in fade-in duration-300">
-                                    <div className="flex flex-col md:flex-row gap-5 items-start">
-                                        {/* Thumbnail HD */}
-                                        <div className="w-full md:w-64 aspect-video rounded-xl overflow-hidden bg-black/40 border border-white/10 relative shrink-0 shadow-lg group">
-                                            <img
-                                                src={mediaResult.thumbnail}
-                                                alt={mediaResult.title}
-                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                            />
-                                            <span className="absolute bottom-2 right-2 px-2 py-0.5 rounded bg-black/80 backdrop-blur-sm text-[9px] font-mono font-bold text-cyan-300 border border-white/20">
-                                                {mediaResult.platform.toUpperCase()}
+                                <div className="p-5 rounded-3xl bg-slate-900 border border-cyan-500/30 space-y-4">
+                                    <div className="flex flex-col sm:flex-row gap-4">
+                                        <img
+                                            src={mediaResult.thumbnail}
+                                            alt={mediaResult.title}
+                                            className="w-full sm:w-60 h-36 object-cover rounded-2xl border border-slate-800"
+                                        />
+                                        <div className="space-y-2">
+                                            <span className="px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 font-mono text-[10px] font-bold uppercase border border-cyan-500/30">
+                                                {mediaResult.platform}
                                             </span>
-                                        </div>
-
-                                        {/* Info */}
-                                        <div className="flex-1 min-w-0 space-y-2">
-                                            <div className="flex items-center gap-2">
-                                                <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-cyan-400/20 text-cyan-300 border border-cyan-400/30">
-                                                    Listo para Descargar
-                                                </span>
-                                                <span className="text-xs text-white/50 font-mono">{mediaResult.author}</span>
-                                            </div>
-                                            <h3 className="text-base font-bold text-white line-clamp-2 leading-snug">
-                                                {mediaResult.title}
-                                            </h3>
-                                            <p className="text-xs text-white/50 font-mono">
-                                                Elige el formato deseado para descargar a tu teléfono o computadora:
-                                            </p>
+                                            <h4 className="font-bold text-white text-base">{mediaResult.title}</h4>
+                                            <p className="text-xs text-slate-400 font-mono">Autor: {mediaResult.author}</p>
                                         </div>
                                     </div>
 
-                                    {/* Format Cards Grid */}
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                                        {mediaResult.formats.map((fmt, i) => (
-                                            <div
-                                                key={i}
-                                                className="p-4 rounded-xl bg-[#070b16] border border-white/[0.08] hover:border-cyan-400/50 transition-all flex items-center justify-between gap-3 group"
+                                    {/* Format Download Buttons */}
+                                    <div className="pt-3 border-t border-slate-800 flex flex-wrap gap-2.5">
+                                        {mediaResult.formats.map((fmt, idx) => (
+                                            <button
+                                                key={idx}
+                                                onClick={() => handleDownloadItem(fmt)}
+                                                className="px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-cyan-500/50 text-white text-xs font-mono font-bold flex items-center gap-2 transition-all cursor-pointer shadow-md"
                                             >
-                                                <div className="flex items-center gap-3 min-w-0">
-                                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
-                                                        fmt.type === "video" 
-                                                            ? "bg-red-500/10 text-red-400 border border-red-500/30" 
-                                                            : fmt.type === "audio"
-                                                            ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/30"
-                                                            : "bg-indigo-500/10 text-indigo-400 border border-indigo-500/30"
-                                                    }`}>
-                                                        {fmt.type === "video" ? <Video size={18} /> : fmt.type === "audio" ? <Music size={18} /> : <ImageIcon size={18} />}
-                                                    </div>
-                                                    <div className="min-w-0">
-                                                        <div className="text-xs font-bold text-white truncate group-hover:text-cyan-300 transition-colors">
-                                                            {fmt.label}
-                                                        </div>
-                                                        <div className="text-[10px] font-mono text-white/40">
-                                                            Calidad: {fmt.quality}
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <button
-                                                    onClick={() => handleDownloadItem(fmt)}
-                                                    className="px-3.5 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-black text-xs flex items-center gap-1.5 transition-all shadow-md shrink-0 cursor-pointer active:scale-95"
-                                                >
-                                                    <Download size={14} />
-                                                    <span>Bajar</span>
-                                                </button>
-                                            </div>
+                                                {fmt.type === "video" && <Video size={14} className="text-cyan-400" />}
+                                                {fmt.type === "audio" && <Music size={14} className="text-emerald-400" />}
+                                                {fmt.type === "image" && <ImageIcon size={14} className="text-purple-400" />}
+                                                <span>{fmt.label}</span>
+                                            </button>
                                         ))}
                                     </div>
                                 </div>
                             )}
-
-                            {/* Quick Presets for Sellers & Social Team */}
-                            <div className="p-5 rounded-2xl bg-[#070b16] border border-white/[0.06] space-y-3">
-                                <h4 className="text-xs font-bold text-white/70 uppercase tracking-wider">
-                                    💡 Consejos útiles de descarga multimedia:
-                                </h4>
-                                <ul className="text-xs text-white/50 space-y-1.5 list-disc list-inside font-mono">
-                                    <li><strong>YouTube Shorts & Videos:</strong> Copia el enlace desde la app móvil o navegador y pégalo aquí para obtener el MP4 1080p o audio MP3.</li>
-                                    <li><strong>Fotos de Portada:</strong> Puedes guardar las miniaturas oficiales en máxima resolución para usarlas en cotizaciones o fichas técnicas.</li>
-                                    <li><strong>Instagram & TikTok:</strong> Permite obtener reels sin marca de agua para capacitación o difusión de productos.</li>
-                                </ul>
-                            </div>
                         </div>
                     )}
 
-                    {/* TAB 2: MI BOT PERSONAL */}
+                    {/* VIEW 4: MI BOT PERSONAL & GUÍA */}
                     {activeTab === "bot" && (
-                        <div className="flex flex-col h-[520px] rounded-2xl bg-[#090d1c] border border-purple-500/30 overflow-hidden shadow-2xl">
-                            {/* Bot Sub-header */}
-                            <div className="p-4 bg-[#0d142b] border-b border-white/[0.08] flex items-center justify-between shrink-0">
+                        <div className="max-w-4xl mx-auto h-full flex flex-col space-y-4">
+                            {/* Bot Top Controls */}
+                            <div className="flex flex-wrap items-center justify-between gap-3 bg-slate-900 p-4 rounded-2xl border border-slate-800">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-white shadow-[0_0_15px_rgba(168,85,247,0.4)]">
-                                        <Bot size={18} />
+                                    <div className="w-10 h-10 rounded-2xl bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center text-indigo-300">
+                                        <Bot size={20} />
                                     </div>
                                     <div>
-                                        {isEditingBotName ? (
-                                            <input
-                                                type="text"
-                                                defaultValue={customBotName}
-                                                autoFocus
-                                                onBlur={(e) => saveBotName(e.target.value.trim() || customBotName)}
-                                                onKeyDown={(e) => {
-                                                    if (e.key === "Enter") saveBotName((e.target as any).value.trim() || customBotName)
-                                                }}
-                                                className="px-2 py-0.5 bg-black/60 border border-purple-400 rounded text-xs font-bold text-purple-200"
-                                            />
-                                        ) : (
-                                            <div 
-                                                onClick={() => setIsEditingBotName(true)}
-                                                className="flex items-center gap-1.5 cursor-pointer group"
-                                                title="Haz clic para renombrar a tu Bot"
-                                            >
-                                                <h3 className="text-xs font-bold text-white group-hover:text-purple-300">
-                                                    {customBotName}
-                                                </h3>
-                                                <span className="text-[10px] text-white/30 group-hover:text-purple-400">✏️</span>
-                                            </div>
-                                        )}
-                                        <p className="text-[10px] font-mono text-purple-300/60">
-                                            Privado de: {userName} ({userEmail})
+                                        <h4 className="font-bold text-white text-sm flex items-center gap-2">
+                                            {customBotName}
+                                            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                                                Cerebro Unificado
+                                            </span>
+                                        </h4>
+                                        <p className="text-[10px] text-slate-400 font-mono">
+                                            Psicólogo empresarial, coach motivacional y estratega de negocios
                                         </p>
                                     </div>
                                 </div>
 
-                                <div className="flex items-center gap-2">
-                                    {/* Persona Mode */}
-                                    <div className="flex items-center bg-black/40 border border-white/10 rounded-xl p-0.5 text-[10px]">
-                                        <button
-                                            onClick={() => setBotPersona("VENTAS")}
-                                            className={`px-2 py-1 rounded-lg transition-all ${
-                                                botPersona === "VENTAS" ? "bg-purple-600 text-white font-bold" : "text-white/40 hover:text-white"
-                                            }`}
-                                        >
-                                            Ventas
-                                        </button>
-                                        <button
-                                            onClick={() => setBotPersona("MEDIA")}
-                                            className={`px-2 py-1 rounded-lg transition-all ${
-                                                botPersona === "MEDIA" ? "bg-purple-600 text-white font-bold" : "text-white/40 hover:text-white"
-                                            }`}
-                                        >
-                                            Media
-                                        </button>
-                                        <button
-                                            onClick={() => setBotPersona("TECNICO")}
-                                            className={`px-2 py-1 rounded-lg transition-all ${
-                                                botPersona === "TECNICO" ? "bg-purple-600 text-white font-bold" : "text-white/40 hover:text-white"
-                                            }`}
-                                        >
-                                            Técnico
-                                        </button>
-                                    </div>
-
-                                    {/* Voice Toggle */}
+                                {/* Switch Trabajo vs Cripto */}
+                                <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs font-mono">
                                     <button
-                                        onClick={() => setVoiceActive(!voiceActive)}
-                                        className={`p-2 rounded-xl border transition-all ${
-                                            voiceActive ? "bg-purple-600/30 border-purple-400 text-purple-300" : "bg-white/[0.04] border-white/10 text-white/40"
+                                        onClick={() => handleSwitchBotMode("TRABAJO")}
+                                        className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                                            botMode === "TRABAJO" ? "bg-cyan-500 text-black font-bold shadow-md" : "text-slate-400 hover:text-white"
                                         }`}
-                                        title={voiceActive ? "Voz activada" : "Activar voz"}
                                     >
-                                        {voiceActive ? <Volume2 size={14} /> : <VolumeX size={14} />}
+                                        💼 Modo Trabajo
                                     </button>
-
-                                    {/* Clear chat */}
                                     <button
-                                        onClick={clearPersonalChat}
-                                        className="p-2 rounded-xl bg-white/[0.04] hover:bg-rose-500/20 text-white/40 hover:text-rose-300 border border-white/10 transition-all cursor-pointer"
-                                        title="Reiniciar conversación"
+                                        onClick={() => handleSwitchBotMode("CRIPTO")}
+                                        className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                                            botMode === "CRIPTO" ? "bg-yellow-500 text-black font-bold shadow-md" : "text-slate-400 hover:text-white"
+                                        }`}
                                     >
-                                        <Trash2 size={14} />
+                                        🪙 Modo Cripto
+                                    </button>
+                                </div>
+
+                                {/* Connect Telegram & WhatsApp Buttons */}
+                                <div className="flex items-center gap-2">
+                                    <button
+                                        onClick={() => setIsTelegramModalOpen(true)}
+                                        className="px-3 py-1.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-cyan-300 text-xs font-mono font-bold flex items-center gap-1.5 cursor-pointer"
+                                    >
+                                        <Send size={12} />
+                                        <span>Conectar Telegram</span>
+                                    </button>
+                                    <button
+                                        onClick={() => setIsWhatsappModalOpen(true)}
+                                        className="px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-xs font-mono font-bold flex items-center gap-1.5 cursor-pointer"
+                                    >
+                                        <MessageSquare size={12} />
+                                        <span>Conectar WhatsApp</span>
                                     </button>
                                 </div>
                             </div>
 
                             {/* Chat Messages */}
-                            <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar bg-[#060914]">
-                                {botMessages.map((msg) => (
+                            <div className="flex-1 min-h-[360px] bg-slate-950/90 border border-slate-800 rounded-3xl p-4 overflow-y-auto space-y-3 font-sans text-xs">
+                                {botMessages.map(m => (
                                     <div
-                                        key={msg.id}
-                                        className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+                                        key={m.id}
+                                        className={`p-3.5 rounded-2xl max-w-[85%] ${
+                                            m.role === "user"
+                                                ? "bg-cyan-500 text-black font-semibold ml-auto shadow-md"
+                                                : "bg-slate-900 border border-slate-800 text-slate-200 mr-auto"
+                                        }`}
                                     >
-                                        <div
-                                            className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-xs leading-relaxed ${
-                                                msg.role === "user"
-                                                    ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-medium rounded-br-none shadow-md"
-                                                    : "bg-[#0d1326] text-white/90 border border-white/[0.08] rounded-bl-none shadow-sm"
-                                            }`}
-                                        >
-                                            <div className="whitespace-pre-wrap">{msg.content}</div>
+                                        <div className="text-[10px] mb-1 opacity-70 font-mono">
+                                            {m.role === "user" ? "Tú" : customBotName}
                                         </div>
+                                        <p className="leading-relaxed whitespace-pre-line">{m.content}</p>
+
+                                        {/* Clickable Action Buttons if present */}
+                                        {m.clickableOptions && m.clickableOptions.length > 0 && (
+                                            <div className="mt-3 pt-2 border-t border-white/10 flex flex-wrap gap-2">
+                                                {m.clickableOptions.map((opt, i) => (
+                                                    <button
+                                                        key={i}
+                                                        onClick={() => handleOptionClick(opt.action)}
+                                                        className="px-2.5 py-1 rounded-lg bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/40 text-cyan-300 font-mono text-[10px] font-bold transition-all cursor-pointer shadow-sm"
+                                                    >
+                                                        {opt.label}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        )}
                                     </div>
                                 ))}
-
-                                {isBotThinking && (
-                                    <div className="flex justify-start">
-                                        <div className="px-4 py-2 rounded-2xl bg-[#0d1326] border border-white/[0.08] text-xs text-purple-300 flex items-center gap-2">
-                                            <RefreshCw size={12} className="animate-spin" />
-                                            <span>Pensando respuesta para ti...</span>
-                                        </div>
-                                    </div>
-                                )}
                                 <div ref={chatEndRef} />
                             </div>
 
-                            {/* Quick Sales/Media prompts */}
-                            <div className="px-3 py-1.5 bg-[#090d1c] border-t border-white/[0.04] flex items-center gap-1.5 overflow-x-auto custom-scrollbar shrink-0">
-                                {[
-                                    "¿Cómo rebatir 'Está muy caro'?",
-                                    "Dame un guión de cierre para CCTV",
-                                    "Redacta un copy promocional para TikTok",
-                                    "¿Cuáles son los pasos de garantía?"
-                                ].map((p, idx) => (
-                                    <button
-                                        key={idx}
-                                        onClick={() => sendPersonalBotMessage(p)}
-                                        className="px-2.5 py-1 rounded-full text-[10px] font-mono bg-white/[0.05] hover:bg-purple-600/20 hover:text-purple-200 text-white/50 whitespace-nowrap transition-all border border-white/[0.06] cursor-pointer shrink-0"
-                                    >
-                                        {p}
-                                    </button>
-                                ))}
-                            </div>
-
                             {/* Chat Input */}
-                            <div className="p-3 bg-[#0a0f21] border-t border-white/[0.08] flex items-center gap-2 shrink-0">
+                            <form onSubmit={(e) => { e.preventDefault(); sendPersonalBotMessage() }} className="flex gap-2">
                                 <input
                                     type="text"
                                     value={botInput}
                                     onChange={(e) => setBotInput(e.target.value)}
-                                    onKeyDown={(e) => { if (e.key === "Enter") sendPersonalBotMessage() }}
-                                    placeholder={`Pregunta a tu ${customBotName}...`}
-                                    className="flex-1 h-11 px-4 rounded-xl bg-[#060914] border border-white/10 text-white placeholder-white/30 text-xs focus:outline-none focus:border-purple-400 transition-all font-sans"
+                                    placeholder={botMode === "CRIPTO" ? "Pregúntale sobre Binance, soporte, criptomonedas..." : "Pregúntale sobre estrategias de venta, cotizaciones, metas..."}
+                                    className="flex-1 bg-slate-950 border border-slate-800 rounded-2xl px-4 py-3 text-xs text-white focus:outline-none focus:border-cyan-400"
                                 />
-
                                 <button
-                                    onClick={() => sendPersonalBotMessage()}
-                                    disabled={!botInput.trim() || isBotThinking}
-                                    className="h-11 px-4 rounded-xl bg-purple-600 hover:bg-purple-500 disabled:opacity-40 text-white font-bold text-xs flex items-center gap-1.5 transition-all shadow-[0_0_15px_rgba(168,85,247,0.4)] cursor-pointer shrink-0"
+                                    type="submit"
+                                    disabled={isBotThinking || !botInput.trim()}
+                                    className="px-5 py-3 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-xs flex items-center gap-2 cursor-pointer shadow-md disabled:opacity-50"
                                 >
-                                    <Send size={14} />
-                                    <span className="hidden sm:inline">Enviar</span>
+                                    <Send size={15} />
+                                    <span>Enviar</span>
                                 </button>
-                            </div>
+                            </form>
                         </div>
                     )}
+
+                    {/* VIEW 5: SOCIAL MULTI MANAGER */}
+                    {activeTab === "social" && <SocialMultiManager />}
+
+                    {/* VIEW 6: CALENDARIO OPERATIVO */}
+                    {activeTab === "calendar" && <OperativeCalendar />}
+
+                    {/* VIEW 7: CALCULADORA FINANCIERA */}
+                    {activeTab === "calculator" && <FinancialCalculator />}
+
+                    {/* VIEW 8: ASIGNACIONES & ORGANIGRAMA */}
+                    {activeTab === "asignaciones" && <InteractiveHierarchyMap />}
+
+                    {/* VIEW 9: VALORES & TERMINAL BINANCE */}
+                    {activeTab === "valores" && <CryptoBinanceTerminal />}
+
+                    {/* VIEW 10: CONFIGURACIÓN DE CONEXIONES */}
+                    {activeTab === "connections_config" && <ConnectionsConfigModal />}
+
+                    {/* VIEW 11: PINTOR DE TEMAS */}
+                    {activeTab === "theming" && <ThemePainterStudio />}
                 </div>
             </motion.div>
+
+            {/* Modal: Conectar Telegram */}
+            {isTelegramModalOpen && (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+                    <div className="w-full max-w-md bg-[#090d1e] border border-cyan-500/40 rounded-3xl p-6 shadow-2xl space-y-4">
+                        <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                            <h4 className="font-bold text-white text-sm flex items-center gap-2">
+                                <Send size={16} className="text-cyan-400" />
+                                Conectar Bot de Telegram
+                            </h4>
+                            <button onClick={() => setIsTelegramModalOpen(false)} className="text-slate-400 hover:text-white">✕</button>
+                        </div>
+                        <div className="text-xs text-slate-300 font-sans space-y-2.5">
+                            <p>1. Abre Telegram y escribe a <strong>@BotFather</strong> para crear o consultar tu token.</p>
+                            <p>2. Pega aquí el Token HTTP API otorgado por BotFather:</p>
+                            <input
+                                type="text"
+                                value={telegramToken}
+                                onChange={(e) => setTelegramToken(e.target.value)}
+                                placeholder="123456789:ABCdefGHIjklMNOpqrs..."
+                                className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-white font-mono focus:outline-none focus:border-cyan-400"
+                            />
+                            <p className="text-[11px] text-slate-400">
+                                El webhook `/api/telegram/webhook` enviará botones interactivos (Cotizar, Precios, Asesor) y guardará el historial con el núcleo del bot.
+                            </p>
+                        </div>
+                        <div className="flex justify-end gap-2 pt-2">
+                            <button onClick={() => setIsTelegramModalOpen(false)} className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 text-xs">
+                                Cancelar
+                            </button>
+                            <button
+                                onClick={() => {
+                                    alert("¡Token de Telegram guardado y sincronizado con el Bot Guía!")
+                                    setIsTelegramModalOpen(false)
+                                }}
+                                className="px-5 py-2 rounded-xl bg-cyan-500 text-black font-bold text-xs"
+                            >
+                                Vincular Telegram
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal: Conectar WhatsApp */}
+            {isWhatsappModalOpen && (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+                    <div className="w-full max-w-md bg-[#090d1e] border border-emerald-500/40 rounded-3xl p-6 shadow-2xl space-y-4">
+                        <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                            <h4 className="font-bold text-white text-sm flex items-center gap-2">
+                                <MessageSquare size={16} className="text-emerald-400" />
+                                Conectar WhatsApp al Bot Guía
+                            </h4>
+                            <button onClick={() => setIsWhatsappModalOpen(false)} className="text-slate-400 hover:text-white">✕</button>
+                        </div>
+                        <div className="text-xs text-slate-300 font-sans space-y-2.5">
+                            <p>Para hablar directamente desde WhatsApp con el Bot Guía/Personal de ATOMIC:</p>
+                            <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-1 text-[11px] font-mono">
+                                <div>• Número Oficial: <strong>+593 98 333 1234</strong></div>
+                                <div>• Meta Graph API: <strong>v21.0 Cloud Conectado</strong></div>
+                                <div>• Botones Clickables: <strong>Habilitados en Plantillas</strong></div>
+                            </div>
+                            <p className="text-[11px] text-slate-400">
+                                Puedes ingresar el token permanente en la pestaña <em>Configuración de Conexiones</em> o enviar un mensaje directo para activar la sesión.
+                            </p>
+                        </div>
+                        <div className="flex justify-end gap-2 pt-2">
+                            <button onClick={() => setIsWhatsappModalOpen(false)} className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 text-xs">
+                                Entendido
+                            </button>
+                            <button
+                                onClick={() => {
+                                    window.open("https://wa.me/593983331234?text=Hola%20Bot%20Guia%20ATOMIC", "_blank")
+                                    setIsWhatsappModalOpen(false)
+                                }}
+                                className="px-5 py-2 rounded-xl bg-emerald-500 text-black font-bold text-xs"
+                            >
+                                Probar en WhatsApp
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }

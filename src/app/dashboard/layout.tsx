@@ -9,7 +9,7 @@ import {
     ShoppingBag, Menu, X, Calendar, Edit3, Mail, BrainCircuit,
     Bot, Globe, BarChart3, GraduationCap, Code2, User, Smartphone,
     Share2, Map, Layers, DollarSign, ShieldCheck, FileSpreadsheet,
-    Table, Bell, Lock, Hexagon, ChevronDown, Sparkles, Scan, Wrench, Shield, Cpu
+    Table, Bell, Lock, Hexagon, ChevronDown, Sparkles, Scan, Wrench, Shield, Cpu, Link2
 } from "lucide-react"
 import { useState, useEffect } from "react"
 import NotificationBell from "@/components/NotificationBell"
@@ -26,7 +26,8 @@ export default function DashboardLayout({
     const { data: session, status } = useSession()
     const [sidebarOpen, setSidebarOpen] = useState(false)
     const [isToolsModalOpen, setIsToolsModalOpen] = useState(false)
-    const [toolsInitialTab, setToolsInitialTab] = useState<"downloader" | "bot">("downloader")
+    const [toolsInitialTab, setToolsInitialTab] = useState<any>("grid")
+    const [showConnectionsModal, setShowConnectionsModal] = useState(false)
     const [unreadCount, setUnreadCount] = useState(0)
     const router = useRouter()
     const pathname = usePathname()
@@ -245,7 +246,7 @@ export default function DashboardLayout({
                         <button
                             type="button"
                             onClick={() => {
-                                setToolsInitialTab("downloader")
+                                setToolsInitialTab("grid")
                                 setIsToolsModalOpen(true)
                             }}
                             className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-[16px] bg-gradient-to-r from-cyan-500/20 via-indigo-600/20 to-purple-600/20 hover:from-cyan-500/30 hover:to-purple-600/30 border border-cyan-400/40 hover:border-cyan-300 text-white shadow-[0_0_20px_rgba(6,182,212,0.15)] hover:shadow-[0_0_25px_rgba(6,182,212,0.35)] transition-all group cursor-pointer"
@@ -349,6 +350,17 @@ export default function DashboardLayout({
                             <ExternalLink size={13} />
                             <span>Visitar Tienda</span>
                         </Link>
+
+                        {/* ── BOTÓN CONEXIONES & LINKS OFICIALES ATOMIC ── */}
+                        <button 
+                            type="button"
+                            onClick={() => setShowConnectionsModal(true)}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 text-xs font-mono font-bold transition-all cursor-pointer shadow-[0_0_15px_rgba(99,102,241,0.15)]"
+                            title="Enlaces y Conexiones Oficiales ATOMIC"
+                        >
+                            <Link2 size={13} className="text-indigo-400" />
+                            <span>Conexiones</span>
+                        </button>
                     </div>
                     
                     <div className="flex items-center gap-3 sm:gap-4">
@@ -452,6 +464,115 @@ export default function DashboardLayout({
                     </div>
                 </div>
             </main>
+
+            {/* Mobile Bottom Dock */}
+            <MobileBottomDock />
+
+            {/* Floating Bot Guía (con insignia visible permanente GUÍA) */}
+            <PersonalBotBubble />
+
+            {/* Central Tools Modal Hub */}
+            <ToolsModal
+                isOpen={isToolsModalOpen}
+                onClose={() => setIsToolsModalOpen(false)}
+                initialTab={toolsInitialTab}
+            />
+
+            {/* Modal: Enlaces & Conexiones Oficiales ATOMIC */}
+            {showConnectionsModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+                    <div className="w-full max-w-lg bg-[#090d1e] border border-indigo-500/40 rounded-3xl p-6 shadow-2xl space-y-4 text-white">
+                        <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                            <div className="flex items-center gap-2.5">
+                                <div className="w-8 h-8 rounded-xl bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center text-indigo-300">
+                                    <Link2 size={16} />
+                                </div>
+                                <div>
+                                    <h4 className="font-bold text-sm text-white">Conexiones & Enlaces Oficiales ATOMIC</h4>
+                                    <p className="text-[10px] text-slate-400 font-mono">Ecosistema público, redes y recursos corporativos</p>
+                                </div>
+                            </div>
+                            <button onClick={() => setShowConnectionsModal(false)} className="text-slate-400 hover:text-white p-1">✕</button>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs font-mono">
+                            <a
+                                href="/web"
+                                target="_blank"
+                                className="p-3 rounded-2xl bg-slate-950 border border-slate-800 hover:border-cyan-500/50 flex items-center justify-between transition-all group"
+                            >
+                                <span className="text-white group-hover:text-cyan-300">Catálogo Web Oficial</span>
+                                <ExternalLink size={13} className="text-slate-500 group-hover:text-cyan-400" />
+                            </a>
+
+                            <a
+                                href="/shop"
+                                target="_blank"
+                                className="p-3 rounded-2xl bg-slate-950 border border-slate-800 hover:border-cyan-500/50 flex items-center justify-between transition-all group"
+                            >
+                                <span className="text-white group-hover:text-cyan-300">Tienda E-Commerce</span>
+                                <ExternalLink size={13} className="text-slate-500 group-hover:text-cyan-400" />
+                            </a>
+
+                            <a
+                                href="https://wa.me/593983331234"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="p-3 rounded-2xl bg-slate-950 border border-slate-800 hover:border-emerald-500/50 flex items-center justify-between transition-all group"
+                            >
+                                <span className="text-white group-hover:text-emerald-300">WhatsApp Oficial</span>
+                                <ExternalLink size={13} className="text-slate-500 group-hover:text-emerald-400" />
+                            </a>
+
+                            <a
+                                href="https://tiktok.com/@atomic_ecuador_oficial"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="p-3 rounded-2xl bg-slate-950 border border-slate-800 hover:border-pink-500/50 flex items-center justify-between transition-all group"
+                            >
+                                <span className="text-white group-hover:text-pink-300">TikTok Oficial</span>
+                                <ExternalLink size={13} className="text-slate-500 group-hover:text-pink-400" />
+                            </a>
+
+                            <a
+                                href="https://facebook.com/atomicelectronicsecuador"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="p-3 rounded-2xl bg-slate-950 border border-slate-800 hover:border-indigo-500/50 flex items-center justify-between transition-all group"
+                            >
+                                <span className="text-white group-hover:text-indigo-300">Facebook Oficial</span>
+                                <ExternalLink size={13} className="text-slate-500 group-hover:text-indigo-400" />
+                            </a>
+
+                            <a
+                                href="/web/contrataciones"
+                                target="_blank"
+                                className="p-3 rounded-2xl bg-slate-950 border border-slate-800 hover:border-purple-500/50 flex items-center justify-between transition-all group"
+                            >
+                                <span className="text-white group-hover:text-purple-300">Portal Colaboradores</span>
+                                <ExternalLink size={13} className="text-slate-500 group-hover:text-purple-400" />
+                            </a>
+
+                            <a
+                                href="/dashboard/academy"
+                                className="p-3 rounded-2xl bg-slate-950 border border-slate-800 hover:border-amber-500/50 flex items-center justify-between transition-all group"
+                            >
+                                <span className="text-white group-hover:text-amber-300">Academia & Capacitación</span>
+                                <ExternalLink size={13} className="text-slate-500 group-hover:text-amber-400" />
+                            </a>
+
+                            <a
+                                href="/recursos"
+                                target="_blank"
+                                className="p-3 rounded-2xl bg-slate-950 border border-slate-800 hover:border-cyan-500/50 flex items-center justify-between transition-all group"
+                            >
+                                <span className="text-white group-hover:text-cyan-300">Fichas & Recursos</span>
+                                <ExternalLink size={13} className="text-slate-500 group-hover:text-cyan-400" />
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }

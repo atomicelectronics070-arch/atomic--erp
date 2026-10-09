@@ -144,63 +144,44 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
     return (
         <div className="w-full min-h-screen bg-[#050505] text-white pb-32 space-y-8">
             
-            {/* MASTER SWITCH 3-WAY: ÁREA DE TRABAJO | PUBLICADOR MULTI-RED | FEED SOCIAL INTERNO */}
+            {/* MASTER SWITCH: OFICINA VIRTUAL NIVEL 6 (PREDETERMINADA) | RED SOCIAL INTERNA & RANKINGS */}
             <div className="bg-slate-900/90 backdrop-blur-xl border border-slate-800 p-2.5 rounded-3xl flex flex-col lg:flex-row items-center justify-between gap-4 shadow-2xl sticky top-20 z-40">
                 <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto">
                     <button
                         onClick={() => setMasterMode("area_trabajo")}
-                        className={`flex-1 sm:flex-initial px-5 py-2.5 rounded-full font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center space-x-2 cursor-pointer ${
+                        className={`flex-1 sm:flex-initial px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center space-x-2.5 cursor-pointer ${
                             masterMode === 'area_trabajo' 
-                                ? 'bg-cyan-500 text-black shadow-[0_0_20px_rgba(6,182,212,0.4)]' 
+                                ? 'bg-gradient-to-r from-cyan-500 to-indigo-600 text-black shadow-[0_0_25px_rgba(6,182,212,0.5)] font-black' 
                                 : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
                         }`}
                     >
-                        <Globe size={15} className={masterMode === 'area_trabajo' ? 'text-black' : 'text-cyan-400'} />
-                        <span>OFICINA VIRTUAL</span>
-                    </button>
-                    
-                    <button
-                        onClick={() => setMasterMode("publicador")}
-                        className={`flex-1 sm:flex-initial px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all flex items-center justify-center space-x-2 ${
-                            masterMode === 'publicador' 
-                                ? 'bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-600 text-white shadow-[0_0_25px_rgba(236,72,153,0.4)] scale-105' 
-                                : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
-                        }`}
-                    >
-                        <Share2 size={16} className="text-pink-400" />
-                        <span>GESTOR SOCIAL</span>
+                        <Globe size={16} className={masterMode === 'area_trabajo' ? 'text-black' : 'text-cyan-400'} />
+                        <span>OFICINA VIRTUAL · NIVEL 6 (CENTRO NEURÁLGICO)</span>
                     </button>
 
                     <button
                         onClick={() => setMasterMode("feed_interno")}
-                        className={`flex-1 sm:flex-initial px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all flex items-center justify-center space-x-2 ${
+                        className={`flex-1 sm:flex-initial px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center space-x-2.5 cursor-pointer ${
                             masterMode === 'feed_interno' 
-                                ? 'bg-gradient-to-r from-emerald-500 via-teal-600 to-cyan-600 text-white shadow-[0_0_25px_rgba(16,185,129,0.4)] scale-105' 
+                                ? 'bg-gradient-to-r from-emerald-500 via-teal-600 to-cyan-600 text-white shadow-[0_0_25px_rgba(16,185,129,0.4)]' 
                                 : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
                         }`}
                     >
                         <Users size={16} className="text-emerald-400 drop-shadow-[0_0_8px_rgba(16,185,129,0.9)]" />
-                        <span>RED SOCIAL INTERNA</span>
+                        <span>RED SOCIAL INTERNA & RANKINGS</span>
                     </button>
                 </div>
 
                 <div className="hidden xl:flex items-center space-x-3 px-4 py-2 bg-slate-950 rounded-2xl border border-slate-800 text-[10px] font-mono text-slate-400">
-                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
-                    <span className="text-white font-bold">Oficina Virtual & CRM Conectados</span>
+                    <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping"></span>
+                    <span className="text-white font-bold">Oficina Nivel 6 · GPT Astra 2026</span>
                 </div>
             </div>
 
-            {/* MODE 1: ÁREA DE TRABAJO (OFICINA VIRTUAL 2.5D) */}
+            {/* MODE 1: ÁREA DE TRABAJO (OFICINA VIRTUAL NIVEL 6) */}
             {masterMode === "area_trabajo" && (
                 <div className="space-y-8 animate-in fade-in zoom-in-95 duration-500">
                     <VirtualOfficeWorkspace currentModule="ventas" />
-                </div>
-            )}
-
-            {/* MODE 2: PUBLICADOR MULTI-RED SOCIAL */}
-            {masterMode === "publicador" && (
-                <div className="space-y-8 animate-in fade-in zoom-in-95 duration-500">
-                    <MultiSocialPublisher />
                 </div>
             )}
 

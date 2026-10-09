@@ -6,7 +6,7 @@ import { usePathname, useSearchParams } from "next/navigation"
 import { 
     MessageSquare, Table, Plus, User, Users, Scan, 
     ShoppingBag, Map, GraduationCap, Grid, Wrench, Shield, 
-    Layers, Cpu, ChevronUp, X 
+    Layers, Cpu, ChevronUp, X, Home 
 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import TeamContactsModal from "./TeamContactsModal"
@@ -165,12 +165,28 @@ function MobileBottomDockInner() {
             >
                 <div className="relative mx-auto max-w-lg rounded-[26px] border border-white/10 bg-[#090d1e]/95 backdrop-blur-2xl shadow-[0_12px_45px_rgba(0,0,0,0.9)] px-1 py-1 flex items-center justify-between overflow-visible">
                     
-                    {/* ══ LADO IZQUIERDO: 4 OPCIONES ══ */}
+                    {/* ══ LADO IZQUIERDO: ACCESOS RÁPIDOS ══ */}
                     
+                    {/* 0. Inicio / Home */}
+                    <Link
+                        href="/dashboard"
+                        className="flex-1 min-w-[34px] flex flex-col items-center justify-center py-1 transition-all group active:scale-90"
+                    >
+                        <div className={`p-1.5 rounded-xl transition-colors ${pathname === '/dashboard' ? 'bg-cyan-500/20 text-cyan-300' : 'text-slate-400 group-hover:text-white'}`}>
+                            <Home size={16} className={pathname === '/dashboard' ? 'stroke-[2.2]' : 'stroke-[1.8]'} />
+                        </div>
+                        <span className={`text-[8px] font-bold tracking-tight mt-0.5 ${pathname === '/dashboard' ? 'text-cyan-300 font-bold' : 'text-slate-400'}`}>
+                            Inicio
+                        </span>
+                        {pathname === '/dashboard' && (
+                            <motion.div layoutId="dock-dot" className="w-1 h-1 rounded-full bg-cyan-400 mt-0.5" />
+                        )}
+                    </Link>
+
                     {/* 1. CRM WhatsApp */}
                     <Link
                         href="/dashboard/whatsapp/crm"
-                        className="flex-1 min-w-[38px] flex flex-col items-center justify-center py-1 transition-all group active:scale-90"
+                        className="flex-1 min-w-[34px] flex flex-col items-center justify-center py-1 transition-all group active:scale-90"
                     >
                         <div className={`p-1.5 rounded-xl transition-colors ${isCrmActive ? 'bg-white/10 theme-text' : 'text-slate-400 group-hover:text-white'}`}>
                             <MessageSquare size={16} className={isCrmActive ? 'stroke-[2.2]' : 'stroke-[1.8]'} />
