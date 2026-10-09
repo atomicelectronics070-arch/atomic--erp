@@ -1,14 +1,15 @@
 export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import axios from 'axios';
+import { getWhatsAppCredentials } from '@/lib/whatsapp/service';
 
-const WHATSAPP_TOKEN = process.env.WHATSAPP_TOKEN;
-const PHONE_NUMBER_ID = process.env.WHATSAPP_PHONE_NUMBER_ID;
 const API_VERSION = 'v21.0';
 
 export async function GET() {
     try {
-        if (!WHATSAPP_TOKEN || !PHONE_NUMBER_ID) {
+        const { token, phoneId } = await getWhatsAppCredentials();
+
+        if (!token || !phoneId) {
             return NextResponse.json({
                 profile: {
                     about: 'Tecnología, Industria y Hogar',
@@ -23,9 +24,9 @@ export async function GET() {
         }
 
         const response = await axios.get(
-            `https://graph.facebook.com/${API_VERSION}/${PHONE_NUMBER_ID}/whatsapp_business_profile?fields=about,address,description,email,profile_picture_url,websites`,
+            `https://graph.facebook.com/${API_VERSION}/${phoneId}/whatsapp_business_profile?fields=about,address,description,email,profile_picture_url,websites`,
             {
-                headers: { Authorization: `Bearer ${WHATSAPP_TOKEN}` }
+                headers: { Authorization: `Bearer ${token}` }
             }
         );
 
@@ -42,7 +43,7 @@ export async function GET() {
                 address: 'Quito, Ecuador',
                 profile_picture_url: ''
             },
-            isConfigured: !!(WHATSAPP_TOKEN && PHONE_NUMBER_ID),
+            isConfigured: false,
             error: error.response?.data?.error?.message || error.message
         });
     }
@@ -50,11 +51,12 @@ export async function GET() {
 
 export async function POST(req: Request) {
     try {
+        const { token, phoneId } = await getWhatsAppCredentials();
         const body = await req.json();
         const { about, description, email, websites, address, profile_picture_url } = body;
 
-        if (!WHATSAPP_TOKEN || !PHONE_NUMBER_ID) {
-            return NextResponse.json({ error: 'Configuración de WhatsApp incompletas (WHATSAPP_TOKEN o PHONE_NUMBER_ID faltantes)' }, { status: 400 });
+        if (!token || !phoneId) {
+            return NextResponse.json({ error: 'Configuración de WhatsApp incompleta (WHATSAPP_TOKEN o PHONE_NUMBER_ID faltantes)' }, { status: 400 });
         }
 
         // 1. Update text profile fields
@@ -68,11 +70,11 @@ export async function POST(req: Request) {
         };
 
         const resProfile = await axios.post(
-            `https://graph.facebook.com/${API_VERSION}/${PHONE_NUMBER_ID}/whatsapp_business_profile`,
+            `https://graph.facebook.com/${API_VERSION}/${phoneId}/whatsapp_business_profile`,
             payload,
             {
                 headers: {
-                    Authorization: `Bearer ${WHATSAPP_TOKEN}`,
+                    Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 }
             }

@@ -1,37 +1,38 @@
 export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import axios from 'axios';
+import { getWhatsAppCredentials } from '@/lib/whatsapp/service';
 
-const WHATSAPP_TOKEN = process.env.WHATSAPP_TOKEN;
-const PHONE_NUMBER_ID = process.env.WHATSAPP_PHONE_NUMBER_ID;
 const API_VERSION = 'v21.0';
 
 export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const testPhone = searchParams.get('phone') || '593969043453';
 
+    const { token, phoneId } = await getWhatsAppCredentials();
+
     const diagnostics: any = {
-        hasToken: !!WHATSAPP_TOKEN,
-        tokenLength: WHATSAPP_TOKEN ? WHATSAPP_TOKEN.length : 0,
-        hasPhoneNumberId: !!PHONE_NUMBER_ID,
-        phoneNumberId: PHONE_NUMBER_ID || 'MISSING',
+        hasToken: !!token,
+        tokenLength: token ? token.length : 0,
+        hasPhoneNumberId: !!phoneId,
+        phoneNumberId: phoneId || 'MISSING',
         testPhoneTarget: testPhone.replace(/\D/g, ''),
         metaApiCheck: null,
         sendTestResult: null,
         error: null
     };
 
-    if (!WHATSAPP_TOKEN || !PHONE_NUMBER_ID) {
-        diagnostics.error = 'ERROR CRÍTICO: Las variables WHATSAPP_TOKEN o WHATSAPP_PHONE_NUMBER_ID no están configuradas en Railway.';
+    if (!token || !phoneId) {
+        diagnostics.error = 'ERROR CRÍTICO: Las variables WHATSAPP_TOKEN o WHATSAPP_PHONE_NUMBER_ID no están configuradas.';
         return NextResponse.json(diagnostics, { status: 400 });
     }
 
     // Step 1: Check Phone Number ID metadata via Meta Graph API
     try {
         const metaRes = await axios.get(
-            `https://graph.facebook.com/${API_VERSION}/${PHONE_NUMBER_ID}`,
+            `https://graph.facebook.com/${API_VERSION}/${phoneId}`,
             {
-                headers: { Authorization: `Bearer ${WHATSAPP_TOKEN}` }
+                headers: { Authorization: `Bearer ${token}` }
             }
         );
         diagnostics.metaApiCheck = metaRes.data;
@@ -47,7 +48,7 @@ export async function GET(req: Request) {
     try {
         const cleanPhone = testPhone.replace(/\D/g, '');
         const sendRes = await axios.post(
-            `https://graph.facebook.com/${API_VERSION}/${PHONE_NUMBER_ID}/messages`,
+            `https://graph.facebook.com/${API_VERSION}/${phoneId}/messages`,
             {
                 messaging_product: 'whatsapp',
                 recipient_type: 'individual',
@@ -57,7 +58,7 @@ export async function GET(req: Request) {
             },
             {
                 headers: {
-                    Authorization: `Bearer ${WHATSAPP_TOKEN}`,
+                    Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
             }

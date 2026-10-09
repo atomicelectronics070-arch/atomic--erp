@@ -235,7 +235,7 @@ export default function ConnectionsConfigModal() {
                                         </label>
                                         <select
                                             value={inst.purpose}
-                                            onChange={(e) => handleChangePurpose(inst.id)}
+                                            onChange={(e) => handleChangePurpose(inst.id, e.target.value)}
                                             className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-xs font-mono text-cyan-300 focus:outline-none focus:border-cyan-400"
                                         >
                                             {purposesList.map(p => (

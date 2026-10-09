@@ -361,6 +361,27 @@ export default function DashboardLayout({
                             <Link2 size={13} className="text-indigo-400" />
                             <span>Conexiones</span>
                         </button>
+
+                        {/* ── BOTÓN MAESTRO DE HERRAMIENTAS (PRO CUADRÍCULA) ── */}
+                        <button 
+                            type="button"
+                            onClick={() => {
+                                setToolsInitialTab("grid")
+                                setIsToolsModalOpen(true)
+                            }}
+                            className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500/25 via-indigo-600/30 to-purple-600/25 hover:from-cyan-500/40 hover:to-purple-600/40 border-2 border-cyan-400/60 hover:border-cyan-300 text-white text-xs font-mono font-black transition-all cursor-pointer shadow-[0_0_20px_rgba(6,182,212,0.35)] hover:shadow-[0_0_30px_rgba(6,182,212,0.6)] active:scale-95 group"
+                            title="Abrir Centro de Herramientas Operacionales (11 Herramientas)"
+                        >
+                            <div className="w-5 h-5 rounded-lg bg-cyan-400 text-black flex items-center justify-center font-black group-hover:rotate-12 transition-transform shadow-md">
+                                <Wrench size={13} className="stroke-[2.5]" />
+                            </div>
+                            <span className="tracking-wider uppercase font-black text-cyan-200 group-hover:text-white">
+                                Herramientas
+                            </span>
+                            <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-cyan-400 text-black font-black uppercase shadow-sm">
+                                11 PRO
+                            </span>
+                        </button>
                     </div>
                     
                     <div className="flex items-center gap-3 sm:gap-4">

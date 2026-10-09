@@ -1,33 +1,16 @@
 export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
 import axios from 'axios';
+import { getWhatsAppCredentials } from '@/lib/whatsapp/service';
 
 const API_VERSION = 'v21.0';
-
-async function getCredentials() {
-    let token = process.env.WHATSAPP_TOKEN;
-    let phoneId = process.env.WHATSAPP_PHONE_NUMBER_ID || '1215685301622222';
-
-    try {
-        const dbToken = await prisma.systemSetting.findUnique({ where: { key: 'WHATSAPP_TOKEN' } });
-        if (dbToken?.value) token = dbToken.value;
-
-        const dbPhoneId = await prisma.systemSetting.findUnique({ where: { key: 'WHATSAPP_PHONE_NUMBER_ID' } });
-        if (dbPhoneId?.value) phoneId = dbPhoneId.value;
-    } catch (e) {
-        // Fallback
-    }
-
-    return { token, phoneId };
-}
 
 export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const testPhone = searchParams.get('phone') || '593969043453';
     const sendTestMsg = searchParams.get('send') === 'true';
 
-    const { token, phoneId } = await getCredentials();
+    const { token, phoneId } = await getWhatsAppCredentials();
 
     const diagnostics: any = {
         success: false,

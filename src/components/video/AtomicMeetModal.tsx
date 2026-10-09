@@ -22,11 +22,13 @@ interface Participant {
 export default function AtomicMeetModal({
     isOpen,
     onClose,
-    targetMember
+    targetMember,
+    embedded = false
 }: {
     isOpen: boolean
     onClose: () => void
     targetMember?: { id?: string; name: string; roleName?: string; phone?: string; email?: string } | null
+    embedded?: boolean
 }) {
     const [isMuted, setIsMuted] = useState(false)
     const [isVideoOff, setIsVideoOff] = useState(false)
@@ -169,17 +171,12 @@ export default function AtomicMeetModal({
 
     if (!isOpen) return null
 
-    return (
-        <AnimatePresence>
-            <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-xl">
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                    className={`relative w-full ${isMinimized ? "max-w-md h-72" : "max-w-6xl h-[88vh]"} bg-[#070a14] border border-cyan-500/30 rounded-3xl shadow-[0_0_60px_rgba(6,182,212,0.25)] flex flex-col overflow-hidden transition-all duration-300`}
-                >
-                    {/* Top Bar */}
-                    <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-slate-950/80">
+    const modalBody = (
+        <div
+            className={`relative w-full ${embedded ? "h-full" : isMinimized ? "max-w-md h-72" : "max-w-6xl h-[88vh]"} bg-[#070a14] border border-cyan-500/30 rounded-3xl shadow-[0_0_60px_rgba(6,182,212,0.25)] flex flex-col overflow-hidden transition-all duration-300`}
+        >
+            {/* Top Bar */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-slate-950/80">
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-2xl bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-300 shadow-[0_0_15px_rgba(6,182,212,0.3)]">
                                 <Video size={20} />
@@ -398,6 +395,23 @@ export default function AtomicMeetModal({
                             <span className="text-white font-bold">{formatTime(callDuration)}</span>
                         </div>
                     </div>
+        </div>
+    )
+
+    if (embedded) {
+        return modalBody
+    }
+
+    return (
+        <AnimatePresence>
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-xl">
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                    className="w-full flex items-center justify-center"
+                >
+                    {modalBody}
                 </motion.div>
             </div>
         </AnimatePresence>

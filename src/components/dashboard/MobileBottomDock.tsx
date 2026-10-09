@@ -64,6 +64,22 @@ function MobileBottomDockInner() {
                         </div>
 
                         <div className="grid grid-cols-3 gap-2.5 text-center text-[10px] font-mono">
+                            {/* 1. Herramientas PRO (Tile Cuadrado Destacado) */}
+                            <button 
+                                type="button"
+                                onClick={() => {
+                                    setShowMoreMenu(false)
+                                    setShowToolsModal(true)
+                                }}
+                                className="p-3 rounded-2xl bg-gradient-to-b from-cyan-500/25 to-indigo-600/25 border-2 border-cyan-400/70 hover:border-cyan-300 flex flex-col items-center gap-1.5 transition-all active:scale-95 cursor-pointer shadow-lg shadow-cyan-950/50"
+                            >
+                                <div className="p-2 rounded-xl bg-cyan-400 text-black shadow-md">
+                                    <Wrench size={18} className="stroke-[2.5]" />
+                                </div>
+                                <span className="text-cyan-200 font-extrabold">Herramientas</span>
+                                <span className="text-[8px] font-mono px-1.5 py-0.2 rounded-full bg-cyan-400 text-black font-black uppercase">11 PRO</span>
+                            </button>
+
                             <Link 
                                 href="/dashboard/tecnicos"
                                 onClick={() => setShowMoreMenu(false)}
@@ -132,27 +148,28 @@ function MobileBottomDockInner() {
                                 <span className="text-slate-200 font-bold">Publicidad</span>
                             </Link>
 
-                            <button 
-                                type="button"
-                                onClick={() => {
-                                    setShowMoreMenu(false)
-                                    setShowToolsModal(true)
-                                }}
-                                className="col-span-3 p-3 rounded-2xl bg-gradient-to-r from-cyan-500/20 via-indigo-600/20 to-purple-600/20 border border-cyan-400/40 hover:border-cyan-300 flex items-center justify-between px-4 transition-all active:scale-95 cursor-pointer shadow-lg shadow-cyan-950/40"
+                            <Link 
+                                href="/dashboard/academy"
+                                onClick={() => setShowMoreMenu(false)}
+                                className="p-3 rounded-2xl bg-slate-900 border border-slate-800 hover:border-cyan-500/40 flex flex-col items-center gap-1.5 transition-all active:scale-95"
                             >
-                                <div className="flex items-center gap-2.5">
-                                    <div className="p-1.5 rounded-xl bg-cyan-400 text-black">
-                                        <Wrench size={16} />
-                                    </div>
-                                    <div className="text-left">
-                                        <div className="text-xs font-bold text-white">Caja de Herramientas</div>
-                                        <div className="text-[9px] text-cyan-300 font-mono">Descargador YouTube & Bot Personal</div>
-                                    </div>
+                                <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-400">
+                                    <GraduationCap size={18} />
                                 </div>
-                                <span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-black bg-cyan-400 text-black uppercase">
-                                    PRO
-                                </span>
-                            </button>
+                                <span className="text-slate-200 font-bold">Academia</span>
+                            </Link>
+
+                            <Link 
+                                href="/web"
+                                target="_blank"
+                                onClick={() => setShowMoreMenu(false)}
+                                className="p-3 rounded-2xl bg-slate-900 border border-slate-800 hover:border-cyan-500/40 flex flex-col items-center gap-1.5 transition-all active:scale-95"
+                            >
+                                <div className="p-2 rounded-xl bg-teal-500/10 text-teal-400">
+                                    <ShoppingBag size={18} />
+                                </div>
+                                <span className="text-slate-200 font-bold">Tienda Web</span>
+                            </Link>
                         </div>
                     </motion.div>
                 )}
