@@ -70,7 +70,7 @@ export default function Globe({
         { location: [51.5074, -0.1278], size: 0.05 },
         { location: [35.6762, 139.6503], size: 0.05 },
       ],
-      onRender: (state) => {
+      onRender: (state: any) => {
         if (!pointerInteracting.current) {
           currentPhi += 0.005 * speed * (direction === "right" ? 1 : -1);
         } else {
@@ -78,7 +78,7 @@ export default function Globe({
         }
         state.phi = currentPhi;
       },
-    });
+    } as any);
 
     setTimeout(() => {
       if (canvas) canvas.style.opacity = "1";

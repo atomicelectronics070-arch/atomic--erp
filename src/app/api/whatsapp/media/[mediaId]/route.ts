@@ -37,11 +37,10 @@ async function getWhatsAppToken() {
 
 export async function GET(
     req: Request,
-    { params }: { params: Promise<{ mediaId: string }> | { mediaId: string } }
+    { params }: { params: Promise<{ mediaId: string }> }
 ) {
     try {
-        const resolvedParams = await Promise.resolve(params);
-        const { mediaId } = resolvedParams;
+        const { mediaId } = await params;
 
         if (!mediaId) {
             return new NextResponse(getFallbackSvg('ID Multimedia Ausente'), {

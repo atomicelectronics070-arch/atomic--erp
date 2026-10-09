@@ -26,9 +26,9 @@ export async function GET() {
                 }
             }),
             prisma.client.count({ where: { salespersonId: session.user.id } }),
-            prisma.quote.count({ where: { userId: session.user.id } }),
+            prisma.quote.count({ where: { salespersonId: session.user.id } }),
             prisma.transaction.findMany({
-                where: { userId: session.user.id, status: { in: ['APROBADO', 'FACTURADO', 'PAGADO'] } },
+                where: { salespersonId: session.user.id, status: { in: ['APROBADO', 'FACTURADO', 'PAGADO'] } },
                 select: { amount: true, profit: true }
             })
         ])

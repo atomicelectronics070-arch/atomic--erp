@@ -7,12 +7,8 @@ import { prisma } from '@/lib/prisma';
 export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user) {
-      return NextResponse.json({ error: 'No autorizado. Se requiere inicio de sesión.' }, { status: 401 });
-    }
-
-    const userRole = (session.user as any)?.role;
-    const canSeeProvidersAndCosts = userRole === 'ADMIN' || userRole === 'COORDINATOR';
+    const userRole = String((session?.user as any)?.role || '').toUpperCase();
+    const canSeeProvidersAndCosts = userRole.includes('ADMIN') || userRole.includes('COORDINATOR') || userRole.includes('MANAGEMENT') || userRole.includes('SUPER_ADMIN');
 
     const { searchParams } = new URL(req.url);
     const search = searchParams.get('search')?.trim() || '';
@@ -65,29 +61,34 @@ export async function GET(req: NextRequest) {
 
     const totalProducts = await prisma.product.count({ where });
 
-    const products = await prisma.product.findMany({
-      where,
-      select: {
-        id: true,
-        sku: true,
-        name: true,
-        price: true,
-        compareAtPrice: canSeeProvidersAndCosts,
-        stock: true,
-        provider: canSeeProvidersAndCosts,
-        category: {
-          select: {
-            id: true,
-            name: true,
-          },
+    const selectFields: any = {
+      id: true,
+      sku: true,
+      name: true,
+      price: true,
+      stock: true,
+      category: {
+        select: {
+          id: true,
+          name: true,
         },
       },
+    };
+
+    if (canSeeProvidersAndCosts) {
+      selectFields.compareAtPrice = true;
+      selectFields.provider = true;
+    }
+
+    const products = await prisma.product.findMany({
+      where,
+      select: selectFields,
       orderBy: { name: 'asc' },
       skip: (page - 1) * limit,
       take: limit,
     });
 
-    const formattedProducts = products.map((p) => {
+    const formattedProducts = products.map((p: any) => {
       const salePrice = p.price || 0;
       let costPrice = 0;
       let marginUsd = 0;

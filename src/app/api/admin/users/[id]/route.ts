@@ -12,9 +12,13 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
         const { id } = await params
         const session = await getServerSession(authOptions)
         
+        if (!session) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+        }
+
         const userRole = (session.user as any)?.role || ""
         const isAuthorized = userRole === 'ADMIN' || userRole === 'MANAGEMENT' || userRole.includes('ADMIN') || userRole.includes('COORDINAT') || userRole.includes('MANAGEMENT')
-        if (!session || !isAuthorized) {
+        if (!isAuthorized) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
         }
 

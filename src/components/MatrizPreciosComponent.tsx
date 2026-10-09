@@ -60,18 +60,40 @@ export default function MatrizPreciosComponent({
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(150);
   const [totalProducts, setTotalProducts] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
   const [themeMode, setThemeMode] = useState<'cyber' | 'emerald' | 'amber' | 'oled' | 'bw' | 'bw-inv'>(defaultTheme);
 
   // Sync with global ATOMIC theme
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const savedTheme = localStorage.getItem('atomic_theme');
-      if (savedTheme === 'emerald-matrix') setThemeMode('emerald');
-      else if (savedTheme === 'solar-amber') setThemeMode('amber');
-      else if (savedTheme === 'oled-black') setThemeMode('oled');
-      else if (savedTheme === 'cyber-neon') setThemeMode('cyber');
-    }
+    const updateFromStorage = () => {
+      if (typeof window !== 'undefined') {
+        const savedTheme = localStorage.getItem('atomic_theme');
+        if (savedTheme === 'emerald-matrix') setThemeMode('emerald');
+        else if (savedTheme === 'solar-amber') setThemeMode('amber');
+        else if (savedTheme === 'oled-black') setThemeMode('oled');
+        else if (savedTheme === 'cyber-neon') setThemeMode('cyber');
+      }
+    };
+    updateFromStorage();
+    const handleThemeChange = (e: any) => {
+      const theme = e.detail;
+      if (theme === 'emerald-matrix') setThemeMode('emerald');
+      else if (theme === 'solar-amber') setThemeMode('amber');
+      else if (theme === 'oled-black') setThemeMode('oled');
+      else if (theme === 'cyber-neon') setThemeMode('cyber');
+    };
+    window.addEventListener('theme-changed', handleThemeChange);
+    return () => window.removeEventListener('theme-changed', handleThemeChange);
   }, []);
+
+  const handleSwitchTheme = (themeKey: 'cyber' | 'emerald' | 'amber' | 'oled', globalThemeId: string) => {
+    setThemeMode(themeKey);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('atomic_theme', globalThemeId);
+      document.documentElement.setAttribute('data-theme', globalThemeId);
+      window.dispatchEvent(new CustomEvent('theme-changed', { detail: globalThemeId }));
+    }
+  };
 
   // Quick Login Modal State
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -826,7 +848,7 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
     }
   };
 
-  const themeClasses = {
+  const themeClasses = ({
     cyber: {
       bg: 'bg-[#050914]',
       text: 'text-slate-100',
@@ -905,7 +927,7 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
       badge: 'border border-cyan-500/30 text-cyan-300 bg-cyan-500/10',
       cellInput: 'bg-slate-900 text-white border border-slate-700 focus:border-cyan-400',
     },
-  }[(themeMode as any) || 'cyber'] || {
+  } as Record<string, any>)[(themeMode as any) || 'cyber'] || {
     bg: 'bg-[#050914]',
     text: 'text-slate-100',
     border: 'border border-cyan-500/30',
@@ -1096,10 +1118,7 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
               <span className="px-2 uppercase opacity-80 text-[10px] font-black text-slate-400">TEMA:</span>
               <button
                 type="button"
-                onClick={() => {
-                  setThemeMode('cyber');
-                  if (typeof window !== 'undefined') localStorage.setItem('atomic_theme', 'cyber-neon');
-                }}
+                onClick={() => handleSwitchTheme('cyber', 'cyber-neon')}
                 className={`px-3 py-1 text-xs uppercase font-black transition-all rounded-lg cursor-pointer ${
                   themeMode === 'cyber' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-sm' : 'text-slate-400 hover:text-white'
                 }`}
@@ -1108,10 +1127,7 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
               </button>
               <button
                 type="button"
-                onClick={() => {
-                  setThemeMode('emerald');
-                  if (typeof window !== 'undefined') localStorage.setItem('atomic_theme', 'emerald-matrix');
-                }}
+                onClick={() => handleSwitchTheme('emerald', 'emerald-matrix')}
                 className={`px-3 py-1 text-xs uppercase font-black transition-all rounded-lg cursor-pointer ${
                   themeMode === 'emerald' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm' : 'text-slate-400 hover:text-white'
                 }`}
@@ -1120,10 +1136,7 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
               </button>
               <button
                 type="button"
-                onClick={() => {
-                  setThemeMode('amber');
-                  if (typeof window !== 'undefined') localStorage.setItem('atomic_theme', 'solar-amber');
-                }}
+                onClick={() => handleSwitchTheme('amber', 'solar-amber')}
                 className={`px-3 py-1 text-xs uppercase font-black transition-all rounded-lg cursor-pointer ${
                   themeMode === 'amber' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm' : 'text-slate-400 hover:text-white'
                 }`}
@@ -1132,10 +1145,7 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
               </button>
               <button
                 type="button"
-                onClick={() => {
-                  setThemeMode('oled');
-                  if (typeof window !== 'undefined') localStorage.setItem('atomic_theme', 'oled-black');
-                }}
+                onClick={() => handleSwitchTheme('oled', 'oled-black')}
                 className={`px-3 py-1 text-xs uppercase font-black transition-all rounded-lg cursor-pointer ${
                   themeMode === 'oled' ? 'bg-slate-800 text-white border border-slate-700 shadow-sm' : 'text-slate-400 hover:text-white'
                 }`}

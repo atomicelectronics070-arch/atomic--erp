@@ -3,6 +3,6 @@ export const revalidate = 0
 
 import PageClient from "./PageClient"
 
-export default function DynamicDashboardPage() {
-    return <PageClient />
+export default function DynamicDashboardPage({ params }: { params: Promise<{ courseId: string }> }) {
+    return <PageClient params={params} />
 }

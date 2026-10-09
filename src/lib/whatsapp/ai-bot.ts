@@ -328,7 +328,7 @@ METODOLOGÍA DE VENTA CONSULTIVA Y REGLAS DE ORO:
         try {
             await prisma.wAMessage.create({
                 data: {
-                    conversationId,
+                    conversationId: params.conversationId,
                     whatsappMessageId: `bot-err-${Date.now()}`,
                     direction: 'OUTBOUND',
                     type: 'text',

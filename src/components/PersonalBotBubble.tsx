@@ -267,7 +267,7 @@ export default function PersonalBotBubble() {
                                         <div key={msg.id} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
                                             {msg.role === "assistant" && (
                                                 <div className="w-7 h-7 rounded-xl bg-gradient-to-br from-cyan-400 to-indigo-600 flex items-center justify-center font-black text-white text-xs mr-2 mt-0.5 shrink-0 shadow-[0_0_10px_rgba(6,182,212,0.4)]">
-                                                    {firstLetter}
+                                                    <Bot size={13} />
                                                 </div>
                                             )}
                                             <div className={`max-w-[88%] ${msg.role === "user" ? "order-1" : ""}`}>
@@ -299,7 +299,7 @@ export default function PersonalBotBubble() {
                                     {isLoading && (
                                         <div className="flex justify-start">
                                             <div className="w-7 h-7 rounded-xl bg-gradient-to-br from-cyan-400 to-indigo-600 flex items-center justify-center font-black text-white text-xs mr-2 shrink-0">
-                                                {firstLetter}
+                                                <Bot size={13} />
                                             </div>
                                             <div className="bg-slate-900/90 border border-slate-800 px-4 py-3 rounded-2xl rounded-bl-sm flex gap-1.5 items-center">
                                                 <span className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />

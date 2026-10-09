@@ -511,7 +511,20 @@ export default function WhatsAppCrmClient() {
                 fetchConversations();
             } else {
                 const errorData = await res.json();
-                alert(`⚠️ Error de entrega de Meta WhatsApp API:\n\n${errorData.error || 'No se pudo despachar el mensaje. Verifica que el Token de WhatsApp esté activo.'}`);
+                const errText = errorData.error || '';
+                const isAuthError = errText.toLowerCase().includes('authenticat') || 
+                                    errText.toLowerCase().includes('token') || 
+                                    errText.toLowerCase().includes('oauth') || 
+                                    errText.toLowerCase().includes('190') ||
+                                    errText.toLowerCase().includes('expired');
+
+                if (isAuthError) {
+                    alert(`⚠️ Error de Autenticación Meta WhatsApp:\n\n${errText}\n\n👉 A continuación se abrirá el panel de Configuración > Credenciales para que puedas pegar y guardar tu nuevo Token Permanente.`);
+                    setActiveSettingsTab('credentials');
+                    setIsSettingsModalOpen(true);
+                } else {
+                    alert(`⚠️ Error de entrega de Meta WhatsApp API:\n\n${errText || 'No se pudo despachar el mensaje. Verifica que el Token de WhatsApp esté activo.'}`);
+                }
             }
         } catch (e: any) {
             console.error('Error sending message:', e);

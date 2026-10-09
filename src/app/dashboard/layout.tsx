@@ -14,7 +14,7 @@ import {
 import { useState, useEffect } from "react"
 import NotificationBell from "@/components/NotificationBell"
 import PersonalBotBubble from "@/components/PersonalBotBubble"
-import PersonalSalesBotModal from "@/components/bot/PersonalSalesBotModal"
+import ToolsModal from "@/components/tools/ToolsModal"
 import MobileBottomDock from "@/components/dashboard/MobileBottomDock"
 import { motion, AnimatePresence } from "framer-motion"
 
@@ -25,7 +25,8 @@ export default function DashboardLayout({
 }) {
     const { data: session, status } = useSession()
     const [sidebarOpen, setSidebarOpen] = useState(false)
-    const [showSalesBot, setShowSalesBot] = useState(false)
+    const [isToolsModalOpen, setIsToolsModalOpen] = useState(false)
+    const [toolsInitialTab, setToolsInitialTab] = useState<"downloader" | "bot">("downloader")
     const [unreadCount, setUnreadCount] = useState(0)
     const router = useRouter()
     const pathname = usePathname()
@@ -96,10 +97,17 @@ export default function DashboardLayout({
     }, [session, isDashboard])
 
     // Dynamic Theme Listener
-    const [, setThemeState] = useState('cyber-neon')
+    const [themeState, setThemeState] = useState('cyber-neon')
     useEffect(() => {
+        const initial = (typeof window !== 'undefined' ? localStorage.getItem('atomic_theme') : null) || 'cyber-neon'
+        setThemeState(initial)
+        if (typeof document !== 'undefined') {
+            document.documentElement.setAttribute('data-theme', initial)
+        }
         const handleThemeChange = (e: any) => {
-            setThemeState(e.detail || localStorage.getItem('atomic_theme') || 'cyber-neon')
+            const nextTheme = e.detail || localStorage.getItem('atomic_theme') || 'cyber-neon'
+            setThemeState(nextTheme)
+            document.documentElement.setAttribute('data-theme', nextTheme)
         }
         window.addEventListener('theme-changed', handleThemeChange)
         return () => window.removeEventListener('theme-changed', handleThemeChange)
@@ -132,7 +140,7 @@ export default function DashboardLayout({
         <div className="flex h-screen bg-[#070a14] text-white/95 overflow-hidden font-sans relative selection:bg-cyan-500/30 selection:text-white">
             
             {/* Background Ambient Depth */}
-            <div className="fixed inset-0 theme-ambient-bg bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-950/25 via-[#070a14] to-[#070a14] pointer-events-none z-0"></div>
+            <div className="fixed inset-0 theme-ambient-bg pointer-events-none z-0 transition-all duration-500"></div>
             
             {/* Mobile Bottom Dock (Cotizar, Precios, CRM, Perfil, Temas) */}
             <MobileBottomDock />
@@ -150,37 +158,33 @@ export default function DashboardLayout({
                 )}
             </AnimatePresence>
 
-            {/* Dual AI Bots: Bot 1 (Guía de ATOMIC) and Bot 2 (Bot Personal de Ventas con Voz) */}
+            {/* Único Bot Flotante en Pantalla: Bot Guía de ATOMIC (Exclusivo para tutorial y orientación) */}
             <PersonalBotBubble />
 
-            <motion.button
-                onClick={() => setShowSalesBot(true)}
-                className="fixed bottom-44 lg:bottom-28 right-5 z-40 w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center shadow-[0_0_35px_rgba(168,85,247,0.55)] group cursor-pointer border border-purple-400/40"
-                whileHover={{ scale: 1.08 }}
-                whileTap={{ scale: 0.95 }}
-                title="Abrir Bot Personal de Ventas con Voz"
-            >
-                <div className="absolute inset-0 rounded-full bg-purple-500 opacity-25 animate-ping" />
-                <div className="absolute inset-1 rounded-full bg-gradient-to-br from-purple-500 via-indigo-600 to-pink-500 shadow-[0_0_30px_rgba(168,85,247,0.6)]" />
-                <div className="relative z-10 flex flex-col items-center justify-center text-white">
-                    <Sparkles size={24} className="drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] group-hover:scale-110 transition-transform" />
-                    <span className="text-[8px] font-mono font-black uppercase tracking-tighter text-purple-200 -mt-0.5">VENTAS</span>
-                </div>
-            </motion.button>
-
-            <PersonalSalesBotModal isOpen={showSalesBot} onClose={() => setShowSalesBot(false)} />
+            {/* Modal Flotante de Herramientas (Descargador YouTube/Redes y Bot Personal de cada colaborador) */}
+            <ToolsModal
+                isOpen={isToolsModalOpen}
+                onClose={() => setIsToolsModalOpen(false)}
+                initialTab={toolsInitialTab}
+            />
 
             {/* ═══════════════════════════════════════════════════════════
                 AI GLASS FLOATING SIDEBAR (QUBE.AI / FIGMA STYLE)
             ═══════════════════════════════════════════════════════════ */}
-            <aside className={`
-                fixed top-4 left-4 bottom-4 w-[270px] z-50 flex flex-col
-                rounded-[34px] border-[2px] border-white/[0.08]
-                bg-[#090d1e]/70 backdrop-blur-[32px]
-                shadow-[0_20px_60px_rgba(0,0,0,0.7)]
-                transition-all duration-400 ease-out
-                ${sidebarOpen ? 'translate-x-0' : '-translate-x-[calc(100%+24px)]'} lg:translate-x-0
-            `}>
+            <aside 
+                style={{
+                    backgroundColor: 'var(--theme-sidebar-bg, rgba(9, 13, 30, 0.75))',
+                    borderColor: 'var(--theme-border, rgba(255, 255, 255, 0.08))',
+                    boxShadow: '0 20px 60px rgba(0,0,0,0.7), 0 0 35px var(--theme-glow, rgba(6,182,212,0.15))'
+                }}
+                className={`
+                    fixed top-4 left-4 bottom-4 w-[270px] z-50 flex flex-col
+                    rounded-[34px] border-[2px]
+                    backdrop-blur-[32px]
+                    transition-all duration-400 ease-out
+                    ${sidebarOpen ? 'translate-x-0' : '-translate-x-[calc(100%+24px)]'} lg:translate-x-0
+                `}
+            >
                 {/* ── HEADER: LOGO + ATOMIC.AI ──────────────────────── */}
                 <header className="h-[72px] px-5 flex items-center justify-between shrink-0 border-b border-white/[0.06]">
                     <Link href="/dashboard" className="flex items-center gap-3 group">
@@ -228,13 +232,36 @@ export default function DashboardLayout({
                     <GlassNavItem href="/dashboard/map-prospecting" icon={<Map size={18} strokeWidth={1.8} />} label="Prospección" isActive={pathname.startsWith('/dashboard/map-prospecting')} />
                     <GlassNavItem href="/dashboard/formularios" icon={<FileSpreadsheet size={18} strokeWidth={1.8} />} label="Contactos Web" isActive={pathname.startsWith('/dashboard/formularios')} />
                     
-                    {/* WhatsApp & CRM */}
+                    {/* WhatsApp, Medios & Edición */}
                     <div className="pt-3 pb-1 px-3.5 text-[11px] font-normal tracking-[0.5px] text-white/40">
-                        WhatsApp & Leads
+                        WhatsApp, Redes & Edición
                     </div>
                     <GlassNavItem href="/dashboard/whatsapp/crm" icon={<Smartphone size={18} strokeWidth={1.8} />} label="CRM WhatsApp" isActive={pathname.startsWith('/dashboard/whatsapp/crm')} />
                     <GlassNavItem href="/dashboard/whatsapp/leads" icon={<Users size={18} strokeWidth={1.8} />} label="Gestión Leads" isActive={pathname.startsWith('/dashboard/whatsapp/leads')} />
-                    <GlassNavItem href="/dashboard/blogs" icon={<Share2 size={18} strokeWidth={1.8} />} label="Social Command" isActive={pathname.startsWith('/dashboard/blogs')} />
+                    <GlassNavItem href="/dashboard/blogs" icon={<Share2 size={18} strokeWidth={1.8} />} label="Edición Audiovisual & Media" isActive={pathname.startsWith('/dashboard/blogs')} />
+                    
+                    {/* Botón Destacado: Herramientas (Descargador YouTube & Bot Personal) */}
+                    <div className="pt-2 pb-1 px-1">
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setToolsInitialTab("downloader")
+                                setIsToolsModalOpen(true)
+                            }}
+                            className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-[16px] bg-gradient-to-r from-cyan-500/20 via-indigo-600/20 to-purple-600/20 hover:from-cyan-500/30 hover:to-purple-600/30 border border-cyan-400/40 hover:border-cyan-300 text-white shadow-[0_0_20px_rgba(6,182,212,0.15)] hover:shadow-[0_0_25px_rgba(6,182,212,0.35)] transition-all group cursor-pointer"
+                            title="Abrir Caja de Herramientas: Descargador de YouTube y Bot Personal"
+                        >
+                            <div className="flex items-center gap-3">
+                                <div className="w-7 h-7 rounded-lg bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center text-cyan-300 group-hover:rotate-12 transition-transform">
+                                    <Wrench size={15} />
+                                </div>
+                                <span className="text-[13px] font-bold tracking-tight">Herramientas</span>
+                            </div>
+                            <span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-black bg-cyan-400 text-black shadow-sm uppercase">
+                                PRO
+                            </span>
+                        </button>
+                    </div>
                     
                     {/* Gestión & Finanzas */}
                     {(role === "ADMIN" || role === "MANAGEMENT" || role === "COORDINATOR" || role === "COORD_ASSISTANT") && (

@@ -72,7 +72,11 @@ export async function sendWhatsAppMessage(to: string, message: string) {
         );
         return response.data;
     } catch (error: any) {
-        const errorDetail = error.response?.data?.error?.message || error.message || 'Error al enviar mensaje via Meta WhatsApp';
+        const metaError = error.response?.data?.error;
+        let errorDetail = metaError?.message || error.message || 'Error al enviar mensaje via Meta WhatsApp';
+        if (metaError?.type === 'OAuthException' || metaError?.code === 190 || errorDetail.toLowerCase().includes('token') || errorDetail.toLowerCase().includes('authenticat') || errorDetail.toLowerCase().includes('session')) {
+            errorDetail = `Error de Autenticación Meta (OAuth 190): ${metaError?.message || 'Token expirado o no autorizado'}. Renueva el Token de WhatsApp en Configuración > Credenciales.`;
+        }
         console.error('WhatsApp Send Error:', error.response?.data || error.message);
         throw new Error(errorDetail);
     }

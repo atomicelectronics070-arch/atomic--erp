@@ -48,30 +48,35 @@ export async function GET(req: NextRequest) {
 
     const totalProducts = await prisma.product.count({ where });
 
-    const products = await prisma.product.findMany({
-      where,
-      select: {
-        id: true,
-        sku: true,
-        name: true,
-        price: true,
-        compareAtPrice: canSeeProvidersAndCosts,
-        stock: true,
-        provider: canSeeProvidersAndCosts,
-        category: {
-          select: {
-            id: true,
-            name: true,
-          },
+    const selectFields: any = {
+      id: true,
+      sku: true,
+      name: true,
+      price: true,
+      stock: true,
+      category: {
+        select: {
+          id: true,
+          name: true,
         },
       },
+    };
+
+    if (canSeeProvidersAndCosts) {
+      selectFields.compareAtPrice = true;
+      selectFields.provider = true;
+    }
+
+    const products = await prisma.product.findMany({
+      where,
+      select: selectFields,
       orderBy: { name: 'asc' },
       skip: (page - 1) * limit,
       take: limit,
     });
 
     // Mapeo con cálculo exacto de costo, precio y margen
-    const formattedProducts = products.map((p) => {
+    const formattedProducts = products.map((p: any) => {
       const salePrice = p.price || 0;
       let costPrice = 0;
       let marginUsd = 0;
