@@ -6,7 +6,7 @@ import { usePathname, useSearchParams } from "next/navigation"
 import { 
     MessageSquare, Table, Plus, User, Users, Scan, 
     ShoppingBag, Map, GraduationCap, Grid, Wrench, Shield, 
-    Layers, Cpu, ChevronUp, X, Home 
+    Layers, Cpu, ChevronUp, X, Home, Flame 
 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import TeamContactsModal from "./TeamContactsModal"
@@ -21,6 +21,7 @@ function MobileBottomDockInner() {
     const [showTeamModal, setShowTeamModal] = useState(false)
     const [showScannerModal, setShowScannerModal] = useState(false)
     const [showToolsModal, setShowToolsModal] = useState(false)
+    const [toolsInitialTab, setToolsInitialTab] = useState<any>("grid")
     const [showMoreMenu, setShowMoreMenu] = useState(false)
 
     const isCrmActive = pathname.startsWith("/dashboard/whatsapp")
@@ -37,7 +38,7 @@ function MobileBottomDockInner() {
         <>
             <TeamContactsModal isOpen={showTeamModal} onClose={() => setShowTeamModal(false)} />
             <BarcodeScannerModal isOpen={showScannerModal} onClose={() => setShowScannerModal(false)} />
-            <ToolsModal isOpen={showToolsModal} onClose={() => setShowToolsModal(false)} />
+            <ToolsModal isOpen={showToolsModal} onClose={() => setShowToolsModal(false)} initialTab={toolsInitialTab} />
 
             {/* ── POPUP: MÁS MÓDULOS DE ATOMIC (ACCESO RÁPIDO OPERACIONAL) ── */}
             <AnimatePresence>
@@ -64,11 +65,29 @@ function MobileBottomDockInner() {
                         </div>
 
                         <div className="grid grid-cols-3 gap-2.5 text-center text-[10px] font-mono">
-                            {/* 1. Herramientas PRO (Tile Cuadrado Destacado) */}
+                            {/* 1. Suicide Squad War Room (Tile Cuadrado Destacado) */}
                             <button 
                                 type="button"
                                 onClick={() => {
                                     setShowMoreMenu(false)
+                                    setToolsInitialTab("suicide_squad")
+                                    setShowToolsModal(true)
+                                }}
+                                className="p-3 rounded-2xl bg-gradient-to-b from-rose-500/25 to-red-600/25 border-2 border-rose-400/80 hover:border-rose-300 flex flex-col items-center gap-1.5 transition-all active:scale-95 cursor-pointer shadow-lg shadow-rose-950/50"
+                            >
+                                <div className="p-2 rounded-xl bg-rose-500 text-black shadow-md">
+                                    <Flame size={18} className="stroke-[2.5]" />
+                                </div>
+                                <span className="text-rose-200 font-extrabold">Suicide Squad</span>
+                                <span className="text-[8px] font-mono px-1.5 py-0.2 rounded-full bg-rose-500 text-black font-black uppercase">5 SQUADS</span>
+                            </button>
+
+                            {/* 2. Herramientas PRO (Tile Cuadrado Destacado) */}
+                            <button 
+                                type="button"
+                                onClick={() => {
+                                    setShowMoreMenu(false)
+                                    setToolsInitialTab("grid")
                                     setShowToolsModal(true)
                                 }}
                                 className="p-3 rounded-2xl bg-gradient-to-b from-cyan-500/25 to-indigo-600/25 border-2 border-cyan-400/70 hover:border-cyan-300 flex flex-col items-center gap-1.5 transition-all active:scale-95 cursor-pointer shadow-lg shadow-cyan-950/50"
@@ -77,7 +96,7 @@ function MobileBottomDockInner() {
                                     <Wrench size={18} className="stroke-[2.5]" />
                                 </div>
                                 <span className="text-cyan-200 font-extrabold">Herramientas</span>
-                                <span className="text-[8px] font-mono px-1.5 py-0.2 rounded-full bg-cyan-400 text-black font-black uppercase">11 PRO</span>
+                                <span className="text-[8px] font-mono px-1.5 py-0.2 rounded-full bg-cyan-400 text-black font-black uppercase">12 PRO</span>
                             </button>
 
                             <Link 

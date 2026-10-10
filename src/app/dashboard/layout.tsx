@@ -9,7 +9,7 @@ import {
     ShoppingBag, Menu, X, Calendar, Edit3, Mail, BrainCircuit,
     Bot, Globe, BarChart3, GraduationCap, Code2, User, Smartphone,
     Share2, Map, Layers, DollarSign, ShieldCheck, FileSpreadsheet,
-    Table, Bell, Lock, Hexagon, ChevronDown, Sparkles, Scan, Wrench, Shield, Cpu, Link2
+    Table, Bell, Lock, Hexagon, ChevronDown, Sparkles, Scan, Wrench, Shield, Cpu, Link2, Flame
 } from "lucide-react"
 import { useState, useEffect } from "react"
 import NotificationBell from "@/components/NotificationBell"
@@ -362,6 +362,27 @@ export default function DashboardLayout({
                             <span>Conexiones</span>
                         </button>
 
+                        {/* ── BOTÓN SUICIDE SQUAD WAR ROOM ── */}
+                        <button 
+                            type="button"
+                            onClick={() => {
+                                setToolsInitialTab("suicide_squad")
+                                setIsToolsModalOpen(true)
+                            }}
+                            className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-gradient-to-r from-rose-500/25 via-red-600/30 to-amber-500/25 hover:from-rose-500/40 hover:to-amber-500/40 border-2 border-rose-400/70 hover:border-rose-300 text-white text-xs font-mono font-black transition-all cursor-pointer shadow-[0_0_20px_rgba(244,63,94,0.35)] hover:shadow-[0_0_30px_rgba(244,63,94,0.6)] active:scale-95 group"
+                            title="Abrir War Room de Suicide Squad (5 Escuadras Virales)"
+                        >
+                            <div className="w-5 h-5 rounded-lg bg-rose-500 text-black flex items-center justify-center font-black group-hover:scale-110 transition-transform shadow-md">
+                                <Flame size={13} className="stroke-[2.5]" />
+                            </div>
+                            <span className="tracking-wider uppercase font-black text-rose-200 group-hover:text-white">
+                                Suicide Squad
+                            </span>
+                            <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-rose-500 text-black font-black uppercase shadow-sm">
+                                5 SQUADS
+                            </span>
+                        </button>
+
                         {/* ── BOTÓN MAESTRO DE HERRAMIENTAS (PRO CUADRÍCULA) ── */}
                         <button 
                             type="button"
@@ -370,7 +391,7 @@ export default function DashboardLayout({
                                 setIsToolsModalOpen(true)
                             }}
                             className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500/25 via-indigo-600/30 to-purple-600/25 hover:from-cyan-500/40 hover:to-purple-600/40 border-2 border-cyan-400/60 hover:border-cyan-300 text-white text-xs font-mono font-black transition-all cursor-pointer shadow-[0_0_20px_rgba(6,182,212,0.35)] hover:shadow-[0_0_30px_rgba(6,182,212,0.6)] active:scale-95 group"
-                            title="Abrir Centro de Herramientas Operacionales (11 Herramientas)"
+                            title="Abrir Centro de Herramientas Operacionales (12 Herramientas)"
                         >
                             <div className="w-5 h-5 rounded-lg bg-cyan-400 text-black flex items-center justify-center font-black group-hover:rotate-12 transition-transform shadow-md">
                                 <Wrench size={13} className="stroke-[2.5]" />
@@ -379,7 +400,7 @@ export default function DashboardLayout({
                                 Herramientas
                             </span>
                             <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-cyan-400 text-black font-black uppercase shadow-sm">
-                                11 PRO
+                                12 PRO
                             </span>
                         </button>
                     </div>

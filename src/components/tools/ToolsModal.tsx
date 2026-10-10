@@ -10,7 +10,7 @@ import {
     Volume2, VolumeX, Smartphone, Share2, Layers, Search,
     Grid, Monitor, Calendar, Calculator, Users, Activity,
     Settings, Palette, ArrowLeft, ArrowRight, ShieldCheck,
-    MessageSquare, DollarSign, Key, Zap, CheckCheck
+    MessageSquare, DollarSign, Key, Zap, CheckCheck, Flame
 } from "lucide-react"
 
 import AnyDeskRemoteView from "./AnyDeskRemoteView"
@@ -22,9 +22,11 @@ import InteractiveHierarchyMap from "./InteractiveHierarchyMap"
 import CryptoBinanceTerminal from "./CryptoBinanceTerminal"
 import ConnectionsConfigModal from "./ConnectionsConfigModal"
 import ThemePainterStudio from "./ThemePainterStudio"
+import SuicideSquadWarRoom from "./SuicideSquadWarRoom"
 
 export type ToolTab = 
     | "grid"
+    | "suicide_squad"
     | "anydesk"
     | "zoom"
     | "downloader"
@@ -332,6 +334,18 @@ export default function ToolsModal({
     // ─────────────────────────────────────────────────────────────
     const TOOLS_LIST = [
         {
+            id: "suicide_squad" as ToolTab,
+            category: "ai",
+            title: "SUICIDE SQUAD",
+            shortTitle: "Suicide Squad",
+            badge: "WAR ROOM",
+            badgeColor: "bg-rose-500/25 text-rose-300 border-rose-500/50",
+            icon: Flame,
+            color: "text-rose-400 bg-rose-500/15 border-rose-500/40",
+            glow: "rgba(244,63,94,0.4)",
+            desc: "5 Escuadras Virales, Miembros a Cargo, Playbook y Catálogo Completo"
+        },
+        {
             id: "anydesk" as ToolTab,
             category: "stream",
             title: "AnyDesk ATOMIC",
@@ -512,13 +526,13 @@ export default function ToolsModal({
                                         </>
                                     )}
                                 </h2>
-                                <span className="text-[9px] font-mono font-black px-2 py-0.5 rounded-full bg-cyan-400 text-black uppercase shadow-sm">
-                                    11 PRO
+                                <span className="text-[9px] font-mono font-black px-2 py-0.5 rounded-full bg-rose-500 text-black uppercase shadow-sm">
+                                    12 PRO (WAR ROOM)
                                 </span>
                             </div>
                             <p className="text-[10px] text-slate-400 font-mono hidden md:block">
                                 {activeTab === "grid" 
-                                    ? "Modo Cuadrícula: Suite integrada de utilidades, streaming, IA y finanzas" 
+                                    ? "Modo Cuadrícula: Suite integrada de utilidades, streaming, IA, Suicide Squad y finanzas" 
                                     : activeToolObj?.desc}
                             </p>
                         </div>
@@ -537,7 +551,7 @@ export default function ToolsModal({
                                             onClick={() => setActiveTab(t.id)}
                                             className={`p-1.5 rounded-xl transition-all cursor-pointer ${
                                                 isCurrent 
-                                                    ? "bg-cyan-500 text-black font-bold shadow-md scale-105" 
+                                                    ? "bg-rose-500 text-black font-bold shadow-md scale-105" 
                                                     : "text-slate-400 hover:text-white hover:bg-slate-800"
                                             }`}
                                             title={t.title}
@@ -580,9 +594,9 @@ export default function ToolsModal({
                             {/* Category Filter Pills Bar */}
                             <div className="flex items-center justify-center gap-1.5 flex-wrap">
                                 {[
-                                    { id: "all", label: "Todas (11)" },
+                                    { id: "all", label: "Todas (12)" },
+                                    { id: "ai", label: "🔥 Suicide Squad & IA (3)" },
                                     { id: "stream", label: "📹 Streaming & PC (2)" },
-                                    { id: "ai", label: "🤖 IA & Asistentes (2)" },
                                     { id: "finance", label: "📈 Finanzas & Precios (2)" },
                                     { id: "system", label: "⚙️ Operación & Sistema (5)" }
                                 ].map((cat) => (
@@ -591,7 +605,7 @@ export default function ToolsModal({
                                         onClick={() => setSelectedCategory(cat.id as any)}
                                         className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer ${
                                             selectedCategory === cat.id
-                                                ? "bg-cyan-500 text-black font-extrabold shadow-[0_0_15px_rgba(6,182,212,0.4)] scale-105"
+                                                ? "bg-rose-500 text-black font-extrabold shadow-[0_0_15px_rgba(244,63,94,0.4)] scale-105"
                                                 : "bg-slate-900/80 text-slate-400 hover:text-white hover:bg-slate-800 border border-slate-800"
                                         }`}
                                     >
@@ -970,6 +984,9 @@ export default function ToolsModal({
 
                     {/* VIEW 11: PINTOR DE TEMAS */}
                     {activeTab === "theming" && <ThemePainterStudio />}
+
+                    {/* VIEW 12: SUICIDE SQUAD WAR ROOM */}
+                    {activeTab === "suicide_squad" && <SuicideSquadWarRoom />}
                 </div>
             </motion.div>
         </div>
