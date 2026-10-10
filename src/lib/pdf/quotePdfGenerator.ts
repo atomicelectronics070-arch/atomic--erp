@@ -35,6 +35,8 @@ export interface UnifiedQuoteData {
   emissionDate?: string;
   validityDays?: number;
   paymentTerms?: string;
+  qrCodeUrl?: string;
+  qrDataUri?: string;
 }
 
 export async function generateAtomicUnifiedProposalPDF(data: UnifiedQuoteData) {
@@ -248,35 +250,102 @@ export async function generateAtomicUnifiedProposalPDF(data: UnifiedQuoteData) {
   }
 
   // ═══════════════════════════════════════════════════
-  // 5. TÉRMINOS Y LIQUIDACIÓN FINANCIERA
+  // 5. TÉRMINOS, QR DE VALIDACIÓN & LIQUIDACIÓN FINANCIERA
   // ═══════════════════════════════════════════════════
-  const summaryWidth = 84;
-  const summaryX = pageWidth - 14 - summaryWidth;
-  const termsWidth = summaryX - 14 - 6;
+  const termsWidth = 66;
+  const qrBoxX = 14 + termsWidth + 3; // 83
+  const qrBoxWidth = 32;
+  const summaryX = qrBoxX + qrBoxWidth + 3; // 118
+  const summaryWidth = pageWidth - 14 - summaryX; // 78
+  const blockHeight = 42;
 
   // Left Box: TÉRMINOS Y CONDICIONES
   doc.setFillColor(248, 250, 252);
   doc.setDrawColor(226, 232, 240);
-  doc.roundedRect(14, currentY, termsWidth, 42, 2, 2, "FD");
+  doc.roundedRect(14, currentY, termsWidth, blockHeight, 2, 2, "FD");
 
   doc.setTextColor(37, 99, 235);
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(8.5);
-  doc.text("TÉRMINOS Y CONDICIONES:", 18, currentY + 6.5);
+  doc.setFontSize(8);
+  doc.text("TÉRMINOS Y CONDICIONES:", 18, currentY + 6);
 
   doc.setTextColor(71, 85, 105);
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(7.5);
-  doc.text("• Garantía de 1 año en defectos de fábrica con repuestos originales.", 18, currentY + 13);
-  doc.text("• Precios expresados en Dólares Americanos (USD).", 18, currentY + 19);
-  doc.text("• Despachos seguros a nivel nacional mediante Servientrega / Transporte.", 18, currentY + 25);
-  doc.text("• Soporte y asesoría técnica personalizada posventa.", 18, currentY + 31);
-  doc.text("• Forma de Pago: Transferencia / Tarjeta de Crédito / Efectivo.", 18, currentY + 37);
+  doc.setFontSize(6.8);
+  doc.text("• Garantía de 1 año en defectos de fábrica.", 18, currentY + 12);
+  doc.text("• Precios expresados en Dólares (USD).", 18, currentY + 17.5);
+  doc.text("• Despachos seguros a nivel nacional.", 18, currentY + 23);
+  doc.text("• Soporte y asesoría técnica personalizada.", 18, currentY + 28.5);
+  doc.text("• Pago: Transferencia / TC / Efectivo.", 18, currentY + 34);
+
+  // Center Box: QR DE VERIFICACIÓN OFICIAL
+  doc.setFillColor(248, 250, 252);
+  doc.setDrawColor(226, 232, 240);
+  doc.roundedRect(qrBoxX, currentY, qrBoxWidth, blockHeight, 2, 2, "FD");
+
+  doc.setTextColor(37, 99, 235);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(6.8);
+  doc.text("VERIFICACIÓN QR", qrBoxX + qrBoxWidth / 2, currentY + 5.5, { align: "center" });
+
+  const onlineQuoteUrl = data.qrCodeUrl || `https://atomiccotizador.shop/c/${normalizedNumber}`;
+
+  // Use provided QR Data URI or fallback to offscreen canvas
+  let effectiveQrUri = data.qrDataUri;
+  if (!effectiveQrUri && typeof document !== "undefined") {
+    const canvas = (document.getElementById(`atomic-quote-qr-${normalizedNumber}`) ||
+                    document.getElementById(`atomic-quote-qr-${data.quoteNumber}`) ||
+                    document.getElementById("atomic-quote-qr-canvas") ||
+                    document.getElementById("atomic-quote-public-qr-canvas")) as HTMLCanvasElement;
+    if (canvas) {
+      try {
+        effectiveQrUri = canvas.toDataURL("image/png");
+      } catch (err) {
+        console.warn("Could not retrieve canvas QR data URI:", err);
+      }
+    }
+  }
+
+  if (effectiveQrUri) {
+    try {
+      doc.addImage(effectiveQrUri, "PNG", qrBoxX + 5, currentY + 7.5, 22, 22);
+    } catch (e) {
+      console.warn("Could not embed QR image:", e);
+    }
+  } else {
+    // Elegant fallback box
+    doc.setFillColor(241, 245, 249);
+    doc.roundedRect(qrBoxX + 5, currentY + 7.5, 22, 22, 1.5, 1.5, "F");
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(5.5);
+    doc.setTextColor(37, 99, 235);
+    doc.text("ATOMIC", qrBoxX + qrBoxWidth / 2, currentY + 16, { align: "center" });
+    doc.setFontSize(5);
+    doc.setTextColor(100, 116, 139);
+    doc.text("DOC VALIDADO", qrBoxX + qrBoxWidth / 2, currentY + 21, { align: "center" });
+  }
+
+  // Active clickable link over the QR Box in digital PDF
+  try {
+    doc.link(qrBoxX, currentY, qrBoxWidth, blockHeight, { url: onlineQuoteUrl });
+  } catch (err) {
+    // link not supported or ignored
+  }
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(5.2);
+  doc.setTextColor(100, 116, 139);
+  doc.text("Escanear para consultar", qrBoxX + qrBoxWidth / 2, currentY + 32, { align: "center" });
+  doc.text("validez y descuentos", qrBoxX + qrBoxWidth / 2, currentY + 35.5, { align: "center" });
+  doc.setTextColor(37, 99, 235);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(5.2);
+  doc.text("atomiccotizador.shop", qrBoxX + qrBoxWidth / 2, currentY + 39, { align: "center" });
 
   // Right Box: RESUMEN FINANCIERO
   doc.setFillColor(248, 250, 252);
   doc.setDrawColor(226, 232, 240);
-  doc.roundedRect(summaryX, currentY, summaryWidth, 42, 2, 2, "FD");
+  doc.roundedRect(summaryX, currentY, summaryWidth, blockHeight, 2, 2, "FD");
 
   let subY = currentY + 6.5;
   doc.setFont("helvetica", "normal");

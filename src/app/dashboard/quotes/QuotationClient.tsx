@@ -3,15 +3,16 @@
 import { useState, useRef, useEffect, useMemo, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { 
-    Plus, Trash2, FileOutput, Calculator, Image as ImageIcon, 
+    Plus, Trash2, FileOutput, FileSpreadsheet, Calculator, Image as ImageIcon, 
     User, ShieldCheck, Mail, Phone, MapPin, 
     MessageSquare, History, X, ChevronRight,
     Briefcase, Save, Clock, Search, CheckCircle2,
     FileText, Zap, Building2, Tag, Percent, ShoppingCart, Wand2, Upload, AlertTriangle, Download, Sparkles,
-    Send, Loader2
+    Send, Loader2, Share2, Copy, Check, ExternalLink, QrCode
 } from "lucide-react"
 import jsPDF from "jspdf"
 import autoTable from "jspdf-autotable"
+import { QRCodeCanvas } from "qrcode.react"
 import { calculateDiscountedPrice } from "@/lib/utils/pricing"
 import { generateAtomicUnifiedProposalPDF } from "@/lib/pdf/quotePdfGenerator"
 
@@ -56,15 +57,31 @@ interface QuotationClientProps {
 
 export default function QuotationClient({ initialProducts, initialHistory, initialClients, nextNumber, session }: QuotationClientProps) {
     const [clientName, setClientName] = useState("")
+    const [clientCedula, setClientCedula] = useState("")
     const [clientEmail, setClientEmail] = useState("")
     const [emailNotSpecified, setEmailNotSpecified] = useState(false)
     const [clientPhone, setClientPhone] = useState("")
     const [clientCity, setClientCity] = useState("")
     const [showClientList, setShowClientList] = useState(false)
     const [isSavingClient, setIsSavingClient] = useState(false)
+    const [isExportingExcel, setIsExportingExcel] = useState(false)
+    const [isNativeSharing, setIsNativeSharing] = useState(false)
+    const [externalShareModalData, setExternalShareModalData] = useState<any | null>(null)
+    const [postPdfSharePrompt, setPostPdfSharePrompt] = useState<any | null>(null)
+    const [isCopiedShare, setIsCopiedShare] = useState(false)
     const [quoteSubject, setQuoteSubject] = useState("")
     const [deliveryAddress, setDeliveryAddress] = useState("")
     const [quoteNumber, setQuoteNumber] = useState(nextNumber)
+
+    const getOnlineQuoteUrl = (qNum: string) => {
+        const cleanNum = qNum?.startsWith("PROP") ? qNum : `PROP-${(qNum || "").replace(/^[A-Z]+-/, "")}`;
+        return `https://atomiccotizador.shop/c/${cleanNum}`;
+    };
+
+    const getQuoteShareText = (qNum: string) => {
+        const url = getOnlineQuoteUrl(qNum);
+        return `Te compartimos aquí la cotización correspondiente a tu petición. Recuerda solicitar un descuento a tu asesor y consultar tu cotización para siempre aquí:\n${url}`;
+    };
 
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
@@ -241,34 +258,218 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
             const globalDisc = (rawSubtotal - itemDiscount) * ((q.discountPercent || 0) / 100)
             const taxable = rawSubtotal - itemDiscount - globalDisc
             const tax = taxable * 0.15
-            await generateAtomicUnifiedProposalPDF({
+            const onlineUrl = getOnlineQuoteUrl(q.quoteNumber);
+            const qrCanvas = (document.getElementById(`atomic-quote-qr-${q.quoteNumber}`) ||
+                              document.getElementById("atomic-quote-qr-canvas")) as HTMLCanvasElement;
+            const qrDataUri = qrCanvas ? qrCanvas.toDataURL("image/png") : undefined;
+
+            const pdfData = await generateAtomicUnifiedProposalPDF({
                 quoteNumber: q.quoteNumber,
                 clientName: q.clientName || '',
                 clientPhone: q.clientPhone || '',
                 clientCity: q.city || '',
                 clientEmail: q.clientEmail || '',
                 quoteSubject: q.quoteSubject || '',
-                advisorName: session?.user?.name?.toUpperCase() || 'ATOMIC',
+                advisorName: q.advisorName || session?.user?.name?.toUpperCase() || 'ATOMIC',
                 items: parsedItems,
                 subtotal: rawSubtotal,
                 taxAmount: tax,
                 taxPercent: 15,
                 discountAmount: itemDiscount + globalDisc,
                 total: q.total || (taxable + tax),
-                deliveryAddress: q.deliveryAddress || ''
+                deliveryAddress: q.deliveryAddress || '',
+                qrCodeUrl: onlineUrl,
+                qrDataUri
             })
+            pdfData.doc.save(pdfData.fileName);
+
+            setPostPdfSharePrompt({
+                quoteNumber: q.quoteNumber,
+                clientName: q.clientName,
+                onlineUrl,
+                pdfData
+            });
         } catch (e) { console.error('PDF download error:', e) }
     }
 
-    const handleOSShareQuote = (q: any) => {
+    const handleShareQuoteNative = async (quoteDataOverride?: any) => {
+        const effClientName = quoteDataOverride ? quoteDataOverride.clientName : clientName;
+        if (!effClientName?.trim()) {
+            alert("⚠️ Por favor ingresa el nombre del cliente para compartir.");
+            return;
+        }
+
+        const effQuoteNumber = quoteDataOverride ? quoteDataOverride.quoteNumber : quoteNumber;
+        const onlineUrl = getOnlineQuoteUrl(effQuoteNumber);
+        const shareText = getQuoteShareText(effQuoteNumber);
+
+        setIsNativeSharing(true);
+        try {
+            const qrCanvas = (document.getElementById(`atomic-quote-qr-${effQuoteNumber}`) ||
+                              document.getElementById("atomic-quote-qr-canvas")) as HTMLCanvasElement;
+            const qrDataUri = qrCanvas ? qrCanvas.toDataURL("image/png") : undefined;
+
+            let pdfData: any = null;
+            if (quoteDataOverride) {
+                const parsedItems = safeParseArray(quoteDataOverride.items);
+                const itemDiscount = parsedItems.reduce((acc: number, item: any) => acc + (item.quantity * item.unitPrice * ((item.discountPercent || 0) / 100)), 0);
+                const rawSubtotal = parsedItems.reduce((acc: number, item: any) => acc + (item.quantity * item.unitPrice), 0);
+                const globalDisc = (rawSubtotal - itemDiscount) * ((quoteDataOverride.discountPercent || 0) / 100);
+                const taxable = rawSubtotal - itemDiscount - globalDisc;
+                const tax = taxable * 0.15;
+                pdfData = await generateAtomicUnifiedProposalPDF({
+                    quoteNumber: quoteDataOverride.quoteNumber,
+                    clientName: quoteDataOverride.clientName || 'Cliente',
+                    clientPhone: quoteDataOverride.clientPhone || '',
+                    clientCity: quoteDataOverride.city || 'Quito',
+                    clientEmail: quoteDataOverride.clientEmail || '',
+                    quoteSubject: quoteDataOverride.quoteSubject || quoteDataOverride.specs || 'PROPUESTA COMERCIAL',
+                    advisorName: quoteDataOverride.advisorName || session?.user?.name?.toUpperCase() || 'ATOMIC',
+                    items: parsedItems,
+                    subtotal: rawSubtotal,
+                    taxAmount: tax,
+                    taxPercent: 15,
+                    discountAmount: itemDiscount + globalDisc,
+                    total: quoteDataOverride.total || (taxable + tax),
+                    deliveryAddress: quoteDataOverride.deliveryAddress || '',
+                    qrCodeUrl: onlineUrl,
+                    qrDataUri
+                });
+            } else {
+                const finalEmail = emailNotSpecified ? "no@especifica.com" : clientEmail;
+                pdfData = await generateAtomicUnifiedProposalPDF({
+                    quoteNumber,
+                    clientName,
+                    clientPhone,
+                    clientEmail: finalEmail,
+                    clientCity,
+                    deliveryAddress: deliveryAddress || clientCity,
+                    quoteSubject: quoteSubject || "PROPUESTA TÉCNICA COMERCIAL",
+                    advisorName,
+                    items: items.map(i => {
+                        const sub = i.quantity * i.unitPrice;
+                        const desc = sub * ((i.discountPercent || 0) / 100);
+                        return {
+                            sku: i.productId || "SKU-GEN",
+                            productId: i.productId,
+                            name: i.description,
+                            description: i.description,
+                            quantity: i.quantity,
+                            unitPrice: i.unitPrice,
+                            discountPercent: i.discountPercent,
+                            discountAmount: desc,
+                            total: sub - desc,
+                            customImage: i.customImage
+                        };
+                    }),
+                    specs: quoteSubject,
+                    warrantyComments: "Garantía oficial de 1 año con soporte técnico y repuestos originales",
+                    subtotal,
+                    taxAmount,
+                    discountAmount: totalDiscountAmount,
+                    total,
+                    validityDays: 15,
+                    qrCodeUrl: onlineUrl,
+                    qrDataUri
+                });
+            }
+
+            const pdfFile = new File([pdfData.blob], pdfData.fileName, { type: "application/pdf" });
+
+            if (typeof navigator !== "undefined" && navigator.share) {
+                let shared = false;
+                if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+                    try {
+                        await navigator.share({
+                            title: `Cotización ${effQuoteNumber} · ATOMIC Solutions`,
+                            text: shareText,
+                            files: [pdfFile]
+                        });
+                        shared = true;
+                        return;
+                    } catch (err: any) {
+                        if (err.name === "AbortError") return;
+                        console.warn("Share files failed/cancelled", err);
+                    }
+                }
+
+                if (!shared) {
+                    try {
+                        await navigator.share({
+                            title: `Cotización ${effQuoteNumber} · ATOMIC Solutions`,
+                            text: shareText,
+                            url: onlineUrl
+                        });
+                        return;
+                    } catch (err: any) {
+                        if (err.name === "AbortError") return;
+                        console.warn("Share url failed/cancelled", err);
+                    }
+                }
+            }
+
+            setExternalShareModalData({
+                quoteNumber: effQuoteNumber,
+                clientName: effClientName,
+                onlineUrl,
+                shareText,
+                pdfBlob: pdfData.blob,
+                fileName: pdfData.fileName
+            });
+        } catch (e) {
+            console.error("Error al preparar compartir:", e);
+            setExternalShareModalData({
+                quoteNumber: effQuoteNumber,
+                clientName: effClientName,
+                onlineUrl,
+                shareText
+            });
+        } finally {
+            setIsNativeSharing(false);
+        }
+    };
+
+    const handleDownloadQuoteExcel = async (q: any) => {
         setQuoteMenuOpen(null)
-        const text = `Cotización ${q.quoteNumber} | Cliente: ${q.clientName} | Total: $${q.total?.toFixed(2)} | Estado: ${q.status}`
-        if (typeof navigator !== 'undefined' && navigator.share) {
-            navigator.share({ title: `Cotización ${q.quoteNumber} – Atomic`, text, url: window.location.href }).catch(() => {})
-        } else if (typeof navigator !== 'undefined' && navigator.clipboard) {
-            navigator.clipboard.writeText(text).then(() => alert('📋 Copiado al portapapeles')).catch(() => {})
+        try {
+            const parsedItems = safeParseArray(q.items)
+            const itemDiscount = parsedItems.reduce((acc: number, item: any) => acc + (item.quantity * item.unitPrice * ((item.discountPercent || 0) / 100)), 0)
+            const rawSubtotal = parsedItems.reduce((acc: number, item: any) => acc + (item.quantity * item.unitPrice), 0)
+            const globalDisc = (rawSubtotal - itemDiscount) * ((q.discountPercent || 0) / 100)
+            const taxable = rawSubtotal - itemDiscount - globalDisc
+            const tax = taxable * 0.15
+            await handleGenerateExcel({
+                quoteNumber: q.quoteNumber,
+                clientName: q.clientName || '',
+                clientCedula: q.client?.cedula || '',
+                clientPhone: q.clientPhone || '',
+                clientCity: q.city || '',
+                clientEmail: q.clientEmail || '',
+                quoteSubject: q.quoteSubject || q.specs || '',
+                advisorName: q.advisorName || session?.user?.name?.toUpperCase() || 'ATOMIC',
+                items: parsedItems.map((item: any) => ({
+                    id: item.id || item.productId,
+                    sku: item.sku || item.productId,
+                    description: item.description || item.name || '',
+                    quantity: Number(item.quantity || 1),
+                    unitPrice: Number(item.unitPrice || 0),
+                    discountPercent: Number(item.discountPercent || 0),
+                    total: Number(item.total || (item.quantity * item.unitPrice))
+                })),
+                subtotal: rawSubtotal,
+                taxAmount: tax,
+                discountAmount: itemDiscount + globalDisc,
+                total: q.total || (taxable + tax)
+            })
+        } catch (e) {
+            console.error('Excel download error:', e)
         }
     }
+
+    const handleOSShareQuote = (q: any) => {
+        setQuoteMenuOpen(null);
+        handleShareQuoteNative(q);
+    };
 
     const handleShareQuote = async (quote: any) => {
         if (!shareTarget || isSharingQuote) return
@@ -439,6 +640,11 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
         }
 
         try {
+            const onlineUrl = getOnlineQuoteUrl(quoteNumber);
+            const qrCanvas = (document.getElementById(`atomic-quote-qr-${quoteNumber}`) ||
+                              document.getElementById("atomic-quote-qr-canvas")) as HTMLCanvasElement;
+            const qrDataUri = qrCanvas ? qrCanvas.toDataURL("image/png") : undefined;
+
             const pdfData = await generateAtomicUnifiedProposalPDF({
                 quoteNumber,
                 clientName,
@@ -471,10 +677,20 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                 taxAmount,
                 discountAmount: totalDiscountAmount,
                 total,
-                validityDays: 15
+                validityDays: 15,
+                qrCodeUrl: onlineUrl,
+                qrDataUri
             });
 
             pdfData.doc.save(pdfData.fileName);
+
+            // Enable immediate sharing option for WhatsApp / mobile apps
+            setPostPdfSharePrompt({
+                quoteNumber,
+                clientName,
+                onlineUrl,
+                pdfData
+            });
 
             const res = await fetch("/api/quotes", {
                 method: "POST",
@@ -484,6 +700,7 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                     clientName,
                     clientEmail: finalEmail,
                     clientPhone,
+                    clientCedula,
                     clientCity,
                     city: clientCity,
                     quoteSubject,
@@ -509,6 +726,120 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
             alert("Error al generar o guardar la cotización.");
         }
     }
+
+    const handleGenerateExcel = async (quoteDataOverride?: any) => {
+        const effClientName = quoteDataOverride ? quoteDataOverride.clientName : clientName;
+        if (!effClientName?.trim()) {
+            alert("⚠️ Por favor ingresa el nombre del cliente.");
+            return;
+        }
+
+        const validItems = quoteDataOverride ? quoteDataOverride.items : items.filter(i => i.description.trim() || i.unitPrice > 0);
+        if (validItems.length === 0) {
+            alert("⚠️ Debes añadir al menos 1 producto para exportar a Excel.");
+            return;
+        }
+
+        setIsExportingExcel(true);
+        try {
+            const finalEmail = emailNotSpecified ? "no@especifica.com" : clientEmail;
+            const payload = quoteDataOverride || {
+                quoteNumber,
+                clientName,
+                clientCedula,
+                clientEmail: finalEmail,
+                clientPhone,
+                clientCity,
+                deliveryAddress: deliveryAddress || clientCity,
+                quoteSubject: quoteSubject || "SUMINISTRO E INSTALACIÓN DE EQUIPOS DE SEGURIDAD",
+                advisorName,
+                items: validItems.map((i: any) => {
+                    const sub = i.quantity * i.unitPrice;
+                    const desc = sub * ((i.discountPercent || 0) / 100);
+                    return {
+                        id: i.id,
+                        productId: i.productId,
+                        sku: i.productId || "SKU-GEN",
+                        description: i.description,
+                        quantity: Number(i.quantity || 1),
+                        unitPrice: Number(i.unitPrice || 0),
+                        discountPercent: Number(i.discountPercent || 0),
+                        discountAmount: desc,
+                        total: sub - desc
+                    };
+                }),
+                subtotal,
+                taxAmount,
+                discountAmount: totalDiscountAmount,
+                total
+            };
+
+            const response = await fetch("/api/quotes/export-excel", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                const errData = await response.json().catch(() => ({}));
+                throw new Error(errData.error || "Error al exportar cotización a Excel");
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            const contentDisposition = response.headers.get("content-disposition");
+            let filename = `${payload.quoteNumber || "PROP"}_${(payload.clientName || "Cliente").replace(/\s+/g, "_")}.xlsx`;
+            if (contentDisposition && contentDisposition.includes("filename=")) {
+                const match = contentDisposition.match(/filename="?([^"]+)"?/);
+                if (match && match[1]) filename = match[1];
+            }
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+
+            // Guardar en base de datos si es una nueva emisión
+            if (!quoteDataOverride) {
+                const res = await fetch("/api/quotes", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        quoteNumber,
+                        clientName,
+                        clientEmail: finalEmail,
+                        clientPhone,
+                        clientCedula,
+                        clientCity,
+                        city: clientCity,
+                        quoteSubject,
+                        subtotal,
+                        discountPercent,
+                        discountAmount: totalDiscountAmount,
+                        taxAmount,
+                        total,
+                        items,
+                        status,
+                        advisorName,
+                        specs: quoteSubject
+                    })
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.nextQuoteNumber) setQuoteNumber(data.nextQuoteNumber);
+                    if (data.history) setQuoteHistory(data.history);
+                }
+            }
+        } catch (e: any) {
+            console.error("Excel generation error:", e);
+            alert(`Error al generar o descargar el archivo Excel: ${e?.message || e}`);
+        } finally {
+            setIsExportingExcel(false);
+        }
+    };
 
     const handleGenerateTicket = async () => {
         if (!clientName.trim() || !clientPhone.trim()) {
@@ -649,7 +980,7 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                             </span>
                         </h1>
                         <p className="text-xs text-slate-400 font-medium flex items-center gap-2 mt-1">
-                            Doc N°: <span className="text-cyan-400 font-bold font-mono">{quoteNumber}</span> • Emisión instantánea en PDF A4 & Ticket
+                            Doc N°: <span className="text-cyan-400 font-bold font-mono">{quoteNumber}</span> • Emisión instantánea en PDF A4, Excel (.xlsx) & Ticket
                         </p>
                     </div>
                 </div>
@@ -673,6 +1004,24 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                         className="px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-xs uppercase tracking-wider rounded-2xl transition-all flex items-center gap-2 shadow-[0_0_15px_rgba(6,182,212,0.3)]"
                     >
                         <FileOutput size={15} /> Exportar PDF A4
+                    </button>
+                    <button 
+                        onClick={() => handleGenerateExcel()}
+                        disabled={isExportingExcel}
+                        className="px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-black text-xs uppercase tracking-wider rounded-2xl transition-all flex items-center gap-2 shadow-[0_0_15px_rgba(16,185,129,0.3)] disabled:opacity-50"
+                        title="Exportar formato exacto Excel (.xlsx) con Logo Superior A1:D4 y fórmulas"
+                    >
+                        {isExportingExcel ? <Loader2 size={15} className="animate-spin" /> : <FileSpreadsheet size={15} />}
+                        {isExportingExcel ? "Generando..." : "Exportar Excel (.xlsx)"}
+                    </button>
+                    <button 
+                        onClick={() => handleShareQuoteNative()}
+                        disabled={isNativeSharing}
+                        className="px-5 py-2.5 bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-black text-xs uppercase tracking-wider rounded-2xl transition-all flex items-center gap-2 shadow-[0_0_15px_rgba(139,92,246,0.3)] disabled:opacity-50"
+                        title="Compartir cotización directamente a WhatsApp, Messenger, Facebook u otras apps de tu teléfono"
+                    >
+                        {isNativeSharing ? <Loader2 size={15} className="animate-spin" /> : <Share2 size={15} />}
+                        {isNativeSharing ? "Preparando..." : "📲 Compartir"}
                     </button>
                     <button 
                         onClick={handleGenerateTicket}
@@ -743,6 +1092,7 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                                                     setClientName(c.name)
                                                     setClientCity(c.city || "")
                                                     setClientPhone(c.phone || "")
+                                                    if (c.cedula) setClientCedula(c.cedula)
                                                     if (c.email) {
                                                         setClientEmail(c.email)
                                                         setEmailNotSpecified(false)
@@ -756,7 +1106,7 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                                             >
                                                 <div>
                                                     <p className="text-xs font-bold text-white uppercase">{c.name}</p>
-                                                    <p className="text-[10px] text-slate-400 font-mono mt-0.5">{c.city || "Sin ciudad"} • {c.phone || "Sin tel"}</p>
+                                                    <p className="text-[10px] text-slate-400 font-mono mt-0.5">{c.city || "Sin ciudad"} • {c.phone || "Sin tel"}{c.cedula ? ` • CI: ${c.cedula}` : ''}</p>
                                                 </div>
                                                 <ChevronRight size={14} className="text-slate-600 group-hover:text-cyan-400" />
                                             </button>
@@ -790,6 +1140,19 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                             <div className="space-y-2">
                                 <label className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider">Teléfono / Celular</label>
                                 <input value={clientPhone} onChange={e => setClientPhone(e.target.value)} className="w-full bg-slate-950 border border-slate-800 text-white p-3.5 text-xs font-bold font-mono rounded-2xl outline-none focus:border-cyan-500/50 transition-colors" placeholder="099..." />
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider flex items-center justify-between">
+                                    <span>•CI / •RUC (Identificación)</span>
+                                    <span className="text-[9px] text-cyan-400 font-normal">Excel Col E7</span>
+                                </label>
+                                <input 
+                                    value={clientCedula} 
+                                    onChange={e => setClientCedula(e.target.value)} 
+                                    className="w-full bg-slate-950 border border-slate-800 text-white p-3.5 text-xs font-bold font-mono rounded-2xl outline-none focus:border-cyan-500/50 transition-colors" 
+                                    placeholder="17XXXXXXXX o RUC 13 dígitos" 
+                                />
                             </div>
                         </div>
                     </div>
@@ -1048,12 +1411,20 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                         </div>
 
                         {quickSuccess && (
-                            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
+                            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="space-y-2">
                                 <button 
                                     onClick={handleGeneratePDF}
                                     className="w-full flex items-center justify-center gap-2 bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-mono font-bold text-xs py-3 rounded-2xl hover:bg-emerald-500/30 transition-all shadow-[0_0_15px_rgba(16,185,129,0.3)]"
                                 >
                                     <Download size={14} /> DESCARGAR COTIZACIÓN EN PDF
+                                </button>
+                                <button 
+                                    onClick={() => handleGenerateExcel()}
+                                    disabled={isExportingExcel}
+                                    className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-600/30 to-teal-600/30 border border-emerald-500/50 text-emerald-300 font-mono font-bold text-xs py-3 rounded-2xl hover:bg-emerald-500/40 transition-all shadow-[0_0_15px_rgba(16,185,129,0.3)] disabled:opacity-50"
+                                >
+                                    {isExportingExcel ? <Loader2 size={14} className="animate-spin" /> : <FileSpreadsheet size={14} />}
+                                    DESCARGAR COTIZACIÓN EN EXCEL (.XLSX)
                                 </button>
                             </motion.div>
                         )}
@@ -1155,6 +1526,14 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                                             <span className="text-[10px] font-bold text-cyan-300 bg-cyan-500/10 border border-cyan-500/30 px-2 py-0.5 rounded-full">{q.quoteNumber}</span>
                                             <div className="flex items-center gap-2">
                                                 <span className="text-[9px] text-slate-400 font-bold">{new Date(q.createdAt).toLocaleDateString()}</span>
+                                                {/* Botón Directo de Compartir */}
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); handleOSShareQuote(q); }}
+                                                    className="p-1.5 rounded-lg bg-violet-500/10 hover:bg-violet-500/20 text-violet-400 hover:text-violet-300 border border-violet-500/30 transition-colors"
+                                                    title="Compartir a WhatsApp, Messenger o aplicaciones del teléfono"
+                                                >
+                                                    <Share2 size={13} />
+                                                </button>
                                                 {/* ⋮ 3-DOT MENU */}
                                                 <div className="relative">
                                                     <button
@@ -1179,7 +1558,8 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                                                                 </div>
                                                                 {[
                                                                     { icon: '⬇️', label: 'Descargar PDF', action: () => handleDownloadQuotePDF(q) },
-                                                                    { icon: '📤', label: 'Compartir (apps externas)', action: () => handleOSShareQuote(q) },
+                                                                    { icon: '📗', label: 'Descargar Excel (.xlsx)', action: () => handleDownloadQuoteExcel(q) },
+                                                                    { icon: '📲', label: 'Compartir (WhatsApp / Apps)', action: () => handleOSShareQuote(q) },
                                                                     { icon: '👤', label: 'Compartir a Perfil…', action: () => { setShareModalOpen(q); setQuoteMenuOpen(null) } },
                                                                     { icon: '✏️', label: 'Editar (nombre + productos)', action: () => handleLoadQuoteMode(q, 'full') },
                                                                     { icon: '🏷️', label: 'Editar (solo nombre del cliente)', action: () => handleLoadQuoteMode(q, 'name_only') },
@@ -1260,6 +1640,231 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                     </>
                 )}
             </AnimatePresence>
+
+            {/* Prompt de Compartición Rápida después de Generar PDF */}
+            <AnimatePresence>
+                {postPdfSharePrompt && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 50, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 50, scale: 0.95 }}
+                        className="fixed bottom-6 right-6 z-[95] max-w-sm w-full bg-slate-900/95 border-2 border-violet-500/50 backdrop-blur-xl p-5 rounded-3xl shadow-[0_0_35px_rgba(139,92,246,0.35)] flex flex-col gap-3"
+                    >
+                        <div className="flex items-start justify-between gap-3">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
+                                    <CheckCircle2 size={22} />
+                                </div>
+                                <div>
+                                    <h4 className="text-sm font-black text-white">¡PDF Generado con Éxito!</h4>
+                                    <p className="text-[11px] font-mono text-slate-300">
+                                        Cotización <span className="text-cyan-400 font-bold">{postPdfSharePrompt.quoteNumber}</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <button 
+                                onClick={() => setPostPdfSharePrompt(null)}
+                                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                            >
+                                <X size={16} />
+                            </button>
+                        </div>
+                        <p className="text-xs text-slate-300 leading-relaxed">
+                            ¿Deseas compartirla directamente a WhatsApp, Messenger o aplicaciones de tu teléfono?
+                        </p>
+                        <div className="flex items-center gap-2 pt-1">
+                            <button
+                                onClick={() => {
+                                    const target = postPdfSharePrompt;
+                                    setPostPdfSharePrompt(null);
+                                    handleShareQuoteNative({ quoteNumber: target.quoteNumber, clientName: target.clientName });
+                                }}
+                                className="flex-1 py-2.5 px-4 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-black text-xs rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all"
+                            >
+                                <Share2 size={15} /> 📲 Compartir Ahora
+                            </button>
+                            <button
+                                onClick={() => setPostPdfSharePrompt(null)}
+                                className="py-2.5 px-4 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs rounded-xl transition-all"
+                            >
+                                Listo
+                            </button>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Modal de Compartición Multipropósito (WhatsApp, Messenger, Facebook, Telegram) */}
+            <AnimatePresence>
+                {externalShareModalData && (
+                    <>
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="fixed inset-0 bg-black/80 backdrop-blur-md z-[100]"
+                            onClick={() => setExternalShareModalData(null)}
+                        />
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                            className="fixed inset-0 z-[101] flex items-center justify-center p-4 pointer-events-none"
+                        >
+                            <div className="bg-slate-900 border border-slate-700 rounded-3xl p-6 shadow-2xl max-w-md w-full pointer-events-auto flex flex-col gap-5 text-white max-h-[90vh] overflow-y-auto">
+                                <div className="flex justify-between items-start">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-violet-600 to-indigo-600 flex items-center justify-center text-white shadow-lg">
+                                            <Share2 size={22} />
+                                        </div>
+                                        <div>
+                                            <h3 className="text-base font-black text-white">Compartir Cotización Oficial</h3>
+                                            <p className="text-xs text-cyan-400 font-mono font-bold">
+                                                {externalShareModalData.quoteNumber} • {externalShareModalData.clientName}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={() => setExternalShareModalData(null)}
+                                        className="p-1.5 rounded-xl hover:bg-slate-800 text-slate-400 hover:text-white transition-colors"
+                                    >
+                                        <X size={18} />
+                                    </button>
+                                </div>
+
+                                {/* Preview de Texto Oficial Requerido */}
+                                <div className="bg-slate-950 border border-slate-800 rounded-2xl p-4 text-xs space-y-2">
+                                    <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+                                        <Sparkles size={12} className="text-cyan-400" /> Mensaje Oficial Configurado:
+                                    </span>
+                                    <p className="text-slate-300 whitespace-pre-line leading-relaxed italic font-sans bg-slate-900/60 p-3 rounded-xl border border-slate-800/80">
+                                        "{externalShareModalData.shareText}"
+                                    </p>
+                                    <button
+                                        onClick={() => {
+                                            navigator.clipboard.writeText(externalShareModalData.shareText);
+                                            setIsCopiedShare(true);
+                                            setTimeout(() => setIsCopiedShare(false), 2500);
+                                        }}
+                                        className="w-full py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs rounded-xl flex items-center justify-center gap-2 transition-colors border border-slate-700"
+                                    >
+                                        {isCopiedShare ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
+                                        {isCopiedShare ? "¡Mensaje y Link Copiados!" : "Copiar Mensaje y Enlace Oficial"}
+                                    </button>
+                                </div>
+
+                                {/* Botones de Aplicaciones Directas */}
+                                <div className="space-y-2">
+                                    <p className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">
+                                        Escoger Aplicación de Envío:
+                                    </p>
+                                    <div className="grid grid-cols-2 gap-2.5">
+                                        {/* WhatsApp */}
+                                        <a
+                                            href={`https://api.whatsapp.com/send?text=${encodeURIComponent(externalShareModalData.shareText)}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="p-3 bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/40 hover:border-emerald-500/60 text-emerald-300 font-black text-xs rounded-2xl flex items-center justify-center gap-2 transition-all shadow-sm"
+                                        >
+                                            <span className="text-base">💬</span> WhatsApp
+                                        </a>
+
+                                        {/* Facebook Messenger */}
+                                        <a
+                                            href={`https://www.facebook.com/dialog/send?link=${encodeURIComponent(externalShareModalData.onlineUrl)}&app_id=291494419107518&redirect_uri=${encodeURIComponent(externalShareModalData.onlineUrl)}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="p-3 bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/40 hover:border-blue-500/60 text-blue-300 font-black text-xs rounded-2xl flex items-center justify-center gap-2 transition-all shadow-sm"
+                                        >
+                                            <span className="text-base">⚡</span> Messenger
+                                        </a>
+
+                                        {/* Facebook */}
+                                        <a
+                                            href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(externalShareModalData.onlineUrl)}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="p-3 bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/40 hover:border-indigo-500/60 text-indigo-300 font-black text-xs rounded-2xl flex items-center justify-center gap-2 transition-all shadow-sm"
+                                        >
+                                            <span className="text-base">📘</span> Facebook
+                                        </a>
+
+                                        {/* Telegram */}
+                                        <a
+                                            href={`https://t.me/share/url?url=${encodeURIComponent(externalShareModalData.onlineUrl)}&text=${encodeURIComponent(externalShareModalData.shareText)}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="p-3 bg-sky-600/20 hover:bg-sky-600/30 border border-sky-500/40 hover:border-sky-500/60 text-sky-300 font-black text-xs rounded-2xl flex items-center justify-center gap-2 transition-all shadow-sm"
+                                        >
+                                            <span className="text-base">✈️</span> Telegram
+                                        </a>
+                                    </div>
+                                </div>
+
+                                {/* Acciones complementarias */}
+                                <div className="border-t border-slate-800 pt-3 flex items-center gap-2">
+                                    <a
+                                        href={externalShareModalData.onlineUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex-1 py-2.5 px-3 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-colors border border-slate-700"
+                                    >
+                                        <ExternalLink size={14} /> Ver en Línea
+                                    </a>
+                                    {externalShareModalData.pdfBlob && (
+                                        <button
+                                            onClick={() => {
+                                                const url = window.URL.createObjectURL(externalShareModalData.pdfBlob);
+                                                const a = document.createElement("a");
+                                                a.href = url;
+                                                a.download = externalShareModalData.fileName || `Cotizacion_${externalShareModalData.quoteNumber}.pdf`;
+                                                document.body.appendChild(a);
+                                                a.click();
+                                                window.URL.revokeObjectURL(url);
+                                                document.body.removeChild(a);
+                                            }}
+                                            className="flex-1 py-2.5 px-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-black text-xs rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-md"
+                                        >
+                                            <Download size={14} /> Descargar PDF
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                        </motion.div>
+                    </>
+                )}
+            </AnimatePresence>
+
+            {/* Elementos canvas ocultos para generación y extracción instantánea de QR */}
+            <div 
+                aria-hidden="true" 
+                style={{ position: 'fixed', left: '-9999px', top: '-9999px', opacity: 0, pointerEvents: 'none' }}
+            >
+                <QRCodeCanvas
+                    id="atomic-quote-qr-canvas"
+                    value={getOnlineQuoteUrl(quoteNumber)}
+                    size={256}
+                    level="M"
+                    marginSize={1}
+                />
+                <QRCodeCanvas
+                    id={`atomic-quote-qr-${quoteNumber}`}
+                    value={getOnlineQuoteUrl(quoteNumber)}
+                    size={256}
+                    level="M"
+                    marginSize={1}
+                />
+                {quoteHistory.map((q: any) => (
+                    <QRCodeCanvas
+                        key={q.quoteNumber || q.id}
+                        id={`atomic-quote-qr-${q.quoteNumber}`}
+                        value={getOnlineQuoteUrl(q.quoteNumber)}
+                        size={256}
+                        level="M"
+                        marginSize={1}
+                    />
+                ))}
+            </div>
         </div>
     )
 }

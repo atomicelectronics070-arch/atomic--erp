@@ -65,7 +65,7 @@ export async function POST(req: Request) {
 
         const body = await req.json()
         const { 
-            quoteNumber: rawQuoteNumber, globalQuoteNumber, clientName, clientEmail, clientPhone, city,
+            quoteNumber: rawQuoteNumber, globalQuoteNumber, clientName, clientEmail, clientPhone, clientCedula, city,
             subtotal, tax, taxAmount, discountPercent, discountAmount, total, items, 
             deliveryAddress, warrantyComments, advisorName, status, quoteSubject, specs 
         } = body
@@ -90,6 +90,7 @@ export async function POST(req: Request) {
         const effectivePhone = (clientPhone || "").trim()
         const effectiveEmail = (clientEmail && clientEmail !== "no@especifica.com") ? clientEmail.trim() : null
         const effectiveCity = (city || deliveryAddress || "Quito / A Domicilio").trim()
+        const effectiveCedula = (clientCedula || "").trim()
 
         // Buscar o registrar cliente en CRM
         let client = await prisma.client.findFirst({
@@ -97,6 +98,7 @@ export async function POST(req: Request) {
                 OR: [
                     { phone: effectivePhone ? effectivePhone : undefined },
                     { email: effectiveEmail ? effectiveEmail : undefined },
+                    { cedula: effectiveCedula ? effectiveCedula : undefined },
                     { name: effectiveClientName }
                 ].filter(Boolean) as any
             }
@@ -110,6 +112,7 @@ export async function POST(req: Request) {
                     lastName: effectiveClientName.split(" ").slice(1).join(" ") || "",
                     email: effectiveEmail,
                     phone: effectivePhone,
+                    cedula: effectiveCedula || undefined,
                     salespersonId: salesperson.id,
                     source: "COTIZADOR_UNIFICADO_PROP",
                     city: effectiveCity,
@@ -122,6 +125,7 @@ export async function POST(req: Request) {
                 where: { id: client.id },
                 data: {
                     status: "COTIZANDO",
+                    ...(effectiveCedula && !client.cedula ? { cedula: effectiveCedula } : {}),
                     requirement: `${client.requirement || ''}\n---\nRef: ${quoteSubject || quoteNumber}`,
                     updatedAt: new Date()
                 }

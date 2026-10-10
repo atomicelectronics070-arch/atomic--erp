@@ -124,4 +124,20 @@ imageMap.forEach((item) => {
     }
   }
 });
+
+// Copy Quotation Excel Master Template
+const templateSrc = path.join(downloadsDir, 'PROP-09-71_Anthony_Ávila_..xlsx');
+const templateDstDir = path.join(publicDir, 'templates');
+const templateDst = path.join(templateDstDir, 'quote_template_atomic.xlsx');
+if (!fs.existsSync(templateDstDir)) fs.mkdirSync(templateDstDir, { recursive: true });
+if (fs.existsSync(templateSrc)) {
+  try {
+    fs.copyFileSync(templateSrc, templateDst);
+    console.log(`✅ [ASSET-SYNC] Plantilla Excel Cotización copiada a ${templateDst}`);
+  } catch (e) {
+    console.error('Error al copiar plantilla Excel:', e);
+  }
+}
+
 console.log('✅ [ASSET-SYNC] Master Asset Sync completado.');
+
