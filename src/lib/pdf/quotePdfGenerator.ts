@@ -15,14 +15,17 @@ export interface UnifiedQuoteItem {
 }
 
 export interface UnifiedQuoteData {
-  quoteNumber: string; // e.g. PROP-2026-9787 or PROP-00-030
+  quoteNumber: string; // e.g. PROP-09-71 or PROP-00-030
   clientName: string;
+  clientCedula?: string;
+  clientRuc?: string;
   clientPhone?: string;
   clientEmail?: string;
   clientCity?: string;
   deliveryAddress?: string;
   quoteSubject?: string;
   advisorName?: string;
+  advisorPhone?: string;
   items: UnifiedQuoteItem[];
   specs?: string;
   warrantyComments?: string;
@@ -39,6 +42,62 @@ export interface UnifiedQuoteData {
   qrDataUri?: string;
 }
 
+let cachedLogoBase64: string | null = null;
+
+async function fetchQuoteLogo(): Promise<string | null> {
+  if (cachedLogoBase64) return cachedLogoBase64;
+  if (typeof window === "undefined") return null;
+
+  try {
+    const res = await fetch("/api/quotes/logo");
+    if (res.ok) {
+      const json = await res.json();
+      if (json.success && json.base64) {
+        cachedLogoBase64 = json.base64;
+        return json.base64;
+      }
+    }
+  } catch (err) {
+    console.warn("Could not retrieve logo from /api/quotes/logo:", err);
+  }
+
+  try {
+    const imgRes = await fetch("/templates/atomic_quote_logo.png");
+    if (imgRes.ok) {
+      const blob = await imgRes.blob();
+      const reader = new FileReader();
+      const b64 = await new Promise<string>((resolve) => {
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.readAsDataURL(blob);
+      });
+      if (b64) {
+        cachedLogoBase64 = b64;
+        return b64;
+      }
+    }
+  } catch (_) {}
+
+  return null;
+}
+
+function formatEcuadorDate(rawDate?: string): string {
+  const d = rawDate ? new Date(rawDate) : new Date();
+  const safeDate = isNaN(d.getTime()) ? new Date() : d;
+
+  const days = ["Dom", "Lun", "Mar", "Mié", "Juv", "Vie", "Sáb"];
+  const months = [
+    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+  ];
+
+  const dayName = days[safeDate.getDay()];
+  const dayNum = safeDate.getDate();
+  const monthName = months[safeDate.getMonth()];
+  const year = safeDate.getFullYear();
+
+  return `${dayName}, ${dayNum} de ${monthName} ${year} .`;
+}
+
 export async function generateAtomicUnifiedProposalPDF(data: UnifiedQuoteData) {
   const doc = new jsPDF({
     orientation: "portrait",
@@ -46,177 +105,259 @@ export async function generateAtomicUnifiedProposalPDF(data: UnifiedQuoteData) {
     format: "a4",
   });
 
-  const pageWidth = doc.internal.pageSize.getWidth();
-  const pageHeight = doc.internal.pageSize.getHeight();
-  const today = data.emissionDate || new Date().toLocaleDateString("es-EC");
+  const pageWidth = doc.internal.pageSize.getWidth(); // 210mm
+  const pageHeight = doc.internal.pageSize.getHeight(); // 297mm
+  const marginLeft = 14;
+  const marginRight = 14;
+  const contentWidth = pageWidth - marginLeft - marginRight; // 182mm
+
   const normalizedNumber = data.quoteNumber.startsWith("PROP")
     ? data.quoteNumber
     : `PROP-${data.quoteNumber.replace(/^[A-Z]+-/, "")}`;
 
-  let currentY = 0;
+  // Try to load the official company logo from the Excel master template
+  const logoBase64 = await fetchQuoteLogo();
 
   // ═══════════════════════════════════════════════════
-  // 1. BANNER SUPERIOR DE ENCABEZADO (NAVY & ELECTRIC BLUE)
+  // 1. CABECERA: LOGO (A1:D4) & CÓDIGO PROFORMA (E1)
   // ═══════════════════════════════════════════════════
-  doc.setFillColor(15, 23, 42); // #0F172A Slate 900
-  doc.rect(0, 0, pageWidth, 38, "F");
+  const topY = 12;
 
-  // Accent Line Blue
-  doc.setFillColor(37, 99, 235); // #2563EB Blue 600
-  doc.rect(0, 38, pageWidth, 2.5, "F");
+  if (logoBase64) {
+    try {
+      // Dimensions matching Excel rows A1:D4 (approx 56mm x 22mm)
+      doc.addImage(logoBase64, "PNG", marginLeft, topY, 56, 21);
+    } catch (e) {
+      console.warn("Failed drawing base64 logo in jsPDF, rendering fallback:", e);
+      renderVectorLogo(doc, marginLeft, topY);
+    }
+  } else {
+    renderVectorLogo(doc, marginLeft, topY);
+  }
 
-  // Header Title & Meta
-  doc.setTextColor(255, 255, 255);
+  // Badge Derecha: CÓDIGO DE COTIZACIÓN (Celda E1 de Excel)
+  const badgeWidth = 54;
+  const badgeHeight = 17;
+  const badgeX = pageWidth - marginRight - badgeWidth;
+  const badgeY = topY + 1;
+
+  // Red outline box matching the Excel template
+  doc.setDrawColor(220, 38, 38); // #DC2626 Red
+  doc.setLineWidth(0.6);
+  doc.setFillColor(255, 255, 255);
+  doc.roundedRect(badgeX, badgeY, badgeWidth, badgeHeight, 1.5, 1.5, "FD");
+
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(19);
-  doc.text("ATOMIC SOLUTIONS", 14, 17);
+  doc.setFontSize(7);
+  doc.setTextColor(220, 38, 38);
+  doc.text("PROFORMA / COTIZACIÓN", badgeX + badgeWidth / 2, badgeY + 5.5, { align: "center" });
 
-  doc.setFont("helvetica", "normal");
+  doc.setFontSize(12);
+  doc.setTextColor(220, 38, 38);
+  doc.text(normalizedNumber, badgeX + badgeWidth / 2, badgeY + 13, { align: "center" });
+
+  // ═══════════════════════════════════════════════════
+  // 2. FECHA DE EMISIÓN (Celda A5 de Excel)
+  // ═══════════════════════════════════════════════════
+  const city = (data.clientCity || "Quito").trim().replace(/,.*/, "");
+  const formattedDateStr = `${city} ${formatEcuadorDate(data.emissionDate)}`;
+
+  let currentY = 38;
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(9);
+  doc.setTextColor(30, 41, 59); // Dark Slate #1E293B
+  doc.text(formattedDateStr, marginLeft, currentY);
+
+  // ═══════════════════════════════════════════════════
+  // 3. DATOS DEL CLIENTE (Celdas A7:E8 de Excel)
+  // ═══════════════════════════════════════════════════
+  currentY += 4;
+  const clientBoxH = 19;
+
+  // Subtle clean border & background matching Excel form
+  doc.setFillColor(248, 250, 252); // #F8FAFC
+  doc.setDrawColor(203, 213, 225); // #CBD5E1
+  doc.setLineWidth(0.3);
+  doc.roundedRect(marginLeft, currentY, contentWidth, clientBoxH, 1.5, 1.5, "FD");
+
+  const clientNameUpper = (data.clientName || "CONSUMIDOR FINAL").trim().toUpperCase();
+  const cedulaRuc = (data.clientCedula || data.clientRuc || "").trim();
+  const phone = (data.clientPhone || "").trim();
+  const addressCity = (data.deliveryAddress || data.clientCity || "Quito, Ecuador").trim();
+
+  // Row 1 inside box (Celda A7: NOMBRE & E7: CI/RUC)
+  doc.setFont("helvetica", "bold");
   doc.setFontSize(8.5);
-  doc.setTextColor(203, 213, 225); // #CBD5E1
-  doc.text("TECNOLOGÍA, ELECTRÓNICA & EQUIPAMIENTO EMPRESARIAL", 14, 23.5);
-  doc.text("RUC / Registro Oficial · Envíos a Nivel Nacional · WhatsApp: 0969043453", 14, 29);
+  doc.setTextColor(15, 23, 42);
+  doc.text("NOMBRE:", marginLeft + 4, currentY + 6.5);
 
-  // Badge Derecha: PROPUESTA OFICIAL
-  doc.setFillColor(37, 99, 235);
-  doc.roundedRect(pageWidth - 68, 9.5, 54, 19, 3, 3, "F");
-  doc.setTextColor(255, 255, 255);
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(9);
-  doc.text("PROPUESTA OFICIAL", pageWidth - 41, 16.5, { align: "center" });
-  doc.setFontSize(10.5);
-  doc.text(normalizedNumber, pageWidth - 41, 24, { align: "center" });
-
-  // ═══════════════════════════════════════════════════
-  // 2. TARJETAS DE CLIENTE & EMISIÓN (DUAL CARDS)
-  // ═══════════════════════════════════════════════════
-  currentY = 48;
-  const cardWidth = (pageWidth - 34) / 2;
-
-  // Left Card: DATOS DEL CLIENTE
-  doc.setFillColor(248, 250, 252);
-  doc.setDrawColor(226, 232, 240);
-  doc.roundedRect(14, currentY, cardWidth, 34, 2, 2, "FD");
-
-  doc.setTextColor(37, 99, 235);
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(9);
-  doc.text("DATOS DEL CLIENTE", 18, currentY + 7);
-
   doc.setTextColor(30, 41, 59);
+  doc.text(clientNameUpper.substring(0, 46), marginLeft + 23, currentY + 6.5);
+
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(9.5);
-  doc.text((data.clientName || "Cliente General").substring(0, 38), 18, currentY + 14);
+  doc.setTextColor(15, 23, 42);
+  doc.text("•CI / •RUC:", marginLeft + 120, currentY + 6.5);
 
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(8.5);
-  doc.setTextColor(100, 116, 139);
-  doc.text(`Tel / WhatsApp: ${data.clientPhone?.trim() || "No especificado"}`, 18, currentY + 20);
-  doc.text(
-    `Ubicación: ${(data.clientCity || data.deliveryAddress || "Quito / Entrega a Domicilio").substring(0, 36)}`,
-    18,
-    currentY + 26
-  );
-
-  // Right Card: INFORMACIÓN DE EMISIÓN
-  const rightBoxX = 14 + cardWidth + 6;
-  doc.setFillColor(248, 250, 252);
-  doc.setDrawColor(226, 232, 240);
-  doc.roundedRect(rightBoxX, currentY, cardWidth, 34, 2, 2, "FD");
-
-  doc.setTextColor(37, 99, 235);
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(9);
-  doc.text("INFORMACIÓN DE EMISIÓN", rightBoxX + 4, currentY + 7);
-
   doc.setTextColor(30, 41, 59);
+  doc.text(cedulaRuc || "Consumidor Final", marginLeft + 140, currentY + 6.5);
+
+  // Row 2 inside box (Celda A8: NÚMERO DE CONTACTO & CIUDAD)
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(15, 23, 42);
+  doc.text("NÚMERO DE CONTACTO:", marginLeft + 4, currentY + 14);
+
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(8.5);
-  doc.text(`Fecha de Emisión: ${today}`, rightBoxX + 4, currentY + 14);
-  doc.text(`Validez de Oferta: ${data.validityDays || 15} días calendario`, rightBoxX + 4, currentY + 20);
-  doc.text(
-    `Asesor: ${(data.advisorName || "COORDINACIÓN / VENTAS").substring(0, 26)}`,
-    rightBoxX + 4,
-    currentY + 26
-  );
+  doc.setTextColor(30, 41, 59);
+  doc.text(phone || "No especificado", marginLeft + 45, currentY + 14);
 
-  currentY += 41;
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(15, 23, 42);
+  doc.text("CIUDAD / DIR:", marginLeft + 120, currentY + 14);
+
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(30, 41, 59);
+  doc.text(addressCity.substring(0, 26), marginLeft + 144, currentY + 14);
+
+  currentY += clientBoxH + 4;
 
   // ═══════════════════════════════════════════════════
-  // 3. TABLA DE ÍTEMS / PRODUCTOS
+  // 4. ASUNTO DEL PROYECTO (Celda C12 de Excel)
   // ═══════════════════════════════════════════════════
-  // Table Header
-  doc.setFillColor(15, 23, 42);
-  doc.rect(14, currentY, pageWidth - 28, 8, "F");
+  const subjectText = (data.quoteSubject || data.specs || "SUMINISTRO E INSTALACIÓN DE EQUIPOS").trim().toUpperCase();
+  const subjectBoxH = 7.5;
 
-  doc.setTextColor(255, 255, 255);
+  doc.setFillColor(241, 245, 249); // #F1F5F9
+  doc.setDrawColor(203, 213, 225);
+  doc.setLineWidth(0.3);
+  doc.rect(marginLeft, currentY, contentWidth, subjectBoxH, "FD");
+
   doc.setFont("helvetica", "bold");
   doc.setFontSize(8);
-  doc.text("SKU", 18, currentY + 5.5);
-  doc.text("DESCRIPCIÓN DEL EQUIPAMIENTO / PRODUCTO", 42, currentY + 5.5);
-  doc.text("CANT.", pageWidth - 70, currentY + 5.5, { align: "center" });
-  doc.text("P. UNIT.", pageWidth - 46, currentY + 5.5, { align: "center" });
-  doc.text("TOTAL", pageWidth - 18, currentY + 5.5, { align: "right" });
+  doc.setTextColor(15, 23, 42);
+  doc.text("ASUNTO:", marginLeft + 4, currentY + 5.2);
 
-  currentY += 8;
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(30, 41, 59);
+  doc.text(subjectText.substring(0, 92), marginLeft + 21, currentY + 5.2);
 
-  // Table Body Rows
-  const itemsList = data.items && data.items.length > 0
+  currentY += subjectBoxH + 5;
+
+  // ═══════════════════════════════════════════════════
+  // 5. TABLA DE PRODUCTOS / ÍTEMS (Celdas A14:E30 de Excel)
+  // Columnas: Item | Cant. | Descripción | Sub-Total | Sub-Total 1
+  // Anchos:   12   |  14   |    100      |    28     |     28    = 182mm
+  // ═══════════════════════════════════════════════════
+  const colWItem = 12;
+  const colWQty = 14;
+  const colWDesc = 100;
+  const colWUnitPrice = 28;
+  const colWTotal = 28;
+
+  const colXItem = marginLeft;
+  const colXQty = colXItem + colWItem;
+  const colXDesc = colXQty + colWQty;
+  const colXUnitPrice = colXDesc + colWDesc;
+  const colXTotal = colXUnitPrice + colWUnitPrice;
+
+  const headerH = 7.5;
+
+  // Header Background & Borders
+  doc.setFillColor(226, 232, 240); // #E2E8F0 Excel Column Header Gray
+  doc.setDrawColor(148, 163, 184); // #94A3B8 Border
+  doc.setLineWidth(0.3);
+  doc.rect(marginLeft, currentY, contentWidth, headerH, "FD");
+
+  // Header vertical cell borders
+  doc.line(colXQty, currentY, colXQty, currentY + headerH);
+  doc.line(colXDesc, currentY, colXDesc, currentY + headerH);
+  doc.line(colXUnitPrice, currentY, colXUnitPrice, currentY + headerH);
+  doc.line(colXTotal, currentY, colXTotal, currentY + headerH);
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(8);
+  doc.setTextColor(15, 23, 42);
+  doc.text("Item", colXItem + colWItem / 2, currentY + 5.2, { align: "center" });
+  doc.text("Cant.", colXQty + colWQty / 2, currentY + 5.2, { align: "center" });
+  doc.text("Descripción", colXDesc + 4, currentY + 5.2);
+  doc.text("Sub-Total", colXUnitPrice + colWUnitPrice - 4, currentY + 5.2, { align: "right" });
+  doc.text("Sub-Total 1", colXTotal + colWTotal - 4, currentY + 5.2, { align: "right" });
+
+  currentY += headerH;
+
+  // Rows from quote data
+  const rawItems = data.items && data.items.length > 0
     ? data.items
     : [
         {
-          sku: "GEN-01",
-          description: "Producto General de Catálogo",
+          description: "Suministro e Implementación General",
           quantity: 1,
           unitPrice: data.subtotal || data.total || 0,
           total: data.subtotal || data.total || 0,
         },
       ];
 
-  itemsList.forEach((item, index) => {
-    const itemSku = item.sku || item.productId || `ITM-${index + 1}`;
-    const itemDesc = item.name || item.description || "Producto / Servicio";
-    const itemQty = Number(item.quantity) || 1;
-    const itemUnitPrice = Number(item.unitPrice) || 0;
-    const itemDiscount = Number(item.discountAmount) || 0;
-    const itemTotal = item.total !== undefined ? Number(item.total) : (itemQty * itemUnitPrice - itemDiscount);
+  rawItems.forEach((item, index) => {
+    const itemNum = index + 1;
+    const qty = Number(item.quantity) || 1;
+    const unitP = Number(item.unitPrice) || 0;
+    const itemDisc = Number(item.discountAmount) || 0;
+    const lineTotal = item.total !== undefined ? Number(item.total) : (qty * unitP - itemDisc);
 
+    // Format description & specifications lines
+    const mainTitle = (item.name || item.description || "Producto / Servicio").trim();
+    const splitLines = doc.splitTextToSize(mainTitle, colWDesc - 8);
+    const rowHeight = Math.max(8.5, 4.5 + splitLines.length * 4);
+
+    // Background fill (alternating clean white / soft slate)
     const isEven = index % 2 === 0;
-    const rowHeight = 14;
-
     doc.setFillColor(isEven ? 255 : 248, isEven ? 255 : 250, isEven ? 255 : 252);
-    doc.setDrawColor(226, 232, 240);
-    doc.rect(14, currentY, pageWidth - 28, rowHeight, "FD");
+    doc.setDrawColor(203, 213, 225);
+    doc.setLineWidth(0.25);
+    doc.rect(marginLeft, currentY, contentWidth, rowHeight, "FD");
 
-    // SKU
+    // Vertical borders between cells
+    doc.line(colXQty, currentY, colXQty, currentY + rowHeight);
+    doc.line(colXDesc, currentY, colXDesc, currentY + rowHeight);
+    doc.line(colXUnitPrice, currentY, colXUnitPrice, currentY + rowHeight);
+    doc.line(colXTotal, currentY, colXTotal, currentY + rowHeight);
+
+    // 1. Col Item (Center)
     doc.setFont("helvetica", "bold");
     doc.setFontSize(8);
-    doc.setTextColor(37, 99, 235);
-    doc.text(itemSku.substring(0, 12), 18, currentY + 6.5);
-
-    // Description
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(8.5);
     doc.setTextColor(15, 23, 42);
-    doc.text(itemDesc.substring(0, 52), 42, currentY + 6);
+    doc.text(`${itemNum}`, colXItem + colWItem / 2, currentY + 5.5, { align: "center" });
 
+    // 2. Col Cant (Center)
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(7.5);
-    doc.setTextColor(100, 116, 139);
-    doc.text("Garantía oficial 1 año · Soporte directo ATOMIC", 42, currentY + 10.5);
+    doc.text(`${qty}`, colXQty + colWQty / 2, currentY + 5.5, { align: "center" });
 
-    // Qty
+    // 3. Col Descripción (Left multiline)
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(8.5);
-    doc.setTextColor(30, 41, 59);
-    doc.text(`${itemQty}`, pageWidth - 70, currentY + 8.5, { align: "center" });
-
-    // Unit Price
-    doc.text(`$${itemUnitPrice.toFixed(2)}`, pageWidth - 46, currentY + 8.5, { align: "center" });
-
-    // Total
+    doc.setFontSize(7.8);
     doc.setTextColor(15, 23, 42);
-    doc.text(`$${itemTotal.toFixed(2)}`, pageWidth - 18, currentY + 8.5, { align: "right" });
+    doc.text(splitLines[0] || "", colXDesc + 4, currentY + 5.2);
+
+    if (splitLines.length > 1) {
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(7.2);
+      doc.setTextColor(51, 65, 85);
+      for (let l = 1; l < splitLines.length; l++) {
+        doc.text(splitLines[l], colXDesc + 4, currentY + 5.2 + (l * 3.8));
+      }
+    }
+
+    // 4. Col Sub-Total (Unit price, Right)
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.setTextColor(30, 41, 59);
+    doc.text(`$ ${unitP.toFixed(2)}`, colXUnitPrice + colWUnitPrice - 4, currentY + 5.5, { align: "right" });
+
+    // 5. Col Sub-Total 1 (Total, Right)
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(15, 23, 42);
+    doc.text(`$ ${lineTotal.toFixed(2)}`, colXTotal + colWTotal - 4, currentY + 5.5, { align: "right" });
 
     currentY += rowHeight;
   });
@@ -224,73 +365,107 @@ export async function generateAtomicUnifiedProposalPDF(data: UnifiedQuoteData) {
   currentY += 4;
 
   // ═══════════════════════════════════════════════════
-  // 4. ESPECIFICACIONES TÉCNICAS & ALCANCE
+  // 6. TOTALES (Celdas E32:E35 de Excel) & CONDICIONES (A39:A43)
   // ═══════════════════════════════════════════════════
-  const specsText = data.specs || data.warrantyComments || data.quoteSubject;
-  if (specsText && specsText.trim()) {
-    doc.setFillColor(248, 250, 252);
-    doc.setDrawColor(226, 232, 240);
-    doc.roundedRect(14, currentY, pageWidth - 28, 24, 2, 2, "FD");
+  const totalsBoxW = 68;
+  const totalsBoxX = pageWidth - marginRight - totalsBoxW;
+  const totalsY = currentY;
+  const rowTotH = 6.2;
 
-    doc.setTextColor(37, 99, 235);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(8.5);
-    doc.text("ESPECIFICACIONES TÉCNICAS & ALCANCE DEL SUMINISTRO:", 18, currentY + 5.5);
+  // Calculos exactos matching Excel formulas
+  const subtotalVal = Number(data.subtotal || data.total || 0);
+  const discountVal = Number(data.discountAmount || 0);
+  const taxableVal = Math.max(0, subtotalVal - discountVal);
+  const taxVal = Number(data.taxAmount || (taxableVal * 0.15));
+  const finalTotalVal = Number(data.total || (taxableVal + taxVal));
 
-    doc.setTextColor(51, 65, 85);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(7.5);
+  // Totals Grid Container
+  doc.setDrawColor(203, 213, 225);
+  doc.setLineWidth(0.3);
 
-    const splitSpecs = doc.splitTextToSize(specsText.trim(), pageWidth - 36);
-    doc.text(splitSpecs.slice(0, 4), 18, currentY + 11);
-
-    currentY += 28;
-  } else {
-    currentY += 4;
-  }
-
-  // ═══════════════════════════════════════════════════
-  // 5. TÉRMINOS, QR DE VALIDACIÓN & LIQUIDACIÓN FINANCIERA
-  // ═══════════════════════════════════════════════════
-  const termsWidth = 66;
-  const qrBoxX = 14 + termsWidth + 3; // 83
-  const qrBoxWidth = 32;
-  const summaryX = qrBoxX + qrBoxWidth + 3; // 118
-  const summaryWidth = pageWidth - 14 - summaryX; // 78
-  const blockHeight = 42;
-
-  // Left Box: TÉRMINOS Y CONDICIONES
-  doc.setFillColor(248, 250, 252);
-  doc.setDrawColor(226, 232, 240);
-  doc.roundedRect(14, currentY, termsWidth, blockHeight, 2, 2, "FD");
-
-  doc.setTextColor(37, 99, 235);
+  // Row 1: DESCUENTO (Celda E32)
+  doc.setFillColor(255, 255, 255);
+  doc.rect(totalsBoxX, totalsY, totalsBoxW, rowTotH, "FD");
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(8);
-  doc.text("TÉRMINOS Y CONDICIONES:", 18, currentY + 6);
-
+  doc.setFontSize(7.8);
   doc.setTextColor(71, 85, 105);
+  doc.text("DESCUENTO:", totalsBoxX + 4, totalsY + 4.5);
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(6.8);
-  doc.text("• Garantía de 1 año en defectos de fábrica.", 18, currentY + 12);
-  doc.text("• Precios expresados en Dólares (USD).", 18, currentY + 17.5);
-  doc.text("• Despachos seguros a nivel nacional.", 18, currentY + 23);
-  doc.text("• Soporte y asesoría técnica personalizada.", 18, currentY + 28.5);
-  doc.text("• Pago: Transferencia / TC / Efectivo.", 18, currentY + 34);
+  doc.setTextColor(discountVal > 0 ? 220 : 71, discountVal > 0 ? 38 : 85, discountVal > 0 ? 38 : 105);
+  doc.text(`$ ${discountVal.toFixed(2)}`, totalsBoxX + totalsBoxW - 4, totalsY + 4.5, { align: "right" });
 
-  // Center Box: QR DE VERIFICACIÓN OFICIAL
+  // Row 2: SUBTOTAL SIN IVA (Celda E33)
   doc.setFillColor(248, 250, 252);
-  doc.setDrawColor(226, 232, 240);
-  doc.roundedRect(qrBoxX, currentY, qrBoxWidth, blockHeight, 2, 2, "FD");
-
-  doc.setTextColor(37, 99, 235);
+  doc.rect(totalsBoxX, totalsY + rowTotH, totalsBoxW, rowTotH, "FD");
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(6.8);
-  doc.text("VERIFICACIÓN QR", qrBoxX + qrBoxWidth / 2, currentY + 5.5, { align: "center" });
+  doc.setTextColor(30, 41, 59);
+  doc.text("SUBTOTAL SIN IVA:", totalsBoxX + 4, totalsY + rowTotH + 4.5);
+  doc.setFont("helvetica", "normal");
+  doc.text(`$ ${subtotalVal.toFixed(2)}`, totalsBoxX + totalsBoxW - 4, totalsY + rowTotH + 4.5, { align: "right" });
+
+  // Row 3: IVA 15% (Celda E34)
+  doc.setFillColor(255, 255, 255);
+  doc.rect(totalsBoxX, totalsY + rowTotH * 2, totalsBoxW, rowTotH, "FD");
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(30, 41, 59);
+  doc.text(`IVA (${data.taxPercent || 15}%):`, totalsBoxX + 4, totalsY + rowTotH * 2 + 4.5);
+  doc.setFont("helvetica", "normal");
+  doc.text(`$ ${taxVal.toFixed(2)}`, totalsBoxX + totalsBoxW - 4, totalsY + rowTotH * 2 + 4.5, { align: "right" });
+
+  // Row 4: TOTAL INC IVA (Celda E35) - Highlighted row
+  doc.setFillColor(241, 245, 249);
+  doc.rect(totalsBoxX, totalsY + rowTotH * 3, totalsBoxW, rowTotH + 1.5, "FD");
+  doc.setDrawColor(15, 23, 42);
+  doc.setLineWidth(0.5);
+  doc.rect(totalsBoxX, totalsY + rowTotH * 3, totalsBoxW, rowTotH + 1.5, "D"); // Bold outer border
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(8.5);
+  doc.setTextColor(15, 23, 42);
+  doc.text("TOTAL INC IVA:", totalsBoxX + 4, totalsY + rowTotH * 3 + 5.2);
+  doc.setFontSize(10.5);
+  doc.setTextColor(220, 38, 38); // Highlighted Red total
+  doc.text(`$ ${finalTotalVal.toFixed(2)}`, totalsBoxX + totalsBoxW - 4, totalsY + rowTotH * 3 + 5.2, { align: "right" });
+
+  // ═══════════════════════════════════════════════════
+  // 7. CONDICIONES COMERCIALES (A39:A43) & QR DE VERIFICACIÓN
+  // ═══════════════════════════════════════════════════
+  const leftBlockW = totalsBoxX - marginLeft - 4; // 106mm
+  const termsW = leftBlockW - 30; // 76mm
+  const qrW = 28;
+  const qrX = marginLeft + termsW + 2;
+
+  // Commercial Terms (Left side)
+  doc.setFillColor(248, 250, 252);
+  doc.setDrawColor(203, 213, 225);
+  doc.setLineWidth(0.3);
+  doc.roundedRect(marginLeft, totalsY, termsW, 28, 1.5, 1.5, "FD");
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(7.5);
+  doc.setTextColor(15, 23, 42);
+  doc.text("CONDICIONES COMERCIALES:", marginLeft + 3.5, totalsY + 5);
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(6.5);
+  doc.setTextColor(71, 85, 105);
+  doc.text("• Precios expresados en Dólares de los Estados Unidos (USD).", marginLeft + 3.5, totalsY + 9.5);
+  doc.text("• Tiempo de entrega: Inmediata / Según stock disponible.", marginLeft + 3.5, totalsY + 14);
+  doc.text(`• Validez de la oferta: ${data.validityDays || 15} días calendario.`, marginLeft + 3.5, totalsY + 18.5);
+  doc.text("• Forma de pago: Transferencia bancaria, tarjeta o efectivo.", marginLeft + 3.5, totalsY + 23);
+
+  // Scannable QR Code Box (Center side)
+  doc.setFillColor(248, 250, 252);
+  doc.setDrawColor(203, 213, 225);
+  doc.roundedRect(qrX, totalsY, qrW, 28, 1.5, 1.5, "FD");
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(5.5);
+  doc.setTextColor(15, 23, 42);
+  doc.text("VERIFICACIÓN QR", qrX + qrW / 2, totalsY + 4.5, { align: "center" });
 
   const onlineQuoteUrl = data.qrCodeUrl || `https://atomiccotizador.shop/c/${normalizedNumber}`;
 
-  // Use provided QR Data URI or fallback to offscreen canvas
   let effectiveQrUri = data.qrDataUri;
   if (!effectiveQrUri && typeof document !== "undefined") {
     const canvas = (document.getElementById(`atomic-quote-qr-${normalizedNumber}`) ||
@@ -300,97 +475,84 @@ export async function generateAtomicUnifiedProposalPDF(data: UnifiedQuoteData) {
     if (canvas) {
       try {
         effectiveQrUri = canvas.toDataURL("image/png");
-      } catch (err) {
-        console.warn("Could not retrieve canvas QR data URI:", err);
-      }
+      } catch (_) {}
     }
   }
 
   if (effectiveQrUri) {
     try {
-      doc.addImage(effectiveQrUri, "PNG", qrBoxX + 5, currentY + 7.5, 22, 22);
-    } catch (e) {
-      console.warn("Could not embed QR image:", e);
-    }
+      doc.addImage(effectiveQrUri, "PNG", qrX + 4.5, totalsY + 5.5, 19, 19);
+    } catch (_) {}
   } else {
-    // Elegant fallback box
+    // Subtle fallback box
     doc.setFillColor(241, 245, 249);
-    doc.roundedRect(qrBoxX + 5, currentY + 7.5, 22, 22, 1.5, 1.5, "F");
+    doc.roundedRect(qrX + 4.5, totalsY + 5.5, 19, 19, 1, 1, "F");
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(5.5);
-    doc.setTextColor(37, 99, 235);
-    doc.text("ATOMIC", qrBoxX + qrBoxWidth / 2, currentY + 16, { align: "center" });
     doc.setFontSize(5);
-    doc.setTextColor(100, 116, 139);
-    doc.text("DOC VALIDADO", qrBoxX + qrBoxWidth / 2, currentY + 21, { align: "center" });
+    doc.setTextColor(37, 99, 235);
+    doc.text("ATOMIC QR", qrX + qrW / 2, totalsY + 15, { align: "center" });
   }
 
-  // Active clickable link over the QR Box in digital PDF
+  // Active clickable link over the QR
   try {
-    doc.link(qrBoxX, currentY, qrBoxWidth, blockHeight, { url: onlineQuoteUrl });
-  } catch (err) {
-    // link not supported or ignored
-  }
+    doc.link(qrX, totalsY, qrW, 28, { url: onlineQuoteUrl });
+  } catch (_) {}
 
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(5.2);
-  doc.setTextColor(100, 116, 139);
-  doc.text("Escanear para consultar", qrBoxX + qrBoxWidth / 2, currentY + 32, { align: "center" });
-  doc.text("validez y descuentos", qrBoxX + qrBoxWidth / 2, currentY + 35.5, { align: "center" });
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(4.8);
   doc.setTextColor(37, 99, 235);
+  doc.text("atomiccotizador.shop", qrX + qrW / 2, totalsY + 26.2, { align: "center" });
+
+  currentY = totalsY + 31;
+
+  // ═══════════════════════════════════════════════════
+  // 8. FIRMA DEL ASESOR COMERCIAL (Celda B47 de Excel)
+  // ═══════════════════════════════════════════════════
+  const advisorUpper = (data.advisorName || "ANTHONY ÁVILA").trim().toUpperCase();
+  const advisorPhone = (data.advisorPhone || "0999047979 / 0969043453").trim();
+
+  // Signature line centered
+  const sigLineY = currentY + 10;
+  const sigCenterX = pageWidth / 2;
+
+  doc.setDrawColor(100, 116, 139);
+  doc.setLineWidth(0.3);
+  doc.line(sigCenterX - 35, sigLineY, sigCenterX + 35, sigLineY);
+
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(5.2);
-  doc.text("atomiccotizador.shop", qrBoxX + qrBoxWidth / 2, currentY + 39, { align: "center" });
-
-  // Right Box: RESUMEN FINANCIERO
-  doc.setFillColor(248, 250, 252);
-  doc.setDrawColor(226, 232, 240);
-  doc.roundedRect(summaryX, currentY, summaryWidth, blockHeight, 2, 2, "FD");
-
-  let subY = currentY + 6.5;
-  doc.setFont("helvetica", "normal");
   doc.setFontSize(8.5);
-  doc.setTextColor(100, 116, 139);
-  doc.text("Subtotal:", summaryX + 6, subY);
-  doc.setTextColor(30, 41, 59);
-  doc.text(`$${Number(data.subtotal || data.total).toFixed(2)}`, summaryX + summaryWidth - 6, subY, { align: "right" });
+  doc.setTextColor(15, 23, 42);
+  doc.text(advisorUpper, sigCenterX, sigLineY + 4.5, { align: "center" });
 
-  if (data.taxAmount && data.taxAmount > 0) {
-    subY += 6;
-    doc.setTextColor(100, 116, 139);
-    doc.text(`IVA (${data.taxPercent || 15}%):`, summaryX + 6, subY);
-    doc.setTextColor(30, 41, 59);
-    doc.text(`$${Number(data.taxAmount).toFixed(2)}`, summaryX + summaryWidth - 6, subY, { align: "right" });
-  }
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(7.5);
+  doc.setTextColor(71, 85, 105);
+  doc.text("ASESOR TÉCNICO COMERCIAL", sigCenterX, sigLineY + 8.5, { align: "center" });
 
-  if (data.discountAmount && data.discountAmount > 0) {
-    subY += 6;
-    doc.setTextColor(220, 38, 38);
-    doc.text("Descuento:", summaryX + 6, subY);
-    doc.text(`-$${Number(data.discountAmount).toFixed(2)}`, summaryX + summaryWidth - 6, subY, { align: "right" });
-  }
-
-  if (data.shippingAmount && data.shippingAmount > 0) {
-    subY += 6;
-    doc.setTextColor(13, 148, 136);
-    doc.text("Envío / Instalación:", summaryX + 6, subY);
-    doc.text(`+$${Number(data.shippingAmount).toFixed(2)}`, summaryX + summaryWidth - 6, subY, { align: "right" });
-  }
-
-  // TOTAL ROW IN ACCENT DARK & EMERALD
-  doc.setFillColor(15, 23, 42);
-  doc.roundedRect(summaryX + 3, currentY + 29, summaryWidth - 6, 10.5, 1.5, 1.5, "F");
-
-  doc.setTextColor(255, 255, 255);
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(9.5);
-  doc.text("TOTAL USD:", summaryX + 7, currentY + 36);
+  doc.setTextColor(15, 23, 42);
+  doc.text("ATOMIC SOLUTIONS", sigCenterX, sigLineY + 12.5, { align: "center" });
 
-  doc.setFontSize(11);
-  doc.setTextColor(52, 211, 153); // Emerald glowing green
-  doc.text(`$${Number(data.total).toFixed(2)}`, summaryX + summaryWidth - 7, currentY + 36, { align: "right" });
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(6.8);
+  doc.setTextColor(100, 116, 139);
+  doc.text(`Telf: ${advisorPhone} · Quito - Ecuador`, sigCenterX, sigLineY + 16.5, { align: "center" });
 
-  const fileName = `Proforma_${normalizedNumber}_${(data.clientName || "Cliente").replace(/\s+/g, "_")}.pdf`;
+  // ═══════════════════════════════════════════════════
+  // 9. PIE DE PÁGINA INSTITUCIONAL
+  // ═══════════════════════════════════════════════════
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(6);
+  doc.setTextColor(148, 163, 184);
+  doc.text(
+    `Documento emitido electrónicamente · ATOMIC SOLUTIONS · Validez y autenticidad verificable mediante código QR`,
+    pageWidth / 2,
+    pageHeight - 6,
+    { align: "center" }
+  );
+
+  const safeClientName = (data.clientName || "Cliente").replace(/\s+/g, "_").replace(/[^a-zA-Z0-9_\-]/g, "");
+  const fileName = `${normalizedNumber}_${safeClientName}.pdf`;
 
   return {
     doc,
@@ -398,4 +560,27 @@ export async function generateAtomicUnifiedProposalPDF(data: UnifiedQuoteData) {
     blob: doc.output("blob"),
     dataUri: doc.output("datauristring"),
   };
+}
+
+function renderVectorLogo(doc: jsPDF, x: number, y: number) {
+  // Red badge accent
+  doc.setFillColor(220, 38, 38);
+  doc.rect(x, y + 2, 3.5, 14, "F");
+
+  // ATOMIC Text
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(18);
+  doc.setTextColor(15, 23, 42);
+  doc.text("ATOMIC", x + 6, y + 9);
+
+  // SOLUTIONS Text
+  doc.setFontSize(11);
+  doc.setTextColor(37, 99, 235);
+  doc.text("SOLUTIONS", x + 38, y + 9);
+
+  // Subtitle
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(6.5);
+  doc.setTextColor(100, 116, 139);
+  doc.text("TECNOLOGÍA, ELECTRÓNICA & EQUIPAMIENTO EMPRESARIAL", x + 6, y + 14);
 }

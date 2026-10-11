@@ -20,8 +20,9 @@ echo [3/4] Creando commit de produccion...
 git commit -m "feat(quotes): exportador excel con logo oficial, verificacion QR en PDF y compartir nativo con enlace permanente"
 
 echo.
-echo [4/4] Subiendo a Produccion (GitHub / Vercel)...
+echo [4/4] Subiendo a Produccion (GitHub / Vercel en main y master)...
 git push origin main
+git push origin main:master --force
 if %ERRORLEVEL% NEQ 0 (
     echo Error al subir cambios a GitHub.
     exit /b %ERRORLEVEL%

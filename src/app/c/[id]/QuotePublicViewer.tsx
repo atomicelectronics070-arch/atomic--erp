@@ -60,12 +60,14 @@ export default function QuotePublicViewer({ quote, items }: PublicQuoteViewerPro
       const pdfData = await generateAtomicUnifiedProposalPDF({
         quoteNumber: quote.quoteNumber,
         clientName: quote.client?.name || quote.clientName || "Cliente",
+        clientCedula: quote.client?.cedula || quote.clientCedula || "",
         clientPhone: quote.client?.phone || quote.clientPhone || "",
         clientEmail: quote.client?.email || quote.clientEmail || "",
         clientCity: quote.city || quote.client?.city || "Quito",
         deliveryAddress: quote.deliveryAddress || "",
         quoteSubject: quote.quoteSubject || quote.specs || "PROPUESTA TÉCNICA COMERCIAL",
         advisorName: quote.advisorName || quote.salesperson?.name || "ASESOR ATOMIC",
+        advisorPhone: quote.salesperson?.phone || "0999047979",
         items: items.map((i: any) => ({
           sku: i.sku || i.productId || "SKU-GEN",
           productId: i.productId,

@@ -13,10 +13,11 @@ Write-Host "`n[2/4] Agregando archivos a Git..." -ForegroundColor Yellow
 git add .
 
 Write-Host "`n[3/4] Creando commit de produccion..." -ForegroundColor Yellow
-git commit -m "feat(quotes): exportador excel con logo oficial, verificacion QR en PDF y compartir nativo con enlace permanente"
+git commit -m "feat(pdf): exportador PDF con diseno ejecutivo exacto del Excel oficial, logo A1:D4, columnas, totales y QR"
 
-Write-Host "`n[4/4] Subiendo a Produccion (GitHub / Vercel)..." -ForegroundColor Yellow
+Write-Host "`n[4/4] Subiendo a Produccion (GitHub / Vercel en main y master)..." -ForegroundColor Yellow
 git push origin main
+git push origin main:master --force
 if ($LASTEXITCODE -ne 0) {
     Write-Error "Error al subir cambios a GitHub."
     exit 1

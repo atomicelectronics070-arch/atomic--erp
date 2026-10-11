@@ -18,7 +18,7 @@ interface SocialTokenConfig {
 
 interface ConnectionPurpose {
     id: string
-    platform: "telegram" | "whatsapp" | "instagram" | "facebook" | "tiktok"
+    platform: "telegram" | "whatsapp" | "instagram" | "facebook" | "tiktok" | "youtube" | "binance"
     instanceName: string
     purpose: string // "Cripto" | "Trabajo" | custom
     isActive: boolean
@@ -51,7 +51,9 @@ export default function ConnectionsConfigModal() {
         { id: "i4", platform: "whatsapp", instanceName: "WhatsApp Alertas Binance", purpose: "Cripto", isActive: true },
         { id: "i5", platform: "instagram", instanceName: "Instagram @atomic.electronics.ec", purpose: "Trabajo", isActive: true },
         { id: "i6", platform: "facebook", instanceName: "Facebook Oficial ATOMIC", purpose: "Trabajo", isActive: true },
-        { id: "i7", platform: "tiktok", instanceName: "TikTok Demos Seguridad", purpose: "Trabajo", isActive: true }
+        { id: "i7", platform: "tiktok", instanceName: "TikTok Demos Seguridad", purpose: "Trabajo", isActive: true },
+        { id: "i8", platform: "youtube", instanceName: "YouTube Canal Oficial ATOMIC", purpose: "Trabajo", isActive: true },
+        { id: "i9", platform: "binance", instanceName: "Binance Spot API Gateway", purpose: "Cripto", isActive: true }
     ])
 
     // Tokens state
@@ -59,7 +61,9 @@ export default function ConnectionsConfigModal() {
         { platform: "WhatsApp Meta Cloud", name: "System User Token v21.0", token: "EAAG...K92L", status: "active", updatedAt: "08/10/2026" },
         { platform: "Telegram Bot API", name: "@AtomicGuiaBot Token", token: "7129...89Xa", status: "active", updatedAt: "08/10/2026" },
         { platform: "Instagram Graph API", name: "Meta Business Token", token: "IGQV...441P", status: "active", updatedAt: "07/10/2026" },
-        { platform: "TikTok Content API", name: "TikTok Open Platform Key", token: "tk_live_99...", status: "active", updatedAt: "06/10/2026" }
+        { platform: "TikTok Content API", name: "TikTok Open Platform Key", token: "tk_live_99...", status: "active", updatedAt: "06/10/2026" },
+        { platform: "YouTube Data API v3", name: "OAuth 2.0 Client Secret", token: "ya29.a0A...419", status: "active", updatedAt: "10/10/2026" },
+        { platform: "Binance Spot API", name: "Trading Spot Key (Sin Retiro)", token: "vmPU...987x", status: "active", updatedAt: "10/10/2026" }
     ])
 
     const handleCreatePurpose = (e: React.FormEvent) => {

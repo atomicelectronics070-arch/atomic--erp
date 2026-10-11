@@ -266,11 +266,13 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
             const pdfData = await generateAtomicUnifiedProposalPDF({
                 quoteNumber: q.quoteNumber,
                 clientName: q.clientName || '',
+                clientCedula: q.client?.cedula || q.clientCedula || '',
                 clientPhone: q.clientPhone || '',
                 clientCity: q.city || '',
                 clientEmail: q.clientEmail || '',
                 quoteSubject: q.quoteSubject || '',
                 advisorName: q.advisorName || session?.user?.name?.toUpperCase() || 'ATOMIC',
+                advisorPhone: q.salesperson?.phone || '0999047979',
                 items: parsedItems,
                 subtotal: rawSubtotal,
                 taxAmount: tax,
@@ -320,11 +322,13 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                 pdfData = await generateAtomicUnifiedProposalPDF({
                     quoteNumber: quoteDataOverride.quoteNumber,
                     clientName: quoteDataOverride.clientName || 'Cliente',
+                    clientCedula: quoteDataOverride.client?.cedula || quoteDataOverride.clientCedula || '',
                     clientPhone: quoteDataOverride.clientPhone || '',
                     clientCity: quoteDataOverride.city || 'Quito',
                     clientEmail: quoteDataOverride.clientEmail || '',
                     quoteSubject: quoteDataOverride.quoteSubject || quoteDataOverride.specs || 'PROPUESTA COMERCIAL',
                     advisorName: quoteDataOverride.advisorName || session?.user?.name?.toUpperCase() || 'ATOMIC',
+                    advisorPhone: quoteDataOverride.salesperson?.phone || '0999047979',
                     items: parsedItems,
                     subtotal: rawSubtotal,
                     taxAmount: tax,
@@ -340,12 +344,14 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                 pdfData = await generateAtomicUnifiedProposalPDF({
                     quoteNumber,
                     clientName,
+                    clientCedula,
                     clientPhone,
                     clientEmail: finalEmail,
                     clientCity,
                     deliveryAddress: deliveryAddress || clientCity,
                     quoteSubject: quoteSubject || "PROPUESTA TÉCNICA COMERCIAL",
                     advisorName,
+                    advisorPhone: session?.user?.phone || '0999047979',
                     items: items.map(i => {
                         const sub = i.quantity * i.unitPrice;
                         const desc = sub * ((i.discountPercent || 0) / 100);
@@ -648,12 +654,14 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
             const pdfData = await generateAtomicUnifiedProposalPDF({
                 quoteNumber,
                 clientName,
+                clientCedula,
                 clientPhone,
                 clientEmail: finalEmail,
                 clientCity,
                 deliveryAddress: deliveryAddress || clientCity,
                 quoteSubject,
                 advisorName,
+                advisorPhone: session?.user?.phone || '0999047979',
                 items: items.map(i => {
                     const sub = i.quantity * i.unitPrice;
                     const desc = sub * ((i.discountPercent || 0) / 100);
@@ -975,12 +983,12 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                     <div>
                         <h1 className="text-2xl font-black text-white tracking-tight flex items-center gap-3">
                             <span>Cotizador Empresarial Pro</span>
-                            <span className="px-3 py-1 text-[10px] font-mono font-bold bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 rounded-full">
-                                CYBERPUNK v4.0
+                            <span className="px-3 py-1 text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 rounded-full">
+                                FORMATO OFICIAL ATOMIC
                             </span>
                         </h1>
                         <p className="text-xs text-slate-400 font-medium flex items-center gap-2 mt-1">
-                            Doc N°: <span className="text-cyan-400 font-bold font-mono">{quoteNumber}</span> • Emisión instantánea en PDF A4, Excel (.xlsx) & Ticket
+                            Doc N°: <span className="text-cyan-400 font-bold font-mono">{quoteNumber}</span> • Emisión oficial en formato idéntico al Excel (PDF A4, Excel .xlsx & Ticket)
                         </p>
                     </div>
                 </div>
@@ -1002,8 +1010,9 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                     <button 
                         onClick={handleGeneratePDF}
                         className="px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-xs uppercase tracking-wider rounded-2xl transition-all flex items-center gap-2 shadow-[0_0_15px_rgba(6,182,212,0.3)]"
+                        title="Exportar cotización en PDF con el formato corporativo oficial idéntico al Excel"
                     >
-                        <FileOutput size={15} /> Exportar PDF A4
+                        <FileOutput size={15} /> Exportar PDF Oficial
                     </button>
                     <button 
                         onClick={() => handleGenerateExcel()}
