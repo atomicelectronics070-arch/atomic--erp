@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import BienvenidaClient from "./BienvenidaClient";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Bienvenido a ATOMIC Solutions 🇪🇨 | Tarjeta Digital & Catálogo Oficial",
   description:
