@@ -99,6 +99,24 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
         { id: "1", productId: "", description: "", quantity: 1, unitPrice: 0 }
     ])
 
+    // Load pre-selected quote items from Suicide Squad or catalog tools
+    useEffect(() => {
+        try {
+            const saved = localStorage.getItem('atomic_quote_items');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    const validItems = parsed.filter((it: any) => it.description || it.unitPrice > 0);
+                    if (validItems.length > 0) {
+                        setItems(validItems);
+                    }
+                }
+            }
+        } catch (e) {
+            console.error("Error loading atomic_quote_items", e);
+        }
+    }, []);
+
     const [productPool, setProductPool] = useState<Product[]>(initialProducts || [])
     const [searchResults, setSearchResults] = useState<Product[]>((initialProducts || []).slice(0, 25))
     const [isSearchingProducts, setIsSearchingProducts] = useState(false)

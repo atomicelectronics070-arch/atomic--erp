@@ -8,7 +8,7 @@ import {
     Sliders, ExternalLink, Download, FileText, ChevronRight, X,
     Eye, Shield, Lock, Zap, Smartphone, Cpu, Video, MessageSquare,
     DollarSign, Clock, Trophy, Target, ArrowUpDown, UserPlus, Trash2,
-    Share2, RefreshCw, FolderTree, Layers, ChevronDown
+    Share2, RefreshCw, FolderTree, Layers, ChevronDown, Plus, FileSpreadsheet
 } from "lucide-react"
 
 export interface SquadMember {
@@ -185,6 +185,95 @@ export default function SuicideSquadWarRoom() {
         setCopiedKey(key)
         setTimeout(() => setCopiedKey(null), 2500)
     }
+
+    // ── QUOTATION ITEMS STATE & HANDLER ──
+    const [quoteItems, setQuoteItems] = useState<{
+        id: string
+        productId: string
+        description: string
+        quantity: number
+        unitPrice: number
+        customImage?: string
+    }[]>([])
+
+    // Load quote items from localStorage on mount
+    useEffect(() => {
+        try {
+            const saved = localStorage.getItem('atomic_quote_items')
+            if (saved) {
+                const parsed = JSON.parse(saved)
+                if (Array.isArray(parsed)) {
+                    setQuoteItems(parsed.filter((it: any) => it.description || it.productId))
+                }
+            }
+        } catch (e) {}
+    }, [])
+
+    const handleAddToQuote = (p: ProductItem) => {
+        const pvp = p.pvp ?? p.price
+        let photoUrl = ""
+        try {
+            if (p.images) {
+                const parsed = JSON.parse(p.images)
+                if (Array.isArray(parsed)) photoUrl = parsed[0]
+                else if (typeof parsed === "string") photoUrl = parsed
+            }
+        } catch (e) {
+            if (p.images && p.images.startsWith("http")) photoUrl = p.images
+        }
+
+        setQuoteItems(prev => {
+            const cleanPrev = prev.filter(it => it.productId || it.description)
+            const existingIndex = cleanPrev.findIndex(item => item.productId === p.id)
+            let updated: typeof prev = []
+
+            if (existingIndex >= 0) {
+                updated = cleanPrev.map((item, idx) =>
+                    idx === existingIndex ? { ...item, quantity: item.quantity + 1 } : item
+                )
+            } else {
+                const newItem = {
+                    id: String(Date.now() + Math.random()),
+                    productId: p.id,
+                    description: p.name,
+                    quantity: 1,
+                    unitPrice: pvp,
+                    customImage: photoUrl || undefined
+                }
+                updated = [...cleanPrev, newItem]
+            }
+
+            try {
+                localStorage.setItem('atomic_quote_items', JSON.stringify(updated))
+                // Also synchronize to atomic_cart
+                const currentCartStr = localStorage.getItem('atomic_cart')
+                let currentCart = currentCartStr ? JSON.parse(currentCartStr) : []
+                if (Array.isArray(currentCart)) {
+                    const existingInCart = currentCart.find((it: any) => it.id === p.id)
+                    if (existingInCart) {
+                        existingInCart.quantity += 1
+                    } else {
+                        currentCart.push({
+                            id: p.id,
+                            name: p.name,
+                            price: pvp,
+                            quantity: 1,
+                            image: photoUrl || undefined
+                        })
+                    }
+                    localStorage.setItem('atomic_cart', JSON.stringify(currentCart))
+                }
+            } catch (e) {}
+
+            return updated
+        })
+
+        setCopiedKey(`quoted-${p.id}`)
+        setTimeout(() => setCopiedKey(null), 2000)
+    }
+
+    const quoteItemsCount = quoteItems.reduce((acc, it) => acc + (it.quantity || 1), 0)
+    const quoteTotalPvp = quoteItems.reduce((acc, it) => acc + ((it.unitPrice || 0) * (it.quantity || 1)), 0)
 
     // ── 1. LOAD SQUADS & MEMBERS ──
     const loadSquadsData = async () => {
@@ -1110,12 +1199,24 @@ export default function SuicideSquadWarRoom() {
                                     </div>
                                 </div>
 
-                                <button
-                                    onClick={() => setExplorerOpen(false)}
-                                    className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
-                                >
-                                    <X size={20} />
-                                </button>
+                                <div className="flex items-center gap-2">
+                                    {quoteItemsCount > 0 && (
+                                        <button
+                                            onClick={() => window.open('/dashboard/quotes', '_blank')}
+                                            className="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500 hover:text-black text-amber-300 border border-amber-500/40 font-mono font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer shadow-md"
+                                            title="Abrir cotizador oficial PROP con los productos seleccionados"
+                                        >
+                                            <FileSpreadsheet size={13} />
+                                            <span>Cotización ({quoteItemsCount})</span>
+                                        </button>
+                                    )}
+                                    <button
+                                        onClick={() => setExplorerOpen(false)}
+                                        className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                                    >
+                                        <X size={20} />
+                                    </button>
+                                </div>
                             </div>
 
                             {/* ── VISTA NIVEL 1: TODAS LAS CATEGORÍAS DEL ESCUADRÓN ── */}
@@ -1265,6 +1366,9 @@ export default function SuicideSquadWarRoom() {
                                                     const photoUrl = parsedImages[0] || "/images/placeholder-product.png"
                                                     const pvp = p.pvp ?? p.price
                                                     const isCopied = copiedKey === `shared-${p.id}`
+                                                    const quoteItem = quoteItems.find(it => it.productId === p.id)
+                                                    const isAddedToQuote = !!quoteItem || copiedKey === `quoted-${p.id}`
+                                                    const quoteQty = quoteItem?.quantity || (copiedKey === `quoted-${p.id}` ? 1 : 0)
 
                                                     return (
                                                         <div
@@ -1324,30 +1428,46 @@ export default function SuicideSquadWarRoom() {
                                                                 </div>
                                                             </div>
 
-                                                            {/* Action Buttons: 1) Compartir con Cliente, 2) Abrir Producto en Tienda */}
-                                                            <div className="pt-3 mt-3 border-t border-slate-800 flex gap-2">
+                                                            {/* Action Buttons: 1) Añadir a Cotización, 2) Compartir Pitch WhatsApp, 3) Abrir Producto en Tienda */}
+                                                            <div className="pt-3 mt-3 border-t border-slate-800 flex items-center gap-1.5">
+                                                                {/* Botón 1: Añadir a Cotización */}
+                                                                <button
+                                                                    onClick={() => handleAddToQuote(p)}
+                                                                    className={`flex-1 py-2 px-2 rounded-xl font-mono font-bold text-[11px] flex items-center justify-center gap-1 transition-all cursor-pointer ${
+                                                                        isAddedToQuote
+                                                                            ? "bg-amber-500 text-black shadow-[0_0_15px_rgba(245,158,11,0.5)] scale-[1.02]"
+                                                                            : "bg-amber-500/15 hover:bg-amber-500 hover:text-black text-amber-300 border border-amber-500/40 active:scale-95"
+                                                                    }`}
+                                                                    title="Añadir producto a la cotización oficial formal (PDF / Excel)"
+                                                                >
+                                                                    {isAddedToQuote ? <Check size={12} /> : <Plus size={12} />}
+                                                                    <span>{isAddedToQuote ? `Cotizando (${quoteQty})` : "+ Cotizar"}</span>
+                                                                </button>
+
+                                                                {/* Botón 2: Compartir Pitch WhatsApp */}
                                                                 <button
                                                                     onClick={() => handleShareProduct(p)}
-                                                                    className={`flex-1 py-2 px-2.5 rounded-xl font-mono font-bold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                                                                    className={`flex-1 py-2 px-2 rounded-xl font-mono font-bold text-[11px] flex items-center justify-center gap-1 transition-all cursor-pointer ${
                                                                         isCopied
                                                                             ? "bg-emerald-500 text-black shadow-[0_0_15px_rgba(16,185,129,0.5)]"
-                                                                            : "bg-slate-900 hover:bg-emerald-500 hover:text-black text-emerald-300 border border-emerald-500/40"
+                                                                            : "bg-slate-900 hover:bg-emerald-500 hover:text-black text-emerald-300 border border-emerald-500/40 active:scale-95"
                                                                     }`}
-                                                                    title="Copiar mensaje con precio y enlace para WhatsApp o compartir"
+                                                                    title="Copiar mensaje con PVP y enlace para WhatsApp o compartir"
                                                                 >
-                                                                    {isCopied ? <Check size={13} /> : <Share2 size={13} />}
+                                                                    {isCopied ? <Check size={12} /> : <Share2 size={12} />}
                                                                     <span>{isCopied ? "¡Copiado!" : "Compartir"}</span>
                                                                 </button>
 
+                                                                {/* Botón 3: Abrir Producto en Tienda */}
                                                                 <button
                                                                     onClick={() => {
                                                                         const targetUrl = p.publicUrl || `/web/product/${p.id}`
                                                                         window.open(targetUrl, "_blank")
                                                                     }}
-                                                                    className="py-2 px-2.5 rounded-xl bg-slate-900 hover:bg-cyan-500 hover:text-black text-slate-300 border border-slate-800 transition-all cursor-pointer flex items-center justify-center gap-1 text-xs font-mono"
+                                                                    className="py-2 px-2.5 rounded-xl bg-slate-900 hover:bg-cyan-500 hover:text-black text-slate-300 border border-slate-800 transition-all cursor-pointer flex items-center justify-center gap-1 text-[11px] font-mono active:scale-95"
                                                                     title="Abrir página oficial del producto en la tienda web"
                                                                 >
-                                                                    <ExternalLink size={13} />
+                                                                    <ExternalLink size={12} />
                                                                     <span className="hidden sm:inline">Abrir</span>
                                                                 </button>
                                                             </div>
@@ -1358,6 +1478,53 @@ export default function SuicideSquadWarRoom() {
                                         )}
                                     </div>
                                 </>
+                            )}
+
+                            {/* ── BARRA INFERIOR DE COTIZACIÓN ACTIVA ── */}
+                            {quoteItemsCount > 0 && (
+                                <div className="shrink-0 mt-3 p-3.5 bg-gradient-to-r from-amber-950/90 via-[#0a1029] to-emerald-950/90 border-t-2 border-amber-500/50 flex flex-wrap items-center justify-between gap-3 rounded-2xl shadow-2xl">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 font-bold shrink-0">
+                                            <FileSpreadsheet size={18} />
+                                        </div>
+                                        <div>
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-xs font-mono font-black text-white">
+                                                    COTIZACIÓN EN CURSO:
+                                                </span>
+                                                <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] font-mono font-bold">
+                                                    {quoteItemsCount} {quoteItemsCount === 1 ? 'producto' : 'productos'}
+                                                </span>
+                                            </div>
+                                            <div className="text-[11px] font-mono text-slate-300 mt-0.5">
+                                                Total PVP Acumulado: <span className="text-emerald-400 font-black">${quoteTotalPvp.toFixed(2)}</span> (Inc. IVA)
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center gap-2">
+                                        <button
+                                            onClick={() => {
+                                                localStorage.removeItem('atomic_quote_items')
+                                                setQuoteItems([])
+                                            }}
+                                            className="px-3 py-2 rounded-xl bg-slate-900 hover:bg-rose-500/20 hover:text-rose-300 text-slate-400 text-xs font-mono border border-slate-800 transition-colors cursor-pointer"
+                                            title="Vaciar productos de la cotización actual"
+                                        >
+                                            Vaciar
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                window.open('/dashboard/quotes', '_blank')
+                                            }}
+                                            className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-black text-xs font-mono flex items-center gap-1.5 cursor-pointer shadow-[0_0_20px_rgba(245,158,11,0.4)] hover:scale-105 transition-all"
+                                        >
+                                            <FileText size={14} />
+                                            <span>Generar Cotización PROP (PDF / Excel)</span>
+                                            <ArrowRight size={14} />
+                                        </button>
+                                    </div>
+                                </div>
                             )}
                         </div>
                     </div>
