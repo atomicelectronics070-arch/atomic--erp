@@ -16,7 +16,7 @@ export const SQUADS_CONFIG = [
         priorityLevel: 1,
         viralScore: "9.8 / 10",
         ticketAvg: "$50 - $650",
-        colorTheme: "rose",
+        colorTheme: "rose" as const,
         categories: [
             "Cámaras de Seguridad",
             "Camaras de Seguridad",
@@ -46,7 +46,7 @@ export const SQUADS_CONFIG = [
         priorityLevel: 2,
         viralScore: "9.4 / 10",
         ticketAvg: "$80 - $800",
-        colorTheme: "emerald",
+        colorTheme: "emerald" as const,
         categories: [
             "Control de Acceso",
             "Cerraduras Smart y Accesos",
@@ -83,7 +83,7 @@ export const SQUADS_CONFIG = [
         priorityLevel: 3,
         viralScore: "9.1 / 10",
         ticketAvg: "$120 - $2,500",
-        colorTheme: "amber",
+        colorTheme: "amber" as const,
         categories: [
             "UPS y Energía",
             "UPS y Reguladores",
@@ -114,7 +114,7 @@ export const SQUADS_CONFIG = [
         priorityLevel: 4,
         viralScore: "9.6 / 10",
         ticketAvg: "$20 - $200",
-        colorTheme: "cyan",
+        colorTheme: "cyan" as const,
         categories: [
             "Domótica",
             "Iluminacion",
@@ -147,7 +147,7 @@ export const SQUADS_CONFIG = [
         priorityLevel: 5,
         viralScore: "8.9 / 10",
         ticketAvg: "$150 - $1,300",
-        colorTheme: "violet",
+        colorTheme: "violet" as const,
         categories: [
             "Celulares, Tablets y Computacion",
             "Celulares y Tablets",
@@ -183,47 +183,298 @@ export const SQUADS_CONFIG = [
     }
 ]
 
+// Taxonomy rules for Subcategory drilldown
+export interface SubcategoryRule {
+    id: string
+    name: string
+    keywords: string[]
+    description: string
+}
+
+function normalizeStr(text: string) {
+    return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim()
+}
+
+export const CATEGORY_TAXONOMY: Record<string, SubcategoryRule[]> = {
+    // Escuadra 1: Guardián Urbano
+    "camaras de seguridad": [
+        { id: "tubo-bala", name: "Cámaras Tubo / Bala Exterior", keywords: ["bala", "tubo", "exterior"], description: "Para fachadas, postes y exteriores resistentes a lluvia IP67" },
+        { id: "domo", name: "Cámaras Domo Interior / Techo", keywords: ["domo", "interior"], description: "Diseño discreto para cielo raso en oficinas y salas" },
+        { id: "wifi-ptz", name: "Cámaras Wi-Fi & Robóticas PTZ 360°", keywords: ["wifi", "wi-fi", "ptz", "bombilla", "robotica", "robótica", "inalambrica", "inalámbrica"], description: "Conexión a celular sin cables, seguimiento inteligente y rotación" },
+        { id: "nvr-dvr", name: "Grabadores NVR, DVR & Almacenamiento", keywords: ["nvr", "dvr", "xvr", "grabador", "hdd"], description: "Sistemas de grabación continua 24/7 y servidores de video" },
+        { id: "kits-accesorios", name: "Kits CCTV & Accesorios de Conexión", keywords: ["balun", "conector", "cable", "rack", "gabinete", "soporte", "kit", "probador"], description: "Baluns pasivos, conectores de corriente, cables siameses y racks" },
+        { id: "especiales", name: "Cámaras Especiales & Ojo de Pez", keywords: ["ojo de pez", "fisheye", "termica", "térmica", "antivand", "antiband"], description: "Monitoreo panorámico 360° y lentes antivandálicos reforzados" }
+    ],
+    "alarmas": [
+        { id: "sensores", name: "Sensores de Movimiento & Magnéticos", keywords: ["sensor", "pir", "magnetico", "magnético", "detector"], description: "Detección de apertura de puertas y presencia de intrusos" },
+        { id: "sirenas", name: "Sirenas de Alta Potencia & Estrobos", keywords: ["sirena", "bocina", "estrobo", "luz"], description: "Disuasión auditiva y luminosa de alto impacto sonoro" },
+        { id: "centrales", name: "Centrales de Alarma & Paneles", keywords: ["panel", "central", "kit alarma", "dsc"], description: "Cerebros de control con comunicación GSM y celular" },
+        { id: "panico", name: "Botones de Pánico & Controles", keywords: ["panico", "pánico", "pulsador", "control"], description: "Activación inmediata ante emergencias y asaltos" }
+    ],
+    // Escuadra 2: Llave Cero
+    "control de acceso": [
+        { id: "biometricos", name: "Biométricos Faciales & Huella Digital", keywords: ["biometr", "huella", "facial", "face", "zkteco"], description: "Registro biométrico sin contacto de alta velocidad" },
+        { id: "chapas", name: "Cerraduras Electromagnéticas & Chapas", keywords: ["cerradura", "chapa", "electroim", "destrab"], description: "Fuerza de sujeción para puertas de madera, vidrio o metal" },
+        { id: "rfid", name: "Tarjetas RFID & Tags de Proximidad", keywords: ["tarjeta", "rfid", "tag", "llavero", "proxim"], description: "Credenciales seguras para residentes y empleados" },
+        { id: "botones", name: "Pulsadores & Botones de Salida Touch", keywords: ["boton", "botón", "pulsador", "salida", "exit", "touch"], description: "Apertura sin contacto / liberación rápida" },
+        { id: "fuentes-acceso", name: "Fuentes & Respaldo para Accesos", keywords: ["fuente", "respaldo", "bater", "cargador"], description: "Suministro eléctrico con batería para no quedar bloqueado" }
+    ],
+    "cerraduras smart y accesos": [
+        { id: "cerraduras-wifi", name: "Cerraduras Inteligentes Wi-Fi / Bluetooth", keywords: ["wifi", "wi-fi", "smart", "bluetooth", "tuya"], description: "Apertura remota desde celular y contraseñas temporales" },
+        { id: "manijas-digitales", name: "Manijas Digitales con Huella y Clave", keywords: ["manija", "huella", "teclado", "digital"], description: "Sustituto directo de cerraduras convencionales" },
+        { id: "vidrio-aluminio", name: "Cerraduras para Puertas de Vidrio y Aluminio", keywords: ["vidrio", "cristal", "aluminio"], description: "Diseñadas para locales comerciales y puertas corredizas" }
+    ],
+    "cerraduras inteligentes": [
+        { id: "cerraduras-wifi", name: "Cerraduras Inteligentes Wi-Fi / Bluetooth", keywords: ["wifi", "wi-fi", "smart", "bluetooth", "tuya"], description: "Apertura remota desde celular y contraseñas temporales" },
+        { id: "manijas-digitales", name: "Manijas Digitales con Huella y Clave", keywords: ["manija", "huella", "teclado", "digital"], description: "Sustituto directo de cerraduras convencionales" }
+    ],
+    "videoporteros e intercomunicadores": [
+        { id: "kits-video", name: "Kits de Videoportero IP & Pantallas Touch", keywords: ["kit", "pantalla", "monitor", "touch", "ip", "7"], description: "Pantalla a color en sala o cocina con llamada al celular" },
+        { id: "frentes-calle", name: "Frentes de Calle & Video Botoneras", keywords: ["frente", "placa", "botonera", "timbre"], description: "Unidad exterior resistente a lluvia con cámara HD" },
+        { id: "citofonos", name: "Citófonos & Intercomunicadores de Audio", keywords: ["citofon", "citófon", "audio", "intercom"], description: "Comunicación clásica y económica para condominios" }
+    ],
+    "barreras vehiculares": [
+        { id: "barreras-auto", name: "Barreras Vehiculares Automáticas", keywords: ["barrera", "pluma", "motor"], description: "Apertura rápida para control de estacionamientos" },
+        { id: "accesorios-vehicular", name: "Plumas, Sensores de Masa & Controles", keywords: ["brazo", "lazo", "sensor", "control"], description: "Mástiles articulados y sensores inductivos anti-aplastamiento" }
+    ],
+    "torniquetes y control peatonal": [
+        { id: "torniquetes-tripode", name: "Torniquetes Trípode & Pasarelas Flap", keywords: ["torniquete", "tripode", "trípode", "pasarela", "peatonal"], description: "Control estricto de entrada uno a uno para empresas y gimnasios" }
+    ],
+    // Escuadra 3: Anti-Apagones
+    "ups y energia": [
+        { id: "ups-hogar", name: "UPS para Routers, Cámaras & Home Office", keywords: ["router", "mini ups", "500va", "650va", "800va", "nt-512"], description: "Mantiene el Wi-Fi y laptops encendidos durante apagones" },
+        { id: "ups-industrial", name: "UPS Online Corporativos & Servidores", keywords: ["1000va", "1500va", "2000va", "3000va", "online", "forza", "rack"], description: "Cero milisegundos de corte para servidores y equipos críticos" },
+        { id: "reguladores", name: "Reguladores de Voltaje Automáticos (AVR)", keywords: ["regulador", "avr", "estabilizador"], description: "Protección contra picos de voltaje y variaciones bruscas" },
+        { id: "baterias-respaldo", name: "Baterías de Ciclo Profundo & Reemplazo", keywords: ["bateria", "batería", "12v", "7ah", "9ah", "gel"], description: "Repuestos certificados para UPS y bancos de energía" }
+    ],
+    "ups y reguladores": [
+        { id: "ups-hogar", name: "UPS para Routers, Cámaras & Home Office", keywords: ["router", "mini ups", "500va", "650va", "800va", "nt-512"], description: "Mantiene el Wi-Fi y laptops encendidos durante apagones" },
+        { id: "reguladores", name: "Reguladores de Voltaje Automáticos (AVR)", keywords: ["regulador", "avr", "estabilizador"], description: "Protección contra picos de voltaje y variaciones bruscas" }
+    ],
+    "paneles solares": [
+        { id: "paneles-mono", name: "Paneles Solares Monocristalinos & Bifaciales", keywords: ["panel", "solar", "longi", "trina", "550w"], description: "Generación fotovoltaica de alta eficiencia garantizada" },
+        { id: "controladores-inversores", name: "Inversores & Controladores de Carga MPPT", keywords: ["inversor", "controlador", "mppt", "hibrido", "híbrido"], description: "Conversión de energía solar a corriente 110V/220V" }
+    ],
+    "movilidad electrica & cargadores ev": [
+        { id: "wallbox-ev", name: "Cargadores EV Portátiles & Wallbox", keywords: ["cargador", "ev", "wallbox", "7.4kw", "tipo 2", "j1772"], description: "Carga rápida para vehículos eléctricos en casa o negocio" }
+    ],
+    "fuentes de poder": [
+        { id: "fuentes-switching", name: "Fuentes Switching 12V / 24V Reguladas", keywords: ["fuente", "12v", "24v", "2a", "5a", "10a", "20a", "30a"], description: "Alimentación estable para cámaras, tiras LED y biométricos" },
+        { id: "fuentes-cctv", name: "Fuentes Centralizadas con Caja de Fusibles", keywords: ["centralizada", "caja", "fusible", "canal"], description: "Unifica la energía de 4, 8 o 16 cámaras en un solo gabinete" }
+    ],
+    // Escuadra 4: Casa Futurista
+    "domotica": [
+        { id: "interruptores-smart", name: "Interruptores Inteligentes Touch Wi-Fi", keywords: ["interruptor", "switch", "touch", "gang"], description: "Control de luces por voz con Alexa o desde la app" },
+        { id: "enchufes-reles", name: "Enchufes Smart & Relés Ocultos", keywords: ["enchufe", "rele", "relé", "smart plug", "sonoff", "mini"], description: "Automatiza cualquier electrodoméstico o cafetera" },
+        { id: "motores-smart", name: "Motores para Cortinas & Persianas", keywords: ["cortina", "persiana", "motor"], description: "Apertura y cierre automático programado por horario" }
+    ],
+    "iluminacion": [
+        { id: "focos-rgb", name: "Focos LED Inteligentes RGB+CCT", keywords: ["foco", "rgb", "bombillo", "e27", "dicroico"], description: "16 millones de colores y luz blanca cálida / fría regulable" },
+        { id: "tiras-led", name: "Tiras LED Neón & Perfiles de Iluminación", keywords: ["tira", "neon", "neón", "perfil", "rgbic"], description: "Iluminación indirecta moderna para salas y dormitorios" },
+        { id: "paneles-techo", name: "Paneles & Lámparas LED de Techo", keywords: ["panel", "lampara", "lámpara", "plafon", "plafón", "downlight"], description: "Iluminación principal de bajo consumo" }
+    ],
+    "audio y sonido": [
+        { id: "parlantes-smart", name: "Parlantes Inteligentes & Asistentes de Voz", keywords: ["alexa", "echo", "google", "smart speaker"], description: "Controla toda tu casa con comandos de voz" },
+        { id: "parlantes-bt", name: "Parlantes Bluetooth Portátiles & Acuáticos", keywords: ["jbl", "bluetooth", "portatil", "portátil", "go"], description: "Sonido potente para llevar a cualquier lugar" },
+        { id: "audio-ambiental", name: "Audio Ambiental & Parlantes de Cielo Raso", keywords: ["ambiental", "techo", "amplificador", "perifoneo"], description: "Música de fondo distribuida para casas u oficinas" }
+    ],
+    "sensores y modulos": [
+        { id: "sensores-hogar", name: "Sensores de Puertas, Ventanas & Presencia", keywords: ["puerta", "ventana", "sensor", "pir", "presencia"], description: "Automatiza luces al entrar o recibe alertas de intrusión" },
+        { id: "sensores-clima", name: "Sensores de Temperatura, Humedad & Humo", keywords: ["temperatura", "humedad", "humo", "gas", "agua"], description: "Monitoreo preventivo del confort y la seguridad del hogar" }
+    ],
+    // Escuadra 5: Setup Máximo
+    "celulares y tablets": [
+        { id: "smartphones", name: "Smartphones & Celulares", keywords: ["samsung", "xiaomi", "redmi", "honor", "realme", "infinix", "iphone"], description: "Teléfonos inteligentes de última generación con garantía" },
+        { id: "tablets", name: "Tablets para Trabajo & Estudio", keywords: ["tablet", "tab", "ipad", "lenovo"], description: "Pantallas portátiles ideales para lectura, trabajo y clases" },
+        { id: "accesorios-movil", name: "Cargadores Rápidos, Cables & Soportes", keywords: ["cargador", "cable", "soporte", "tipo c", "lightning"], description: "Carga turbo y conectividad para dispositivos móviles" }
+    ],
+    "computadores": [
+        { id: "laptops-gamer", name: "Laptops Gamer & Alto Rendimiento", keywords: ["gamer", "gaming", "rtx", "tuf", "victus", "legion", "i7", "ryzen 7"], description: "Potencia gráfica para renderizado 3D y videojuegos" },
+        { id: "laptops-oficina", name: "Laptops Ejecutivas & Oficina", keywords: ["laptop", "thinkpad", "ideapad", "dell", "hp", "vivobook", "i3", "i5", "ryzen 5"], description: "Portabilidad, rapidez y batería de larga duración" },
+        { id: "pcs-aio", name: "Computadoras All in One & Escritorio", keywords: ["pc", "all in one", "aio", "desktop", "computador"], description: "Soluciones completas de cómputo para puestos de trabajo" }
+    ],
+    "laptops": [
+        { id: "laptops-gamer", name: "Laptops Gamer & Alto Rendimiento", keywords: ["gamer", "gaming", "rtx", "tuf", "victus", "legion", "i7", "ryzen 7"], description: "Potencia gráfica para renderizado 3D y videojuegos" },
+        { id: "laptops-oficina", name: "Laptops Ejecutivas & Oficina", keywords: ["laptop", "thinkpad", "ideapad", "dell", "hp", "vivobook", "i3", "i5", "ryzen 5"], description: "Portabilidad, rapidez y batería de larga duración" }
+    ],
+    "monitores": [
+        { id: "monitores-gamer", name: "Monitores Gamer 144Hz - 240Hz", keywords: ["144hz", "165hz", "180hz", "192hz", "240hz", "curvo"], description: "Tasa de refresco ultra fluida para gaming competitivo" },
+        { id: "monitores-diseno", name: "Monitores IPS para Oficina & Diseño", keywords: ["ips", "24", "27", "fhd", "4k", "led"], description: "Precisión de color y confort visual para largas jornadas" }
+    ],
+    "gaming & consolas": [
+        { id: "consolas", name: "Consolas de Videojuegos & Portátiles", keywords: ["playstation", "ps5", "nintendo", "switch", "xbox", "portal"], description: "Consolas originales con garantía y stock inmediato" },
+        { id: "mandos", name: "Mandos, Controles & Joysticks", keywords: ["mando", "control", "dualsense", "joystick"], description: "Mandos inalámbricos oficiales y de alto rendimiento" }
+    ],
+    "gaming": [
+        { id: "consolas", name: "Consolas de Videojuegos", keywords: ["playstation", "ps5", "nintendo", "switch", "xbox"], description: "Consolas originales con garantía" },
+        { id: "mandos", name: "Mandos & Periféricos Gamer", keywords: ["mando", "control", "teclado", "mouse", "auricular"], description: "Control y accesorios gamer" }
+    ],
+    "tarjetas de video": [
+        { id: "rtx-series", name: "Tarjetas Gráficas NVIDIA GeForce RTX", keywords: ["rtx", "geforce", "nvidia", "3050", "3060", "4060", "5060"], description: "Ray tracing e IA para gráficos de máxima fidelidad" }
+    ],
+    "discos duros": [
+        { id: "ssd-nvme", name: "Discos Sólidos SSD NVMe & SATA", keywords: ["ssd", "nvme", "m.2", "solido", "sólido", "kingston", "western"], description: "Velocidad extrema de arranque y carga de programas" }
+    ],
+    "memorias ram": [
+        { id: "ram-ddr4-ddr5", name: "Memorias RAM DDR4 & DDR5", keywords: ["ddr4", "ddr5", "ram", "8gb", "16gb", "32gb"], description: "Fluidez para multitarea pesada y creación de contenido" }
+    ],
+    "procesadores": [
+        { id: "cpu-intel-amd", name: "Procesadores Intel Core & AMD Ryzen", keywords: ["intel", "core", "ryzen", "amd", "i5", "i7", "i9"], description: "El motor de procesamiento para armar o actualizar tu PC" }
+    ]
+}
+
 export async function GET(req: Request) {
     try {
         const { searchParams } = new URL(req.url)
         const action = searchParams.get("action")
 
-        // ── ACTION 1: GET ALL PRODUCTS FOR A SPECIFIC SQUAD (Scroll Drawer) ──
+        // ── ACTION: GET SUBCATEGORIES FOR A SPECIFIC CATEGORY ──
+        if (action === "subcategories") {
+            const categoryName = (searchParams.get("categoryName") || "").trim()
+            if (!categoryName) {
+                return NextResponse.json({ success: false, error: "categoryName es requerido" }, { status: 400 })
+            }
+
+            // Find category in DB
+            const dbCategory = await prisma.category.findFirst({
+                where: {
+                    name: { equals: categoryName, mode: "insensitive" }
+                },
+                include: {
+                    subcategories: {
+                        select: {
+                            id: true,
+                            name: true,
+                            _count: { select: { products: true } }
+                        }
+                    }
+                }
+            })
+
+            // Get total products in this category
+            const total = await prisma.product.count({
+                where: {
+                    isDeleted: false,
+                    isActive: true,
+                    category: { name: { equals: categoryName, mode: "insensitive" } }
+                }
+            })
+
+            const normalizedKey = normalizeStr(categoryName)
+            const rules = CATEGORY_TAXONOMY[normalizedKey] || []
+
+            // If category has DB subcategories with products, format those first
+            const formattedSubs: any[] = []
+
+            // Always add the "Todas las Referencias" master card
+            formattedSubs.push({
+                id: "all",
+                name: `⭐ Todos los Modelos (${total})`,
+                description: `Explorar catálogo completo de ${categoryName}`,
+                count: total,
+                keywords: [],
+                isAll: true
+            })
+
+            // If taxonomy rules exist, evaluate product count for each rule
+            for (const rule of rules) {
+                const count = await prisma.product.count({
+                    where: {
+                        isDeleted: false,
+                        isActive: true,
+                        category: { name: { equals: categoryName, mode: "insensitive" } },
+                        OR: rule.keywords.map(kw => ({
+                            name: { contains: kw, mode: "insensitive" }
+                        }))
+                    }
+                })
+
+                if (count > 0) {
+                    formattedSubs.push({
+                        id: rule.id,
+                        name: rule.name,
+                        description: rule.description,
+                        count,
+                        keywords: rule.keywords,
+                        isAll: false
+                    })
+                }
+            }
+
+            // Include any DB-defined subcategories if they exist
+            if (dbCategory?.subcategories && dbCategory.subcategories.length > 0) {
+                for (const sub of dbCategory.subcategories) {
+                    if (sub._count.products > 0 && !formattedSubs.some(s => s.name.toLowerCase() === sub.name.toLowerCase())) {
+                        formattedSubs.push({
+                            id: sub.id,
+                            name: sub.name,
+                            description: `Subcategoría oficial registrada en el sistema`,
+                            count: sub._count.products,
+                            keywords: [sub.name.toLowerCase()],
+                            isAll: false
+                        })
+                    }
+                }
+            }
+
+            return NextResponse.json({
+                success: true,
+                categoryName,
+                total,
+                subcategories: formattedSubs
+            })
+        }
+
+        // ── ACTION: GET PRODUCTS (Hierarchical Level 3 & Drawer) ──
         if (action === "products") {
-            const squadId = searchParams.get("squadId") || "squad-1"
+            const squadId = searchParams.get("squadId")
+            const categoryName = (searchParams.get("categoryName") || "").trim()
+            const subcategoryKeywords = (searchParams.get("keywords") || "").trim()
             const query = (searchParams.get("query") || "").trim()
             const sortBy = searchParams.get("sortBy") || "price_asc" // price_asc, price_desc, name_asc
             const page = parseInt(searchParams.get("page") || "1", 10)
             const limit = parseInt(searchParams.get("limit") || "40", 10)
 
-            const squadConfig = SQUADS_CONFIG.find(s => s.id === squadId) || SQUADS_CONFIG[0]
-
-            // Find categories in DB matching names
-            const categories = await prisma.category.findMany({
-                where: {
-                    name: { in: squadConfig.categories }
-                },
-                select: { id: true, name: true }
-            })
-
-            const categoryIds = categories.map(c => c.id)
-
-            // Build where filter
             const whereClause: any = {
                 isDeleted: false,
                 isActive: true
             }
 
-            if (categoryIds.length > 0) {
-                whereClause.categoryId = { in: categoryIds }
+            // Category filter
+            if (categoryName) {
+                whereClause.category = { name: { equals: categoryName, mode: "insensitive" } }
+            } else if (squadId) {
+                const squadConfig = SQUADS_CONFIG.find(s => s.id === squadId) || SQUADS_CONFIG[0]
+                whereClause.category = { name: { in: squadConfig.categories } }
             }
 
+            // Subcategory keywords filter
+            if (subcategoryKeywords && subcategoryKeywords !== "all") {
+                const kwArray = subcategoryKeywords.split(",").map(k => k.trim()).filter(Boolean)
+                if (kwArray.length > 0) {
+                    whereClause.AND = [
+                        ...(whereClause.AND || []),
+                        {
+                            OR: kwArray.map(kw => ({
+                                name: { contains: kw, mode: "insensitive" }
+                            }))
+                        }
+                    ]
+                }
+            }
+
+            // Free text search
             if (query) {
-                whereClause.OR = [
-                    { name: { contains: query, mode: "insensitive" } },
-                    { description: { contains: query, mode: "insensitive" } },
-                    { sku: { contains: query, mode: "insensitive" } },
-                    { keywords: { contains: query, mode: "insensitive" } }
+                whereClause.AND = [
+                    ...(whereClause.AND || []),
+                    {
+                        OR: [
+                            { name: { contains: query, mode: "insensitive" } },
+                            { description: { contains: query, mode: "insensitive" } },
+                            { sku: { contains: query, mode: "insensitive" } },
+                            { keywords: { contains: query, mode: "insensitive" } }
+                        ]
+                    }
                 ]
             }
 
@@ -233,7 +484,7 @@ export async function GET(req: Request) {
             else if (sortBy === "name_asc") orderBy = { name: "asc" }
 
             const total = await prisma.product.count({ where: whereClause })
-            const products = await prisma.product.findMany({
+            const rawProducts = await prisma.product.findMany({
                 where: whereClause,
                 select: {
                     id: true,
@@ -251,10 +502,23 @@ export async function GET(req: Request) {
                 take: limit
             })
 
+            // Format with explicit PVP Público and public product URL
+            const products = rawProducts.map(p => {
+                const pvp = p.price
+                const distributorPrice = p.compareAtPrice && p.compareAtPrice > 0 ? p.compareAtPrice : null
+                const publicUrl = `https://atomiccotizador.shop/web/product/${p.id}`
+
+                return {
+                    ...p,
+                    pvp,
+                    distributorPrice,
+                    publicUrl,
+                    whatsappPitch: `*${p.name}*\n🏷️ *PVP Público:* $${pvp.toFixed(2)} (Inc. IVA)\n📦 Stock: ${p.stock > 0 ? `${p.stock} unid.` : 'Bajo Pedido'}\n🔗 Comprar aquí: ${publicUrl}`
+                }
+            })
+
             return NextResponse.json({
                 success: true,
-                squadId,
-                squadName: squadConfig.name,
                 products,
                 total,
                 page,
@@ -262,7 +526,7 @@ export async function GET(req: Request) {
             })
         }
 
-        // ── ACTION 2: GET MAIN SQUADS METADATA & PERSISTED ASSIGNMENTS ──
+        // ── ACTION: DEFAULT (GET MAIN SQUADS METADATA & PERSISTED ASSIGNMENTS) ──
         // 1. Get all system users available for assignment
         const systemUsers = await prisma.user.findMany({
             where: { isActive: true },
@@ -277,19 +541,23 @@ export async function GET(req: Request) {
             orderBy: [{ role: "asc" }, { name: "asc" }]
         })
 
-        // 2. Query real product count per squad
-        const squadStats: Record<string, number> = {}
-        for (const squad of SQUADS_CONFIG) {
-            const count = await prisma.product.count({
-                where: {
-                    isDeleted: false,
-                    isActive: true,
-                    category: {
-                        name: { in: squad.categories }
-                    }
-                }
-            })
-            squadStats[squad.id] = count
+        // 2. Query real product count per category and per squad in parallel
+        const allCategories = await prisma.category.findMany({
+            select: { id: true, name: true }
+        })
+        const nameById = Object.fromEntries(allCategories.map(c => [c.id, c.name]))
+
+        const groupCounts = await prisma.product.groupBy({
+            by: ['categoryId'],
+            where: { isDeleted: false, isActive: true },
+            _count: { id: true }
+        })
+
+        const categoryCountsMap: Record<string, number> = {}
+        for (const gc of groupCounts) {
+            if (gc.categoryId && nameById[gc.categoryId]) {
+                categoryCountsMap[nameById[gc.categoryId]] = gc._count.id
+            }
         }
 
         // 3. Retrieve saved squad assignments from SystemSetting
@@ -303,12 +571,24 @@ export async function GET(req: Request) {
             }
         } catch (e) {}
 
-        // Combine squads configuration with live counts and assignments
+        // Combine squads configuration with live counts and categorized details
         const squadsWithData = SQUADS_CONFIG.map(s => {
             const members = savedAssignments[s.id] || []
+            let squadTotal = 0
+
+            const categoryDetails = s.categories.map(catName => {
+                const count = categoryCountsMap[catName] || 0
+                squadTotal += count
+                return {
+                    name: catName,
+                    count
+                }
+            })
+
             return {
                 ...s,
-                productCount: squadStats[s.id] || 0,
+                productCount: squadTotal,
+                categoryDetails,
                 members
             }
         })

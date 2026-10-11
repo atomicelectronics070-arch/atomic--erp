@@ -4,11 +4,11 @@ import React, { useState, useEffect, useMemo } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import {
     Flame, Users, ShieldAlert, Sparkles, CheckCircle2, AlertCircle,
-    Copy, Check, Search, Filter, ArrowRight, Play, Pause, RotateCcw,
+    Copy, Check, Search, Filter, ArrowRight, ArrowLeft, Play, Pause, RotateCcw,
     Sliders, ExternalLink, Download, FileText, ChevronRight, X,
     Eye, Shield, Lock, Zap, Smartphone, Cpu, Video, MessageSquare,
     DollarSign, Clock, Trophy, Target, ArrowUpDown, UserPlus, Trash2,
-    Share2, RefreshCw
+    Share2, RefreshCw, FolderTree, Layers, ChevronDown
 } from "lucide-react"
 
 export interface SquadMember {
@@ -32,6 +32,10 @@ export interface SquadData {
     ticketAvg: string
     colorTheme: "rose" | "emerald" | "amber" | "cyan" | "violet"
     categories: string[]
+    categoryDetails?: {
+        name: string
+        count: number
+    }[]
     productCount: number
     mission: string
     viralHook: string
@@ -46,11 +50,24 @@ export interface SquadData {
     members?: SquadMember[]
 }
 
+export interface SubcategoryItem {
+    id: string
+    name: string
+    description?: string
+    count: number
+    keywords?: string[]
+    isAll?: boolean
+}
+
 export interface ProductItem {
     id: string
     name: string
     price: number
     compareAtPrice?: number | null
+    pvp?: number
+    distributorPrice?: number | null
+    publicUrl?: string
+    whatsappPitch?: string
     sku?: string | null
     stock: number
     images?: string | null
@@ -128,13 +145,23 @@ export default function SuicideSquadWarRoom() {
     const [activeTab, setActiveTab] = useState<"squads" | "playbook" | "simulator" | "calculator">("squads")
 
     // Modals
-    const [selectedSquadForProducts, setSelectedSquadForProducts] = useState<SquadData | null>(null)
     const [selectedSquadForPlaybook, setSelectedSquadForPlaybook] = useState<SquadData | null>(null)
     const [assigningSquadId, setAssigningSquadId] = useState<string | null>(null)
 
     // User assignment modal state
     const [selectedUserToAdd, setSelectedUserToAdd] = useState("")
     const [customUserName, setCustomUserName] = useState("")
+
+    // ── 3-LEVEL HIERARCHICAL CATALOG EXPLORER STATE ──
+    const [explorerOpen, setExplorerOpen] = useState(false)
+    const [explorerLevel, setExplorerLevel] = useState<1 | 2 | 3>(1) // 1: Squad Categories, 2: Subcategories, 3: Products
+    const [activeSquad, setActiveSquad] = useState<SquadData | null>(null)
+    const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+    const [selectedSubcategory, setSelectedSubcategory] = useState<SubcategoryItem | null>(null)
+
+    // Subcategories list
+    const [subcategoriesList, setSubcategoriesList] = useState<SubcategoryItem[]>([])
+    const [subcategoriesLoading, setSubcategoriesLoading] = useState(false)
 
     // Products modal state
     const [productsList, setProductsList] = useState<ProductItem[]>([])
@@ -156,7 +183,7 @@ export default function SuicideSquadWarRoom() {
     const copyToClipboard = (text: string, key: string) => {
         navigator.clipboard.writeText(text)
         setCopiedKey(key)
-        setTimeout(() => setCopiedKey(null), 2000)
+        setTimeout(() => setCopiedKey(null), 2500)
     }
 
     // ── 1. LOAD SQUADS & MEMBERS ──
@@ -181,22 +208,18 @@ export default function SuicideSquadWarRoom() {
     }, [])
 
     // ── 2. SAVE ASSIGNMENTS PERSISTENTLY ──
-    const handleSaveAssignments = async (newSquads: SquadData[]) => {
+    const handleSaveAssignments = async (updatedSquads: SquadData[]) => {
         setIsSaving(true)
         try {
-            const assignmentsPayload: Record<string, SquadMember[]> = {}
-            newSquads.forEach(s => {
-                assignmentsPayload[s.id] = s.members || []
+            const assignmentsMap: Record<string, SquadMember[]> = {}
+            updatedSquads.forEach(s => {
+                assignmentsMap[s.id] = s.members || []
             })
 
-            // Save to localStorage immediately as fast fallback
-            localStorage.setItem("atomic_suicide_squad_assignments", JSON.stringify(assignmentsPayload))
-
-            // Save to database
             await fetch("/api/tools/suicide-squad", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ assignments: assignmentsPayload })
+                body: JSON.stringify({ assignments: assignmentsMap })
             })
         } catch (e) {
             console.error("Error saving assignments:", e)
@@ -269,39 +292,122 @@ export default function SuicideSquadWarRoom() {
         handleSaveAssignments(updated)
     }
 
-    // ── 3. FETCH PRODUCTS FOR FLOATING SCROLL DRAWER ──
-    const fetchSquadProducts = async (squadId: string, search: string = "", sort: string = "price_asc") => {
+    // ── 3. HIERARCHICAL EXPLORER LOGIC (NIVELES 1, 2 Y 3) ──
+    // Open from squad card directly into Level 2 (Subcategories of a selected category)
+    const handleOpenCategoryDirectly = (squad: SquadData, categoryName: string) => {
+        setActiveSquad(squad)
+        setSelectedCategory(categoryName)
+        setSelectedSubcategory(null)
+        setExplorerLevel(2)
+        setExplorerOpen(true)
+        fetchSubcategories(categoryName)
+    }
+
+    // Open at Level 1 (All categories belonging to this squad)
+    const handleOpenSquadCategories = (squad: SquadData) => {
+        setActiveSquad(squad)
+        setSelectedCategory(null)
+        setSelectedSubcategory(null)
+        setExplorerLevel(1)
+        setExplorerOpen(true)
+    }
+
+    // Level 2: Fetch subcategories for the chosen category
+    const fetchSubcategories = async (categoryName: string) => {
+        setSubcategoriesLoading(true)
+        try {
+            const res = await fetch(`/api/tools/suicide-squad?action=subcategories&categoryName=${encodeURIComponent(categoryName)}`)
+            const data = await res.json()
+            if (data.success) {
+                setSubcategoriesList(data.subcategories || [])
+            }
+        } catch (e) {
+            console.error("Error fetching subcategories:", e)
+        } finally {
+            setSubcategoriesLoading(false)
+        }
+    }
+
+    // Level 3: Select a subcategory and load its products
+    const handleSelectSubcategory = (sub: SubcategoryItem) => {
+        setSelectedSubcategory(sub)
+        setExplorerLevel(3)
+        setProductSearch("")
+        setProductSort("price_asc")
+        fetchProducts(selectedCategory || "", sub, "", "price_asc")
+    }
+
+    // Level 3: Fetch products with filters
+    const fetchProducts = async (categoryName: string, sub: SubcategoryItem | null, query: string = "", sort: string = "price_asc") => {
         setProductsLoading(true)
         try {
-            const url = `/api/tools/suicide-squad?action=products&squadId=${squadId}&query=${encodeURIComponent(search)}&sortBy=${sort}&limit=80`
+            const kwParam = sub && !sub.isAll && sub.keywords && sub.keywords.length > 0
+                ? `&keywords=${encodeURIComponent(sub.keywords.join(','))}`
+                : ""
+            const squadParam = activeSquad ? `&squadId=${activeSquad.id}` : ""
+            const catParam = categoryName ? `&categoryName=${encodeURIComponent(categoryName)}` : ""
+
+            const url = `/api/tools/suicide-squad?action=products${catParam}${squadParam}${kwParam}&query=${encodeURIComponent(query)}&sortBy=${sort}&limit=100`
             const res = await fetch(url)
             const data = await res.json()
             if (data.success) {
-                setProductsList(data.products)
-                setTotalProductsCount(data.total)
+                setProductsList(data.products || [])
+                setTotalProductsCount(data.total || 0)
             }
         } catch (e) {
-            console.error("Error fetching squad products:", e)
+            console.error("Error fetching products:", e)
         } finally {
             setProductsLoading(false)
         }
     }
 
-    const handleOpenProductsModal = (squad: SquadData) => {
-        setSelectedSquadForProducts(squad)
-        setProductSearch("")
-        setProductSort("price_asc")
-        fetchSquadProducts(squad.id, "", "price_asc")
-    }
-
-    // Debounced search for products
+    // Debounced search for products in Level 3
     useEffect(() => {
-        if (!selectedSquadForProducts) return
+        if (!explorerOpen || explorerLevel !== 3 || !selectedCategory) return
         const timer = setTimeout(() => {
-            fetchSquadProducts(selectedSquadForProducts.id, productSearch, productSort)
+            fetchProducts(selectedCategory, selectedSubcategory, productSearch, productSort)
         }, 350)
         return () => clearTimeout(timer)
     }, [productSearch, productSort])
+
+    // Breadcrumb navigation back
+    const handleNavigateBack = () => {
+        if (explorerLevel === 3) {
+            setExplorerLevel(2)
+            setSelectedSubcategory(null)
+            setProductSearch("")
+        } else if (explorerLevel === 2) {
+            setExplorerLevel(1)
+            setSelectedCategory(null)
+            setSelectedSubcategory(null)
+        } else {
+            setExplorerOpen(false)
+        }
+    }
+
+    // Share product via Web Share API or Clipboard with PVP
+    const handleShareProduct = async (p: ProductItem) => {
+        const pvp = p.pvp || p.price
+        const url = p.publicUrl || `https://atomiccotizador.shop/web/product/${p.id}`
+        const text = `🔥 *${p.name}*\n🏷️ *PVP PÚBLICO:* $${pvp.toFixed(2)} (Inc. IVA)\n📦 *Disponibilidad:* ${p.stock > 0 ? `${p.stock} unidades en stock` : 'Bajo pedido con entrega inmediata'}\n🛡️ Garantía local en Ecuador y factura autorizada.\n🔗 *Ver y comprar aquí:* ${url}\n\n📲 *Asesoría directa en ATOMIC:* https://wa.me/593963226319?text=Hola,%20deseo%20comprar%20este%20producto:%20${encodeURIComponent(p.name)}`
+
+        if (typeof navigator !== "undefined" && navigator.share) {
+            try {
+                await navigator.share({
+                    title: p.name,
+                    text: text,
+                    url: url
+                })
+                setCopiedKey(`shared-${p.id}`)
+                setTimeout(() => setCopiedKey(null), 2500)
+                return
+            } catch (e) {
+                // Ignore abort error, proceed to clipboard
+            }
+        }
+
+        copyToClipboard(text, `shared-${p.id}`)
+    }
 
     // ── 4. SIMULATOR TIMER (0-25s) ──
     useEffect(() => {
@@ -321,51 +427,49 @@ export default function SuicideSquadWarRoom() {
     }, [isSimRunning])
 
     return (
-        <div className="h-full flex flex-col space-y-5 max-w-7xl mx-auto text-slate-100">
-            {/* ── TOP HERO HEADER & METRICS BAR ── */}
-            <div className="p-5 rounded-3xl bg-gradient-to-r from-[#0d122b] via-[#090d1f] to-[#120b22] border-2 border-rose-500/30 shadow-[0_0_40px_rgba(244,63,94,0.15)] flex flex-wrap items-center justify-between gap-4">
-                <div className="flex items-center gap-3.5">
-                    <div className="w-13 h-13 rounded-2xl bg-gradient-to-tr from-rose-600 via-red-500 to-amber-500 flex items-center justify-center text-black font-black shadow-lg shadow-rose-500/30">
-                        <Flame size={28} className="animate-pulse" />
+        <div className="space-y-6">
+            {/* Top Navigation & Status Bar */}
+            <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-3xl bg-[#080d22] border border-cyan-500/20 shadow-2xl">
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-2xl bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-300">
+                        <Flame size={20} className="animate-pulse" />
                     </div>
                     <div>
-                        <div className="flex items-center gap-2">
-                            <h2 className="text-lg sm:text-xl font-black tracking-tight text-white flex items-center gap-2">
-                                SUICIDE SQUAD <span className="text-rose-400 font-mono text-xs px-2 py-0.5 rounded-full bg-rose-500/20 border border-rose-500/40">WAR ROOM</span>
-                            </h2>
-                            <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/40">
-                                5 SQUADS ACTIVAS
+                        <h2 className="text-base sm:text-lg font-black text-white tracking-wide flex items-center gap-2">
+                            <span>SUICIDE SQUAD WAR ROOM</span>
+                            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">
+                                5 ESCUADRAS ACTIVAS
                             </span>
-                        </div>
+                        </h2>
                         <p className="text-xs text-slate-400 font-mono mt-0.5">
-                            Células Focales de Crecimiento Viral: 5 Categorías Insignia, Miembros Asignados y Dominio de Redes
+                            Explorador de Categorías, Subcategorías y Productos con PVP Público para Ventas
                         </p>
                     </div>
                 </div>
 
-                {/* Sub-Tabs Selector */}
-                <div className="flex items-center gap-1.5 bg-slate-950/80 p-1.5 rounded-2xl border border-slate-800">
+                {/* Tab Navigation Buttons */}
+                <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-slate-950/80 border border-slate-800">
                     <button
                         onClick={() => setActiveTab("squads")}
                         className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
                             activeTab === "squads"
-                                ? "bg-rose-500 text-black font-extrabold shadow-[0_0_15px_rgba(244,63,94,0.4)]"
+                                ? "bg-cyan-500 text-black font-extrabold shadow-[0_0_15px_rgba(6,182,212,0.4)]"
                                 : "text-slate-400 hover:text-white"
                         }`}
                     >
-                        <Flame size={13} />
-                        <span>Escuadras (5)</span>
+                        <ShieldAlert size={13} />
+                        <span>Escuadras Virales (5)</span>
                     </button>
                     <button
                         onClick={() => setActiveTab("playbook")}
                         className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
                             activeTab === "playbook"
-                                ? "bg-cyan-500 text-black font-extrabold shadow-[0_0_15px_rgba(6,182,212,0.4)]"
+                                ? "bg-rose-500 text-black font-extrabold shadow-[0_0_15px_rgba(244,63,94,0.4)]"
                                 : "text-slate-400 hover:text-white"
                         }`}
                     >
-                        <FileText size={13} />
-                        <span>Plan de Guerra</span>
+                        <Sparkles size={13} />
+                        <span>Playbook de 25s</span>
                     </button>
                     <button
                         onClick={() => setActiveTab("simulator")}
@@ -376,7 +480,7 @@ export default function SuicideSquadWarRoom() {
                         }`}
                     >
                         <Clock size={13} />
-                        <span>Simulador TikTok</span>
+                        <span>Simulador 25s</span>
                     </button>
                     <button
                         onClick={() => setActiveTab("calculator")}
@@ -397,7 +501,7 @@ export default function SuicideSquadWarRoom() {
                 <div className="space-y-6">
                     {isLoading ? (
                         <div className="p-12 text-center text-slate-400 font-mono text-sm animate-pulse">
-                            Cargando las 5 Escuadras Virales y conectando con los 9,736 productos de catálogo...
+                            Cargando las 5 Escuadras Virales y conectando con el catálogo de 9,736 productos...
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -441,6 +545,39 @@ export default function SuicideSquadWarRoom() {
                                                 <p className="text-[11px] text-slate-400 mt-2 leading-relaxed line-clamp-2">
                                                     {squad.mission}
                                                 </p>
+                                            </div>
+
+                                            {/* ── BOTONES DE CADA CATEGORÍA (NIVEL 1) ── */}
+                                            <div className="pt-2 border-t border-slate-800/80 space-y-2">
+                                                <div className="flex items-center justify-between text-[10px] font-mono text-slate-400">
+                                                    <span className="flex items-center gap-1.5 font-bold text-cyan-300">
+                                                        <FolderTree size={12} />
+                                                        Categorías del Escuadrón ({squad.categories.length}):
+                                                    </span>
+                                                    <span className="text-[9px] text-slate-500 font-mono">Clic para subfamilias</span>
+                                                </div>
+                                                <div className="flex flex-wrap gap-1.5">
+                                                    {squad.categories.map((catName) => {
+                                                        const detail = squad.categoryDetails?.find(c => c.name.toLowerCase() === catName.toLowerCase())
+                                                        const count = detail?.count ?? 0
+                                                        return (
+                                                            <button
+                                                                key={catName}
+                                                                onClick={() => handleOpenCategoryDirectly(squad, catName)}
+                                                                className="group/cat flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-slate-900/95 hover:bg-slate-800 border border-slate-700/80 hover:border-cyan-400 text-xs font-mono text-slate-200 hover:text-white transition-all cursor-pointer shadow-sm active:scale-95 hover:scale-[1.02]"
+                                                                title={`Explorar subcategorías de ${catName}`}
+                                                            >
+                                                                <span className="font-semibold">{catName}</span>
+                                                                {count > 0 && (
+                                                                    <span className="px-1.5 py-0.2 rounded-full bg-cyan-500/15 border border-cyan-500/30 text-[10px] text-cyan-300 font-bold">
+                                                                        {count}
+                                                                    </span>
+                                                                )}
+                                                                <ChevronRight size={11} className="text-slate-500 group-hover/cat:text-cyan-400 group-hover/cat:translate-x-0.5 transition-transform" />
+                                                            </button>
+                                                        )
+                                                    })}
+                                                </div>
                                             </div>
 
                                             {/* Viral Hook Preview Box */}
@@ -539,7 +676,7 @@ export default function SuicideSquadWarRoom() {
                                             </div>
                                         </div>
 
-                                        {/* Bottom Actions: 1) Ver Plan Viral, 2) Ver Todos los Productos */}
+                                        {/* Bottom Actions: 1) Ver Plan Viral, 2) Explorar Catálogo Jerárquico */}
                                         <div className="pt-4 mt-4 border-t border-slate-800 flex gap-2">
                                             <button
                                                 onClick={() => setSelectedSquadForPlaybook(squad)}
@@ -550,11 +687,11 @@ export default function SuicideSquadWarRoom() {
                                             </button>
 
                                             <button
-                                                onClick={() => handleOpenProductsModal(squad)}
+                                                onClick={() => handleOpenSquadCategories(squad)}
                                                 className={`flex-1 py-2.5 px-3 rounded-2xl text-xs font-mono font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer active:scale-95 ${style.btnPrimary}`}
                                             >
                                                 <Eye size={13} />
-                                                <span>Ver Todo ({squad.productCount})</span>
+                                                <span>Explorar Todo ({squad.productCount})</span>
                                             </button>
                                         </div>
                                     </div>
@@ -576,11 +713,10 @@ export default function SuicideSquadWarRoom() {
                             La Fórmula Científica de 25 Segundos para Vender Hardware
                         </h3>
                         <p className="text-xs text-slate-400 max-w-2xl mx-auto font-sans">
-                            Cada uno de tus 5 colaboradores debe aplicar esta estructura sin desviarse. No se venden características; se vende paz mental y dolor resuelto en Ecuador.
+                            Cada uno de tus colaboradores debe aplicar esta estructura sin desviarse. No se venden características; se vende paz mental y dolor resuelto en Ecuador.
                         </p>
                     </div>
 
-                    {/* Timeline of 4 steps */}
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                         {[
                             {
@@ -623,7 +759,6 @@ export default function SuicideSquadWarRoom() {
                         ))}
                     </div>
 
-                    {/* Checklist de Producción Diaria */}
                     <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
                         <h4 className="font-bold text-white text-sm flex items-center gap-2">
                             <CheckCircle2 size={16} className="text-emerald-400" />
@@ -666,7 +801,6 @@ export default function SuicideSquadWarRoom() {
                         </p>
                     </div>
 
-                    {/* Timer Big Display */}
                     <div className="w-44 h-44 rounded-full border-4 border-amber-500/40 bg-slate-950 flex flex-col items-center justify-center mx-auto shadow-[0_0_40px_rgba(245,158,11,0.2)]">
                         <span className="text-5xl font-mono font-black text-amber-400">
                             {simSeconds.toString().padStart(2, "0")}s
@@ -678,7 +812,6 @@ export default function SuicideSquadWarRoom() {
                         </span>
                     </div>
 
-                    {/* Progress Bar */}
                     <div className="w-full bg-slate-900 h-3 rounded-full overflow-hidden border border-slate-800">
                         <div
                             className="h-full bg-gradient-to-r from-amber-500 via-rose-500 to-emerald-500 transition-all duration-300"
@@ -686,7 +819,6 @@ export default function SuicideSquadWarRoom() {
                         />
                     </div>
 
-                    {/* Controls */}
                     <div className="flex justify-center gap-3">
                         <button
                             onClick={() => setIsSimRunning(!isSimRunning)}
@@ -721,7 +853,6 @@ export default function SuicideSquadWarRoom() {
                         </p>
                     </div>
 
-                    {/* Views Slider */}
                     <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
                         <div className="flex justify-between text-xs font-mono">
                             <span className="text-slate-400">Visualizaciones promedio por video:</span>
@@ -738,7 +869,6 @@ export default function SuicideSquadWarRoom() {
                         />
                     </div>
 
-                    {/* Calculation Results Cards */}
                     <div className="grid grid-cols-3 gap-3 text-center">
                         <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800">
                             <span className="text-[10px] font-mono text-slate-400 block uppercase">Alcance Mensual</span>
@@ -748,99 +878,95 @@ export default function SuicideSquadWarRoom() {
                             <span className="text-[9px] text-slate-500 font-mono">personas en Ecuador</span>
                         </div>
                         <div className="p-4 rounded-2xl bg-emerald-950/40 border border-emerald-500/30">
-                            <span className="text-[10px] font-mono text-emerald-300 block uppercase">Prospectos CRM</span>
-                            <span className="text-lg sm:text-xl font-black text-emerald-400 font-mono mt-1 block">
-                                {Math.round((dailyViews * 10 * 30) * 0.005).toLocaleString()}
+                            <span className="text-[10px] font-mono text-emerald-400 block uppercase">Leads WhatsApp</span>
+                            <span className="text-lg sm:text-xl font-black text-emerald-300 font-mono mt-1 block">
+                                {Math.round((dailyViews * 10 * 30) * 0.0035).toLocaleString()}
                             </span>
-                            <span className="text-[9px] text-emerald-500/80 font-mono">chats directos (0.5%)</span>
+                            <span className="text-[9px] text-slate-400 font-mono">conversaciones (0.35%)</span>
                         </div>
                         <div className="p-4 rounded-2xl bg-cyan-950/40 border border-cyan-500/30">
-                            <span className="text-[10px] font-mono text-cyan-300 block uppercase">Ventas Cerradas</span>
-                            <span className="text-lg sm:text-xl font-black text-cyan-400 font-mono mt-1 block">
-                                {Math.round((dailyViews * 10 * 30) * 0.005 * 0.12).toLocaleString()}
+                            <span className="text-[10px] font-mono text-cyan-400 block uppercase">Ventas Estimadas</span>
+                            <span className="text-lg sm:text-xl font-black text-cyan-300 font-mono mt-1 block">
+                                ${Math.round((dailyViews * 10 * 30 * 0.0035 * 0.12) * 110).toLocaleString()}
                             </span>
-                            <span className="text-[9px] text-cyan-500/80 font-mono">cierre 12% ticket prom</span>
+                            <span className="text-[9px] text-slate-400 font-mono">ticket prom. $110</span>
                         </div>
                     </div>
                 </div>
             )}
 
-            {/* ── MODAL 1: ASIGNAR MIEMBRO ── */}
+            {/* ── MODAL 1: ASIGNAR MIEMBRO A ESCUADRA ── */}
             <AnimatePresence>
                 {assigningSquadId && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-150">
                         <div className="w-full max-w-md bg-[#090e24] border-2 border-cyan-500/40 rounded-3xl p-6 shadow-2xl space-y-4">
                             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                                <h4 className="font-bold text-white text-sm flex items-center gap-2">
-                                    <UserPlus size={16} className="text-cyan-400" />
-                                    Asignar Miembro al Escuadrón
-                                </h4>
+                                <h3 className="font-black text-white text-base flex items-center gap-2">
+                                    <UserPlus size={18} className="text-cyan-400" />
+                                    <span>Asignar Colaborador al Escuadrón</span>
+                                </h3>
                                 <button
                                     onClick={() => setAssigningSquadId(null)}
-                                    className="text-slate-400 hover:text-white"
+                                    className="p-1 rounded-xl text-slate-400 hover:text-white"
                                 >
-                                    <X size={16} />
+                                    <X size={18} />
                                 </button>
                             </div>
 
-                            <p className="text-xs text-slate-300 font-sans">
-                                Selecciona un colaborador registrado en el ERP o escribe su nombre para asignarlo como responsable oficial de este grupo focal:
-                            </p>
+                            <div className="space-y-3">
+                                <div>
+                                    <label className="text-xs font-mono text-slate-300 block mb-1.5">
+                                        Seleccionar usuario registrado del sistema:
+                                    </label>
+                                    <select
+                                        value={selectedUserToAdd}
+                                        onChange={(e) => {
+                                            setSelectedUserToAdd(e.target.value)
+                                            if (e.target.value) setCustomUserName("")
+                                        }}
+                                        className="w-full bg-slate-950 border border-slate-800 rounded-2xl px-3.5 py-2.5 text-xs text-white font-mono focus:outline-none focus:border-cyan-400"
+                                    >
+                                        <option value="">-- Seleccionar usuario --</option>
+                                        {systemUsers.map(u => (
+                                            <option key={u.id} value={u.id}>
+                                                {u.name || u.email} ({u.role})
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
 
-                            {/* Select system user */}
-                            <div className="space-y-1.5">
-                                <label className="text-[10px] font-mono text-slate-400 uppercase">
-                                    Colaborador del Sistema:
-                                </label>
-                                <select
-                                    value={selectedUserToAdd}
-                                    onChange={(e) => {
-                                        setSelectedUserToAdd(e.target.value)
-                                        if (e.target.value) setCustomUserName("")
-                                    }}
-                                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-cyan-400"
-                                >
-                                    <option value="">-- Seleccionar de la lista de usuarios --</option>
-                                    {systemUsers.map((u) => (
-                                        <option key={u.id} value={u.id}>
-                                            {u.name || u.email} ({u.role})
-                                        </option>
-                                    ))}
-                                </select>
+                                <div className="text-center text-[10px] font-mono text-slate-500">
+                                    - O ingresa un colaborador manual -
+                                </div>
+
+                                <div>
+                                    <label className="text-xs font-mono text-slate-300 block mb-1.5">
+                                        Nombre del Colaborador / Creador:
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={customUserName}
+                                        onChange={(e) => {
+                                            setCustomUserName(e.target.value)
+                                            if (e.target.value) setSelectedUserToAdd("")
+                                        }}
+                                        placeholder="Ej: David Proaño (Tiktoker Oficial)"
+                                        className="w-full bg-slate-950 border border-slate-800 rounded-2xl px-3.5 py-2.5 text-xs text-white font-mono focus:outline-none focus:border-cyan-400"
+                                    />
+                                </div>
                             </div>
 
-                            <div className="flex items-center gap-2 text-[10px] font-mono text-slate-500 justify-center">
-                                <span>— O Escribe un Nombre Manual —</span>
-                            </div>
-
-                            {/* Custom name input */}
-                            <div className="space-y-1.5">
-                                <label className="text-[10px] font-mono text-slate-400 uppercase">
-                                    Nombre del Asesor / Creador:
-                                </label>
-                                <input
-                                    type="text"
-                                    value={customUserName}
-                                    onChange={(e) => {
-                                        setCustomUserName(e.target.value)
-                                        if (e.target.value) setSelectedUserToAdd("")
-                                    }}
-                                    placeholder="Ej. Roberto Sánchez (Vendedor Guayaquil)..."
-                                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-cyan-400"
-                                />
-                            </div>
-
-                            <div className="flex justify-end gap-2 pt-3 border-t border-slate-800">
+                            <div className="flex gap-2 pt-2 border-t border-slate-800">
                                 <button
                                     onClick={() => setAssigningSquadId(null)}
-                                    className="px-4 py-2 rounded-xl bg-slate-900 text-slate-300 text-xs font-mono"
+                                    className="flex-1 py-2.5 rounded-2xl bg-slate-900 text-slate-400 hover:text-white font-mono text-xs"
                                 >
                                     Cancelar
                                 </button>
                                 <button
                                     onClick={() => handleAddMember(assigningSquadId)}
                                     disabled={!selectedUserToAdd && !customUserName.trim()}
-                                    className="px-5 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-xs font-mono disabled:opacity-40 cursor-pointer shadow-md"
+                                    className="flex-1 py-2.5 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold font-mono text-xs disabled:opacity-50 cursor-pointer"
                                 >
                                     Confirmar Asignación
                                 </button>
@@ -877,7 +1003,6 @@ export default function SuicideSquadWarRoom() {
                                 </button>
                             </div>
 
-                            {/* Teleprompter Script Box */}
                             <div className="space-y-2">
                                 <div className="flex items-center justify-between">
                                     <span className="text-xs font-mono font-bold text-amber-300 flex items-center gap-1.5">
@@ -897,7 +1022,6 @@ export default function SuicideSquadWarRoom() {
                                 </div>
                             </div>
 
-                            {/* Keyword WhatsApp Info */}
                             <div className="p-4 rounded-2xl bg-emerald-950/30 border border-emerald-500/30 flex items-center justify-between">
                                 <div>
                                     <span className="text-[10px] font-mono text-emerald-400 block uppercase font-bold">
@@ -922,155 +1046,319 @@ export default function SuicideSquadWarRoom() {
                 )}
             </AnimatePresence>
 
-            {/* ── MODAL 3: FLOATING SCROLL DRAWER - VER TODOS LOS PRODUCTOS DE LA CATEGORÍA ── */}
+            {/* ── MODAL 3: EXPLORADOR JERÁRQUICO (NIVEL 1: CATEGORÍAS -> NIVEL 2: SUBCATEGORÍAS -> NIVEL 3: PRODUCTOS CON PVP) ── */}
             <AnimatePresence>
-                {selectedSquadForProducts && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-5 bg-black/85 backdrop-blur-xl animate-in fade-in duration-150">
+                {explorerOpen && activeSquad && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-5 bg-black/90 backdrop-blur-xl animate-in fade-in duration-150">
                         <div className="w-full max-w-6xl h-[92vh] bg-[#070b19] border-2 border-cyan-500/40 rounded-3xl p-5 sm:p-6 shadow-[0_0_80px_rgba(0,0,0,0.9)] flex flex-col overflow-hidden">
-                            {/* Modal Header */}
+                            {/* Breadcrumbs Navigation Header */}
                             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-4 shrink-0">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-2xl bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-300 font-bold">
-                                        <Eye size={20} />
-                                    </div>
+                                    {/* Botón Volver si está en Nivel 2 o 3 */}
+                                    {explorerLevel > 1 && (
+                                        <button
+                                            onClick={handleNavigateBack}
+                                            className="p-2 rounded-2xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700 transition-all cursor-pointer flex items-center gap-1.5 text-xs font-mono"
+                                            title="Volver al nivel anterior"
+                                        >
+                                            <ArrowLeft size={16} />
+                                            <span className="hidden sm:inline">Volver</span>
+                                        </button>
+                                    )}
+
                                     <div>
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-xs font-mono font-black px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40">
-                                                {selectedSquadForProducts.code}
-                                            </span>
-                                            <h3 className="font-black text-white text-base sm:text-lg">
-                                                Catálogo Completo: {selectedSquadForProducts.name}
-                                            </h3>
+                                        {/* Breadcrumbs interactivos */}
+                                        <div className="flex flex-wrap items-center gap-1.5 text-xs font-mono">
+                                            <button
+                                                onClick={() => { setExplorerLevel(1); setSelectedCategory(null); setSelectedSubcategory(null); }}
+                                                className={`font-black flex items-center gap-1.5 px-2 py-0.5 rounded-lg transition-colors ${
+                                                    explorerLevel === 1 ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40' : 'text-slate-400 hover:text-white cursor-pointer'
+                                                }`}
+                                            >
+                                                <span>{activeSquad.code} {activeSquad.name}</span>
+                                            </button>
+
+                                            {selectedCategory && (
+                                                <>
+                                                    <ChevronRight size={12} className="text-slate-600" />
+                                                    <button
+                                                        onClick={() => { setExplorerLevel(2); setSelectedSubcategory(null); }}
+                                                        className={`font-bold px-2 py-0.5 rounded-lg transition-colors ${
+                                                            explorerLevel === 2 ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'text-slate-400 hover:text-white cursor-pointer'
+                                                        }`}
+                                                    >
+                                                        <span>{selectedCategory}</span>
+                                                    </button>
+                                                </>
+                                            )}
+
+                                            {selectedSubcategory && (
+                                                <>
+                                                    <ChevronRight size={12} className="text-slate-600" />
+                                                    <span className="font-bold px-2 py-0.5 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                                                        {selectedSubcategory.name}
+                                                    </span>
+                                                </>
+                                            )}
                                         </div>
-                                        <p className="text-xs text-slate-400 font-mono mt-0.5">
-                                            {totalProductsCount} productos activos en {selectedSquadForProducts.categories.join(", ")}
+
+                                        <p className="text-[11px] text-slate-400 font-mono mt-1">
+                                            {explorerLevel === 1 && `Paso 1: Selecciona una de las categorías del escuadrón para explorar sus subfamilias.`}
+                                            {explorerLevel === 2 && `Paso 2: Subfamilias de "${selectedCategory}". Selecciona una para ver todos los productos con PVP Público.`}
+                                            {explorerLevel === 3 && `Paso 3: Catálogo desplegado (${totalProductsCount} productos). Comparte por WhatsApp o abre el producto en la tienda.`}
                                         </p>
                                     </div>
                                 </div>
 
                                 <button
-                                    onClick={() => setSelectedSquadForProducts(null)}
+                                    onClick={() => setExplorerOpen(false)}
                                     className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
                                 >
                                     <X size={20} />
                                 </button>
                             </div>
 
-                            {/* Search & Sort Filter Bar */}
-                            <div className="py-3.5 flex flex-wrap items-center justify-between gap-3 shrink-0">
-                                <div className="relative flex-1 min-w-[240px]">
-                                    <Search size={15} className="absolute left-3.5 top-3 text-slate-400" />
-                                    <input
-                                        type="text"
-                                        value={productSearch}
-                                        onChange={(e) => setProductSearch(e.target.value)}
-                                        placeholder={`Buscar producto, SKU, marca en ${selectedSquadForProducts.name}...`}
-                                        className="w-full bg-slate-950 border border-slate-800 rounded-2xl pl-10 pr-4 py-2 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-400 font-mono"
-                                    />
-                                </div>
-
-                                <div className="flex items-center gap-2">
-                                    <span className="text-xs font-mono text-slate-400 hidden sm:inline">Ordenar:</span>
-                                    <select
-                                        value={productSort}
-                                        onChange={(e) => setProductSort(e.target.value as any)}
-                                        className="bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-mono focus:outline-none focus:border-cyan-400"
-                                    >
-                                        <option value="price_asc">Menor Precio ($ → $$$)</option>
-                                        <option value="price_desc">Mayor Precio ($$$ → $)</option>
-                                        <option value="name_asc">Nombre A-Z</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            {/* Scrollable Product Grid */}
-                            <div className="flex-1 overflow-y-auto pr-1 space-y-3">
-                                {productsLoading ? (
-                                    <div className="h-64 flex flex-col items-center justify-center text-slate-400 font-mono text-xs gap-3">
-                                        <RefreshCw size={24} className="animate-spin text-cyan-400" />
-                                        <span>Consultando inventario en tiempo real...</span>
-                                    </div>
-                                ) : productsList.length === 0 ? (
-                                    <div className="h-64 flex flex-col items-center justify-center text-slate-500 font-mono text-xs">
-                                        No se encontraron productos con el término de búsqueda.
-                                    </div>
-                                ) : (
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5 pb-4">
-                                        {productsList.map((p) => {
-                                            let parsedImages: string[] = []
-                                            try {
-                                                if (p.images) {
-                                                    const parsed = JSON.parse(p.images)
-                                                    if (Array.isArray(parsed)) parsedImages = parsed
-                                                }
-                                            } catch (e) {
-                                                if (p.images && p.images.startsWith("http")) parsedImages = [p.images]
-                                            }
-
-                                            const photoUrl = parsedImages[0] || "/images/placeholder-product.png"
+                            {/* ── VISTA NIVEL 1: TODAS LAS CATEGORÍAS DEL ESCUADRÓN ── */}
+                            {explorerLevel === 1 && (
+                                <div className="flex-1 overflow-y-auto pr-1 py-4 space-y-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                        {activeSquad.categories.map((catName) => {
+                                            const detail = activeSquad.categoryDetails?.find(c => c.name.toLowerCase() === catName.toLowerCase())
+                                            const count = detail?.count ?? 0
 
                                             return (
                                                 <div
-                                                    key={p.id}
-                                                    className="p-3.5 rounded-2xl bg-[#090d22] border border-slate-800/90 hover:border-cyan-400/50 flex flex-col justify-between transition-all group hover:scale-[1.01]"
+                                                    key={catName}
+                                                    onClick={() => handleOpenCategoryDirectly(activeSquad, catName)}
+                                                    className="p-5 rounded-3xl bg-[#090e24] border-2 border-slate-800 hover:border-cyan-400/80 p-5 flex flex-col justify-between transition-all group hover:scale-[1.02] cursor-pointer shadow-lg hover:shadow-cyan-500/10"
                                                 >
                                                     <div className="space-y-2">
-                                                        {/* Product Image / Placeholder */}
-                                                        <div className="w-full h-32 rounded-xl bg-slate-950 border border-slate-800 overflow-hidden relative flex items-center justify-center">
-                                                            <img
-                                                                src={photoUrl}
-                                                                alt={p.name}
-                                                                className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform"
-                                                                onError={(e) => {
-                                                                    (e.target as any).src = "https://placehold.co/300x200/0f172a/38bdf8?text=ATOMIC"
-                                                                }}
-                                                            />
-                                                            <span className="absolute top-2 left-2 text-[8px] font-mono px-2 py-0.5 rounded bg-black/70 text-slate-300 border border-white/10 uppercase">
-                                                                {p.category?.name || "Hardware"}
+                                                        <div className="flex items-center justify-between">
+                                                            <div className="w-9 h-9 rounded-2xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-300">
+                                                                <FolderTree size={18} />
+                                                            </div>
+                                                            <span className="px-2.5 py-1 rounded-full bg-slate-900 border border-slate-800 text-xs font-mono font-bold text-cyan-400">
+                                                                {count} productos
                                                             </span>
                                                         </div>
-
-                                                        {/* Product Name & SKU */}
-                                                        <div>
-                                                            <h4 className="text-xs font-bold text-white line-clamp-2 leading-snug group-hover:text-cyan-300 transition-colors" title={p.name}>
-                                                                {p.name}
-                                                            </h4>
-                                                            {p.sku && (
-                                                                <span className="text-[9px] font-mono text-slate-500 block mt-0.5">
-                                                                    SKU: {p.sku}
-                                                                </span>
-                                                            )}
-                                                        </div>
+                                                        <h4 className="font-black text-white text-base group-hover:text-cyan-300 transition-colors">
+                                                            {catName}
+                                                        </h4>
+                                                        <p className="text-xs text-slate-400 font-sans leading-relaxed">
+                                                            Haz clic para desplegar las subfamilias y todos los equipos de esta línea.
+                                                        </p>
                                                     </div>
 
-                                                    {/* Price, Stock and Quick Action */}
-                                                    <div className="pt-3 mt-3 border-t border-slate-800/80 flex items-center justify-between">
-                                                        <div>
-                                                            <span className="text-sm font-black text-emerald-400 font-mono">
-                                                                ${p.price.toFixed(2)}
-                                                            </span>
-                                                            <span className="text-[9px] font-mono text-slate-400 block">
-                                                                Stock: {p.stock > 0 ? `${p.stock} unid.` : "Bajo Pedido"}
-                                                            </span>
-                                                        </div>
-
-                                                        <button
-                                                            onClick={() => {
-                                                                const textToCopy = `*${p.name}*\nPrecio: $${p.price.toFixed(2)} + IVA\nDisponible en ATOMIC Ecuador: https://atomiccotizador.shop/web`
-                                                                copyToClipboard(textToCopy, `prod-${p.id}`)
-                                                            }}
-                                                            className="p-2 rounded-xl bg-slate-900 hover:bg-cyan-500 hover:text-black text-slate-300 border border-slate-800 transition-all cursor-pointer"
-                                                            title="Copiar detalles para enviar a cliente"
-                                                        >
-                                                            {copiedKey === `prod-${p.id}` ? <Check size={14} className="text-emerald-400" /> : <Share2 size={14} />}
-                                                        </button>
+                                                    <div className="pt-4 mt-4 border-t border-slate-800 flex items-center justify-between text-xs font-mono font-bold text-cyan-400 group-hover:text-cyan-300">
+                                                        <span>Ver Subcategorías</span>
+                                                        <ChevronRight size={15} className="group-hover:translate-x-1 transition-transform" />
                                                     </div>
                                                 </div>
                                             )
                                         })}
                                     </div>
-                                )}
-                            </div>
+                                </div>
+                            )}
+
+                            {/* ── VISTA NIVEL 2: SUBCATEGORÍAS DE LA CATEGORÍA SELECCIONADA ── */}
+                            {explorerLevel === 2 && (
+                                <div className="flex-1 overflow-y-auto pr-1 py-4 space-y-4">
+                                    {subcategoriesLoading ? (
+                                        <div className="h-64 flex flex-col items-center justify-center text-slate-400 font-mono text-xs gap-3">
+                                            <RefreshCw size={24} className="animate-spin text-cyan-400" />
+                                            <span>Consultando subcategorías e inventario en vivo...</span>
+                                        </div>
+                                    ) : (
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                            {subcategoriesList.map((sub) => (
+                                                <div
+                                                    key={sub.id}
+                                                    onClick={() => handleSelectSubcategory(sub)}
+                                                    className="p-5 rounded-3xl bg-[#090e24] border-2 border-slate-800 hover:border-emerald-400/80 p-5 flex flex-col justify-between transition-all group hover:scale-[1.02] cursor-pointer shadow-lg hover:shadow-emerald-500/10"
+                                                >
+                                                    <div className="space-y-2.5">
+                                                        <div className="flex items-center justify-between">
+                                                            <div className="w-9 h-9 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-300">
+                                                                <Layers size={18} />
+                                                            </div>
+                                                            <span className="px-2.5 py-1 rounded-full bg-emerald-950/60 border border-emerald-500/40 text-xs font-mono font-black text-emerald-400">
+                                                                {sub.count} productos
+                                                            </span>
+                                                        </div>
+
+                                                        <h4 className="font-black text-white text-base group-hover:text-emerald-300 transition-colors">
+                                                            {sub.name}
+                                                        </h4>
+
+                                                        {sub.description && (
+                                                            <p className="text-xs text-slate-400 font-sans leading-relaxed">
+                                                                {sub.description}
+                                                            </p>
+                                                        )}
+                                                    </div>
+
+                                                    <div className="pt-4 mt-4 border-t border-slate-800 flex items-center justify-between text-xs font-mono font-bold text-emerald-400 group-hover:text-emerald-300">
+                                                        <span>Desplegar Productos con PVP</span>
+                                                        <ChevronRight size={15} className="group-hover:translate-x-1 transition-transform" />
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* ── VISTA NIVEL 3: PRODUCTOS DESPLEGADOS CON PVP PÚBLICO Y ACCIONES ── */}
+                            {explorerLevel === 3 && (
+                                <>
+                                    {/* Search & Sort Filter Bar */}
+                                    <div className="py-3 flex flex-wrap items-center justify-between gap-3 shrink-0">
+                                        <div className="relative flex-1 min-w-[240px]">
+                                            <Search size={15} className="absolute left-3.5 top-3 text-slate-400" />
+                                            <input
+                                                type="text"
+                                                value={productSearch}
+                                                onChange={(e) => setProductSearch(e.target.value)}
+                                                placeholder={`Buscar por nombre, SKU o marca en ${selectedSubcategory?.name || 'subcategoría'}...`}
+                                                className="w-full bg-slate-950 border border-slate-800 rounded-2xl pl-10 pr-4 py-2 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-400 font-mono"
+                                            />
+                                        </div>
+
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-xs font-mono text-slate-400 hidden sm:inline">Ordenar:</span>
+                                            <select
+                                                value={productSort}
+                                                onChange={(e) => setProductSort(e.target.value as any)}
+                                                className="bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-mono focus:outline-none focus:border-emerald-400"
+                                            >
+                                                <option value="price_asc">Menor PVP ($ → $$$)</option>
+                                                <option value="price_desc">Mayor PVP ($$$ → $)</option>
+                                                <option value="name_asc">Nombre A-Z</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    {/* Scrollable Product Grid */}
+                                    <div className="flex-1 overflow-y-auto pr-1 space-y-3">
+                                        {productsLoading ? (
+                                            <div className="h-64 flex flex-col items-center justify-center text-slate-400 font-mono text-xs gap-3">
+                                                <RefreshCw size={24} className="animate-spin text-emerald-400" />
+                                                <span>Cargando productos con PVP Público...</span>
+                                            </div>
+                                        ) : productsList.length === 0 ? (
+                                            <div className="h-64 flex flex-col items-center justify-center text-slate-500 font-mono text-xs">
+                                                No se encontraron productos coincidentes en esta subcategoría.
+                                            </div>
+                                        ) : (
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pb-4">
+                                                {productsList.map((p) => {
+                                                    let parsedImages: string[] = []
+                                                    try {
+                                                        if (p.images) {
+                                                            const parsed = JSON.parse(p.images)
+                                                            if (Array.isArray(parsed)) parsedImages = parsed
+                                                        }
+                                                    } catch (e) {
+                                                        if (p.images && p.images.startsWith("http")) parsedImages = [p.images]
+                                                    }
+
+                                                    const photoUrl = parsedImages[0] || "/images/placeholder-product.png"
+                                                    const pvp = p.pvp ?? p.price
+                                                    const isCopied = copiedKey === `shared-${p.id}`
+
+                                                    return (
+                                                        <div
+                                                            key={p.id}
+                                                            className="p-3.5 rounded-3xl bg-[#090e24] border border-slate-800/90 hover:border-emerald-400/60 flex flex-col justify-between transition-all group hover:scale-[1.01] shadow-lg"
+                                                        >
+                                                            <div className="space-y-2.5">
+                                                                {/* Product Image / Preview */}
+                                                                <div className="w-full h-36 rounded-2xl bg-slate-950 border border-slate-800 overflow-hidden relative flex items-center justify-center">
+                                                                    <img
+                                                                        src={photoUrl}
+                                                                        alt={p.name}
+                                                                        className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-300"
+                                                                        onError={(e) => {
+                                                                            (e.target as any).src = "https://placehold.co/300x200/0f172a/38bdf8?text=ATOMIC"
+                                                                        }}
+                                                                    />
+                                                                    <span className="absolute top-2 left-2 text-[8px] font-mono px-2 py-0.5 rounded bg-black/80 text-cyan-300 border border-white/10 uppercase">
+                                                                        {p.category?.name || "Catálogo"}
+                                                                    </span>
+                                                                    <span className={`absolute top-2 right-2 text-[8px] font-mono px-2 py-0.5 rounded uppercase font-bold border ${
+                                                                        p.stock > 0 ? 'bg-emerald-950/80 text-emerald-400 border-emerald-500/40' : 'bg-amber-950/80 text-amber-400 border-amber-500/40'
+                                                                    }`}>
+                                                                        {p.stock > 0 ? `${p.stock} unid.` : 'Bajo Pedido'}
+                                                                    </span>
+                                                                </div>
+
+                                                                {/* Title & SKU */}
+                                                                <div>
+                                                                    <h4 className="text-xs font-bold text-white line-clamp-2 leading-snug group-hover:text-emerald-300 transition-colors" title={p.name}>
+                                                                        {p.name}
+                                                                    </h4>
+                                                                    {p.sku && (
+                                                                        <span className="text-[9px] font-mono text-slate-500 block mt-1">
+                                                                            REF/SKU: {p.sku}
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+
+                                                                {/* PVP Público Highlighted Box */}
+                                                                <div className="p-2.5 rounded-2xl bg-emerald-950/30 border border-emerald-500/30">
+                                                                    <div className="text-[9px] font-mono font-bold text-emerald-400 uppercase tracking-wider flex items-center justify-between">
+                                                                        <span>PVP PÚBLICO</span>
+                                                                        <span className="text-[8px] text-slate-400 font-normal">INC. IVA</span>
+                                                                    </div>
+                                                                    <div className="text-xl font-black text-white font-mono mt-0.5">
+                                                                        ${pvp.toFixed(2)}
+                                                                    </div>
+                                                                    {p.distributorPrice && p.distributorPrice > 0 && (
+                                                                        <div className="text-[9px] font-mono text-slate-400 mt-1 flex justify-between border-t border-emerald-500/20 pt-1">
+                                                                            <span>Costo: ${p.distributorPrice.toFixed(2)}</span>
+                                                                            <span className="text-cyan-400 font-bold">
+                                                                                Margen: +${(pvp - p.distributorPrice).toFixed(2)}
+                                                                            </span>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+
+                                                            {/* Action Buttons: 1) Compartir con Cliente, 2) Abrir Producto en Tienda */}
+                                                            <div className="pt-3 mt-3 border-t border-slate-800 flex gap-2">
+                                                                <button
+                                                                    onClick={() => handleShareProduct(p)}
+                                                                    className={`flex-1 py-2 px-2.5 rounded-xl font-mono font-bold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                                                                        isCopied
+                                                                            ? "bg-emerald-500 text-black shadow-[0_0_15px_rgba(16,185,129,0.5)]"
+                                                                            : "bg-slate-900 hover:bg-emerald-500 hover:text-black text-emerald-300 border border-emerald-500/40"
+                                                                    }`}
+                                                                    title="Copiar mensaje con precio y enlace para WhatsApp o compartir"
+                                                                >
+                                                                    {isCopied ? <Check size={13} /> : <Share2 size={13} />}
+                                                                    <span>{isCopied ? "¡Copiado!" : "Compartir"}</span>
+                                                                </button>
+
+                                                                <button
+                                                                    onClick={() => {
+                                                                        const targetUrl = p.publicUrl || `/web/product/${p.id}`
+                                                                        window.open(targetUrl, "_blank")
+                                                                    }}
+                                                                    className="py-2 px-2.5 rounded-xl bg-slate-900 hover:bg-cyan-500 hover:text-black text-slate-300 border border-slate-800 transition-all cursor-pointer flex items-center justify-center gap-1 text-xs font-mono"
+                                                                    title="Abrir página oficial del producto en la tienda web"
+                                                                >
+                                                                    <ExternalLink size={13} />
+                                                                    <span className="hidden sm:inline">Abrir</span>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    )
+                                                })}
+                                            </div>
+                                        )}
+                                    </div>
+                                </>
+                            )}
                         </div>
                     </div>
                 )}
