@@ -56,7 +56,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `
               try {
-                var theme = localStorage.getItem('atomic_theme') || 'cyber-neon';
+                var theme = localStorage.getItem('atomic_theme') || 'ticketmaster-white';
                 document.documentElement.setAttribute('data-theme', theme);
               } catch (e) {}
             `,
@@ -64,10 +64,10 @@ export default function RootLayout({
         />
       </head>
       <body
-        className="antialiased selection:bg-blue-500/20 selection:text-blue-300"
+        className="antialiased selection:bg-blue-500/20 selection:text-blue-600 bg-white text-slate-900"
         style={{
-          backgroundColor: "#09090A",
-          color: "#FFFFFF",
+          backgroundColor: "#FFFFFF",
+          color: "#0F172A",
           fontFamily: "'Instrument Sans', 'Inter', ui-sans-serif, system-ui",
           WebkitFontSmoothing: "antialiased",
           MozOsxFontSmoothing: "grayscale",

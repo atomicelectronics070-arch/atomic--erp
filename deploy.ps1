@@ -13,7 +13,7 @@ Write-Host "`n[2/4] Agregando archivos a Git..." -ForegroundColor Yellow
 git add .
 
 Write-Host "`n[3/4] Creando commit de produccion..." -ForegroundColor Yellow
-git commit -m "feat(pdf): exportador PDF con diseno ejecutivo exacto del Excel oficial, logo A1:D4, columnas, totales y QR"
+git commit -m "feat(ui): tema blanco ticketmaster por defecto y herramienta de mensajes para copiar y pegar marketplace"
 
 Write-Host "`n[4/4] Subiendo a Produccion (GitHub / Vercel en main y master)..." -ForegroundColor Yellow
 git push origin main

@@ -98,15 +98,15 @@ export default function DashboardLayout({
     }, [session, isDashboard])
 
     // Dynamic Theme Listener
-    const [themeState, setThemeState] = useState('cyber-neon')
+    const [themeState, setThemeState] = useState('ticketmaster-white')
     useEffect(() => {
-        const initial = (typeof window !== 'undefined' ? localStorage.getItem('atomic_theme') : null) || 'cyber-neon'
+        const initial = (typeof window !== 'undefined' ? localStorage.getItem('atomic_theme') : null) || 'ticketmaster-white'
         setThemeState(initial)
         if (typeof document !== 'undefined') {
             document.documentElement.setAttribute('data-theme', initial)
         }
         const handleThemeChange = (e: any) => {
-            const nextTheme = e.detail || localStorage.getItem('atomic_theme') || 'cyber-neon'
+            const nextTheme = e.detail || localStorage.getItem('atomic_theme') || 'ticketmaster-white'
             setThemeState(nextTheme)
             document.documentElement.setAttribute('data-theme', nextTheme)
         }

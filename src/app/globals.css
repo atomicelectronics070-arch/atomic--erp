@@ -59,39 +59,57 @@ html {
 }
 
 :root {
-  --background: #09090A;
-  --foreground: #FFFFFF;
-  --primary: #FFFFFF;
-  --primary-light: #E4E4E6;
-  --navy: #0E0E10;
-  --secondary: #131315;
+  --background: #FFFFFF;
+  --foreground: #0F172A;
+  --primary: #026CDF;
+  --primary-light: #0053CD;
+  --navy: #0F172A;
+  --secondary: #12161A;
 
-  /* Surface tokens — Appit dark */
-  --surface-0: #09090A;
-  --surface-1: #0E0E10;
-  --surface-2: #131315;
+  /* Surface tokens — Ticketmaster clean white */
+  --surface-0: #FFFFFF;
+  --surface-1: #F8FAFC;
+  --surface-2: #F1F5F9;
 
-  /* Glass effects — dark style */
-  --glass-bg: rgba(14, 14, 16, 0.90);
-  --glass-border: rgba(255, 255, 255, 0.06);
-  --navy-glow: 0 0 40px rgba(255, 255, 255, 0.03);
+  /* Glass effects — clean light style */
+  --glass-bg: rgba(255, 255, 255, 0.95);
+  --glass-border: rgba(226, 232, 240, 0.8);
+  --navy-glow: 0 0 40px rgba(2, 108, 223, 0.08);
 
-  /* Appit exact color tokens (used by legacy classes) */
-  --appit-bg-0: rgb(9, 9, 10);
-  --appit-bg-1: rgb(14, 14, 16);
-  --appit-bg-2: rgb(19, 19, 21);
-  --appit-bg-3: rgb(24, 24, 26);
-  --appit-bg-4: rgb(29, 29, 32);
-  --appit-gray-dark: rgb(40, 40, 44);
-  --appit-gray-mid: rgb(98, 100, 108);
-  --appit-gray-light: rgb(228, 228, 230);
+  /* Appit exact color tokens */
+  --appit-bg-0: rgb(255, 255, 255);
+  --appit-bg-1: rgb(248, 250, 252);
+  --appit-bg-2: rgb(241, 245, 249);
+  --appit-bg-3: rgb(226, 232, 240);
+  --appit-bg-4: rgb(203, 213, 225);
+  --appit-gray-dark: rgb(15, 23, 42);
+  --appit-gray-mid: rgb(71, 85, 105);
+  --appit-gray-light: rgb(241, 245, 249);
 
-  /* Dynamic Theme Fallbacks */
-  --theme-primary: #06B6D4;
-  --theme-accent: #6366F1;
-  --theme-glow: rgba(6, 182, 212, 0.45);
-  --theme-border: rgba(6, 182, 212, 0.35);
-  --theme-bg-subtle: rgba(6, 182, 212, 0.08);
+  /* Dynamic Theme Fallbacks — Ticketmaster Official Palette */
+  --theme-primary: #026CDF;
+  --theme-secondary: #0F172A;
+  --theme-accent: #0053CD;
+  --theme-glow: rgba(2, 108, 223, 0.25);
+  --theme-border: #E2E8F0;
+  --theme-bg-subtle: #F0F7FF;
+  --theme-bg-ambient: #FFFFFF;
+  --theme-sidebar-bg: #FFFFFF;
+  --theme-button-gradient: linear-gradient(135deg, #026CDF, #0053CD);
+}
+
+html[data-theme="ticketmaster-white"],
+html:not([data-theme]),
+html[data-theme=""] {
+  --theme-primary: #026CDF;
+  --theme-secondary: #0F172A;
+  --theme-accent: #0053CD;
+  --theme-glow: rgba(2, 108, 223, 0.25);
+  --theme-border: #E2E8F0;
+  --theme-bg-subtle: #F0F7FF;
+  --theme-bg-ambient: #FFFFFF;
+  --theme-sidebar-bg: #FFFFFF;
+  --theme-button-gradient: linear-gradient(135deg, #026CDF, #0053CD);
 }
 
 /* ══════════════════════════════════════════════════════════════ */
@@ -236,10 +254,10 @@ html[data-surface="grafito-tech"] {
 }
 
 body {
-  background-color: #09090A !important;
-  color: #FFFFFF;
+  background-color: var(--background, #FFFFFF) !important;
+  color: var(--foreground, #0F172A);
   font-family: "Instrument Sans", "Inter", ui-sans-serif, system-ui;
-  accent-color: #FFFFFF;
+  accent-color: var(--primary, #026CDF);
   letter-spacing: 0.01em;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
@@ -255,28 +273,27 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 
-/* ── Glass panel (Monochrome) ── */
+/* ── Glass panel ── */
 .glass-panel {
-  background: var(--glass-bg);
+  background: var(--glass-bg, rgba(255, 255, 255, 0.95));
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--glass-border);
-  box-shadow: 0 4px 24px 0 rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--glass-border, #E2E8F0);
+  box-shadow: 0 4px 24px 0 rgba(0, 0, 0, 0.04);
 }
 
-/* ── Cyber Card (Monochrome Theme) ── */
-/* ── Cyber Card / Bento Card (Appit Theme) ── */
+/* ── Cyber Card / Bento Card ── */
 .cyber-card, .bento-card {
-  background: #0E0E10;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--surface-0, #FFFFFF);
+  border: 1px solid var(--theme-border, #E2E8F0);
   border-radius: 1.5rem;
   position: relative;
   overflow: hidden;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .cyber-card:hover, .bento-card:hover {
-  border-color: rgba(255, 255, 255, 0.2);
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  border-color: rgba(2, 108, 223, 0.3);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
   transform: translateY(-2px);
 }
 

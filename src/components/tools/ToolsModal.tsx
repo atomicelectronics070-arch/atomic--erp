@@ -23,9 +23,11 @@ import CryptoBinanceTerminal from "./CryptoBinanceTerminal"
 import ConnectionsConfigModal from "./ConnectionsConfigModal"
 import ThemePainterStudio from "./ThemePainterStudio"
 import SuicideSquadWarRoom from "./SuicideSquadWarRoom"
+import SalesCopyManager from "./SalesCopyManager"
 
 export type ToolTab = 
     | "grid"
+    | "sales_copy_messages"
     | "suicide_squad"
     | "anydesk"
     | "zoom"
@@ -333,6 +335,18 @@ export default function ToolsModal({
     // TOOLS DEFINITIONS FOR SQUARE GRID
     // ─────────────────────────────────────────────────────────────
     const TOOLS_LIST = [
+        {
+            id: "sales_copy_messages" as ToolTab,
+            category: "ai",
+            title: "Mensajes para Copiar y Pegar",
+            shortTitle: "Scripts Marketplace",
+            badge: "VENTAS & WHATSAPP",
+            badgeColor: "bg-emerald-500/25 text-emerald-300 border-emerald-500/50",
+            icon: MessageSquare,
+            color: "text-emerald-400 bg-emerald-500/15 border-emerald-500/40",
+            glow: "rgba(16,185,129,0.4)",
+            desc: "Bienvenida Marketplace, link de tienda, captura de WhatsApp y cierres rápidos"
+        },
         {
             id: "suicide_squad" as ToolTab,
             category: "ai",
@@ -987,6 +1001,9 @@ export default function ToolsModal({
 
                     {/* VIEW 12: SUICIDE SQUAD WAR ROOM */}
                     {activeTab === "suicide_squad" && <SuicideSquadWarRoom />}
+
+                    {/* VIEW 13: MENSAJES PARA COPIAR Y PEGAR (SCRIPTS MARKETPLACE) */}
+                    {activeTab === "sales_copy_messages" && <SalesCopyManager onClose={() => setActiveTab("grid")} />}
                 </div>
             </motion.div>
         </div>

@@ -8,6 +8,7 @@ import {
     Video, MessageSquare, AlertCircle, FileText, Send, DollarSign, Download, Check, X, ChevronUp, ChevronDown, Sparkles, Filter, Database, UserCheck, ShieldCheck
 } from "lucide-react"
 import AdvisorsTabContent from "@/components/coordinacion/AdvisorsTabContent"
+import SalesCopyManager from "@/components/tools/SalesCopyManager"
 
 export default function CoordinacionPage() {
     const { data: session, status } = useSession()
@@ -21,7 +22,7 @@ export default function CoordinacionPage() {
     const [quotesError, setQuotesError] = useState<string | null>(null)
     const [quoteFilter, setQuoteFilter] = useState<"ALL" | "DRAFT" | "APPROVED" | "REJECTED">("ALL")
     
-    const [activeTab, setActiveTab] = useState<"ASESORES" | "BITACORA" | "COTIZACIONES" | "SCRAPER">("ASESORES")
+    const [activeTab, setActiveTab] = useState<"ASESORES" | "BITACORA" | "COTIZACIONES" | "SCRAPER" | "SCRIPTS">("ASESORES")
     
     const [notices, setNotices] = useState("")
     const [publishToSocial, setPublishToSocial] = useState(false)
@@ -416,7 +417,26 @@ export default function CoordinacionPage() {
                     <Database size={16} />
                     <span>SCRAPER & PROSPECCIÓN</span>
                 </button>
+
+                <button
+                    onClick={() => setActiveTab("SCRIPTS")}
+                    className={`flex-1 sm:flex-initial px-6 py-3 rounded-xl font-mono font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 ${
+                        activeTab === "SCRIPTS"
+                            ? "bg-gradient-to-r from-blue-600 via-[#026CDF] to-cyan-500 text-white shadow-[0_0_20px_rgba(2,108,223,0.4)] scale-105"
+                            : "text-slate-400 hover:text-white hover:bg-slate-800/60"
+                    }`}
+                >
+                    <MessageSquare size={16} />
+                    <span>💬 SCRIPTS MARKETPLACE (COPIAR/PEGAR)</span>
+                </button>
             </div>
+
+            {/* ── TAB SCRIPTS: MENSAJES PARA COPIAR Y PEGAR ── */}
+            {activeTab === "SCRIPTS" && (
+                <div className="bg-slate-900 border border-slate-800 p-6 rounded-3xl animate-in fade-in duration-300">
+                    <SalesCopyManager />
+                </div>
+            )}
 
             {/* ── TAB 0: ASESORES & CONTRATOS ── */}
             {activeTab === "ASESORES" && (

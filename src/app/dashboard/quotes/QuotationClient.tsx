@@ -15,6 +15,7 @@ import autoTable from "jspdf-autotable"
 import { QRCodeCanvas } from "qrcode.react"
 import { calculateDiscountedPrice } from "@/lib/utils/pricing"
 import { generateAtomicUnifiedProposalPDF } from "@/lib/pdf/quotePdfGenerator"
+import SalesCopyManager from "@/components/tools/SalesCopyManager"
 
 const safeParseArray = (str: any, fallback: any = []) => {
     if (!str) return fallback;
@@ -201,6 +202,7 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
     const [systemUsers, setSystemUsers] = useState<any[]>([])
     const [shareMessage, setShareMessage] = useState<string>('')
     const [isSharingQuote, setIsSharingQuote] = useState(false)
+    const [showSalesCopyModal, setShowSalesCopyModal] = useState(false)
 
     // Quick Generator States
     const [quickText, setQuickText] = useState("")
@@ -1033,6 +1035,13 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                         {isNativeSharing ? "Preparando..." : "📲 Compartir"}
                     </button>
                     <button 
+                        onClick={() => setShowSalesCopyModal(true)}
+                        className="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-[#026CDF] hover:from-blue-500 hover:to-[#0053CD] text-white font-black text-xs uppercase tracking-wider rounded-2xl transition-all flex items-center gap-2 shadow-[0_0_15px_rgba(2,108,223,0.3)]"
+                        title="Abrir mensajes y scripts de bienvenida para Marketplace y WhatsApp"
+                    >
+                        <MessageSquare size={15} /> 💬 Mensajes para Copiar
+                    </button>
+                    <button 
                         onClick={handleGenerateTicket}
                         className="px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-black text-xs uppercase tracking-wider rounded-2xl transition-all flex items-center gap-2 shadow-[0_0_15px_rgba(99,102,241,0.3)]"
                     >
@@ -1838,6 +1847,47 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                                         </button>
                                     )}
                                 </div>
+                            </div>
+                        </motion.div>
+                    </>
+                )}
+            </AnimatePresence>
+
+            {/* Modal de Mensajes para Copiar y Pegar (Scripts Marketplace & WhatsApp) */}
+            <AnimatePresence>
+                {showSalesCopyModal && (
+                    <>
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setShowSalesCopyModal(false)}
+                            className="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-50"
+                        />
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className="fixed inset-4 sm:inset-8 md:inset-12 lg:inset-16 max-w-5xl mx-auto my-auto bg-white rounded-3xl z-50 overflow-hidden shadow-2xl border border-slate-200 flex flex-col max-h-[92vh]"
+                        >
+                            <div className="p-4 sm:p-5 border-b border-slate-200 flex items-center justify-between bg-slate-50 shrink-0">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-8 h-8 rounded-xl bg-[#026CDF]/10 border border-[#026CDF]/20 flex items-center justify-center text-[#026CDF]">
+                                        <MessageSquare size={16} />
+                                    </div>
+                                    <h3 className="text-sm font-black text-slate-900 uppercase tracking-tight">
+                                        Scripts de Ventas & Marketplace (ATOMIC ERP)
+                                    </h3>
+                                </div>
+                                <button
+                                    onClick={() => setShowSalesCopyModal(false)}
+                                    className="p-2 rounded-full hover:bg-slate-200 text-slate-500 hover:text-slate-800 transition-colors"
+                                >
+                                    <X size={18} />
+                                </button>
+                            </div>
+                            <div className="p-4 sm:p-6 overflow-y-auto flex-1 bg-white">
+                                <SalesCopyManager onClose={() => setShowSalesCopyModal(false)} />
                             </div>
                         </motion.div>
                     </>

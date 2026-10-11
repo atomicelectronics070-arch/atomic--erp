@@ -17,6 +17,7 @@ interface ThemePalette {
 }
 
 const PRESET_PALETTES: ThemePalette[] = [
+    { name: "Ticketmaster Blanco (Por Defecto)", primary: "#026cdf", glow: "rgba(2, 108, 223, 0.25)", bgBase: "#ffffff", cardBg: "#f8fafc", borderColor: "#e2e8f0" },
     { name: "Cyan Neón (Oficial)", primary: "#06b6d4", glow: "rgba(6, 182, 212, 0.4)", bgBase: "#050914", cardBg: "#070c1d", borderColor: "rgba(6, 182, 212, 0.3)" },
     { name: "Verde Esmeralda Matrix", primary: "#10b981", glow: "rgba(16, 185, 129, 0.4)", bgBase: "#02120a", cardBg: "#051c11", borderColor: "rgba(16, 185, 129, 0.3)" },
     { name: "Púrpura Cyberpunk", primary: "#a855f7", glow: "rgba(168, 85, 247, 0.4)", bgBase: "#0b0518", cardBg: "#120a24", borderColor: "rgba(168, 85, 247, 0.3)" },
@@ -26,10 +27,10 @@ const PRESET_PALETTES: ThemePalette[] = [
 ]
 
 export default function ThemePainterStudio() {
-    const [primaryColor, setPrimaryColor] = useState("#06b6d4")
-    const [bgBaseColor, setBgBaseColor] = useState("#050914")
-    const [cardBgColor, setCardBgColor] = useState("#070c1d")
-    const [glowIntensity, setGlowIntensity] = useState(40)
+    const [primaryColor, setPrimaryColor] = useState("#026cdf")
+    const [bgBaseColor, setBgBaseColor] = useState("#ffffff")
+    const [cardBgColor, setCardBgColor] = useState("#f8fafc")
+    const [glowIntensity, setGlowIntensity] = useState(25)
     const [appliedSuccess, setAppliedSuccess] = useState(false)
 
     // Load saved custom palette
