@@ -41,7 +41,7 @@ export default function SalesCopyManager({
     const [sellerName, setSellerName] = useState(session?.user?.name || "Asesor Comercial")
     const [clientName, setClientName] = useState("")
     const [product, setProduct] = useState("Equipos de Tecnología y Seguridad")
-    const [storeUrl, setStoreUrl] = useState("https://atomiccotizador.shop/web")
+    const [storeUrl, setStoreUrl] = useState("https://atomiccotizador.shop/bienvenida")
     const [sellerPhone, setSellerPhone] = useState((session?.user as any)?.phone || "0969043453")
     const [clientPhone, setClientPhone] = useState("")
     const [city, setCity] = useState("Quito")
@@ -57,7 +57,7 @@ export default function SalesCopyManager({
         sellerName: sellerName.trim() || "Asesor",
         clientName: clientName.trim() ? ` ${clientName.trim()}` : "",
         product: product.trim() || "el producto",
-        storeUrl: storeUrl.trim() || "https://atomiccotizador.shop/web",
+        storeUrl: storeUrl.trim() || "https://atomiccotizador.shop/bienvenida",
         sellerPhone: sellerPhone.trim() || "0969043453",
         clientPhone: clientPhone.trim(),
         city: city.trim() || "Quito"
@@ -67,7 +67,7 @@ export default function SalesCopyManager({
     const SCRIPTS: SalesScript[] = [
         {
             id: "bienvenida_marketplace",
-            title: "🌟 Bienvenida Marketplace (Saludar + Tienda Web + Pedir WhatsApp)",
+            title: "🌟 Bienvenida Marketplace (Saludar + Portal Bienvenida + Pedir WhatsApp)",
             category: "marketplace",
             badge: "MÁS UTILIZADO",
             badgeColor: "bg-emerald-500/10 text-emerald-600 border-emerald-500/30",
@@ -76,7 +76,7 @@ export default function SalesCopyManager({
             template: (v) => 
 `¡Hola${v.clientName}! 👋 Qué tal, un gusto saludarte. Con mucho gusto te ayudo con toda la información y disponibilidad de ${v.product} en ATOMIC Solutions 🇪🇨.
 
-Te invito a ver nuestro catálogo completo, fotos reales en alta definición y promociones oficiales en nuestra tienda online:
+Te invito a ver nuestro portal oficial de bienvenida, referencias verificadas y catálogo completo con promociones:
 👉 ${v.storeUrl}
 
 Por este medio a veces las respuestas se demoran; ¿cuál es tu número de WhatsApp para enviarte de inmediato la ficha técnica completa, videos de prueba y el catálogo con precios especiales y garantía oficial de 1 año?`

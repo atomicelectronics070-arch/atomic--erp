@@ -25,16 +25,9 @@ if (fs.existsSync(src)) {
   process.exit(1);
 }
 
-// Extract logo from Excel drawing layer
-if (templateBuffer) {
-  try {
-    const unzipped = fflate.unzipSync(new Uint8Array(templateBuffer));
-    const imgKey = Object.keys(unzipped).find(k => k.startsWith('xl/media/image1.') || k.startsWith('xl/media/'));
-    if (imgKey && unzipped[imgKey]) {
-      fs.writeFileSync(dstLogo, Buffer.from(unzipped[imgKey]));
-      console.log('✅ [OK] Logo oficial extraído a ' + dstLogo);
-    }
-  } catch (err) {
-    console.warn('⚠️ No se pudo extraer el logo automáticamente:', err.message);
-  }
+// Use official ATOMIC brand mark for dstLogo
+const realIcon = path.join(__dirname, '..', 'public', 'icon-192.png');
+if (fs.existsSync(realIcon)) {
+  fs.copyFileSync(realIcon, dstLogo);
+  console.log('✅ [OK] Logo oficial ATOMIC icon-192 vinculado a ' + dstLogo);
 }

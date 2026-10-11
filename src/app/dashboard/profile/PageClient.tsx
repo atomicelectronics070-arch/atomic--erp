@@ -25,6 +25,16 @@ interface ThemeOption {
 
 const SYSTEM_THEMES: ThemeOption[] = [
     {
+        id: "ticketmaster-white",
+        name: "Ticketmaster Blanco (Por Defecto)",
+        desc: "Limpio, profesional, blanco ejecutivo y azul Ticketmaster #026CDF",
+        primaryColor: "#026CDF",
+        accentColor: "#0F172A",
+        bgGrad: "from-blue-500/10 via-slate-100 to-white",
+        borderClass: "border-blue-500/40 text-blue-600",
+        badgeBg: "bg-blue-50 text-blue-600 border-blue-200"
+    },
+    {
         id: "cyber-neon",
         name: "Cyber Neon (Cyan & Indigo)",
         desc: "La estética oficial de alto contraste de ATOMIC",
@@ -251,40 +261,75 @@ export default function ProfilePage() {
                 <div className="absolute bottom-0 left-1/3 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
 
                 <div className="relative z-10 flex flex-col md:flex-row items-center md:items-start gap-6">
-                    {/* Avatar */}
-                    <div className="relative group shrink-0">
-                        <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-3xl bg-slate-950 border-2 border-cyan-500/40 p-1 shadow-[0_0_30px_rgba(6,182,212,0.25)] flex items-center justify-center overflow-hidden">
-                            {formData.profilePicture ? (
-                                <img src={formData.profilePicture} alt="Avatar" className="w-full h-full object-cover rounded-2xl" />
-                            ) : (
-                                <div className="w-full h-full rounded-2xl bg-gradient-to-br from-cyan-600 to-indigo-700 flex items-center justify-center text-white text-4xl font-black italic">
-                                    {formData.name?.[0] || session?.user?.name?.[0] || "A"}
-                                </div>
-                            )}
-                        </div>
-                        <label className="absolute inset-0 bg-black/60 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center cursor-pointer text-white text-[10px] font-bold uppercase gap-1">
-                            <Camera size={20} />
-                            <span>Cambiar</span>
-                            <input 
-                                type="file" 
-                                accept="image/*" 
-                                className="hidden" 
-                                onChange={(e) => {
-                                    const file = e.target.files?.[0]
-                                    if (file) {
-                                        const reader = new FileReader()
-                                        reader.onload = (ev) => {
-                                            if (ev.target?.result) {
-                                                setFormData(prev => ({ ...prev, profilePicture: ev.target!.result as string }))
+                    {/* Avatar & Controls */}
+                    <div className="flex flex-col items-center gap-2.5 shrink-0">
+                        <div className="relative group">
+                            <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-3xl bg-slate-950 border-2 border-cyan-500/40 p-1 shadow-[0_0_30px_rgba(6,182,212,0.25)] flex items-center justify-center overflow-hidden">
+                                {formData.profilePicture ? (
+                                    <img src={formData.profilePicture} alt="Avatar" className="w-full h-full object-cover rounded-2xl" />
+                                ) : (
+                                    <div className="w-full h-full rounded-2xl bg-gradient-to-br from-cyan-600 to-indigo-700 flex items-center justify-center text-white text-4xl font-black italic">
+                                        {formData.name?.[0] || session?.user?.name?.[0] || "A"}
+                                    </div>
+                                )}
+                            </div>
+                            <label className="absolute inset-0 bg-black/60 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center cursor-pointer text-white text-[10px] font-bold uppercase gap-1">
+                                <Camera size={20} />
+                                <span>Cambiar</span>
+                                <input 
+                                    type="file" 
+                                    accept="image/*" 
+                                    className="hidden" 
+                                    onChange={(e) => {
+                                        const file = e.target.files?.[0]
+                                        if (file) {
+                                            const reader = new FileReader()
+                                            reader.onload = (ev) => {
+                                                if (ev.target?.result) {
+                                                    setFormData(prev => ({ ...prev, profilePicture: ev.target!.result as string }))
+                                                }
                                             }
+                                            reader.readAsDataURL(file)
                                         }
-                                        reader.readAsDataURL(file)
-                                    }
-                                }}
-                            />
-                        </label>
-                        <div className="absolute -bottom-2 -right-2 bg-emerald-500 text-black text-[9px] font-black px-2 py-0.5 rounded-full border-2 border-slate-900 shadow-md">
-                            ONLINE
+                                    }}
+                                />
+                            </label>
+                            <div className="absolute -bottom-2 -right-2 bg-emerald-500 text-black text-[9px] font-black px-2 py-0.5 rounded-full border-2 border-slate-900 shadow-md">
+                                ONLINE
+                            </div>
+                        </div>
+
+                        {/* Quick Action Buttons */}
+                        <div className="flex items-center gap-2">
+                            <label className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 text-[11px] font-bold cursor-pointer transition border border-slate-700 shadow-sm">
+                                <Camera size={13} />
+                                <span>Subir Foto</span>
+                                <input 
+                                    type="file" 
+                                    accept="image/*" 
+                                    className="hidden" 
+                                    onChange={(e) => {
+                                        const file = e.target.files?.[0]
+                                        if (file) {
+                                            const reader = new FileReader()
+                                            reader.onload = (ev) => {
+                                                if (ev.target?.result) {
+                                                    setFormData(prev => ({ ...prev, profilePicture: ev.target!.result as string }))
+                                                }
+                                            }
+                                            reader.readAsDataURL(file)
+                                        }
+                                    }}
+                                />
+                            </label>
+                            <button
+                                type="button"
+                                onClick={() => setFormData(prev => ({ ...prev, profilePicture: "/icon-192.png" }))}
+                                className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 text-[11px] font-bold transition border border-blue-500/30 cursor-pointer"
+                                title="Usar logo de átomo oficial como foto de perfil"
+                            >
+                                <span>⚛ Logo Oficial</span>
+                            </button>
                         </div>
                     </div>
 

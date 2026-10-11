@@ -48,6 +48,24 @@ async function fetchQuoteLogo(): Promise<string | null> {
   if (cachedLogoBase64) return cachedLogoBase64;
   if (typeof window === "undefined") return null;
 
+  // 1. Direct official brand icon
+  try {
+    const iconRes = await fetch("/icon-192.png");
+    if (iconRes.ok) {
+      const blob = await iconRes.blob();
+      const reader = new FileReader();
+      const b64 = await new Promise<string>((resolve) => {
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.readAsDataURL(blob);
+      });
+      if (b64) {
+        cachedLogoBase64 = b64;
+        return b64;
+      }
+    }
+  } catch (_) {}
+
+  // 2. Fallback to API endpoint
   try {
     const res = await fetch("/api/quotes/logo");
     if (res.ok) {
@@ -60,22 +78,6 @@ async function fetchQuoteLogo(): Promise<string | null> {
   } catch (err) {
     console.warn("Could not retrieve logo from /api/quotes/logo:", err);
   }
-
-  try {
-    const imgRes = await fetch("/templates/atomic_quote_logo.png");
-    if (imgRes.ok) {
-      const blob = await imgRes.blob();
-      const reader = new FileReader();
-      const b64 = await new Promise<string>((resolve) => {
-        reader.onloadend = () => resolve(reader.result as string);
-        reader.readAsDataURL(blob);
-      });
-      if (b64) {
-        cachedLogoBase64 = b64;
-        return b64;
-      }
-    }
-  } catch (_) {}
 
   return null;
 }
@@ -115,25 +117,48 @@ export async function generateAtomicUnifiedProposalPDF(data: UnifiedQuoteData) {
     ? data.quoteNumber
     : `PROP-${data.quoteNumber.replace(/^[A-Z]+-/, "")}`;
 
-  // Try to load the official company logo from the Excel master template
+  // Try to load the official company logo
   const logoBase64 = await fetchQuoteLogo();
 
   // ═══════════════════════════════════════════════════
-  // 1. CABECERA: LOGO (A1:D4) & CÓDIGO PROFORMA (E1)
+  // 1. CABECERA: LOGO & MARCA ATOMIC + CÓDIGO PROFORMA
   // ═══════════════════════════════════════════════════
-  const topY = 12;
+  const topY = 11;
 
   if (logoBase64) {
     try {
-      // Dimensions matching Excel rows A1:D4 (approx 56mm x 22mm)
-      doc.addImage(logoBase64, "PNG", marginLeft, topY, 56, 21);
+      // Crisp 1:1 square atom icon matching brand specifications
+      doc.addImage(logoBase64, "PNG", marginLeft, topY, 18, 18);
     } catch (e) {
       console.warn("Failed drawing base64 logo in jsPDF, rendering fallback:", e);
-      renderVectorLogo(doc, marginLeft, topY);
+      renderVectorAtomIcon(doc, marginLeft, topY);
     }
   } else {
-    renderVectorLogo(doc, marginLeft, topY);
+    renderVectorAtomIcon(doc, marginLeft, topY);
   }
+
+  // Official corporate typography next to the atom icon
+  const brandTextX = marginLeft + 21;
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(16);
+  doc.setTextColor(15, 23, 42); // Dark Navy #0F172A
+  doc.text("ATOMIC", brandTextX, topY + 6);
+
+  const atomicW = doc.getTextWidth("ATOMIC");
+  doc.setFontSize(12);
+  doc.setTextColor(2, 108, 223); // Ticketmaster Blue #026CDF
+  doc.text("SOLUTIONS", brandTextX + atomicW + 2, topY + 6);
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(6.5);
+  doc.setTextColor(51, 65, 85);
+  doc.text("INGENIERÍA & SOLUCIONES TECNOLÓGICAS · ECUADOR", brandTextX, topY + 10.5);
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(5.8);
+  doc.setTextColor(100, 116, 139);
+  doc.text("RUC: 1723948291001 · Matriz: Quito, Ecuador · Cobertura Nacional", brandTextX, topY + 14);
+  doc.text("Telf: 0999047979 / 0969043453 · info@atomiccotizador.shop", brandTextX, topY + 17.2);
 
   // Badge Derecha: CÓDIGO DE COTIZACIÓN (Celda E1 de Excel)
   const badgeWidth = 54;
@@ -562,25 +587,24 @@ export async function generateAtomicUnifiedProposalPDF(data: UnifiedQuoteData) {
   };
 }
 
+function renderVectorAtomIcon(doc: jsPDF, x: number, y: number) {
+  const cx = x + 9;
+  const cy = y + 9;
+
+  // Outer orbital rings (Navy slate)
+  doc.setDrawColor(15, 23, 42);
+  doc.setLineWidth(0.4);
+
+  // Vertical ellipse
+  doc.ellipse(cx, cy, 3.8, 8.2, "S");
+  // Diagonal ellipse 1 (approximated with balanced radius)
+  doc.ellipse(cx, cy, 7.8, 4.2, "S");
+
+  // Center nucleus (Orange #EA580C)
+  doc.setFillColor(234, 88, 12);
+  doc.circle(cx, cy, 2.3, "F");
+}
+
 function renderVectorLogo(doc: jsPDF, x: number, y: number) {
-  // Red badge accent
-  doc.setFillColor(220, 38, 38);
-  doc.rect(x, y + 2, 3.5, 14, "F");
-
-  // ATOMIC Text
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(18);
-  doc.setTextColor(15, 23, 42);
-  doc.text("ATOMIC", x + 6, y + 9);
-
-  // SOLUTIONS Text
-  doc.setFontSize(11);
-  doc.setTextColor(37, 99, 235);
-  doc.text("SOLUTIONS", x + 38, y + 9);
-
-  // Subtitle
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(6.5);
-  doc.setTextColor(100, 116, 139);
-  doc.text("TECNOLOGÍA, ELECTRÓNICA & EQUIPAMIENTO EMPRESARIAL", x + 6, y + 14);
+  renderVectorAtomIcon(doc, x, y);
 }

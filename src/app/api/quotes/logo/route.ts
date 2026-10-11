@@ -1,6 +1,5 @@
 import fs from "fs";
 import path from "path";
-import * as fflate from "fflate";
 import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
@@ -13,49 +12,32 @@ function loadLogoFromTemplate(): { base64: string; buffer: Buffer } | null {
     return { base64: cachedBase64, buffer: cachedBuffer };
   }
 
-  const candidatePaths = [
-    path.join(process.cwd(), "public", "templates", "quote_template_atomic.xlsx"),
-    path.join(process.cwd(), "public", "templates", "atomic_quote_logo.png"),
-    "C:\\Users\\SANTIAGO\\Downloads\\PROP-09-71_Anthony_Ávila_..xlsx"
+  // 1. Official Atomic brand icon
+  const iconPaths = [
+    path.join(process.cwd(), "public", "icon-192.png"),
+    path.join(process.cwd(), "public", "apple-icon.png"),
+    path.join(process.cwd(), "public", "icon-64.png"),
+    path.join(process.cwd(), "public", "icon-32.png"),
   ];
 
-  // 1. Direct png file if already extracted
-  const directPng = path.join(process.cwd(), "public", "templates", "atomic_quote_logo.png");
-  if (fs.existsSync(directPng)) {
-    try {
-      const buf = fs.readFileSync(directPng);
-      cachedBuffer = buf;
-      cachedBase64 = `data:image/png;base64,${buf.toString("base64")}`;
-      return { base64: cachedBase64, buffer: cachedBuffer };
-    } catch (_) {}
-  }
-
-  // 2. Extract from Excel template
-  for (const tPath of candidatePaths) {
-    if (tPath.endsWith(".xlsx") && fs.existsSync(tPath)) {
+  for (const iconPath of iconPaths) {
+    if (fs.existsSync(iconPath)) {
       try {
-        const fileBytes = fs.readFileSync(tPath);
-        const unzipped = fflate.unzipSync(new Uint8Array(fileBytes));
-        
-        // Find image in zip
-        const imgKey = Object.keys(unzipped).find(k => k.startsWith("xl/media/image1.") || k.startsWith("xl/media/"));
-        if (imgKey && unzipped[imgKey]) {
-          const buf = Buffer.from(unzipped[imgKey]);
-          cachedBuffer = buf;
-          cachedBase64 = `data:image/png;base64,${buf.toString("base64")}`;
+        const buf = fs.readFileSync(iconPath);
+        cachedBuffer = buf;
+        cachedBase64 = `data:image/png;base64,${buf.toString("base64")}`;
 
-          // Cache to public directory for static serving
-          try {
-            const outPng = path.join(process.cwd(), "public", "templates", "atomic_quote_logo.png");
-            const dir = path.dirname(outPng);
-            if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-            fs.writeFileSync(outPng, buf);
-          } catch (_) {}
+        // Overwrite any legacy/stale parking barrier image
+        try {
+          const outPng = path.join(process.cwd(), "public", "templates", "atomic_quote_logo.png");
+          const dir = path.dirname(outPng);
+          if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+          fs.writeFileSync(outPng, buf);
+        } catch (_) {}
 
-          return { base64: cachedBase64, buffer: cachedBuffer };
-        }
-      } catch (err) {
-        console.warn(`[API/quotes/logo] Failed unzipping ${tPath}:`, err);
+        return { base64: cachedBase64, buffer: cachedBuffer };
+      } catch (e) {
+        console.warn(`[API/quotes/logo] Error reading ${iconPath}:`, e);
       }
     }
   }
@@ -70,7 +52,7 @@ export async function GET(req: Request) {
 
     const logo = loadLogoFromTemplate();
     if (!logo) {
-      return NextResponse.json({ success: false, error: "Logo no encontrado en la plantilla" }, { status: 404 });
+      return NextResponse.json({ success: false, error: "Logo no encontrado" }, { status: 404 });
     }
 
     if (format === "png") {
@@ -78,14 +60,14 @@ export async function GET(req: Request) {
         status: 200,
         headers: {
           "Content-Type": "image/png",
-          "Cache-Control": "public, max-age=31536000, immutable"
-        }
+          "Cache-Control": "public, max-age=31536000, immutable",
+        },
       });
     }
 
     return NextResponse.json({
       success: true,
-      base64: logo.base64
+      base64: logo.base64,
     });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
