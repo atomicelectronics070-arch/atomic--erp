@@ -230,6 +230,9 @@ export default function DashboardLayout({
                     {(role === "ADMIN" || role === "COORDINATOR" || role === "MANAGEMENT") && (
                         <GlassNavItem href="/dashboard/coordinacion" icon={<Users size={18} strokeWidth={1.8} />} label="Coordinación" isActive={pathname.startsWith('/dashboard/coordinacion')} />
                     )}
+                    {(role === "ADMIN" || role === "COORDINATOR" || role === "MANAGEMENT") && (
+                        <GlassNavItem href="/dashboard/supervision" icon={<Shield size={18} strokeWidth={1.8} />} label="Supervisión" isActive={pathname.startsWith('/dashboard/supervision')} />
+                    )}
                     <GlassNavItem href="/dashboard/map-prospecting" icon={<Map size={18} strokeWidth={1.8} />} label="Prospección" isActive={pathname.startsWith('/dashboard/map-prospecting')} />
                     <GlassNavItem href="/dashboard/formularios" icon={<FileSpreadsheet size={18} strokeWidth={1.8} />} label="Contactos Web" isActive={pathname.startsWith('/dashboard/formularios')} />
                     

@@ -4,6 +4,7 @@ import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { sanitizeProductPrice, sanitizeProductImage } from "@/lib/productSanitizer"
 
 // Category mapping definition for each Suicide Squad
 const SQUADS_CONFIG = [
@@ -502,15 +503,21 @@ export async function GET(req: Request) {
                 take: limit
             })
 
-            // Format with explicit PVP Público and public product URL
+            // Format with explicit PVP Público, sanitized prices and fallback images
             const products = rawProducts.map(p => {
-                const pvp = p.price
+                const categoryName = p.category?.name || ""
+                const priceCheck = sanitizeProductPrice(p.name, p.price, categoryName)
+                const pvp = priceCheck.price
                 const distributorPrice = p.compareAtPrice && p.compareAtPrice > 0 ? p.compareAtPrice : null
                 const publicUrl = `https://atomiccotizador.shop/web/product/${p.id}`
+                const sanitizedImage = sanitizeProductImage(p.name, p.images, categoryName)
 
                 return {
                     ...p,
+                    price: pvp,
                     pvp,
+                    images: JSON.stringify([sanitizedImage]),
+                    isPriceSanitized: priceCheck.isSanitized,
                     distributorPrice,
                     publicUrl,
                     whatsappPitch: `*${p.name}*\n🏷️ *PVP Público:* $${pvp.toFixed(2)} (Inc. IVA)\n📦 Stock: ${p.stock > 0 ? `${p.stock} unid.` : 'Bajo Pedido'}\n🔗 Comprar aquí: ${publicUrl}`

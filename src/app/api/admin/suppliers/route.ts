@@ -20,10 +20,65 @@ export interface SupplierItem {
     warrantyNotes: string
     internalNotes?: string
     isPreferred?: boolean
+    supplierType?: "MARCA" | "DISTRIBUIDOR" | "SERVICIO" | "IMPORTADOR"
     updatedAt: string
 }
 
 const DEFAULT_SUPPLIERS: SupplierItem[] = [
+    {
+        id: "sup-megatek-ec",
+        name: "Megatek Ecuador (Importador Tecnológico)",
+        contactName: "Ing. Santiago Andrade",
+        phone: "+593 99 789 0123",
+        email: "ventas@megatek.com.ec",
+        city: "Quito / Guayaquil",
+        address: "Av. Amazonas y Eloy Alfaro, Centro de Distribución Norte",
+        category: "Seguridad & Redes",
+        brands: ["Megatek", "Tuya Smart", "EZVIZ", "Dahua", "Imou", "TP-Link"],
+        discountTerms: "45% de descuento por catálogo mayorista; scraping activo de inventario",
+        creditDays: 30,
+        warrantyNotes: "Garantía de 1 año con cambio inmediato en bodega matriz.",
+        internalNotes: "Proveedor principal de extracción de artículos web y catálogo sincronizado.",
+        isPreferred: true,
+        supplierType: "IMPORTADOR",
+        updatedAt: new Date().toISOString()
+    },
+    {
+        id: "sup-diel-ec",
+        name: "Diel Comunicaciones & Electrónica",
+        contactName: "Lcda. Mónica Viteri",
+        phone: "+593 98 321 6549",
+        email: "distribucion@diel.com.ec",
+        city: "Quito / Cuenca",
+        address: "Av. 10 de Agosto N31-150 y Mariana de Jesús",
+        category: "Cerraduras & CCTV",
+        brands: ["Diel", "ZKTeco", "Dahua", "Chapas Smart", "Cable UTP"],
+        discountTerms: "Margen distribuidor 35% en cerraduras digitales y kits de videoporteros",
+        creditDays: 30,
+        warrantyNotes: "Garantía de 1 año con soporte técnico y repuestos originales.",
+        internalNotes: "Proveedor clave de cerraduras inteligentes N191A y videoporteros analógicos e IP.",
+        isPreferred: true,
+        supplierType: "DISTRIBUIDOR",
+        updatedAt: new Date().toISOString()
+    },
+    {
+        id: "sup-steren-ec",
+        name: "Steren Ecuador (Electrónica & Conectividad)",
+        contactName: "Carlos Alomoto",
+        phone: "+593 99 444 8899",
+        email: "corporativo@steren.com.ec",
+        city: "Quito / Guayaquil / Cuenca",
+        address: "Av. Naciones Unidas y Shyris, C.C. Quicentro Norte",
+        category: "Electrónica & Cables",
+        brands: ["Steren", "Steren Smart Home", "Conectores", "Audio"],
+        discountTerms: "25% de descuento en línea corporativa y componentes electrónicos",
+        creditDays: 15,
+        warrantyNotes: "Garantía de 1 año directa en tiendas Steren a nivel nacional.",
+        internalNotes: "Proveedor directo de baluns, fuentes de poder, convertidores HDMI y cables.",
+        isPreferred: true,
+        supplierType: "MARCA",
+        updatedAt: new Date().toISOString()
+    },
     {
         id: "sup-dahua-nexsys",
         name: "Dahua Technology Ecuador (Nexsys)",
@@ -39,6 +94,7 @@ const DEFAULT_SUPPLIERS: SupplierItem[] = [
         warrantyNotes: "Garantía directa de 2 años en cámaras y 3 años en NVR. RMA express 48h.",
         internalNotes: "Proveedor clave de proyectos residenciales y corporativos. Hablar con Carlos para reservar stock.",
         isPreferred: true,
+        supplierType: "DISTRIBUIDOR",
         updatedAt: new Date().toISOString()
     },
     {
@@ -56,6 +112,7 @@ const DEFAULT_SUPPLIERS: SupplierItem[] = [
         warrantyNotes: "Garantía de 2 años. Cambio inmediato en bodega de Guayaquil para fallas de fábrica.",
         internalNotes: "Excelente catálogo en cámaras ColorVu con audio integrado y sistemas térmicos.",
         isPreferred: true,
+        supplierType: "IMPORTADOR",
         updatedAt: new Date().toISOString()
     },
     {
@@ -73,6 +130,7 @@ const DEFAULT_SUPPLIERS: SupplierItem[] = [
         warrantyNotes: "Garantía 1 año en terminales faciales y cerraduras. Soporte técnico nivel 2 incluido.",
         internalNotes: "Prioridad para proyectos de control de asistencia, torniquetes y chapas electromagnéticas.",
         isPreferred: true,
+        supplierType: "MARCA",
         updatedAt: new Date().toISOString()
     },
     {
@@ -90,6 +148,7 @@ const DEFAULT_SUPPLIERS: SupplierItem[] = [
         warrantyNotes: "Garantía de 1 año en switches PoE y routers industriales.",
         internalNotes: "Recomendado para enlaces de edificios, intercomunicadores IP y PBX virtual.",
         isPreferred: false,
+        supplierType: "MARCA",
         updatedAt: new Date().toISOString()
     },
     {
@@ -101,46 +160,49 @@ const DEFAULT_SUPPLIERS: SupplierItem[] = [
         city: "Guayaquil / Machala",
         address: "C.C. Las Vitrinas, Local 18",
         category: "Alarmas & Cercos",
-        brands: ["JFL Brasil", "Genno"],
+        brands: ["JFL Brasil", "Genno", "Hagroy"],
         discountTerms: "40% en energizadores de cerco eléctrico y 30% en sensores infrarrojos",
         creditDays: 15,
         warrantyNotes: "Cambio inmediato de tarjetas principales ante descarga eléctrica o rayo (1 evento por equipo).",
         internalNotes: "El mejor proveedor en robustez para cerramientos perimetrales y quintas campestres.",
         isPreferred: true,
+        supplierType: "DISTRIBUIDOR",
         updatedAt: new Date().toISOString()
     },
     {
-        id: "sup-ubiquiti-megared",
-        name: "Megared Ecuador (Ubiquiti & MikroTik)",
-        contactName: "David Albarracín",
-        phone: "+593 98 111 2233",
-        email: "david@megared.com.ec",
-        city: "Quito",
-        address: "Av. Orellana E4-44 y 6 de Diciembre",
-        category: "Redes & Wi-Fi",
-        brands: ["Ubiquiti UniFi", "MikroTik", "TP-Link Omada"],
-        discountTerms: "28% sobre PVP; certificación oficial con descuento para técnicos de ATOMIC",
-        creditDays: 30,
-        warrantyNotes: "Garantía de fábrica 1 año. Stock local permanente de antenas NanoStation y APs WiFi 6.",
-        internalNotes: "Comprar aquí todo el equipamiento de enlace para fincas y enlaces punto a punto.",
-        isPreferred: false,
-        updatedAt: new Date().toISOString()
-    },
-    {
-        id: "sup-powest-ups",
-        name: "Powest / APC Schneider (Sistemas de Energía)",
-        contactName: "Gabriela Torres",
-        phone: "+593 99 555 7788",
-        email: "ups.ecuador@powest.com",
-        city: "Guayaquil",
-        address: "Av. Juan Tanca Marengo Km 2.5",
-        category: "Energía & Respaldo",
-        brands: ["Powest", "APC", "Forza", "CSB Battery"],
-        discountTerms: "Descuento por volumen en baterías secas 12V 7Ah / 9Ah ($11.50 neto por unidad por caja de 10)",
-        creditDays: 30,
-        warrantyNotes: "Garantía 2 años en UPS Online y 1 año en bancos de baterías.",
-        internalNotes: "Suministro crítico para garantizar que los sistemas de seguridad sigan operando en cortes de luz.",
+        id: "sup-servientrega-logistica",
+        name: "Servientrega Ecuador (Logística Express)",
+        contactName: "Mesa de Operaciones Corporativas",
+        phone: "+593 2 373 2000",
+        email: "corporativo@servientrega.com.ec",
+        city: "Nacional (24 Provincias)",
+        address: "Av. Eloy Alfaro y De los Granados",
+        category: "Logística & Envíos",
+        brands: ["Servientrega", "Guías con Seguro", "Entrega 24 Horas"],
+        discountTerms: "Tarifa preferencial corporativa ATOMIC $3.80 por guía hasta 2kg asegurada",
+        creditDays: 15,
+        warrantyNotes: "Seguro al 100% del valor declarado ante extravío o siniestro de hardware.",
+        internalNotes: "Servicio aliado para entrega de pedidos a clientes y recepción de repuestos desde bodegas mayoristas.",
         isPreferred: true,
+        supplierType: "SERVICIO",
+        updatedAt: new Date().toISOString()
+    },
+    {
+        id: "sup-lab-calibracion",
+        name: "Laboratorio Técnico RMA & Microelectrónica",
+        contactName: "Ing. Paul Guanochanga",
+        phone: "+593 98 222 7711",
+        email: "laboratorio@atomic.ec",
+        city: "Quito",
+        address: "Laboratorio Técnico Matriz ATOMIC",
+        category: "Servicio Técnico & RMA",
+        brands: ["Diagnóstico RMA", "Micro-soldadura", "Calibración Lentes CCTV"],
+        discountTerms: "Costo interno bonificado para reparaciones y mantenimiento de clientes ATOMIC",
+        creditDays: 30,
+        warrantyNotes: "Garantía de 90 días en cada reparación efectuada con informe técnico firmado.",
+        internalNotes: "Servicio de diagnóstico rápido para fuentes quemadas, NVRs bloqueados y actualización de firmwares.",
+        isPreferred: true,
+        supplierType: "SERVICIO",
         updatedAt: new Date().toISOString()
     }
 ]

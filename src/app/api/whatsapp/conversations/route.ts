@@ -8,7 +8,16 @@ export async function GET(req: Request) {
         const status = searchParams.get('status');
 
         const conversations = await prisma.wAConversation.findMany({
-            where: status ? { status } : {},
+            where: {
+                ...(status ? { status } : {}),
+                contact: {
+                    NOT: [
+                        { whatsappId: { contains: '969043453' } },
+                        { whatsappId: '593969043453' },
+                        { whatsappId: '0969043453' }
+                    ]
+                }
+            },
             include: {
                 contact: true,
                 owner: { select: { name: true, id: true } },

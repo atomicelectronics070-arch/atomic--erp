@@ -2,7 +2,7 @@
 
 import React, { useState } from "react"
 import BarcodeScannerModal, { ScannedProductItem } from "@/components/scanner/BarcodeScannerModal"
-import { Scan, Plus, Box, Download, ArrowRight, ShieldCheck, RefreshCw, Sparkles, Table } from "lucide-react"
+import { Scan, Plus, Box, Download, ArrowRight, ShieldCheck, RefreshCw, Sparkles, Table, Flame } from "lucide-react"
 import Link from "next/link"
 
 export default function ScannerClient() {
@@ -37,7 +37,7 @@ export default function ScannerClient() {
                     </div>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-3">
                     <button
                         onClick={() => setIsScannerOpen(true)}
                         className="px-6 py-3.5 bg-gradient-to-r from-cyan-500 via-teal-500 to-emerald-500 text-slate-950 font-black text-xs uppercase tracking-widest rounded-2xl shadow-[0_0_25px_rgba(6,182,212,0.4)] hover:scale-105 transition-all flex items-center gap-2 cursor-pointer"
@@ -45,6 +45,15 @@ export default function ScannerClient() {
                         <Scan size={18} />
                         <span>Abrir Cámara Escáner</span>
                     </button>
+                    <a
+                        href="/bienvenida"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-5 py-3.5 bg-rose-500/15 hover:bg-rose-500/25 border-2 border-rose-500/40 text-rose-300 rounded-2xl text-xs font-mono font-bold flex items-center gap-2 transition-all cursor-pointer"
+                    >
+                        <Flame size={16} className="text-rose-400 animate-pulse" />
+                        <span>Vitrina Stock Remate</span>
+                    </a>
                     <Link
                         href="/dashboard/matriz-precios"
                         className="px-5 py-3.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 rounded-2xl text-xs font-mono font-bold flex items-center gap-2 transition-all"

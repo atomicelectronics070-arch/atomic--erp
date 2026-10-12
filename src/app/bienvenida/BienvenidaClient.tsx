@@ -24,7 +24,20 @@ import {
   Play,
   FileText,
   BadgeCheck,
+  ShoppingBag,
+  Layers,
+  Search,
+  Check,
+  ArrowRight,
+  Flame,
+  Clock,
+  RefreshCw
 } from "lucide-react";
+import {
+  SUICIDE_SQUAD_CATEGORIES,
+  SuicideSquadCategoryLanding
+} from "@/lib/data/suicideSquadCategories";
+import { generateCategoryCatalogPDF } from "@/lib/pdf/categoryCatalogPdf";
 
 // TikTok custom SVG icon
 function TikTokIcon({ className = "w-5 h-5" }: { className?: string }) {
@@ -36,9 +49,36 @@ function TikTokIcon({ className = "w-5 h-5" }: { className?: string }) {
 }
 
 export default function BienvenidaClient() {
-  const [activeTab, setActiveTab] = useState<"nosotros" | "referencias" | "youtube" | "formulario">("formulario");
+  const [activeTab, setActiveTab] = useState<"formulario" | "remate" | "catalogos" | "nosotros" | "referencias" | "youtube">("formulario");
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [downloadingSlug, setDownloadingSlug] = useState<string | null>(null);
+  const [catalogSearch, setCatalogSearch] = useState("");
+  const [downloadNotification, setDownloadNotification] = useState<string | null>(null);
+
+  // Clearance Stock (Stock de Remate) states
+  const [remateItems, setRemateItems] = useState<any[]>([]);
+  const [loadingRemate, setLoadingRemate] = useState(false);
+  const [remateSearch, setRemateSearch] = useState("");
+
+  const fetchRemateItems = async () => {
+    setLoadingRemate(true);
+    try {
+      const res = await fetch("/api/stock-remate");
+      const data = await res.json();
+      if (data.success && Array.isArray(data.products)) {
+        setRemateItems(data.products);
+      }
+    } catch (e) {
+      console.error("Error loading clearance products:", e);
+    } finally {
+      setLoadingRemate(false);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchRemateItems();
+  }, []);
 
   // Form states
   const [nombre, setNombre] = useState("");
@@ -47,8 +87,10 @@ export default function BienvenidaClient() {
   const [producto, setProducto] = useState("Cámaras de Seguridad & CCTV");
   const [mensaje, setMensaje] = useState("");
 
-  const officialPhone = "+593999047979";
-  const officialPhoneDisplay = "099 904 7979";
+  const officialPhone = "+593963226319";
+  const officialPhoneDisplay = "096 322 6319";
+  const secondaryPhone = "+593999047979";
+  const secondaryPhoneDisplay = "099 904 7979";
   const officialEmail = "ventas@atomiccotizador.shop";
 
   // vCard generator & download
@@ -59,12 +101,17 @@ N:Solutions;ATOMIC;;;
 FN:ATOMIC Solutions Ecuador
 ORG:ATOMIC Solutions S.A.
 TITLE:Tecnología, Domótica & Seguridad Electrónica
-TEL;TYPE=WORK,VOICE:+593999047979
-TEL;TYPE=CELL,VOICE:+593969043453
+TEL;TYPE=WORK,VOICE:${officialPhone}
+TEL;TYPE=CELL,VOICE:${secondaryPhone}
 EMAIL;TYPE=WORK:${officialEmail}
 URL:https://atomiccotizador.shop/bienvenida
 ADR;TYPE=WORK:;;Quito;Pichincha;;Ecuador
 NOTE:Empresa líder en tecnología y equipamiento electrónico. Envíos nacionales Servientrega y Garantía oficial de 1 año.
+X-SOCIALPROFILE;type=tiktok:https://www.tiktok.com/@santiagoguzman216
+X-SOCIALPROFILE;type=instagram:https://www.instagram.com/atomic_industries_26
+X-SOCIALPROFILE;type=youtube:https://youtube.com/@atomicmenquantum
+X-SOCIALPROFILE;type=facebook:https://www.facebook.com/share/14uWsX16BQH/
+X-SOCIALPROFILE;type=tiktok:https://www.tiktok.com/@juanguzman35886
 END:VCARD`;
 
     const blob = new Blob([vCardData], { type: "text/vcard;charset=utf-8;" });
@@ -75,6 +122,21 @@ END:VCARD`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };
+
+  const handleDownloadCategoryPdf = async (cat: SuicideSquadCategoryLanding) => {
+    setDownloadingSlug(cat.slug);
+    try {
+      const ok = await generateCategoryCatalogPDF(cat);
+      if (ok) {
+        setDownloadNotification(`¡Catálogo oficial de ${cat.name} descargado con éxito!`);
+        setTimeout(() => setDownloadNotification(null), 4000);
+      }
+    } catch (e) {
+      console.error("Error downloading category PDF:", e);
+    } finally {
+      setDownloadingSlug(null);
+    }
   };
 
   const handleSubmitLead = async (e: React.FormEvent) => {
@@ -175,35 +237,81 @@ ${mensaje ? `Comentarios: ${mensaje}` : "¿Me pueden ayudar con disponibilidad y
             </div>
           </div>
 
-          {/* Quick CTA Actions */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 mt-6 pt-6 border-t border-[#F1F5F9] relative z-10">
+          {/* Quick CTA Actions (PRIORIZANDO VER PRODUCTOS Y CONTACTO A WHATSAPP) */}
+          <div className="space-y-3 mt-6 pt-6 border-t border-[#F1F5F9] relative z-10">
+            {/* Fila Principal de Alta Prioridad */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <Link
+                href="/bienvenida/categoria"
+                className="flex items-center justify-center gap-2.5 py-4 px-5 rounded-2xl bg-gradient-to-r from-orange-600 via-orange-500 to-amber-500 hover:from-orange-500 hover:to-amber-400 text-white text-xs sm:text-sm font-black uppercase tracking-wider transition-all shadow-lg shadow-orange-500/25 active:scale-95 group text-center"
+              >
+                <ShoppingBag size={18} className="animate-pulse shrink-0" />
+                <span>Ver Productos & Catálogo 2026</span>
+                <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform shrink-0" />
+              </Link>
+
+              <a
+                href={`https://wa.me/593963226319?text=${encodeURIComponent(
+                  "¡Hola ATOMIC Solutions! 👋 Vengo desde la tarjeta de presentación oficial y deseo cotizar productos con asesoría y garantía."
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2.5 py-4 px-5 rounded-2xl bg-[#25D366] hover:bg-[#20ba59] text-white text-xs sm:text-sm font-black uppercase tracking-wider transition-all shadow-lg shadow-emerald-500/25 active:scale-95 text-center"
+              >
+                <MessageCircle size={18} className="shrink-0" />
+                <span>Contacto WhatsApp Inmediato</span>
+              </a>
+            </div>
+
+            {/* 🔥 BANNER BOTÓN STOCK DE REMATE (% OFF) */}
             <button
-              onClick={downloadVCard}
-              className="flex items-center justify-center gap-2 py-3 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition shadow hover:shadow-md cursor-pointer"
+              onClick={() => {
+                setActiveTab("remate");
+                const elem = document.getElementById("seccion-catalogos-tabs");
+                if (elem) elem.scrollIntoView({ behavior: "smooth" });
+              }}
+              className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-rose-600 via-red-600 to-amber-600 hover:from-rose-500 hover:to-amber-500 text-white text-xs sm:text-sm font-black uppercase tracking-wider transition-all shadow-lg shadow-rose-500/25 flex items-center justify-between gap-3 cursor-pointer group active:scale-98"
             >
-              <Download size={14} />
-              <span>Guardar Contacto</span>
+              <div className="flex items-center gap-2.5">
+                <Flame size={20} className="text-yellow-300 animate-pulse shrink-0" />
+                <span className="truncate">🔥 STOCK DE REMATE · HASTA -60% OFF</span>
+              </div>
+              <span className="text-[11px] font-mono font-bold bg-black/30 px-3 py-1 rounded-full shrink-0 group-hover:scale-105 transition-transform flex items-center gap-1">
+                <span>Ver Ofertas</span>
+                <ArrowRight size={12} />
+              </span>
             </button>
 
-            <a
-              href={`https://wa.me/593999047979?text=${encodeURIComponent(
-                "¡Hola ATOMIC Solutions! 👋 Vengo desde el portal de bienvenida de Marketplace y deseo consultar información y promociones."
-              )}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 py-3 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition shadow hover:shadow-md"
-            >
-              <MessageCircle size={14} />
-              <span>WhatsApp Directo</span>
-            </a>
+            {/* Fila Secundaria de Soporte & Catálogo */}
+            <div className="grid grid-cols-3 gap-2">
+              <button
+                onClick={() => {
+                  setActiveTab("catalogos");
+                  const elem = document.getElementById("seccion-catalogos-tabs");
+                  if (elem) elem.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-bold transition shadow cursor-pointer text-center"
+              >
+                <Download size={13} className="shrink-0 text-orange-400" />
+                <span className="truncate">Descargar Catálogo PDF</span>
+              </button>
 
-            <a
-              href="tel:+593999047979"
-              className="col-span-2 sm:col-span-1 flex items-center justify-center gap-2 py-3 px-3 rounded-xl bg-blue-50 hover:bg-blue-100 text-[#026CDF] border border-blue-200 text-xs font-bold transition"
-            >
-              <Phone size={14} />
-              <span>Llamar al Asesor</span>
-            </a>
+              <button
+                onClick={downloadVCard}
+                className="flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 text-[11px] font-bold transition cursor-pointer text-center"
+              >
+                <FileText size={13} className="shrink-0 text-blue-600" />
+                <span className="truncate">Guardar Contacto</span>
+              </button>
+
+              <a
+                href={`tel:${officialPhone}`}
+                className="flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-[#026CDF] border border-blue-200 text-[11px] font-bold transition text-center"
+              >
+                <Phone size={13} className="shrink-0" />
+                <span className="truncate">Llamar al Asesor</span>
+              </a>
+            </div>
           </div>
         </div>
 
@@ -214,104 +322,136 @@ ${mensaje ? `Comentarios: ${mensaje}` : "¿Me pueden ayudar con disponibilidad y
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-black uppercase tracking-wider text-slate-800 flex items-center gap-2">
               <Share2 size={16} className="text-[#026CDF]" />
-              Canales Oficiales de Contacto
+              Canales Oficiales & Redes Sociales ATOMIC
             </h2>
-            <span className="text-[11px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-              ● Atención Activa
+            <span className="text-[11px] font-semibold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200 font-mono">
+              ● En Línea 24/7
             </span>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {/* WhatsApp */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+            {/* 1. WhatsApp Oficial Cotizaciones (PRIORITARIO) */}
             <a
-              href="https://wa.me/593999047979?text=Hola%20ATOMIC%20Solutions%2C%20deseo%20asesoria"
+              href="https://wa.me/593963226319?text=Hola%20ATOMIC%20Solutions%2C%20deseo%20asesoria%20comercial%20y%20precios"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-3 p-3 rounded-2xl bg-[#25D366]/10 hover:bg-[#25D366]/20 border border-[#25D366]/30 text-[#128C7E] transition group"
+              className="flex items-center gap-3 p-3 rounded-2xl bg-[#25D366]/10 hover:bg-[#25D366]/20 border border-[#25D366]/40 text-[#128C7E] transition group shadow-sm hover:shadow"
             >
-              <div className="w-9 h-9 rounded-xl bg-[#25D366] text-white flex items-center justify-center shadow">
-                <MessageCircle size={18} />
+              <div className="w-10 h-10 rounded-xl bg-[#25D366] text-white flex items-center justify-center shadow shrink-0 group-hover:scale-105 transition-transform">
+                <MessageCircle size={20} />
               </div>
               <div className="min-w-0">
-                <p className="text-xs font-black truncate">WhatsApp</p>
-                <p className="text-[10px] text-slate-500 font-mono truncate">099 904 7979</p>
+                <p className="text-xs font-black truncate text-emerald-950">WhatsApp Cotizaciones</p>
+                <p className="text-[10px] text-emerald-700 font-mono truncate font-bold">{officialPhoneDisplay} · Inmediato</p>
               </div>
             </a>
 
-            {/* Instagram */}
+            {/* 2. TikTok Jefe Técnico (ATOMIC ELECTRONICS) */}
             <a
-              href="https://www.instagram.com/atomic.electronics.ec"
+              href="https://www.tiktok.com/@santiagoguzman216?_r=1&_t=ZS-9AU9OLRgZkY"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-3 p-3 rounded-2xl bg-gradient-to-r from-pink-500/10 to-purple-500/10 hover:from-pink-500/20 hover:to-purple-500/20 border border-pink-300 text-pink-700 transition group"
+              className="flex items-center gap-3 p-3 rounded-2xl bg-slate-900/5 hover:bg-slate-900/10 border border-slate-300 text-slate-900 transition group shadow-sm hover:shadow"
             >
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-yellow-500 via-pink-600 to-purple-600 text-white flex items-center justify-center shadow">
-                <Instagram size={18} />
-              </div>
-              <div className="min-w-0">
-                <p className="text-xs font-black truncate">Instagram</p>
-                <p className="text-[10px] text-slate-500 truncate">@atomic.electronics</p>
-              </div>
-            </a>
-
-            {/* TikTok */}
-            <a
-              href="https://www.tiktok.com/@atomic_ecuador_oficial"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-3 p-3 rounded-2xl bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-900 transition group"
-            >
-              <div className="w-9 h-9 rounded-xl bg-black text-white flex items-center justify-center shadow">
+              <div className="w-10 h-10 rounded-xl bg-black text-white flex items-center justify-center shadow shrink-0 group-hover:scale-105 transition-transform">
                 <TikTokIcon className="w-5 h-5" />
               </div>
               <div className="min-w-0">
-                <p className="text-xs font-black truncate">TikTok</p>
-                <p className="text-[10px] text-slate-500 truncate">@atomic_ecuador</p>
+                <p className="text-xs font-black truncate">Jefe Técnico (Pruebas)</p>
+                <p className="text-[10px] text-slate-500 truncate font-mono">@santiagoguzman216 · Demos</p>
               </div>
             </a>
 
-            {/* Facebook */}
+            {/* 3. Instagram Industrias (LÍNEA DE PRODUCTOS) */}
             <a
-              href="https://www.facebook.com/atomicecuador"
+              href="https://www.instagram.com/atomic_industries_26?cplk=bDczYW9xN2F6NXFs"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-3 p-3 rounded-2xl bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-700 transition group"
+              className="flex items-center gap-3 p-3 rounded-2xl bg-gradient-to-r from-pink-500/10 to-purple-500/10 hover:from-pink-500/20 hover:to-purple-500/20 border border-pink-300 text-pink-700 transition group shadow-sm hover:shadow"
             >
-              <div className="w-9 h-9 rounded-xl bg-[#1877F2] text-white flex items-center justify-center shadow">
-                <Facebook size={18} />
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-yellow-500 via-pink-600 to-purple-600 text-white flex items-center justify-center shadow shrink-0 group-hover:scale-105 transition-transform">
+                <Instagram size={20} />
               </div>
               <div className="min-w-0">
-                <p className="text-xs font-black truncate">Facebook</p>
-                <p className="text-[10px] text-slate-500 truncate">Atomic Ecuador</p>
+                <p className="text-xs font-black truncate text-purple-950">Atomic Industrias</p>
+                <p className="text-[10px] text-pink-700 truncate font-mono">@atomic_industries_26</p>
               </div>
             </a>
 
-            {/* YouTube */}
+            {/* 4. YouTube Canal Comercial & Capacitaciones */}
             <a
-              href="https://www.youtube.com/@AtomicSolutionsEc"
+              href="https://youtube.com/@atomicmenquantum?si=jScgTmF2FBGTrObU"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-3 p-3 rounded-2xl bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 transition group"
+              className="flex items-center gap-3 p-3 rounded-2xl bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 transition group shadow-sm hover:shadow"
             >
-              <div className="w-9 h-9 rounded-xl bg-[#FF0000] text-white flex items-center justify-center shadow">
-                <Youtube size={18} />
+              <div className="w-10 h-10 rounded-xl bg-[#FF0000] text-white flex items-center justify-center shadow shrink-0 group-hover:scale-105 transition-transform">
+                <Youtube size={20} />
               </div>
               <div className="min-w-0">
-                <p className="text-xs font-black truncate">YouTube</p>
-                <p className="text-[10px] text-slate-500 truncate">Reviews & Demos</p>
+                <p className="text-xs font-black truncate text-red-950">Canal Comercial & Demos</p>
+                <p className="text-[10px] text-red-600 truncate font-mono">@atomicmenquantum</p>
               </div>
             </a>
 
-            {/* Email */}
+            {/* 5. Facebook Línea de Productos */}
+            <a
+              href="https://www.facebook.com/share/14uWsX16BQH/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-3 p-3 rounded-2xl bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-700 transition group shadow-sm hover:shadow"
+            >
+              <div className="w-10 h-10 rounded-xl bg-[#1877F2] text-white flex items-center justify-center shadow shrink-0 group-hover:scale-105 transition-transform">
+                <Facebook size={20} />
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs font-black truncate text-blue-950">Atomic Industrias FB</p>
+                <p className="text-[10px] text-blue-600 truncate">Línea de Productos Oficial</p>
+              </div>
+            </a>
+
+            {/* 6. TikTok Atomic Home (UNBOXING & REVIEWS) */}
+            <a
+              href="https://www.tiktok.com/@juanguzman35886?_r=1&_t=ZS-9AU9ov9ihow"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-3 p-3 rounded-2xl bg-slate-900/5 hover:bg-slate-900/10 border border-slate-300 text-slate-900 transition group shadow-sm hover:shadow"
+            >
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-slate-900 to-slate-800 text-white flex items-center justify-center shadow shrink-0 group-hover:scale-105 transition-transform">
+                <TikTokIcon className="w-5 h-5" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs font-black truncate">Atomic Home (Unboxing)</p>
+                <p className="text-[10px] text-slate-500 truncate font-mono">@juanguzman35886</p>
+              </div>
+            </a>
+
+            {/* 7. WhatsApp Ventas & Despachos Secundario */}
+            <a
+              href="https://wa.me/593999047979?text=Hola%20ATOMIC%20Solutions%2C%20deseo%20consultar%20mi%20despacho%20Servientrega"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-3 p-3 rounded-2xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-800 transition group shadow-sm hover:shadow"
+            >
+              <div className="w-10 h-10 rounded-xl bg-emerald-700 text-white flex items-center justify-center shadow shrink-0 group-hover:scale-105 transition-transform">
+                <Truck size={18} />
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs font-black truncate">Despachos & Guías</p>
+                <p className="text-[10px] text-emerald-700 truncate font-mono">{secondaryPhoneDisplay} · Servientrega</p>
+              </div>
+            </a>
+
+            {/* 8. Correo Institucional */}
             <a
               href={`mailto:${officialEmail}?subject=Consulta%20desde%20Portal%20ATOMIC`}
-              className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 transition group"
+              className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 transition group shadow-sm hover:shadow"
             >
-              <div className="w-9 h-9 rounded-xl bg-slate-700 text-white flex items-center justify-center shadow">
+              <div className="w-10 h-10 rounded-xl bg-slate-700 text-white flex items-center justify-center shadow shrink-0 group-hover:scale-105 transition-transform">
                 <Mail size={18} />
               </div>
               <div className="min-w-0">
-                <p className="text-xs font-black truncate">Correo</p>
+                <p className="text-xs font-black truncate">Correo Legal</p>
                 <p className="text-[10px] text-slate-500 truncate">ventas@atomic...</p>
               </div>
             </a>
@@ -319,9 +459,9 @@ ${mensaje ? `Comentarios: ${mensaje}` : "¿Me pueden ayudar con disponibilidad y
         </div>
 
         {/* ═══════════════════════════════════════════════════ */}
-        {/* 3. TABS DE NAVEGACIÓN (FORMULARIO, NOSOTROS, REFERENCIAS, YOUTUBE) */}
+        {/* 3. TABS DE NAVEGACIÓN (FORMULARIO, CATÁLOGOS PDF, NOSOTROS, REFERENCIAS, YOUTUBE) */}
         {/* ═══════════════════════════════════════════════════ */}
-        <div className="flex items-center justify-between border-b border-[#E2E8F0] gap-1 overflow-x-auto pb-1">
+        <div id="seccion-catalogos-tabs" className="flex items-center justify-between border-b border-[#E2E8F0] gap-1 overflow-x-auto pb-1">
           <button
             onClick={() => setActiveTab("formulario")}
             className={`flex items-center gap-2 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer ${
@@ -331,7 +471,31 @@ ${mensaje ? `Comentarios: ${mensaje}` : "¿Me pueden ayudar con disponibilidad y
             }`}
           >
             <Send size={14} />
-            <span>Solicitar Catálogo / Cotización</span>
+            <span>Solicitar Cotización</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab("remate")}
+            className={`flex items-center gap-2 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer ${
+              activeTab === "remate"
+                ? "bg-gradient-to-r from-rose-600 via-red-600 to-amber-600 text-white shadow-md shadow-rose-500/30"
+                : "text-rose-700 hover:text-rose-900 hover:bg-rose-50 border border-rose-200"
+            }`}
+          >
+            <Flame size={14} className={activeTab === "remate" ? "text-yellow-300 animate-pulse" : "text-rose-500"} />
+            <span>🔥 Stock de Remate (% OFF)</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab("catalogos")}
+            className={`flex items-center gap-2 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer ${
+              activeTab === "catalogos"
+                ? "bg-gradient-to-r from-orange-600 to-amber-600 text-white shadow-md shadow-orange-500/30"
+                : "text-slate-600 hover:text-slate-900 hover:bg-orange-50 border border-transparent hover:border-orange-200"
+            }`}
+          >
+            <Download size={14} className={activeTab === "catalogos" ? "text-white" : "text-orange-500"} />
+            <span>📥 Catálogos PDF (Descargables)</span>
           </button>
 
           <button
@@ -509,6 +673,346 @@ ${mensaje ? `Comentarios: ${mensaje}` : "¿Me pueden ayudar con disponibilidad y
         )}
 
         {/* ═══════════════════════════════════════════════════ */}
+        {/* PESTAÑA: STOCK DE REMATE (% OFF / LIQUIDACIÓN) */}
+        {/* ═══════════════════════════════════════════════════ */}
+        {activeTab === "remate" && (
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#E2E8F0] shadow-md space-y-6 animate-in fade-in duration-300">
+            {/* Header Showcase Banner */}
+            <div className="p-6 rounded-2xl bg-gradient-to-r from-rose-950 via-slate-900 to-amber-950 text-white space-y-3 relative overflow-hidden border border-rose-500/30">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="text-[11px] font-black uppercase tracking-wider text-rose-300 bg-rose-500/20 px-3 py-1 rounded-full border border-rose-500/40 flex items-center gap-1.5 font-mono">
+                  <Flame size={14} className="text-rose-400 animate-pulse" />
+                  Liquidación Inmediata · Stock de Remate
+                </span>
+                <span className="text-xs font-mono font-bold text-amber-300 bg-amber-500/20 px-2.5 py-1 rounded-full border border-amber-500/30">
+                  Descuentos hasta -60% OFF
+                </span>
+              </div>
+
+              <div>
+                <h3 className="text-xl sm:text-2xl font-black uppercase tracking-tight text-white flex items-center gap-2">
+                  <span>Vitrina Oficial de Stock de Remate</span>
+                  <span className="text-rose-400 font-mono text-base sm:text-lg">[% OFF]</span>
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-2xl leading-relaxed">
+                  Aprovecha precios de liquidación por renovación de inventario y últimas unidades en bodega. 
+                  Todos los artículos cuentan con garantía legal ATOMIC de 1 año y entrega nacional inmediata vía Servientrega.
+                </p>
+              </div>
+
+              {/* Badges / Guarantees bar */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-2 border-t border-white/10 text-xs font-mono text-slate-300">
+                <div className="flex items-center gap-2 bg-black/30 px-3 py-1.5 rounded-xl">
+                  <Flame size={14} className="text-rose-400 shrink-0" />
+                  <span>{remateItems.length} Artículos en Oferta</span>
+                </div>
+                <div className="flex items-center gap-2 bg-black/30 px-3 py-1.5 rounded-xl">
+                  <ShieldCheck size={14} className="text-emerald-400 shrink-0" />
+                  <span>100% Nuevos con Garantía</span>
+                </div>
+                <div className="flex items-center gap-2 bg-black/30 px-3 py-1.5 rounded-xl">
+                  <Truck size={14} className="text-cyan-400 shrink-0" />
+                  <span>Despacho 24h Servientrega</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Search Bar for Clearance Products */}
+            <div className="flex flex-col sm:flex-row gap-3 items-center justify-between">
+              <div className="relative w-full sm:w-96">
+                <Search size={16} className="absolute left-3.5 top-3 text-slate-400" />
+                <input
+                  type="text"
+                  value={remateSearch}
+                  onChange={(e) => setRemateSearch(e.target.value)}
+                  placeholder="Buscar en remate por nombre, SKU o categoría..."
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20 text-xs outline-none transition bg-slate-50/50"
+                />
+              </div>
+
+              <div className="flex items-center gap-2 text-xs font-mono text-slate-500 self-end sm:self-auto">
+                <button
+                  onClick={fetchRemateItems}
+                  className="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center gap-1.5 font-bold cursor-pointer"
+                  title="Recargar artículos"
+                >
+                  <RefreshCw size={12} className={loadingRemate ? "animate-spin" : ""} />
+                  <span>Actualizar</span>
+                </button>
+                <span>
+                  {remateItems.filter((i) => {
+                    const q = remateSearch.toLowerCase();
+                    return !q || i.name.toLowerCase().includes(q) || i.sku?.toLowerCase().includes(q) || i.category?.toLowerCase().includes(q);
+                  }).length} productos disponibles
+                </span>
+              </div>
+            </div>
+
+            {/* Product Cards Grid */}
+            {loadingRemate ? (
+              <div className="p-12 text-center space-y-3">
+                <RefreshCw size={24} className="animate-spin text-rose-500 mx-auto" />
+                <p className="text-xs text-slate-400 font-mono">Cargando productos en Stock de Remate...</p>
+              </div>
+            ) : remateItems.length === 0 ? (
+              <div className="p-12 rounded-3xl bg-slate-50 border border-dashed border-slate-300 text-center space-y-3">
+                <Flame size={32} className="text-slate-400 mx-auto" />
+                <h4 className="text-base font-bold text-slate-700">No hay productos en Stock de Remate en este momento</h4>
+                <p className="text-xs text-slate-500 max-w-md mx-auto">
+                  Pronto agregaremos nuevas promociones y liquidaciones de equipos tecnológicos.
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                {remateItems
+                  .filter((item) => {
+                    const q = remateSearch.toLowerCase();
+                    return !q || item.name.toLowerCase().includes(q) || item.sku?.toLowerCase().includes(q) || item.category?.toLowerCase().includes(q);
+                  })
+                  .map((item) => {
+                    const mainImage = item.images?.[0] || "https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=800&q=80";
+                    const isLowStock = item.stock <= 2;
+                    const discount = item.discountPercent || (item.compareAtPrice > item.price ? Math.round(((item.compareAtPrice - item.price) / item.compareAtPrice) * 100) : 0);
+
+                    const whatsappRemateMsg = `¡Hola ATOMIC Solutions! 👋 Deseo comprar de inmediato el producto en *Stock de Remate*: *${item.name}* (Código: ${item.sku}) por *$${item.price.toFixed(2)} USD* (con ${discount}% OFF). ¿Aún tienen unidades disponibles?`;
+
+                    return (
+                      <div
+                        key={item.id || item.sku}
+                        className="group rounded-3xl bg-white border-2 border-slate-200 hover:border-rose-500/60 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col justify-between"
+                      >
+                        {/* Image Container with Badges */}
+                        <div className="relative h-48 w-full bg-slate-950 overflow-hidden">
+                          <img
+                            src={mainImage}
+                            alt={item.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=800&q=80";
+                            }}
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-70" />
+
+                          {/* % OFF Ribbon */}
+                          {discount > 0 && (
+                            <div className="absolute top-3 left-3 px-3 py-1 rounded-xl bg-gradient-to-r from-rose-600 to-amber-600 text-white font-black text-xs font-mono shadow-lg flex items-center gap-1.5 border border-white/20 animate-pulse">
+                              <Flame size={14} className="text-yellow-300" />
+                              <span>-{discount}% OFF</span>
+                            </div>
+                          )}
+
+                          {/* Remaining Stock Badge */}
+                          <div className={`absolute top-3 right-3 px-2.5 py-1 rounded-xl text-[10px] font-mono font-bold backdrop-blur-md border ${
+                            isLowStock
+                              ? "bg-rose-500/90 text-white border-rose-300"
+                              : "bg-emerald-600/90 text-white border-emerald-300"
+                          }`}>
+                            {item.stock} {item.stock === 1 ? "unidad" : "unidades"}
+                          </div>
+
+                          {/* Category Tag */}
+                          <div className="absolute bottom-2 left-3 px-2 py-0.5 rounded-lg bg-black/70 backdrop-blur-md text-white text-[10px] font-mono">
+                            {item.category || "Liquidación"}
+                          </div>
+                        </div>
+
+                        {/* Body Details */}
+                        <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between text-[11px] font-mono text-slate-400">
+                              <span className="font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-md">
+                                SKU: {item.sku}
+                              </span>
+                              <span className="text-rose-600 font-bold uppercase text-[10px]">
+                                Liquidación 2026
+                              </span>
+                            </div>
+
+                            <h4 className="text-sm font-black text-slate-900 group-hover:text-rose-600 transition-colors leading-snug line-clamp-2">
+                              {item.name}
+                            </h4>
+
+                            {item.description && (
+                              <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">
+                                {item.description}
+                              </p>
+                            )}
+                          </div>
+
+                          {/* Pricing Block */}
+                          <div className="p-3.5 rounded-2xl bg-rose-50/60 border border-rose-200/80 space-y-1">
+                            {item.compareAtPrice && item.compareAtPrice > item.price && (
+                              <div className="flex items-baseline justify-between text-xs font-mono text-slate-500">
+                                <span>PVP Normal:</span>
+                                <span className="line-through text-slate-400">
+                                  ${item.compareAtPrice.toFixed(2)} USD
+                                </span>
+                              </div>
+                            )}
+
+                            <div className="flex items-baseline justify-between">
+                              <span className="text-xs font-black uppercase text-rose-700 font-mono flex items-center gap-1">
+                                <Flame size={13} className="text-rose-600" />
+                                Precio Remate:
+                              </span>
+                              <span className="text-xl font-black font-mono text-rose-600">
+                                ${item.price.toFixed(2)} USD
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* WhatsApp Direct Buy Button */}
+                          <a
+                            href={`https://wa.me/593963226319?text=${encodeURIComponent(whatsappRemateMsg)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-[#25D366] to-emerald-600 hover:from-[#20ba59] hover:to-emerald-500 text-white text-xs font-black uppercase tracking-wider transition shadow-md hover:shadow-lg active:scale-98"
+                          >
+                            <MessageCircle size={16} />
+                            <span>Apartar / Comprar por WhatsApp</span>
+                          </a>
+                        </div>
+                      </div>
+                    );
+                  })}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ═══════════════════════════════════════════════════ */}
+        {/* PESTAÑA: CATÁLOGOS DESCARGABLES POR CATEGORÍA (PDF) */}
+        {/* ═══════════════════════════════════════════════════ */}
+        {activeTab === "catalogos" && (
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#E2E8F0] shadow-md space-y-6 animate-in fade-in duration-300">
+            {/* Header */}
+            <div>
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="text-[11px] font-black uppercase tracking-wider text-orange-600 bg-orange-50 px-2.5 py-1 rounded-full border border-orange-200">
+                  📥 Catálogos Oficiales 2026 en PDF
+                </span>
+                <span className="text-xs font-mono font-bold text-slate-500">
+                  11 Categorías Especializadas
+                </span>
+              </div>
+              <h3 className="text-xl font-black text-[#0F172A] mt-2">
+                Descarga de Proformas & Catálogos por Categoría
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed">
+                Genera al instante el documento PDF formal con especificaciones técnicas, precios oficiales PVP con 15% de IVA desglosado, garantía legal de 1 año y respaldo de despachos Servientrega a nivel nacional.
+              </p>
+            </div>
+
+            {/* Notification Toast */}
+            {downloadNotification && (
+              <div className="p-3.5 bg-emerald-50 border border-emerald-300 rounded-2xl flex items-center gap-2.5 text-xs font-bold text-emerald-800 animate-in fade-in shadow-sm">
+                <CheckCircle2 size={18} className="text-emerald-600 shrink-0" />
+                <span>{downloadNotification}</span>
+              </div>
+            )}
+
+            {/* Search filter for categories */}
+            <div className="relative">
+              <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Buscar categoría para descargar catálogo (ej. Cerraduras, CCTV, Solar, Alarmas)..."
+                value={catalogSearch}
+                onChange={(e) => setCatalogSearch(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 rounded-2xl border border-slate-300 text-xs sm:text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 bg-slate-50/50 transition"
+              />
+            </div>
+
+            {/* Categories Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {SUICIDE_SQUAD_CATEGORIES.filter((cat) => {
+                const q = catalogSearch.toLowerCase();
+                return (
+                  cat.name.toLowerCase().includes(q) ||
+                  cat.subtitle.toLowerCase().includes(q) ||
+                  cat.squadName.toLowerCase().includes(q) ||
+                  cat.badge.toLowerCase().includes(q)
+                );
+              }).map((cat) => {
+                const isDownloading = downloadingSlug === cat.slug;
+                const whatsappCatMsg = `¡Hola ATOMIC Solutions! 👋 Deseo cotizar productos de la categoría *${cat.name}* (${cat.squadCode}) con garantía oficial y envío a mi ciudad.`;
+
+                return (
+                  <div
+                    key={cat.slug}
+                    className="p-5 rounded-2xl bg-slate-50/80 hover:bg-white border border-slate-200 hover:border-orange-400/80 transition-all shadow-sm hover:shadow-md flex flex-col justify-between space-y-4"
+                  >
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase bg-slate-900 text-orange-400">
+                          {cat.squadCode} · {cat.squadName}
+                        </span>
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-orange-100 text-orange-700">
+                          {cat.badge}
+                        </span>
+                      </div>
+
+                      <h4 className="text-sm font-black text-slate-900 leading-snug">
+                        {cat.name}
+                      </h4>
+                      <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">
+                        {cat.subtitle}
+                      </p>
+
+                      <div className="pt-1 flex items-center justify-between text-[11px] font-mono text-slate-600">
+                        <span>PVP: ${cat.priceRange.min} - ${cat.priceRange.max} USD</span>
+                        <span className="text-emerald-700 font-bold font-sans">IVA 15% Inc.</span>
+                      </div>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="space-y-2 pt-2 border-t border-slate-200/70">
+                      <button
+                        onClick={() => handleDownloadCategoryPdf(cat)}
+                        disabled={isDownloading}
+                        className="w-full flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white text-xs font-bold transition shadow-sm active:scale-98 cursor-pointer disabled:opacity-60"
+                      >
+                        {isDownloading ? (
+                          <>
+                            <RefreshCw size={14} className="animate-spin text-white" />
+                            <span>Generando PDF Oficial...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Download size={14} className="text-white" />
+                            <span>Descargar Catálogo PDF</span>
+                          </>
+                        )}
+                      </button>
+
+                      <div className="grid grid-cols-2 gap-2">
+                        <Link
+                          href={`/bienvenida/categoria/${cat.slug}`}
+                          className="flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl bg-white hover:bg-slate-100 border border-slate-300 text-slate-800 text-[11px] font-bold transition text-center"
+                        >
+                          <ShoppingBag size={12} className="text-blue-600" />
+                          <span>Ver Productos</span>
+                        </Link>
+
+                        <a
+                          href={`https://wa.me/593963226319?text=${encodeURIComponent(whatsappCatMsg)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-800 text-[11px] font-bold transition text-center"
+                        >
+                          <MessageCircle size={12} className="text-emerald-600" />
+                          <span>Cotizar WA</span>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* ═══════════════════════════════════════════════════ */}
         {/* PESTAÑA: SOBRE NOSOTROS */}
         {/* ═══════════════════════════════════════════════════ */}
         {activeTab === "nosotros" && (
@@ -659,53 +1163,53 @@ ${mensaje ? `Comentarios: ${mensaje}` : "¿Me pueden ayudar con disponibilidad y
         )}
 
         {/* ═══════════════════════════════════════════════════ */}
-        {/* PESTAÑA: YOUTUBE & DEMOSTRACIONES */}
+        {/* PESTAÑA: YOUTUBE & DEMOSTRACIONES MULTIMEDIA */}
         {/* ═══════════════════════════════════════════════════ */}
         {activeTab === "youtube" && (
           <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#E2E8F0] shadow-md space-y-6 animate-in fade-in duration-300">
             <div className="flex items-center justify-between">
               <div>
                 <span className="text-[11px] font-black uppercase tracking-wider text-red-600 bg-red-50 px-2.5 py-1 rounded-full border border-red-200">
-                  ▶️ Canal Oficial de YouTube
+                  ▶️ Canal Oficial & Demos en Video
                 </span>
                 <h3 className="text-xl font-black text-[#0F172A] mt-2">
-                  Demostraciones & Tutoriales en Video
+                  Capacitaciones, Unboxing & Pruebas en Vivo
                 </h3>
               </div>
 
               <a
-                href="https://www.youtube.com/@AtomicSolutionsEc"
+                href="https://youtube.com/@atomicmenquantum?si=jScgTmF2FBGTrObU"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hidden sm:flex items-center gap-2 py-2 px-4 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold transition shadow"
               >
                 <Youtube size={16} />
-                <span>Suscribirse</span>
+                <span>@atomicmenquantum</span>
               </a>
             </div>
 
-            <p className="text-xs text-slate-600">
-              Mira cómo funcionan nuestros equipos antes de comprar: calidad de imagen nocturna en cámaras, apertura remota desde celular con cerraduras inteligentes y unboxing de equipos.
+            <p className="text-xs sm:text-sm text-slate-600">
+              Conoce el funcionamiento real de cada equipo antes de comprar: calidad de imagen nocturna en cámaras, aperturas biométricas en cerraduras inteligentes y unboxings detallados.
             </p>
 
             {/* Video Cards Grid */}
             <div className="space-y-4">
+              {/* Video 1: YouTube Oficial Capacitaciones */}
               <div className="rounded-2xl border border-slate-200 overflow-hidden bg-slate-900 group relative">
                 <div className="aspect-video w-full bg-slate-800 flex flex-col items-center justify-center text-white relative">
-                  {/* Decorative preview banner */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex flex-col justify-end p-5">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent flex flex-col justify-end p-5">
                     <span className="text-[10px] font-mono uppercase bg-red-600 text-white font-bold px-2 py-0.5 rounded w-fit mb-1">
-                      REVIEW OFICIAL
+                      YOUTUBE COMERCIAL & CAPACITACIONES
                     </span>
-                    <h4 className="text-sm font-bold text-white">
-                      Demostración de Cámaras de Seguridad HD con Visión Nocturna a Color
+                    <h4 className="text-sm sm:text-base font-bold text-white">
+                      ATOMIC: Presentación de Línea de Productos & Capacitaciones Técnicas
                     </h4>
                     <p className="text-xs text-slate-300 mt-1">
-                      Configuración paso a paso en celular y alertas en tiempo real.
+                      Canal oficial @atomicmenquantum · Demostraciones completas y asesoría técnica.
                     </p>
                   </div>
                   <a
-                    href="https://www.youtube.com/@AtomicSolutionsEc"
+                    href="https://youtube.com/@atomicmenquantum?si=jScgTmF2FBGTrObU"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-14 h-14 rounded-full bg-red-600/90 text-white flex items-center justify-center shadow-xl group-hover:scale-110 transition cursor-pointer"
@@ -715,24 +1219,52 @@ ${mensaje ? `Comentarios: ${mensaje}` : "¿Me pueden ayudar con disponibilidad y
                 </div>
               </div>
 
+              {/* Video 2: TikTok Jefe Técnico */}
               <div className="rounded-2xl border border-slate-200 overflow-hidden bg-slate-900 group relative">
                 <div className="aspect-video w-full bg-slate-800 flex flex-col items-center justify-center text-white relative">
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex flex-col justify-end p-5">
-                    <span className="text-[10px] font-mono uppercase bg-red-600 text-white font-bold px-2 py-0.5 rounded w-fit mb-1">
-                      UNBOXING & TEST
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent flex flex-col justify-end p-5">
+                    <span className="text-[10px] font-mono uppercase bg-black text-white font-bold px-2 py-0.5 rounded w-fit mb-1 border border-slate-600 flex items-center gap-1">
+                      <TikTokIcon className="w-3 h-3" />
+                      TIKTOK JEFE TÉCNICO
                     </span>
-                    <h4 className="text-sm font-bold text-white">
-                      Cerradura Biométrica Inteligente: Huella, Código, Tarjeta y App Wi-Fi
+                    <h4 className="text-sm sm:text-base font-bold text-white">
+                      Pruebas de Campo, Instalación y Configuración por el Jefe Técnico
                     </h4>
                     <p className="text-xs text-slate-300 mt-1">
-                      Instalación residencial y prueba de seguridad antibumping.
+                      Santiago Guzmán (@santiagoguzman216) · Respuestas técnicas directas y testeos.
                     </p>
                   </div>
                   <a
-                    href="https://www.youtube.com/@AtomicSolutionsEc"
+                    href="https://www.tiktok.com/@santiagoguzman216?_r=1&_t=ZS-9AU9OLRgZkY"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-14 h-14 rounded-full bg-red-600/90 text-white flex items-center justify-center shadow-xl group-hover:scale-110 transition cursor-pointer"
+                    className="w-14 h-14 rounded-full bg-black/90 text-white border-2 border-white/20 flex items-center justify-center shadow-xl group-hover:scale-110 transition cursor-pointer"
+                  >
+                    <Play size={24} className="ml-1" />
+                  </a>
+                </div>
+              </div>
+
+              {/* Video 3: TikTok Atomic Home Unboxing */}
+              <div className="rounded-2xl border border-slate-200 overflow-hidden bg-slate-900 group relative">
+                <div className="aspect-video w-full bg-slate-800 flex flex-col items-center justify-center text-white relative">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent flex flex-col justify-end p-5">
+                    <span className="text-[10px] font-mono uppercase bg-blue-600 text-white font-bold px-2 py-0.5 rounded w-fit mb-1 flex items-center gap-1">
+                      <TikTokIcon className="w-3 h-3" />
+                      ATOMIC HOME UNBOXING
+                    </span>
+                    <h4 className="text-sm sm:text-base font-bold text-white">
+                      Unboxing de Cerraduras Inteligentes, Domótica y Gadgets Residenciales
+                    </h4>
+                    <p className="text-xs text-slate-300 mt-1">
+                      Juan Guzmán (@juanguzman35886) · Desempaque real y primeros pasos de usuario.
+                    </p>
+                  </div>
+                  <a
+                    href="https://www.tiktok.com/@juanguzman35886?_r=1&_t=ZS-9AU9ov9ihow"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-14 h-14 rounded-full bg-blue-600/90 text-white flex items-center justify-center shadow-xl group-hover:scale-110 transition cursor-pointer"
                   >
                     <Play size={24} className="ml-1" />
                   </a>
@@ -740,16 +1272,25 @@ ${mensaje ? `Comentarios: ${mensaje}` : "¿Me pueden ayudar con disponibilidad y
               </div>
             </div>
 
-            <div className="text-center pt-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
               <a
-                href="https://www.youtube.com/@AtomicSolutionsEc"
+                href="https://youtube.com/@atomicmenquantum?si=jScgTmF2FBGTrObU"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 py-3 px-6 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition shadow"
+                className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold transition shadow text-center"
               >
-                <Youtube size={16} className="text-red-500" />
-                <span>Ver Más Videos en Nuestro Canal Oficial</span>
-                <ExternalLink size={14} />
+                <Youtube size={16} />
+                <span>Suscribirse a YouTube (@atomicmenquantum)</span>
+              </a>
+
+              <a
+                href="https://www.tiktok.com/@santiagoguzman216?_r=1&_t=ZS-9AU9OLRgZkY"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-slate-900 hover:bg-black text-white text-xs font-bold transition shadow text-center"
+              >
+                <TikTokIcon className="w-4 h-4" />
+                <span>Seguir a Jefe Técnico en TikTok</span>
               </a>
             </div>
           </div>

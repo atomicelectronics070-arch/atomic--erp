@@ -7,7 +7,9 @@ import { motion, AnimatePresence } from "framer-motion"
 import { 
     X, Send, Sparkles, Loader2, Copy, Check, FileText, 
     ShoppingBag, Users, Map, Smartphone, DollarSign, Palette, 
-    FileSpreadsheet, Bot, GraduationCap, ArrowRight, Table
+    FileSpreadsheet, Bot, GraduationCap, ArrowRight, Table,
+    Settings, Sliders, CalendarCheck, ShieldAlert, Globe, Monitor,
+    Building2, MessageSquare, Plus, CheckCircle2
 } from "lucide-react"
 
 interface BotMessage {
@@ -24,6 +26,120 @@ interface ModuleQuickAction {
     query: string
     path: string
 }
+
+export interface FloatingShortcut {
+    id: string
+    label: string
+    shortLabel: string
+    icon: string
+    path: string
+    gradient: string
+    border: string
+    description: string
+}
+
+export const ALL_AVAILABLE_SHORTCUTS: FloatingShortcut[] = [
+    {
+        id: "landings",
+        label: "Landings ATOMIC 2026",
+        shortLabel: "Landings",
+        icon: "🌐",
+        path: "/bienvenida/categoria",
+        gradient: "from-cyan-500 to-blue-600",
+        border: "border-cyan-400/50",
+        description: "Catálogo de 11+ landings de bienvenida por categoría"
+    },
+    {
+        id: "ruta_dia",
+        label: "Ruta del Día",
+        shortLabel: "Ruta Día",
+        icon: "📋",
+        path: "/dashboard/ruta-del-dia",
+        gradient: "from-emerald-500 to-teal-600",
+        border: "border-emerald-400/50",
+        description: "Checklist de 7 actividades, catálogo y metas"
+    },
+    {
+        id: "suicide_squad",
+        label: "Suicide Squad War Room",
+        shortLabel: "Squad",
+        icon: "💀",
+        path: "/dashboard/suicide-squad",
+        gradient: "from-rose-500 to-pink-600",
+        border: "border-rose-400/50",
+        description: "5 escuadras virales, speeches de venta y simulador"
+    },
+    {
+        id: "quotes",
+        label: "Cotizaciones PROP",
+        shortLabel: "Cotizar",
+        icon: "📄",
+        path: "/dashboard/quotes",
+        gradient: "from-amber-500 to-orange-600",
+        border: "border-amber-400/50",
+        description: "Generador de cotizaciones formales PDF y Excel"
+    },
+    {
+        id: "anydesk",
+        label: "AnyDesk PC en Vivo",
+        shortLabel: "AnyDesk",
+        icon: "🖥️",
+        path: "/dashboard/anydesk",
+        gradient: "from-red-500 to-rose-700",
+        border: "border-red-400/50",
+        description: "Conexión y transmisión en vivo de pantalla de PC"
+    },
+    {
+        id: "suppliers",
+        label: "Gestor de Proveedores",
+        shortLabel: "Proveed.",
+        icon: "🏢",
+        path: "/dashboard/suppliers",
+        gradient: "from-purple-500 to-indigo-600",
+        border: "border-purple-400/50",
+        description: "Marcas, distribuidores, importadores y scraping"
+    },
+    {
+        id: "scripts",
+        label: "Marketplace de Scripts",
+        shortLabel: "Scripts",
+        icon: "💬",
+        path: "/dashboard/sales-copy",
+        gradient: "from-blue-500 to-cyan-500",
+        border: "border-blue-400/50",
+        description: "Mensajes para copiar y pegar para ventas rápidas"
+    },
+    {
+        id: "tienda",
+        label: "Catálogo & Tienda Web",
+        shortLabel: "Tienda",
+        icon: "🛒",
+        path: "/web",
+        gradient: "from-teal-500 to-emerald-600",
+        border: "border-teal-400/50",
+        description: "Catálogo público para clientes con PVP e IVA"
+    },
+    {
+        id: "crm",
+        label: "WhatsApp CRM",
+        shortLabel: "CRM",
+        icon: "📱",
+        path: "/dashboard/whatsapp/crm",
+        gradient: "from-emerald-600 to-green-500",
+        border: "border-emerald-400/50",
+        description: "Panel de mensajes, chats con clientes y seguimiento"
+    },
+    {
+        id: "map_radar",
+        label: "Radar de Prospección",
+        shortLabel: "Radar",
+        icon: "📍",
+        path: "/dashboard/map-prospecting",
+        gradient: "from-amber-600 to-yellow-500",
+        border: "border-amber-400/50",
+        description: "Búsqueda geográfica de comercios en Google Maps"
+    }
+]
 
 const QUICK_MODULES: ModuleQuickAction[] = [
     { id: "quotes", label: "Cotizaciones PROP", icon: <FileText size={12} />, query: "¿Cómo funciona el módulo de cotizaciones y cómo descargo el PDF?", path: "/dashboard/quotes" },
@@ -46,13 +162,58 @@ export default function PersonalBotBubble() {
     const [messages, setMessages] = useState<BotMessage[]>([])
     const [input, setInput] = useState("")
     const [isLoading, setIsLoading] = useState(false)
-    const [botName, setBotName] = useState<string | null>(null)
-    const [onboardingDone, setOnboardingDone] = useState(false)
-    const [isNamingBot, setIsNamingBot] = useState(false)
     const [isInitializing, setIsInitializing] = useState(true)
     const [hasNewMessage, setHasNewMessage] = useState(false)
     const [copiedIndex, setCopiedIndex] = useState<number | null>(null)
     const messagesEndRef = useRef<HTMLDivElement>(null)
+
+    // ── CONFIGURABLE FLOATING SHORTCUTS (UP TO 4 BUTTONS ABOVE BOT) ──
+    const [activeShortcutIds, setActiveShortcutIds] = useState<string[]>(["landings", "ruta_dia", "suicide_squad", "quotes"])
+    const [isConfigShortcutsOpen, setIsConfigShortcutsOpen] = useState(false)
+    const [tempSelectedShortcuts, setTempSelectedShortcuts] = useState<string[]>([])
+
+    // Load active shortcuts from localStorage
+    useEffect(() => {
+        try {
+            const saved = localStorage.getItem("atomic_floating_shortcuts")
+            if (saved) {
+                const parsed = JSON.parse(saved)
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    setActiveShortcutIds(parsed.slice(0, 4))
+                }
+            }
+        } catch (e) {}
+    }, [])
+
+    const handleOpenShortcutConfig = (e: React.MouseEvent) => {
+        e.stopPropagation()
+        setTempSelectedShortcuts([...activeShortcutIds])
+        setIsConfigShortcutsOpen(true)
+    }
+
+    const toggleShortcutSelection = (id: string) => {
+        if (tempSelectedShortcuts.includes(id)) {
+            setTempSelectedShortcuts(prev => prev.filter(item => item !== id))
+        } else {
+            if (tempSelectedShortcuts.length >= 4) {
+                alert("Puedes seleccionar un máximo de 4 atajos flotantes.")
+                return
+            }
+            setTempSelectedShortcuts(prev => [...prev, id])
+        }
+    }
+
+    const handleSaveShortcuts = () => {
+        if (tempSelectedShortcuts.length === 0) {
+            alert("Debes seleccionar al menos 1 atajo flotante.")
+            return
+        }
+        setActiveShortcutIds(tempSelectedShortcuts)
+        try {
+            localStorage.setItem("atomic_floating_shortcuts", JSON.stringify(tempSelectedShortcuts))
+        } catch (e) {}
+        setIsConfigShortcutsOpen(false)
+    }
 
     // Load memory on mount
     useEffect(() => {
@@ -83,14 +244,14 @@ export default function PersonalBotBubble() {
                         setMessages([{
                             id: "welcome",
                             role: "assistant",
-                            content: `👋 ¡Hola **${session.user.name?.split(" ")[0] || "Asesor"}**! Hola, soy el **Guía de ATOMIC**, estoy para enseñarte el sistema nada más.\n\nTengo acceso a todos los módulos: Cotizaciones \`PROP\`, Inventario, Coordinación, Radar de Prospección y más.\n\n✨ Haz clic en cualquier botón del **menú inferior** o escribe tu duda para aprender a usar ATOMIC.`,
+                            content: `👋 ¡Hola **${session.user.name?.split(" ")[0] || "Asesor"}**! Soy el **Guía de ATOMIC**.\n\nTengo acceso a todos los módulos: Cotizaciones \`PROP\`, Inventario, Coordinación, Radar de Prospección y más.\n\n✨ Haz clic en cualquier botón del **menú inferior** o escribe tu duda para aprender a usar ATOMIC.`,
                         }])
                     }
                 } else {
                     setMessages([{
                         id: "welcome",
                         role: "assistant",
-                        content: `👋 ¡Hola **${session.user.name?.split(" ")[0] || "Asesor"}**! Hola, soy el **Guía de ATOMIC**, estoy para enseñarte el sistema nada más.\n\nTengo acceso a todos los módulos: Cotizaciones \`PROP\`, Inventario, Coordinación, Radar de Prospección y más.\n\n✨ Haz clic en cualquier botón del **menú inferior** o escribe tu duda para aprender a usar ATOMIC.`,
+                        content: `👋 ¡Hola **${session.user.name?.split(" ")[0] || "Asesor"}**! Soy el **Guía de ATOMIC**.\n\nTengo acceso a todos los módulos: Cotizaciones \`PROP\`, Inventario, Coordinación, Radar de Prospección y más.\n\n✨ Haz clic en cualquier botón del **menú inferior** o escribe tu duda para aprender a usar ATOMIC.`,
                     }])
                 }
             })
@@ -98,7 +259,7 @@ export default function PersonalBotBubble() {
                 setMessages([{
                     id: "welcome",
                     role: "assistant",
-                    content: `👋 ¡Hola **${session.user.name?.split(" ")[0] || "Asesor"}**! Hola, soy el **Guía de ATOMIC**, estoy para enseñarte el sistema nada más.\n\n¿Qué módulo o herramienta del ERP deseas aprender a usar hoy?`,
+                    content: `👋 ¡Hola **${session.user.name?.split(" ")[0] || "Asesor"}**! Soy el **Guía de ATOMIC**.\n\n¿Qué módulo o herramienta del ERP deseas aprender a usar hoy?`,
                 }])
             })
             .finally(() => setIsInitializing(false))
@@ -118,7 +279,7 @@ export default function PersonalBotBubble() {
         } else if (pathname === "/dashboard/coordinacion") {
             popupText = `📍 **Estás en Coordinación**: Gestiona asesores comerciales, contratos laborales y bitácoras de seguimiento.`
         } else if (pathname === "/dashboard/profile") {
-            popupText = `📍 **Estás en tu Perfil**: Puedes actualizar tus datos y alternar entre los **Temas Globales** y temas de Relleno/Superficie.`
+            popupText = `📍 **Estás en tu Perfil**: Puedes actualizar tus datos y alternar entre los **Temas Globales** (Blanco Ejecutivo con Tomate activado).`
         }
 
         if (popupText) {
@@ -201,12 +362,6 @@ export default function PersonalBotBubble() {
         }
     }
 
-    const copyToClipboard = (text: string, index: number) => {
-        navigator.clipboard.writeText(text)
-        setCopiedIndex(index)
-        setTimeout(() => setCopiedIndex(null), 2000)
-    }
-
     const formatContent = (text: string) => {
         return text
             .replace(/\*\*(.*?)\*\*/g, '<strong class="text-cyan-300 font-bold">$1</strong>')
@@ -217,29 +372,175 @@ export default function PersonalBotBubble() {
 
     const displayName = session?.user?.name ? "Guía de ATOMIC" : "Asistente ATOMIC"
 
+    const activeShortcuts = ALL_AVAILABLE_SHORTCUTS.filter(s => activeShortcutIds.includes(s.id))
+
     return (
         <>
-            {/* Floating Bubble - Repositioned to bottom-28 on mobile to not block bottom dock */}
-            <motion.button
-                onClick={() => { setIsOpen(true); setHasNewMessage(false) }}
-                className="fixed bottom-28 lg:bottom-10 right-5 z-40 w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center shadow-[0_0_35px_rgba(6,182,212,0.55)] group cursor-pointer border border-cyan-400/40"
-                whileHover={{ scale: 1.08 }}
-                whileTap={{ scale: 0.95 }}
-                title="Abrir Guía de ATOMIC"
+            {/* ═══════════════════════════════════════════════════════════════════════════
+                STACK VERTICAL DE ATAJOS FLOTANTES + BOTÓN GUÍA (ABOVE DOCK ON MOBILE)
+            ═══════════════════════════════════════════════════════════════════════════ */}
+            <div 
+                className="fixed bottom-28 lg:bottom-8 right-4 sm:right-6 z-40 flex flex-col-reverse items-center gap-2.5 pointer-events-none"
                 style={{ display: isOpen ? "none" : "flex" }}
             >
-                <div className="absolute inset-0 rounded-full bg-cyan-500 opacity-25 animate-ping" />
-                <div className="absolute inset-1 rounded-full bg-gradient-to-br from-cyan-400 via-indigo-600 to-teal-500 shadow-[0_0_30px_rgba(6,182,212,0.6)]" />
-                <div className="relative z-10 flex flex-col items-center justify-center text-white">
-                    <Bot size={26} className="drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] group-hover:scale-110 transition-transform" />
-                    <span className="text-[8px] font-mono font-black uppercase tracking-tighter text-cyan-200 -mt-0.5">GUÍA</span>
-                    {hasNewMessage && (
-                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 rounded-full border-2 border-slate-950 animate-bounce" />
-                    )}
-                </div>
-            </motion.button>
+                {/* 1. BOTÓN PRINCIPAL GUÍA DE ATOMIC */}
+                <motion.button
+                    onClick={() => { setIsOpen(true); setHasNewMessage(false) }}
+                    className="w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center shadow-[0_0_35px_rgba(6,182,212,0.55)] group cursor-pointer border-2 border-cyan-400/50 pointer-events-auto relative"
+                    whileHover={{ scale: 1.08 }}
+                    whileTap={{ scale: 0.95 }}
+                    title="Abrir Guía de ATOMIC"
+                >
+                    <div className="absolute inset-0 rounded-full bg-cyan-500 opacity-25 animate-ping" />
+                    <div className="absolute inset-1 rounded-full bg-gradient-to-br from-cyan-400 via-indigo-600 to-teal-500 shadow-[0_0_30px_rgba(6,182,212,0.6)]" />
+                    <div className="relative z-10 flex flex-col items-center justify-center text-white">
+                        <Bot size={26} className="drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] group-hover:scale-110 transition-transform" />
+                        <span className="text-[8px] font-mono font-black uppercase tracking-tighter text-cyan-200 -mt-0.5">GUÍA</span>
+                        {hasNewMessage && (
+                            <div className="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 rounded-full border-2 border-slate-950 animate-bounce" />
+                        )}
+                    </div>
+                </motion.button>
 
-            {/* Chat Panel */}
+                {/* 2. LOS HASTA 4 BOTONES DE ACCESO RÁPIDO CONFIGURADOS */}
+                <div className="flex flex-col-reverse items-center gap-2 pointer-events-auto">
+                    {activeShortcuts.map((shortcut, idx) => (
+                        <motion.button
+                            key={shortcut.id}
+                            onClick={() => router.push(shortcut.path)}
+                            whileHover={{ scale: 1.12, x: -3 }}
+                            whileTap={{ scale: 0.92 }}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: idx * 0.05 }}
+                            className={`w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-tr ${shortcut.gradient} border ${shortcut.border} shadow-lg shadow-black/60 flex flex-col items-center justify-center text-white cursor-pointer group relative`}
+                            title={shortcut.label}
+                        >
+                            <span className="text-base sm:text-lg leading-none">{shortcut.icon}</span>
+                            <span className="text-[7.5px] font-mono font-black uppercase tracking-tight text-white/90 drop-shadow mt-0.5">
+                                {shortcut.shortLabel}
+                            </span>
+                            
+                            {/* Hover Tooltip */}
+                            <span className="absolute right-full mr-2.5 px-2.5 py-1 rounded-xl bg-slate-950/95 border border-slate-800 text-white text-[10px] font-mono whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-xl">
+                                {shortcut.label}
+                            </span>
+                        </motion.button>
+                    ))}
+
+                    {/* 3. BOTÓN PARA CONFIGURAR ATAJOS (GEAR MINI ICON) */}
+                    <motion.button
+                        onClick={handleOpenShortcutConfig}
+                        whileHover={{ scale: 1.15, rotate: 45 }}
+                        whileTap={{ scale: 0.9 }}
+                        className="w-7 h-7 rounded-full bg-slate-950/90 border border-slate-700/80 hover:border-cyan-400 text-slate-400 hover:text-cyan-300 flex items-center justify-center cursor-pointer shadow-md transition-colors"
+                        title="Configurar Atajos Flotantes (Hasta 4)"
+                    >
+                        <Settings size={13} />
+                    </motion.button>
+                </div>
+            </div>
+
+            {/* ═══════════════════════════════════════════════════════════════════════════
+                MODAL DE CONFIGURACIÓN DE ATAJOS FLOTANTES
+            ═══════════════════════════════════════════════════════════════════════════ */}
+            <AnimatePresence>
+                {isConfigShortcutsOpen && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/80 backdrop-blur-md animate-in fade-in duration-150">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                            className="w-full max-w-lg bg-[#070b18] border-2 border-cyan-500/40 rounded-3xl p-5 sm:p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto"
+                        >
+                            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                                <div className="flex items-center gap-2.5">
+                                    <div className="w-9 h-9 rounded-xl bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-300">
+                                        <Sliders size={18} />
+                                    </div>
+                                    <div>
+                                        <h3 className="font-black text-white text-base">
+                                            Configurar Atajos Flotantes
+                                        </h3>
+                                        <p className="text-[11px] font-mono text-slate-400">
+                                            Selecciona hasta 4 botones de acceso rápido sobre el Guía
+                                        </p>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => setIsConfigShortcutsOpen(false)}
+                                    className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+                                >
+                                    <X size={18} />
+                                </button>
+                            </div>
+
+                            {/* Selector grid */}
+                            <div className="space-y-2">
+                                <div className="flex items-center justify-between text-xs font-mono">
+                                    <span className="text-slate-400">Seleccionados:</span>
+                                    <span className={`font-bold ${tempSelectedShortcuts.length === 4 ? "text-cyan-400" : "text-emerald-400"}`}>
+                                        {tempSelectedShortcuts.length} / 4 activos
+                                    </span>
+                                </div>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                    {ALL_AVAILABLE_SHORTCUTS.map((s) => {
+                                        const isSelected = tempSelectedShortcuts.includes(s.id)
+                                        return (
+                                            <div
+                                                key={s.id}
+                                                onClick={() => toggleShortcutSelection(s.id)}
+                                                className={`p-3 rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-3 select-none ${
+                                                    isSelected
+                                                        ? "bg-cyan-950/40 border-cyan-400/60 shadow-[0_0_15px_rgba(6,182,212,0.2)]"
+                                                        : "bg-slate-950 border-slate-800 hover:border-slate-700"
+                                                }`}
+                                            >
+                                                <div className="flex items-center gap-2.5 min-w-0">
+                                                    <span className="text-xl shrink-0">{s.icon}</span>
+                                                    <div className="min-w-0">
+                                                        <h4 className="text-xs font-bold text-white truncate">{s.label}</h4>
+                                                        <p className="text-[10px] text-slate-400 truncate font-mono">{s.description}</p>
+                                                    </div>
+                                                </div>
+
+                                                <div className="shrink-0">
+                                                    {isSelected ? (
+                                                        <CheckCircle2 size={18} className="text-cyan-400" />
+                                                    ) : (
+                                                        <div className="w-4 h-4 rounded-full border border-slate-700" />
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )
+                                    })}
+                                </div>
+                            </div>
+
+                            {/* Actions */}
+                            <div className="flex gap-2.5 pt-3 border-t border-slate-800">
+                                <button
+                                    onClick={() => setIsConfigShortcutsOpen(false)}
+                                    className="flex-1 py-2.5 rounded-2xl bg-slate-900 text-slate-400 hover:text-white font-mono text-xs font-bold transition-colors cursor-pointer"
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    onClick={handleSaveShortcuts}
+                                    className="flex-1 py-2.5 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-black font-mono text-xs hover:scale-102 transition-all cursor-pointer shadow-lg shadow-cyan-500/30"
+                                >
+                                    Guardar Atajos ({tempSelectedShortcuts.length})
+                                </button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            {/* ═══════════════════════════════════════════════════════════════════════════
+                VENTANA PRINCIPAL DEL CHAT GUÍA
+            ═══════════════════════════════════════════════════════════════════════════ */}
             <AnimatePresence>
                 {isOpen && (
                     <motion.div

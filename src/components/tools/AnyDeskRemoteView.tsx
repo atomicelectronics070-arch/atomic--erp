@@ -37,6 +37,50 @@ export default function AnyDeskRemoteView() {
     // Bridge Status to SUITE_AUTOMATIZACION_ATOMIC
     const [bridgeStatus, setBridgeStatus] = useState<"connected" | "standby" | "busy">("connected")
 
+    // Real PC Screen Sharing State via navigator.mediaDevices.getDisplayMedia
+    const [isScreenSharing, setIsScreenSharing] = useState(false)
+    const [screenStream, setScreenStream] = useState<MediaStream | null>(null)
+    const videoRef = useRef<HTMLVideoElement>(null)
+
+    const startScreenShare = async () => {
+        try {
+            if (typeof navigator === "undefined" || !navigator.mediaDevices?.getDisplayMedia) {
+                alert("Tu navegador no soporta la función getDisplayMedia.")
+                return
+            }
+            const stream = await navigator.mediaDevices.getDisplayMedia({
+                video: { cursor: "always" } as any,
+                audio: false
+            })
+            setScreenStream(stream)
+            setIsScreenSharing(true)
+            if (videoRef.current) {
+                videoRef.current.srcObject = stream
+            }
+            stream.getVideoTracks()[0].onended = () => {
+                stopScreenShare()
+            }
+            addLog("Stream de monitor físico en vivo conectado con éxito (60 FPS P2P)", "system")
+        } catch (err: any) {
+            addLog(`Conexión a pantalla cancelada: ${err.message}`, "system")
+        }
+    }
+
+    const stopScreenShare = () => {
+        if (screenStream) {
+            screenStream.getTracks().forEach(track => track.stop())
+        }
+        setScreenStream(null)
+        setIsScreenSharing(false)
+        addLog("Transmisión de monitor físico detenida", "system")
+    }
+
+    useEffect(() => {
+        if (videoRef.current && screenStream) {
+            videoRef.current.srcObject = screenStream
+        }
+    }, [screenStream, isScreenSharing])
+
     // Input & Messages
     const [inputCommand, setInputCommand] = useState("")
     const [messages, setMessages] = useState<Message[]>([
@@ -157,35 +201,51 @@ export default function AnyDeskRemoteView() {
                     </div>
                 </div>
 
-                {/* Center: Monitor Selector */}
-                <div className="flex items-center gap-1 bg-slate-950/80 p-1 rounded-xl border border-white/10">
+                {/* Center: Monitor Selector & Screen Share Trigger */}
+                <div className="flex items-center gap-2 flex-wrap">
                     <button
-                        onClick={() => setMonitorMode("mon1")}
-                        className={`px-3 py-1 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer ${
-                            monitorMode === "mon1" ? "bg-cyan-500 text-black font-bold shadow-[0_0_12px_rgba(6,182,212,0.4)]" : "text-slate-400 hover:text-white"
+                        type="button"
+                        onClick={isScreenSharing ? stopScreenShare : startScreenShare}
+                        className={`px-3 py-1.5 rounded-xl flex items-center gap-1.5 text-xs font-mono font-bold transition-all cursor-pointer shadow-md ${
+                            isScreenSharing 
+                                ? "bg-rose-600 hover:bg-rose-500 text-white shadow-rose-950 animate-pulse" 
+                                : "bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-950"
                         }`}
+                        title={isScreenSharing ? "Detener transmisión de pantalla" : "Conectar y ver tu PC real en vivo"}
                     >
-                        <Monitor size={13} />
-                        <span>Monitor 1 (IDE)</span>
+                        <Monitor size={14} />
+                        <span>{isScreenSharing ? "🔴 PC En Vivo (Detener)" : "🖥️ Conectar a mi PC en Vivo"}</span>
                     </button>
-                    <button
-                        onClick={() => setMonitorMode("mon2")}
-                        className={`px-3 py-1 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer ${
-                            monitorMode === "mon2" ? "bg-cyan-500 text-black font-bold shadow-[0_0_12px_rgba(6,182,212,0.4)]" : "text-slate-400 hover:text-white"
-                        }`}
-                    >
-                        <Monitor size={13} />
-                        <span>Monitor 2 (CRM)</span>
-                    </button>
-                    <button
-                        onClick={() => setMonitorMode("both")}
-                        className={`px-3 py-1 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer ${
-                            monitorMode === "both" ? "bg-indigo-600 text-white font-bold shadow-[0_0_15px_rgba(99,102,241,0.5)]" : "text-slate-400 hover:text-white"
-                        }`}
-                    >
-                        <Layers size={13} />
-                        <span>Doble Monitor (Paralelo)</span>
-                    </button>
+
+                    <div className="flex items-center gap-1 bg-slate-950/80 p-1 rounded-xl border border-white/10">
+                        <button
+                            onClick={() => setMonitorMode("mon1")}
+                            className={`px-3 py-1 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer ${
+                                monitorMode === "mon1" ? "bg-cyan-500 text-black font-bold shadow-[0_0_12px_rgba(6,182,212,0.4)]" : "text-slate-400 hover:text-white"
+                            }`}
+                        >
+                            <Monitor size={13} />
+                            <span>Monitor 1 (IDE)</span>
+                        </button>
+                        <button
+                            onClick={() => setMonitorMode("mon2")}
+                            className={`px-3 py-1 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer ${
+                                monitorMode === "mon2" ? "bg-cyan-500 text-black font-bold shadow-[0_0_12px_rgba(6,182,212,0.4)]" : "text-slate-400 hover:text-white"
+                            }`}
+                        >
+                            <Monitor size={13} />
+                            <span>Monitor 2 (CRM)</span>
+                        </button>
+                        <button
+                            onClick={() => setMonitorMode("both")}
+                            className={`px-3 py-1 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer ${
+                                monitorMode === "both" ? "bg-indigo-600 text-white font-bold shadow-[0_0_15px_rgba(99,102,241,0.5)]" : "text-slate-400 hover:text-white"
+                            }`}
+                        >
+                            <Layers size={13} />
+                            <span>Doble Monitor (Paralelo)</span>
+                        </button>
+                    </div>
                 </div>
 
                 {/* Right: Telemetry & Actions */}
@@ -240,101 +300,144 @@ export default function AnyDeskRemoteView() {
                         />
                     )}
 
-                    {/* Screens Layout */}
-                    <div className={`w-full h-full grid gap-4 transition-all duration-300 ${
-                        monitorMode === "both" ? "grid-cols-1 lg:grid-cols-2" : "grid-cols-1"
-                    }`}>
-                        {/* Monitor 1: Antigravity IDE & Code Workspace */}
-                        {(monitorMode === "mon1" || monitorMode === "both") && (
-                            <div className="relative rounded-2xl bg-[#090d1e] border border-cyan-500/30 overflow-hidden flex flex-col shadow-2xl">
-                                {/* Screen Header */}
-                                <div className="px-4 py-2 bg-slate-950/90 border-b border-slate-800 flex items-center justify-between text-[11px] font-mono">
-                                    <div className="flex items-center gap-2">
-                                        <span className="w-2.5 h-2.5 rounded-full bg-cyan-400" />
-                                        <span className="text-white font-bold">MONITOR 1 · Antigravity IDE & Terminal</span>
-                                    </div>
-                                    <span className="text-slate-400 text-[10px]">1920x1080 @ 60Hz</span>
+                    {/* Screens Layout: Live PC Screen or Dual Monitor Mock */}
+                    {isScreenSharing ? (
+                        <div className="w-full h-full relative rounded-2xl bg-black border-2 border-emerald-500/60 overflow-hidden flex flex-col shadow-[0_0_50px_rgba(16,185,129,0.3)]">
+                            {/* Live Screen Header */}
+                            <div className="px-4 py-2.5 bg-slate-950/95 border-b border-emerald-500/40 flex items-center justify-between text-xs font-mono shrink-0">
+                                <div className="flex items-center gap-2">
+                                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
+                                    <span className="text-white font-black tracking-wider">
+                                        TRANSMISIÓN EN VIVO · PANTALLA REAL DE TU PC (60 FPS P2P)
+                                    </span>
                                 </div>
-
-                                {/* Screen Contents Mock (Antigravity Code & Prompt) */}
-                                <div className="flex-1 p-4 font-mono text-xs text-slate-300 space-y-3 bg-[#070b18] overflow-y-auto">
-                                    <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-                                        <span className="text-cyan-400 font-bold">📂 scratch/atomic--erp · Antigravity Assistant</span>
-                                        <span className="text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded text-[10px]">Auto-Allow: LISTO</span>
-                                    </div>
-                                    <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-[11px] space-y-1">
-                                        <p className="text-purple-400 font-bold">&gt; Session: Softres / ATOMIC Enterprise</p>
-                                        <p className="text-slate-400">Requerimientos de Rómulo: Integración de nómina y módulos multi-rol.</p>
-                                        <p className="text-slate-500">// Monitoreando ejecución por hardware físico...</p>
-                                    </div>
-
-                                    <div className="p-3 rounded-xl bg-[#0b1329] border border-cyan-500/40 text-[11px]">
-                                        <span className="text-xs text-cyan-300 font-bold block mb-1">🤖 Antigravity Chat Input Area</span>
-                                        <div className="p-2 bg-slate-950 rounded-lg border border-slate-800 text-slate-400 flex items-center justify-between">
-                                            <span>Escribe un mensaje para Antigravity...</span>
-                                            <span className="px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 text-[9px] font-bold">PROCEED DISPONIBLE</span>
-                                        </div>
-                                    </div>
-
-                                    <div className="mt-2 p-2.5 rounded-xl bg-slate-950 border border-slate-900 text-[10px] text-slate-400">
-                                        <span className="text-slate-500 block mb-1">TERMINAL POWERSHELL EN VIVO:</span>
-                                        <p className="text-emerald-400 font-bold">PS C:\Users\SANTIAGO\Desktop\SUITE_AUTOMATIZACION_ATOMIC&gt; python server.py</p>
-                                        <p className="text-slate-400">[Uvicorn] Servidor de automatización corriendo en http://0.0.0.0:8000</p>
-                                    </div>
+                                <div className="flex items-center gap-3">
+                                    <span className="text-emerald-400 font-bold text-[11px]">
+                                        Latencia: {latency}ms
+                                    </span>
+                                    <button
+                                        type="button"
+                                        onClick={stopScreenShare}
+                                        className="px-3 py-1 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-[11px] transition-all cursor-pointer shadow-md"
+                                    >
+                                        Desconectar Pantalla
+                                    </button>
                                 </div>
                             </div>
-                        )}
 
-                        {/* Monitor 2: Secondary Desktop (WhatsApp CRM & Browsing) */}
-                        {(monitorMode === "mon2" || monitorMode === "both") && (
-                            <div className="relative rounded-2xl bg-[#090d1e] border border-indigo-500/30 overflow-hidden flex flex-col shadow-2xl">
-                                {/* Screen Header */}
-                                <div className="px-4 py-2 bg-slate-950/90 border-b border-slate-800 flex items-center justify-between text-[11px] font-mono">
-                                    <div className="flex items-center gap-2">
-                                        <span className="w-2.5 h-2.5 rounded-full bg-indigo-400" />
-                                        <span className="text-white font-bold">MONITOR 2 · WhatsApp Cloud & Navegador Operativo</span>
-                                    </div>
-                                    <span className="text-slate-400 text-[10px]">1920x1080 @ 60Hz</span>
-                                </div>
-
-                                {/* Screen Contents Mock (CRM & Social) */}
-                                <div className="flex-1 p-4 font-mono text-xs text-slate-300 space-y-3 bg-[#070b18] overflow-y-auto">
-                                    <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-                                        <span className="text-indigo-400 font-bold">📱 WhatsApp Web & Drive Sync</span>
-                                        <span className="text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded text-[10px]">Meta API: Online</span>
-                                    </div>
-
-                                    <div className="grid grid-cols-2 gap-2 text-[10px]">
-                                        <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
-                                            <span className="text-slate-500 block font-bold">ÚLTIMO CONTACTO</span>
-                                            <span className="text-white font-bold">Ing. Rómulo (Guayaquil)</span>
-                                            <span className="text-emerald-400 block mt-1">✓ Mensaje entregado</span>
-                                        </div>
-                                        <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
-                                            <span className="text-slate-500 block font-bold">GOOGLE DRIVE</span>
-                                            <span className="text-white font-bold">Cotizacion_ATOMIC_441.pdf</span>
-                                            <span className="text-cyan-400 block mt-1">Sincronizado 100%</span>
-                                        </div>
-                                    </div>
-
-                                    {/* Live Activity Monitor */}
-                                    <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
-                                        <span className="text-[10px] text-slate-400 font-bold block uppercase">Registro de Eventos Físicos de Mouse:</span>
-                                        <div className="space-y-1 text-[10px]">
-                                            {logs.slice(0, 4).map((log) => (
-                                                <div key={log.id} className="flex items-center gap-2 text-slate-400">
-                                                    <span className="text-cyan-400 font-bold">{log.timestamp}</span>
-                                                    <span className={log.type === "success" ? "text-emerald-400 font-bold" : log.type === "vision" ? "text-purple-300" : "text-slate-300"}>
-                                                        {log.action}
-                                                    </span>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
+                            {/* Real Screen Live Video Feed */}
+                            <div className="flex-1 relative bg-black flex items-center justify-center overflow-hidden">
+                                <video
+                                    ref={videoRef}
+                                    autoPlay
+                                    playsInline
+                                    muted
+                                    className="w-full h-full object-contain"
+                                />
                             </div>
-                        )}
-                    </div>
+                        </div>
+                    ) : (
+                        <div className={`w-full h-full grid gap-4 transition-all duration-300 ${
+                            monitorMode === "both" ? "grid-cols-1 lg:grid-cols-2" : "grid-cols-1"
+                        }`}>
+                            {/* Monitor 1: Antigravity IDE & Code Workspace */}
+                            {(monitorMode === "mon1" || monitorMode === "both") && (
+                                <div className="relative rounded-2xl bg-[#090d1e] border border-cyan-500/30 overflow-hidden flex flex-col shadow-2xl">
+                                    {/* Screen Header */}
+                                    <div className="px-4 py-2 bg-slate-950/90 border-b border-slate-800 flex items-center justify-between text-[11px] font-mono">
+                                        <div className="flex items-center gap-2">
+                                            <span className="w-2.5 h-2.5 rounded-full bg-cyan-400" />
+                                            <span className="text-white font-bold">MONITOR 1 · Antigravity IDE & Terminal</span>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={startScreenShare}
+                                            className="text-[10px] text-cyan-300 hover:text-white underline cursor-pointer"
+                                        >
+                                            Conectar mi monitor real
+                                        </button>
+                                    </div>
+
+                                    {/* Screen Contents Mock (Antigravity Code & Prompt) */}
+                                    <div className="flex-1 p-4 font-mono text-xs text-slate-300 space-y-3 bg-[#070b18] overflow-y-auto">
+                                        <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                                            <span className="text-cyan-400 font-bold">📂 scratch/atomic--erp · Antigravity Assistant</span>
+                                            <span className="text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded text-[10px]">Auto-Allow: LISTO</span>
+                                        </div>
+                                        <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-[11px] space-y-1">
+                                            <p className="text-purple-400 font-bold">&gt; Session: Softres / ATOMIC Enterprise</p>
+                                            <p className="text-slate-400">Requerimientos de Rómulo: Integración de nómina y módulos multi-rol.</p>
+                                            <p className="text-slate-500">// Monitoreando ejecución por hardware físico...</p>
+                                        </div>
+
+                                        <div className="p-3 rounded-xl bg-[#0b1329] border border-cyan-500/40 text-[11px]">
+                                            <span className="text-xs text-cyan-300 font-bold block mb-1">🤖 Antigravity Chat Input Area</span>
+                                            <div className="p-2 bg-slate-950 rounded-lg border border-slate-800 text-slate-400 flex items-center justify-between">
+                                                <span>Escribe un mensaje para Antigravity...</span>
+                                                <span className="px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 text-[9px] font-bold">PROCEED DISPONIBLE</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="mt-2 p-2.5 rounded-xl bg-slate-950 border border-slate-900 text-[10px] text-slate-400">
+                                            <span className="text-slate-500 block mb-1">TERMINAL POWERSHELL EN VIVO:</span>
+                                            <p className="text-emerald-400 font-bold">PS C:\Users\SANTIAGO\Desktop\SUITE_AUTOMATIZACION_ATOMIC&gt; python server.py</p>
+                                            <p className="text-slate-400">[Uvicorn] Servidor de automatización corriendo en http://0.0.0.0:8000</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Monitor 2: Secondary Desktop (WhatsApp CRM & Browsing) */}
+                            {(monitorMode === "mon2" || monitorMode === "both") && (
+                                <div className="relative rounded-2xl bg-[#090d1e] border border-indigo-500/30 overflow-hidden flex flex-col shadow-2xl">
+                                    {/* Screen Header */}
+                                    <div className="px-4 py-2 bg-slate-950/90 border-b border-slate-800 flex items-center justify-between text-[11px] font-mono">
+                                        <div className="flex items-center gap-2">
+                                            <span className="w-2.5 h-2.5 rounded-full bg-indigo-400" />
+                                            <span className="text-white font-bold">MONITOR 2 · WhatsApp Cloud & Navegador Operativo</span>
+                                        </div>
+                                        <span className="text-slate-400 text-[10px]">1920x1080 @ 60Hz</span>
+                                    </div>
+
+                                    {/* Screen Contents Mock (CRM & Social) */}
+                                    <div className="flex-1 p-4 font-mono text-xs text-slate-300 space-y-3 bg-[#070b18] overflow-y-auto">
+                                        <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                                            <span className="text-indigo-400 font-bold">📱 WhatsApp Web & Drive Sync</span>
+                                            <span className="text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded text-[10px]">Meta API: Online</span>
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-2 text-[10px]">
+                                            <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
+                                                <span className="text-slate-500 block font-bold">ÚLTIMO CONTACTO</span>
+                                                <span className="text-white font-bold">Ing. Rómulo (Guayaquil)</span>
+                                                <span className="text-emerald-400 block mt-1">✓ Mensaje entregado</span>
+                                            </div>
+                                            <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
+                                                <span className="text-slate-500 block font-bold">GOOGLE DRIVE</span>
+                                                <span className="text-white font-bold">Cotizacion_ATOMIC_441.pdf</span>
+                                                <span className="text-cyan-400 block mt-1">Sincronizado 100%</span>
+                                            </div>
+                                        </div>
+
+                                        {/* Live Activity Monitor */}
+                                        <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+                                            <span className="text-[10px] text-slate-400 font-bold block uppercase">Registro de Eventos Físicos de Mouse:</span>
+                                            <div className="space-y-1 text-[10px]">
+                                                {logs.slice(0, 4).map((log) => (
+                                                    <div key={log.id} className="flex items-center gap-2 text-slate-400">
+                                                        <span className="text-cyan-400 font-bold">{log.timestamp}</span>
+                                                        <span className={log.type === "success" ? "text-emerald-400 font-bold" : log.type === "vision" ? "text-purple-300" : "text-slate-300"}>
+                                                            {log.action}
+                                                        </span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
 
                 {/* Docked AI Copilot Panel (Acoplado a la derecha sin flotar sobre los monitores) */}

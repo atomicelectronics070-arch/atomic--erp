@@ -157,7 +157,7 @@ export async function handleIncomingWhatsAppBot(params: {
 
         // A. Verificar si el remitente es Juan (Administrador / Dueño) interactuando con Karen
         if (isJuan(whatsappId)) {
-            const karenReply = await processJuanCommand(messageText);
+            const karenReply = await processJuanCommand(messageText, conversationId);
             await sendWhatsAppMessage(whatsappId, karenReply);
             await prisma.wAMessage.create({
                 data: {

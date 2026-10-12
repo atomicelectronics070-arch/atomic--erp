@@ -1,18 +1,30 @@
 export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { karenState, checkInactivityAndAlertJuan } from '@/lib/karen/karenBrain';
+import { karenState, checkInactivityAndAlertJuan, checkAndSendMorningBriefingToJuan } from '@/lib/karen/karenBrain';
 
 /**
  * Endpoint de Auditoría en Vivo y Diagnóstico de Mensajería de Karen
  */
 export async function GET() {
     try {
-        // Verificar si hay inactividad prolongada para alertar a Juan
+        // 1. Saludo matutino diario de Karen a Juan (si es horario AM)
+        await checkAndSendMorningBriefingToJuan().catch(() => {});
+
+        // 2. Verificar si hay inactividad prolongada para alertar a Juan
         await checkInactivityAndAlertJuan().catch(() => {});
 
-        // Cargar conversaciones recientes
+        // 3. Cargar conversaciones recientes de clientes (excluyendo a Juan)
         const conversations = await prisma.wAConversation.findMany({
+            where: {
+                contact: {
+                    NOT: [
+                        { whatsappId: { contains: '969043453' } },
+                        { whatsappId: '593969043453' },
+                        { whatsappId: '0969043453' }
+                    ]
+                }
+            },
             take: 100,
             orderBy: { updatedAt: 'desc' },
             include: {

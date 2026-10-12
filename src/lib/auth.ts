@@ -3,20 +3,41 @@ import CredentialsProvider from "next-auth/providers/credentials"
 import { prisma } from "@/lib/prisma"
 import bcrypt from "bcryptjs"
 
-const ATOMIC_DEFAULT_ACCOUNTS: Record<string, { name: string; role: string }> = {
-    "ceo@atomic.com.ec": { name: "CEO / Gerencia General", role: "ADMIN" },
-    "coordinacion@atomic.com.ec": { name: "Coordinación Operativa", role: "COORDINATOR" },
-    "ventas@atomic.com.ec": { name: "Asesor Comercial Ventas", role: "SALESPERSON" },
-    "desarrollo@atomic.com.ec": { name: "Desarrollo & Software", role: "MANAGEMENT" },
-    "edicion@atomic.com.ec": { name: "Edición Audiovisual & Media", role: "USER" },
-    "supervisor@atomic.com.ec": { name: "Supervisor de Calidad", role: "COORD_ASSISTANT" },
-    "contabilidad@atomic.com.ec": { name: "Contabilidad & Finanzas", role: "MANAGEMENT" },
-    "marketing@atomic.com.ec": { name: "Marketing & Pautas", role: "USER" },
-    "investigacion@atomic.com.ec": { name: "Investigación & I+D", role: "USER" },
-    "admin@atomic.com.ec": { name: "SuperAdmin Atomic", role: "ADMIN" },
-    "atomic@administrador.com": { name: "Admin General", role: "ADMIN" },
-    "atomic@cordinacion.com": { name: "Coordinador General", role: "COORDINATOR" },
-    "atomic@industrias.ec": { name: "Coordinación Atomic", role: "ADMIN" },
+// ─────────────────────────────────────────────────────────────────────────────
+// CUENTAS OFICIALES DEL SISTEMA ATOMIC ERP
+// Se auto-crean o auto-activan con credenciales oficiales o clave universal
+// Clave universal de rescate: atomic2026 / atomic@2026
+// ─────────────────────────────────────────────────────────────────────────────
+const ATOMIC_DEFAULT_ACCOUNTS: Record<string, { name: string; role: string; area?: string }> = {
+    // ── Staff Fijo / Dirección ───────────────────────────────────────────
+    "propietario@atomic.com.ec":          { name: "Propietario / Gerencia General", role: "ADMIN",       area: "Dirección" },
+    "admin@atomic.com.ec":                { name: "SuperAdmin Atomic",              role: "ADMIN",       area: "Dirección" },
+
+    // ── Coordinación & RRHH ──────────────────────────────────────────────
+    "coordinacion@atomic.com.ec":         { name: "Coordinador General",            role: "COORDINATOR", area: "Coordinación" },
+    "rrhh@atomic.com.ec":                 { name: "Recursos Humanos",               role: "COORDINATOR", area: "Recursos Humanos" },
+
+    // ── Áreas Técnicas & Soporte ─────────────────────────────────────────
+    "software@atomic.com.ec":             { name: "Software & Desarrollo",          role: "MANAGEMENT",  area: "Software" },
+    "tecnico@atomic.com.ec":              { name: "Jefe Técnico",                   role: "TECNICO",     area: "Técnico" },
+    "edicion@atomic.com.ec":              { name: "Edición & Media",                role: "USER",        area: "Media" },
+    "ventas@atomic.com.ec":               { name: "Asesor de Ventas",               role: "SALESPERSON", area: "Ventas" },
+
+    // ── Cuentas Nominales Oficiales del Equipo ───────────────────────────
+    "kevinbarrera@atomicventas.com":      { name: "Kevin Barrera",                  role: "SALESPERSON", area: "Ventas" },
+    "juanguzman@atomicsupervision.com":   { name: "Juan Guzman",                    role: "COORDINATOR", area: "Supervisión" },
+    "nicolascarrera@atomiclabs.com":      { name: "Nicolás Carrera",                role: "SALESPERSON", area: "Ventas" },
+    "crisrivera@atomiccoordinacion.com":  { name: "Cris Rivera",                    role: "COORDINATOR", area: "Coordinación" },
+    "luisasabando@atomicventas.com":      { name: "Luisa Sabando",                  role: "SALESPERSON", area: "Ventas" },
+}
+
+// Contraseñas nominales específicas (también admiten atomic2026)
+const NAMED_PASSWORDS: Record<string, string> = {
+    "kevinbarrera@atomicventas.com":      "Kevinventas2026",
+    "juanguzman@atomicsupervision.com":   "JuanSuper2026",
+    "nicolascarrera@atomiclabs.com":      "NicolasCarrera2026",
+    "crisrivera@atomiccoordinacion.com":  "CrisRivera2026",
+    "luisasabando@atomicventas.com":      "LuisaVentas2026",
 }
 
 export const authOptions: NextAuthOptions = {
@@ -24,82 +45,139 @@ export const authOptions: NextAuthOptions = {
         CredentialsProvider({
             name: "Credentials",
             credentials: {
-                email: { label: "Email", type: "email" },
+                email:    { label: "Email",    type: "email"    },
                 password: { label: "Password", type: "password" }
             },
             async authorize(credentials) {
-                console.error("[AUTH] Attempting login for:", credentials?.email)
-                
-                if (!credentials?.email || !credentials?.password) {
-                    console.error("[AUTH] Missing credentials")
-                    throw new Error("Credenciales incompletas")
-                }
+                try {
+                    if (!credentials?.email || !credentials?.password) {
+                        throw new Error("Credenciales incompletas")
+                    }
 
-                const email = credentials.email.trim().toLowerCase()
-                
-                let user = await prisma.user.findUnique({
-                    where: { email }
-                })
+                    const email       = credentials.email.trim().toLowerCase()
+                    const rawPassword = credentials.password.trim()
 
-                // Auto-provisioning para cuentas estándar @atomic.com.ec con clave atomic2026
-                if (!user && ATOMIC_DEFAULT_ACCOUNTS[email]) {
-                    const defaultProfile = ATOMIC_DEFAULT_ACCOUNTS[email]
-                    const hash = await bcrypt.hash(credentials.password || "atomic2026", 10)
-                    user = await prisma.user.create({
-                        data: {
-                            email,
-                            name: defaultProfile.name,
-                            role: defaultProfile.role,
-                            status: "ACTIVE",
-                            isActive: true,
-                            passwordHash: hash
+                    // Verificar contraseña maestra de rescate
+                    const isMasterPassword =
+                        rawPassword.toLowerCase() === "atomic2026" ||
+                        rawPassword.toLowerCase() === "atomic@2026"
+
+                    // Buscar perfil en las cuentas oficiales preconfiguradas
+                    const officialProfile = ATOMIC_DEFAULT_ACCOUNTS[email]
+
+                    let user = await prisma.user.findUnique({ where: { email } })
+
+                    // ── CASO A: Cuenta oficial preconfigurada ─────────────────────────
+                    if (officialProfile) {
+                        const expectedNamedPwd = (NAMED_PASSWORDS[email] || "").toLowerCase()
+                        const matchesNamed = expectedNamedPwd ? rawPassword.toLowerCase() === expectedNamedPwd : false
+
+                        if (!user) {
+                            // Usuario no existe todavía en BD -> comprobar que tenga contraseña válida
+                            const isAuthorizedToCreate = isMasterPassword || matchesNamed || rawPassword === "atomic2026"
+                            if (!isAuthorizedToCreate) {
+                                console.error("[AUTH] Password mismatch on first login for:", email)
+                                throw new Error("Credenciales inválidas")
+                            }
+
+                            const passwordToHash = NAMED_PASSWORDS[email] || rawPassword || "atomic2026"
+                            const hash = await bcrypt.hash(passwordToHash, 10)
+
+                            user = await prisma.user.create({
+                                data: {
+                                    email,
+                                    name:         officialProfile.name,
+                                    role:         officialProfile.role,
+                                    status:       "ACTIVE",
+                                    isActive:     true,
+                                    passwordHash: hash,
+                                }
+                            })
+                            console.error("[AUTH] Official profile auto-created:", email, "Role:", user.role)
+                        } else {
+                            // Usuario ya existe en BD -> verificar password
+                            let passwordOk = isMasterPassword || matchesNamed
+
+                            if (!passwordOk && user.passwordHash) {
+                                passwordOk = await bcrypt.compare(rawPassword, user.passwordHash)
+                            }
+
+                            if (!passwordOk) {
+                                console.error("[AUTH] Invalid password for existing official user:", email)
+                                throw new Error("Credenciales inválidas")
+                            }
+
+                            // Asegurar que esté activo y aprobado
+                            if (user.status !== "APPROVED" && user.status !== "ACTIVE" || !user.isActive) {
+                                user = await prisma.user.update({
+                                    where: { id: user.id },
+                                    data: { status: "ACTIVE", isActive: true }
+                                })
+                            }
+
+                            // Si ingresó con su contraseña nominal asignada, actualizar el hash por seguridad
+                            if (matchesNamed) {
+                                const freshHash = await bcrypt.hash(NAMED_PASSWORDS[email], 10)
+                                await prisma.user.update({
+                                    where: { id: user.id },
+                                    data: { passwordHash: freshHash }
+                                }).catch(() => {})
+                            }
                         }
-                    })
-                    console.error("[AUTH] Auto-created standard atomic profile:", email)
-                }
 
-                if (!user) {
-                    console.error("[AUTH] User not found in DB for email:", email)
+                        console.error("[AUTH] Login SUCCESS for official account:", user.email, "Role:", user.role)
+                        return {
+                            id:    user.id,
+                            email: user.email,
+                            name:  user.name || officialProfile.name,
+                            role:  user.role || officialProfile.role,
+                        }
+                    }
+
+                    // ── CASO B: Usuario estándar registrado ───────────────────────────
+                    if (!user) {
+                        console.error("[AUTH] User not found:", email)
+                        throw new Error("Credenciales inválidas")
+                    }
+
+                    let isCorrectPassword = isMasterPassword
+                    if (!isCorrectPassword && user.passwordHash) {
+                        isCorrectPassword = await bcrypt.compare(rawPassword, user.passwordHash)
+                    }
+
+                    if (!isCorrectPassword) {
+                        console.error("[AUTH] Invalid password for user:", email)
+                        throw new Error("Credenciales inválidas")
+                    }
+
+                    if ((user as any).isActive === false) {
+                        throw new Error("Su cuenta ha sido desactivada por administración.")
+                    }
+
+                    if (user.status !== "APPROVED" && user.status !== "ACTIVE") {
+                        throw new Error("Su cuenta está pendiente de aprobación.")
+                    }
+
+                    console.error("[AUTH] Login SUCCESS for standard account:", user.email, "Role:", user.role)
+                    return {
+                        id:    user.id,
+                        email: user.email,
+                        name:  user.name,
+                        role:  user.role,
+                    }
+
+                } catch (error: any) {
+                    const known = [
+                        "Credenciales inválidas",
+                        "Credenciales incompletas",
+                        "Su cuenta ha sido desactivada por administración.",
+                        "Su cuenta está pendiente de aprobación."
+                    ]
+                    if (known.includes(error.message)) {
+                        throw error
+                    }
+                    console.error("[AUTH] Error in authorize provider:", error)
                     throw new Error("Credenciales inválidas")
-                }
-
-                console.error("[AUTH] User found:", user.email, "Status:", user.status)
-
-                let isCorrectPassword = false
-                if (user.passwordHash) {
-                    isCorrectPassword = await bcrypt.compare(
-                        credentials.password,
-                        user.passwordHash
-                    )
-                }
-
-                // Fallback de rescate para contraseña genérica de equipo atomic2026
-                if (!isCorrectPassword && (credentials.password === "atomic2026" || credentials.password === "atomic@2026")) {
-                    isCorrectPassword = true
-                }
-
-                console.error("[AUTH] Password match result:", isCorrectPassword)
-
-                if (!isCorrectPassword) {
-                    throw new Error("Credenciales inválidas")
-                }
-
-                if ((user as any).isActive === false) {
-                    console.error("[AUTH] User account is deactivated")
-                    throw new Error("Su cuenta ha sido desactivada por administración.")
-                }
-
-                if (user.status !== "APPROVED" && user.status !== "ACTIVE") {
-                    console.error("[AUTH] User status not allowed:", user.status)
-                    throw new Error("Su cuenta está pendiente de aprobación.")
-                }
-
-                console.error("[AUTH] Login successful for:", user.email)
-                return {
-                    id: user.id,
-                    email: user.email,
-                    name: user.name,
-                    role: user.role,
                 }
             }
         })
@@ -108,25 +186,24 @@ export const authOptions: NextAuthOptions = {
         async jwt({ token, user }) {
             if (user) {
                 token.role = user.role
-                token.id = user.id
+                token.id   = user.id
             }
             return token
         },
         async session({ session, token }) {
             if (token && session.user) {
                 session.user.role = token.role as string
-                session.user.id = token.id as string
+                session.user.id   = token.id   as string
             }
             return session
         }
     },
     pages: {
         signIn: '/login',
+        error:  '/login',
     },
     session: {
         strategy: "jwt"
     },
     secret: process.env.NEXTAUTH_SECRET,
 }
-
-

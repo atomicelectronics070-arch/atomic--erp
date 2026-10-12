@@ -7,6 +7,7 @@ import {
     RegistrationDraft 
 } from "@/lib/auth/verification"
 import { sendWhatsAppMessage } from "@/lib/whatsapp/service"
+import { isJuan } from "@/lib/karen/karenBrain"
 
 export interface BotContext {
     senderId: string // phone number for WhatsApp, or userId/sessionToken for Web
@@ -341,6 +342,13 @@ export async function processConversationalBotMessage(
         lower.includes("cotizar contrato")
 
     if (isQuoteIntent) {
+        if (!isJuan(context.senderId)) {
+            return {
+                handled: true,
+                replyText: `La generación directa de contratos internos y proformas oficiales está reservada para el personal autorizado de ATOMIC. Si eres cliente o deseas cotizar nuestros productos para tu proyecto, con mucho gusto te asesoro. ¿Qué equipo o solución de seguridad estás buscando?`,
+                suggestions: ["Ver catálogo", "Videoporteros", "Torniquetes"]
+            }
+        }
         setState(context.senderId, "QUOTE_AWAITING_PIN", {})
         return {
             handled: true,

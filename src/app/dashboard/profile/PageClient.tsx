@@ -26,13 +26,13 @@ interface ThemeOption {
 const SYSTEM_THEMES: ThemeOption[] = [
     {
         id: "ticketmaster-white",
-        name: "Ticketmaster Blanco (Por Defecto)",
-        desc: "Limpio, profesional, blanco ejecutivo y azul Ticketmaster #026CDF",
-        primaryColor: "#026CDF",
-        accentColor: "#0F172A",
-        bgGrad: "from-blue-500/10 via-slate-100 to-white",
-        borderClass: "border-blue-500/40 text-blue-600",
-        badgeBg: "bg-blue-50 text-blue-600 border-blue-200"
+        name: "Blanco Ejecutivo con Tomate (Por Defecto)",
+        desc: "Limpio, profesional, blanco ejecutivo y dinámicos acentos color tomate #EA580C",
+        primaryColor: "#EA580C",
+        accentColor: "#C2410C",
+        bgGrad: "from-orange-500/10 via-amber-50 to-white",
+        borderClass: "border-orange-500/40 text-orange-600",
+        badgeBg: "bg-orange-50 text-orange-600 border-orange-200"
     },
     {
         id: "cyber-neon",
@@ -135,7 +135,7 @@ export default function ProfilePage() {
     const [loading, setLoading] = useState(true)
     const [saving, setSaving] = useState(false)
     const [activeTab, setActiveTab] = useState<"info" | "themes" | "security">("info")
-    const [currentTheme, setCurrentTheme] = useState("cyber-neon")
+    const [currentTheme, setCurrentTheme] = useState("ticketmaster-white")
     const [currentSurfaceTheme, setCurrentSurfaceTheme] = useState("cyber-glass")
     
     const [formData, setFormData] = useState({

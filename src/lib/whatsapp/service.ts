@@ -241,3 +241,45 @@ export async function sendWhatsAppMedia(
     }
 }
 
+export async function sendWhatsAppCatalogMessage(
+    to: string,
+    bodyText: string = '¡Hola! Te invitamos a explorar nuestro catálogo oficial de equipos de seguridad y tecnología en WhatsApp.',
+    footerText: string = 'ATOMIC • Seguridad & Tecnología'
+) {
+    try {
+        const { token, phoneId } = await getWhatsAppCredentials();
+        if (!token) throw new Error('Falta WHATSAPP_TOKEN en la configuración.');
+
+        const cleanTo = sanitizeToE164(to);
+
+        const response = await axios.post(
+            `https://graph.facebook.com/${API_VERSION}/${phoneId}/messages`,
+            {
+                messaging_product: 'whatsapp',
+                recipient_type: 'individual',
+                to: cleanTo,
+                type: 'interactive',
+                interactive: {
+                    type: 'catalog_message',
+                    body: { text: bodyText },
+                    footer: { text: footerText },
+                    action: {
+                        name: 'catalog_message'
+                    }
+                }
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            }
+        );
+        return response.data;
+    } catch (error: any) {
+        const detail = error.response?.data?.error?.message || error.message || 'Error al enviar mensaje de catálogo';
+        console.error('WhatsApp Catalog Send Error:', error.response?.data || error.message);
+        throw new Error(detail);
+    }
+}
+

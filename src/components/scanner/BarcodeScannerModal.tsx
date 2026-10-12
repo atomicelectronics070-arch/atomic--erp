@@ -4,7 +4,8 @@ import React, { useState, useEffect, useRef, useCallback } from "react"
 import { 
     Camera, X, Scan, Flashlight, RefreshCw, Plus, Minus, Check, 
     AlertCircle, ShoppingBag, Download, Trash2, ArrowRight, 
-    FileSpreadsheet, Sparkles, Layers, Box, Tag, DollarSign, Search
+    FileSpreadsheet, Sparkles, Layers, Box, Tag, DollarSign, Search,
+    Flame, Upload, Image as ImageIcon
 } from "lucide-react"
 
 export interface ScannedProductItem {
@@ -12,6 +13,9 @@ export interface ScannedProductItem {
     sku: string
     name: string
     price: number
+    compareAtPrice?: number
+    discountPercent?: number
+    isRemate?: boolean
     stock: number
     category: string
     provider?: string
@@ -60,8 +64,66 @@ export default function BarcodeScannerModal({
         provider: "ATOMIC",
         description: ""
     })
+    const [productImage, setProductImage] = useState<string | null>(null)
+    const [isRemateSelected, setIsRemateSelected] = useState(false)
+    const [listFilter, setListFilter] = useState<"all" | "general" | "remate">("all")
+    const fileInputRef = useRef<HTMLInputElement>(null)
+
     const [isSavingProduct, setIsSavingProduct] = useState(false)
     const [saveMessage, setSaveMessage] = useState<string | null>(null)
+
+    // Capture photo from active camera stream
+    const capturePhotoFromStream = () => {
+        if (!videoRef.current) return
+        try {
+            const canvas = document.createElement("canvas")
+            canvas.width = videoRef.current.videoWidth || 640
+            canvas.height = videoRef.current.videoHeight || 480
+            const ctx = canvas.getContext("2d")
+            if (ctx) {
+                ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height)
+                const dataUrl = canvas.toDataURL("image/jpeg", 0.85)
+                setProductImage(dataUrl)
+            }
+        } catch (e) {
+            console.error("Error capturing photo from stream", e)
+        }
+    }
+
+    // Handle file upload from device
+    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (file) {
+            const reader = new FileReader()
+            reader.onloadend = () => {
+                setProductImage(reader.result as string)
+            }
+            reader.readAsDataURL(file)
+        }
+    }
+
+    // Toggle product between General list and Stock de Remate
+    const toggleRemateStatus = async (item: ScannedProductItem) => {
+        if (!item.id) return
+        const willBeRemate = !item.isRemate
+        try {
+            const res = await fetch("/api/stock-remate", {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    id: item.id,
+                    addToRemate: willBeRemate,
+                    removeFromRemate: !willBeRemate
+                })
+            })
+            if (res.ok) {
+                setActiveResult(prev => prev && prev.id === item.id ? { ...prev, isRemate: willBeRemate } : prev)
+                setScannedList(prev => prev.map(p => p.id === item.id ? { ...p, isRemate: willBeRemate } : p))
+            }
+        } catch (e) {
+            console.error("Error toggling remate status:", e)
+        }
+    }
 
     // Session Scanned History List
     const [scannedList, setScannedList] = useState<ScannedProductItem[]>([])
@@ -325,7 +387,11 @@ export default function BarcodeScannerModal({
             const res = await fetch("/api/scanner", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(newProductData)
+                body: JSON.stringify({
+                    ...newProductData,
+                    images: productImage ? [productImage] : undefined,
+                    isRemate: isRemateSelected
+                })
             })
             const data = await res.json()
 
@@ -338,16 +404,24 @@ export default function BarcodeScannerModal({
                     sku: saved.sku || newProductData.sku,
                     name: saved.name,
                     price: saved.price,
+                    compareAtPrice: saved.compareAtPrice,
+                    discountPercent: saved.compareAtPrice && saved.compareAtPrice > saved.price 
+                        ? Math.round(((saved.compareAtPrice - saved.price) / saved.compareAtPrice) * 100) 
+                        : 0,
+                    isRemate: isRemateSelected,
                     stock: saved.stock,
                     category: saved.category?.name || newProductData.categoryName,
                     provider: saved.provider || newProductData.provider,
                     description: saved.description || "",
+                    images: productImage ? [productImage] : (saved.images ? (typeof saved.images === 'string' && saved.images.startsWith('[') ? JSON.parse(saved.images) : [saved.images]) : []),
                     scannedAt: new Date().toLocaleTimeString("es-EC", { hour: "2-digit", minute: "2-digit" }),
                     isNew: false
                 }
 
                 setActiveResult(item)
                 setIsNewProductForm(false)
+                setProductImage(null)
+                setIsRemateSelected(false)
                 setScannedList(prev => [item, ...prev.filter(p => p.sku !== item.sku)])
                 setSaveMessage("✅ ¡Producto registrado exitosamente en el catálogo ATOMIC!")
 
@@ -605,10 +679,10 @@ export default function BarcodeScannerModal({
                                         </div>
                                     </div>
 
-                                    {/* Quick Stock Controls */}
-                                    <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between gap-3">
+                                    {/* Quick Stock Controls & Remate Toggle */}
+                                    <div className="pt-3 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-3">
                                         <div className="flex items-center gap-2">
-                                            <span className="text-xs font-mono text-slate-400">Ajustar Stock:</span>
+                                            <span className="text-xs font-mono text-slate-400">Stock:</span>
                                             <button
                                                 type="button"
                                                 onClick={() => handleStockDelta(-1)}
@@ -627,16 +701,32 @@ export default function BarcodeScannerModal({
                                             </button>
                                         </div>
 
-                                        <button
-                                            onClick={() => {
-                                                if (onProductSelected) onProductSelected(activeResult)
-                                                onClose()
-                                            }}
-                                            className="px-4 py-2 bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/40 text-cyan-300 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all"
-                                        >
-                                            <span>Usar en Cotización</span>
-                                            <ArrowRight size={14} />
-                                        </button>
+                                        <div className="flex items-center gap-2">
+                                            <button
+                                                type="button"
+                                                onClick={() => toggleRemateStatus(activeResult)}
+                                                className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 border transition-all cursor-pointer ${
+                                                    activeResult.isRemate
+                                                        ? "bg-rose-500/20 text-rose-300 border-rose-500/40 hover:bg-rose-500/30"
+                                                        : "bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30"
+                                                }`}
+                                                title={activeResult.isRemate ? "Quitar de Stock de Remate" : "Asignar a Stock de Remate"}
+                                            >
+                                                <Flame size={13} className={activeResult.isRemate ? "text-rose-400" : "text-amber-400"} />
+                                                <span>{activeResult.isRemate ? "🔥 En Remate (Quitar)" : "🔥 Pasar a Remate"}</span>
+                                            </button>
+
+                                            <button
+                                                onClick={() => {
+                                                    if (onProductSelected) onProductSelected(activeResult)
+                                                    onClose()
+                                                }}
+                                                className="px-3.5 py-1.5 bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/40 text-cyan-300 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all cursor-pointer"
+                                            >
+                                                <span>Cotizar</span>
+                                                <ArrowRight size={13} />
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             )}
@@ -657,6 +747,63 @@ export default function BarcodeScannerModal({
                                     </div>
 
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                                        {/* FOTO DEL PRODUCTO (CÁMARA / ARCHIVO) */}
+                                        <div className="sm:col-span-2 p-3 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2">
+                                            <div className="flex items-center justify-between">
+                                                <label className="text-[10px] font-mono uppercase text-slate-300 font-bold flex items-center gap-1.5">
+                                                    <ImageIcon size={13} className="text-cyan-400" />
+                                                    <span>Foto del Producto</span>
+                                                </label>
+                                                <span className="text-[10px] font-mono text-slate-500">Captura en vivo o sube archivo</span>
+                                            </div>
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-16 h-16 rounded-xl bg-slate-900 border border-dashed border-slate-700 flex items-center justify-center overflow-hidden shrink-0">
+                                                    {productImage ? (
+                                                        <img src={productImage} alt="Preview" className="w-full h-full object-cover" />
+                                                    ) : (
+                                                        <Camera size={22} className="text-slate-600" />
+                                                    )}
+                                                </div>
+                                                <div className="flex flex-wrap items-center gap-2">
+                                                    <button
+                                                        type="button"
+                                                        onClick={capturePhotoFromStream}
+                                                        className="px-3 py-1.5 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 text-[11px] font-mono font-bold flex items-center gap-1.5 cursor-pointer"
+                                                        title="Captura el fotograma actual de la cámara"
+                                                    >
+                                                        <Camera size={13} />
+                                                        <span>📸 Capturar Foto de Cámara</span>
+                                                    </button>
+                                                    <input
+                                                        type="file"
+                                                        ref={fileInputRef}
+                                                        accept="image/*"
+                                                        className="hidden"
+                                                        onChange={handleFileUpload}
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => fileInputRef.current?.click()}
+                                                        className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-[11px] font-mono flex items-center gap-1.5 cursor-pointer"
+                                                    >
+                                                        <Upload size={13} />
+                                                        <span>📁 Subir Foto</span>
+                                                    </button>
+                                                    {productImage && (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setProductImage(null)}
+                                                            className="p-1.5 rounded-lg bg-rose-500/20 text-rose-300 text-xs cursor-pointer hover:bg-rose-500/30"
+                                                            title="Eliminar foto"
+                                                        >
+                                                            <X size={13} />
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* NOMBRE */}
                                         <div className="sm:col-span-2">
                                             <label className="text-[10px] font-mono uppercase text-slate-400 block mb-1">
                                                 Nombre del Producto *
@@ -671,9 +818,61 @@ export default function BarcodeScannerModal({
                                             />
                                         </div>
 
+                                        {/* TOGGLE REMATE */}
+                                        <div className="sm:col-span-2 p-3 rounded-2xl bg-gradient-to-r from-rose-950/40 to-amber-950/40 border border-rose-500/40 space-y-2">
+                                            <label className="flex items-center justify-between cursor-pointer">
+                                                <div className="flex items-center gap-2">
+                                                    <Flame size={16} className="text-rose-400" />
+                                                    <div>
+                                                        <span className="text-xs font-bold text-white uppercase font-mono block">
+                                                            🔥 Asignar a Stock de Remate (% OFF)
+                                                        </span>
+                                                        <span className="text-[10px] text-slate-400 font-mono">
+                                                            Aparecerá en la sección de liquidación de la tarjeta /bienvenida
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={isRemateSelected}
+                                                    onChange={(e) => setIsRemateSelected(e.target.checked)}
+                                                    className="w-5 h-5 accent-rose-500 rounded cursor-pointer"
+                                                />
+                                            </label>
+
+                                            {isRemateSelected && (
+                                                <div className="grid grid-cols-2 gap-2 pt-2 border-t border-rose-500/20">
+                                                    <div>
+                                                        <label className="text-[10px] font-mono uppercase text-slate-400 block mb-1">
+                                                            Precio Regular Original ($)
+                                                        </label>
+                                                        <input
+                                                            type="number"
+                                                            step="0.01"
+                                                            value={newProductData.compareAtPrice}
+                                                            onChange={e => setNewProductData(p => ({ ...p, compareAtPrice: e.target.value }))}
+                                                            placeholder="PVP normal..."
+                                                            className="w-full bg-slate-950 border border-slate-800 text-xs text-slate-300 line-through rounded-xl px-3 py-1.5 outline-none focus:border-rose-400"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="text-[10px] font-mono uppercase text-rose-300 block mb-1">
+                                                            % Descuento OFF
+                                                        </label>
+                                                        <div className="h-8 px-3 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center font-mono font-bold text-rose-300 text-xs">
+                                                            {parseFloat(newProductData.compareAtPrice) > parseFloat(newProductData.price) && parseFloat(newProductData.compareAtPrice) > 0
+                                                                ? `-${Math.round(((parseFloat(newProductData.compareAtPrice) - parseFloat(newProductData.price)) / parseFloat(newProductData.compareAtPrice)) * 100)}% OFF`
+                                                                : "Define PVP regular"}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* PRECIO PVP / REMATE */}
                                         <div>
                                             <label className="text-[10px] font-mono uppercase text-slate-400 block mb-1">
-                                                Precio PVP ($USD) *
+                                                {isRemateSelected ? "Precio de Remate ($USD) *" : "Precio PVP ($USD) *"}
                                             </label>
                                             <input
                                                 type="number"
@@ -682,7 +881,11 @@ export default function BarcodeScannerModal({
                                                 value={newProductData.price}
                                                 onChange={e => setNewProductData(p => ({ ...p, price: e.target.value }))}
                                                 placeholder="0.00"
-                                                className="w-full bg-slate-950 border border-slate-800 text-sm font-mono text-emerald-400 placeholder:text-slate-600 rounded-xl px-3 py-2 outline-none focus:border-amber-400"
+                                                className={`w-full bg-slate-950 border text-sm font-mono placeholder:text-slate-600 rounded-xl px-3 py-2 outline-none ${
+                                                    isRemateSelected 
+                                                        ? "border-rose-500/50 text-amber-300 font-bold focus:border-rose-400" 
+                                                        : "border-slate-800 text-emerald-400 focus:border-amber-400"
+                                                }`}
                                             />
                                         </div>
 
@@ -769,22 +972,64 @@ export default function BarcodeScannerModal({
                     {/* VIEW TAB 2: SCANNED LIST & INVENTORY VALUATION */}
                     {activeTab === "list" && (
                         <div className="space-y-6">
+                            {/* Filter Bar: General vs Stock de Remate */}
+                            <div className="flex items-center gap-2 flex-wrap">
+                                <button
+                                    onClick={() => setListFilter("all")}
+                                    className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer ${
+                                        listFilter === "all"
+                                            ? "bg-cyan-500 text-black shadow-md"
+                                            : "bg-slate-900 text-slate-400 hover:text-white border border-slate-800"
+                                    }`}
+                                >
+                                    Todos ({scannedList.length})
+                                </button>
+                                <button
+                                    onClick={() => setListFilter("general")}
+                                    className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                                        listFilter === "general"
+                                            ? "bg-blue-600 text-white shadow-md"
+                                            : "bg-slate-900 text-slate-400 hover:text-white border border-slate-800"
+                                    }`}
+                                >
+                                    <span>📦 Lista General</span>
+                                    <span>({scannedList.filter(p => !p.isRemate).length})</span>
+                                </button>
+                                <button
+                                    onClick={() => setListFilter("remate")}
+                                    className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                                        listFilter === "remate"
+                                            ? "bg-gradient-to-r from-rose-600 to-amber-600 text-white shadow-md shadow-rose-500/20"
+                                            : "bg-slate-900 text-slate-400 hover:text-white border border-slate-800"
+                                    }`}
+                                >
+                                    <Flame size={12} className="text-yellow-400" />
+                                    <span>🔥 Stock de Remate</span>
+                                    <span>({scannedList.filter(p => p.isRemate).length})</span>
+                                </button>
+                            </div>
+
                             {/* Stats bar */}
                             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                                 <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800">
-                                    <span className="text-[10px] font-mono uppercase text-slate-400 block">Artículos Escaneados</span>
-                                    <span className="text-2xl font-black text-white">{scannedList.length}</span>
+                                    <span className="text-[10px] font-mono uppercase text-slate-400 block">Artículos Mostrados</span>
+                                    <span className="text-2xl font-black text-white">
+                                        {scannedList.filter(p => listFilter === "all" ? true : listFilter === "remate" ? p.isRemate : !p.isRemate).length}
+                                    </span>
                                 </div>
                                 <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800">
-                                    <span className="text-[10px] font-mono uppercase text-slate-400 block">Unidades Totales</span>
+                                    <span className="text-[10px] font-mono uppercase text-slate-400 block">Unidades Físicas</span>
                                     <span className="text-2xl font-black text-cyan-400">
-                                        {scannedList.reduce((acc, p) => acc + (p.stock || 1), 0)}
+                                        {scannedList.filter(p => listFilter === "all" ? true : listFilter === "remate" ? p.isRemate : !p.isRemate).reduce((acc, p) => acc + (p.stock || 1), 0)}
                                     </span>
                                 </div>
                                 <div className="col-span-2 sm:col-span-1 p-4 rounded-2xl bg-slate-900/90 border border-slate-800">
                                     <span className="text-[10px] font-mono uppercase text-slate-400 block">Valoración Total</span>
                                     <span className="text-2xl font-black text-emerald-400">
-                                        ${totalInventoryValue.toFixed(2)} USD
+                                        ${scannedList
+                                            .filter(p => listFilter === "all" ? true : listFilter === "remate" ? p.isRemate : !p.isRemate)
+                                            .reduce((acc, p) => acc + (p.price * (p.stock || 1)), 0)
+                                            .toFixed(2)} USD
                                     </span>
                                 </div>
                             </div>
@@ -792,13 +1037,13 @@ export default function BarcodeScannerModal({
                             {/* Export / Clear buttons */}
                             <div className="flex items-center justify-between gap-3">
                                 <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-300">
-                                    Historial de esta Sesión
+                                    Gestión de Inventario Escaneado
                                 </h3>
                                 <div className="flex items-center gap-2">
                                     <button
                                         onClick={exportHistoryCSV}
                                         disabled={scannedList.length === 0}
-                                        className="px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all disabled:opacity-40"
+                                        className="px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all disabled:opacity-40 cursor-pointer"
                                     >
                                         <Download size={13} />
                                         <span>Exportar CSV</span>
@@ -806,7 +1051,7 @@ export default function BarcodeScannerModal({
                                     <button
                                         onClick={() => setScannedList([])}
                                         disabled={scannedList.length === 0}
-                                        className="px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-300 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all disabled:opacity-40"
+                                        className="px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-300 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all disabled:opacity-40 cursor-pointer"
                                     >
                                         <Trash2 size={13} />
                                         <span>Limpiar</span>
@@ -824,23 +1069,74 @@ export default function BarcodeScannerModal({
                                     <table className="w-full text-left text-xs font-mono">
                                         <thead className="bg-slate-950 text-slate-400 border-b border-slate-800">
                                             <tr>
-                                                <th className="px-4 py-3">SKU</th>
-                                                <th className="px-4 py-3">Producto</th>
-                                                <th className="px-4 py-3 text-right">PVP ($)</th>
-                                                <th className="px-4 py-3 text-center">Stock</th>
-                                                <th className="px-4 py-3 text-right">Hora</th>
+                                                <th className="px-3 py-3">Foto / SKU</th>
+                                                <th className="px-3 py-3">Producto</th>
+                                                <th className="px-3 py-3">Lista</th>
+                                                <th className="px-3 py-3 text-right">Precio</th>
+                                                <th className="px-3 py-3 text-center">Stock</th>
+                                                <th className="px-3 py-3 text-right">Acción</th>
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-slate-800/60 bg-slate-900/60">
-                                            {scannedList.map((item, idx) => (
-                                                <tr key={idx} className="hover:bg-slate-800/40 transition-colors">
-                                                    <td className="px-4 py-3 font-bold text-cyan-300">{item.sku}</td>
-                                                    <td className="px-4 py-3 text-white font-sans font-medium">{item.name}</td>
-                                                    <td className="px-4 py-3 text-right font-bold text-emerald-400">${item.price.toFixed(2)}</td>
-                                                    <td className="px-4 py-3 text-center">{item.stock}</td>
-                                                    <td className="px-4 py-3 text-right text-slate-400">{item.scannedAt}</td>
-                                                </tr>
-                                            ))}
+                                            {scannedList
+                                                .filter(p => listFilter === "all" ? true : listFilter === "remate" ? p.isRemate : !p.isRemate)
+                                                .map((item, idx) => {
+                                                    const mainImg = item.images?.[0]
+                                                    return (
+                                                        <tr key={idx} className="hover:bg-slate-800/40 transition-colors">
+                                                            <td className="px-3 py-3">
+                                                                <div className="flex items-center gap-2">
+                                                                    <div className="w-9 h-9 rounded-lg bg-slate-950 border border-slate-800 overflow-hidden shrink-0 flex items-center justify-center">
+                                                                        {mainImg ? (
+                                                                            <img src={mainImg} alt={item.name} className="w-full h-full object-cover" />
+                                                                        ) : (
+                                                                            <Box size={14} className="text-slate-600" />
+                                                                        )}
+                                                                    </div>
+                                                                    <span className="font-bold text-cyan-300 text-[11px]">{item.sku}</span>
+                                                                </div>
+                                                            </td>
+                                                            <td className="px-3 py-3">
+                                                                <div className="text-white font-sans font-medium line-clamp-1">{item.name}</div>
+                                                                <div className="text-[10px] text-slate-500">{item.category}</div>
+                                                            </td>
+                                                            <td className="px-3 py-3">
+                                                                {item.isRemate ? (
+                                                                    <span className="px-2 py-0.5 rounded-full bg-rose-500/20 border border-rose-500/40 text-rose-300 text-[10px] font-bold flex items-center gap-1 w-max">
+                                                                        <Flame size={10} />
+                                                                        <span>Stock Remate</span>
+                                                                    </span>
+                                                                ) : (
+                                                                    <span className="px-2 py-0.5 rounded-full bg-blue-500/20 border border-blue-500/40 text-blue-300 text-[10px] font-bold w-max block">
+                                                                        General
+                                                                    </span>
+                                                                )}
+                                                            </td>
+                                                            <td className="px-3 py-3 text-right">
+                                                                <div className="font-bold text-emerald-400">${item.price.toFixed(2)}</div>
+                                                                {item.compareAtPrice && item.compareAtPrice > item.price && (
+                                                                    <div className="text-[10px] text-slate-500 line-through">
+                                                                        ${item.compareAtPrice.toFixed(2)}
+                                                                    </div>
+                                                                )}
+                                                            </td>
+                                                            <td className="px-3 py-3 text-center font-bold">{item.stock}</td>
+                                                            <td className="px-3 py-3 text-right">
+                                                                <button
+                                                                    onClick={() => toggleRemateStatus(item)}
+                                                                    className={`px-2.5 py-1 rounded-lg text-[10px] font-bold font-mono transition-all cursor-pointer ${
+                                                                        item.isRemate 
+                                                                            ? "bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700" 
+                                                                            : "bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/40"
+                                                                    }`}
+                                                                    title={item.isRemate ? "Mover a Inventario General" : "Mover a Stock de Remate"}
+                                                                >
+                                                                    {item.isRemate ? "Mover a General" : "🔥 A Remate"}
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                    )
+                                                })}
                                         </tbody>
                                     </table>
                                 </div>

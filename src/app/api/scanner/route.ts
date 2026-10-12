@@ -43,6 +43,10 @@ export async function GET(req: Request) {
         }
 
         if (product) {
+            const isRemate = (product.keywords || '').includes('STOCK_REMATE');
+            const originalPrice = product.compareAtPrice || 0;
+            const discountPercent = originalPrice > product.price ? Math.round(((originalPrice - product.price) / originalPrice) * 100) : 0;
+
             return NextResponse.json({
                 found: true,
                 product: {
@@ -50,11 +54,15 @@ export async function GET(req: Request) {
                     sku: product.sku || code,
                     name: product.name,
                     price: product.price,
+                    compareAtPrice: product.compareAtPrice,
+                    discountPercent,
+                    isRemate,
                     stock: product.stock,
                     category: product.category?.name || 'General',
                     categoryId: product.categoryId,
                     provider: product.provider || 'ATOMIC',
                     description: product.description || '',
+                    keywords: product.keywords || '',
                     images: product.images ? (product.images.startsWith('[') ? JSON.parse(product.images) : [product.images]) : []
                 }
             });
@@ -75,7 +83,7 @@ export async function POST(req: Request) {
     try {
         const session = await getServerSession(authOptions);
         const body = await req.json();
-        const { sku, name, price, stock, categoryName, provider, description, compareAtPrice } = body;
+        const { sku, name, price, stock, categoryName, provider, description, compareAtPrice, images, image, isRemate } = body;
 
         if (!sku || !name || price === undefined) {
             return NextResponse.json({ error: 'Código, nombre y precio son requeridos' }, { status: 400 });
@@ -85,6 +93,16 @@ export async function POST(req: Request) {
         const cleanName = String(name).trim();
         const parsedPrice = parseFloat(price) || 0;
         const parsedStock = parseInt(stock) || 1;
+
+        // Process images
+        let finalImagesJson: string | null = null;
+        if (Array.isArray(images) && images.length > 0) {
+            finalImagesJson = JSON.stringify(images);
+        } else if (typeof image === 'string' && image.trim()) {
+            finalImagesJson = JSON.stringify([image.trim()]);
+        } else if (typeof images === 'string' && images.trim()) {
+            finalImagesJson = JSON.stringify([images.trim()]);
+        }
 
         // Check if category exists or create it safely if categoryName is provided
         let categoryId: string | null = null;
@@ -125,6 +143,13 @@ export async function POST(req: Request) {
         });
 
         if (existing) {
+            let keywords = existing.keywords || '';
+            if (isRemate) {
+                if (!keywords.includes('STOCK_REMATE')) {
+                    keywords = `${keywords ? keywords + ', ' : ''}STOCK_REMATE`;
+                }
+            }
+
             const updated = await prisma.product.update({
                 where: { id: existing.id },
                 data: {
@@ -136,6 +161,8 @@ export async function POST(req: Request) {
                     provider: provider || existing.provider,
                     categoryId: categoryId || existing.categoryId,
                     compareAtPrice: compareAtPrice ? parseFloat(compareAtPrice) : existing.compareAtPrice,
+                    images: finalImagesJson || existing.images,
+                    keywords: isRemate ? keywords : existing.keywords,
                     isDeleted: false,
                     isActive: true
                 },
@@ -160,6 +187,8 @@ export async function POST(req: Request) {
                 provider: provider || 'ATOMIC',
                 categoryId: categoryId,
                 compareAtPrice: compareAtPrice ? parseFloat(compareAtPrice) : null,
+                images: finalImagesJson,
+                keywords: isRemate ? 'STOCK_REMATE' : null,
                 isActive: true,
                 isDeleted: false
             },

@@ -200,7 +200,41 @@ export default function AttendanceClient() {
         }
     }
 
-    // Upload Proof Action
+    // Reset Evaluation Action — wipe all cycle data and start fresh
+    const handleResetEvaluation = async () => {
+        const confirmed = window.confirm(
+            "⚠️ ¿Estás seguro de que quieres REINICIAR el calendario?\n\nEsto borrará todos los datos de la evaluación actual y dejará el calendario en blanco para empezar de nuevo hoy."
+        )
+        if (!confirmed) return
+
+        setIsSubmitting(true)
+        try {
+            const res = await fetch("/api/attendance", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ action: "reset_evaluation" })
+            })
+            const data = await res.json()
+            if (data.success) {
+                // Reset local state immediately
+                setEvaluation({ active: false, startDate: "", daysRemaining: 30, bonusTarget: 100, currentDay: 0, totalDays: 30 })
+                setDailyCounters({ posts: 0, groupPosts: 0, numbers: 0, calls: 0, brandCampaign: false, offerCampaign: false, personalStatuses: 0 })
+                setProofs([])
+                setCallsChecklist([false, false, false, false, false, false, false])
+                setHistory([])
+                showToast("success", "Calendario reiniciado. Ahora puedes iniciar una nueva evaluación desde hoy.")
+                fetchAttendance()
+            } else {
+                showToast("error", data.error || "No se pudo reiniciar la evaluación.")
+            }
+        } catch (e: any) {
+            showToast("error", "Error al conectar con el servidor.")
+        } finally {
+            setIsSubmitting(false)
+        }
+    }
+
+
     const handleFileUpload = async (category: 'posts' | 'groupPosts' | 'brandCampaign' | 'offerCampaign' | 'personalStatuses', file: File) => {
         if (!file) return
 
@@ -464,6 +498,16 @@ export default function AttendanceClient() {
                             <span>Inicio: {evaluation.startDate ? new Date(evaluation.startDate).toLocaleDateString("es-EC") : "Hoy"}</span>
                             <span>Bono: $100 USD</span>
                         </div>
+                        {/* RESET BUTTON */}
+                        <button
+                            onClick={handleResetEvaluation}
+                            disabled={isSubmitting}
+                            className="mt-2 w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-400 hover:text-rose-300 text-xs font-semibold transition-all active:scale-95 cursor-pointer"
+                            title="Borrar todo y empezar de cero desde hoy"
+                        >
+                            <RefreshCw className="w-3.5 h-3.5" />
+                            Reiniciar Calendario (Empezar de Cero)
+                        </button>
                     </div>
                 </div>
             )}

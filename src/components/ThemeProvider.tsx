@@ -11,8 +11,8 @@ export function ThemeProvider() {
             } catch (e) {}
         }
 
-        // Initialize from localStorage
-        const savedTheme = localStorage.getItem("atomic_theme") || "cyber-neon"
+        // Initialize from localStorage - default to ticketmaster-white (blanco con tomate)
+        const savedTheme = localStorage.getItem("atomic_theme") || "ticketmaster-white"
         applyTheme(savedTheme)
 
         // Listen for live theme changes from profile or elsewhere

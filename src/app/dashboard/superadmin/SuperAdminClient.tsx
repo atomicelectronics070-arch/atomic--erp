@@ -799,14 +799,14 @@ export default function SuperAdminClient() {
                     </div>
 
                     {/* Hierarchy Conceptual Map Canvas */}
-                    <div className="p-8 sm:p-12 rounded-3xl bg-gradient-to-b from-slate-950 via-[#070b18] to-slate-950 border border-slate-800 relative shadow-2xl space-y-12 overflow-x-auto">
+                    <div className="p-4 sm:p-8 lg:p-12 rounded-3xl bg-gradient-to-b from-slate-950 via-[#070b18] to-slate-950 border border-slate-800 relative shadow-2xl space-y-8 sm:space-y-12 overflow-x-auto">
                         
                         {/* ── NIVEL 1: CÚSPIDE (SUPER ADMIN / GERENCIA) ── */}
-                        <div className="flex flex-wrap justify-center gap-8">
+                        <div className="flex flex-wrap justify-center gap-4 sm:gap-8">
                             {roles.filter(r => r.department === "Dirección General").map(r => (
                                 <div 
                                     key={r.roleId}
-                                    className="p-6 rounded-3xl bg-gradient-to-br from-rose-500/20 via-purple-500/20 to-slate-900 border-2 border-rose-500/50 shadow-[0_0_40px_rgba(244,63,94,0.3)] max-w-sm w-full text-center space-y-3 relative group"
+                                    className="p-4 sm:p-6 rounded-3xl bg-gradient-to-br from-rose-500/20 via-purple-500/20 to-slate-900 border-2 border-rose-500/50 shadow-[0_0_40px_rgba(244,63,94,0.3)] max-w-sm w-full text-center space-y-3 relative group"
                                 >
                                     <div className="inline-flex p-3 rounded-2xl bg-rose-500/10 text-rose-400 border border-rose-500/30">
                                         <Shield size={24} />
@@ -847,11 +847,11 @@ export default function SuperAdminClient() {
                         </div>
 
                         {/* ── NIVEL 2: COORDINACIÓN & SUPERVISIÓN ── */}
-                        <div className="flex flex-wrap justify-center gap-8 max-w-4xl mx-auto">
+                        <div className="flex flex-wrap justify-center gap-4 sm:gap-8 max-w-4xl mx-auto">
                             {roles.filter(r => r.department === "Nivel Táctico & Control").map(r => (
                                 <div 
                                     key={r.roleId}
-                                    className="p-6 rounded-3xl bg-slate-900/90 border border-amber-500/40 max-w-sm w-full text-center space-y-3 shadow-xl relative"
+                                    className="p-4 sm:p-6 rounded-3xl bg-slate-900/90 border border-amber-500/40 max-w-sm w-full text-center space-y-3 shadow-xl relative"
                                 >
                                     <div className="inline-flex p-2.5 rounded-2xl bg-amber-500/10 text-amber-400 border border-amber-500/30">
                                         <Layers size={20} />
@@ -896,7 +896,7 @@ export default function SuperAdminClient() {
                                 ── CÉLULAS OPERACIONALES EN EJECUCIÓN CONTINUA ──
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                                 {departments
                                     .filter(d => d !== "Dirección General" && d !== "Nivel Táctico & Control")
                                     .map(dept => {
@@ -904,7 +904,7 @@ export default function SuperAdminClient() {
                                         return (
                                             <div 
                                                 key={dept}
-                                                className="p-6 rounded-3xl bg-slate-900/70 border border-slate-800 backdrop-blur-xl space-y-4 shadow-xl"
+                                                className="p-4 sm:p-6 rounded-3xl bg-slate-900/70 border border-slate-800 backdrop-blur-xl space-y-4 shadow-xl"
                                             >
                                                 <div className="flex items-center justify-between border-b border-slate-800 pb-3">
                                                     <h5 className="font-black text-sm text-cyan-300 uppercase">{dept}</h5>

@@ -27,9 +27,11 @@ import SuicideSquadWarRoom from "./SuicideSquadWarRoom"
 import SalesCopyManager from "./SalesCopyManager"
 import RutaDelDiaWorkspace from "./RutaDelDiaWorkspace"
 import SuppliersManager from "./SuppliersManager"
+import StockRemateManager from "./StockRemateManager"
 
 export type ToolTab = 
     | "grid"
+    | "stock_remate"
     | "proveedores"
     | "ruta_del_dia"
     | "sales_copy_messages"
@@ -341,6 +343,18 @@ export default function ToolsModal({
     // ─────────────────────────────────────────────────────────────
     const TOOLS_LIST = [
         {
+            id: "stock_remate" as ToolTab,
+            category: "finance",
+            title: "Stock de Remate (% OFF)",
+            shortTitle: "Stock Remate",
+            badge: "LIQUIDACIÓN",
+            badgeColor: "bg-rose-500/25 text-rose-300 border-rose-500/50",
+            icon: Flame,
+            color: "text-rose-400 bg-rose-500/15 border-rose-500/40",
+            glow: "rgba(244,63,94,0.4)",
+            desc: "Liquidación, fotos reales y precios de remate sincronizados con vitrina /bienvenida"
+        },
+        {
             id: "proveedores" as ToolTab,
             category: "system",
             title: "Gestor de Proveedores",
@@ -570,12 +584,12 @@ export default function ToolsModal({
                                     )}
                                 </h2>
                                 <span className="text-[9px] font-mono font-black px-2 py-0.5 rounded-full bg-rose-500 text-black uppercase shadow-sm">
-                                    14 PRO (SUITE COMPLETA)
+                                    15 PRO (SUITE COMPLETA)
                                 </span>
                             </div>
                             <p className="text-[10px] text-slate-400 font-mono hidden md:block">
                                 {activeTab === "grid" 
-                                    ? "Modo Cuadrícula: Suite integrada de utilidades, streaming, IA, Suicide Squad y finanzas" 
+                                    ? "Modo Cuadrícula: Suite integrada de utilidades, streaming, IA, Suicide Squad, liquidación y finanzas" 
                                     : activeToolObj?.desc}
                             </p>
                         </div>
@@ -637,10 +651,10 @@ export default function ToolsModal({
                             {/* Category Filter Pills Bar */}
                             <div className="flex items-center justify-center gap-1.5 flex-wrap">
                                 {[
-                                    { id: "all", label: "Todas (13)" },
+                                    { id: "all", label: "Todas (14)" },
                                     { id: "ai", label: "🔥 Suicide Squad & IA (3)" },
                                     { id: "stream", label: "📹 Streaming & PC (2)" },
-                                    { id: "finance", label: "📈 Finanzas & Precios (2)" },
+                                    { id: "finance", label: "📈 Finanzas & Remate (3)" },
                                     { id: "system", label: "⚙️ Operación & Sistema (6)" }
                                 ].map((cat) => (
                                     <button
@@ -1039,6 +1053,9 @@ export default function ToolsModal({
 
                     {/* VIEW 15: GESTOR DE PROVEEDORES (ADMIN & COMUNICACIÓN DIRECTA) */}
                     {activeTab === "proveedores" && <SuppliersManager onClose={() => setActiveTab("grid")} />}
+
+                    {/* VIEW 16: STOCK DE REMATE (% OFF / LIQUIDACIÓN) */}
+                    {activeTab === "stock_remate" && <StockRemateManager onClose={() => setActiveTab("grid")} />}
                 </div>
             </motion.div>
         </div>

@@ -25,6 +25,7 @@ export interface SupplierItem {
     warrantyNotes: string
     internalNotes?: string
     isPreferred?: boolean
+    supplierType?: "MARCA" | "DISTRIBUIDOR" | "SERVICIO" | "IMPORTADOR"
     updatedAt: string
 }
 
@@ -37,6 +38,7 @@ export default function SuppliersManager({ onClose }: { onClose?: () => void }) 
     const [loading, setLoading] = useState(true)
     const [searchTerm, setSearchTerm] = useState("")
     const [selectedCategory, setSelectedCategory] = useState<string>("ALL")
+    const [selectedType, setSelectedType] = useState<string>("ALL")
     
     // "El Cajón" (Drawer de detalle / edición)
     const [selectedSupplier, setSelectedSupplier] = useState<SupplierItem | null>(null)
@@ -101,6 +103,10 @@ export default function SuppliersManager({ onClose }: { onClose?: () => void }) 
     const filteredSuppliers = useMemo(() => {
         return suppliers.filter(s => {
             const matchesCategory = selectedCategory === "ALL" || s.category === selectedCategory
+            const currentType = s.supplierType || "DISTRIBUIDOR"
+            const matchesType = selectedType === "ALL" || currentType === selectedType
+            if (!matchesType) return false
+
             const q = searchTerm.toLowerCase().trim()
             if (!q) return matchesCategory
             const matchesText = 
@@ -113,7 +119,7 @@ export default function SuppliersManager({ onClose }: { onClose?: () => void }) 
                 (s.discountTerms && s.discountTerms.toLowerCase().includes(q))
             return matchesCategory && matchesText
         })
-    }, [suppliers, selectedCategory, searchTerm])
+    }, [suppliers, selectedCategory, selectedType, searchTerm])
 
     // Helper: Normalize phone for WhatsApp wa.me link
     const cleanPhoneForWa = (phoneStr: string) => {
@@ -318,6 +324,41 @@ export default function SuppliersManager({ onClose }: { onClose?: () => void }) 
                 </div>
             </div>
 
+            {/* ── FILTRO PRINCIPAL DE TIPO DE PROVEEDOR (Marcas | Distribuidores | Servicios | Importadores) ── */}
+            <div className="flex items-center gap-2 mb-3 overflow-x-auto pb-1 scrollbar-none">
+                <span className="text-[11px] font-mono font-bold text-slate-400 uppercase tracking-wider shrink-0 mr-1 flex items-center gap-1.5">
+                    <Filter size={13} className="text-cyan-400" />
+                    Filtrar por:
+                </span>
+                {[
+                    { id: "ALL", label: "🏢 Todos", count: suppliers.length },
+                    { id: "MARCA", label: "🏷️ Marcas", count: suppliers.filter(s => s.supplierType === "MARCA").length },
+                    { id: "DISTRIBUIDOR", label: "📦 Distribuidores", count: suppliers.filter(s => s.supplierType === "DISTRIBUIDOR" || !s.supplierType).length },
+                    { id: "SERVICIO", label: "🛠️ Servicios", count: suppliers.filter(s => s.supplierType === "SERVICIO").length },
+                    { id: "IMPORTADOR", label: "🚢 Importadores", count: suppliers.filter(s => s.supplierType === "IMPORTADOR").length },
+                ].map((typeTab) => {
+                    const isSelected = selectedType === typeTab.id
+                    return (
+                        <button
+                            key={typeTab.id}
+                            onClick={() => setSelectedType(typeTab.id)}
+                            className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold whitespace-nowrap transition-all cursor-pointer flex items-center gap-2 ${
+                                isSelected
+                                    ? "bg-gradient-to-r from-cyan-500 to-indigo-600 text-white shadow-md shadow-cyan-950 font-black scale-102"
+                                    : "bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:border-slate-700"
+                            }`}
+                        >
+                            <span>{typeTab.label}</span>
+                            <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${
+                                isSelected ? "bg-white/20 text-white" : "bg-black/40 text-slate-400"
+                            }`}>
+                                {typeTab.count}
+                            </span>
+                        </button>
+                    )
+                })}
+            </div>
+
             {/* Search & Categories Filter */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mb-4">
                 <div className="relative flex-1 max-w-md">
@@ -393,6 +434,9 @@ export default function SuppliersManager({ onClose }: { onClose?: () => void }) 
                                                 <div className="flex items-center gap-2 flex-wrap">
                                                     <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
                                                         {supplier.category || "General"}
+                                                    </span>
+                                                    <span className="text-[10px] font-mono font-black px-2 py-0.5 rounded-md bg-purple-500/15 text-purple-300 border border-purple-500/30 uppercase">
+                                                        {supplier.supplierType || "DISTRIBUIDOR"}
                                                     </span>
                                                     {supplier.isPreferred && (
                                                         <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/30 flex items-center gap-1">

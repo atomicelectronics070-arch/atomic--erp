@@ -12,7 +12,7 @@ import {
 interface SalesScript {
     id: string
     title: string
-    category: "marketplace" | "whatsapp" | "cierre" | "seguimiento" | "garantia"
+    category: "marketplace" | "whatsapp" | "cierre" | "seguimiento" | "ofertas" | "recompra" | "objeciones" | "garantia"
     badge: string
     badgeColor: string
     template: (vars: ScriptVars) => string
@@ -47,7 +47,7 @@ export default function SalesCopyManager({
     const [city, setCity] = useState("Quito")
 
     // Filter category
-    const [activeCategory, setActiveCategory] = useState<"all" | "marketplace" | "whatsapp" | "cierre" | "seguimiento">("all")
+    const [activeCategory, setActiveCategory] = useState<"all" | "marketplace" | "whatsapp" | "cierre" | "seguimiento" | "ofertas" | "recompra" | "objeciones" | "garantia">("all")
     const [searchFilter, setSearchFilter] = useState("")
 
     // Copy notification state
@@ -82,6 +82,23 @@ Te invito a ver nuestro portal oficial de bienvenida, referencias verificadas y 
 Por este medio a veces las respuestas se demoran; ¿cuál es tu número de WhatsApp para enviarte de inmediato la ficha técnica completa, videos de prueba y el catálogo con precios especiales y garantía oficial de 1 año?`
         },
         {
+            id: "prospeccion_en_frio_maps",
+            title: "❄️ Prospección en Frío (Contactos de Google Maps / Negocios)",
+            category: "marketplace",
+            badge: "VENTA EN FRÍO",
+            badgeColor: "bg-cyan-500/10 text-cyan-600 border-cyan-500/30",
+            tips: "Para escribir a los 10 contactos recolectados de Google Maps cada día.",
+            template: (v) =>
+`¡Buen día! 👋 Les saluda ${v.sellerName} de ATOMIC Solutions Ecuador.
+
+Nos comunicamos porque en su sector en ${v.city} estamos equipando a varios comercios y oficinas con ${v.product} y sistemas de seguridad electrónica sin mensualidades.
+
+Les compartimos nuestra carta de presentación oficial y catálogo corporativo:
+👉 ${v.storeUrl}
+
+¿Con quién tengo el gusto de coordinar una cotización sin costo con precios mayoristas y garantía de 1 año con factura con IVA?`
+        },
+        {
             id: "respuesta_disponible",
             title: "⚡ Respuesta Rápida: \"¿Sigue disponible?\" (Marketplace)",
             category: "marketplace",
@@ -109,6 +126,43 @@ Puedes consultar la disponibilidad exacta y alternativas en nuestra tienda ofici
 Puedes revisar las categorías principales aquí: ${v.storeUrl}
 
 ¿Cuál es tu número de WhatsApp? Te comparto por ahí el catálogo interactivo en PDF con precios de distribuidor y resolvemos cualquier duda técnica de inmediato.`
+        },
+        {
+            id: "oferta_flash_lunes_miercoles",
+            title: "⚡ Oferta Flash (Lunes & Miércoles - Difusión Obligatoria)",
+            category: "ofertas",
+            badge: "FLASH LUNES/MIÉRCOLES",
+            badgeColor: "bg-rose-500/10 text-rose-600 border-rose-500/30",
+            isFeatured: true,
+            tips: "Para enviar a toda tu base de contactos los días lunes y miércoles según el plan laboral.",
+            template: (v) =>
+`¡Hola${v.clientName}! 👋 Te saluda ${v.sellerName} de ATOMIC Solutions.
+
+🔥 *OFERTA FLASH DE LA SEMANA* 🔥
+Habilitamos un lote exclusivo de ${v.product} con PRECIO DE BODEGA con factura y garantía oficial de 1 año.
+
+📦 Incluye entrega inmediata y opción de despacho con Servientrega asegurado a todo el país.
+👉 Mira fotos y especificaciones en nuestro portal: ${v.storeUrl}
+
+Válido solo por 48 horas o hasta agotar 5 unidades en stock. ¿Te reservo una unidad a tu nombre hoy?`
+        },
+        {
+            id: "recompra_clientes_antiguos",
+            title: "🔥 Reactivación de Clientes Anteriores (Recompra & Descuento)",
+            category: "recompra",
+            badge: "CLIENTES CALIENTES",
+            badgeColor: "bg-amber-500/10 text-amber-600 border-amber-500/30",
+            isFeatured: true,
+            tips: "Contacta a clientes que ya te compraron hace semanas o meses para ofrecerles accesorios, mantenimiento o renovación.",
+            template: (v) =>
+`¡Hola${v.clientName}! 👋 Qué gusto saludarte, te escribe ${v.sellerName} de ATOMIC Solutions.
+
+Te escribía para saber cómo ha estado funcionando el equipo que adquiriste con nosotros y comentarte que por ser CLIENTE PREFERENCIAL tienes habilitado un *15% DE DESCUENTO* en accesorios, repuestos o nuevas instalaciones de ${v.product}.
+
+Además, si requieres mantenimiento o asesoría técnica, cuentas con nuestro respaldo directo.
+Revisa las novedades de temporada en: ${v.storeUrl}
+
+¿Hay algún requerimiento o equipo adicional que estés necesitando para tu casa o negocio en estos días?`
         },
         {
             id: "envio_cotizacion",
@@ -147,28 +201,68 @@ Para emitirte la proforma formal con factura electrónica y reservar tu unidad, 
 4. Teléfono de contacto:`
         },
         {
-            id: "seguimiento_descuento",
-            title: "⏳ Seguimiento con Descuento Especial por Compra Hoy",
-            category: "seguimiento",
-            badge: "URGENCIA & DESCUENTO",
-            badgeColor: "bg-amber-500/10 text-amber-600 border-amber-500/30",
-            tips: "Activa a clientes que dejaron de responder aplicando escasez y beneficio inmediato.",
+            id: "objecion_precio_caro",
+            title: "🛡️ Manejo de Objeción: \"Está muy caro / Lo vi en $X en otro lado\"",
+            category: "objeciones",
+            badge: "DESTRUIR OBJECIÓN",
+            badgeColor: "bg-red-500/10 text-red-600 border-red-500/30",
+            tips: "Explica con contundencia la diferencia entre réplica informal y equipo original con respaldo.",
             template: (v) =>
-`¡Hola${v.clientName}! 👋 Te saluda nuevamente ${v.sellerName} de ATOMIC Solutions.
+`Comprendo perfectamente${v.clientName}. En el mercado informal hay opciones que parecen más económicas, pero casi siempre son réplicas sin garantía, sin soporte técnico y sin factura para respaldo ante el SRI.
 
-Quería comentarte que logré habilitarte un DESCUENTO ESPECIAL de cierre para tu compra de ${v.product} si confirmamos tu pedido el día de hoy.
+En ATOMIC Solutions te entregamos:
+1. Equipo 100% original en caja sellada con número de serie homologado.
+2. Factura oficial legal que respalda tu inversión.
+3. Garantía REAL de 1 año con reemplazo y soporte en Ecuador.
+4. Asesoría técnica directa para configuración e instalación.
 
-Además, te incluimos garantía oficial de 1 año y soporte técnico directo.
-¿Deseas que te reserve la última unidad disponible con este beneficio?`
+Por una diferencia mínima aseguras que tu inversión no se pierda al mes de uso. ¿Deseas que te mantengamos la oferta con el obsequio técnico incluido?`
+        },
+        {
+            id: "objecion_solo_cotizando",
+            title: "🎯 Manejo de Objeción: \"Solo estoy cotizando / Lo voy a pensar\"",
+            category: "objeciones",
+            badge: "RECUPERAR CLIENTE",
+            badgeColor: "bg-orange-500/10 text-orange-600 border-orange-500/30",
+            tips: "Congela el precio por tiempo limitado para forzar una decisión positiva.",
+            template: (v) =>
+`¡Totalmente de acuerdo${v.clientName}! Es bueno comparar antes de decidir. 
+
+Solo para tu tranquilidad, te voy a dejar *CONGELADO EL PRECIO* de ${v.product} durante las próximas 48 horas, para que si te decides no te afecte la variación de inventario o fin de la promoción.
+
+¿Te gustaría que te envíe un video de 30 segundos mostrando el equipo funcionando en vivo para que tengas todos los elementos al tomar la decisión?`
+        },
+        {
+            id: "cierre_b2b_conjuntos",
+            title: "🏢 Propuesta B2B para Administradores de Edificios / Empresas",
+            category: "cierre",
+            badge: "ALTO TICKET B2B",
+            badgeColor: "bg-violet-500/10 text-violet-600 border-violet-500/30",
+            tips: "Para juntas de condominios, conjuntos residenciales y constructoras.",
+            template: (v) =>
+`Estimados miembros de la directiva / administración${v.clientName}:
+
+Les saluda ${v.sellerName}, asesor técnico corporativo de ATOMIC Solutions.
+Ponemos a su disposición nuestra solución integral en ${v.product} con las siguientes ventajas institucionales:
+
+• Inspección técnica preliminar sin costo en sitio.
+• Equipos de alta demanda certificados con 1 año de garantía extendible.
+• Factura electrónica corporativa y facilidades de pago para condominios.
+• Respaldo técnico continuo y actas de entrega certificadas.
+
+Pueden revisar nuestro portafolio de referencias en proyectos similares aquí:
+👉 ${v.storeUrl}
+
+¿Qué día de esta semana podemos coordinar una visita técnica de 15 minutos para relevar medidas exactas?`
         },
         {
             id: "garantia_soporte",
             title: "🛡️ Garantía Oficial de 1 Año & Soporte Técnico ATOMIC",
             category: "garantia",
-            badge: "CONFIANZA",
+            badge: "CONFIANZA TOTAL",
             badgeColor: "bg-slate-500/10 text-slate-700 border-slate-500/30",
             tips: "Para derribar objeciones sobre desconfianza, procedencia o repuestos.",
-            template: (v) =>
+            template: (v) => 
 `En ATOMIC Solutions todos nuestros productos cuentan con:
 ✅ Garantía oficial de 1 año por defectos de fábrica.
 ✅ Equipos 100% nuevos en caja sellada con factura legal para respaldo tributario.
@@ -309,22 +403,25 @@ Puedes validar nuestra seriedad y catálogo en: ${v.storeUrl}
                 </div>
             </div>
 
-            {/* Category Filter Tabs */}
-            <div className="flex flex-wrap items-center gap-2 border-b border-slate-200 pb-2">
+            {/* Category Filter Tabs - Marketplace Style */}
+            <div className="flex flex-wrap items-center gap-2 border-b border-slate-200 pb-3">
                 {[
-                    { id: "all", label: "Todos los Mensajes" },
-                    { id: "marketplace", label: "🛒 Marketplace & Bienvenida" },
+                    { id: "all", label: "🏢 Todos los Mensajes" },
+                    { id: "marketplace", label: "🛒 Marketplace & Frío" },
                     { id: "whatsapp", label: "💬 Captura de WhatsApp" },
+                    { id: "ofertas", label: "⚡ Ofertas Flash (Lunes/Miérc)" },
+                    { id: "recompra", label: "🔥 Reactivación & Recompra" },
                     { id: "cierre", label: "🤝 Cierre & Envíos" },
-                    { id: "seguimiento", label: "⏳ Seguimiento & Descuento" }
+                    { id: "objeciones", label: "🛡️ Manejo de Objeciones" },
+                    { id: "garantia", label: "📜 Garantía & SRI" }
                 ].map(tab => (
                     <button
                         key={tab.id}
                         onClick={() => setActiveCategory(tab.id as any)}
-                        className={`px-4 py-2 text-xs font-bold rounded-2xl transition-all border ${
+                        className={`px-3.5 py-1.5 text-xs font-bold rounded-xl transition-all border cursor-pointer ${
                             activeCategory === tab.id
-                                ? "bg-[#026CDF] text-white border-[#026CDF] shadow-sm shadow-[#026CDF]/20"
-                                : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
+                                ? "bg-orange-600 text-white border-orange-600 shadow-sm shadow-orange-600/30"
+                                : "bg-white text-slate-600 border-slate-200 hover:bg-slate-100"
                         }`}
                     >
                         {tab.label}

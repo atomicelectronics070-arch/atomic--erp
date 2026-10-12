@@ -206,18 +206,52 @@ export async function GET(req: Request) {
             if (!isWorkingDay) {
                 status = "LIBRE" // Sunday
             } else if (isToday) {
-                // Today
+                // Today: in progress unless all counters are met
                 const meetsAll = dailyCounters.posts >= 5 &&
                     dailyCounters.groupPosts >= 3 &&
                     dailyCounters.numbers >= 10 &&
                     dailyCounters.calls >= 7
                 status = meetsAll ? "COMPLETED" : "IN_PROGRESS"
             } else if (isPast) {
-                // Determine past day status: if evaluation is active and started before/on this day
-                if (activeCycle && new Date(activeCycle.startDate) <= dateObj) {
-                    status = (d % 3 === 0) ? "IN_PROGRESS" : "COMPLETED"
+                // Past day: only mark as COMPLETED/IN_PROGRESS if there's an active cycle
+                // that started on or before this specific day. Otherwise leave as PENDING.
+                if (activeCycle && activeCycle.startDate) {
+                    const cycleStart = new Date(activeCycle.startDate)
+                    const cycleStartDay = new Date(cycleStart.getFullYear(), cycleStart.getMonth(), cycleStart.getDate())
+                    if (cycleStartDay <= dateObj) {
+                        // Check if there's a real daily log for this date
+                        const logForDay = await prisma.dailyLog.findFirst({
+                            where: {
+                                cycleId: activeCycle.id,
+                                date: {
+                                    gte: new Date(currentYear, currentMonth, d, 0, 0, 0),
+                                    lte: new Date(currentYear, currentMonth, d, 23, 59, 59)
+                                }
+                            }
+                        })
+                        if (logForDay?.content) {
+                            try {
+                                const logData = JSON.parse(logForDay.content)
+                                const lc = logData.dailyCounters || {}
+                                const dayMeetsAll = (lc.posts || 0) >= 5 &&
+                                    (lc.groupPosts || 0) >= 3 &&
+                                    (lc.numbers || 0) >= 10 &&
+                                    (lc.calls || 0) >= 7
+                                status = dayMeetsAll ? "COMPLETED" : "IN_PROGRESS"
+                            } catch {
+                                status = "IN_PROGRESS"
+                            }
+                        } else {
+                            // Cycle was active this day but no log → incomplete
+                            status = "IN_PROGRESS"
+                        }
+                    } else {
+                        // Cycle hadn't started yet on this day
+                        status = "PENDING"
+                    }
                 } else {
-                    status = (d < now.getDate() - 1) ? "COMPLETED" : "IN_PROGRESS"
+                    // No active cycle at all → all past days are just PENDING
+                    status = "PENDING"
                 }
             } else {
                 status = "PENDING"
@@ -434,6 +468,35 @@ export async function POST(req: Request) {
                     currentDay: 1,
                     totalDays: 30
                 }
+            })
+        }
+
+        // -------------------------------------------------------------
+        // ACTION: reset_evaluation  — wipe cycle and start fresh today
+        // -------------------------------------------------------------
+        if (action === "reset_evaluation") {
+            if (user.id !== "mock-salesperson-id") {
+                // Deactivate ALL work cycles for this user
+                const oldCycles = await prisma.workCycle.findMany({
+                    where: { userId: user.id, isActive: true }
+                })
+                for (const c of oldCycles) {
+                    // Delete all daily logs linked to those cycles
+                    await prisma.dailyLog.deleteMany({ where: { cycleId: c.id } })
+                }
+                await prisma.workCycle.updateMany({
+                    where: { userId: user.id },
+                    data: { isActive: false }
+                })
+                // Also clear any attendance systemSettings for this user
+                await prisma.systemSetting.deleteMany({
+                    where: { key: { startsWith: `attendance_${user.id}_` } }
+                })
+            }
+
+            return NextResponse.json({
+                success: true,
+                message: "Evaluación reiniciada. El calendario está limpio. Presiona 'Iniciar Evaluación' cuando estés listo."
             })
         }
 

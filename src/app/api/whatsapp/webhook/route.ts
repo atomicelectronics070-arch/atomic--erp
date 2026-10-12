@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { handleIncomingWhatsAppBot } from '@/lib/whatsapp/ai-bot';
+import { checkAndSendMorningBriefingToJuan } from '@/lib/karen/karenBrain';
 
 const VERIFY_TOKEN = process.env.WHATSAPP_VERIFY_TOKEN || 'atomic_whatsapp_verify_token_2026';
 
@@ -19,6 +20,9 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
     try {
+        // Disparar saludo matutino automático de Karen para Juan si es horario AM
+        checkAndSendMorningBriefingToJuan().catch(() => {});
+
         const body = await req.json();
 
         // Basic structure validation

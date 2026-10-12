@@ -7,7 +7,7 @@ import {
     Sparkles, Plus, ExternalLink, ShieldCheck, Tag, RefreshCw, ChevronLeft,
     Settings, Image as ImageIcon, ShoppingBag, Download, Check, Save, X, Globe, Mail, MapPin,
     Volume2, Mic, Film, FileText, Megaphone, Eye, Key, AlertCircle, Copy, Paperclip, Loader2,
-    UserCheck, UserPlus, Lock, Users, Filter, CheckCircle2, Flame, Bot, Zap, Bell
+    UserCheck, UserPlus, Lock, Users, Filter, CheckCircle2, Flame, Bot, Zap, Bell, Camera, Upload
 } from "lucide-react"
 
 interface ReferralData {
@@ -301,10 +301,114 @@ export default function WhatsAppCrmClient() {
 
     // WhatsApp Settings & Profile Modal State
     const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
-    const [activeSettingsTab, setActiveSettingsTab] = useState<'profile' | 'credentials' | 'manual'>('credentials')
+    const [activeSettingsTab, setActiveSettingsTab] = useState<'profile' | 'credentials' | 'catalog' | 'manual'>('credentials')
     const [settingsSaving, setSettingsSaving] = useState(false)
     const [settingsMessage, setSettingsMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
     
+    // WhatsApp Commerce & Catalog State
+    const [catalogSettings, setCatalogSettings] = useState<{
+        isCatalogVisible: boolean;
+        isCartEnabled: boolean;
+        catalogId: string;
+        totalProducts: number;
+        feedUrl: string;
+        metaError: string | null;
+        linkedCatalogs: any[];
+    }>({
+        isCatalogVisible: true,
+        isCartEnabled: true,
+        catalogId: '',
+        totalProducts: 0,
+        feedUrl: 'https://atomiccotizador.shop/api/whatsapp/catalog?format=csv',
+        metaError: null,
+        linkedCatalogs: []
+    })
+    const [catalogLoading, setCatalogLoading] = useState(false)
+    const [sendingCatalog, setSendingCatalog] = useState(false)
+
+    const fetchCatalogSettings = async () => {
+        try {
+            setCatalogLoading(true)
+            const res = await fetch('/api/whatsapp/commerce')
+            if (res.ok) {
+                const data = await res.json()
+                setCatalogSettings({
+                    isCatalogVisible: data.isCatalogVisible ?? true,
+                    isCartEnabled: data.isCartEnabled ?? true,
+                    catalogId: data.catalogId || '',
+                    totalProducts: data.totalProducts || 0,
+                    feedUrl: data.feedUrl || 'https://atomiccotizador.shop/api/whatsapp/catalog?format=csv',
+                    metaError: data.metaError || null,
+                    linkedCatalogs: data.linkedCatalogs || []
+                })
+            }
+        } catch (_) {}
+        finally {
+            setCatalogLoading(false)
+        }
+    }
+
+    const handleSaveCatalogSettings = async (e?: React.FormEvent) => {
+        if (e) e.preventDefault()
+        setSettingsSaving(true)
+        setSettingsMessage(null)
+        try {
+            const res = await fetch('/api/whatsapp/commerce', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    isCatalogVisible: catalogSettings.isCatalogVisible,
+                    isCartEnabled: catalogSettings.isCartEnabled,
+                    catalogId: catalogSettings.catalogId
+                })
+            })
+            const data = await res.json()
+            if (res.ok && data.success) {
+                setSettingsMessage({
+                    type: 'success',
+                    text: '¡Ajustes de catálogo y carrito actualizados con éxito en Meta WhatsApp Cloud API!'
+                })
+                fetchCatalogSettings()
+            } else {
+                setSettingsMessage({
+                    type: 'error',
+                    text: data.error || 'Error al actualizar catálogo en Meta'
+                })
+            }
+        } catch (err: any) {
+            setSettingsMessage({ type: 'error', text: err.message || 'Error de conexión' })
+        } finally {
+            setSettingsSaving(false)
+        }
+    }
+
+    const handleSendCatalogToClient = async () => {
+        if (!activeChat) return
+        if (!confirm(`¿Deseas enviar el Catálogo Oficial interactivo a ${activeChat.name}?`)) return
+        setSendingCatalog(true)
+        try {
+            const res = await fetch('/api/whatsapp/catalog/send', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    conversationId: activeChat.id,
+                    phone: activeChat.phone
+                })
+            })
+            const data = await res.json()
+            if (res.ok && data.success) {
+                playOutgoingSound()
+                fetchConversations()
+            } else {
+                alert(`⚠️ Error enviando catálogo: ${data.error || 'Verifica que la cuenta de WhatsApp tenga un catálogo conectado en Meta.'}`)
+            }
+        } catch (err: any) {
+            alert(`⚠️ Error de red: ${err.message}`)
+        } finally {
+            setSendingCatalog(false)
+        }
+    }
+
     // Credentials State
     const [credPhoneId, setCredPhoneId] = useState('')
     const [credToken, setCredToken] = useState('')
@@ -324,6 +428,58 @@ export default function WhatsAppCrmClient() {
         address: 'Quito, Ecuador',
         profile_picture_url: ''
     })
+    const [avatarKey, setAvatarKey] = useState(Date.now())
+    const [photoPreview, setPhotoPreview] = useState<string | null>(null)
+    const [photoBase64, setPhotoBase64] = useState<string | null>(null)
+    const photoFileInputRef = useRef<HTMLInputElement>(null)
+
+    const handlePhotoFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        if (file.size > 5 * 1024 * 1024) {
+            alert('⚠️ La imagen seleccionada no debe superar los 5MB.');
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            const base64 = reader.result as string;
+            setPhotoPreview(base64);
+            setPhotoBase64(base64);
+        };
+        reader.readAsDataURL(file);
+    };
+
+    const [isSyncingPhoto, setIsSyncingPhoto] = useState(false);
+
+    const handleSyncMetaPhoto = async () => {
+        setIsSyncingPhoto(true);
+        setSettingsMessage(null);
+        try {
+            const res = await fetch('/api/whatsapp/profile/sync', { method: 'POST' });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                setSettingsMessage({ 
+                    type: 'success', 
+                    text: data.message || '¡Foto de perfil sincronizada con éxito en Meta WhatsApp Cloud API!' 
+                });
+                setAvatarKey(Date.now());
+                if (data.updatedProfile?.profile_picture_url) {
+                    setProfileData(prev => ({ ...prev, profile_picture_url: data.updatedProfile.profile_picture_url }));
+                }
+            } else {
+                setSettingsMessage({ 
+                    type: 'error', 
+                    text: data.error || 'Error al sincronizar foto con Meta Cloud API' 
+                });
+            }
+        } catch (err: any) {
+            setSettingsMessage({ type: 'error', text: err.message || 'Error de conexión con el servidor' });
+        } finally {
+            setIsSyncingPhoto(false);
+        }
+    };
 
     const fetchConversations = useCallback(async () => {
         try {
@@ -331,7 +487,12 @@ export default function WhatsAppCrmClient() {
             if (res.ok) {
                 const data = await res.json()
                 if (Array.isArray(data)) {
-                    const formattedChats: Chat[] = data.map((conv: any) => {
+                    const formattedChats: Chat[] = data
+                        .filter((conv: any) => {
+                            const rawId = (conv.contact?.whatsappId || '').replace(/\D/g, '');
+                            return !rawId.endsWith('969043453');
+                        })
+                        .map((conv: any) => {
                         const rawMessages = conv.messages || [];
                         let isFromAd = conv.status === 'LEAD_PAUTA';
                         let adHeadline = '';
@@ -451,6 +612,7 @@ export default function WhatsAppCrmClient() {
         fetchWhatsAppProfile();
         fetchCredentials();
         fetchAdvisors();
+        fetchCatalogSettings();
         const interval = setInterval(fetchConversations, 3500);
         return () => clearInterval(interval);
     }, [fetchConversations]);
@@ -609,13 +771,23 @@ export default function WhatsAppCrmClient() {
                     email: profileData.email,
                     websites: profileData.websites.split(',').map(s => s.trim()),
                     address: profileData.address,
-                    profile_picture_url: profileData.profile_picture_url
+                    profile_picture_url: profileData.profile_picture_url,
+                    profile_picture_base64: photoBase64 || undefined
                 })
             });
 
             const data = await res.json();
             if (res.ok) {
-                setSettingsMessage({ type: 'success', text: '¡Perfil de WhatsApp actualizado exitosamente en Meta!' });
+                const feedbackText = data.metaPictureMessage 
+                    ? `¡Perfil y foto guardados! ${data.metaPictureMessage}` 
+                    : '¡Perfil de WhatsApp actualizado exitosamente en Meta!';
+                setSettingsMessage({ type: 'success', text: feedbackText });
+                setAvatarKey(Date.now());
+                if (data.avatarUrl) {
+                    setProfileData(prev => ({ ...prev, profile_picture_url: data.avatarUrl }));
+                }
+                setPhotoBase64(null);
+                setPhotoPreview(null);
             } else {
                 setSettingsMessage({ type: 'error', text: data.error || 'Error al actualizar perfil' });
             }
@@ -768,7 +940,7 @@ export default function WhatsAppCrmClient() {
                     >
                         <div className="relative">
                             <img 
-                                src="/api/karen-avatar" 
+                                src={`/api/karen-avatar?t=${avatarKey}`} 
                                 alt="Karen" 
                                 className="w-7 h-7 rounded-full object-cover border border-cyan-400 group-hover:scale-105 transition-transform" 
                             />
@@ -1343,6 +1515,15 @@ export default function WhatsAppCrmClient() {
                                 >
                                     {isUploadingAttachment ? <Loader2 size={16} className="animate-spin text-cyan-400" /> : <Paperclip size={16} />}
                                 </button>
+                                <button
+                                    type="button"
+                                    onClick={handleSendCatalogToClient}
+                                    disabled={sendingCatalog}
+                                    className="p-2.5 rounded-xl bg-slate-900 hover:bg-cyan-950/60 border border-slate-800 hover:border-cyan-500/50 text-slate-400 hover:text-cyan-300 transition-all cursor-pointer disabled:opacity-50 group"
+                                    title="Enviar Catálogo Oficial de Productos a este cliente por WhatsApp"
+                                >
+                                    {sendingCatalog ? <Loader2 size={16} className="animate-spin text-cyan-400" /> : <ShoppingBag size={16} className="group-hover:scale-110 transition-transform" />}
+                                </button>
                                 <input
                                     type="text"
                                     value={inputText}
@@ -1545,6 +1726,16 @@ export default function WhatsAppCrmClient() {
                                 🔑 Token & Conexión Meta
                             </button>
                             <button
+                                onClick={() => { setActiveSettingsTab('catalog'); fetchCatalogSettings(); }}
+                                className={`px-4 py-2 text-xs font-bold transition-all border-b-2 cursor-pointer ${
+                                    activeSettingsTab === 'catalog'
+                                        ? 'border-cyan-500 text-cyan-400 bg-cyan-500/10 rounded-t-lg'
+                                        : 'border-transparent text-slate-400 hover:text-white'
+                                }`}
+                            >
+                                🛍️ Catálogo & Tienda
+                            </button>
+                            <button
                                 onClick={() => setActiveSettingsTab('manual')}
                                 className={`px-4 py-2 text-xs font-bold transition-all border-b-2 cursor-pointer ${
                                     activeSettingsTab === 'manual'
@@ -1570,6 +1761,104 @@ export default function WhatsAppCrmClient() {
                         {/* TAB 1: PERFIL */}
                         {activeSettingsTab === 'profile' && (
                             <form onSubmit={handleSaveProfile} className="space-y-4 text-xs">
+                                {/* SECCIÓN FOTO DE PERFIL OFICIAL WHATSAPP BUSINESS (ATOMIC) */}
+                                <div className="p-4 bg-slate-900/90 rounded-2xl border border-cyan-500/30 space-y-3">
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                                                <Camera size={14} className="text-cyan-400" /> Foto Oficial de Perfil WhatsApp Business (ATOMIC)
+                                            </span>
+                                            <p className="text-[10px] text-slate-400">
+                                                Logo oficial de ATOMIC sincronizado con Meta Cloud API (+593 96 322 6319). Esta imagen la ven tus clientes en WhatsApp.
+                                            </p>
+                                        </div>
+                                        <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/30">
+                                            1:1 Cuadrada • PNG / JPG
+                                        </span>
+                                    </div>
+
+                                    <div className="flex flex-col sm:flex-row items-center gap-4 pt-1">
+                                        <div className="relative group shrink-0">
+                                            <div className="w-20 h-20 rounded-2xl overflow-hidden border-2 border-cyan-400 shadow-md shadow-cyan-950/60 bg-slate-950 flex items-center justify-center">
+                                                <img 
+                                                    src={photoPreview || profileData.profile_picture_url || `/api/whatsapp-avatar?t=${avatarKey}`} 
+                                                    alt="WhatsApp Profile Preview" 
+                                                    className="w-full h-full object-cover"
+                                                    onError={(e) => {
+                                                        (e.target as HTMLImageElement).src = `/api/whatsapp-avatar?t=${avatarKey}`;
+                                                    }}
+                                                />
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={() => photoFileInputRef.current?.click()}
+                                                className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl flex flex-col items-center justify-center text-white text-[10px] font-bold cursor-pointer"
+                                                title="Cambiar foto de WhatsApp"
+                                            >
+                                                <Camera size={18} className="mb-0.5 text-cyan-300" />
+                                                <span>Cambiar</span>
+                                            </button>
+                                        </div>
+
+                                        <div className="flex-1 space-y-2 w-full">
+                                            <input 
+                                                type="file" 
+                                                ref={photoFileInputRef} 
+                                                onChange={handlePhotoFileChange} 
+                                                accept="image/png,image/jpeg,image/webp" 
+                                                className="hidden" 
+                                            />
+                                            <div className="flex flex-wrap items-center gap-2">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => photoFileInputRef.current?.click()}
+                                                    className="px-3 py-1.5 rounded-xl bg-cyan-600/20 hover:bg-cyan-600/30 border border-cyan-500/40 text-cyan-300 font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer shadow-sm"
+                                                >
+                                                    <Upload size={13} /> <span>Subir foto desde PC</span>
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    disabled={isSyncingPhoto}
+                                                    onClick={handleSyncMetaPhoto}
+                                                    className="px-3 py-1.5 rounded-xl bg-emerald-600/25 hover:bg-emerald-600/40 border border-emerald-500/40 text-emerald-300 font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer shadow-sm"
+                                                    title="Forzar sincronización inmediata de la foto con Meta WhatsApp (+593 96 322 6319)"
+                                                >
+                                                    {isSyncingPhoto ? <Loader2 size={13} className="animate-spin" /> : <RefreshCw size={13} />}
+                                                    <span>{isSyncingPhoto ? 'Sincronizando con Meta...' : '⚡ Sincronizar Foto con WhatsApp Meta Ahora'}</span>
+                                                </button>
+                                                {photoPreview && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => { setPhotoPreview(null); setPhotoBase64(null); }}
+                                                        className="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs flex items-center gap-1 cursor-pointer"
+                                                    >
+                                                        <X size={12} /> Descartar
+                                                    </button>
+                                                )}
+                                                {photoPreview && (
+                                                    <span className="text-[10px] text-emerald-400 font-medium flex items-center gap-1">
+                                                        <Check size={11} /> Nueva imagen lista para guardar
+                                                    </span>
+                                                )}
+                                            </div>
+
+                                            <div>
+                                                <label className="block text-[10px] text-slate-400 mb-0.5 font-medium">O especificar URL directa de imagen:</label>
+                                                <input 
+                                                    type="url"
+                                                    value={profileData.profile_picture_url}
+                                                    onChange={(e) => {
+                                                        setProfileData({ ...profileData, profile_picture_url: e.target.value });
+                                                        if (!photoBase64) setPhotoPreview(e.target.value);
+                                                    }}
+                                                    placeholder="https://atomiccotizador.shop/images/logo.png"
+                                                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-white placeholder-slate-600"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div className="space-y-3 bg-slate-950 p-4 rounded-xl border border-slate-800">
                                     <div>
                                         <label className="block text-[11px] text-slate-400 mb-1 font-medium">Estado / Eslogan Corto:</label>
@@ -1762,6 +2051,205 @@ export default function WhatsAppCrmClient() {
                             </div>
                         )}
 
+                        {/* TAB: CATÁLOGO DE PRODUCTOS & TIENDA WHATSAPP CLOUD API */}
+                        {activeSettingsTab === 'catalog' && (
+                            <div className="space-y-4 text-xs">
+                                {/* Banner de Estado General */}
+                                <div className="p-4 bg-gradient-to-r from-slate-950 via-cyan-950/30 to-slate-950 rounded-2xl border border-cyan-500/30 space-y-2">
+                                    <div className="flex items-center justify-between flex-wrap gap-2">
+                                        <div className="flex items-center gap-2">
+                                            <div className="p-2 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
+                                                <ShoppingBag size={18} />
+                                            </div>
+                                            <div>
+                                                <h4 className="text-sm font-black text-white uppercase tracking-wider">
+                                                    Catálogo & Tienda Oficial en WhatsApp
+                                                </h4>
+                                                <p className="text-[11px] text-slate-300">
+                                                    Muestra el icono de tienda 🛍️ en el perfil de WhatsApp (+593 96 322 6319) y sincroniza los productos con Meta.
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <span className={`text-[10px] font-mono px-2.5 py-1 rounded-full font-bold border ${
+                                                catalogSettings.isCatalogVisible
+                                                    ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                                                    : 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                                            }`}>
+                                                {catalogSettings.isCatalogVisible ? '● Catálogo Visible en WhatsApp' : '○ Catálogo Oculto'}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Formulario de Activación en Meta */}
+                                <form onSubmit={handleSaveCatalogSettings} className="p-4 bg-slate-950 rounded-2xl border border-slate-800 space-y-4">
+                                    <div className="border-b border-slate-800 pb-2 flex items-center justify-between">
+                                        <div>
+                                            <h5 className="font-bold text-white text-xs uppercase flex items-center gap-1.5">
+                                                <Zap size={14} className="text-cyan-400" /> Control de Comercio en Meta Cloud API
+                                            </h5>
+                                            <p className="text-[10px] text-slate-400 mt-0.5">
+                                                Configura el endpoint oficial <code className="text-cyan-300 font-mono">whatsapp_commerce_settings</code> de Meta.
+                                            </p>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={fetchCatalogSettings}
+                                            disabled={catalogLoading}
+                                            className="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-400 hover:text-white text-[10px] font-mono flex items-center gap-1 cursor-pointer"
+                                        >
+                                            <RefreshCw size={11} className={catalogLoading ? 'animate-spin' : ''} /> Consultar Meta
+                                        </button>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        {/* Switch Visibilidad Catálogo */}
+                                        <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 space-y-2 flex flex-col justify-between">
+                                            <div>
+                                                <div className="flex items-center justify-between">
+                                                    <span className="font-bold text-white text-xs">Visibilidad del Catálogo</span>
+                                                    <span className="text-[10px] font-mono text-cyan-400">is_catalog_visible</span>
+                                                </div>
+                                                <p className="text-[10px] text-slate-400 mt-1">
+                                                    Muestra el icono de tienda (Storefront) en el perfil de WhatsApp de ATOMIC y en la barra superior de los chats.
+                                                </p>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={() => setCatalogSettings(prev => ({ ...prev, isCatalogVisible: !prev.isCatalogVisible }))}
+                                                className={`w-full py-2 px-3 rounded-lg font-bold text-xs transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                                                    catalogSettings.isCatalogVisible
+                                                        ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-950'
+                                                        : 'bg-slate-800 hover:bg-slate-700 text-slate-400'
+                                                }`}
+                                            >
+                                                {catalogSettings.isCatalogVisible ? <Check size={14} /> : <X size={14} />}
+                                                <span>{catalogSettings.isCatalogVisible ? 'Catálogo Visible (Activo)' : 'Hacer Visible'}</span>
+                                            </button>
+                                        </div>
+
+                                        {/* Switch Carrito de Compras */}
+                                        <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 space-y-2 flex flex-col justify-between">
+                                            <div>
+                                                <div className="flex items-center justify-between">
+                                                    <span className="font-bold text-white text-xs">Carrito de Compras</span>
+                                                    <span className="text-[10px] font-mono text-cyan-400">is_cart_enabled</span>
+                                                </div>
+                                                <p className="text-[10px] text-slate-400 mt-1">
+                                                    Permite a los clientes armar pedidos y enviarte carritos de compra directamente desde el chat de WhatsApp.
+                                                </p>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={() => setCatalogSettings(prev => ({ ...prev, isCartEnabled: !prev.isCartEnabled }))}
+                                                className={`w-full py-2 px-3 rounded-lg font-bold text-xs transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                                                    catalogSettings.isCartEnabled
+                                                        ? 'bg-cyan-600 hover:bg-cyan-500 text-white shadow-md shadow-cyan-950'
+                                                        : 'bg-slate-800 hover:bg-slate-700 text-slate-400'
+                                                }`}
+                                            >
+                                                {catalogSettings.isCartEnabled ? <Check size={14} /> : <X size={14} />}
+                                                <span>{catalogSettings.isCartEnabled ? 'Carrito Habilitado' : 'Habilitar Carrito'}</span>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {/* Input Catalog ID de Meta */}
+                                    <div className="space-y-1.5 pt-1">
+                                        <label className="text-[11px] font-bold text-slate-300 flex items-center justify-between">
+                                            <span>Meta Commerce Catalog ID (Opcional):</span>
+                                            <span className="text-[10px] font-mono text-slate-500">Facebook Business Manager</span>
+                                        </label>
+                                        <div className="flex gap-2">
+                                            <input 
+                                                type="text"
+                                                value={catalogSettings.catalogId}
+                                                onChange={(e) => setCatalogSettings(prev => ({ ...prev, catalogId: e.target.value }))}
+                                                placeholder="Ej: ID del Catálogo creado en Meta Commerce Manager"
+                                                className="flex-1 bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs font-mono text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500"
+                                            />
+                                        </div>
+                                        <p className="text-[10px] text-slate-500">
+                                            Si tienes un catálogo creado en Meta Commerce Manager, pega su ID aquí para vincularlo directamente con este número.
+                                        </p>
+                                    </div>
+
+                                    <div className="pt-2">
+                                        <button
+                                            type="submit"
+                                            disabled={settingsSaving}
+                                            className="w-full py-2.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold rounded-xl flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-cyan-950/40"
+                                        >
+                                            {settingsSaving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
+                                            <span>⚡ Guardar y Activar en Meta Cloud API (+593 96 322 6319)</span>
+                                        </button>
+                                    </div>
+                                </form>
+
+                                {/* Sección: Sincronización Automática de Productos con el ERP */}
+                                <div className="p-4 bg-slate-950 rounded-2xl border border-slate-800 space-y-3">
+                                    <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                                        <div className="flex items-center gap-2 font-bold text-emerald-400">
+                                            <ShoppingBag size={16} />
+                                            <span>Data Feed Automático de Productos (Desde el ERP)</span>
+                                        </div>
+                                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                                            {catalogSettings.totalProducts} Productos Activos
+                                        </span>
+                                    </div>
+
+                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                        Meta Commerce Manager requiere una fuente de datos (Data Feed) para cargar los productos automáticamente a WhatsApp con fotos, precios y stock.
+                                    </p>
+
+                                    <div className="p-3 bg-slate-900 rounded-xl border border-slate-800 space-y-2">
+                                        <label className="text-[10px] uppercase font-bold text-slate-400 block">
+                                            URL del Feed CSV para Meta Commerce Manager:
+                                        </label>
+                                        <div className="flex items-center gap-2">
+                                            <input 
+                                                type="text" 
+                                                readOnly 
+                                                value={catalogSettings.feedUrl}
+                                                className="flex-1 bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs font-mono text-cyan-300 select-all"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    navigator.clipboard.writeText(catalogSettings.feedUrl);
+                                                    alert('📋 URL del Feed de Productos copiada al portapapeles');
+                                                }}
+                                                className="px-3 py-1.5 bg-cyan-600/20 hover:bg-cyan-600/30 border border-cyan-500/40 text-cyan-300 rounded-lg text-xs font-bold flex items-center gap-1 cursor-pointer"
+                                            >
+                                                <Copy size={12} /> Copiar
+                                            </button>
+                                            <a
+                                                href="/api/whatsapp/catalog?format=csv"
+                                                download="whatsapp-catalog-meta-feed.csv"
+                                                className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-lg text-xs font-bold flex items-center gap-1 cursor-pointer"
+                                            >
+                                                <Download size={12} /> CSV
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                    {/* Pasos para conectar en Meta */}
+                                    <div className="p-3 bg-slate-900/60 rounded-xl border border-slate-800 space-y-2">
+                                        <span className="text-[10px] uppercase font-bold text-amber-300 block">
+                                            📌 Pasos para conectar tus productos en Meta Commerce Manager:
+                                        </span>
+                                        <ol className="text-[11px] text-slate-400 space-y-1.5 list-decimal pl-4">
+                                            <li>Abre <a href="https://business.facebook.com/commerce_manager" target="_blank" rel="noopener noreferrer" className="text-cyan-400 underline font-medium">Meta Commerce Manager</a> y selecciona o crea un Catálogo de Productos.</li>
+                                            <li>En el menú lateral, ve a <strong>Catálogo &gt; Fuentes de datos &gt; Data feed</strong>.</li>
+                                            <li>Selecciona <strong>Usar una URL</strong>, pega el enlace de arriba (<code className="text-cyan-300 font-mono">/api/whatsapp/catalog?format=csv</code>) y programa sincronización automática.</li>
+                                            <li>Meta importará automáticamente tus <strong>{catalogSettings.totalProducts} productos</strong> con fotos, precios y enlaces a WhatsApp.</li>
+                                        </ol>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
                         {/* TAB 3: GUÍA PASO A PASO PARA TOKEN PERMANENTE */}
                         {activeSettingsTab === 'manual' && (
                             <div className="space-y-4 text-xs">
@@ -1946,12 +2434,23 @@ export default function WhatsAppCrmClient() {
                         {/* Header */}
                         <div className="p-4 md:p-6 bg-gradient-to-r from-slate-950 via-cyan-950/40 to-slate-950 border-b border-cyan-500/20 flex items-center justify-between">
                             <div className="flex items-center gap-3.5">
-                                <div className="relative">
+                                <div className="relative group">
                                     <img 
-                                        src="/api/karen-avatar" 
+                                        src={`/api/karen-avatar?t=${avatarKey}`} 
                                         alt="Karen" 
                                         className="w-14 h-14 rounded-2xl object-cover border-2 border-cyan-400 shadow-lg shadow-cyan-950/50" 
                                     />
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setActiveSettingsTab('profile');
+                                            setIsSettingsModalOpen(true);
+                                        }}
+                                        className="absolute inset-0 bg-black/60 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-cyan-300 cursor-pointer"
+                                        title="Cambiar foto de perfil en Ajustes"
+                                    >
+                                        <Camera size={16} />
+                                    </button>
                                     <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-slate-950 ${
                                         karenAuditData?.karen?.mode === 'MANUAL' ? 'bg-rose-500' :
                                         karenAuditData?.karen?.mode === 'AWAITING_APPROVAL' ? 'bg-amber-400' : 'bg-emerald-400'
@@ -2112,7 +2611,7 @@ export default function WhatsAppCrmClient() {
                                         >
                                             {log.sender === 'karen' && (
                                                 <img 
-                                                    src="/api/karen-avatar" 
+                                                    src={`/api/karen-avatar?t=${avatarKey}`} 
                                                     alt="Karen" 
                                                     className="w-6 h-6 rounded-full object-cover shrink-0 mt-0.5 border border-cyan-400" 
                                                 />
@@ -2210,6 +2709,51 @@ export default function WhatsAppCrmClient() {
                     </div>
                 </div>
             )}
+
+            {/* BOTÓN FLOTANTE KAREN: JEFA DE MENSAJERÍA & AUDITORÍA EN VIVO */}
+            <div className="fixed bottom-6 right-6 z-40 flex items-center gap-3">
+                {/* Badge informativo / Tooltip visible */}
+                <div 
+                    onClick={() => { setKarenModalOpen(true); fetchKarenAudit(); }}
+                    className="hidden sm:flex items-center gap-2 bg-slate-950/90 border border-cyan-500/40 backdrop-blur-md px-3.5 py-1.5 rounded-full shadow-[0_0_20px_rgba(6,182,212,0.3)] cursor-pointer hover:border-cyan-400 transition-all hover:scale-105"
+                >
+                    <span className="relative flex h-2.5 w-2.5">
+                        <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
+                            karenAuditData?.karen?.mode === 'MANUAL' ? 'bg-rose-400' :
+                            karenAuditData?.karen?.mode === 'AWAITING_APPROVAL' ? 'bg-amber-400' : 'bg-emerald-400'
+                        }`} />
+                        <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${
+                            karenAuditData?.karen?.mode === 'MANUAL' ? 'bg-rose-500' :
+                            karenAuditData?.karen?.mode === 'AWAITING_APPROVAL' ? 'bg-amber-400' : 'bg-emerald-400'
+                        }`} />
+                    </span>
+                    <span className="text-[11px] font-black text-white tracking-wide">
+                        Karen <span className="text-cyan-400 font-mono text-[10px] font-normal">• Jefa de Mensajería</span>
+                    </span>
+                </div>
+
+                {/* Avatar Flotante Interactivo */}
+                <button
+                    type="button"
+                    onClick={() => { setKarenModalOpen(true); fetchKarenAudit(); }}
+                    className="relative group p-1 rounded-full bg-slate-950/95 border-2 border-cyan-400 hover:border-cyan-300 shadow-[0_0_25px_rgba(6,182,212,0.45)] hover:shadow-[0_0_35px_rgba(6,182,212,0.7)] transition-all cursor-pointer hover:scale-110 active:scale-95"
+                    title="Abrir Asistente Karen (Jefa de Mensajería & Auditoría)"
+                >
+                    <div className="w-13 h-13 sm:w-15 sm:h-15 rounded-full overflow-hidden border border-cyan-500/50">
+                        <img 
+                            src={`/api/karen-avatar?t=${avatarKey}`} 
+                            alt="Karen Jefa de Mensajería" 
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" 
+                        />
+                    </div>
+                    
+                    {/* Indicador de Estado Semáforo */}
+                    <span className={`absolute bottom-0.5 right-0.5 w-4 h-4 rounded-full border-2 border-slate-950 shadow-md ${
+                        karenAuditData?.karen?.mode === 'MANUAL' ? 'bg-rose-500' :
+                        karenAuditData?.karen?.mode === 'AWAITING_APPROVAL' ? 'bg-amber-400' : 'bg-emerald-400'
+                    }`} />
+                </button>
+            </div>
         </div>
     )
 }

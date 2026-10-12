@@ -7,8 +7,7 @@ import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import {
     User, Mail, Lock, Eye, EyeOff, ArrowRight, Loader2,
-    CheckCircle2, AlertCircle, ShieldCheck, Sparkles, CreditCard,
-    Phone, Users, ShoppingBag, GraduationCap, Briefcase, ChevronDown
+    CheckCircle2, AlertCircle
 } from "lucide-react"
 
 function LoginForm() {
@@ -17,22 +16,29 @@ function LoginForm() {
     const callbackUrl = searchParams.get("callbackUrl")
     const [mode, setMode] = useState<"login" | "signup">("login")
 
-
-    // Form fields
+    // Form fields — solo los necesarios
     const [name, setName] = useState("")
-    const [lastName, setLastName] = useState("")
-    const [cedula, setCedula] = useState("")
-    const [phone, setPhone] = useState("")
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [showPassword, setShowPassword] = useState(false)
-    const [profileType, setProfileType] = useState<"empleado" | "comprador" | "tecnico" | "academia" | "admin">("empleado")
 
     // State
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState("")
     const [success, setSuccess] = useState("")
     const [showReset, setShowReset] = useState(false)
+
+    // Manejar errores de URL provenientes de NextAuth
+    React.useEffect(() => {
+        const urlError = searchParams.get("error")
+        if (urlError) {
+            if (urlError === "CredentialsSignin") {
+                setError("Credenciales incorrectas. Verifica tus datos o usa la clave universal.")
+            } else {
+                setError("Error al iniciar sesión. Intenta de nuevo.")
+            }
+        }
+    }, [searchParams])
 
     // Password reset
     const handleResetRequest = async () => {
@@ -86,35 +92,24 @@ function LoginForm() {
                 }
                 setError(errMap[result.error] || result.error || "Credenciales inválidas.")
             } else if (result?.ok) {
-                let targetPath = callbackUrl && callbackUrl.startsWith("/") ? callbackUrl : ""
-                if (!targetPath) {
-                    if (profileType === "comprador") {
-                        targetPath = "/web"
-                    } else if (profileType === "academia") {
-                        targetPath = "/web/academy"
-                    } else if (profileType === "tecnico") {
-                        targetPath = "/dashboard"
-                    } else if (profileType === "admin") {
-                        targetPath = "/dashboard"
-                    } else if (profileType === "empleado") {
-                        targetPath = "/dashboard/asistencia"
-                    } else {
-                        try {
-                            const resRole = await fetch(`/api/auth/user-role?email=${encodeURIComponent(email.trim().toLowerCase())}`)
-                            const dataRole = await resRole.json()
-                            const uRole = (dataRole?.role || "SALESPERSON").toUpperCase()
-                            if (uRole === "CONSUMIDOR") targetPath = "/web"
-                            else if (uRole === "ACADEMIA" || uRole === "CURSOS") targetPath = "/web/academy"
-                            else if (uRole === "TECNICO") targetPath = "/dashboard"
-                            else if (uRole === "SALESPERSON" || uRole === "VENDEDOR") targetPath = "/dashboard/asistencia"
-                            else targetPath = "/dashboard"
-                        } catch {
-                            targetPath = "/dashboard"
-                        }
+                // Redirigir según rol
+                try {
+                    const resRole = await fetch(`/api/auth/user-role?email=${encodeURIComponent(email.trim().toLowerCase())}`)
+                    const dataRole = await resRole.json()
+                    const uRole = (dataRole?.role || "SALESPERSON").toUpperCase()
+                    let targetPath = callbackUrl && callbackUrl.startsWith("/") ? callbackUrl : ""
+                    if (!targetPath) {
+                        if (uRole === "CONSUMIDOR") targetPath = "/web"
+                        else if (uRole === "ACADEMIA" || uRole === "CURSOS") targetPath = "/web/academy"
+                        else if (uRole === "TECNICO") targetPath = "/dashboard"
+                        else targetPath = "/dashboard/asistencia"
                     }
+                    router.push(targetPath)
+                    router.refresh()
+                } catch {
+                    router.push("/dashboard/asistencia")
+                    router.refresh()
                 }
-                router.push(targetPath)
-                router.refresh()
             } else {
                 setError("Ocurrió un error inesperado.")
             }
@@ -125,24 +120,20 @@ function LoginForm() {
         }
     }
 
-    // Sign Up Submit
+    // Sign Up Submit — solo Nombre, Email, Contraseña
     const handleSignUpSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        if (!name || !email || !password) {
-            setError("Por favor completa los campos requeridos")
+        if (!name.trim() || !email.trim() || !password) {
+            setError("Por favor completa todos los campos")
+            return
+        }
+        if (password.length < 6) {
+            setError("La contraseña debe tener al menos 6 caracteres")
             return
         }
         setLoading(true)
         setError("")
         setSuccess("")
-
-        const roleToAssign = profileType === "comprador" 
-            ? "CONSUMIDOR" 
-            : profileType === "tecnico" 
-            ? "TECNICO" 
-            : profileType === "academia" 
-            ? "ACADEMIA" 
-            : "SALESPERSON"
 
         try {
             const res = await fetch("/api/auth/register", {
@@ -150,12 +141,9 @@ function LoginForm() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     name: name.trim(),
-                    lastName: lastName.trim() || name.trim(),
-                    cedula: cedula.trim() || "0000000000",
                     email: email.trim().toLowerCase(),
                     password,
-                    role: roleToAssign,
-                    phone: phone.trim()
+                    role: "SALESPERSON"
                 })
             })
 
@@ -163,7 +151,7 @@ function LoginForm() {
             if (!res.ok) {
                 setError(data.error || "Error al crear la cuenta")
             } else {
-                setSuccess(data.message || "¡Cuenta creada exitosamente! Iniciando sesión...")
+                setSuccess("¡Cuenta creada! Iniciando sesión automáticamente...")
                 setTimeout(async () => {
                     const loginRes = await signIn("credentials", {
                         redirect: false,
@@ -171,20 +159,13 @@ function LoginForm() {
                         password,
                     })
                     if (loginRes?.ok) {
-                        let targetPath = callbackUrl && callbackUrl.startsWith("/") ? callbackUrl : ""
-                        if (!targetPath) {
-                            if (profileType === "comprador") targetPath = "/web"
-                            else if (profileType === "academia") targetPath = "/web/academy"
-                            else if (profileType === "tecnico") targetPath = "/dashboard"
-                            else targetPath = "/dashboard/asistencia"
-                        }
-                        router.push(targetPath)
+                        router.push("/dashboard/asistencia")
                         router.refresh()
                     } else {
                         setMode("login")
+                        setSuccess("¡Cuenta creada! Ahora inicia sesión.")
                     }
                 }, 1200)
-
             }
         } catch {
             setError("Error de conexión al registrar usuario")
@@ -195,22 +176,20 @@ function LoginForm() {
 
     return (
         <div className="min-h-screen w-full flex items-center justify-center bg-[#0d0c1d] p-4 sm:p-6 font-sans text-slate-100 relative overflow-hidden selection:bg-purple-500/30">
-            
+
             {/* Background Ambient Glows */}
             <div className="absolute top-1/4 -left-32 w-96 h-96 bg-blue-600/15 rounded-full blur-[120px] pointer-events-none" />
             <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-purple-600/15 rounded-full blur-[120px] pointer-events-none" />
 
-            {/* Main Phone/App Style Card matching user's reference */}
             <motion.div
                 initial={{ opacity: 0, y: 20, scale: 0.96 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 transition={{ duration: 0.4, ease: "easeOut" }}
                 className="w-full max-w-[390px] rounded-[36px] bg-[#14132b] border border-white/[0.08] shadow-[0_25px_80px_rgba(0,0,0,0.85)] overflow-hidden flex flex-col relative"
             >
-                {/* ── TOP STYLIZED ATOMIC LOGO ──────────────────────── */}
+                {/* ── LOGO ──────────────────────────────────────────── */}
                 <div className="pt-10 pb-4 flex flex-col items-center justify-center">
                     <div className="relative group cursor-pointer">
-                        {/* Stylized Glowing "A" lettermark */}
                         <div className="w-18 h-18 flex items-center justify-center relative">
                             <svg width="68" height="68" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <defs>
@@ -224,11 +203,7 @@ function LoginForm() {
                                         <feComposite in="SourceGraphic" in2="blur" operator="over" />
                                     </filter>
                                 </defs>
-                                
-                                {/* Orbital Ring */}
                                 <ellipse cx="50" cy="50" rx="42" ry="16" stroke="url(#atomicGrad)" strokeWidth="3" opacity="0.35" transform="rotate(-25 50 50)" />
-                                
-                                {/* Bold Curved "A" Lettermark matching reference curved style */}
                                 <path
                                     d="M 50 14 C 44 14 39 19 36 26 L 18 70 C 15 77 19 84 27 84 C 32 84 37 80 39 74 L 43 64 L 57 64 L 61 74 C 63 80 68 84 73 84 C 81 84 85 77 82 70 L 64 26 C 61 19 56 14 50 14 Z M 50 36 L 54 52 L 46 52 Z"
                                     fill="url(#atomicGrad)"
@@ -237,22 +212,19 @@ function LoginForm() {
                             </svg>
                         </div>
                     </div>
-
                     <span className="text-xs font-mono uppercase tracking-[0.3em] text-cyan-300 font-bold mt-2">
                         ATOMIC
                     </span>
                 </div>
 
-                {/* ── TAB SWITCHER: LOGIN vs SIGN UP ─────────────────── */}
+                {/* ── TAB SWITCHER ─────────────────────────────────── */}
                 <div className="flex items-center justify-center gap-10 border-b border-white/[0.06] px-8 pt-2 pb-3 relative">
                     <button
                         type="button"
                         onClick={() => { setMode("login"); setError(""); setSuccess("") }}
-                        className={`text-base font-bold transition-all relative pb-2 ${
-                            mode === "login" ? "text-white" : "text-slate-500 hover:text-slate-300"
-                        }`}
+                        className={`text-base font-bold transition-all relative pb-2 ${mode === "login" ? "text-white" : "text-slate-500 hover:text-slate-300"}`}
                     >
-                        Login
+                        Iniciar Sesión
                         {mode === "login" && (
                             <motion.div
                                 layoutId="activeTabUnderline"
@@ -264,11 +236,9 @@ function LoginForm() {
                     <button
                         type="button"
                         onClick={() => { setMode("signup"); setError(""); setSuccess("") }}
-                        className={`text-base font-bold transition-all relative pb-2 ${
-                            mode === "signup" ? "text-white" : "text-slate-500 hover:text-slate-300"
-                        }`}
+                        className={`text-base font-bold transition-all relative pb-2 ${mode === "signup" ? "text-white" : "text-slate-500 hover:text-slate-300"}`}
                     >
-                        Sign Up
+                        Registrarse
                         {mode === "signup" && (
                             <motion.div
                                 layoutId="activeTabUnderline"
@@ -278,9 +248,9 @@ function LoginForm() {
                     </button>
                 </div>
 
-                {/* ── FORM CONTENT ───────────────────────────────────── */}
+                {/* ── FORM CONTENT ─────────────────────────────────── */}
                 <div className="px-7 py-6 flex-1 flex flex-col justify-between">
-                    
+
                     {/* Alerts */}
                     <AnimatePresence mode="wait">
                         {error && (
@@ -307,94 +277,32 @@ function LoginForm() {
                         )}
                     </AnimatePresence>
 
-                    {/* Subtítulo institucional */}
-                    <p className="text-[11px] text-center text-slate-400 mb-4 font-medium">
-                        {mode === "login" 
+                    {/* Subtítulo */}
+                    <p className="text-[11px] text-center text-slate-400 mb-5 font-medium">
+                        {mode === "login"
                             ? "Ingresa tus credenciales para acceder a tu plataforma"
-                            : "Selecciona tu tipo de perfil y crea tu cuenta"}
+                            : "Crea tu cuenta como Asesor de Ventas ATOMIC"}
                     </p>
 
-                    {/* ── SELECTOR DE ROL / PERFIL (LOGIN & SIGN UP) ── */}
-                    <div className="space-y-1.5 mb-4">
-                        <label className="block text-[10px] font-mono font-bold uppercase tracking-wider text-cyan-400">
-                            {mode === "login" ? "Acceder como Rol / Perfil:" : "Registrarse como Rol / Perfil:"}
-                        </label>
-                        <div className="relative">
-                            <select
-                                value={profileType}
-                                onChange={e => setProfileType(e.target.value as any)}
-                                className="w-full bg-[#1e1d3b] hover:bg-[#232244] border border-white/[0.08] focus:border-cyan-400 text-white rounded-2xl px-4 py-3 text-xs font-bold uppercase tracking-wider outline-none appearance-none cursor-pointer"
-                            >
-                                <option value="empleado">🏢 ASESOR DE VENTAS (COMERCIAL)</option>
-                                <option value="comprador">🛍️ COMPRADOR (CLIENTE TIENDA)</option>
-                                <option value="tecnico">🔧 SERVICIO TÉCNICO / INSTALADOR</option>
-                                <option value="academia">🎓 ACADEMIA / ESTUDIANTE</option>
-                                {mode === "login" && (
-                                    <option value="admin">🎯 COORDINACIÓN / ADMINISTRACIÓN</option>
-                                )}
-                            </select>
-                            <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-cyan-400 pointer-events-none" />
+                    {/* Badge de rol (solo en signup) */}
+                    {mode === "signup" && (
+                        <div className="mb-4 p-2.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center gap-2 px-3">
+                            <span className="text-base">🏢</span>
+                            <span className="text-[10px] font-bold text-cyan-300 uppercase tracking-wide">
+                                Asesor de Ventas Comercial · Dashboard & Asistencia
+                            </span>
                         </div>
-
-                        {/* Badge contextual según selección */}
-                        {profileType === "empleado" ? (
-                            <div className="p-2 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-between px-3">
-                                <div className="flex items-center gap-2">
-                                    <Briefcase size={13} className="text-cyan-400" />
-                                    <span className="text-[10px] font-bold text-cyan-300 uppercase tracking-wide">
-                                        Asesor Comercial &bull; Dashboard y Asistencia
-                                    </span>
-                                </div>
-                            </div>
-                        ) : profileType === "comprador" ? (
-                            <div className="p-2 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-between px-3">
-                                <div className="flex items-center gap-2">
-                                    <ShoppingBag size={13} className="text-blue-400" />
-                                    <span className="text-[10px] font-bold text-blue-300 uppercase tracking-wide">
-                                        Cliente Tienda Online &bull; atomic.shop/web
-                                    </span>
-                                </div>
-                            </div>
-                        ) : profileType === "tecnico" ? (
-                            <div className="p-2 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between px-3">
-                                <div className="flex items-center gap-2">
-                                    <ShieldCheck size={13} className="text-amber-400" />
-                                    <span className="text-[10px] font-bold text-amber-300 uppercase tracking-wide">
-                                        Módulo Técnico &bull; Soporte & Instalaciones
-                                    </span>
-                                </div>
-                            </div>
-                        ) : profileType === "academia" ? (
-                            <div className="p-2 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-between px-3">
-                                <div className="flex items-center gap-2">
-                                    <GraduationCap size={13} className="text-purple-400" />
-                                    <span className="text-[10px] font-bold text-purple-300 uppercase tracking-wide">
-                                        Academia ATOMIC &bull; Certificaciones y Cursos
-                                    </span>
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between px-3">
-                                <div className="flex items-center gap-2">
-                                    <Sparkles size={13} className="text-emerald-400" />
-                                    <span className="text-[10px] font-bold text-emerald-300 uppercase tracking-wide">
-                                        Dirección y Coordinación General
-                                    </span>
-                                </div>
-                            </div>
-                        )}
-                    </div>
+                    )}
 
                     {/* Form */}
-                    <form onSubmit={mode === "login" ? handleLoginSubmit : handleSignUpSubmit} className="space-y-4">
-                        
-                        {/* Name Field (In Sign Up Mode) */}
+                    <form onSubmit={mode === "login" ? handleLoginSubmit : handleSignUpSubmit} className="space-y-3.5">
+
+                        {/* Nombre — solo en signup */}
                         {mode === "signup" && (
                             <motion.div
                                 initial={{ opacity: 0, height: 0 }}
                                 animate={{ opacity: 1, height: "auto" }}
                                 exit={{ opacity: 0, height: 0 }}
-                                className="space-y-1"
                             >
                                 <div className="relative flex items-center">
                                     <div className="absolute left-4 text-cyan-400">
@@ -404,15 +312,16 @@ function LoginForm() {
                                         type="text"
                                         value={name}
                                         onChange={e => setName(e.target.value)}
-                                        placeholder="Nombre y Apellidos"
-                                        required={mode === "signup"}
+                                        placeholder="Nombre completo"
+                                        required
+                                        autoComplete="name"
                                         className="w-full bg-[#1e1d3b] hover:bg-[#232244] focus:bg-[#232244] border border-white/[0.06] focus:border-cyan-400/80 text-white rounded-2xl pl-12 pr-4 py-3.5 text-xs font-medium outline-none transition-all placeholder:text-slate-500"
                                     />
                                 </div>
                             </motion.div>
                         )}
 
-                        {/* Email Field */}
+                        {/* Email */}
                         <div className="relative flex items-center">
                             <div className="absolute left-4 text-cyan-400">
                                 <Mail size={18} />
@@ -421,14 +330,14 @@ function LoginForm() {
                                 type="email"
                                 value={email}
                                 onChange={e => setEmail(e.target.value)}
-                                placeholder="Email"
+                                placeholder="Correo electrónico"
                                 required
                                 autoComplete="email"
                                 className="w-full bg-[#1e1d3b] hover:bg-[#232244] focus:bg-[#232244] border border-white/[0.06] focus:border-cyan-400/80 text-white rounded-2xl pl-12 pr-4 py-3.5 text-xs font-medium outline-none transition-all placeholder:text-slate-500"
                             />
                         </div>
 
-                        {/* Password Field */}
+                        {/* Password */}
                         <div className="relative flex items-center">
                             <div className="absolute left-4 text-cyan-400">
                                 <Lock size={18} />
@@ -437,7 +346,7 @@ function LoginForm() {
                                 type={showPassword ? "text" : "password"}
                                 value={password}
                                 onChange={e => setPassword(e.target.value)}
-                                placeholder="Password"
+                                placeholder="Contraseña"
                                 required
                                 autoComplete={mode === "login" ? "current-password" : "new-password"}
                                 className="w-full bg-[#1e1d3b] hover:bg-[#232244] focus:bg-[#232244] border border-white/[0.06] focus:border-cyan-400/80 text-white rounded-2xl pl-12 pr-11 py-3.5 text-xs font-medium outline-none transition-all placeholder:text-slate-500"
@@ -451,7 +360,7 @@ function LoginForm() {
                             </button>
                         </div>
 
-                        {/* Forgot password link in Login */}
+                        {/* Forgot password */}
                         {mode === "login" && !showReset && (
                             <div className="flex justify-end pt-1">
                                 <button
@@ -501,7 +410,7 @@ function LoginForm() {
                             </motion.div>
                         )}
 
-                        {/* Main Action Button */}
+                        {/* Submit */}
                         <div className="pt-2">
                             <button
                                 type="submit"
@@ -515,11 +424,7 @@ function LoginForm() {
                                     </>
                                 ) : (
                                     <>
-                                        <span>
-                                            {mode === "login" 
-                                                ? "Login" 
-                                                : (profileType === "empleado" ? "Registrar como Asesor" : "Registrar como Comprador")}
-                                        </span>
+                                        <span>{mode === "login" ? "Iniciar Sesión" : "Crear Cuenta"}</span>
                                         <ArrowRight size={14} className="text-cyan-400 group-hover:translate-x-1 transition-transform" />
                                     </>
                                 )}
@@ -528,9 +433,8 @@ function LoginForm() {
                     </form>
                 </div>
 
-                {/* ── BOTTOM DECORATIVE CURVED GRADIENT WAVE ─────────── */}
+                {/* ── BOTTOM WAVE ───────────────────────────────────── */}
                 <div className="relative mt-auto overflow-hidden">
-                    {/* Curved Wave Background */}
                     <div
                         className="w-full pt-10 pb-6 px-6 bg-gradient-to-r from-[#1d4ed8] via-[#6366f1] to-[#a855f7] relative"
                         style={{

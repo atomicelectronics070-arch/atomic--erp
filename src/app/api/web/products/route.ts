@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
+import { sanitizeProductPrice, sanitizeProductImage } from "@/lib/productSanitizer"
 
 export const dynamic = "force-dynamic"
 
@@ -75,7 +76,18 @@ export async function GET(req: Request) {
             prisma.product.count({ where }),
         ])
 
-        return NextResponse.json({ products, total, page, pageSize })
+        const sanitizedProducts = products.map(p => {
+            const catName = p.category?.name || ""
+            const priceCheck = sanitizeProductPrice(p.name, p.price, catName)
+            const sanitizedImg = sanitizeProductImage(p.name, p.images, catName)
+            return {
+                ...p,
+                price: priceCheck.price,
+                images: JSON.stringify([sanitizedImg])
+            }
+        })
+
+        return NextResponse.json({ products: sanitizedProducts, total, page, pageSize })
     } catch (error) {
         console.error("Web products API error:", error)
         return NextResponse.json(

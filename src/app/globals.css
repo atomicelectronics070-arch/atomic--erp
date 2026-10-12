@@ -86,30 +86,31 @@ html {
   --appit-gray-mid: rgb(71, 85, 105);
   --appit-gray-light: rgb(241, 245, 249);
 
-  /* Dynamic Theme Fallbacks — Ticketmaster Official Palette */
-  --theme-primary: #026CDF;
+  /* Dynamic Theme Fallbacks — Blanco con Tomate (Por Defecto) */
+  --theme-primary: #EA580C;
   --theme-secondary: #0F172A;
-  --theme-accent: #0053CD;
-  --theme-glow: rgba(2, 108, 223, 0.25);
+  --theme-accent: #C2410C;
+  --theme-glow: rgba(234, 88, 12, 0.35);
   --theme-border: #E2E8F0;
-  --theme-bg-subtle: #F0F7FF;
+  --theme-bg-subtle: #FFF7ED;
   --theme-bg-ambient: #FFFFFF;
   --theme-sidebar-bg: #FFFFFF;
-  --theme-button-gradient: linear-gradient(135deg, #026CDF, #0053CD);
+  --theme-button-gradient: linear-gradient(135deg, #EA580C, #C2410C);
 }
 
 html[data-theme="ticketmaster-white"],
+html[data-theme="blanco-tomate"],
 html:not([data-theme]),
 html[data-theme=""] {
-  --theme-primary: #026CDF;
+  --theme-primary: #EA580C;
   --theme-secondary: #0F172A;
-  --theme-accent: #0053CD;
-  --theme-glow: rgba(2, 108, 223, 0.25);
+  --theme-accent: #C2410C;
+  --theme-glow: rgba(234, 88, 12, 0.35);
   --theme-border: #E2E8F0;
-  --theme-bg-subtle: #F0F7FF;
+  --theme-bg-subtle: #FFF7ED;
   --theme-bg-ambient: #FFFFFF;
   --theme-sidebar-bg: #FFFFFF;
-  --theme-button-gradient: linear-gradient(135deg, #026CDF, #0053CD);
+  --theme-button-gradient: linear-gradient(135deg, #EA580C, #C2410C);
 }
 
 /* ══════════════════════════════════════════════════════════════ */

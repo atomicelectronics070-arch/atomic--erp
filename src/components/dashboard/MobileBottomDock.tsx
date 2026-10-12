@@ -6,7 +6,7 @@ import { usePathname, useSearchParams } from "next/navigation"
 import { 
     MessageSquare, Table, Plus, User, Users, Scan, 
     ShoppingBag, Map, GraduationCap, Grid, Wrench, Shield, 
-    Layers, Cpu, ChevronUp, X, Home, Flame, CalendarCheck 
+    Layers, Cpu, ChevronUp, X, Home, Flame, CalendarCheck, Globe 
 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import TeamContactsModal from "./TeamContactsModal"
@@ -118,6 +118,19 @@ function MobileBottomDockInner() {
                                 <span className="text-[8px] font-mono px-1.5 py-0.2 rounded-full bg-cyan-400 text-black font-black uppercase">12 PRO</span>
                             </button>
 
+                            {/* 3. Landings ATOMIC 2026 (Acceso Rápido Oficial) */}
+                            <Link 
+                                href="/bienvenida/categoria"
+                                onClick={() => setShowMoreMenu(false)}
+                                className="p-3 rounded-2xl bg-gradient-to-b from-blue-500/25 to-indigo-600/25 border-2 border-blue-400/80 hover:border-blue-300 flex flex-col items-center gap-1.5 transition-all active:scale-95 cursor-pointer shadow-lg shadow-blue-950/50"
+                            >
+                                <div className="p-2 rounded-xl bg-blue-500 text-white shadow-md">
+                                    <Globe size={18} className="stroke-[2.5]" />
+                                </div>
+                                <span className="text-blue-200 font-extrabold">Landings 2026</span>
+                                <span className="text-[8px] font-mono px-1.5 py-0.2 rounded-full bg-blue-500 text-white font-black uppercase">11 CATEGORÍAS</span>
+                            </Link>
+
                             <Link 
                                 href="/dashboard/tecnicos"
                                 onClick={() => setShowMoreMenu(false)}
@@ -214,172 +227,189 @@ function MobileBottomDockInner() {
             </AnimatePresence>
 
             {/* ── EXPANDED MOBILE & DESKTOP BOTTOM DOCK (SIGUE A TODO LADO) ── */}
+            {/* ── EXPANDED MOBILE & DESKTOP BOTTOM DOCK (SIGUE A TODO LADO) ── */}
             <nav 
                 aria-label="Navegación Rápida Expandida ATOMIC"
                 className="fixed bottom-2.5 left-2 right-2 sm:left-1/2 sm:-translate-x-1/2 sm:w-full sm:max-w-2xl z-40 select-none"
             >
-                <div className="relative mx-auto max-w-2xl rounded-[26px] border border-white/10 bg-[#090d1e]/95 backdrop-blur-2xl shadow-[0_12px_45px_rgba(0,0,0,0.9)] px-1 py-1 flex items-center justify-between overflow-visible">
+                <div className="relative mx-auto max-w-2xl rounded-[28px] border border-white/10 bg-[#090d1e]/95 backdrop-blur-2xl shadow-[0_12px_45px_rgba(0,0,0,0.95)] px-1.5 py-1 flex items-center justify-between overflow-visible">
                     
-                    {/* ══ LADO IZQUIERDO: ACCESOS RÁPIDOS ══ */}
-                    
-                    {/* 0. Inicio / Home */}
-                    <Link
-                        href="/dashboard"
-                        className="flex-1 min-w-[34px] flex flex-col items-center justify-center py-1 transition-all group active:scale-90"
-                    >
-                        <div className={`p-1.5 rounded-xl transition-colors ${pathname === '/dashboard' ? 'bg-cyan-500/20 text-cyan-300' : 'text-slate-400 group-hover:text-white'}`}>
-                            <Home size={16} className={pathname === '/dashboard' ? 'stroke-[2.2]' : 'stroke-[1.8]'} />
-                        </div>
-                        <span className={`text-[8px] font-bold tracking-tight mt-0.5 ${pathname === '/dashboard' ? 'text-cyan-300 font-bold' : 'text-slate-400'}`}>
-                            Inicio
-                        </span>
-                        {pathname === '/dashboard' && (
-                            <motion.div layoutId="dock-dot" className="w-1 h-1 rounded-full bg-cyan-400 mt-0.5" />
-                        )}
-                    </Link>
+                    {/* ══ ALA IZQUIERDA: ESPACIADO SIMÉTRICO Y UNIFORME ══ */}
+                    <div className="flex-1 flex items-center justify-around">
+                        
+                        {/* 0. Inicio / Home */}
+                        <Link
+                            href="/dashboard"
+                            className="flex flex-col items-center justify-center py-1 transition-all group active:scale-90"
+                            title="Inicio Dashboard"
+                        >
+                            <div className={`p-1.5 rounded-xl transition-colors ${pathname === '/dashboard' ? 'bg-cyan-500/20 text-cyan-300 shadow-[0_0_10px_rgba(6,182,212,0.3)]' : 'text-slate-400 group-hover:text-white'}`}>
+                                <Home size={16} className={pathname === '/dashboard' ? 'stroke-[2.2]' : 'stroke-[1.8]'} />
+                            </div>
+                            <span className={`text-[8px] font-bold tracking-tight mt-0.5 ${pathname === '/dashboard' ? 'text-cyan-300 font-bold' : 'text-slate-400'}`}>
+                                Inicio
+                            </span>
+                            {pathname === '/dashboard' && (
+                                <motion.div layoutId="dock-dot" className="w-1 h-1 rounded-full bg-cyan-400 mt-0.5" />
+                            )}
+                        </Link>
 
-                    {/* 1. CRM WhatsApp */}
-                    <Link
-                        href="/dashboard/whatsapp/crm"
-                        className="flex-1 min-w-[34px] flex flex-col items-center justify-center py-1 transition-all group active:scale-90"
-                    >
-                        <div className={`p-1.5 rounded-xl transition-colors ${isCrmActive ? 'bg-white/10 theme-text' : 'text-slate-400 group-hover:text-white'}`}>
-                            <MessageSquare size={16} className={isCrmActive ? 'stroke-[2.2]' : 'stroke-[1.8]'} />
-                        </div>
-                        <span className={`text-[8px] font-bold tracking-tight mt-0.5 ${isCrmActive ? 'text-white theme-text' : 'text-slate-400'}`}>
-                            CRM
-                        </span>
-                        {isCrmActive && (
-                            <motion.div layoutId="dock-dot" className="w-1 h-1 rounded-full theme-dot mt-0.5" />
-                        )}
-                    </Link>
+                        {/* 1. CRM WhatsApp */}
+                        <Link
+                            href="/dashboard/whatsapp/crm"
+                            className="flex flex-col items-center justify-center py-1 transition-all group active:scale-90"
+                            title="CRM WhatsApp"
+                        >
+                            <div className={`p-1.5 rounded-xl transition-colors ${isCrmActive ? 'bg-white/10 theme-text' : 'text-slate-400 group-hover:text-white'}`}>
+                                <MessageSquare size={16} className={isCrmActive ? 'stroke-[2.2]' : 'stroke-[1.8]'} />
+                            </div>
+                            <span className={`text-[8px] font-bold tracking-tight mt-0.5 ${isCrmActive ? 'text-white theme-text' : 'text-slate-400'}`}>
+                                CRM
+                            </span>
+                            {isCrmActive && (
+                                <motion.div layoutId="dock-dot" className="w-1 h-1 rounded-full theme-dot mt-0.5" />
+                            )}
+                        </Link>
 
-                    {/* 2. Matriz de Precios */}
-                    <Link
-                        href="/dashboard/matriz-precios"
-                        className="flex-1 min-w-[38px] flex flex-col items-center justify-center py-1 transition-all group active:scale-90"
-                    >
-                        <div className={`p-1.5 rounded-xl transition-colors ${isPricesActive ? 'bg-white/10 theme-text' : 'text-slate-400 group-hover:text-white'}`}>
-                            <Table size={16} className={isPricesActive ? 'stroke-[2.2]' : 'stroke-[1.8]'} />
-                        </div>
-                        <span className={`text-[8px] font-bold tracking-tight mt-0.5 ${isPricesActive ? 'text-white theme-text' : 'text-slate-400'}`}>
-                            Precios
-                        </span>
-                        {isPricesActive && (
-                            <motion.div layoutId="dock-dot" className="w-1 h-1 rounded-full theme-dot mt-0.5" />
-                        )}
-                    </Link>
+                        {/* 2. Matriz de Precios */}
+                        <Link
+                            href="/dashboard/matriz-precios"
+                            className="flex flex-col items-center justify-center py-1 transition-all group active:scale-90"
+                            title="Matriz de Precios"
+                        >
+                            <div className={`p-1.5 rounded-xl transition-colors ${isPricesActive ? 'bg-white/10 theme-text' : 'text-slate-400 group-hover:text-white'}`}>
+                                <Table size={16} className={isPricesActive ? 'stroke-[2.2]' : 'stroke-[1.8]'} />
+                            </div>
+                            <span className={`text-[8px] font-bold tracking-tight mt-0.5 ${isPricesActive ? 'text-white theme-text' : 'text-slate-400'}`}>
+                                Precios
+                            </span>
+                            {isPricesActive && (
+                                <motion.div layoutId="dock-dot" className="w-1 h-1 rounded-full theme-dot mt-0.5" />
+                            )}
+                        </Link>
 
-                    {/* 3. Escáner de Códigos de Barras Móvil */}
-                    <button
-                        type="button"
-                        onClick={() => setShowScannerModal(true)}
-                        className="flex-1 min-w-[38px] flex flex-col items-center justify-center py-1 transition-all group active:scale-90 cursor-pointer"
-                        title="Escanear Código de Barras con la Cámara"
-                    >
-                        <div className={`p-1.5 rounded-xl transition-colors ${isScannerActive ? 'bg-cyan-500/20 text-cyan-300' : 'text-slate-400 group-hover:text-cyan-400'}`}>
-                            <Scan size={16} className={isScannerActive ? 'stroke-[2.2]' : 'stroke-[1.8]'} />
-                        </div>
-                        <span className={`text-[8px] font-bold tracking-tight mt-0.5 ${isScannerActive ? 'text-cyan-300' : 'text-slate-400'}`}>
-                            Escáner
-                        </span>
-                    </button>
+                        {/* 3. Tienda / Catálogo (Visible en pantallas medianas+) */}
+                        <Link
+                            href="/web"
+                            className="hidden sm:flex flex-col items-center justify-center py-1 transition-all group active:scale-90"
+                            title="Tienda Web Oficial"
+                        >
+                            <div className={`p-1.5 rounded-xl transition-colors ${isShopActive ? 'bg-white/10 theme-text' : 'text-slate-400 group-hover:text-white'}`}>
+                                <ShoppingBag size={16} className={isShopActive ? 'stroke-[2.2]' : 'stroke-[1.8]'} />
+                            </div>
+                            <span className={`text-[8px] font-bold tracking-tight mt-0.5 ${isShopActive ? 'text-white theme-text' : 'text-slate-400'}`}>
+                                Tienda
+                            </span>
+                        </Link>
 
-                    {/* 4. Tienda / Catálogo */}
-                    <Link
-                        href="/web"
-                        className="flex-1 min-w-[38px] flex flex-col items-center justify-center py-1 transition-all group active:scale-90"
-                    >
-                        <div className={`p-1.5 rounded-xl transition-colors ${isShopActive ? 'bg-white/10 theme-text' : 'text-slate-400 group-hover:text-white'}`}>
-                            <ShoppingBag size={16} className={isShopActive ? 'stroke-[2.2]' : 'stroke-[1.8]'} />
-                        </div>
-                        <span className={`text-[8px] font-bold tracking-tight mt-0.5 ${isShopActive ? 'text-white theme-text' : 'text-slate-400'}`}>
-                            Tienda
-                        </span>
-                    </Link>
+                        {/* 4. Radar / Prospección (Visible en pantallas medianas+) */}
+                        <Link
+                            href="/dashboard/map-prospecting"
+                            className="hidden sm:flex flex-col items-center justify-center py-1 transition-all group active:scale-90"
+                            title="Radar de Clientes en Mapa"
+                        >
+                            <div className={`p-1.5 rounded-xl transition-colors ${isRadarActive ? 'bg-white/10 theme-text' : 'text-slate-400 group-hover:text-white'}`}>
+                                <Map size={16} className={isRadarActive ? 'stroke-[2.2]' : 'stroke-[1.8]'} />
+                            </div>
+                            <span className={`text-[8px] font-bold tracking-tight mt-0.5 ${isRadarActive ? 'text-white theme-text' : 'text-slate-400'}`}>
+                                Radar
+                            </span>
+                        </Link>
 
-                    {/* ══ 5. RUTA DEL DÍA (DIRECTAMENTE A LA IZQUIERDA DE COTIZAR) ══ */}
-                    <button
-                        type="button"
-                        onClick={() => setShowRutaModal(true)}
-                        className="flex-1 min-w-[36px] flex flex-col items-center justify-center py-1 transition-all group active:scale-90 cursor-pointer"
-                        title="Ruta del Día: Plan de Trabajo, Actividades, Categorías y Mensajes"
-                    >
-                        <div className="p-1.5 rounded-xl transition-colors bg-gradient-to-br from-emerald-500/25 to-teal-500/25 text-emerald-300 group-hover:text-emerald-100 border border-emerald-400/40 shadow-[0_0_12px_rgba(16,185,129,0.35)]">
-                            <CalendarCheck size={16} className="stroke-[2.2]" />
-                        </div>
-                        <span className="text-[8px] font-black tracking-tight mt-0.5 text-emerald-300 group-hover:text-white truncate">
-                            Ruta Día
-                        </span>
-                    </button>
+                    </div>
 
-                    {/* ══ CENTRO: BOTÓN DESTACADO COTIZAR (+) NO CORTADO ══ */}
-                    <div className="relative -top-4 px-1 shrink-0 z-20 flex flex-col items-center">
+                    {/* ══ CENTRO MATEMÁTICO: SLOT EXCLUSIVO RESERVADO PARA BOTÓN FLOTANTE COTIZAR (+) ══ */}
+                    <div className="relative flex flex-col items-center justify-end shrink-0 w-14 sm:w-16 px-0.5 z-30 pointer-events-auto">
                         <Link
                             href="/dashboard/quotes"
-                            className="w-12 h-12 rounded-full bg-gradient-to-tr from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 flex items-center justify-center text-white border-2 border-white/30 shadow-[0_0_25px_rgba(249,115,22,0.6)] active:scale-90 transition-transform cursor-pointer group"
-                            title="Hacer Cotización"
+                            className="w-12 h-12 sm:w-14 sm:h-14 -mt-6 rounded-full bg-gradient-to-tr from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 flex items-center justify-center text-white border-2 border-white/50 shadow-[0_0_25px_rgba(249,115,22,0.7)] active:scale-90 transition-transform cursor-pointer group"
+                            title="Hacer Nueva Cotización Oficial PROP"
                         >
-                            <Plus size={24} strokeWidth={2.8} className="group-hover:rotate-90 transition-transform duration-200" />
+                            <Plus size={24} strokeWidth={3} className="group-hover:rotate-90 transition-transform duration-200" />
                         </Link>
-                        <span className="block text-center text-[8px] font-black uppercase tracking-wider text-amber-300 mt-0.5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
+                        <span className="block text-center text-[8px] font-black uppercase tracking-wider text-amber-300 mt-1 drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)] whitespace-nowrap">
                             Cotizar
                         </span>
                     </div>
 
-                    {/* ══ LADO DERECHO: 4 OPCIONES ══ */}
+                    {/* ══ ALA DERECHA: ESPACIADO SIMÉTRICO Y UNIFORME ══ */}
+                    <div className="flex-1 flex items-center justify-around">
 
-                    {/* 5. Radar / Prospección */}
-                    <Link
-                        href="/dashboard/map-prospecting"
-                        className="flex-1 min-w-[38px] flex flex-col items-center justify-center py-1 transition-all group active:scale-90"
-                    >
-                        <div className={`p-1.5 rounded-xl transition-colors ${isRadarActive ? 'bg-white/10 theme-text' : 'text-slate-400 group-hover:text-white'}`}>
-                            <Map size={16} className={isRadarActive ? 'stroke-[2.2]' : 'stroke-[1.8]'} />
-                        </div>
-                        <span className={`text-[8px] font-bold tracking-tight mt-0.5 ${isRadarActive ? 'text-white theme-text' : 'text-slate-400'}`}>
-                            Radar
-                        </span>
-                    </Link>
+                        {/* 5. Escáner de Códigos de Barras Móvil */}
+                        <button
+                            type="button"
+                            onClick={() => setShowScannerModal(true)}
+                            className="flex flex-col items-center justify-center py-1 transition-all group active:scale-90 cursor-pointer"
+                            title="Escanear Código de Barras con la Cámara"
+                        >
+                            <div className={`p-1.5 rounded-xl transition-colors ${isScannerActive ? 'bg-cyan-500/20 text-cyan-300 shadow-[0_0_10px_rgba(6,182,212,0.3)]' : 'text-slate-400 group-hover:text-cyan-400'}`}>
+                                <Scan size={16} className={isScannerActive ? 'stroke-[2.2]' : 'stroke-[1.8]'} />
+                            </div>
+                            <span className={`text-[8px] font-bold tracking-tight mt-0.5 ${isScannerActive ? 'text-cyan-300' : 'text-slate-400'}`}>
+                                Escáner
+                            </span>
+                        </button>
 
-                    {/* 6. Equipo */}
-                    <button
-                        onClick={() => setShowTeamModal(true)}
-                        className="flex-1 min-w-[38px] flex flex-col items-center justify-center py-1 transition-all group active:scale-90 cursor-pointer"
-                    >
-                        <div className="p-1.5 rounded-xl transition-colors text-slate-400 group-hover:text-cyan-400">
-                            <Users size={16} className="stroke-[1.8]" />
-                        </div>
-                        <span className="text-[8px] font-bold tracking-tight mt-0.5 text-slate-400 group-hover:text-cyan-300">
-                            Equipo
-                        </span>
-                    </button>
+                        {/* 6. Ruta del Día */}
+                        <button
+                            type="button"
+                            onClick={() => setShowRutaModal(true)}
+                            className="flex flex-col items-center justify-center py-1 transition-all group active:scale-90 cursor-pointer"
+                            title="Ruta del Día: Plan de Trabajo, Actividades y Metas"
+                        >
+                            <div className="p-1.5 rounded-xl transition-colors bg-gradient-to-br from-emerald-500/25 to-teal-500/25 text-emerald-300 group-hover:text-emerald-100 border border-emerald-400/40 shadow-[0_0_12px_rgba(16,185,129,0.35)]">
+                                <CalendarCheck size={16} className="stroke-[2.2]" />
+                            </div>
+                            <span className="text-[8px] font-black tracking-tight mt-0.5 text-emerald-300 group-hover:text-white truncate">
+                                Ruta Día
+                            </span>
+                        </button>
 
-                    {/* 7. Perfil */}
-                    <Link
-                        href="/dashboard/profile"
-                        className="flex-1 min-w-[38px] flex flex-col items-center justify-center py-1 transition-all group active:scale-90"
-                    >
-                        <div className={`p-1.5 rounded-xl transition-colors ${isProfileActive || isThemesActive ? 'bg-white/10 theme-text' : 'text-slate-400 group-hover:text-white'}`}>
-                            <User size={16} className={isProfileActive || isThemesActive ? 'stroke-[2.2]' : 'stroke-[1.8]'} />
-                        </div>
-                        <span className={`text-[8px] font-bold tracking-tight mt-0.5 ${isProfileActive || isThemesActive ? 'text-white theme-text' : 'text-slate-400'}`}>
-                            Perfil
-                        </span>
-                    </Link>
+                        {/* 7. Equipo / Contactos (Visible en pantallas medianas+) */}
+                        <button
+                            type="button"
+                            onClick={() => setShowTeamModal(true)}
+                            className="hidden sm:flex flex-col items-center justify-center py-1 transition-all group active:scale-90 cursor-pointer"
+                            title="Contactos del Equipo"
+                        >
+                            <div className="p-1.5 rounded-xl transition-colors text-slate-400 group-hover:text-cyan-400">
+                                <Users size={16} className="stroke-[1.8]" />
+                            </div>
+                            <span className="text-[8px] font-bold tracking-tight mt-0.5 text-slate-400 group-hover:text-cyan-300">
+                                Equipo
+                            </span>
+                        </button>
 
-                    {/* 8. Más Módulos Drawer */}
-                    <button
-                        onClick={() => setShowMoreMenu(prev => !prev)}
-                        className={`flex-1 min-w-[38px] flex flex-col items-center justify-center py-1 transition-all group active:scale-90 cursor-pointer ${showMoreMenu ? 'text-cyan-400' : 'text-slate-400'}`}
-                    >
-                        <div className="p-1.5 rounded-xl transition-colors text-slate-400 group-hover:text-cyan-400">
-                            <Grid size={16} className="stroke-[1.8]" />
-                        </div>
-                        <span className="text-[8px] font-bold tracking-tight mt-0.5 text-slate-400 group-hover:text-cyan-300">
-                            Más
-                        </span>
-                    </button>
+                        {/* 8. Perfil (Visible en pantallas medianas+) */}
+                        <Link
+                            href="/dashboard/profile"
+                            className="hidden sm:flex flex-col items-center justify-center py-1 transition-all group active:scale-90"
+                            title="Mi Perfil"
+                        >
+                            <div className={`p-1.5 rounded-xl transition-colors ${isProfileActive || isThemesActive ? 'bg-white/10 theme-text' : 'text-slate-400 group-hover:text-white'}`}>
+                                <User size={16} className={isProfileActive || isThemesActive ? 'stroke-[2.2]' : 'stroke-[1.8]'} />
+                            </div>
+                            <span className={`text-[8px] font-bold tracking-tight mt-0.5 ${isProfileActive || isThemesActive ? 'text-white theme-text' : 'text-slate-400'}`}>
+                                Perfil
+                            </span>
+                        </Link>
+
+                        {/* 9. Más Módulos Drawer */}
+                        <button
+                            type="button"
+                            onClick={() => setShowMoreMenu(prev => !prev)}
+                            className={`flex flex-col items-center justify-center py-1 transition-all group active:scale-90 cursor-pointer ${showMoreMenu ? 'text-cyan-400' : 'text-slate-400'}`}
+                            title="Más módulos y herramientas operativas"
+                        >
+                            <div className={`p-1.5 rounded-xl transition-colors ${showMoreMenu ? 'bg-cyan-500/20 text-cyan-300' : 'text-slate-400 group-hover:text-cyan-400'}`}>
+                                <Grid size={16} className="stroke-[1.8]" />
+                            </div>
+                            <span className={`text-[8px] font-bold tracking-tight mt-0.5 ${showMoreMenu ? 'text-cyan-300 font-bold' : 'text-slate-400 group-hover:text-cyan-300'}`}>
+                                Más
+                            </span>
+                        </button>
+
+                    </div>
 
                 </div>
             </nav>
