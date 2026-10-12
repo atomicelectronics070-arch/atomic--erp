@@ -11,7 +11,7 @@ import {
     ArrowRight, Clock, Target, DollarSign, Award, 
     Zap, Sparkles, AlertCircle, RefreshCw, X, ShieldCheck, 
     Search, Layers, Send, Smartphone, Users, Wrench, Video, Code2, 
-    FileText, UserCheck, ShieldAlert, Globe, Download
+    FileText, UserCheck, ShieldAlert, Globe, Download, CheckSquare
 } from "lucide-react"
 import SalesCopyManager from "./SalesCopyManager"
 import { getCategoryLandingSlug } from "./SuicideSquadWarRoom"
@@ -760,6 +760,18 @@ export default function RutaDelDiaWorkspace({
                             />
                         </div>
                     </div>
+
+                    {/* Botón directo al Registro Diario de Asistencia & Metas */}
+                    <Link
+                        href="/dashboard/asistencia"
+                        onClick={onClose}
+                        className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-black text-xs font-black flex items-center gap-1.5 transition-all shadow-md shadow-emerald-500/20 hover:scale-105 active:scale-95 cursor-pointer"
+                        title="Abrir Registro Diario de Asistencia y Metas (Llamadas, Publicaciones, Grupos, Estados)"
+                    >
+                        <CheckSquare size={13} className="stroke-[2.5]" />
+                        <span className="hidden sm:inline">Registro Asistencia</span>
+                        <span className="sm:hidden">Asistencia</span>
+                    </Link>
 
                     {quoteCount > 0 && (
                         <Link

@@ -3,10 +3,11 @@
 import React, { Suspense, useState } from "react"
 import Link from "next/link"
 import { usePathname, useSearchParams } from "next/navigation"
+import { useSession } from "next-auth/react"
 import { 
     MessageSquare, Table, Plus, User, Users, Scan, 
     ShoppingBag, Map, GraduationCap, Grid, Wrench, Shield, 
-    Layers, Cpu, ChevronUp, X, Home, Flame, CalendarCheck, Globe 
+    Layers, Cpu, ChevronUp, X, Home, Flame, CalendarCheck, Globe, CheckSquare 
 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import TeamContactsModal from "./TeamContactsModal"
@@ -15,6 +16,10 @@ import ToolsModal from "@/components/tools/ToolsModal"
 import RutaDelDiaWorkspace from "@/components/tools/RutaDelDiaWorkspace"
 
 function MobileBottomDockInner() {
+    const { data: session } = useSession()
+    const userRole = String((session?.user as any)?.role || "SALESPERSON").toUpperCase()
+    const isAdministrative = userRole.includes("ADMIN") || userRole.includes("COORDINATOR") || userRole.includes("MANAGEMENT")
+
     const pathname = usePathname()
     const searchParams = useSearchParams()
     const currentTab = searchParams ? searchParams.get("tab") : null
@@ -27,6 +32,7 @@ function MobileBottomDockInner() {
     const [showMoreMenu, setShowMoreMenu] = useState(false)
 
     const isCrmActive = pathname.startsWith("/dashboard/whatsapp")
+    const isAsistenciaActive = pathname.startsWith("/dashboard/asistencia")
     const isPricesActive = pathname.startsWith("/dashboard/matriz-precios") || pathname.startsWith("/dashboard/shop") || pathname.startsWith("/dashboard/precios-vendedor")
     const isQuotesActive = pathname.startsWith("/dashboard/quotes")
     const isShopActive = pathname.startsWith("/dashboard/shop") || pathname === "/web"
@@ -254,22 +260,40 @@ function MobileBottomDockInner() {
                             )}
                         </Link>
 
-                        {/* 1. CRM WhatsApp */}
-                        <Link
-                            href="/dashboard/whatsapp/crm"
-                            className="flex flex-col items-center justify-center py-1 transition-all group active:scale-90"
-                            title="CRM WhatsApp"
-                        >
-                            <div className={`p-1.5 rounded-xl transition-colors ${isCrmActive ? 'bg-white/10 theme-text' : 'text-slate-400 group-hover:text-white'}`}>
-                                <MessageSquare size={16} className={isCrmActive ? 'stroke-[2.2]' : 'stroke-[1.8]'} />
-                            </div>
-                            <span className={`text-[8px] font-bold tracking-tight mt-0.5 ${isCrmActive ? 'text-white theme-text' : 'text-slate-400'}`}>
-                                CRM
-                            </span>
-                            {isCrmActive && (
-                                <motion.div layoutId="dock-dot" className="w-1 h-1 rounded-full theme-dot mt-0.5" />
-                            )}
-                        </Link>
+                        {/* 1. CRM WhatsApp (Solo Administrativos) o Inicio del Día (Ventas) */}
+                        {isAdministrative ? (
+                            <Link
+                                href="/dashboard/whatsapp/crm"
+                                className="flex flex-col items-center justify-center py-1 transition-all group active:scale-90"
+                                title="CRM WhatsApp Oficial"
+                            >
+                                <div className={`p-1.5 rounded-xl transition-colors ${isCrmActive ? 'bg-white/10 theme-text' : 'text-slate-400 group-hover:text-white'}`}>
+                                    <MessageSquare size={16} className={isCrmActive ? 'stroke-[2.2]' : 'stroke-[1.8]'} />
+                                </div>
+                                <span className={`text-[8px] font-bold tracking-tight mt-0.5 ${isCrmActive ? 'text-white theme-text' : 'text-slate-400'}`}>
+                                    CRM
+                                </span>
+                                {isCrmActive && (
+                                    <motion.div layoutId="dock-dot" className="w-1 h-1 rounded-full theme-dot mt-0.5" />
+                                )}
+                            </Link>
+                        ) : (
+                            <Link
+                                href="/dashboard/asistencia"
+                                className="flex flex-col items-center justify-center py-1 transition-all group active:scale-90"
+                                title="Inicio del Día (Asistencia & Metas)"
+                            >
+                                <div className={`p-1.5 rounded-xl transition-colors ${isAsistenciaActive ? 'bg-emerald-500/20 text-emerald-300' : 'text-emerald-400 group-hover:text-emerald-200'}`}>
+                                    <CalendarCheck size={16} className={isAsistenciaActive ? 'stroke-[2.2]' : 'stroke-[1.8]'} />
+                                </div>
+                                <span className={`text-[8px] font-bold tracking-tight mt-0.5 ${isAsistenciaActive ? 'text-white' : 'text-emerald-400'}`}>
+                                    Inicio Día
+                                </span>
+                                {isAsistenciaActive && (
+                                    <motion.div layoutId="dock-dot" className="w-1 h-1 rounded-full bg-emerald-400 mt-0.5" />
+                                )}
+                            </Link>
+                        )}
 
                         {/* 2. Matriz de Precios */}
                         <Link
@@ -350,20 +374,19 @@ function MobileBottomDockInner() {
                             </span>
                         </button>
 
-                        {/* 6. Ruta del Día */}
-                        <button
-                            type="button"
-                            onClick={() => setShowRutaModal(true)}
+                        {/* 6. Inicio del Día (Asistencia & Metas Diarias) */}
+                        <Link
+                            href="/dashboard/asistencia"
                             className="flex flex-col items-center justify-center py-1 transition-all group active:scale-90 cursor-pointer"
-                            title="Ruta del Día: Plan de Trabajo, Actividades y Metas"
+                            title="Inicio del Día: Registro diario de Asistencia, Llamadas, Publicaciones, Grupos y Estados"
                         >
                             <div className="p-1.5 rounded-xl transition-colors bg-gradient-to-br from-emerald-500/25 to-teal-500/25 text-emerald-300 group-hover:text-emerald-100 border border-emerald-400/40 shadow-[0_0_12px_rgba(16,185,129,0.35)]">
                                 <CalendarCheck size={16} className="stroke-[2.2]" />
                             </div>
                             <span className="text-[8px] font-black tracking-tight mt-0.5 text-emerald-300 group-hover:text-white truncate">
-                                Ruta Día
+                                Inicio Día
                             </span>
-                        </button>
+                        </Link>
 
                         {/* 7. Equipo / Contactos (Visible en pantallas medianas+) */}
                         <button

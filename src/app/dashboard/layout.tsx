@@ -221,28 +221,28 @@ export default function DashboardLayout({
                     <div className="pt-3 pb-1 px-3.5 text-[11px] font-normal tracking-[0.5px] text-white/40">
                         Operaciones & Ventas
                     </div>
-                    <GlassNavItem href="/dashboard/asistencia" icon={<CheckSquare size={18} strokeWidth={1.8} />} label="Asistencia & Metas" isActive={pathname.startsWith('/dashboard/asistencia')} />
-                    <GlassNavItem href="/dashboard/contactos-historicos" icon={<Users size={18} strokeWidth={1.8} />} label="Contactos Históricos" isActive={pathname.startsWith('/dashboard/contactos-historicos')} />
+                    <GlassNavItem href="/dashboard/asistencia" icon={<CheckSquare size={18} strokeWidth={1.8} />} label="Inicio del Día (Asistencia)" isActive={pathname.startsWith('/dashboard/asistencia')} />
                     <GlassNavItem href="/dashboard/quotes" icon={<FileText size={18} strokeWidth={1.8} />} label="Cotizaciones" isActive={pathname.startsWith('/dashboard/quotes')} />
                     <GlassNavItem href="/dashboard/matriz-precios" icon={<Table size={18} strokeWidth={1.8} />} label="Matriz de Precios" isActive={pathname.startsWith('/dashboard/matriz-precios') || pathname.startsWith('/dashboard/shop') || pathname.startsWith('/dashboard/precios-vendedor')} />
+                    <GlassNavItem href="/dashboard/contactos-historicos" icon={<Users size={18} strokeWidth={1.8} />} label="Contactos Históricos" isActive={pathname.startsWith('/dashboard/contactos-historicos')} />
                     <GlassNavItem href="/dashboard/scanner" icon={<Scan size={18} strokeWidth={1.8} />} label="Escáner Códigos" isActive={pathname.startsWith('/dashboard/scanner')} />
-                    <GlassNavItem href="/dashboard/tecnicos" icon={<Wrench size={18} strokeWidth={1.8} />} label="Técnicos & Campo" isActive={pathname.startsWith('/dashboard/tecnicos')} />
-                    {(role === "ADMIN" || role === "COORDINATOR" || role === "MANAGEMENT") && (
-                        <GlassNavItem href="/dashboard/coordinacion" icon={<Users size={18} strokeWidth={1.8} />} label="Coordinación" isActive={pathname.startsWith('/dashboard/coordinacion')} />
-                    )}
-                    {(role === "ADMIN" || role === "COORDINATOR" || role === "MANAGEMENT") && (
-                        <GlassNavItem href="/dashboard/supervision" icon={<Shield size={18} strokeWidth={1.8} />} label="Supervisión" isActive={pathname.startsWith('/dashboard/supervision')} />
-                    )}
-                    <GlassNavItem href="/dashboard/map-prospecting" icon={<Map size={18} strokeWidth={1.8} />} label="Prospección" isActive={pathname.startsWith('/dashboard/map-prospecting')} />
-                    <GlassNavItem href="/dashboard/formularios" icon={<FileSpreadsheet size={18} strokeWidth={1.8} />} label="Contactos Web" isActive={pathname.startsWith('/dashboard/formularios')} />
                     
-                    {/* WhatsApp, Medios & Edición */}
-                    <div className="pt-3 pb-1 px-3.5 text-[11px] font-normal tracking-[0.5px] text-white/40">
-                        WhatsApp, Redes & Edición
-                    </div>
-                    <GlassNavItem href="/dashboard/whatsapp/crm" icon={<Smartphone size={18} strokeWidth={1.8} />} label="CRM WhatsApp" isActive={pathname.startsWith('/dashboard/whatsapp/crm')} />
-                    <GlassNavItem href="/dashboard/whatsapp/leads" icon={<Users size={18} strokeWidth={1.8} />} label="Gestión Leads" isActive={pathname.startsWith('/dashboard/whatsapp/leads')} />
-                    <GlassNavItem href="/dashboard/blogs" icon={<Share2 size={18} strokeWidth={1.8} />} label="Edición Audiovisual & Media" isActive={pathname.startsWith('/dashboard/blogs')} />
+                    {/* Solo Administrativos / Coordinación (Propietario, Admin, Juan Guzman, Cris Rivera, Software) */}
+                    {(role === "ADMIN" || role === "COORDINATOR" || role === "MANAGEMENT") && (
+                        <>
+                            <div className="pt-3 pb-1 px-3.5 text-[11px] font-normal tracking-[0.5px] text-cyan-400/80 font-mono uppercase">
+                                Gestión Administrativa
+                            </div>
+                            <GlassNavItem href="/dashboard/coordinacion" icon={<Users size={18} strokeWidth={1.8} />} label="Coordinación" isActive={pathname.startsWith('/dashboard/coordinacion')} />
+                            <GlassNavItem href="/dashboard/supervision" icon={<Shield size={18} strokeWidth={1.8} />} label="Supervisión" isActive={pathname.startsWith('/dashboard/supervision')} />
+                            <GlassNavItem href="/dashboard/whatsapp/crm" icon={<Smartphone size={18} strokeWidth={1.8} />} label="CRM WhatsApp" isActive={pathname.startsWith('/dashboard/whatsapp/crm')} />
+                            <GlassNavItem href="/dashboard/whatsapp/leads" icon={<Users size={18} strokeWidth={1.8} />} label="Gestión Leads" isActive={pathname.startsWith('/dashboard/whatsapp/leads')} />
+                            <GlassNavItem href="/dashboard/tecnicos" icon={<Wrench size={18} strokeWidth={1.8} />} label="Técnicos & Campo" isActive={pathname.startsWith('/dashboard/tecnicos')} />
+                            <GlassNavItem href="/dashboard/map-prospecting" icon={<Map size={18} strokeWidth={1.8} />} label="Prospección" isActive={pathname.startsWith('/dashboard/map-prospecting')} />
+                            <GlassNavItem href="/dashboard/formularios" icon={<FileSpreadsheet size={18} strokeWidth={1.8} />} label="Contactos Web" isActive={pathname.startsWith('/dashboard/formularios')} />
+                            <GlassNavItem href="/dashboard/blogs" icon={<Share2 size={18} strokeWidth={1.8} />} label="Edición Audiovisual & Media" isActive={pathname.startsWith('/dashboard/blogs')} />
+                        </>
+                    )}
                     
                     {/* Botón Destacado: Herramientas (Descargador YouTube & Bot Personal) */}
                     <div className="pt-2 pb-1 px-1">
@@ -267,27 +267,23 @@ export default function DashboardLayout({
                         </button>
                     </div>
 
-                    {/* Botón Destacado: Ruta del Día (Plan Diario & Actividades) */}
+                    {/* Botón Destacado: Inicio del Día (Asistencia & Metas de Venta) */}
                     <div className="pb-1 px-1">
-                        <button
-                            type="button"
-                            onClick={() => {
-                                setToolsInitialTab("ruta_del_dia")
-                                setIsToolsModalOpen(true)
-                            }}
+                        <Link
+                            href="/dashboard/asistencia"
                             className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-[16px] bg-gradient-to-r from-emerald-500/20 via-teal-600/20 to-cyan-600/20 hover:from-emerald-500/30 hover:to-cyan-600/30 border border-emerald-400/40 hover:border-emerald-300 text-white shadow-[0_0_20px_rgba(16,185,129,0.15)] hover:shadow-[0_0_25px_rgba(16,185,129,0.35)] transition-all group cursor-pointer"
-                            title="Abrir Ruta del Día: Plan de Trabajo, Actividades y Metas"
+                            title="Inicio del Día: Registro diario de Asistencia, Números Telefónicos, Publicaciones, Grupos y Estados"
                         >
                             <div className="flex items-center gap-3">
                                 <div className="w-7 h-7 rounded-lg bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-emerald-300 group-hover:scale-110 transition-transform">
                                     <CalendarCheck size={15} />
                                 </div>
-                                <span className="text-[13px] font-bold tracking-tight">Ruta del Día</span>
+                                <span className="text-[13px] font-bold tracking-tight">Inicio del Día</span>
                             </div>
                             <span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-black bg-emerald-400 text-black shadow-sm uppercase">
-                                HOY
+                                METAS
                             </span>
-                        </button>
+                        </Link>
                     </div>
                     
                     {/* Gestión & Finanzas */}
