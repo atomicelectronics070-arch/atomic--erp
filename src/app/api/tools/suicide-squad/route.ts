@@ -6,7 +6,7 @@ import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 
 // Category mapping definition for each Suicide Squad
-export const SQUADS_CONFIG = [
+const SQUADS_CONFIG = [
     {
         id: "squad-1",
         code: "S-01",
@@ -195,7 +195,7 @@ function normalizeStr(text: string) {
     return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim()
 }
 
-export const CATEGORY_TAXONOMY: Record<string, SubcategoryRule[]> = {
+const CATEGORY_TAXONOMY: Record<string, SubcategoryRule[]> = {
     // Escuadra 1: Guardián Urbano
     "camaras de seguridad": [
         { id: "tubo-bala", name: "Cámaras Tubo / Bala Exterior", keywords: ["bala", "tubo", "exterior"], description: "Para fachadas, postes y exteriores resistentes a lluvia IP67" },

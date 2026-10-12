@@ -56,7 +56,17 @@ export default function PersonalBotBubble() {
 
     // Load memory on mount
     useEffect(() => {
-        if (!session?.user) return
+        if (!session?.user) {
+            setMessages([{
+                id: "welcome-guest",
+                role: "assistant",
+                content: `👋 ¡Hola! Soy el asistente de **ATOMIC Industries**.\n\nPuedo ayudarte a registrarte en el sistema diciendo:\n*"Quiero registrarme como vendedor"*\n\nO si eres asesor con código de trabajador, escribe:\n*"Ayúdame a generar una cotización"* (Código \`1111\`).\n\n¿En qué te puedo ayudar hoy?`,
+                suggestions: ["Quiero registrarme como vendedor", "Quiero registrarme como técnico", "Ayúdame a generar un contrato"]
+            }])
+            setIsInitializing(false)
+            return
+        }
+
         fetch("/api/personal-bot/memory")
             .then(r => r.json())
             .then(data => {
@@ -140,21 +150,33 @@ export default function PersonalBotBubble() {
         setIsLoading(true)
 
         try {
+            let guestSenderId = "guest-web"
+            if (typeof window !== "undefined") {
+                guestSenderId = localStorage.getItem("atomic_guest_sender_id") || ""
+                if (!guestSenderId) {
+                    guestSenderId = "guest-" + Math.random().toString(36).substring(2, 9)
+                    localStorage.setItem("atomic_guest_sender_id", guestSenderId)
+                }
+            }
+
             const res = await fetch("/api/personal-bot", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
+                    message: textToSend.trim(),
                     messages: newMessages.map(m => ({ role: m.role, content: m.content })),
+                    senderId: session?.user?.id || guestSenderId,
                     currentPath: pathname,
                 })
             })
 
             const data = await res.json()
-            if (data.reply) {
+            const replyMsg = data.reply || data.text
+            if (replyMsg) {
                 const assistantMsg: BotMessage = {
                     id: (Date.now() + 1).toString(),
                     role: "assistant",
-                    content: data.reply,
+                    content: replyMsg,
                     suggestions: data.suggestions,
                 }
                 setMessages(prev => [...prev, assistantMsg])
@@ -193,9 +215,7 @@ export default function PersonalBotBubble() {
             .replace(/\n/g, '<br/>')
     }
 
-    if (!session?.user) return null
-
-    const displayName = "Guía de ATOMIC"
+    const displayName = session?.user?.name ? "Guía de ATOMIC" : "Asistente ATOMIC"
 
     return (
         <>

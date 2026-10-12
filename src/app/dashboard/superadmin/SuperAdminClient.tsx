@@ -8,7 +8,8 @@ import {
     Sparkles, CheckCircle2, XCircle, Search, Edit3, Trash2, 
     Plus, Download, RefreshCw, Eye, EyeOff, Bot, Globe, 
     FileText, DollarSign, BarChart3, GraduationCap, ChevronRight,
-    Lock, Unlock, ArrowDown, Network, Box, X, UserPlus, UserMinus
+    Lock, Unlock, ArrowDown, Network, Box, X, UserPlus, UserMinus,
+    Loader2, ShieldCheck
 } from "lucide-react"
 
 export interface RolePermissionSchema {
@@ -223,8 +224,70 @@ export default function SuperAdminClient() {
     const { data: session } = useSession()
     const [roles, setRoles] = useState<RolePermissionSchema[]>(INITIAL_ROLES_PERMISSIONS)
     const [search, setSearch] = useState("")
-    const [activeTab, setActiveTab] = useState<"permissions" | "org_tree">("permissions")
+    const [activeTab, setActiveTab] = useState<"permissions" | "org_tree" | "incoming_requests">("permissions")
     const [savedNotification, setSavedNotification] = useState<string | null>(null)
+
+    // Solicitudes Entrantes & Aprobación
+    const [pendingUsers, setPendingUsers] = useState<any[]>([])
+    const [loadingUsers, setLoadingUsers] = useState(false)
+    const [incomingSearch, setIncomingSearch] = useState("")
+
+    const loadPendingUsers = async () => {
+        setLoadingUsers(true)
+        try {
+            const res = await fetch("/api/admin/users?status=ALL")
+            if (res.ok) {
+                const data = await res.json()
+                const applicants = (data.users || []).filter((u: any) => 
+                    u.status === "PENDING" || u.status === "PENDING_VERIFICATION" || u.isActive === false
+                )
+                setPendingUsers(applicants)
+            }
+        } catch (e) {
+            console.error(e)
+        } finally {
+            setLoadingUsers(false)
+        }
+    }
+
+    useEffect(() => {
+        loadPendingUsers()
+    }, [])
+
+    const handleApproveUser = async (userId: string, role?: string) => {
+        try {
+            const res = await fetch(`/api/admin/users/${userId}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    status: "APPROVED",
+                    isActive: true,
+                    ...(role ? { role } : {})
+                })
+            })
+            if (res.ok) {
+                showToast("✅ ¡Perfil aprobado y activado en el sistema!")
+                loadPendingUsers()
+            }
+        } catch (e) {
+            alert("Error al aprobar usuario")
+        }
+    }
+
+    const handleRejectUser = async (userId: string) => {
+        if (!confirm("¿Deseas rechazar y eliminar esta solicitud de registro?")) return
+        try {
+            const res = await fetch(`/api/admin/users/${userId}`, {
+                method: "DELETE"
+            })
+            if (res.ok) {
+                showToast("Solicitud rechazada y eliminada")
+                loadPendingUsers()
+            }
+        } catch (e) {
+            alert("Error al rechazar usuario")
+        }
+    }
 
     // Modal Create Role / Profile
     const [isCreateRoleOpen, setIsCreateRoleOpen] = useState(false)
@@ -500,6 +563,23 @@ export default function SuperAdminClient() {
                 >
                     <Network size={16} />
                     <span>Organigrama Dinámico en Vivo (Mapa Conceptual)</span>
+                </button>
+
+                <button
+                    onClick={() => setActiveTab("incoming_requests")}
+                    className={`px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all flex items-center gap-2 cursor-pointer relative ${
+                        activeTab === "incoming_requests"
+                            ? "bg-cyan-500/20 border border-cyan-500/40 text-cyan-300 shadow-lg"
+                            : "text-slate-400 hover:text-white hover:bg-slate-800/50"
+                    }`}
+                >
+                    <UserPlus size={16} />
+                    <span>📥 Solicitudes Entrantes & Aprobación</span>
+                    {pendingUsers.length > 0 && (
+                        <span className="ml-1 px-2 py-0.5 rounded-full bg-cyan-500 text-slate-950 font-bold text-[10px]">
+                            {pendingUsers.length}
+                        </span>
+                    )}
                 </button>
             </div>
 
@@ -887,6 +967,212 @@ export default function SuperAdminClient() {
                         </div>
 
                     </div>
+                </div>
+            )}
+
+            {/* TAB 3: SOLICITUDES ENTRANTES & APROBACIÓN EN UN CLIC */}
+            {activeTab === "incoming_requests" && (
+                <div className="space-y-6">
+                    {/* Header info & Stats */}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div className="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 flex items-center justify-between">
+                            <div>
+                                <p className="text-[10px] font-mono uppercase text-slate-400">Total Solicitudes</p>
+                                <p className="text-2xl font-black text-white">{pendingUsers.length}</p>
+                            </div>
+                            <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 font-bold">
+                                {pendingUsers.length}
+                            </div>
+                        </div>
+
+                        <div className="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 flex items-center justify-between">
+                            <div>
+                                <p className="text-[10px] font-mono uppercase text-slate-400">Código Verificado (Por Aprobar)</p>
+                                <p className="text-2xl font-black text-emerald-400">
+                                    {pendingUsers.filter(u => u.status === "PENDING").length}
+                                </p>
+                            </div>
+                            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                                <CheckCircle2 size={20} />
+                            </div>
+                        </div>
+
+                        <div className="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 flex items-center justify-between">
+                            <div>
+                                <p className="text-[10px] font-mono uppercase text-slate-400">Esperando Código en Correo</p>
+                                <p className="text-2xl font-black text-amber-400">
+                                    {pendingUsers.filter(u => u.status === "PENDING_VERIFICATION").length}
+                                </p>
+                            </div>
+                            <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
+                                <Key size={20} />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Search & Refresh */}
+                    <div className="flex flex-col sm:flex-row gap-4 justify-between items-center bg-slate-900/60 p-4 rounded-2xl border border-slate-800">
+                        <div className="relative flex-1 w-full">
+                            <Search className="absolute left-4 top-3 text-slate-500" size={16} />
+                            <input
+                                type="text"
+                                value={incomingSearch}
+                                onChange={e => setIncomingSearch(e.target.value)}
+                                placeholder="Filtrar solicitudes por nombre, cédula, ciudad o correo..."
+                                className="w-full bg-slate-950 border border-slate-800 text-xs text-white rounded-xl pl-11 pr-4 py-2.5 outline-none focus:border-cyan-400 transition-all"
+                            />
+                        </div>
+                        <button
+                            onClick={loadPendingUsers}
+                            disabled={loadingUsers}
+                            className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-mono font-bold flex items-center gap-2 cursor-pointer transition-all"
+                        >
+                            <RefreshCw size={14} className={loadingUsers ? "animate-spin" : ""} />
+                            <span>Refrescar Solicitudes</span>
+                        </button>
+                    </div>
+
+                    {/* Applicant Cards List */}
+                    {loadingUsers ? (
+                        <div className="p-16 text-center rounded-3xl bg-slate-900/40 border border-slate-800 flex flex-col items-center justify-center gap-3">
+                            <Loader2 className="animate-spin text-cyan-400" size={32} />
+                            <p className="text-xs font-mono text-slate-400">Cargando solicitudes entrantes...</p>
+                        </div>
+                    ) : pendingUsers.length === 0 ? (
+                        <div className="p-16 text-center rounded-3xl bg-slate-900/40 border border-slate-800/80 space-y-3">
+                            <div className="w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center mx-auto mb-2">
+                                <ShieldCheck size={32} />
+                            </div>
+                            <h4 className="text-base font-bold text-white uppercase">No hay solicitudes pendientes</h4>
+                            <p className="text-xs text-slate-400 max-w-md mx-auto leading-relaxed">
+                                Todas las cuentas están al día. Cuando nuevos postulantes o clientes se registren desde la web o el bot de WhatsApp, aparecerán aquí para tu aprobación directa con 1 clic.
+                            </p>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            {pendingUsers
+                                .filter(u => {
+                                    if (!incomingSearch) return true
+                                    const s = incomingSearch.toLowerCase()
+                                    return (
+                                        (u.name || "").toLowerCase().includes(s) ||
+                                        (u.lastName || "").toLowerCase().includes(s) ||
+                                        (u.cedula || "").toLowerCase().includes(s) ||
+                                        (u.email || "").toLowerCase().includes(s) ||
+                                        (u.residenceSector || "").toLowerCase().includes(s) ||
+                                        (u.aspirations || "").toLowerCase().includes(s) ||
+                                        (u.role || "").toLowerCase().includes(s)
+                                    )
+                                })
+                                .map(u => {
+                                    let meta: any = {}
+                                    try {
+                                        if (u.profileData) meta = JSON.parse(u.profileData)
+                                    } catch (_) {}
+
+                                    const isCodeVerified = u.status === "PENDING" || meta.isCodeVerified
+                                    const originCity = u.aspirations || meta.cityOrigin || "No especificada"
+                                    const residenceCity = u.residenceSector || meta.cityResidence || "Ecuador"
+                                    const roleName = u.role === "SALESPERSON" ? "Vendedor (Asesor Comercial)" :
+                                                     u.role === "TECNICO" ? "Técnico (Instalador / Soporte)" :
+                                                     u.role === "CONSUMIDOR" ? "Usuario (Cliente / Tienda)" :
+                                                     u.role === "ACADEMIA" ? "Académico (Cursos Academy)" : u.role
+
+                                    return (
+                                        <div 
+                                            key={u.id}
+                                            className="p-6 rounded-3xl bg-slate-900/90 border border-slate-800 hover:border-cyan-500/40 transition-all shadow-xl space-y-5 relative overflow-hidden"
+                                        >
+                                            <div className="flex items-start justify-between gap-4">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 flex items-center justify-center font-black text-sm uppercase">
+                                                        {(u.name?.[0] || 'U')}{(u.lastName?.[0] || '')}
+                                                    </div>
+                                                    <div>
+                                                        <h4 className="font-bold text-white text-sm flex items-center gap-2">
+                                                            <span>{u.name} {u.lastName || ''}</span>
+                                                        </h4>
+                                                        <p className="text-[11px] font-mono text-cyan-400 font-semibold">
+                                                            {roleName}
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                <div>
+                                                    {isCodeVerified ? (
+                                                        <span className="px-3 py-1 rounded-full text-[10px] font-mono font-bold bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center gap-1.5">
+                                                            <CheckCircle2 size={12} /> Correo Verificado
+                                                        </span>
+                                                    ) : (
+                                                        <span className="px-3 py-1 rounded-full text-[10px] font-mono font-bold bg-amber-500/10 border border-amber-500/30 text-amber-300 flex items-center gap-1.5" title={`Código temporal: ${u.tempResetCode || 'Pendiente'}`}>
+                                                            <Key size={12} /> Cód: {u.tempResetCode || 'Enviado'}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            {/* Details Grid */}
+                                            <div className="grid grid-cols-2 gap-3 p-4 rounded-2xl bg-slate-950/80 border border-slate-800 text-xs">
+                                                <div>
+                                                    <span className="text-[10px] font-mono uppercase text-slate-500 block">Cédula / RUC</span>
+                                                    <span className="font-mono text-white font-bold">{u.cedula || 'N/A'}</span>
+                                                </div>
+
+                                                <div>
+                                                    <span className="text-[10px] font-mono uppercase text-slate-500 block">Teléfono / WhatsApp</span>
+                                                    {u.phoneNumber ? (
+                                                        <a 
+                                                            href={`https://wa.me/${u.phoneNumber.replace(/\D/g, '')}`} 
+                                                            target="_blank" 
+                                                            rel="noopener noreferrer"
+                                                            className="text-cyan-400 hover:underline font-mono font-bold flex items-center gap-1"
+                                                        >
+                                                            <span>{u.phoneNumber}</span>
+                                                        </a>
+                                                    ) : (
+                                                        <span className="text-slate-400">N/A</span>
+                                                    )}
+                                                </div>
+
+                                                <div>
+                                                    <span className="text-[10px] font-mono uppercase text-slate-500 block">Ciudad de Origen</span>
+                                                    <span className="text-slate-200">{originCity}</span>
+                                                </div>
+
+                                                <div>
+                                                    <span className="text-[10px] font-mono uppercase text-slate-500 block">Ciudad de Residencia</span>
+                                                    <span className="text-slate-200">{residenceCity}</span>
+                                                </div>
+
+                                                <div className="col-span-2">
+                                                    <span className="text-[10px] font-mono uppercase text-slate-500 block">Correo Activo</span>
+                                                    <span className="text-cyan-300 font-mono text-[11px] truncate block">{u.email}</span>
+                                                </div>
+                                            </div>
+
+                                            {/* Action Buttons */}
+                                            <div className="flex items-center justify-between gap-3 pt-2">
+                                                <button
+                                                    onClick={() => handleRejectUser(u.id)}
+                                                    className="px-4 py-2.5 rounded-xl border border-rose-500/30 text-rose-400 hover:bg-rose-500/10 text-xs font-mono font-bold transition-all cursor-pointer flex items-center gap-1.5"
+                                                >
+                                                    <Trash2 size={14} /> Rechazar
+                                                </button>
+
+                                                <div className="flex items-center gap-2">
+                                                    <button
+                                                        onClick={() => handleApproveUser(u.id, u.role)}
+                                                        className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-black text-xs uppercase tracking-wider transition-all shadow-lg shadow-emerald-500/20 cursor-pointer flex items-center gap-2"
+                                                    >
+                                                        <CheckCircle2 size={16} /> Aprobar Perfil
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )
+                                })}
+                        </div>
+                    )}
                 </div>
             )}
 

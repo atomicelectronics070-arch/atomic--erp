@@ -10,7 +10,8 @@ import {
     Volume2, VolumeX, Smartphone, Share2, Layers, Search,
     Grid, Monitor, Calendar, Calculator, Users, Activity,
     Settings, Palette, ArrowLeft, ArrowRight, ShieldCheck,
-    MessageSquare, DollarSign, Key, Zap, CheckCheck, Flame
+    MessageSquare, DollarSign, Key, Zap, CheckCheck, Flame,
+    CalendarCheck, Truck
 } from "lucide-react"
 
 import AnyDeskRemoteView from "./AnyDeskRemoteView"
@@ -24,9 +25,13 @@ import ConnectionsConfigModal from "./ConnectionsConfigModal"
 import ThemePainterStudio from "./ThemePainterStudio"
 import SuicideSquadWarRoom from "./SuicideSquadWarRoom"
 import SalesCopyManager from "./SalesCopyManager"
+import RutaDelDiaWorkspace from "./RutaDelDiaWorkspace"
+import SuppliersManager from "./SuppliersManager"
 
 export type ToolTab = 
     | "grid"
+    | "proveedores"
+    | "ruta_del_dia"
     | "sales_copy_messages"
     | "suicide_squad"
     | "anydesk"
@@ -336,6 +341,30 @@ export default function ToolsModal({
     // ─────────────────────────────────────────────────────────────
     const TOOLS_LIST = [
         {
+            id: "proveedores" as ToolTab,
+            category: "system",
+            title: "Gestor de Proveedores",
+            shortTitle: "Proveedores",
+            badge: "ADMIN",
+            badgeColor: "bg-cyan-500/25 text-cyan-300 border-cyan-500/50",
+            icon: Truck,
+            color: "text-cyan-400 bg-cyan-500/15 border-cyan-500/40",
+            glow: "rgba(6,182,212,0.4)",
+            desc: "Directorio de proveedores, tratos comerciales, WhatsApp y correo rápido con cajón interactivo"
+        },
+        {
+            id: "ruta_del_dia" as ToolTab,
+            category: "system",
+            title: "Ruta del Día (Plan Diario)",
+            shortTitle: "Ruta del Día",
+            badge: "PLAN & METAS",
+            badgeColor: "bg-emerald-500/25 text-emerald-300 border-emerald-500/50",
+            icon: CalendarCheck,
+            color: "text-emerald-400 bg-emerald-500/15 border-emerald-500/40",
+            glow: "rgba(16,185,129,0.4)",
+            desc: "Plan de trabajo diario, checklist de actividades, categorías y mensajes rápidos"
+        },
+        {
             id: "sales_copy_messages" as ToolTab,
             category: "ai",
             title: "Mensajes para Copiar y Pegar",
@@ -541,7 +570,7 @@ export default function ToolsModal({
                                     )}
                                 </h2>
                                 <span className="text-[9px] font-mono font-black px-2 py-0.5 rounded-full bg-rose-500 text-black uppercase shadow-sm">
-                                    12 PRO (WAR ROOM)
+                                    14 PRO (SUITE COMPLETA)
                                 </span>
                             </div>
                             <p className="text-[10px] text-slate-400 font-mono hidden md:block">
@@ -608,11 +637,11 @@ export default function ToolsModal({
                             {/* Category Filter Pills Bar */}
                             <div className="flex items-center justify-center gap-1.5 flex-wrap">
                                 {[
-                                    { id: "all", label: "Todas (12)" },
+                                    { id: "all", label: "Todas (13)" },
                                     { id: "ai", label: "🔥 Suicide Squad & IA (3)" },
                                     { id: "stream", label: "📹 Streaming & PC (2)" },
                                     { id: "finance", label: "📈 Finanzas & Precios (2)" },
-                                    { id: "system", label: "⚙️ Operación & Sistema (5)" }
+                                    { id: "system", label: "⚙️ Operación & Sistema (6)" }
                                 ].map((cat) => (
                                     <button
                                         key={cat.id}
@@ -1004,6 +1033,12 @@ export default function ToolsModal({
 
                     {/* VIEW 13: MENSAJES PARA COPIAR Y PEGAR (SCRIPTS MARKETPLACE) */}
                     {activeTab === "sales_copy_messages" && <SalesCopyManager onClose={() => setActiveTab("grid")} />}
+
+                    {/* VIEW 14: RUTA DEL DÍA (PLAN DE TRABAJO, ACTIVIDADES & METAS) */}
+                    {activeTab === "ruta_del_dia" && <RutaDelDiaWorkspace embedded={true} onClose={() => setActiveTab("grid")} />}
+
+                    {/* VIEW 15: GESTOR DE PROVEEDORES (ADMIN & COMUNICACIÓN DIRECTA) */}
+                    {activeTab === "proveedores" && <SuppliersManager onClose={() => setActiveTab("grid")} />}
                 </div>
             </motion.div>
         </div>

@@ -64,14 +64,16 @@ export default async function PublicQuotePage({ params }: PageProps) {
   }
 
   let items: any[] = [];
-  if (typeof quote.items === "string") {
+  const qAny = quote as any;
+  const rawItems = qAny.itemsData || qAny.items;
+  if (typeof rawItems === "string") {
     try {
-      items = JSON.parse(quote.items);
+      items = JSON.parse(rawItems);
     } catch (e) {
       items = [];
     }
-  } else if (Array.isArray(quote.items)) {
-    items = quote.items;
+  } else if (Array.isArray(rawItems)) {
+    items = rawItems;
   }
 
   return <QuotePublicViewer quote={JSON.parse(JSON.stringify(quote))} items={items} />;

@@ -6,12 +6,13 @@ import { usePathname, useSearchParams } from "next/navigation"
 import { 
     MessageSquare, Table, Plus, User, Users, Scan, 
     ShoppingBag, Map, GraduationCap, Grid, Wrench, Shield, 
-    Layers, Cpu, ChevronUp, X, Home, Flame 
+    Layers, Cpu, ChevronUp, X, Home, Flame, CalendarCheck 
 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import TeamContactsModal from "./TeamContactsModal"
 import BarcodeScannerModal from "@/components/scanner/BarcodeScannerModal"
 import ToolsModal from "@/components/tools/ToolsModal"
+import RutaDelDiaWorkspace from "@/components/tools/RutaDelDiaWorkspace"
 
 function MobileBottomDockInner() {
     const pathname = usePathname()
@@ -21,6 +22,7 @@ function MobileBottomDockInner() {
     const [showTeamModal, setShowTeamModal] = useState(false)
     const [showScannerModal, setShowScannerModal] = useState(false)
     const [showToolsModal, setShowToolsModal] = useState(false)
+    const [showRutaModal, setShowRutaModal] = useState(false)
     const [toolsInitialTab, setToolsInitialTab] = useState<any>("grid")
     const [showMoreMenu, setShowMoreMenu] = useState(false)
 
@@ -39,6 +41,7 @@ function MobileBottomDockInner() {
             <TeamContactsModal isOpen={showTeamModal} onClose={() => setShowTeamModal(false)} />
             <BarcodeScannerModal isOpen={showScannerModal} onClose={() => setShowScannerModal(false)} />
             <ToolsModal isOpen={showToolsModal} onClose={() => setShowToolsModal(false)} initialTab={toolsInitialTab} />
+            <RutaDelDiaWorkspace isOpen={showRutaModal} onClose={() => setShowRutaModal(false)} />
 
             {/* ── POPUP: MÁS MÓDULOS DE ATOMIC (ACCESO RÁPIDO OPERACIONAL) ── */}
             <AnimatePresence>
@@ -65,6 +68,22 @@ function MobileBottomDockInner() {
                         </div>
 
                         <div className="grid grid-cols-3 gap-2.5 text-center text-[10px] font-mono">
+                            {/* 0. Ruta del Día (Tile Cuadrado Destacado) */}
+                            <button 
+                                type="button"
+                                onClick={() => {
+                                    setShowMoreMenu(false)
+                                    setShowRutaModal(true)
+                                }}
+                                className="p-3 rounded-2xl bg-gradient-to-b from-emerald-500/25 to-teal-600/25 border-2 border-emerald-400/80 hover:border-emerald-300 flex flex-col items-center gap-1.5 transition-all active:scale-95 cursor-pointer shadow-lg shadow-emerald-950/50"
+                            >
+                                <div className="p-2 rounded-xl bg-emerald-500 text-black shadow-md">
+                                    <CalendarCheck size={18} className="stroke-[2.5]" />
+                                </div>
+                                <span className="text-emerald-200 font-extrabold">Ruta del Día</span>
+                                <span className="text-[8px] font-mono px-1.5 py-0.2 rounded-full bg-emerald-500 text-black font-black uppercase">PLAN DIARIO</span>
+                            </button>
+
                             {/* 1. Suicide Squad War Room (Tile Cuadrado Destacado) */}
                             <button 
                                 type="button"
@@ -194,12 +213,12 @@ function MobileBottomDockInner() {
                 )}
             </AnimatePresence>
 
-            {/* ── EXPANDED MOBILE BOTTOM DOCK (MÁS DE 2 OPCIONES POR LADO) ── */}
+            {/* ── EXPANDED MOBILE & DESKTOP BOTTOM DOCK (SIGUE A TODO LADO) ── */}
             <nav 
-                aria-label="Navegación Móvil Rápida Expandida"
-                className="lg:hidden fixed bottom-2.5 left-2 right-2 z-40 select-none"
+                aria-label="Navegación Rápida Expandida ATOMIC"
+                className="fixed bottom-2.5 left-2 right-2 sm:left-1/2 sm:-translate-x-1/2 sm:w-full sm:max-w-2xl z-40 select-none"
             >
-                <div className="relative mx-auto max-w-lg rounded-[26px] border border-white/10 bg-[#090d1e]/95 backdrop-blur-2xl shadow-[0_12px_45px_rgba(0,0,0,0.9)] px-1 py-1 flex items-center justify-between overflow-visible">
+                <div className="relative mx-auto max-w-2xl rounded-[26px] border border-white/10 bg-[#090d1e]/95 backdrop-blur-2xl shadow-[0_12px_45px_rgba(0,0,0,0.9)] px-1 py-1 flex items-center justify-between overflow-visible">
                     
                     {/* ══ LADO IZQUIERDO: ACCESOS RÁPIDOS ══ */}
                     
@@ -278,6 +297,21 @@ function MobileBottomDockInner() {
                             Tienda
                         </span>
                     </Link>
+
+                    {/* ══ 5. RUTA DEL DÍA (DIRECTAMENTE A LA IZQUIERDA DE COTIZAR) ══ */}
+                    <button
+                        type="button"
+                        onClick={() => setShowRutaModal(true)}
+                        className="flex-1 min-w-[36px] flex flex-col items-center justify-center py-1 transition-all group active:scale-90 cursor-pointer"
+                        title="Ruta del Día: Plan de Trabajo, Actividades, Categorías y Mensajes"
+                    >
+                        <div className="p-1.5 rounded-xl transition-colors bg-gradient-to-br from-emerald-500/25 to-teal-500/25 text-emerald-300 group-hover:text-emerald-100 border border-emerald-400/40 shadow-[0_0_12px_rgba(16,185,129,0.35)]">
+                            <CalendarCheck size={16} className="stroke-[2.2]" />
+                        </div>
+                        <span className="text-[8px] font-black tracking-tight mt-0.5 text-emerald-300 group-hover:text-white truncate">
+                            Ruta Día
+                        </span>
+                    </button>
 
                     {/* ══ CENTRO: BOTÓN DESTACADO COTIZAR (+) NO CORTADO ══ */}
                     <div className="relative -top-4 px-1 shrink-0 z-20 flex flex-col items-center">

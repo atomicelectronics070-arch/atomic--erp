@@ -61,7 +61,7 @@ export async function POST(req: Request) {
     const safeNum = sanitizeFilename(excelData.quoteNumber || "PROP");
     const filename = `${safeNum}_${safeClient}.xlsx`;
 
-    return new Response(buffer, {
+    return new Response(new Uint8Array(buffer), {
       status: 200,
       headers: {
         "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -100,28 +100,30 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "Cotización no encontrada" }, { status: 404 });
     }
 
+    const qAny = quote as any;
     let parsedItems: any[] = [];
-    if (typeof quote.items === "string") {
+    const rawItems = qAny.itemsData || qAny.items;
+    if (typeof rawItems === "string") {
       try {
-        parsedItems = JSON.parse(quote.items);
+        parsedItems = JSON.parse(rawItems);
       } catch (e) {
         parsedItems = [];
       }
-    } else if (Array.isArray(quote.items)) {
-      parsedItems = quote.items;
+    } else if (Array.isArray(rawItems)) {
+      parsedItems = rawItems;
     }
 
     const excelData: QuoteExcelData = {
       quoteNumber: quote.quoteNumber,
       clientName: quote.client?.name || quote.clientName || "CLIENTE",
       clientCedula: quote.client?.cedula || "",
-      clientPhone: quote.client?.phone || quote.clientPhone || "",
-      clientEmail: quote.client?.email || quote.clientEmail || "",
-      clientCity: quote.city || quote.client?.city || "Quito",
+      clientPhone: quote.client?.phone || qAny.clientPhone || "",
+      clientEmail: quote.client?.email || qAny.clientEmail || "",
+      clientCity: qAny.city || quote.client?.city || "Quito",
       deliveryAddress: quote.deliveryAddress || "",
-      quoteSubject: quote.quoteSubject || quote.specs || "PROPUESTA TÉCNICA COMERCIAL",
+      quoteSubject: qAny.quoteSubject || qAny.specs || "PROPUESTA TÉCNICA COMERCIAL",
       advisorName: quote.advisorName || quote.salesperson?.name || "ASESOR ATOMIC",
-      advisorPhone: quote.salesperson?.phone || "0999047979",
+      advisorPhone: quote.salesperson?.phoneNumber || "0999047979",
       items: parsedItems.map((item: any) => ({
         id: item.id || item.productId,
         sku: item.sku || item.productId,
@@ -133,8 +135,8 @@ export async function GET(req: Request) {
         total: Number(item.total || (item.quantity * item.unitPrice))
       })),
       subtotal: Number(quote.subtotal || 0),
-      taxAmount: Number(quote.taxAmount || 0),
-      discountAmount: Number(quote.discountAmount || 0),
+      taxAmount: Number(qAny.taxAmount || quote.tax || 0),
+      discountAmount: Number(qAny.discountAmount || quote.discount || 0),
       total: Number(quote.total || 0)
     };
 
@@ -144,7 +146,7 @@ export async function GET(req: Request) {
     const safeNum = sanitizeFilename(excelData.quoteNumber || "PROP");
     const filename = `${safeNum}_${safeClient}.xlsx`;
 
-    return new Response(buffer, {
+    return new Response(new Uint8Array(buffer), {
       status: 200,
       headers: {
         "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",

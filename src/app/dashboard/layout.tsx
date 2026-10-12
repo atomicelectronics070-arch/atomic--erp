@@ -9,7 +9,7 @@ import {
     ShoppingBag, Menu, X, Calendar, Edit3, Mail, BrainCircuit,
     Bot, Globe, BarChart3, GraduationCap, Code2, User, Smartphone,
     Share2, Map, Layers, DollarSign, ShieldCheck, FileSpreadsheet,
-    Table, Bell, Lock, Hexagon, ChevronDown, Sparkles, Scan, Wrench, Shield, Cpu, Link2, Flame
+    Table, Bell, Lock, Hexagon, ChevronDown, Sparkles, Scan, Wrench, Shield, Cpu, Link2, Flame, CalendarCheck
 } from "lucide-react"
 import { useState, useEffect } from "react"
 import NotificationBell from "@/components/NotificationBell"
@@ -263,6 +263,29 @@ export default function DashboardLayout({
                             </span>
                         </button>
                     </div>
+
+                    {/* Botón Destacado: Ruta del Día (Plan Diario & Actividades) */}
+                    <div className="pb-1 px-1">
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setToolsInitialTab("ruta_del_dia")
+                                setIsToolsModalOpen(true)
+                            }}
+                            className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-[16px] bg-gradient-to-r from-emerald-500/20 via-teal-600/20 to-cyan-600/20 hover:from-emerald-500/30 hover:to-cyan-600/30 border border-emerald-400/40 hover:border-emerald-300 text-white shadow-[0_0_20px_rgba(16,185,129,0.15)] hover:shadow-[0_0_25px_rgba(16,185,129,0.35)] transition-all group cursor-pointer"
+                            title="Abrir Ruta del Día: Plan de Trabajo, Actividades y Metas"
+                        >
+                            <div className="flex items-center gap-3">
+                                <div className="w-7 h-7 rounded-lg bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-emerald-300 group-hover:scale-110 transition-transform">
+                                    <CalendarCheck size={15} />
+                                </div>
+                                <span className="text-[13px] font-bold tracking-tight">Ruta del Día</span>
+                            </div>
+                            <span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-black bg-emerald-400 text-black shadow-sm uppercase">
+                                HOY
+                            </span>
+                        </button>
+                    </div>
                     
                     {/* Gestión & Finanzas */}
                     {(role === "ADMIN" || role === "MANAGEMENT" || role === "COORDINATOR" || role === "COORD_ASSISTANT") && (
@@ -383,6 +406,27 @@ export default function DashboardLayout({
                             </span>
                         </button>
 
+                        {/* ── BOTÓN MAESTRO DE RUTA DEL DÍA (PLAN DIARIO & METAS) ── */}
+                        <button 
+                            type="button"
+                            onClick={() => {
+                                setToolsInitialTab("ruta_del_dia")
+                                setIsToolsModalOpen(true)
+                            }}
+                            className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500/25 via-teal-600/30 to-cyan-600/25 hover:from-emerald-500/40 hover:to-cyan-600/40 border-2 border-emerald-400/60 hover:border-emerald-300 text-white text-xs font-mono font-black transition-all cursor-pointer shadow-[0_0_20px_rgba(16,185,129,0.35)] hover:shadow-[0_0_30px_rgba(16,185,129,0.6)] active:scale-95 group"
+                            title="Ruta del Día: Plan de Trabajo, Actividades y Metas"
+                        >
+                            <div className="w-5 h-5 rounded-lg bg-emerald-400 text-black flex items-center justify-center font-black group-hover:scale-110 transition-transform shadow-md">
+                                <CalendarCheck size={13} className="stroke-[2.5]" />
+                            </div>
+                            <span className="tracking-wider uppercase font-black text-emerald-200 group-hover:text-white">
+                                Ruta Día
+                            </span>
+                            <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-emerald-400 text-black font-black uppercase shadow-sm">
+                                HOY
+                            </span>
+                        </button>
+
                         {/* ── BOTÓN MAESTRO DE HERRAMIENTAS (PRO CUADRÍCULA) ── */}
                         <button 
                             type="button"
@@ -391,7 +435,7 @@ export default function DashboardLayout({
                                 setIsToolsModalOpen(true)
                             }}
                             className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500/25 via-indigo-600/30 to-purple-600/25 hover:from-cyan-500/40 hover:to-purple-600/40 border-2 border-cyan-400/60 hover:border-cyan-300 text-white text-xs font-mono font-black transition-all cursor-pointer shadow-[0_0_20px_rgba(6,182,212,0.35)] hover:shadow-[0_0_30px_rgba(6,182,212,0.6)] active:scale-95 group"
-                            title="Abrir Centro de Herramientas Operacionales (12 Herramientas)"
+                            title="Abrir Centro de Herramientas Operacionales (13 Herramientas)"
                         >
                             <div className="w-5 h-5 rounded-lg bg-cyan-400 text-black flex items-center justify-center font-black group-hover:rotate-12 transition-transform shadow-md">
                                 <Wrench size={13} className="stroke-[2.5]" />
@@ -400,7 +444,7 @@ export default function DashboardLayout({
                                 Herramientas
                             </span>
                             <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-cyan-400 text-black font-black uppercase shadow-sm">
-                                12 PRO
+                                13 PRO
                             </span>
                         </button>
                     </div>
@@ -509,9 +553,6 @@ export default function DashboardLayout({
 
             {/* Mobile Bottom Dock */}
             <MobileBottomDock />
-
-            {/* Floating Bot Guía (con insignia visible permanente GUÍA) */}
-            <PersonalBotBubble />
 
             {/* Central Tools Modal Hub */}
             <ToolsModal

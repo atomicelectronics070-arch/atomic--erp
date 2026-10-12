@@ -1,8 +1,8 @@
-export const dynamic = 'force-dynamic';
 import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { processConversationalBotMessage } from "@/lib/bot/botBrain"
 
 // Fallback intelligent responses for all modules if AI API is offline
 const MODULE_KNOWLEDGE_BASE: Record<string, { title: string; text: string; suggestions: string[]; link?: string }> = {
@@ -69,12 +69,52 @@ function getRoleAdvice(role: string): string {
 export async function POST(req: Request) {
     try {
         const session = await getServerSession(authOptions)
-        if (!session?.user?.id) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+        const body = await req.json()
+        const rawMessage = (body.message || (body.messages && body.messages[body.messages.length - 1]?.content) || "").trim()
+        const senderId = session?.user?.id || body.senderId || "web-guest"
+
+        // Verificar flujos conversacionales de Registro y Cotizador 1111 con botBrain
+        if (rawMessage) {
+            const brainRes = await processConversationalBotMessage(rawMessage, {
+                senderId,
+                senderName: session?.user?.name || "Usuario Web",
+                channel: "WEB",
+                userSession: session?.user
+            })
+
+            if (brainRes.handled) {
+                if (session?.user?.id) {
+                    try {
+                        let memory = await prisma.personalBotMemory.findUnique({ where: { userId: session.user.id } })
+                        if (!memory) memory = await prisma.personalBotMemory.create({ data: { userId: session.user.id } })
+                        await prisma.personalBotMessage.createMany({
+                            data: [
+                                { memoryId: memory.id, role: "user", content: rawMessage },
+                                { memoryId: memory.id, role: "assistant", content: brainRes.replyText }
+                            ]
+                        })
+                    } catch (_) {}
+                }
+                return NextResponse.json({
+                    text: brainRes.replyText,
+                    reply: brainRes.replyText,
+                    suggestions: brainRes.suggestions || [],
+                    botName: "Guía de ATOMIC"
+                })
+            }
         }
 
-        const body = await req.json()
-        const { message, isNamingBot } = body
+        if (!session?.user?.id) {
+            return NextResponse.json({ 
+                text: "👋 ¡Hola! Soy el asistente de **ATOMIC Industries**.\n\nPuedes pedirme registrarte escribiendo *'Quiero registrarme como vendedor'* o generar una cotización formal diciendo *'Ayúdame a generar una cotización'*. Si ya tienes una cuenta, inicia sesión para acceder a todas las funciones del ERP.",
+                reply: "👋 ¡Hola! Soy el asistente de **ATOMIC Industries**.\n\nPuedes pedirme registrarte escribiendo *'Quiero registrarme como vendedor'* o generar una cotización formal diciendo *'Ayúdame a generar una cotización'*. Si ya tienes una cuenta, inicia sesión para acceder a todas las funciones del ERP.",
+                suggestions: ["Quiero registrarme como vendedor", "¿Cómo me registro?", "Iniciar Sesión"],
+                botName: "Guía de ATOMIC"
+            })
+        }
+
+        const message = rawMessage
+        const { isNamingBot } = body
         const lowerMsg = (message || "").toLowerCase()
 
         // 1. Load user profile
@@ -161,6 +201,7 @@ export async function POST(req: Request) {
 
                 return NextResponse.json({
                     text: info.text,
+                    reply: info.text,
                     suggestions: info.suggestions,
                     botName
                 })
@@ -220,7 +261,7 @@ Al final de tu respuesta agrega: [[SUGGESTIONS: "¿Pregunta 1?", "¿Pregunta 2?"
                             ]
                         })
 
-                        return NextResponse.json({ text: replyText, suggestions, botName })
+                        return NextResponse.json({ text: replyText, reply: replyText, suggestions, botName })
                     }
                 }
             } catch (err) {
@@ -240,6 +281,7 @@ Al final de tu respuesta agrega: [[SUGGESTIONS: "¿Pregunta 1?", "¿Pregunta 2?"
 
         return NextResponse.json({
             text: fallbackText,
+            reply: fallbackText,
             suggestions: ["¿Cómo emitir una cotización PROP?", "¿Cómo funciona el radar de prospección?", "¿Cómo cambiar los temas del sistema?"],
             botName
         })

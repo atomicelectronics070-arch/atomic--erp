@@ -7,7 +7,7 @@ import {
     Sparkles, Plus, ExternalLink, ShieldCheck, Tag, RefreshCw, ChevronLeft,
     Settings, Image as ImageIcon, ShoppingBag, Download, Check, Save, X, Globe, Mail, MapPin,
     Volume2, Mic, Film, FileText, Megaphone, Eye, Key, AlertCircle, Copy, Paperclip, Loader2,
-    UserCheck, UserPlus, Lock, Users, Filter, CheckCircle2
+    UserCheck, UserPlus, Lock, Users, Filter, CheckCircle2, Flame, Bot, Zap, Bell
 } from "lucide-react"
 
 interface ReferralData {
@@ -196,9 +196,71 @@ export default function WhatsAppCrmClient() {
         }
     }, [])
 
-    // CRM Tabs Filter: "MY_LEADS" | "ALL_WHATSAPP"
-    const [activeCrmTab, setActiveCrmTab] = useState<'MY_LEADS' | 'ALL_WHATSAPP'>('MY_LEADS')
+    // CRM Tabs Filter: "MY_LEADS" | "ALL_WHATSAPP" | "AUTO_REGISTER"
+    const [activeCrmTab, setActiveCrmTab] = useState<'MY_LEADS' | 'ALL_WHATSAPP' | 'AUTO_REGISTER'>('MY_LEADS')
     const [systemAdvisors, setSystemAdvisors] = useState<any[]>([])
+
+    // Karen Agent Modal & Live State
+    const [karenModalOpen, setKarenModalOpen] = useState(false)
+    const [karenAuditData, setKarenAuditData] = useState<any>(null)
+    const [karenLoading, setKarenLoading] = useState(false)
+    const [karenChatInput, setKarenChatInput] = useState("")
+    const [karenChatLog, setKarenChatLog] = useState<Array<{ sender: 'karen' | 'user'; text: string }>>([
+        { sender: 'karen', text: '¡Hola Juan! Soy Karen, Jefa de Mensajería y Auditoría de ATOMIC. Estoy monitoreando todos los chats en tiempo real. ¿En qué te puedo asesorar hoy?' }
+    ])
+
+    const fetchKarenAudit = useCallback(async () => {
+        try {
+            const res = await fetch('/api/karen/audit')
+            if (res.ok) {
+                const data = await res.json()
+                setKarenAuditData(data)
+            }
+        } catch (_) {}
+    }, [])
+
+    useEffect(() => {
+        fetchKarenAudit()
+        const interval = setInterval(fetchKarenAudit, 30000)
+        return () => clearInterval(interval)
+    }, [fetchKarenAudit])
+
+    const handleKarenCommand = async (commandText: string) => {
+        if (!commandText.trim()) return
+        const text = commandText.trim()
+        setKarenChatLog(prev => [...prev, { sender: 'user', text }])
+        setKarenChatInput("")
+        setKarenLoading(true)
+        try {
+            const res = await fetch('/api/karen/command', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ command: text })
+            })
+            const data = await res.json()
+            if (data.reply) {
+                setKarenChatLog(prev => [...prev, { sender: 'karen', text: data.reply }])
+            }
+            fetchKarenAudit()
+        } catch (err: any) {
+            setKarenChatLog(prev => [...prev, { sender: 'karen', text: 'Error de conexión al consultar con Karen.' }])
+        } finally {
+            setKarenLoading(false)
+        }
+    }
+
+    const handleSetKarenMode = async (mode: 'AUTOMATIC' | 'MANUAL' | 'AWAITING_APPROVAL') => {
+        try {
+            const res = await fetch('/api/karen/command', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ mode })
+            })
+            if (res.ok) {
+                fetchKarenAudit()
+            }
+        } catch (_) {}
+    }
 
     // Roles permitted to assign leads: SUPERVISOR, COORDINADOR, CEO (ADMIN), JEFE TECNICO
     const userRole = (session?.user as any)?.role?.toUpperCase() || ''
@@ -638,14 +700,38 @@ export default function WhatsAppCrmClient() {
         return false
     }
 
-    const myLeadsCount = chats.filter(c => isMyLead(c)).length
-    const allWhatsAppCount = chats.length
+    const isAutoRegister = (chat: Chat) => {
+        if (chat.status === 'AUTO_REGISTER' || chat.status === 'REGISTRO_AUTOMATICO') return true
+        const textDump = chat.messages.map(m => (m.text || '').toLowerCase()).join(' ')
+        return (
+            textDump.includes('código de verificación') ||
+            textDump.includes('codigo de verificacion') ||
+            textDump.includes('código de trabajador') ||
+            textDump.includes('codigo de trabajador') ||
+            textDump.includes('quiero registrarme') ||
+            textDump.includes('ayúdame a generar') ||
+            textDump.includes('ayudame a generar') ||
+            textDump.includes('prop-2026-') ||
+            textDump.includes('propuesta comercial generada con éxito') ||
+            textDump.includes('propuesta comercial') ||
+            chat.messages.some(m => m.status === 'BOT_ATOMIC_BRAIN')
+        )
+    }
+
+    const autoRegisterCount = chats.filter(c => isAutoRegister(c)).length
+    const myLeadsCount = chats.filter(c => isMyLead(c) && !isAutoRegister(c)).length
+    const allWhatsAppCount = chats.filter(c => !isAutoRegister(c)).length
 
     const filteredChats = chats.filter(c => {
         // Tab filter
-        if (activeCrmTab === 'MY_LEADS' && !isMyLead(c)) {
-            return false
+        if (activeCrmTab === 'AUTO_REGISTER') {
+            if (!isAutoRegister(c)) return false
+        } else if (activeCrmTab === 'MY_LEADS') {
+            if (!isMyLead(c) || isAutoRegister(c)) return false
+        } else if (activeCrmTab === 'ALL_WHATSAPP') {
+            if (isAutoRegister(c)) return false
         }
+
         // Search query filter
         const q = searchQuery.toLowerCase().trim()
         if (!q) return true
@@ -674,6 +760,29 @@ export default function WhatsAppCrmClient() {
                 </div>
 
                 <div className="flex items-center gap-2 md:gap-3">
+                    {/* Bot Agente Karen: Jefa de Mensajería & Auditoría */}
+                    <button
+                        onClick={() => { setKarenModalOpen(true); fetchKarenAudit(); }}
+                        className="py-1 px-3 rounded-xl bg-gradient-to-r from-cyan-950/90 to-blue-950/90 border border-cyan-500/40 hover:border-cyan-400 text-white transition-all text-xs flex items-center gap-2 cursor-pointer shadow-[0_0_15px_rgba(6,182,212,0.3)] group"
+                        title="Abrir Auditoría & Control de Karen (Jefa de Mensajería)"
+                    >
+                        <div className="relative">
+                            <img 
+                                src="/api/karen-avatar" 
+                                alt="Karen" 
+                                className="w-7 h-7 rounded-full object-cover border border-cyan-400 group-hover:scale-105 transition-transform" 
+                            />
+                            <div className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-slate-950 ${
+                                karenAuditData?.karen?.mode === 'MANUAL' ? 'bg-rose-500' :
+                                karenAuditData?.karen?.mode === 'AWAITING_APPROVAL' ? 'bg-amber-400' : 'bg-emerald-400'
+                            }`} />
+                        </div>
+                        <div className="text-left hidden sm:block">
+                            <span className="font-bold text-xs text-cyan-300 block leading-tight">Karen</span>
+                            <span className="text-[9px] font-mono text-slate-400 block -mt-0.5">Jefa de Mensajería</span>
+                        </div>
+                    </button>
+
                     <button
                         onClick={() => setIsSettingsModalOpen(true)}
                         className="px-3 py-1.5 rounded-xl bg-blue-600/30 hover:bg-blue-600/50 border border-blue-500/40 text-cyan-300 transition-all text-xs flex items-center gap-1.5 font-bold shadow-sm cursor-pointer"
@@ -707,21 +816,22 @@ export default function WhatsAppCrmClient() {
                 {/* Left Sidebar: Chat List */}
                 <div className={`w-full md:w-80 lg:w-96 border-r border-slate-800 bg-slate-900/90 flex flex-col shrink-0 ${activeChatId ? 'hidden md:flex' : 'flex'}`}>
                     
-                    {/* CRM View Tabs: MIS LEADS vs WHATSAPP */}
-                    <div className="p-2.5 bg-slate-950/90 border-b border-slate-800/80">
-                        <div className="grid grid-cols-2 gap-1.5 p-1 bg-slate-900/90 rounded-2xl border border-slate-800">
+                    {/* CRM View Tabs: MIS LEADS vs WHATSAPP vs REGISTRO AUTOMATICO */}
+                    <div className="p-2 bg-slate-950/90 border-b border-slate-800/80">
+                        <div className="grid grid-cols-3 gap-1 p-1 bg-slate-900/90 rounded-2xl border border-slate-800">
                             <button
                                 type="button"
                                 onClick={() => setActiveCrmTab('MY_LEADS')}
-                                className={`py-2 px-3 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                                className={`py-2 px-1 rounded-xl text-[11px] font-black transition-all flex items-center justify-center gap-1 cursor-pointer truncate ${
                                     activeCrmTab === 'MY_LEADS'
                                         ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-950/50'
                                         : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
                                 }`}
+                                title="Mis Leads y asignados"
                             >
-                                <UserCheck size={13} className={activeCrmTab === 'MY_LEADS' ? 'text-white' : 'text-emerald-400'} />
-                                <span>Mis Leads</span>
-                                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold ${
+                                <UserCheck size={12} className={activeCrmTab === 'MY_LEADS' ? 'text-white' : 'text-emerald-400'} />
+                                <span className="truncate">Mis Leads</span>
+                                <span className={`text-[9px] px-1 py-0.2 rounded-full font-mono font-bold shrink-0 ${
                                     activeCrmTab === 'MY_LEADS' ? 'bg-black/40 text-emerald-200' : 'bg-slate-800 text-slate-400'
                                 }`}>
                                     {myLeadsCount}
@@ -731,18 +841,38 @@ export default function WhatsAppCrmClient() {
                             <button
                                 type="button"
                                 onClick={() => setActiveCrmTab('ALL_WHATSAPP')}
-                                className={`py-2 px-3 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                                className={`py-2 px-1 rounded-xl text-[11px] font-black transition-all flex items-center justify-center gap-1 cursor-pointer truncate ${
                                     activeCrmTab === 'ALL_WHATSAPP'
                                         ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-950/50'
                                         : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
                                 }`}
+                                title="Todos los chats generales"
                             >
-                                <MessageSquare size={13} className={activeCrmTab === 'ALL_WHATSAPP' ? 'text-white' : 'text-cyan-400'} />
-                                <span>WhatsApp</span>
-                                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold ${
+                                <MessageSquare size={12} className={activeCrmTab === 'ALL_WHATSAPP' ? 'text-white' : 'text-cyan-400'} />
+                                <span className="truncate">Generales</span>
+                                <span className={`text-[9px] px-1 py-0.2 rounded-full font-mono font-bold shrink-0 ${
                                     activeCrmTab === 'ALL_WHATSAPP' ? 'bg-black/40 text-cyan-200' : 'bg-slate-800 text-slate-400'
                                 }`}>
                                     {allWhatsAppCount}
+                                </span>
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={() => setActiveCrmTab('AUTO_REGISTER')}
+                                className={`py-2 px-1 rounded-xl text-[11px] font-black transition-all flex items-center justify-center gap-1 cursor-pointer truncate ${
+                                    activeCrmTab === 'AUTO_REGISTER'
+                                        ? 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white shadow-md shadow-cyan-950/50'
+                                        : 'text-slate-400 hover:text-cyan-300 hover:bg-slate-800/50'
+                                }`}
+                                title="Registros y Cotizaciones del Bot"
+                            >
+                                <Sparkles size={12} className={activeCrmTab === 'AUTO_REGISTER' ? 'text-white' : 'text-cyan-400'} />
+                                <span className="truncate">Reg. Auto</span>
+                                <span className={`text-[9px] px-1 py-0.2 rounded-full font-mono font-bold shrink-0 ${
+                                    activeCrmTab === 'AUTO_REGISTER' ? 'bg-black/40 text-cyan-200' : 'bg-slate-800 text-cyan-400'
+                                }`}>
+                                    {autoRegisterCount}
                                 </span>
                             </button>
                         </div>
@@ -1803,6 +1933,279 @@ export default function WhatsAppCrmClient() {
                                 {assigningLoading ? <Loader2 size={14} className="animate-spin" /> : <Check size={14} />}
                                 <span>{canAssignLeads ? 'Asignar Lead' : 'Confirmar y Atender'}</span>
                             </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* MODAL KAREN: JEFA DE MENSAJERÍA & AUDITORÍA EN VIVO */}
+            {karenModalOpen && (
+                <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 md:p-6 animate-in fade-in duration-200">
+                    <div className="bg-slate-950 border border-cyan-500/30 rounded-3xl w-full max-w-4xl max-h-[92vh] flex flex-col shadow-[0_0_50px_rgba(6,182,212,0.25)] overflow-hidden">
+                        
+                        {/* Header */}
+                        <div className="p-4 md:p-6 bg-gradient-to-r from-slate-950 via-cyan-950/40 to-slate-950 border-b border-cyan-500/20 flex items-center justify-between">
+                            <div className="flex items-center gap-3.5">
+                                <div className="relative">
+                                    <img 
+                                        src="/api/karen-avatar" 
+                                        alt="Karen" 
+                                        className="w-14 h-14 rounded-2xl object-cover border-2 border-cyan-400 shadow-lg shadow-cyan-950/50" 
+                                    />
+                                    <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-slate-950 ${
+                                        karenAuditData?.karen?.mode === 'MANUAL' ? 'bg-rose-500' :
+                                        karenAuditData?.karen?.mode === 'AWAITING_APPROVAL' ? 'bg-amber-400' : 'bg-emerald-400'
+                                    }`} />
+                                </div>
+                                <div>
+                                    <div className="flex items-center gap-2">
+                                        <h2 className="text-lg md:text-xl font-black text-white tracking-tight flex items-center gap-2">
+                                            Karen <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/40">Jefa de Mensajería & IA</span>
+                                        </h2>
+                                    </div>
+                                    <p className="text-xs text-slate-300 mt-0.5">Auditoría inteligente en vivo, discernimiento de leads y enlace directo con Juan (0969043453)</p>
+                                </div>
+                            </div>
+
+                            <button 
+                                onClick={() => setKarenModalOpen(false)}
+                                className="p-2 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-800 transition-colors cursor-pointer"
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        {/* Body Container */}
+                        <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-5">
+                            
+                            {/* Semáforo de Control */}
+                            <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-3">
+                                <div className="flex items-center justify-between flex-wrap gap-2">
+                                    <div className="flex items-center gap-2">
+                                        <div className="p-1.5 rounded-lg bg-cyan-500/10 text-cyan-400">
+                                            <Zap size={16} />
+                                        </div>
+                                        <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300">Semáforo de Operación de Karen</h3>
+                                    </div>
+                                    <span className="text-[11px] font-mono text-slate-400">
+                                        Estado actual: <span className="font-bold text-white uppercase">{karenAuditData?.karen?.mode || 'AUTOMATIC'}</span>
+                                    </span>
+                                </div>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                                    <button
+                                        type="button"
+                                        onClick={() => handleSetKarenMode('AUTOMATIC')}
+                                        className={`p-3 rounded-xl border text-left transition-all cursor-pointer flex items-center gap-3 ${
+                                            karenAuditData?.karen?.mode === 'AUTOMATIC' || !karenAuditData?.karen?.mode
+                                                ? 'bg-emerald-950/60 border-emerald-500 text-emerald-200 ring-2 ring-emerald-500/40'
+                                                : 'bg-slate-950/40 border-slate-800 hover:border-slate-700 text-slate-400'
+                                        }`}
+                                    >
+                                        <span className="text-2xl">🟢</span>
+                                        <div>
+                                            <div className="text-xs font-black text-white">Automático</div>
+                                            <div className="text-[10px] text-slate-400 leading-tight">Karen responde, filtra y atiende en tiempo real</div>
+                                        </div>
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => handleSetKarenMode('AWAITING_APPROVAL')}
+                                        className={`p-3 rounded-xl border text-left transition-all cursor-pointer flex items-center gap-3 ${
+                                            karenAuditData?.karen?.mode === 'AWAITING_APPROVAL'
+                                                ? 'bg-amber-950/60 border-amber-500 text-amber-200 ring-2 ring-amber-500/40'
+                                                : 'bg-slate-950/40 border-slate-800 hover:border-slate-700 text-slate-400'
+                                        }`}
+                                    >
+                                        <span className="text-2xl">🟡</span>
+                                        <div>
+                                            <div className="text-xs font-black text-white">Autorización</div>
+                                            <div className="text-[10px] text-slate-400 leading-tight">Consulta contexto y pide OK a Juan antes de enviar</div>
+                                        </div>
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => handleSetKarenMode('MANUAL')}
+                                        className={`p-3 rounded-xl border text-left transition-all cursor-pointer flex items-center gap-3 ${
+                                            karenAuditData?.karen?.mode === 'MANUAL'
+                                                ? 'bg-rose-950/60 border-rose-500 text-rose-200 ring-2 ring-rose-500/40'
+                                                : 'bg-slate-950/40 border-slate-800 hover:border-slate-700 text-slate-400'
+                                        }`}
+                                    >
+                                        <span className="text-2xl">🔴</span>
+                                        <div>
+                                            <div className="text-xs font-black text-white">Manual</div>
+                                            <div className="text-[10px] text-slate-400 leading-tight">WhatsApp 100% humano, bot silenciado</div>
+                                        </div>
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Métricas Auditoría & Discernimiento */}
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                <div className="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800 text-center">
+                                    <span className="text-[10px] font-mono uppercase text-slate-400 block">Total Chats Auditados</span>
+                                    <span className="text-xl md:text-2xl font-black text-white block mt-1">{chats.length}</span>
+                                    <span className="text-[9px] text-emerald-400 font-medium">100% en vigilancia</span>
+                                </div>
+
+                                <div className="p-3.5 rounded-2xl bg-slate-900/60 border border-cyan-500/20 text-center">
+                                    <span className="text-[10px] font-mono uppercase text-cyan-300 block">Registro Automático</span>
+                                    <span className="text-xl md:text-2xl font-black text-cyan-400 block mt-1">{autoRegisterCount}</span>
+                                    <span className="text-[9px] text-slate-400 font-medium">Cotiz. y postulaciones</span>
+                                </div>
+
+                                <div className="p-3.5 rounded-2xl bg-slate-900/60 border border-amber-500/20 text-center">
+                                    <span className="text-[10px] font-mono uppercase text-amber-300 block">Chats Sin Catalogar</span>
+                                    <span className="text-xl md:text-2xl font-black text-amber-400 block mt-1">
+                                        {karenAuditData?.karen?.uncatalogedChats?.length || 0}
+                                    </span>
+                                    <span className="text-[9px] text-slate-400 font-medium">Identificados por Karen</span>
+                                </div>
+
+                                <div className="p-3.5 rounded-2xl bg-slate-900/60 border border-rose-500/20 text-center">
+                                    <span className="text-[10px] font-mono uppercase text-rose-300 block">Oportunidades Hot</span>
+                                    <span className="text-xl md:text-2xl font-black text-rose-400 block mt-1 flex items-center justify-center gap-1">
+                                        <Flame size={18} className="text-rose-500" />
+                                        {karenAuditData?.karen?.hotOpportunities?.length || 0}
+                                    </span>
+                                    <span className="text-[9px] text-slate-400 font-medium">Alta probabilidad</span>
+                                </div>
+                            </div>
+
+                            {/* Alerta de Inactividad y Despacho a Juan */}
+                            <div className="p-4 rounded-2xl bg-gradient-to-r from-blue-950/40 via-cyan-950/30 to-slate-900 border border-blue-500/30 flex items-start gap-3">
+                                <div className="p-2 rounded-xl bg-blue-500/20 text-cyan-300 shrink-0 mt-0.5">
+                                    <Bell size={18} />
+                                </div>
+                                <div className="space-y-1">
+                                    <div className="text-xs font-black text-white flex items-center gap-2">
+                                        Línea de Auditoría Directa con Juan (WhatsApp: 0969043453)
+                                        <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[9px] px-2 py-0.2 rounded-full font-bold">Activo</span>
+                                    </div>
+                                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                                        • <strong>Alerta de Inactividad:</strong> Si pasan 2 horas sin mensajes entrantes, Karen escribe automáticamente al WhatsApp de Juan: <em>&quot;Juan, activa las pautas Juan, no hay mensajes en las últimas horas.&quot;</em><br />
+                                        • <strong>Alerta de Ráfagas:</strong> Cada 5 minutos con mensajes continuos, Karen reporta el desglose de leads atendidos (contratación, registro, ventas).<br />
+                                        • <strong>Oportunidades Hot:</strong> Notifica de inmediato ante intención firme de compra.
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Chat Directo & Consola de Órdenes con Karen */}
+                            <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-3">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <Bot size={16} className="text-cyan-400" />
+                                        <h3 className="text-xs font-bold uppercase tracking-wider text-white">Consola y Diálogo Ejecutivo con Karen</h3>
+                                    </div>
+                                    <span className="text-[10px] font-mono text-cyan-400">Motor LLM de Discernimiento</span>
+                                </div>
+
+                                {/* Chat Logs */}
+                                <div className="h-52 overflow-y-auto bg-slate-950/70 rounded-xl p-3 space-y-2.5 border border-slate-800/80">
+                                    {karenChatLog.map((log, idx) => (
+                                        <div 
+                                            key={idx} 
+                                            className={`flex gap-2.5 ${log.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+                                        >
+                                            {log.sender === 'karen' && (
+                                                <img 
+                                                    src="/api/karen-avatar" 
+                                                    alt="Karen" 
+                                                    className="w-6 h-6 rounded-full object-cover shrink-0 mt-0.5 border border-cyan-400" 
+                                                />
+                                            )}
+                                            <div className={`p-2.5 rounded-2xl max-w-[85%] text-xs leading-relaxed ${
+                                                log.sender === 'user'
+                                                    ? 'bg-cyan-600 text-white rounded-br-none'
+                                                    : 'bg-slate-800 text-slate-200 border border-slate-700/80 rounded-bl-none'
+                                            }`}>
+                                                {log.text}
+                                            </div>
+                                        </div>
+                                    ))}
+                                    {karenLoading && (
+                                        <div className="flex items-center gap-2 text-cyan-400 text-xs py-1">
+                                            <Loader2 size={14} className="animate-spin" />
+                                            <span>Karen está analizando el CRM...</span>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Quick command chips */}
+                                <div className="flex flex-wrap gap-1.5 pt-1">
+                                    <button
+                                        type="button"
+                                        onClick={() => handleKarenCommand("¿Cómo van los mensajes y el flujo de leads hoy?")}
+                                        className="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white px-2.5 py-1 rounded-lg border border-slate-700 transition-colors cursor-pointer"
+                                    >
+                                        📊 ¿Cómo van los mensajes hoy?
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => handleKarenCommand("¿De qué trata ese chat sin catalogar?")}
+                                        className="text-[10px] bg-amber-950/50 hover:bg-amber-900/60 text-amber-300 px-2.5 py-1 rounded-lg border border-amber-500/30 transition-colors cursor-pointer"
+                                    >
+                                        🔍 ¿De qué trata el chat sin catalogar?
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => handleKarenCommand("Dame las sugerencias estratégicas y promo de esta semana")}
+                                        className="text-[10px] bg-cyan-950/50 hover:bg-cyan-900/60 text-cyan-300 px-2.5 py-1 rounded-lg border border-cyan-500/30 transition-colors cursor-pointer"
+                                    >
+                                        💡 Recomendación y Promo semanal
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => handleKarenCommand("🟢")}
+                                        className="text-[10px] bg-emerald-950/50 hover:bg-emerald-900/60 text-emerald-300 px-2.5 py-1 rounded-lg border border-emerald-500/30 transition-colors cursor-pointer"
+                                    >
+                                        🟢 Auto
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => handleKarenCommand("🟡")}
+                                        className="text-[10px] bg-amber-950/50 hover:bg-amber-900/60 text-amber-300 px-2.5 py-1 rounded-lg border border-amber-500/30 transition-colors cursor-pointer"
+                                    >
+                                        🟡 Pedir autorización
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => handleKarenCommand("🔴")}
+                                        className="text-[10px] bg-rose-950/50 hover:bg-rose-900/60 text-rose-300 px-2.5 py-1 rounded-lg border border-rose-500/30 transition-colors cursor-pointer"
+                                    >
+                                        🔴 Manual
+                                    </button>
+                                </div>
+
+                                {/* Form Input */}
+                                <form 
+                                    onSubmit={(e) => {
+                                        e.preventDefault()
+                                        handleKarenCommand(karenChatInput)
+                                    }}
+                                    className="flex gap-2"
+                                >
+                                    <input 
+                                        type="text"
+                                        value={karenChatInput}
+                                        onChange={(e) => setKarenChatInput(e.target.value)}
+                                        placeholder="Escribe una instrucción a Karen (ej: 'envía tal mensaje a tal persona', '¿cómo van las pautas?', etc.)"
+                                        className="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500"
+                                    />
+                                    <button
+                                        type="submit"
+                                        disabled={!karenChatInput.trim() || karenLoading}
+                                        className="px-4 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 disabled:opacity-50 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-md shadow-cyan-950"
+                                    >
+                                        <Send size={13} />
+                                        <span>Enviar</span>
+                                    </button>
+                                </form>
+                            </div>
+
                         </div>
                     </div>
                 </div>

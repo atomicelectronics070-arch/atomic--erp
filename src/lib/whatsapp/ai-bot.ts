@@ -1,6 +1,15 @@
 import axios from 'axios';
 import { prisma } from '@/lib/prisma';
 import { sendWhatsAppMessage } from '@/lib/whatsapp/service';
+import { processConversationalBotMessage } from '@/lib/bot/botBrain';
+import { 
+    isJuan, 
+    processJuanCommand, 
+    karenState, 
+    notifyJuanIncomingBurst, 
+    notifyJuanHotOpportunity, 
+    notifyJuanUncatalogedChat 
+} from '@/lib/karen/karenBrain';
 
 const NVIDIA_API_KEY = process.env.NVIDIA_API_KEY || "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";
 const NVIDIA_MODEL = "meta/llama-3.2-90b-vision-instruct";
@@ -146,6 +155,67 @@ export async function handleIncomingWhatsAppBot(params: {
     try {
         const { whatsappId, contactName, messageText, mediaUrl, conversationId } = params;
 
+        // A. Verificar si el remitente es Juan (Administrador / Dueño) interactuando con Karen
+        if (isJuan(whatsappId)) {
+            const karenReply = await processJuanCommand(messageText);
+            await sendWhatsAppMessage(whatsappId, karenReply);
+            await prisma.wAMessage.create({
+                data: {
+                    conversationId,
+                    whatsappMessageId: `karen-juan-${Date.now()}`,
+                    direction: 'OUTBOUND',
+                    type: 'text',
+                    body: karenReply,
+                    status: 'SENT',
+                    senderId: 'KAREN_CHIEF_DIRECT'
+                }
+            });
+            console.log(`[KAREN_JUAN_INTERACTION] Karen respondió comando a Juan en WhatsApp`);
+            return karenReply;
+        }
+
+        // Registrar timestamp de actividad entrante para control de inactividad de Karen
+        karenState.lastIncomingAt = Date.now();
+
+        // B. Verificar si Karen puso el sistema en MODO MANUAL (🔴)
+        if (karenState.mode === "MANUAL") {
+            console.log(`[KAREN_MANUAL_MODE] WhatsApp en modo manual: se omite respuesta automática para ${whatsappId}`);
+            return null;
+        }
+
+        // C. Interceptar flujos conversacionales de Registro y Cotizador 1111 con botBrain
+        const brainRes = await processConversationalBotMessage(messageText, {
+            senderId: whatsappId,
+            senderName: contactName,
+            channel: 'WHATSAPP'
+        });
+
+        if (brainRes.handled) {
+            // Marcar conversación explícitamente como AUTO_REGISTER para el tercer apartado del CRM
+            await prisma.wAConversation.update({
+                where: { id: conversationId },
+                data: { status: 'AUTO_REGISTER', priority: 'HIGH' }
+            }).catch(() => {});
+
+            karenState.burstCounters.autoRegister++;
+            notifyJuanIncomingBurst().catch(() => {});
+
+            await sendWhatsAppMessage(whatsappId, brainRes.replyText);
+            await prisma.wAMessage.create({
+                data: {
+                    conversationId,
+                    whatsappMessageId: `bot-brain-${Date.now()}`,
+                    direction: 'OUTBOUND',
+                    type: 'text',
+                    body: brainRes.replyText,
+                    status: 'SENT',
+                    senderId: 'BOT_ATOMIC_BRAIN'
+                }
+            });
+            console.log(`[BOT_BRAIN_WHATSAPP_SUCCESS] Respondió flujo conversacional a ${whatsappId}`);
+            return brainRes.replyText;
+        }
+
         // 1. Historial reciente para contexto
         const recentMessages = await prisma.wAMessage.findMany({
             where: { conversationId },
@@ -184,6 +254,9 @@ export async function handleIncomingWhatsAppBot(params: {
         let systemPrompt = "";
 
         if (isRecruitment) {
+            karenState.burstCounters.recruitment++;
+            notifyJuanIncomingBurst().catch(() => {});
+
             // === MUNDO RECLUTAMIENTO / RECURSOS HUMANOS ===
             systemPrompt = `
 Eres la Asistente de Selección y Talento Humano de ATOMIC Electronics Ecuador.
@@ -207,6 +280,50 @@ INSTRUCCIÓN CLAVE DE RESPUESTA:
 5. Mantén un tono motivador, seguro y sumamente humano (usa emojis sobrios como 💼, 🚀, 📲).
 `;
         } else {
+            const isCommercial = 
+                textLower.includes('precio') || 
+                textLower.includes('cuanto') || 
+                textLower.includes('cuánto') || 
+                textLower.includes('cotiz') || 
+                textLower.includes('compr') || 
+                textLower.includes('vend') || 
+                textLower.includes('proforma') || 
+                textLower.includes('camara') || 
+                textLower.includes('cámara') || 
+                textLower.includes('portero') || 
+                textLower.includes('torniquet') || 
+                textLower.includes('citofon') || 
+                textLower.includes('cerco') || 
+                textLower.includes('antena') || 
+                textLower.includes('seguridad') || 
+                textLower.includes('hola') || 
+                textLower.includes('buenas') || 
+                textLower.includes('catalogo') || 
+                textLower.includes('catálogo') ||
+                textLower.includes('info');
+
+            if (isCommercial) {
+                karenState.burstCounters.sales++;
+                const isHotOpportunity = 
+                    textLower.includes('torniquet') || 
+                    textLower.includes('molinete') || 
+                    textLower.includes('collective') || 
+                    textLower.includes('edificio') || 
+                    textLower.includes('conjunto') || 
+                    textLower.includes('antihurto') || 
+                    textLower.includes('biometric') || 
+                    textLower.includes('mayorista');
+
+                if (isHotOpportunity) {
+                    notifyJuanHotOpportunity(contactName, whatsappId, messageText).catch(() => {});
+                }
+                notifyJuanIncomingBurst().catch(() => {});
+            } else {
+                karenState.burstCounters.uncataloged++;
+                notifyJuanUncatalogedChat(contactName, whatsappId, messageText, conversationId).catch(() => {});
+                notifyJuanIncomingBurst().catch(() => {});
+            }
+
             // === MUNDO COMERCIAL: ASESOR CONSULTIVO EXPERTO DE VENTAS ===
             const dbProducts = await searchLiveProducts(messageText);
             let liveInventorySnippet = "";

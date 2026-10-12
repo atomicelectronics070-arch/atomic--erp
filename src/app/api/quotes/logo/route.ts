@@ -56,7 +56,7 @@ export async function GET(req: Request) {
     }
 
     if (format === "png") {
-      return new Response(logo.buffer, {
+      return new Response(new Uint8Array(logo.buffer), {
         status: 200,
         headers: {
           "Content-Type": "image/png",
