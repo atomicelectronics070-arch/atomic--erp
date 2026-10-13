@@ -370,11 +370,15 @@ export default function PersonalBotBubble() {
             .replace(/\n/g, '<br/>')
     }
 
-    const displayName = session?.user?.name ? "Guía de ATOMIC" : "Asistente ATOMIC"
-
     const activeShortcuts = ALL_AVAILABLE_SHORTCUTS.filter(s => activeShortcutIds.includes(s.id))
 
+    // Ocultar completamente el bot y los atajos en páginas públicas de informes
+    if (pathname?.startsWith("/informes") || pathname?.startsWith("/web/informes")) {
+        return null
+    }
+
     return (
+
         <>
             {/* ═══════════════════════════════════════════════════════════════════════════
                 STACK VERTICAL DE ATAJOS FLOTANTES + BOTÓN GUÍA (ABOVE DOCK ON MOBILE)
