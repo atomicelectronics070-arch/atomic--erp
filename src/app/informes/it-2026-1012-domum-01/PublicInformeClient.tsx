@@ -49,8 +49,21 @@ export default function PublicInformeClient() {
 
     return (
         <div className="min-h-screen bg-white text-slate-900 selection:bg-orange-500 selection:text-white">
+            {/* Fail-safe de seguridad visual: Ocultar cualquier bot o widget flotante */}
+            <style dangerouslySetInnerHTML={{ __html: `
+                .fixed.bottom-28,
+                .fixed.bottom-8,
+                [title="Abrir Guía de ATOMIC"],
+                [title*="Guía"] {
+                    display: none !important;
+                    visibility: hidden !important;
+                    opacity: 0 !important;
+                    pointer-events: none !important;
+                }
+            ` }} />
             {/* Barra superior institucional - Fondo blanco pulcro con acentos tomate */}
             <header className="border-b border-slate-200 bg-white/95 backdrop-blur-md sticky top-0 z-40 shadow-xs">
+
                 <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-orange-600 flex items-center justify-center text-white font-black text-base shadow-sm">
