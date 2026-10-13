@@ -233,6 +233,7 @@ export default function DashboardLayout({
                             <div className="pt-3 pb-1 px-3.5 text-[11px] font-normal tracking-[0.5px] text-cyan-400/80 font-mono uppercase">
                                 Gestión Administrativa
                             </div>
+                            <GlassNavItem href="/dashboard/informes-tecnicos" icon={<FileText size={18} strokeWidth={1.8} />} label="Informes Técnicos" isActive={pathname.startsWith('/dashboard/informes-tecnicos')} />
                             <GlassNavItem href="/dashboard/coordinacion" icon={<Users size={18} strokeWidth={1.8} />} label="Coordinación" isActive={pathname.startsWith('/dashboard/coordinacion')} />
                             <GlassNavItem href="/dashboard/supervision" icon={<Shield size={18} strokeWidth={1.8} />} label="Supervisión" isActive={pathname.startsWith('/dashboard/supervision')} />
                             <GlassNavItem href="/dashboard/whatsapp/crm" icon={<Smartphone size={18} strokeWidth={1.8} />} label="CRM WhatsApp" isActive={pathname.startsWith('/dashboard/whatsapp/crm')} />
