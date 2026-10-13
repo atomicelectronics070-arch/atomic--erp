@@ -16,8 +16,10 @@ import {
 import SalesCopyManager from "./SalesCopyManager"
 import { getCategoryLandingSlug } from "./SuicideSquadWarRoom"
 import { sanitizeProductPrice, sanitizeProductImage } from "@/lib/productSanitizer"
-import { getCategoryBySlug } from "@/lib/data/suicideSquadCategories"
 import { generateCategoryCatalogPDF } from "@/lib/pdf/categoryCatalogPdf"
+import SoftwareDailyWorkspace from "./software/SoftwareDailyWorkspace"
+import SupervisionDailyWorkspace from "./supervision/SupervisionDailyWorkspace"
+import EdicionDailyWorkspace from "./edicion/EdicionDailyWorkspace"
 
 export type RoleType = "VENTAS" | "COORDINACION" | "SUPERVISION" | "TECNICO" | "EDICION" | "SOFTWARE"
 
@@ -867,7 +869,14 @@ export default function RutaDelDiaWorkspace({
                 ═══════════════════════════════════════════════════════════ */}
                 {activeTab === "actividades" && (
                     <div className="max-w-5xl mx-auto space-y-6">
-                        
+                        {selectedRole === "SUPERVISION" ? (
+                            <SupervisionDailyWorkspace onSwitchRole={(r) => setSelectedRole(r)} />
+                        ) : selectedRole === "SOFTWARE" ? (
+                            <SoftwareDailyWorkspace />
+                        ) : selectedRole === "EDICION" ? (
+                            <EdicionDailyWorkspace />
+                        ) : (
+                            <>
                         {/* Daily Motivational Status Card */}
                         <div className="p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-emerald-950/40 via-slate-900/80 to-cyan-950/40 border border-emerald-500/30 flex flex-col sm:flex-row items-center justify-between gap-4">
                             <div className="space-y-1 text-center sm:text-left">
@@ -1083,7 +1092,8 @@ export default function RutaDelDiaWorkspace({
                                 </button>
                             </div>
                         </div>
-
+                            </>
+                        )}
                     </div>
                 )}
 

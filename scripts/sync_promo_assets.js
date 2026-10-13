@@ -139,5 +139,29 @@ if (fs.existsSync(templateSrc)) {
   }
 }
 
+// Copy Genuine PLAN DE PROPUESTAS PDF (DITEC Commercial Reference)
+const planCandidates = [
+  'C:/Users/SANTIAGO/.gemini/antigravity/brain/9ce93935-4804-41b7-a54b-256f7ab20e4e/PLAN DE PROPUESTAS.pdf',
+  path.join(downloadsDir, 'PLAN DE PROPUESTAS.pdf')
+];
+const docDstDir = path.join(publicDir, 'documentos');
+if (!fs.existsSync(docDstDir)) fs.mkdirSync(docDstDir, { recursive: true });
+const planDst = path.join(docDstDir, 'PLAN_DE_PROPUESTAS_DITEC.pdf');
+const desktopPlanDst = 'C:/Users/SANTIAGO/Desktop/PLAN_DE_PROPUESTAS_DITEC.pdf';
+
+for (const p of planCandidates) {
+  if (fs.existsSync(p)) {
+    try {
+      fs.copyFileSync(p, planDst);
+      fs.copyFileSync(p, desktopPlanDst);
+      console.log(`✅ [ASSET-SYNC] Genuine PLAN DE PROPUESTAS copiado a ${planDst} y Desktop`);
+      break;
+    } catch (e) {
+      console.error('Error al copiar PLAN DE PROPUESTAS:', e);
+    }
+  }
+}
+
 console.log('✅ [ASSET-SYNC] Master Asset Sync completado.');
+
 

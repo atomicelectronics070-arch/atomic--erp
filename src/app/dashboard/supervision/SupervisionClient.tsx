@@ -13,6 +13,7 @@ import {
     LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
     ReferenceLine, Area, AreaChart
 } from "recharts"
+import RutaDelDiaWorkspace from "@/components/tools/RutaDelDiaWorkspace"
 
 // ─────────────────────────────────────────────────────────────────────────────
 // TYPES
@@ -167,7 +168,7 @@ export default function SupervisionClient({ session }: { session: any }) {
     const [todayAttendance, setTodayAttendance] = useState<AttendanceRecord | null>(null)
 
     // ── MODAL STATE ──────────────────────────────────────────────────────────
-    const [activeTab, setActiveTab] = useState<"asistencia"|"auditoria"|"ciclos"|"tareas"|"crm">("asistencia")
+    const [activeTab, setActiveTab] = useState<"asistencia"|"auditoria"|"ciclos"|"tareas"|"crm"|"ruta_dia">("asistencia")
     const [checkModal, setCheckModal] = useState<"personal"|"empresa"|"marketing"|null>(null)
     const [addCycleOpen, setAddCycleOpen] = useState(false)
     const [sendTaskOpen, setSendTaskOpen] = useState(false)
@@ -493,13 +494,14 @@ export default function SupervisionClient({ session }: { session: any }) {
 
             {/* ── TABS ────────────────────────────────────────────────── */}
             <div className="flex items-center gap-1 bg-slate-900/80 border border-slate-800 rounded-2xl p-1 overflow-x-auto">
-                {(["asistencia", "auditoria", "ciclos", "tareas", "crm"] as const).map(tab => {
+                {(["asistencia", "auditoria", "ciclos", "tareas", "crm", "ruta_dia"] as const).map(tab => {
                     const labels: Record<string, string> = {
                         asistencia: "📊 Asistencia & Plano",
                         auditoria: "🗂️ Auditoría Diaria",
                         ciclos: "⏱️ Ciclos Laborales",
                         tareas: "📋 Pendientes Dirigidos",
-                        crm: "👥 Clientes & CRM"
+                        crm: "👥 Clientes & CRM",
+                        ruta_dia: "🗺️ Rutas del Día & Cuadrillas"
                     }
                     return (
                         <button
@@ -900,6 +902,14 @@ export default function SupervisionClient({ session }: { session: any }) {
                             {delegated.length === 0 && (
                                 <div className="py-12 text-center text-slate-500 font-mono text-sm">No hay clientes delegados</div>
                             )}
+                        </div>
+                    </motion.div>
+                )}
+
+                {activeTab === "ruta_dia" && (
+                    <motion.div key="ruta_dia" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-4">
+                        <div className="rounded-3xl border border-slate-800 bg-[#040714] overflow-hidden min-h-[750px]">
+                            <RutaDelDiaWorkspace embedded={true} isOpen={true} />
                         </div>
                     </motion.div>
                 )}

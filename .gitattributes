@@ -1,0 +1,7 @@
+# Treat binary files as binary so CRLF is never touched
+*.pdf binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary

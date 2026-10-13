@@ -26,18 +26,22 @@ const ATOMIC_DEFAULT_ACCOUNTS: Record<string, { name: string; role: string; area
     // ── Cuentas Nominales Oficiales del Equipo ───────────────────────────
     "kevinbarrera@atomicventas.com":      { name: "Kevin Barrera",                  role: "SALESPERSON", area: "Ventas" },
     "juanguzman@atomicsupervision.com":   { name: "Juan Guzman",                    role: "COORDINATOR", area: "Supervisión" },
+    "atomic@industrias.ec":               { name: "Juan Guzman (Supervisión)",      role: "COORDINATOR", area: "Supervisión" },
     "nicolascarrera@atomiclabs.com":      { name: "Nicolás Carrera",                role: "SALESPERSON", area: "Ventas" },
     "crisrivera@atomiccoordinacion.com":  { name: "Cris Rivera",                    role: "COORDINATOR", area: "Coordinación" },
     "luisasabando@atomicventas.com":      { name: "Luisa Sabando",                  role: "SALESPERSON", area: "Ventas" },
+    "stefy@atomicedicion.com":            { name: "Stefy (Edición & Media)",        role: "USER",        area: "Media" },
 }
 
 // Contraseñas nominales específicas (también admiten atomic2026)
 const NAMED_PASSWORDS: Record<string, string> = {
     "kevinbarrera@atomicventas.com":      "Kevinventas2026",
     "juanguzman@atomicsupervision.com":   "JuanSuper2026",
+    "atomic@industrias.ec":               "JuanSuper2026",
     "nicolascarrera@atomiclabs.com":      "NicolasCarrera2026",
     "crisrivera@atomiccoordinacion.com":  "CrisRivera2026",
     "luisasabando@atomicventas.com":      "LuisaVentas2026",
+    "stefy@atomicedicion.com":            "StefyEdicion2026",
 }
 
 export const authOptions: NextAuthOptions = {

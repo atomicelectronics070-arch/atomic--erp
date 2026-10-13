@@ -31,10 +31,10 @@ export default function InformesClient() {
     const handleDescargarRecursos = () => {
         showToast("📦 Descargando paquete de recursos (Informe Oficial + Plan de Precios)...")
         setTimeout(() => {
-            downloadFile("/documentos/INFORME_TECNICO_DOMUM_BARRERAS_DITEC_2026.pdf", "INFORME_TECNICO_DOMUM_BARRERAS_DITEC_2026.pdf")
+            downloadFile("/api/documentos/INFORME_TECNICO_DOMUM_BARRERAS_DITEC_2026.pdf", "INFORME_TECNICO_DOMUM_BARRERAS_DITEC_2026.pdf")
         }, 300)
         setTimeout(() => {
-            downloadFile("/documentos/PLAN_DE_PROPUESTAS_DITEC.pdf", "PLAN_DE_PROPUESTAS_REFERENCIA_DITEC.pdf")
+            downloadFile("/api/documentos/PLAN_DE_PROPUESTAS_DITEC.pdf", "PLAN_DE_PROPUESTAS_REFERENCIA_DITEC.pdf")
         }, 1200)
     }
 
@@ -46,8 +46,19 @@ export default function InformesClient() {
     // Botón 3: Descargar PDF Oficial
     const handleDescargarInformeDirecto = () => {
         showToast("📄 Descargando Informe Técnico Oficial en PDF...")
-        downloadFile("/documentos/INFORME_TECNICO_DOMUM_BARRERAS_DITEC_2026.pdf", "INFORME_TECNICO_DOMUM_BARRERAS_DITEC_2026.pdf")
+        downloadFile("/api/documentos/INFORME_TECNICO_DOMUM_BARRERAS_DITEC_2026.pdf", "INFORME_TECNICO_DOMUM_BARRERAS_DITEC_2026.pdf")
     }
+
+    // Botón 4: Copiar Enlace Público para Clientes
+    const handleCopiarEnlace = () => {
+        const url = "https://atomiccotizador.shop/informes/it-2026-1012-domum-01"
+        navigator.clipboard.writeText(url).then(() => {
+            showToast("🔗 Enlace oficial copiado: " + url)
+        }).catch(() => {
+            showToast("Enlace oficial: " + url)
+        })
+    }
+
 
     return (
         <div className="min-h-screen pb-24 text-slate-100">
@@ -198,7 +209,7 @@ export default function InformesClient() {
                             </button>
                         </div>
 
-                        <div>
+                        <div className="flex flex-wrap items-center gap-2">
                             {/* BOTÓN 3: Descargar PDF Oficial */}
                             <button
                                 onClick={handleDescargarInformeDirecto}
@@ -207,8 +218,30 @@ export default function InformesClient() {
                                 <FileText size={16} className="text-cyan-400" />
                                 <span>Descargar PDF Oficial</span>
                             </button>
+
+                            {/* Copiar Enlace Público para Clientes */}
+                            <button
+                                onClick={handleCopiarEnlace}
+                                className="px-3.5 py-3 rounded-2xl text-xs font-mono font-semibold bg-cyan-950/40 hover:bg-cyan-900/60 border border-cyan-500/30 text-cyan-300 transition-all flex items-center gap-2"
+                                title="Copiar enlace oficial de producción: https://atomiccotizador.shop/informes/it-2026-1012-domum-01"
+                            >
+                                <Share2 size={15} />
+                                <span>Copiar Enlace Público</span>
+                            </button>
+
+                            {/* Abrir Página Oficial Standalone */}
+                            <a
+                                href="/informes/it-2026-1012-domum-01"
+                                target="_blank"
+                                rel="noreferrer"
+                                className="px-3 py-3 rounded-2xl text-xs font-bold bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 transition-all flex items-center gap-1.5"
+                                title="Abrir página oficial de visualización pública en nueva pestaña"
+                            >
+                                <ExternalLink size={15} />
+                            </a>
                         </div>
                     </div>
+
                 </div>
             </article>
 
