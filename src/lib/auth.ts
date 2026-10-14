@@ -31,6 +31,9 @@ const ATOMIC_DEFAULT_ACCOUNTS: Record<string, { name: string; role: string; area
     "crisrivera@atomiccoordinacion.com":  { name: "Cris Rivera",                    role: "COORDINATOR", area: "Coordinación" },
     "luisasabando@atomicventas.com":      { name: "Luisa Sabando",                  role: "SALESPERSON", area: "Ventas" },
     "luisasabando247@gmail.com":          { name: "Luisa Sabando",                  role: "SALESPERSON", area: "Ventas" },
+    "nuryvelasco@atomicventas.com":       { name: "Nury Velasco",                   role: "SALESPERSON", area: "Ventas" },
+    "nuryvelasco2005@gmail.com":          { name: "Nury Velasco",                   role: "SALESPERSON", area: "Ventas" },
+    "nuryv156@gmail.com":                 { name: "Nury Velasco",                   role: "SALESPERSON", area: "Ventas" },
     "stefy@atomicedicion.com":            { name: "Stefy (Edición & Media)",        role: "USER",        area: "Media" },
 }
 
@@ -43,6 +46,9 @@ const NAMED_PASSWORDS: Record<string, string> = {
     "crisrivera@atomiccoordinacion.com":  "CrisRivera2026",
     "luisasabando@atomicventas.com":      "LuisaVentas2026",
     "luisasabando247@gmail.com":          "LuisaVentas2026",
+    "nuryvelasco@atomicventas.com":       "NuryVentas2026",
+    "nuryvelasco2005@gmail.com":          "NuryVentas2026",
+    "nuryv156@gmail.com":                 "NuryVentas2026",
     "stefy@atomicedicion.com":            "StefyEdicion2026",
 }
 
