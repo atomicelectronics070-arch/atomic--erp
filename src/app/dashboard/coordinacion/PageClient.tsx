@@ -5,10 +5,14 @@ import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { 
     Clock, CheckSquare, Save, Users, Calendar, 
-    Video, MessageSquare, AlertCircle, FileText, Send, DollarSign, Download, Check, X, ChevronUp, ChevronDown, Sparkles, Filter, Database, UserCheck, ShieldCheck
+    Video, MessageSquare, AlertCircle, FileText, Send, DollarSign, Download, Check, X, ChevronUp, ChevronDown, Sparkles, Filter, Database, UserCheck, ShieldCheck,
+    KeyRound, ShieldAlert
 } from "lucide-react"
 import AdvisorsTabContent from "@/components/coordinacion/AdvisorsTabContent"
 import SalesCopyManager from "@/components/tools/SalesCopyManager"
+import EquipoAsistenciasModal from "@/components/coordinacion/EquipoAsistenciasModal"
+import GestorCuentasModal from "@/components/coordinacion/GestorCuentasModal"
+import BajoComisionModal from "@/components/coordinacion/BajoComisionModal"
 
 export default function CoordinacionPage() {
     const { data: session, status } = useSession()
@@ -24,6 +28,11 @@ export default function CoordinacionPage() {
     
     const [activeTab, setActiveTab] = useState<"ASESORES" | "BITACORA" | "COTIZACIONES" | "SCRAPER" | "SCRIPTS">("ASESORES")
     
+    // Modals for team attendance and account manager
+    const [showEquipoAsistenciasModal, setShowEquipoAsistenciasModal] = useState(false)
+    const [showGestorCuentasModal, setShowGestorCuentasModal] = useState(false)
+    const [showBajoComisionModal, setShowBajoComisionModal] = useState(false)
+
     const [notices, setNotices] = useState("")
     const [publishToSocial, setPublishToSocial] = useState(false)
     
@@ -332,10 +341,32 @@ export default function CoordinacionPage() {
                     </p>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-3">
+                <div className="flex flex-wrap items-center gap-2.5">
+                    {/* Botón Destacado: Ajustar Asistencias de Equipo */}
+                    <button
+                        type="button"
+                        onClick={() => setShowEquipoAsistenciasModal(true)}
+                        className="px-4 py-2.5 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-mono text-xs font-black uppercase tracking-wider flex items-center gap-2 shadow-lg shadow-cyan-950/60 transition-all active:scale-95 cursor-pointer border border-cyan-400/50"
+                        title="Gestionar asistencias, ciclos laborales y calendario de cada asesor"
+                    >
+                        <Calendar size={15} className="stroke-[2.5]" />
+                        <span>Ajustar Asistencias de Equipo</span>
+                    </button>
+
+                    {/* Botón Destacado: Gestor de Cuentas */}
+                    <button
+                        type="button"
+                        onClick={() => setShowGestorCuentasModal(true)}
+                        className="px-4 py-2.5 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black font-mono text-xs font-black uppercase tracking-wider flex items-center gap-2 shadow-lg shadow-amber-950/50 transition-all active:scale-95 cursor-pointer border border-amber-400/60"
+                        title="Crear y delegar cuentas de plataformas a colaboradores"
+                    >
+                        <KeyRound size={15} className="stroke-[2.5]" />
+                        <span>Gestor de Cuentas</span>
+                    </button>
+
                     {/* Date Selector */}
-                    <div className="bg-slate-900 border border-slate-800 rounded-2xl px-4 py-2 flex items-center gap-2">
-                        <Calendar size={15} className="text-cyan-400" />
+                    <div className="bg-slate-900 border border-slate-800 rounded-2xl px-3.5 py-2 flex items-center gap-2">
+                        <Calendar size={14} className="text-cyan-400" />
                         <span className="text-[10px] font-mono text-slate-400 font-bold uppercase">FECHA:</span>
                         <input 
                             type="date" 
@@ -348,14 +379,14 @@ export default function CoordinacionPage() {
                     {/* Test Mode Toggle */}
                     <button 
                         onClick={() => setIsTestMode(!isTestMode)}
-                        className={`px-4 py-2.5 rounded-2xl font-mono text-xs font-bold border transition-all flex items-center gap-2 ${
+                        className={`px-3 py-2 rounded-2xl font-mono text-xs font-bold border transition-all flex items-center gap-1.5 ${
                             isTestMode 
                                 ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 shadow-[0_0_15px_rgba(245,158,11,0.3)]' 
                                 : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-white'
                         }`}
                     >
-                        <CheckSquare size={15} className={isTestMode ? "text-amber-400" : ""} />
-                        <span>{isTestMode ? "✓ Modo Prueba Activo" : "Modo Prueba"}</span>
+                        <CheckSquare size={14} className={isTestMode ? "text-amber-400" : ""} />
+                        <span>{isTestMode ? "Modo Prueba" : "Prueba"}</span>
                     </button>
                 </div>
             </div>
@@ -917,6 +948,23 @@ export default function CoordinacionPage() {
                     </motion.div>
                 )}
             </AnimatePresence>
+
+            {/* Modales Operativos: Ajuste Asistencias, Gestor de Cuentas y Bajo Comisión */}
+            <EquipoAsistenciasModal 
+                isOpen={showEquipoAsistenciasModal} 
+                onClose={() => setShowEquipoAsistenciasModal(false)} 
+            />
+
+            <GestorCuentasModal 
+                isOpen={showGestorCuentasModal} 
+                onClose={() => setShowGestorCuentasModal(false)} 
+            />
+
+            <BajoComisionModal 
+                isOpen={showBajoComisionModal} 
+                onClose={() => setShowBajoComisionModal(false)} 
+                advisorName={session?.user?.name || "Asesor"}
+            />
         </div>
     )
 }

@@ -7,7 +7,7 @@ import Link from "next/link"
 import {
     Briefcase, Globe, Target, Cpu, CheckCircle2, ChevronRight,
     Users, Star, TrendingUp, Monitor, ShieldCheck, ArrowRight,
-    Award, Layers, Zap
+    Award, Layers, Zap, Video, CalendarCheck, Clock, Sparkles, PhoneCall
 } from "lucide-react"
 
 const BENEFITS = [
@@ -55,9 +55,14 @@ export default function EmpleoLandingPage() {
                         </div>
                         <span className="text-xl font-black text-white tracking-tight">Atomic Careers</span>
                     </div>
-                    <Link href="/register?role=SALESPERSON" className="px-6 py-2.5 rounded-full bg-slate-900/50 backdrop-blur-xl border-slate-700/50 text-slate-100 font-bold text-sm hover:bg-slate-200 transition-colors">
-                        Aplicar Ahora
-                    </Link>
+                    <div className="flex items-center gap-3">
+                        <Link href="/web/empleo-freelance" className="hidden sm:inline-flex px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 font-bold text-xs hover:bg-amber-500/20 transition-all">
+                            ⚡ Ver Vendedor Bajo Comisión (Freelance)
+                        </Link>
+                        <Link href="/register?role=SALESPERSON" className="px-6 py-2.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-black font-black text-sm transition-all shadow-lg shadow-emerald-950/50">
+                            Aplicar Ahora
+                        </Link>
+                    </div>
                 </div>
             </nav>
 
@@ -140,6 +145,89 @@ export default function EmpleoLandingPage() {
                             </div>
                         </motion.div>
                     </div>
+                </section>
+
+                {/* 2.5 OFICINA VIRTUAL & ACTIVIDADES QUE MANTIENEN VIVA LA OFICINA */}
+                <section className="max-w-7xl mx-auto px-6">
+                    <motion.div
+                        initial={{ opacity: 0, y: 25 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="p-8 md:p-12 rounded-[2.5rem] bg-gradient-to-br from-[#0c1836] via-[#091126] to-[#040814] border-2 border-cyan-500/40 shadow-[0_0_80px_rgba(6,182,212,0.18)] space-y-8"
+                    >
+                        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-white/10 pb-6">
+                            <div>
+                                <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-500/15 border border-cyan-500/40 text-cyan-300 font-mono text-xs font-bold uppercase tracking-widest mb-3">
+                                    <Sparkles size={14} /> Dinámica de Operaciones Diarias
+                                </span>
+                                <h2 className="text-3xl md:text-4xl font-black text-white">
+                                    Actividades que Mantienen Viva la Oficina Virtual
+                                </h2>
+                                <p className="text-slate-300 text-sm md:text-base mt-2 max-w-2xl">
+                                    Como asesor comercial de staff fijo en nuestra <strong>Oficina Virtual</strong>, tu compromiso diario se mide a través del cumplimiento de las actividades operativas, puntualidad y el contacto directo con tu coordinación.
+                                </p>
+                            </div>
+
+                            <Link 
+                                href="/web/empleo-freelance"
+                                className="px-5 py-3 rounded-2xl bg-amber-500/15 border border-amber-500/40 hover:bg-amber-500/25 text-amber-300 text-xs font-bold transition-all flex items-center gap-2 shrink-0"
+                            >
+                                <span>¿Prefieres modalidad 100% freelance sin oficina?</span>
+                                <ArrowRight size={14} />
+                            </Link>
+                        </div>
+
+                        <div className="grid md:grid-cols-3 gap-6">
+                            {/* Pilar 1: Reuniones en Zoom */}
+                            <div className="p-6 rounded-3xl bg-white/5 border border-white/10 space-y-3 hover:border-cyan-500/30 transition-all">
+                                <div className="w-12 h-12 rounded-2xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold">
+                                    <Video size={24} />
+                                </div>
+                                <h3 className="text-xl font-bold text-white">Reuniones Diarias en Zoom</h3>
+                                <p className="text-slate-400 text-sm leading-relaxed">
+                                    Deberás asistir puntualmente a las sesiones sincrónicas del equipo en Zoom para alineación de promociones, revisión de stock de remate y soporte técnico comercial en vivo.
+                                </p>
+                            </div>
+
+                            {/* Pilar 2: Marcaje de Asistencias */}
+                            <div className="p-6 rounded-3xl bg-white/5 border border-white/10 space-y-3 hover:border-emerald-500/30 transition-all">
+                                <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
+                                    <CalendarCheck size={24} />
+                                </div>
+                                <h3 className="text-xl font-bold text-white">Timbrado y Asistencias</h3>
+                                <p className="text-slate-400 text-sm leading-relaxed">
+                                    Registrarás tu timbrado de entrada y salida oficial en la plataforma todos los días. Cada jornada de tu ciclo laboral se refleja en tiempo real en tu matriz gráfica de 30 días.
+                                </p>
+                            </div>
+
+                            {/* Pilar 3: Seguimiento y Justificaciones con Asesores */}
+                            <div className="p-6 rounded-3xl bg-white/5 border border-white/10 space-y-3 hover:border-indigo-500/30 transition-all">
+                                <div className="w-12 h-12 rounded-2xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold">
+                                    <ShieldCheck size={24} />
+                                </div>
+                                <h3 className="text-xl font-bold text-white">Seguimiento con Coordinación</h3>
+                                <p className="text-slate-400 text-sm leading-relaxed">
+                                    Todo seguimiento de tus actividades operativas, metas diarias, permisos o justificaciones de inasistencia se llevará de forma transparente y directa con tus coordinadores y asesores designados.
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Banner resumen de tareas diarias */}
+                        <div className="p-5 rounded-2xl bg-black/40 border border-white/10 flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-mono">
+                            <div className="flex items-center gap-3 text-slate-300">
+                                <Clock size={18} className="text-cyan-400 shrink-0" />
+                                <span>
+                                    <strong>Tareas Diarias Clave:</strong> 5 publicaciones en Marketplace • 3 en grupos FB • 10 prospectos en Maps • 7 llamadas • 5 estados WhatsApp
+                                </span>
+                            </div>
+                            <Link 
+                                href="/register?role=SALESPERSON"
+                                className="px-5 py-2.5 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-black font-black uppercase tracking-wider shrink-0 transition-transform hover:scale-105"
+                            >
+                                Iniciar Carrera Fija
+                            </Link>
+                        </div>
+                    </motion.div>
                 </section>
 
                 {/* 3. METODOLOGÍA & PLATAFORMA */}

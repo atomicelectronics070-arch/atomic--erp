@@ -9,7 +9,7 @@ import {
     ShoppingBag, Menu, X, Calendar, Edit3, Mail, BrainCircuit,
     Bot, Globe, BarChart3, GraduationCap, Code2, User, Smartphone,
     Share2, Map, Layers, DollarSign, ShieldCheck, FileSpreadsheet,
-    Table, Bell, Lock, Hexagon, ChevronDown, Sparkles, Scan, Wrench, Shield, Cpu, Link2, Flame, CalendarCheck
+    Table, Bell, Lock, Hexagon, ChevronDown, Sparkles, Scan, Wrench, Shield, Cpu, Link2, Flame, CalendarCheck, KeyRound
 } from "lucide-react"
 import { useState, useEffect } from "react"
 import NotificationBell from "@/components/NotificationBell"
@@ -235,6 +235,8 @@ export default function DashboardLayout({
                             </div>
                             <GlassNavItem href="/dashboard/informes-tecnicos" icon={<FileText size={18} strokeWidth={1.8} />} label="Informes Técnicos" isActive={pathname.startsWith('/dashboard/informes-tecnicos')} />
                             <GlassNavItem href="/dashboard/coordinacion" icon={<Users size={18} strokeWidth={1.8} />} label="Coordinación" isActive={pathname.startsWith('/dashboard/coordinacion')} />
+                            <GlassNavItem href="/dashboard/coordinacion" icon={<Calendar size={18} strokeWidth={1.8} />} label="Ajustar Asistencias" isActive={pathname.startsWith('/dashboard/coordinacion')} />
+                            <GlassNavItem href="/dashboard/coordinacion" icon={<KeyRound size={18} strokeWidth={1.8} />} label="Gestor de Cuentas" isActive={pathname.startsWith('/dashboard/coordinacion')} />
                             <GlassNavItem href="/dashboard/supervision" icon={<Shield size={18} strokeWidth={1.8} />} label="Supervisión" isActive={pathname.startsWith('/dashboard/supervision')} />
                             <GlassNavItem href="/dashboard/whatsapp/crm" icon={<Smartphone size={18} strokeWidth={1.8} />} label="CRM WhatsApp" isActive={pathname.startsWith('/dashboard/whatsapp/crm')} />
                             <GlassNavItem href="/dashboard/whatsapp/leads" icon={<Users size={18} strokeWidth={1.8} />} label="Gestión Leads" isActive={pathname.startsWith('/dashboard/whatsapp/leads')} />

@@ -7,13 +7,17 @@ import { useSession } from "next-auth/react"
 import { 
     MessageSquare, Table, Plus, User, Users, Scan, 
     ShoppingBag, Map, GraduationCap, Grid, Wrench, Shield, 
-    Layers, Cpu, ChevronUp, X, Home, Flame, CalendarCheck, Globe, CheckSquare 
+    Layers, Cpu, ChevronUp, X, Home, Flame, CalendarCheck, Globe, CheckSquare,
+    KeyRound, ShieldAlert, Sparkles, Clock
 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import TeamContactsModal from "./TeamContactsModal"
 import BarcodeScannerModal from "@/components/scanner/BarcodeScannerModal"
 import ToolsModal from "@/components/tools/ToolsModal"
 import RutaDelDiaWorkspace from "@/components/tools/RutaDelDiaWorkspace"
+import BajoComisionModal from "@/components/coordinacion/BajoComisionModal"
+import EquipoAsistenciasModal from "@/components/coordinacion/EquipoAsistenciasModal"
+import GestorCuentasModal from "@/components/coordinacion/GestorCuentasModal"
 
 function MobileBottomDockInner() {
     const { data: session } = useSession()
@@ -30,6 +34,33 @@ function MobileBottomDockInner() {
     const [showRutaModal, setShowRutaModal] = useState(false)
     const [toolsInitialTab, setToolsInitialTab] = useState<any>("grid")
     const [showMoreMenu, setShowMoreMenu] = useState(false)
+    const [showBajoComisionModal, setShowBajoComisionModal] = useState(false)
+    const [showEquipoAsistenciasModal, setShowEquipoAsistenciasModal] = useState(false)
+    const [showGestorCuentasModal, setShowGestorCuentasModal] = useState(false)
+    const [quickClockLoading, setQuickClockLoading] = useState(false)
+    const [quickClockToast, setQuickClockToast] = useState<string | null>(null)
+
+    const handleQuickClock = async () => {
+        setQuickClockLoading(true)
+        try {
+            const res = await fetch("/api/admin/attendance-team", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ action: "quick_clock" })
+            })
+            const data = await res.json()
+            if (data.success) {
+                setQuickClockToast(`✅ ${data.message}`)
+                setTimeout(() => setQuickClockToast(null), 3500)
+            } else {
+                alert(data.error || "No se pudo registrar asistencia rápida")
+            }
+        } catch (e: any) {
+            alert(e.message || "Error al registrar asistencia")
+        } finally {
+            setQuickClockLoading(false)
+        }
+    }
 
     const isCrmActive = pathname.startsWith("/dashboard/whatsapp")
     const isAsistenciaActive = pathname.startsWith("/dashboard/asistencia")
@@ -48,6 +79,17 @@ function MobileBottomDockInner() {
             <BarcodeScannerModal isOpen={showScannerModal} onClose={() => setShowScannerModal(false)} />
             <ToolsModal isOpen={showToolsModal} onClose={() => setShowToolsModal(false)} initialTab={toolsInitialTab} />
             <RutaDelDiaWorkspace isOpen={showRutaModal} onClose={() => setShowRutaModal(false)} />
+            <BajoComisionModal isOpen={showBajoComisionModal} onClose={() => setShowBajoComisionModal(false)} advisorName={session?.user?.name || "Asesor"} />
+            <EquipoAsistenciasModal isOpen={showEquipoAsistenciasModal} onClose={() => setShowEquipoAsistenciasModal(false)} />
+            <GestorCuentasModal isOpen={showGestorCuentasModal} onClose={() => setShowGestorCuentasModal(false)} />
+
+            {/* Quick Clock Floating Toast */}
+            {quickClockToast && (
+                <div className="fixed top-20 left-1/2 -translate-x-1/2 z-60 px-5 py-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 text-black font-black text-xs shadow-2xl flex items-center gap-2 animate-bounce border-2 border-white">
+                    <CheckSquare size={16} />
+                    <span>{quickClockToast}</span>
+                </div>
+            )}
 
             {/* ── POPUP: MÁS MÓDULOS DE ATOMIC (ACCESO RÁPIDO OPERACIONAL) ── */}
             <AnimatePresence>
@@ -85,6 +127,82 @@ function MobileBottomDockInner() {
                         </div>
 
                         <div className="grid grid-cols-3 gap-2.5 text-center text-[10px] font-mono">
+                            {/* ── BOTÓN OFICIAL: ASISTENCIA RÁPIDA (UNIVERSAL PARA TODOS LOS PERFILES LOGUEADOS) ── */}
+                            <button 
+                                type="button"
+                                disabled={quickClockLoading}
+                                onClick={handleQuickClock}
+                                className="col-span-3 p-3 rounded-2xl bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 text-white border-2 border-emerald-300 hover:border-white flex items-center justify-between gap-3 shadow-lg shadow-emerald-950/60 transition-all active:scale-98 cursor-pointer group"
+                            >
+                                <div className="flex items-center gap-2.5">
+                                    <div className="p-2 rounded-xl bg-black/30 text-white">
+                                        <Clock size={18} className={quickClockLoading ? "animate-spin" : "stroke-[2.5]"} />
+                                    </div>
+                                    <div className="text-left">
+                                        <div className="font-black text-xs uppercase tracking-wide flex items-center gap-1.5">
+                                            <span>Asistencia Rápida</span>
+                                            <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-black/40 text-emerald-300 font-bold">1 CLIC</span>
+                                        </div>
+                                        <div className="text-[10px] text-emerald-100 font-medium">
+                                            Timbra tu jornada diaria al instante (Entrada / Salida)
+                                        </div>
+                                    </div>
+                                </div>
+                                <span className="text-[9px] font-mono px-2.5 py-1 rounded-full bg-white text-emerald-950 font-black uppercase shrink-0 shadow-md">
+                                    {quickClockLoading ? "TIMBRANDO..." : "TIMBRAR"}
+                                </span>
+                            </button>
+
+                            {/* ── BOTÓN: BAJO COMISIÓN (REGLAMENTO CONDICIONANTE) ── */}
+                            <button 
+                                type="button"
+                                onClick={() => {
+                                    setShowMoreMenu(false)
+                                    setShowBajoComisionModal(true)
+                                }}
+                                className="p-3 rounded-2xl bg-gradient-to-b from-amber-500/25 to-orange-600/25 border-2 border-amber-400/80 hover:border-amber-300 flex flex-col items-center gap-1.5 transition-all active:scale-95 cursor-pointer shadow-lg shadow-amber-950/50"
+                            >
+                                <div className="p-2 rounded-xl bg-amber-500 text-black shadow-md">
+                                    <ShieldAlert size={18} className="stroke-[2.5]" />
+                                </div>
+                                <span className="text-amber-200 font-extrabold">Bajo Comisión</span>
+                                <span className="text-[8px] font-mono px-1.5 py-0.2 rounded-full bg-amber-500 text-black font-black uppercase">REGLAMENTO</span>
+                            </button>
+
+                            {/* Si es administrativo: Asistencias de Equipo y Gestor de Cuentas */}
+                            {isAdministrative && (
+                                <>
+                                    <button 
+                                        type="button"
+                                        onClick={() => {
+                                            setShowMoreMenu(false)
+                                            setShowEquipoAsistenciasModal(true)
+                                        }}
+                                        className="p-3 rounded-2xl bg-gradient-to-b from-cyan-500/25 to-blue-600/25 border-2 border-cyan-400/80 hover:border-cyan-300 flex flex-col items-center gap-1.5 transition-all active:scale-95 cursor-pointer shadow-lg shadow-cyan-950/50"
+                                    >
+                                        <div className="p-2 rounded-xl bg-cyan-400 text-black shadow-md">
+                                            <CalendarCheck size={18} className="stroke-[2.5]" />
+                                        </div>
+                                        <span className="text-cyan-200 font-extrabold">Ajustar Asistencias</span>
+                                        <span className="text-[8px] font-mono px-1.5 py-0.2 rounded-full bg-cyan-400 text-black font-black uppercase">EQUIPO</span>
+                                    </button>
+
+                                    <button 
+                                        type="button"
+                                        onClick={() => {
+                                            setShowMoreMenu(false)
+                                            setShowGestorCuentasModal(true)
+                                        }}
+                                        className="p-3 rounded-2xl bg-gradient-to-b from-amber-500/25 to-yellow-600/25 border-2 border-amber-400/80 hover:border-amber-300 flex flex-col items-center gap-1.5 transition-all active:scale-95 cursor-pointer shadow-lg shadow-amber-950/50"
+                                    >
+                                        <div className="p-2 rounded-xl bg-amber-400 text-black shadow-md">
+                                            <KeyRound size={18} className="stroke-[2.5]" />
+                                        </div>
+                                        <span className="text-amber-200 font-extrabold">Gestor Cuentas</span>
+                                        <span className="text-[8px] font-mono px-1.5 py-0.2 rounded-full bg-amber-400 text-black font-black uppercase">DELEGACIÓN</span>
+                                    </button>
+                                </>
+                            )}
                             {/* 0. Ruta del Día (Tile Cuadrado Destacado) */}
                             <button 
                                 type="button"
