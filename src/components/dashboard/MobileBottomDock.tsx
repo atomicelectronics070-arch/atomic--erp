@@ -52,12 +52,23 @@ function MobileBottomDockInner() {
             {/* ── POPUP: MÁS MÓDULOS DE ATOMIC (ACCESO RÁPIDO OPERACIONAL) ── */}
             <AnimatePresence>
                 {showMoreMenu && (
-                    <motion.div 
-                        initial={{ opacity: 0, y: 50 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 50 }}
-                        className="lg:hidden fixed bottom-20 left-4 right-4 z-50 bg-[#090d1e]/95 backdrop-blur-2xl border border-cyan-500/30 rounded-3xl p-5 shadow-[0_0_50px_rgba(0,0,0,0.9)] space-y-4"
-                    >
+                    <>
+                        {/* Backdrop to close when clicking outside */}
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setShowMoreMenu(false)}
+                            className="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 cursor-pointer"
+                        />
+
+                        <motion.div 
+                            initial={{ opacity: 0, y: 30, scale: 0.96 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: 30, scale: 0.96 }}
+                            transition={{ duration: 0.2 }}
+                            className="fixed bottom-20 left-3 right-3 sm:left-1/2 sm:-translate-x-1/2 sm:w-full sm:max-w-xl z-55 bg-[#090d1e]/98 backdrop-blur-2xl border border-cyan-500/40 rounded-3xl p-5 shadow-[0_0_60px_rgba(0,0,0,0.95)] space-y-4 max-h-[80vh] overflow-y-auto"
+                        >
                         <div className="flex items-center justify-between border-b border-white/10 pb-3">
                             <div className="flex items-center gap-2">
                                 <Grid size={16} className="text-cyan-400" />
@@ -229,6 +240,7 @@ function MobileBottomDockInner() {
                             </Link>
                         </div>
                     </motion.div>
+                </>
                 )}
             </AnimatePresence>
 
@@ -346,6 +358,11 @@ function MobileBottomDockInner() {
                     <div className="relative flex flex-col items-center justify-end shrink-0 w-14 sm:w-16 px-0.5 z-30 pointer-events-auto">
                         <Link
                             href="/dashboard/quotes"
+                            onClick={() => {
+                                if (pathname === "/dashboard/quotes" || pathname.startsWith("/dashboard/quotes")) {
+                                    window.scrollTo({ top: 0, behavior: "smooth" })
+                                }
+                            }}
                             className="w-12 h-12 sm:w-14 sm:h-14 -mt-6 rounded-full bg-gradient-to-tr from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 flex items-center justify-center text-white border-2 border-white/50 shadow-[0_0_25px_rgba(249,115,22,0.7)] active:scale-90 transition-transform cursor-pointer group"
                             title="Hacer Nueva Cotización Oficial PROP"
                         >
@@ -420,7 +437,11 @@ function MobileBottomDockInner() {
                         {/* 9. Más Módulos Drawer */}
                         <button
                             type="button"
-                            onClick={() => setShowMoreMenu(prev => !prev)}
+                            onClick={(e) => {
+                                e.preventDefault()
+                                e.stopPropagation()
+                                setShowMoreMenu(prev => !prev)
+                            }}
                             className={`flex flex-col items-center justify-center py-1 transition-all group active:scale-90 cursor-pointer ${showMoreMenu ? 'text-cyan-400' : 'text-slate-400'}`}
                             title="Más módulos y herramientas operativas"
                         >
