@@ -154,7 +154,7 @@ export default function ProfilePage() {
     useEffect(() => {
         // Load saved theme and surface
         if (typeof window !== "undefined") {
-            const savedTheme = localStorage.getItem("atomic_theme") || "cyber-neon"
+            const savedTheme = localStorage.getItem("atomic_theme") || "ticketmaster-white"
             setCurrentTheme(savedTheme)
             document.documentElement.setAttribute("data-theme", savedTheme)
 

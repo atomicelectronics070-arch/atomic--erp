@@ -155,7 +155,7 @@ const QUICK_MODULES: ModuleQuickAction[] = [
 ]
 
 export default function PersonalBotBubble() {
-    const { data: session } = useSession()
+    const { data: session, status } = useSession()
     const pathname = usePathname()
     const router = useRouter()
     const [isOpen, setIsOpen] = useState(false)
@@ -372,8 +372,15 @@ export default function PersonalBotBubble() {
 
     const activeShortcuts = ALL_AVAILABLE_SHORTCUTS.filter(s => activeShortcutIds.includes(s.id))
 
-    // Ocultar completamente el bot y los atajos en páginas públicas de informes
-    if (pathname?.startsWith("/informes") || pathname?.startsWith("/web/informes")) {
+    // Ocultar estrictamente el bot y los atajos si el usuario NO está autenticado, o si está en login o páginas públicas
+    if (
+        status !== "authenticated" || 
+        !session?.user || 
+        pathname === "/login" || 
+        pathname?.startsWith("/login") || 
+        pathname?.startsWith("/informes") || 
+        pathname?.startsWith("/web/informes")
+    ) {
         return null
     }
 

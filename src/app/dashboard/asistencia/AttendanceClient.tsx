@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
+import UniversalTimbrado30Dias from "@/components/attendance/UniversalTimbrado30Dias"
 import { 
     Calendar as CalendarIcon, 
     Clock, 
@@ -425,6 +426,12 @@ export default function AttendanceClient() {
                     </div>
                 </div>
             </div>
+
+            {/* ═══════════════════════════════════════════════════════════════════
+                TIMBRADO OFICIAL DEL DÍA & MATRIZ GRÁFICA 30 DÍAS (UNIVERSAL)
+                Visible para TODOS los perfiles organizacionales sin excepción.
+            ═══════════════════════════════════════════════════════════════════ */}
+            <UniversalTimbrado30Dias />
 
             {/* 2. INICIAR CARRERA / EVALUACIÓN (30 DÍAS) BANNER */}
             {!evaluation.active ? (

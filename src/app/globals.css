@@ -113,6 +113,46 @@ html[data-theme=""] {
   --theme-button-gradient: linear-gradient(135deg, #EA580C, #C2410C);
 }
 
+/* ── TICKETMASTER-WHITE: Fix text contrast on white sidebar & main content ── */
+html[data-theme="ticketmaster-white"] aside,
+html[data-theme="blanco-tomate"] aside,
+html:not([data-theme]) aside,
+html[data-theme=""] aside {
+  color: #0F172A !important;
+}
+html[data-theme="ticketmaster-white"] aside a,
+html[data-theme="blanco-tomate"] aside a,
+html:not([data-theme]) aside a,
+html[data-theme=""] aside a {
+  color: #334155 !important;
+}
+html[data-theme="ticketmaster-white"] aside a[aria-current="page"],
+html[data-theme="blanco-tomate"] aside a[aria-current="page"],
+html:not([data-theme]) aside a[aria-current="page"],
+html[data-theme=""] aside a[aria-current="page"] {
+  color: #EA580C !important;
+  background: rgba(234, 88, 12, 0.08) !important;
+}
+html[data-theme="ticketmaster-white"] aside a:hover,
+html[data-theme="blanco-tomate"] aside a:hover {
+  color: #0F172A !important;
+  background: rgba(234, 88, 12, 0.06) !important;
+}
+html[data-theme="ticketmaster-white"] header,
+html[data-theme="blanco-tomate"] header,
+html:not([data-theme]) header,
+html[data-theme=""] header {
+  color: #0F172A !important;
+}
+html[data-theme="ticketmaster-white"] header span,
+html[data-theme="ticketmaster-white"] header a,
+html[data-theme="ticketmaster-white"] header button,
+html[data-theme="blanco-tomate"] header span,
+html[data-theme="blanco-tomate"] header a,
+html[data-theme="blanco-tomate"] header button {
+  color: inherit;
+}
+
 /* ══════════════════════════════════════════════════════════════ */
 /* 🎨 ATOMIC ECOSISTEMA: SISTEMA DE 5 TEMAS DINÁMICOS GLOBALES   */
 /* ══════════════════════════════════════════════════════════════ */

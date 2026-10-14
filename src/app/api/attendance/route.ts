@@ -206,12 +206,18 @@ export async function GET(req: Request) {
             if (!isWorkingDay) {
                 status = "LIBRE" // Sunday
             } else if (isToday) {
-                // Today: in progress unless all counters are met
+                // Today: status reflects timbrado or counter completion
                 const meetsAll = dailyCounters.posts >= 5 &&
                     dailyCounters.groupPosts >= 3 &&
                     dailyCounters.numbers >= 10 &&
                     dailyCounters.calls >= 7
-                status = meetsAll ? "COMPLETED" : "IN_PROGRESS"
+                if (storedData?.clockOutTime) {
+                    status = "COMPLETED"
+                } else if (storedData?.clockInTime || meetsAll) {
+                    status = "IN_PROGRESS"
+                } else {
+                    status = "PENDING"
+                }
             } else if (isPast) {
                 // Past day: only mark as COMPLETED/IN_PROGRESS if there's an active cycle
                 // that started on or before this specific day. Otherwise leave as PENDING.
@@ -265,7 +271,9 @@ export async function GET(req: Request) {
                 isWorkingDay,
                 isToday,
                 isPast,
-                status
+                status,
+                clockInTime: isToday ? (storedData?.clockInTime || null) : null,
+                clockOutTime: isToday ? (storedData?.clockOutTime || null) : null
             })
         }
 
@@ -281,6 +289,8 @@ export async function GET(req: Request) {
             proofs,
             callsChecklist,
             todayContacts,
+            clockInTime: storedData?.clockInTime || null,
+            clockOutTime: storedData?.clockOutTime || null,
             history
         })
     } catch (error: any) {
@@ -645,6 +655,46 @@ export async function POST(req: Request) {
                 success: true,
                 callsChecklist: state.callsChecklist,
                 dailyCounters: state.dailyCounters
+            })
+        }
+
+        // -------------------------------------------------------------
+        // ACTION: clock_in
+        // -------------------------------------------------------------
+        if (action === "clock_in") {
+            const timeNow = body.time || new Date().toLocaleTimeString("es-EC", { hour: "2-digit", minute: "2-digit", second: "2-digit" })
+            const cycle = await getActiveCycle()
+            const state = await loadDailyState(cycle)
+
+            state.clockInTime = timeNow
+            state.clockInDate = new Date().toISOString()
+            await saveDailyState(cycle, state)
+
+            return NextResponse.json({
+                success: true,
+                message: "¡Entrada timbrada correctamente!",
+                clockInTime: timeNow,
+                clockOutTime: state.clockOutTime || null
+            })
+        }
+
+        // -------------------------------------------------------------
+        // ACTION: clock_out
+        // -------------------------------------------------------------
+        if (action === "clock_out") {
+            const timeNow = body.time || new Date().toLocaleTimeString("es-EC", { hour: "2-digit", minute: "2-digit", second: "2-digit" })
+            const cycle = await getActiveCycle()
+            const state = await loadDailyState(cycle)
+
+            state.clockOutTime = timeNow
+            state.clockOutDate = new Date().toISOString()
+            await saveDailyState(cycle, state)
+
+            return NextResponse.json({
+                success: true,
+                message: "¡Salida timbrada correctamente!",
+                clockInTime: state.clockInTime || null,
+                clockOutTime: timeNow
             })
         }
 

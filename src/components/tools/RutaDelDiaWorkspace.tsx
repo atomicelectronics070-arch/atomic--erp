@@ -20,6 +20,7 @@ import { generateCategoryCatalogPDF } from "@/lib/pdf/categoryCatalogPdf"
 import SoftwareDailyWorkspace from "./software/SoftwareDailyWorkspace"
 import SupervisionDailyWorkspace from "./supervision/SupervisionDailyWorkspace"
 import EdicionDailyWorkspace from "./edicion/EdicionDailyWorkspace"
+import UniversalTimbrado30Dias from "@/components/attendance/UniversalTimbrado30Dias"
 
 export type RoleType = "VENTAS" | "COORDINACION" | "SUPERVISION" | "TECNICO" | "EDICION" | "SOFTWARE"
 
@@ -869,6 +870,9 @@ export default function RutaDelDiaWorkspace({
                 ═══════════════════════════════════════════════════════════ */}
                 {activeTab === "actividades" && (
                     <div className="max-w-5xl mx-auto space-y-6">
+                        {/* ── TIMBRADO OFICIAL DEL DÍA & MATRIZ GRÁFICA 30 DÍAS (TODOS LOS ROLES) ── */}
+                        <UniversalTimbrado30Dias roleName={currentRoleInfo.label} />
+
                         {selectedRole === "SUPERVISION" ? (
                             <SupervisionDailyWorkspace onSwitchRole={(r) => setSelectedRole(r)} />
                         ) : selectedRole === "SOFTWARE" ? (
