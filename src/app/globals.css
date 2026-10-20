@@ -98,26 +98,35 @@ html {
   --theme-button-gradient: linear-gradient(135deg, #EA580C, #C2410C);
 }
 
-html[data-theme="ticketmaster-white"],
-html[data-theme="blanco-tomate"],
 html:not([data-theme]),
-html[data-theme=""] {
-  --theme-primary: #EA580C;
+html[data-theme=""],
+html[data-theme="ticketmaster-white"],
+html[data-theme="blanco-tomate"] {
+  --theme-primary: #026CDF;
   --theme-secondary: #0F172A;
-  --theme-accent: #C2410C;
-  --theme-glow: rgba(234, 88, 12, 0.35);
+  --theme-accent: #06B6D4;
+  --theme-glow: rgba(2, 108, 223, 0.25);
   --theme-border: #E2E8F0;
-  --theme-bg-subtle: #FFF7ED;
+  --theme-bg-subtle: #F8FAFC;
   --theme-bg-ambient: #FFFFFF;
   --theme-sidebar-bg: #FFFFFF;
-  --theme-button-gradient: linear-gradient(135deg, #EA580C, #C2410C);
+  --theme-button-gradient: linear-gradient(135deg, #026cdf, #0891b2);
+}
+
+html[data-theme="cyber-neon"] {
+  --theme-primary: #06B6D4;
+  --theme-accent: #6366F1;
+  --theme-glow: rgba(6, 182, 212, 0.45);
+  --theme-border: rgba(6, 182, 212, 0.35);
+  --theme-bg-subtle: rgba(6, 182, 212, 0.08);
+  --theme-bg-ambient: radial-gradient(ellipse at top right, rgba(6, 182, 212, 0.22), #070a14 70%);
+  --theme-sidebar-bg: rgba(9, 13, 30, 0.75);
+  --theme-button-gradient: linear-gradient(135deg, #0891b2, #4f46e5);
 }
 
 /* ── TICKETMASTER-WHITE: Fix text contrast on white sidebar & main content ── */
 html[data-theme="ticketmaster-white"] aside,
-html[data-theme="blanco-tomate"] aside,
-html:not([data-theme]) aside,
-html[data-theme=""] aside {
+html[data-theme="blanco-tomate"] aside {
   color: #0F172A !important;
 }
 html[data-theme="ticketmaster-white"] aside a,

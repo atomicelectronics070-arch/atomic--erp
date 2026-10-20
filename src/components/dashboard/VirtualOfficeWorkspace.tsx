@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import { useSession } from "next-auth/react"
 import { motion, AnimatePresence } from "framer-motion"
 import {
@@ -49,6 +49,15 @@ export default function VirtualOfficeWorkspace({ currentModule = "ventas" }: Pro
     const [searchSeller, setSearchSeller] = useState("")
     const [mobileIndex, setMobileIndex] = useState(0)
     const [viewMode, setViewMode] = useState<"auto" | "single" | "plan">("auto")
+
+    // ── 🎮 RPG VIDEO GAME & 3D ISOMETRIC STATES ──
+    const [officeZoom, setOfficeZoom] = useState<number>(0.85)
+    const [is3DIsometric, setIs3DIsometric] = useState<boolean>(true)
+    const [isInteractiveMode, setIsInteractiveMode] = useState<boolean>(false)
+    const [playerPos, setPlayerPos] = useState<{ x: number; y: number }>({ x: 26, y: 52 })
+    const [playerFacing, setPlayerFacing] = useState<"left" | "right" | "up" | "down">("down")
+    const [isWalking, setIsWalking] = useState(false)
+    const floorMapRef = useRef<HTMLDivElement>(null)
 
     // Current 3 sales advisors assigned to desks
     const [activeSellers, setActiveSellers] = useState<Array<{ id: string; name: string; email?: string }>>([
@@ -260,6 +269,77 @@ export default function VirtualOfficeWorkspace({ currentModule = "ventas" }: Pro
 
     const allMembers = [...coreTeam, ...salesMembers]
 
+    // Nearest team member proximity calculation for RPG mode
+    const nearestMember = React.useMemo<TeamMember | null>(() => {
+        if (!isInteractiveMode) return null
+        let closest: TeamMember | null = null
+        let minDist = 999
+        allMembers.forEach(m => {
+            const dx = m.x - playerPos.x
+            const dy = m.y - playerPos.y
+            const dist = Math.sqrt(dx * dx + dy * dy)
+            if (dist < 14 && dist < minDist) {
+                minDist = dist
+                closest = m
+            }
+        })
+        return closest
+    }, [allMembers, isInteractiveMode, playerPos])
+
+    const movePlayer = (dx: number, dy: number, facing?: "left" | "right" | "up" | "down") => {
+        if (facing) setPlayerFacing(facing)
+        setIsWalking(true)
+        setPlayerPos(prev => ({
+            x: Math.max(6, Math.min(94, Number((prev.x + dx).toFixed(1)))),
+            y: Math.max(8, Math.min(92, Number((prev.y + dy).toFixed(1))))
+        }))
+        setTimeout(() => setIsWalking(false), 200)
+    }
+
+    const handleFloorClick = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (!isInteractiveMode || !floorMapRef.current) return
+        const rect = floorMapRef.current.getBoundingClientRect()
+        const clickX = ((e.clientX - rect.left) / rect.width) * 100
+        const clickY = ((e.clientY - rect.top) / rect.height) * 100
+        setPlayerFacing(clickX > playerPos.x ? "right" : "left")
+        setIsWalking(true)
+        setPlayerPos({
+            x: Math.max(6, Math.min(94, Math.round(clickX))),
+            y: Math.max(8, Math.min(92, Math.round(clickY)))
+        })
+        setTimeout(() => setIsWalking(false), 300)
+    }
+
+    useEffect(() => {
+        if (!isInteractiveMode) return
+
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (["INPUT", "TEXTAREA", "SELECT"].includes((document.activeElement as HTMLElement)?.tagName)) return
+
+            if (["ArrowUp", "KeyW"].includes(e.code)) {
+                e.preventDefault()
+                movePlayer(0, -4, "up")
+            } else if (["ArrowDown", "KeyS"].includes(e.code)) {
+                e.preventDefault()
+                movePlayer(0, 4, "down")
+            } else if (["ArrowLeft", "KeyA"].includes(e.code)) {
+                e.preventDefault()
+                movePlayer(-4, 0, "left")
+            } else if (["ArrowRight", "KeyD"].includes(e.code)) {
+                e.preventDefault()
+                movePlayer(4, 0, "right")
+            } else if (["KeyE", "Enter", "Space"].includes(e.code)) {
+                if (nearestMember) {
+                    e.preventDefault()
+                    setSelectedMember(nearestMember)
+                }
+            }
+        }
+
+        window.addEventListener("keydown", handleKeyDown)
+        return () => window.removeEventListener("keydown", handleKeyDown)
+    }, [isInteractiveMode, nearestMember, playerPos])
+
     return (
         <div className="w-full rounded-3xl bg-[#12151d] border border-slate-800 shadow-2xl overflow-hidden font-sans text-white select-none">
             
@@ -270,33 +350,92 @@ export default function VirtualOfficeWorkspace({ currentModule = "ventas" }: Pro
                         <Sparkles size={20} />
                     </div>
                     <div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 flex-wrap">
                             <h3 className="font-black text-sm uppercase tracking-wider text-white">
-                                OFICINA VIRTUAL · NIVEL 6 (GPT ASTRA)
+                                OFICINA VIRTUAL · NIVEL 6 (RPG 3D)
                             </h3>
                             <span className="px-2 py-0.5 rounded-full text-[9px] font-black bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 flex items-center gap-1">
-                                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" /> TELEMETRÍA CUÁNTICA
+                                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" /> VISTA ISOMÉTRICA
                             </span>
-                            <span className="hidden sm:inline-block px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                                ZOOM ILIMITADO
-                            </span>
+                            {isInteractiveMode && (
+                                <span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-black bg-amber-400 text-black animate-pulse flex items-center gap-1">
+                                    🎮 MODO JUEGO ACTIVO (WASD / TOUCH)
+                                </span>
+                            )}
                         </div>
                         <p className="text-[11px] text-slate-400 mt-0.5 font-mono">
-                            Puestos de mando holográfico, estaciones departamentales y videollamadas directas en tiempo real
+                            Vista diagonal superior 3D con perspectiva isométrica, zoom ajustable y modo avatar interactivo
                         </p>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-2.5">
+                <div className="flex flex-wrap items-center gap-2">
+                    {/* Botón MODO INTERACTIVO (VIDEOJUEGO RPG) */}
+                    <button
+                        type="button"
+                        onClick={() => setIsInteractiveMode(prev => !prev)}
+                        className={`px-3.5 py-2 rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-2 transition-all cursor-pointer shadow-lg active:scale-95 ${
+                            isInteractiveMode
+                                ? "bg-amber-400 hover:bg-amber-300 text-black shadow-amber-400/40 ring-2 ring-white"
+                                : "bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white shadow-cyan-500/25"
+                        }`}
+                        title="Convierte la oficina en un videojuego interactivo con avatar"
+                    >
+                        <span>🎮</span>
+                        <span>{isInteractiveMode ? "Salir de Modo Juego" : "Modo Interactivo"}</span>
+                    </button>
+
+                    {/* Toggle Vista 3D Isométrica vs 2D Plano */}
+                    <button
+                        type="button"
+                        onClick={() => setIs3DIsometric(prev => !prev)}
+                        className={`px-3 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                            is3DIsometric
+                                ? "bg-cyan-500/20 border-cyan-400 text-cyan-300 shadow-sm"
+                                : "bg-slate-900 border-slate-700 text-slate-300 hover:text-white"
+                        }`}
+                        title="Alternar entre perspectiva 3D diagonal isométrica y plano 2D cenital"
+                    >
+                        {is3DIsometric ? "📐 3D Isométrico" : "🗺️ 2D Plano"}
+                    </button>
+
+                    {/* Controles de Zoom (+, -, 100%) */}
+                    <div className="flex items-center bg-slate-900 border border-slate-700 rounded-xl p-0.5 text-xs font-mono font-bold">
+                        <button
+                            type="button"
+                            onClick={() => setOfficeZoom(prev => Math.max(0.5, Number((prev - 0.1).toFixed(2))))}
+                            className="w-7 h-7 flex items-center justify-center rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 cursor-pointer"
+                            title="Alejar (-)"
+                        >
+                            -
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setOfficeZoom(0.85)}
+                            className="px-2 py-1 text-[11px] text-cyan-400 hover:underline cursor-pointer"
+                            title="Restablecer zoom a escala óptima"
+                        >
+                            {Math.round(officeZoom * 100)}%
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setOfficeZoom(prev => Math.min(1.5, Number((prev + 0.1).toFixed(2))))}
+                            className="w-7 h-7 flex items-center justify-center rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 cursor-pointer"
+                            title="Acercar (+)"
+                        >
+                            +
+                        </button>
+                    </div>
+
                     {/* Botón Exclusivo para Supervisor, Coordinador y CEO */}
                     {canManageSellers && (
                         <button
                             onClick={openManageModal}
-                            className="px-4 py-2 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-slate-950 font-black rounded-xl text-xs flex items-center gap-2 cursor-pointer shadow-lg shadow-amber-950/40 transition-all active:scale-95"
+                            className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/40 rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-all active:scale-95"
                             title="Añadir o remover los 3 asesores de ventas en la oficina"
                         >
-                            <Settings size={14} />
-                            <span>Gestionar Asesores en Oficina ({activeSellers.length}/3)</span>
+                            <Settings size={13} />
+                            <span>Asesores ({activeSellers.length}/3)</span>
                         </button>
                     )}
 
@@ -310,18 +449,7 @@ export default function VirtualOfficeWorkspace({ currentModule = "ventas" }: Pro
                             }`}
                             title="Modo Inteligente: Tarjeta en Celular y Plano en Computadora"
                         >
-                            Adaptativo
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => setViewMode("single")}
-                            className={`px-2.5 py-1 rounded-lg flex items-center gap-1 transition-all cursor-pointer ${
-                                viewMode === "single" ? "bg-cyan-500 text-black shadow" : "text-slate-400 hover:text-white"
-                            }`}
-                            title="Ver sólo 1 estación a la vez (Especial celulares)"
-                        >
-                            <Smartphone size={11} />
-                            <span>1 Estación</span>
+                            Auto
                         </button>
                         <button
                             type="button"
@@ -329,15 +457,10 @@ export default function VirtualOfficeWorkspace({ currentModule = "ventas" }: Pro
                             className={`px-2.5 py-1 rounded-lg flex items-center gap-1 transition-all cursor-pointer ${
                                 viewMode === "plan" ? "bg-cyan-500 text-black shadow" : "text-slate-400 hover:text-white"
                             }`}
-                            title="Ver plano completo 2D"
+                            title="Ver plano completo"
                         >
-                            <LayoutGrid size={11} />
-                            <span>Plano</span>
+                            Plano
                         </button>
-                    </div>
-
-                    <div className="px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-[10px] font-mono text-slate-400 flex items-center gap-2">
-                        <span>👥 {allMembers.length} Puestos</span>
                     </div>
                 </div>
             </div>
@@ -533,180 +656,285 @@ export default function VirtualOfficeWorkspace({ currentModule = "ventas" }: Pro
                 </div>
             )}
 
-            {/* ── 🗺️ VISTA COMPLETA: PLANO TOP-DOWN 2D (ESCRITORIO O TOGGLE) ─── */}
+            {/* ── 🗺️ VISTA COMPLETA: PLANO TOP-DOWN / 3D ISOMÉTRICO RPG (ESCRITORIO O TOGGLE) ─── */}
             {(viewMode === "plan" || viewMode === "auto") && (
-                <div className={`w-full overflow-x-auto custom-scrollbar ${viewMode === "auto" ? "hidden md:block" : "block"}`}>
-                    <div className="relative min-w-[760px] w-full h-[620px] overflow-hidden bg-[#b88c5d] select-none">
+                <div className={`relative w-full overflow-hidden bg-[#0a0d14] ${viewMode === "auto" ? "hidden md:block" : "block"}`}>
                     
-                    {/* 1. SUELO: CORREDOR DE BALDOSAS GRISES CHECKERBOARD (A LA IZQUIERDA) */}
-                    <div 
-                        className="absolute left-0 top-0 bottom-0 w-[24%] border-r-4 border-[#5a3e2b]"
-                        style={{
-                            backgroundColor: "#c5c9d1",
-                            backgroundImage: `
-                                linear-gradient(45deg, #a0a6b2 25%, transparent 25%), 
-                                linear-gradient(-45deg, #a0a6b2 25%, transparent 25%), 
-                                linear-gradient(45deg, transparent 75%, #a0a6b2 75%), 
-                                linear-gradient(-45deg, transparent 75%, #a0a6b2 75%)
-                            `,
-                            backgroundSize: "28px 28px",
-                            backgroundPosition: "0 0, 0 14px, 14px -14px, -14px 0px"
-                        }}
-                    >
-                        {/* Comedor / Sala de estar lateral */}
-                        <div className="absolute top-10 left-4 right-4 p-3 bg-[#6e462d] rounded-2xl border-2 border-[#422919] shadow-lg flex flex-col items-center gap-3">
-                            <span className="text-[9px] font-black uppercase text-[#e9d2b8] tracking-widest flex items-center gap-1">
-                                <Coffee size={12} /> Cafetería & Break
-                            </span>
-                            {/* Mesa de madera con sillas */}
-                            <div className="w-16 h-28 bg-[#8d5836] rounded-xl border-2 border-[#4b2f1b] shadow flex flex-col justify-around items-center py-2">
-                                <div className="w-2.5 h-2.5 rounded-full bg-white/80" title="Taza de café" />
-                                <div className="w-3 h-3 rounded-full bg-amber-400/90" title="Snack" />
+                    {/* Proximity / Interaction Floating Alert */}
+                    {isInteractiveMode && (
+                        <div className="absolute top-3 left-4 right-4 z-40 flex items-center justify-between pointer-events-none">
+                            <div className="bg-slate-950/90 border border-amber-400/60 text-amber-300 px-3 py-1.5 rounded-2xl text-xs font-mono font-bold shadow-xl flex items-center gap-2 pointer-events-auto backdrop-blur-md">
+                                <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
+                                <span>📍 Click en el piso o usa WASD / Flechas / D-Pad para moverte</span>
                             </div>
-                        </div>
 
-                        {/* Planta decorativa en el pasillo */}
-                        <div className="absolute bottom-16 left-6 flex flex-col items-center">
-                            <div className="w-8 h-8 rounded-full bg-emerald-600 border-2 border-emerald-800 shadow-md flex items-center justify-center text-xs">
-                                🪴
-                            </div>
-                            <div className="w-5 h-4 bg-[#8b5a36] rounded-b-md border border-[#52331c] -mt-1" />
-                        </div>
-                    </div>
-
-                    {/* 2. SUELO PRINCIPAL: PARQUET DE MADERA CÁLIDA (A LA DERECHA) */}
-                    <div 
-                        className="absolute left-[24%] right-0 top-0 bottom-0"
-                        style={{
-                            backgroundColor: "#b88c5d",
-                            backgroundImage: `
-                                linear-gradient(to bottom, rgba(0,0,0,0.05) 1px, transparent 1px),
-                                linear-gradient(to right, rgba(0,0,0,0.04) 1px, transparent 1px)
-                            `,
-                            backgroundSize: "80px 30px"
-                        }}
-                    >
-                        {/* ALFOMBRA ROJA EJECUTIVA EN DIRECCIÓN (SUPERIOR) */}
-                        <div className="absolute top-5 left-[34%] w-[38%] h-24 bg-[#991b1b]/80 rounded-2xl border border-[#7f1d1d] shadow-inner" />
-
-                        {/* ALFOMBRA DE MARKETING EN EL CENTRO */}
-                        <div className="absolute top-[44%] left-[28%] w-[42%] h-28 bg-[#1e293b]/40 rounded-2xl border border-dashed border-[#475569]/50" />
-
-                        {/* RÓTULOS DE ÁREAS IMPRESOS EN EL SUELO (IGUAL A LA IMAGEN) */}
-                        <div className="absolute top-2 left-6 text-[#523521] font-black text-xs uppercase tracking-widest opacity-80">
-                            🏛️ Alta Dirección & Supervisión
-                        </div>
-
-                        <div className="absolute top-[38%] left-[45%] text-[#4b3322] font-black text-base uppercase tracking-widest opacity-70">
-                            Marketing & Ventas
-                        </div>
-
-                        <div className="absolute bottom-4 left-6 text-[#523521] font-black text-xs uppercase tracking-widest opacity-80">
-                            🛠️ Ingeniería, Software & Taller Técnico
-                        </div>
-
-                        {/* SILLÓN BALÓN DE BALONCESTO (DELUXE - COMO EN LA FOTO DEL CLIENTE) */}
-                        <div 
-                            className="absolute top-[48%] left-[16%] flex flex-col items-center group cursor-pointer"
-                            title="Sillón Balón de Baloncesto ATOMIC Relax"
-                        >
-                            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-orange-500 via-orange-600 to-orange-700 border-2 border-black shadow-xl relative overflow-hidden flex items-center justify-center group-hover:scale-105 transition-transform">
-                                {/* Líneas de baloncesto */}
-                                <div className="absolute inset-0 border-t-2 border-b-2 border-black/80 my-auto h-0" />
-                                <div className="absolute inset-0 border-l-2 border-r-2 border-black/80 mx-auto w-0" />
-                                <div className="absolute w-12 h-12 rounded-full border border-black/70" />
-                            </div>
-                            <span className="text-[8px] font-black text-[#4b301c] bg-[#e4be95] px-1.5 py-0.2 rounded-full mt-1 border border-[#8d5e39]">
-                                Lounge
-                            </span>
-                        </div>
-
-                        {/* PLANTA PALMERA CORPORATIVA EN MACETA BLANCA */}
-                        <div className="absolute top-4 left-4 flex flex-col items-center">
-                            <div className="text-3xl filter drop-shadow-md select-none">🌴</div>
-                            <div className="w-6 h-5 bg-white rounded-b-lg border-2 border-slate-300 shadow -mt-2" />
-                        </div>
-
-                        {/* FLORERO ELEGANTE DE MESA */}
-                        <div className="absolute top-8 right-8 flex flex-col items-center">
-                            <div className="w-10 h-10 rounded-full bg-emerald-100 border-2 border-emerald-300 flex items-center justify-center text-base shadow">
-                                💐
-                            </div>
-                        </div>
-
-                        {/* ── RENDER DE CADA PUESTO DE TRABAJO Y PERSONAJE (2D TOP-DOWN) ── */}
-                        {allMembers.map(member => {
-                            const isSelected = selectedMember?.id === member.id
-                            return (
-                                <div
-                                    key={member.id}
-                                    onClick={() => setSelectedMember(member)}
-                                    className="absolute -translate-x-1/2 -translate-y-1/2 cursor-pointer z-20 group"
-                                    style={{ left: `${member.x}%`, top: `${member.y}%` }}
+                            {nearestMember && (
+                                <button
+                                    type="button"
+                                    onClick={() => setSelectedMember(nearestMember)}
+                                    className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-4 py-1.5 rounded-2xl text-xs font-black shadow-xl flex items-center gap-2 pointer-events-auto cursor-pointer animate-pulse transition-transform hover:scale-105"
                                 >
-                                    {/* 🏷️ ETIQUETA FLOTANTE CON ESTADO Y NOMBRE */}
-                                    <div className="flex flex-col items-center mb-1 transition-transform group-hover:-translate-y-1">
-                                        <div className={`px-2 py-0.5 rounded-full text-[9px] font-black shadow-lg border flex items-center gap-1 max-w-[130px] whitespace-nowrap overflow-hidden text-ellipsis ${
-                                            member.status === "online" 
-                                                ? "bg-slate-950/95 text-white border-emerald-500/60 shadow-emerald-950/40" 
-                                                : "bg-slate-950/95 text-white border-amber-500/60 shadow-amber-950/40"
-                                        }`}>
-                                            <span className={`w-1.5 h-1.5 shrink-0 rounded-full ${member.status === "online" ? "bg-emerald-400" : "bg-rose-400"} animate-pulse`} />
-                                            <span className="font-bold truncate">{member.name}</span>
-                                        </div>
-                                        <span className="text-[7.5px] font-bold uppercase tracking-wider text-[#3d2716] font-mono mt-0.2 max-w-[120px] truncate text-center">
-                                            {member.roleName}
-                                        </span>
-                                    </div>
+                                    <span>💬</span>
+                                    <span>Hablar con {nearestMember.name.split(" ")[0]} ({nearestMember.roleName})</span>
+                                </button>
+                            )}
+                        </div>
+                    )}
 
-                                    {/* 🧑‍💼 SPRITE DEL PERSONAJE Y ESCRITORIO CON MONITORES */}
-                                    <div className="relative flex flex-col items-center">
-                                        
-                                        {/* CABEZA / AVATAR DEL PERSONAJE EN SU SILLA */}
-                                        <div className="relative z-10 w-9 h-9 rounded-full bg-slate-900 border-2 border-white/80 shadow-md flex items-center justify-center group-hover:scale-110 transition-transform overflow-hidden">
-                                            {member.spriteType === "executive" ? (
-                                                <span className="text-base">🧑‍💼</span>
-                                            ) : member.spriteType === "creative" ? (
-                                                <span className="text-base">🎨</span>
-                                            ) : member.spriteType === "tech" ? (
-                                                <span className="text-base">👨‍💻</span>
-                                            ) : member.spriteType === "taller" ? (
-                                                <span className="text-base">🔧</span>
-                                            ) : (
-                                                <span className="text-base">💼</span>
-                                            )}
-                                        </div>
-
-                                        {/* SILLA ERGONÓMICA DE OFICINA DETRÁS */}
-                                        <div className="w-10 h-7 rounded-t-xl bg-[#1e293b] border border-slate-700 -mt-6 z-0 shadow" />
-
-                                        {/* 🖥️ ESCRITORIO CORPORATIVO CON PANTALLAS */}
-                                        <div 
-                                            className="w-20 h-11 rounded-lg border-2 shadow-xl flex items-center justify-around px-1.5 mt-0.5 relative z-10"
-                                            style={{ 
-                                                backgroundColor: "#222734",
-                                                borderColor: member.deskColor
-                                            }}
-                                        >
-                                            {/* Monitor 1 (Glow pantalla encendida) */}
-                                            <div className="w-7 h-4 rounded bg-sky-400 border border-white/60 shadow-[0_0_8px_rgba(56,189,248,0.8)] flex items-center justify-center">
-                                                <div className="w-4 h-0.5 bg-white/60 rounded-full" />
-                                            </div>
-
-                                            {/* Teclado */}
-                                            <div className="w-3 h-2 bg-slate-800 rounded-xs border border-slate-600" />
-
-                                            {/* Monitor 2 */}
-                                            <div className="w-7 h-4 rounded bg-cyan-300 border border-white/60 shadow-[0_0_8px_rgba(34,211,238,0.8)] flex items-center justify-center">
-                                                <div className="w-4 h-0.5 bg-slate-900 rounded-full" />
-                                            </div>
-                                        </div>
+                    {/* Viewport Container with Scroll and Zoom Support */}
+                    <div className="w-full overflow-auto custom-scrollbar flex items-center justify-center p-4 min-h-[640px]">
+                        <div 
+                            ref={floorMapRef}
+                            onClick={handleFloorClick}
+                            className={`relative min-w-[780px] w-[860px] h-[600px] overflow-hidden rounded-3xl border-4 border-[#452b1b] shadow-2xl select-none cursor-pointer transition-all duration-300 ${
+                                isInteractiveMode ? "ring-2 ring-amber-400/50" : ""
+                            }`}
+                            style={{
+                                transform: `${is3DIsometric ? "perspective(1100px) rotateX(46deg) rotateZ(-24deg)" : ""} scale(${officeZoom})`,
+                                transformOrigin: "center center"
+                            }}
+                        >
+                            {/* 1. SUELO: CORREDOR DE BALDOSAS GRISES CHECKERBOARD (A LA IZQUIERDA) */}
+                            <div 
+                                className="absolute left-0 top-0 bottom-0 w-[24%] border-r-4 border-[#5a3e2b]"
+                                style={{
+                                    backgroundColor: "#c5c9d1",
+                                    backgroundImage: `
+                                        linear-gradient(45deg, #a0a6b2 25%, transparent 25%), 
+                                        linear-gradient(-45deg, #a0a6b2 25%, transparent 25%), 
+                                        linear-gradient(45deg, transparent 75%, #a0a6b2 75%), 
+                                        linear-gradient(-45deg, transparent 75%, #a0a6b2 75%)
+                                    `,
+                                    backgroundSize: "28px 28px",
+                                    backgroundPosition: "0 0, 0 14px, 14px -14px, -14px 0px"
+                                }}
+                            >
+                                {/* Comedor / Sala de estar lateral */}
+                                <div className="absolute top-10 left-4 right-4 p-3 bg-[#6e462d] rounded-2xl border-2 border-[#422919] shadow-lg flex flex-col items-center gap-3">
+                                    <span className="text-[9px] font-black uppercase text-[#e9d2b8] tracking-widest flex items-center gap-1">
+                                        <Coffee size={12} /> Cafetería & Break
+                                    </span>
+                                    {/* Mesa de madera con sillas */}
+                                    <div className="w-16 h-28 bg-[#8d5836] rounded-xl border-2 border-[#4b2f1b] shadow flex flex-col justify-around items-center py-2">
+                                        <div className="w-2.5 h-2.5 rounded-full bg-white/80" title="Taza de café" />
+                                        <div className="w-3 h-3 rounded-full bg-amber-400/90" title="Snack" />
                                     </div>
                                 </div>
-                            )
-                        })}
+
+                                {/* Planta decorativa en el pasillo */}
+                                <div className="absolute bottom-16 left-6 flex flex-col items-center">
+                                    <div className="w-8 h-8 rounded-full bg-emerald-600 border-2 border-emerald-800 shadow-md flex items-center justify-center text-xs">
+                                        🪴
+                                    </div>
+                                    <div className="w-5 h-4 bg-[#8b5a36] rounded-b-md border border-[#52331c] -mt-1" />
+                                </div>
+                            </div>
+
+                            {/* 2. SUELO PRINCIPAL: PARQUET DE MADERA CÁLIDA (A LA DERECHA) */}
+                            <div 
+                                className="absolute left-[24%] right-0 top-0 bottom-0"
+                                style={{
+                                    backgroundColor: "#b88c5d",
+                                    backgroundImage: `
+                                        linear-gradient(to bottom, rgba(0,0,0,0.05) 1px, transparent 1px),
+                                        linear-gradient(to right, rgba(0,0,0,0.04) 1px, transparent 1px)
+                                    `,
+                                    backgroundSize: "80px 30px"
+                                }}
+                            >
+                                {/* ALFOMBRA ROJA EJECUTIVA EN DIRECCIÓN (SUPERIOR) */}
+                                <div className="absolute top-5 left-[34%] w-[38%] h-24 bg-[#991b1b]/80 rounded-2xl border border-[#7f1d1d] shadow-inner" />
+
+                                {/* ALFOMBRA DE MARKETING EN EL CENTRO */}
+                                <div className="absolute top-[44%] left-[28%] w-[42%] h-28 bg-[#1e293b]/40 rounded-2xl border border-dashed border-[#475569]/50" />
+
+                                {/* RÓTULOS DE ÁREAS IMPRESOS EN EL SUELO */}
+                                <div className="absolute top-2 left-6 text-[#523521] font-black text-xs uppercase tracking-widest opacity-80">
+                                    🏛️ Alta Dirección & Supervisión
+                                </div>
+
+                                <div className="absolute top-[38%] left-[45%] text-[#4b3322] font-black text-base uppercase tracking-widest opacity-70">
+                                    Marketing & Ventas
+                                </div>
+
+                                <div className="absolute bottom-4 left-6 text-[#523521] font-black text-xs uppercase tracking-widest opacity-80">
+                                    🛠️ Ingeniería, Software & Taller Técnico
+                                </div>
+
+                                {/* SILLÓN BALÓN DE BALONCESTO */}
+                                <div 
+                                    className="absolute top-[48%] left-[16%] flex flex-col items-center group cursor-pointer"
+                                    title="Sillón Balón de Baloncesto ATOMIC Relax"
+                                >
+                                    <div className="w-14 h-14 rounded-full bg-gradient-to-br from-orange-500 via-orange-600 to-orange-700 border-2 border-black shadow-xl relative overflow-hidden flex items-center justify-center group-hover:scale-105 transition-transform">
+                                        <div className="absolute inset-0 border-t-2 border-b-2 border-black/80 my-auto h-0" />
+                                        <div className="absolute inset-0 border-l-2 border-r-2 border-black/80 mx-auto w-0" />
+                                        <div className="absolute w-12 h-12 rounded-full border border-black/70" />
+                                    </div>
+                                    <span className="text-[8px] font-black text-[#4b301c] bg-[#e4be95] px-1.5 py-0.2 rounded-full mt-1 border border-[#8d5e39]">
+                                        Lounge
+                                    </span>
+                                </div>
+
+                                {/* PLANTA PALMERA CORPORATIVA */}
+                                <div className="absolute top-4 left-4 flex flex-col items-center">
+                                    <div className="text-3xl filter drop-shadow-md select-none">🌴</div>
+                                    <div className="w-6 h-5 bg-white rounded-b-lg border-2 border-slate-300 shadow -mt-2" />
+                                </div>
+
+                                {/* FLORERO ELEGANTE DE MESA */}
+                                <div className="absolute top-8 right-8 flex flex-col items-center">
+                                    <div className="w-10 h-10 rounded-full bg-emerald-100 border-2 border-emerald-300 flex items-center justify-center text-base shadow">
+                                        💐
+                                    </div>
+                                </div>
+
+                                {/* ── RENDER DE CADA PUESTO DE TRABAJO Y PERSONAJE (CON BILLBOARDING 3D) ── */}
+                                {allMembers.map(member => {
+                                    return (
+                                        <div
+                                            key={member.id}
+                                            onClick={(e) => {
+                                                e.stopPropagation()
+                                                setSelectedMember(member)
+                                            }}
+                                            className="absolute cursor-pointer z-20 group transition-transform"
+                                            style={{ 
+                                                left: `${member.x}%`, 
+                                                top: `${member.y}%`,
+                                                transform: is3DIsometric 
+                                                    ? "translate(-50%, -50%) rotateZ(24deg) rotateX(-46deg)" 
+                                                    : "translate(-50%, -50%)"
+                                            }}
+                                        >
+                                            {/* 🏷️ ETIQUETA FLOTANTE CON ESTADO Y NOMBRE */}
+                                            <div className="flex flex-col items-center mb-1 transition-transform group-hover:-translate-y-1">
+                                                <div className={`px-2 py-0.5 rounded-full text-[9px] font-black shadow-lg border flex items-center gap-1 max-w-[130px] whitespace-nowrap overflow-hidden text-ellipsis ${
+                                                    member.status === "online" 
+                                                        ? "bg-slate-950/95 text-white border-emerald-500/60 shadow-emerald-950/40" 
+                                                        : "bg-slate-950/95 text-white border-amber-500/60 shadow-amber-950/40"
+                                                }`}>
+                                                    <span className={`w-1.5 h-1.5 shrink-0 rounded-full ${member.status === "online" ? "bg-emerald-400" : "bg-rose-400"} animate-pulse`} />
+                                                    <span className="font-bold truncate">{member.name}</span>
+                                                </div>
+                                                <span className="text-[7.5px] font-bold uppercase tracking-wider text-[#3d2716] font-mono mt-0.2 max-w-[120px] truncate text-center">
+                                                    {member.roleName}
+                                                </span>
+                                            </div>
+
+                                            {/* 🧑‍💼 SPRITE DEL PERSONAJE Y ESCRITORIO CON MONITORES */}
+                                            <div className="relative flex flex-col items-center">
+                                                
+                                                {/* CABEZA / AVATAR DEL PERSONAJE EN SU SILLA */}
+                                                <div className="relative z-10 w-9 h-9 rounded-full bg-slate-900 border-2 border-white/80 shadow-md flex items-center justify-center group-hover:scale-110 transition-transform overflow-hidden">
+                                                    {member.spriteType === "executive" ? (
+                                                        <span className="text-base">🧑‍💼</span>
+                                                    ) : member.spriteType === "creative" ? (
+                                                        <span className="text-base">🎨</span>
+                                                    ) : member.spriteType === "tech" ? (
+                                                        <span className="text-base">👨‍💻</span>
+                                                    ) : member.spriteType === "taller" ? (
+                                                        <span className="text-base">🔧</span>
+                                                    ) : (
+                                                        <span className="text-base">💼</span>
+                                                    )}
+                                                </div>
+
+                                                {/* SILLA ERGONÓMICA DE OFICINA DETRÁS */}
+                                                <div className="w-10 h-7 rounded-t-xl bg-[#1e293b] border border-slate-700 -mt-6 z-0 shadow" />
+
+                                                {/* 🖥️ ESCRITORIO CORPORATIVO CON PANTALLAS */}
+                                                <div 
+                                                    className="w-20 h-11 rounded-lg border-2 shadow-xl flex items-center justify-around px-1.5 mt-0.5 relative z-10"
+                                                    style={{ 
+                                                        backgroundColor: "#222734",
+                                                        borderColor: member.deskColor
+                                                    }}
+                                                >
+                                                    {/* Monitor 1 (Glow pantalla encendida) */}
+                                                    <div className="w-7 h-4 rounded bg-sky-400 border border-white/60 shadow-[0_0_8px_rgba(56,189,248,0.8)] flex items-center justify-center">
+                                                        <div className="w-4 h-0.5 bg-white/60 rounded-full" />
+                                                    </div>
+
+                                                    {/* Teclado */}
+                                                    <div className="w-3 h-2 bg-slate-800 rounded-xs border border-slate-600" />
+
+                                                    {/* Monitor 2 */}
+                                                    <div className="w-7 h-4 rounded bg-cyan-300 border border-white/60 shadow-[0_0_8px_rgba(34,211,238,0.8)] flex items-center justify-center">
+                                                        <div className="w-4 h-0.5 bg-slate-900 rounded-full" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )
+                                })}
+
+                                {/* 🏃 AVATAR DEL JUGADOR (MODO RPG INTERACTIVO) */}
+                                {isInteractiveMode && (
+                                    <div
+                                        className="absolute z-30 pointer-events-none transition-all duration-150 ease-out flex flex-col items-center"
+                                        style={{
+                                            left: `${playerPos.x}%`,
+                                            top: `${playerPos.y}%`,
+                                            transform: is3DIsometric 
+                                                ? "translate(-50%, -50%) rotateZ(24deg) rotateX(-46deg)" 
+                                                : "translate(-50%, -50%)"
+                                        }}
+                                    >
+                                        <div className="px-2 py-0.5 rounded-full text-[9px] font-black bg-amber-400 text-black border border-white shadow-xl whitespace-nowrap mb-1 animate-bounce">
+                                            ⭐ TÚ (AVATAR)
+                                        </div>
+                                        <div className="relative w-11 h-11 rounded-full bg-gradient-to-tr from-cyan-500 via-sky-400 to-indigo-600 border-2 border-white shadow-[0_0_18px_rgba(34,211,238,0.9)] flex items-center justify-center text-2xl">
+                                            🧙‍♂️
+                                            <span className="absolute -bottom-1 w-4 h-1.5 bg-black/50 rounded-full blur-[1px]" />
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
                     </div>
-                </div>
+
+                    {/* D-Pad Virtual flotante para móviles y touch en modo interactivo */}
+                    {isInteractiveMode && (
+                        <div className="absolute bottom-4 right-4 z-40 bg-slate-950/80 backdrop-blur-md border border-slate-700/80 p-2 rounded-3xl shadow-2xl flex flex-col items-center gap-1 select-none">
+                            <span className="text-[9px] font-mono font-bold text-slate-400 mb-0.5">D-PAD</span>
+                            <button
+                                type="button"
+                                onClick={() => movePlayer(0, -5, "up")}
+                                className="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 active:bg-cyan-500 active:text-black text-white font-black flex items-center justify-center shadow cursor-pointer text-xs"
+                                title="Arriba"
+                            >
+                                ▲
+                            </button>
+                            <div className="flex items-center gap-1">
+                                <button
+                                    type="button"
+                                    onClick={() => movePlayer(-5, 0, "left")}
+                                    className="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 active:bg-cyan-500 active:text-black text-white font-black flex items-center justify-center shadow cursor-pointer text-xs"
+                                    title="Izquierda"
+                                >
+                                    ◀
+                                </button>
+                                <div className="w-4 h-4 rounded-full bg-amber-400/80" />
+                                <button
+                                    type="button"
+                                    onClick={() => movePlayer(5, 0, "right")}
+                                    className="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 active:bg-cyan-500 active:text-black text-white font-black flex items-center justify-center shadow cursor-pointer text-xs"
+                                    title="Derecha"
+                                >
+                                    ▶
+                                </button>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => movePlayer(0, 5, "down")}
+                                className="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 active:bg-cyan-500 active:text-black text-white font-black flex items-center justify-center shadow cursor-pointer text-xs"
+                                title="Abajo"
+                            >
+                                ▼
+                            </button>
+                        </div>
+                    )}
                 </div>
             )}
 

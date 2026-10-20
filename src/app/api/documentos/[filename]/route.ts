@@ -75,7 +75,7 @@ export async function GET(
         return new NextResponse("Documento no encontrado", { status: 404 })
     }
 
-    return new NextResponse(fileBuffer, {
+    return new NextResponse(new Uint8Array(fileBuffer), {
         headers: {
             "Content-Type": "application/pdf",
             "Content-Disposition": `inline; filename="${safeFilename}"`,

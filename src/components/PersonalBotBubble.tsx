@@ -675,7 +675,7 @@ export default function PersonalBotBubble() {
                                     value={input}
                                     onChange={e => setInput(e.target.value)}
                                     onKeyDown={handleKeyDown}
-                                    placeholder={`Pregunta a ${displayName} sobre cualquier módulo...`}
+                                    placeholder="Pregunta al Asistente sobre cualquier módulo..."
                                     rows={1}
                                     className="flex-1 bg-slate-900 border border-slate-800 text-white text-xs placeholder:text-slate-500 rounded-2xl px-4 py-3 outline-none resize-none focus:border-cyan-400/60 focus:ring-1 focus:ring-cyan-400/30 transition-all"
                                     style={{ maxHeight: "90px" }}

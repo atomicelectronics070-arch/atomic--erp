@@ -97,7 +97,7 @@ export default function DashboardLayout({
         }
     }, [session, isDashboard])
 
-    // Dynamic Theme Listener
+    // Dynamic Theme Listener (Por defecto Blanco Elegante con Iluminaciones Neón)
     const [themeState, setThemeState] = useState('ticketmaster-white')
     useEffect(() => {
         const initial = (typeof window !== 'undefined' ? localStorage.getItem('atomic_theme') : null) || 'ticketmaster-white'
@@ -234,8 +234,8 @@ export default function DashboardLayout({
                                 Gestión Administrativa
                             </div>
                             <GlassNavItem href="/dashboard/informes-tecnicos" icon={<FileText size={18} strokeWidth={1.8} />} label="Informes Técnicos" isActive={pathname.startsWith('/dashboard/informes-tecnicos')} />
-                            <GlassNavItem href="/dashboard/coordinacion" icon={<Users size={18} strokeWidth={1.8} />} label="Coordinación" isActive={pathname.startsWith('/dashboard/coordinacion')} />
-                            <GlassNavItem href="/dashboard/coordinacion" icon={<Calendar size={18} strokeWidth={1.8} />} label="Ajustar Asistencias" isActive={pathname.startsWith('/dashboard/coordinacion')} />
+                            <GlassNavItem href="/dashboard/coordinacion" icon={<Users size={18} strokeWidth={1.8} />} label="Coordinación" isActive={pathname === '/dashboard/coordinacion'} />
+                            <GlassNavItem href="/dashboard/coordinacion?tab=ASISTENCIAS" icon={<Calendar size={18} strokeWidth={1.8} />} label="Ajustar Asistencias" isActive={pathname.startsWith('/dashboard/coordinacion')} />
                             <GlassNavItem href="/dashboard/coordinacion" icon={<KeyRound size={18} strokeWidth={1.8} />} label="Gestor de Cuentas" isActive={pathname.startsWith('/dashboard/coordinacion')} />
                             <GlassNavItem href="/dashboard/supervision" icon={<Shield size={18} strokeWidth={1.8} />} label="Supervisión" isActive={pathname.startsWith('/dashboard/supervision')} />
                             <GlassNavItem href="/dashboard/whatsapp/crm" icon={<Smartphone size={18} strokeWidth={1.8} />} label="CRM WhatsApp" isActive={pathname.startsWith('/dashboard/whatsapp/crm')} />

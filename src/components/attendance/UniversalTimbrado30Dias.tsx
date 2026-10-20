@@ -53,18 +53,48 @@ export default function UniversalTimbrado30Dias({
     // 30-Day graphical matrix
     const [historyDays, setHistoryDays] = useState<DayAttendanceLog[]>([])
     const [selectedDay, setSelectedDay] = useState<DayAttendanceLog | null>(null)
+    const [showGlossaryModal, setShowGlossaryModal] = useState(false)
 
-    const now = new Date()
-    const todayKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
-    const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+    // Accurate Ecuador (UTC-5) Date Calculations
+    const getEcuadorDateInfo = () => {
+        const formatter = new Intl.DateTimeFormat("en-CA", {
+            timeZone: "America/Guayaquil",
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit"
+        })
+        const dateStr = formatter.format(new Date()) // YYYY-MM-DD
+        const [y, m, d] = dateStr.split("-").map(Number)
+        return {
+            year: y,
+            month: m - 1, // 0-indexed month
+            day: d,
+            todayKey: dateStr,
+            monthKey: `${y}-${String(m).padStart(2, '0')}`
+        }
+    }
+
+    const { year: ecYear, month: ecMonth, day: ecDay, todayKey, monthKey } = getEcuadorDateInfo()
     const storagePrefix = `atomic_timbrado_${userEmail.replace(/[^a-zA-Z0-9]/g, "_")}`
 
-    // Live clock timer
+    // Live clock timer pinned strictly to Ecuador timezone (America/Guayaquil)
     useEffect(() => {
         const updateClock = () => {
             const d = new Date()
-            setCurrentTime(d.toLocaleTimeString("es-EC", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: true }))
-            setCurrentDateStr(d.toLocaleDateString("es-EC", { weekday: "long", year: "numeric", month: "long", day: "numeric" }))
+            setCurrentTime(d.toLocaleTimeString("es-EC", {
+                timeZone: "America/Guayaquil",
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+                hour12: true
+            }))
+            setCurrentDateStr(d.toLocaleDateString("es-EC", {
+                timeZone: "America/Guayaquil",
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric"
+            }))
         }
         updateClock()
         const timer = setInterval(updateClock, 1000)
@@ -76,13 +106,13 @@ export default function UniversalTimbrado30Dias({
         setTimeout(() => setNotification(null), 4000)
     }
 
-    // Build the 30-Day Matrix
+    // Build the 30-Day Matrix using Ecuador time
     const buildMonthlyMatrix = (serverHistory: any[] = [], currentIn: string | null = null, currentOut: string | null = null) => {
-        const year = now.getFullYear()
-        const month = now.getMonth()
+        const year = ecYear
+        const month = ecMonth
         const daysInMonth = new Date(year, month + 1, 0).getDate()
         const dayNames = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"]
-        const todayDate = now.getDate()
+        const todayDate = ecDay
 
         // Load monthly history from localStorage fallback
         let localHistoryMap: Record<string, { in?: string; out?: string }> = {}
@@ -304,9 +334,21 @@ export default function UniversalTimbrado30Dias({
                             <span>Control de Asistencia & Timbrado del Día</span>
                         </h2>
 
-                        <p className="text-xs text-slate-600 dark:text-slate-400 capitalize font-medium">
-                            📅 {currentDateStr || "Cargando fecha actual..."}
-                        </p>
+                        <div className="flex items-center gap-2 flex-wrap">
+                            <p className="text-xs text-slate-600 dark:text-slate-400 capitalize font-medium">
+                                📅 {currentDateStr || "Cargando fecha actual..."}
+                            </p>
+                            <span className="text-slate-400">•</span>
+                            <button
+                                type="button"
+                                onClick={() => setShowGlossaryModal(true)}
+                                className="px-2.5 py-1 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-amber-300 text-[11px] font-mono font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-sm"
+                                title="Abrir explicación explícita: Bajo Comisión vs Fijo vs Asistencia vs Ciclo de 30 Días"
+                            >
+                                <Info size={13} className="text-amber-400" />
+                                <span>Glosario Operativo: Modalidades & Ciclos</span>
+                            </button>
+                        </div>
                     </div>
 
                     {/* Middle: Reloj Digital y Status */}
@@ -590,6 +632,113 @@ export default function UniversalTimbrado30Dias({
                                     Cerrar Detalle
                                 </button>
                             </div>
+                        </motion.div>
+                    </div>
+                )}
+
+                {/* ═══════════════════════════════════════════════════════════
+                    3. MODAL DE GLOSARIO OPERATIVO (EXPLICACIÓN EXPLÍCITA)
+                ═══════════════════════════════════════════════════════════ */}
+                {showGlossaryModal && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 15 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 15 }}
+                            className="bg-slate-900 border-2 border-amber-500/50 rounded-3xl p-6 sm:p-7 max-w-2xl w-full shadow-2xl text-left space-y-5 max-h-[90vh] overflow-y-auto custom-scrollbar"
+                        >
+                            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2.5 rounded-2xl bg-amber-500/20 border border-amber-500/40 text-amber-400">
+                                        <Info size={22} />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-lg font-black text-white">
+                                            Glosario Operativo Oficial ATOMIC
+                                        </h3>
+                                        <p className="text-xs text-amber-300/80 font-mono">
+                                            Diferencias explícitas de modalidades, asistencia y ciclos
+                                        </p>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => setShowGlossaryModal(false)}
+                                    className="p-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors cursor-pointer"
+                                >
+                                    <X size={18} />
+                                </button>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 text-xs">
+                                {/* Card 1: Bajo Comisión */}
+                                <div className="p-4 rounded-2xl bg-amber-950/30 border border-amber-500/30 space-y-2">
+                                    <div className="flex items-center gap-2 text-amber-400 font-black uppercase text-xs">
+                                        <span>💼</span>
+                                        <h4>1. Asesor Bajo Comisión (Freelance)</h4>
+                                    </div>
+                                    <p className="text-slate-300 leading-relaxed text-[11px]">
+                                        Modalidad orientada a ingresos variables sin relación de dependencia. <strong>No percibe sueldo fijo</strong>.
+                                    </p>
+                                    <div className="pt-1.5 border-t border-amber-500/20 text-[10px] text-amber-200/90 space-y-1 font-mono">
+                                        <div>• <strong>3 Obligaciones Únicas:</strong></div>
+                                        <div>1. Marcar asistencia diaria (timbrado).</div>
+                                        <div>2. 5 publicaciones diarias en Marketplace (Lun a Vie).</div>
+                                        <div>3. 15 números telefónicos a la semana de Google Maps.</div>
+                                    </div>
+                                </div>
+
+                                {/* Card 2: Plan Fijo */}
+                                <div className="p-4 rounded-2xl bg-indigo-950/30 border border-indigo-500/30 space-y-2">
+                                    <div className="flex items-center gap-2 text-indigo-400 font-black uppercase text-xs">
+                                        <span>🏛️</span>
+                                        <h4>2. Asesor Plan Fijo (Plan Laboral 30 Días)</h4>
+                                    </div>
+                                    <p className="text-slate-300 leading-relaxed text-[11px]">
+                                        Contrato con <strong>sueldo base fijo mensual escalonado</strong> ($100 mes 1 → $200 mes 2 → $450 mes 3) + comisiones por ventas.
+                                    </p>
+                                    <div className="pt-1.5 border-t border-indigo-500/20 text-[10px] text-indigo-200/90 space-y-1 font-mono">
+                                        <div>• 7 actividades diarias estrictas.</div>
+                                        <div>• Asistencia a salas Zoom grabadas con supervisión.</div>
+                                        <div>• Justificaciones y reportes directos con coordinación.</div>
+                                    </div>
+                                </div>
+
+                                {/* Card 3: Asistencia Diaria */}
+                                <div className="p-4 rounded-2xl bg-emerald-950/30 border border-emerald-500/30 space-y-2">
+                                    <div className="flex items-center gap-2 text-emerald-400 font-black uppercase text-xs">
+                                        <span>⏱️</span>
+                                        <h4>3. Asistencia Diaria (Timbrado Universal)</h4>
+                                    </div>
+                                    <p className="text-slate-300 leading-relaxed text-[11px]">
+                                        Registro de entrada y salida obligatorio para <strong>TODOS los perfiles del sistema</strong> (Admin, Coordinación, Supervisión, Técnicos, Desarrolladores y Vendedores).
+                                    </p>
+                                    <p className="text-[10px] text-emerald-300/90 font-mono">
+                                        Es 100% independiente de si estás o no en un ciclo laboral formal.
+                                    </p>
+                                </div>
+
+                                {/* Card 4: Iniciar Ciclo de 30 Días */}
+                                <div className="p-4 rounded-2xl bg-cyan-950/30 border border-cyan-500/30 space-y-2">
+                                    <div className="flex items-center gap-2 text-cyan-400 font-black uppercase text-xs">
+                                        <span>🎯</span>
+                                        <h4>4. Iniciar Ciclo de 30 Días</h4>
+                                    </div>
+                                    <p className="text-slate-300 leading-relaxed text-[11px]">
+                                        Activación formal del <strong>ciclo mensual de metas comerciales</strong>.
+                                    </p>
+                                    <p className="text-[10px] text-cyan-300/90 font-mono">
+                                        Al activarse, inicia el contador de 30 días con seguimiento de cuotas diarias de prospección y habilita el bono garantizado de $100 USD al culminar.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <button
+                                type="button"
+                                onClick={() => setShowGlossaryModal(false)}
+                                className="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-black text-xs uppercase tracking-wider transition-all cursor-pointer shadow-md"
+                            >
+                                Entendido, Volver al Timbrado
+                            </button>
                         </motion.div>
                     </div>
                 )}

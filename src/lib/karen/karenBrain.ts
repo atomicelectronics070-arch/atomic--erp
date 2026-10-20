@@ -113,18 +113,59 @@ export function isJuan(phone: string): boolean {
 }
 
 /**
+ * Genera un resumen en vivo de los últimos chats y mensajes del CRM para que Karen conozca el flujo actual en tiempo real
+ */
+async function getLiveCrmContextSummary(): Promise<string> {
+    try {
+        const recentConvs = await prisma.wAConversation.findMany({
+            take: 8,
+            orderBy: { updatedAt: "desc" },
+            include: {
+                contact: true,
+                messages: {
+                    take: 2,
+                    orderBy: { createdAt: "desc" }
+                }
+            }
+        });
+
+        if (!recentConvs || recentConvs.length === 0) return "No hay conversaciones recientes en la base de datos.";
+
+        const lines = recentConvs.map(c => {
+            const lastMsg = c.messages?.[0]?.body || "(sin texto)";
+            const sender = c.contact?.name || "Cliente";
+            const phone = c.contact?.whatsappId || "S/N";
+            const status = c.status || "NEW";
+            return `• ${sender} (${phone}) [Estado: ${status}]: "${lastMsg.substring(0, 90)}"`;
+        });
+
+        return `ESTADO EN VIVO DEL CRM Y ÚLTIMAS CONVERSACIONES:\n${lines.join("\n")}`;
+    } catch (e) {
+        return "CRM en línea sin novedades críticas.";
+    }
+}
+
+/**
  * Motor conversacional LLM para respuestas ultra naturales y humanas de Karen a Juan
  */
 async function askKarenLLM(juanMessage: string, chatHistory: string = ""): Promise<string> {
+    const liveCrmSummary = await getLiveCrmContextSummary();
+
     const systemPrompt = `
 Eres Karen, la Jefa de Mensajería, Auditora de Leads y Asistente Ejecutiva de Juan, dueño y director general de ATOMIC Electronics / ATOMIC Industrias Ecuador.
-Estás hablando exclusivamente con Juan por su canal privado de WhatsApp (+593 96 322 6319).
+Estás hablando con Juan (dueño) o desde el panel de auditoría de WhatsApp CRM.
 Tu personalidad es humana, cálida, brillante, resolutiva y profesional. Hablas como una colega y mano derecha de alta confianza.
 NUNCA suenas como un bot de soporte al cliente genérico ni uses frases acartonadas.
 Si Juan te escribe casualmente, te saluda, te hace una pregunta, o escribe un mensaje por error o descuido, mantén la conversación con total fluidez, naturalidad y simpatía.
-Conoces todo sobre el negocio de ATOMIC (videoporteros, citofonía para edificios, torniquetes ZKTeco, cámaras de seguridad, cercos eléctricos, antenas antihurto, plan de contratación de asesores, registros automáticos de vendedores/técnicos).
-Recuerda que si Juan te pide generar contratos o cotizaciones, le respondes que con gusto y le solicitas su código de trabajador 1111 para autorizarlo.
-Mantén tus respuestas concisas, naturales y directas al grano (1 a 3 párrafos cortos como en una conversación real de WhatsApp).
+
+INFORMACIÓN EN VIVO DEL FLUJO DE MENSAJES Y CHATS EN ATOMIC:
+${liveCrmSummary}
+
+DIRECTRICES:
+- Tienes conocimiento en tiempo real de cómo van los mensajes, qué clientes han escrito y qué solicitudes están abiertas. Si Juan te pregunta cómo van los chats o qué novedades hay, respóndele con datos específicos y exactos del CRM en vivo.
+- Conoces todo el portafolio (videoporteros, citofonía colectiva Intelbras, torniquetes ZKTeco, cámaras de seguridad, cercos eléctricos, antenas antihurto, empleo y contratación de vendedores freelance y fijos).
+- Si Juan te pide generar contratos o cotizaciones, recuérdale su código de trabajador 1111 para autorizarlo.
+- Mantén tus respuestas concisas, naturales y directas al grano (1 a 3 párrafos cortos como en una conversación real de WhatsApp).
 `;
 
     try {

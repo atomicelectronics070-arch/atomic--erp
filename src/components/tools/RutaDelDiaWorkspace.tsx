@@ -15,6 +15,7 @@ import {
 } from "lucide-react"
 import SalesCopyManager from "./SalesCopyManager"
 import { getCategoryLandingSlug } from "./SuicideSquadWarRoom"
+import { getCategoryBySlug } from "@/lib/data/suicideSquadCategories"
 import { sanitizeProductPrice, sanitizeProductImage } from "@/lib/productSanitizer"
 import { generateCategoryCatalogPDF } from "@/lib/pdf/categoryCatalogPdf"
 import SoftwareDailyWorkspace from "./software/SoftwareDailyWorkspace"

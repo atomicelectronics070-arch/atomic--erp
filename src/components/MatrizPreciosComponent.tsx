@@ -969,26 +969,23 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
                 : 'Control Central de Productos · PVP, Márgenes, Stock y Costos en Tiempo Real')}
             </p>
 
-            {/* SELECTOR DUAL EXCLUSIVO DEL PERFIL ADMIN / COORDINACIÓN */}
+            {/* PESTAÑAS EXCLUSIVAS PARA ADMINISTRADORES: COSTOS Y PRECIOS PVP */}
             {canAccessAdminView && !isVendedorMode && (
-              <div className="inline-flex items-center gap-2 p-1.5 bg-slate-950/80 border border-white/10 rounded-2xl shadow-xl">
-
+              <div className="inline-flex items-center gap-1.5 p-1 bg-slate-950/90 border border-slate-800 rounded-2xl shadow-xl">
                 <button
                   type="button"
                   onClick={() => {
                     setDualMode('admin');
                     setIsEditMode(true);
-                    showNotification('👑 Vista cambiada a: MATRIZ ADMIN (Costos, ROI y Edición)');
                   }}
-                  className={`px-4 py-2 text-xs font-black uppercase tracking-wider rounded-lg transition-all flex items-center gap-2 cursor-pointer ${
+                  className={`px-5 py-2.5 text-xs font-black uppercase tracking-wider rounded-xl transition-all cursor-pointer ${
                     !effectiveVendedorMode
-                      ? 'bg-gradient-to-r from-amber-400 to-orange-500 text-zinc-950 shadow-md ring-2 ring-white/40 font-black'
-                      : 'text-zinc-400 hover:text-white hover:bg-zinc-900'
+                      ? 'bg-amber-400 text-black shadow-lg font-black'
+                      : 'text-slate-400 hover:text-white hover:bg-slate-800'
                   }`}
-                  title="Ver matriz de costos internos, ROI y edición"
+                  title="Ver costos de compra y márgenes ROI"
                 >
-                  <span>👑</span>
-                  <span>Vista Admin (Costos & ROI)</span>
+                  COSTOS
                 </button>
 
                 <button
@@ -996,48 +993,29 @@ _¿Deseas confirmar tu pedido para coordinar el despacho inmediato?_`;
                   onClick={() => {
                     setDualMode('vendedor');
                     setIsEditMode(false);
-                    showNotification('🛒 Vista cambiada a: MATRIZ VENDEDORES (PVP y Cotizador)');
                   }}
-                  className={`px-4 py-2 text-xs font-black uppercase tracking-wider rounded-lg transition-all flex items-center gap-2 cursor-pointer ${
+                  className={`px-5 py-2.5 text-xs font-black uppercase tracking-wider rounded-xl transition-all cursor-pointer ${
                     effectiveVendedorMode
-                      ? 'bg-gradient-to-r from-emerald-400 to-teal-500 text-zinc-950 shadow-md ring-2 ring-white/40 font-black'
-                      : 'text-zinc-400 hover:text-white hover:bg-zinc-900'
+                      ? 'bg-cyan-500 text-black shadow-lg font-black'
+                      : 'text-slate-400 hover:text-white hover:bg-slate-800'
                   }`}
+                  title="Ver precios PVP oficiales para venta al público"
                 >
-                  <span>🛒</span>
-                  <span>Vista Vendedores (PVP)</span>
+                  PRECIOS PVP
                 </button>
               </div>
             )}
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2.5">
             {/* BOTÓN HACER COTIZACIÓN / COTIZADOR RÁPIDO */}
             <button
               onClick={() => openQuoteModalWithProduct(null)}
-              className="px-4 py-2.5 border-2 border-zinc-950 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-xs uppercase flex items-center gap-2 rounded-lg shadow-sm transition-all"
+              className="px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-xs uppercase flex items-center gap-2 rounded-xl shadow-lg shadow-emerald-950/40 transition-all cursor-pointer"
             >
               <span>📑</span>
               <span>HACER COTIZACIÓN</span>
             </button>
-
-            {/* BOTÓN LANDING PAGES */}
-            <button
-              onClick={() => setShowLandingsModal(true)}
-              className="px-4 py-2.5 border-2 border-zinc-950 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black text-xs uppercase flex items-center gap-2 rounded-lg shadow-sm transition-all"
-            >
-              <span>🚀 LANDINGS</span>
-            </button>
-
-            {/* BOTÓN PROMOCIONES */}
-            <a
-              href="/web"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-4 py-2.5 border-2 border-zinc-950 bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-zinc-950 font-black text-xs uppercase flex items-center gap-2 rounded-lg shadow-sm transition-all"
-            >
-              <span>🔥 PROMOCIONES</span>
-            </a>
 
             {/* BOTÓN ACTUALIZAR LISTA */}
             <button

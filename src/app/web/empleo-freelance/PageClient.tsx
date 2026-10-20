@@ -7,7 +7,7 @@ import {
     Briefcase, Globe, Target, Cpu, CheckCircle2, ChevronRight,
     Users, Star, TrendingUp, Monitor, ShieldCheck, ArrowRight,
     Award, Layers, Zap, ShieldAlert, CalendarCheck, Share2, MapPin,
-    DollarSign, Clock, MessageSquare, PhoneCall, Sparkles
+    DollarSign, Clock, MessageSquare, PhoneCall, Sparkles, FileText
 } from "lucide-react"
 
 export default function EmpleoFreelancePageClient() {

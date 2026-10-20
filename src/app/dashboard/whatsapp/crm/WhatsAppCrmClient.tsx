@@ -988,23 +988,23 @@ export default function WhatsAppCrmClient() {
                 {/* Left Sidebar: Chat List */}
                 <div className={`w-full md:w-80 lg:w-96 border-r border-slate-800 bg-slate-900/90 flex flex-col shrink-0 ${activeChatId ? 'hidden md:flex' : 'flex'}`}>
                     
-                    {/* CRM View Tabs: MIS LEADS vs WHATSAPP vs REGISTRO AUTOMATICO */}
-                    <div className="p-2 bg-slate-950/90 border-b border-slate-800/80">
-                        <div className="grid grid-cols-3 gap-1 p-1 bg-slate-900/90 rounded-2xl border border-slate-800">
+                    {/* CRM View Tabs: MIS CONTACTOS vs ENTRANTES vs EMPLEO */}
+                    <div className="p-2 bg-[#111b21] border-b border-[#202c33]">
+                        <div className="grid grid-cols-3 gap-1 p-1 bg-[#202c33] rounded-2xl border border-slate-700/50">
                             <button
                                 type="button"
                                 onClick={() => setActiveCrmTab('MY_LEADS')}
                                 className={`py-2 px-1 rounded-xl text-[11px] font-black transition-all flex items-center justify-center gap-1 cursor-pointer truncate ${
                                     activeCrmTab === 'MY_LEADS'
-                                        ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-950/50'
-                                        : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                                        ? 'bg-[#00a884] text-black shadow-md font-black'
+                                        : 'text-slate-400 hover:text-white hover:bg-white/5'
                                 }`}
-                                title="Mis Leads y asignados"
+                                title="Mis Contactos y asignados"
                             >
-                                <UserCheck size={12} className={activeCrmTab === 'MY_LEADS' ? 'text-white' : 'text-emerald-400'} />
-                                <span className="truncate">Mis Leads</span>
+                                <UserCheck size={12} className={activeCrmTab === 'MY_LEADS' ? 'text-black' : 'text-[#00a884]'} />
+                                <span className="truncate">MIS CONTACTOS</span>
                                 <span className={`text-[9px] px-1 py-0.2 rounded-full font-mono font-bold shrink-0 ${
-                                    activeCrmTab === 'MY_LEADS' ? 'bg-black/40 text-emerald-200' : 'bg-slate-800 text-slate-400'
+                                    activeCrmTab === 'MY_LEADS' ? 'bg-black/30 text-white' : 'bg-slate-800 text-slate-400'
                                 }`}>
                                     {myLeadsCount}
                                 </span>
@@ -1015,15 +1015,15 @@ export default function WhatsAppCrmClient() {
                                 onClick={() => setActiveCrmTab('ALL_WHATSAPP')}
                                 className={`py-2 px-1 rounded-xl text-[11px] font-black transition-all flex items-center justify-center gap-1 cursor-pointer truncate ${
                                     activeCrmTab === 'ALL_WHATSAPP'
-                                        ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-950/50'
-                                        : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                                        ? 'bg-[#00a884] text-black shadow-md font-black'
+                                        : 'text-slate-400 hover:text-white hover:bg-white/5'
                                 }`}
-                                title="Todos los chats generales"
+                                title="Todos los chats entrantes"
                             >
-                                <MessageSquare size={12} className={activeCrmTab === 'ALL_WHATSAPP' ? 'text-white' : 'text-cyan-400'} />
-                                <span className="truncate">Generales</span>
+                                <MessageSquare size={12} className={activeCrmTab === 'ALL_WHATSAPP' ? 'text-black' : 'text-cyan-400'} />
+                                <span className="truncate">ENTRANTES</span>
                                 <span className={`text-[9px] px-1 py-0.2 rounded-full font-mono font-bold shrink-0 ${
-                                    activeCrmTab === 'ALL_WHATSAPP' ? 'bg-black/40 text-cyan-200' : 'bg-slate-800 text-slate-400'
+                                    activeCrmTab === 'ALL_WHATSAPP' ? 'bg-black/30 text-white' : 'bg-slate-800 text-slate-400'
                                 }`}>
                                     {allWhatsAppCount}
                                 </span>
@@ -1034,15 +1034,15 @@ export default function WhatsAppCrmClient() {
                                 onClick={() => setActiveCrmTab('AUTO_REGISTER')}
                                 className={`py-2 px-1 rounded-xl text-[11px] font-black transition-all flex items-center justify-center gap-1 cursor-pointer truncate ${
                                     activeCrmTab === 'AUTO_REGISTER'
-                                        ? 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white shadow-md shadow-cyan-950/50'
-                                        : 'text-slate-400 hover:text-cyan-300 hover:bg-slate-800/50'
+                                        ? 'bg-[#00a884] text-black shadow-md font-black'
+                                        : 'text-slate-400 hover:text-white hover:bg-white/5'
                                 }`}
-                                title="Registros y Cotizaciones del Bot"
+                                title="Postulantes a Empleo y Registros"
                             >
-                                <Sparkles size={12} className={activeCrmTab === 'AUTO_REGISTER' ? 'text-white' : 'text-cyan-400'} />
-                                <span className="truncate">Reg. Auto</span>
+                                <Sparkles size={12} className={activeCrmTab === 'AUTO_REGISTER' ? 'text-black' : 'text-amber-400'} />
+                                <span className="truncate">EMPLEO</span>
                                 <span className={`text-[9px] px-1 py-0.2 rounded-full font-mono font-bold shrink-0 ${
-                                    activeCrmTab === 'AUTO_REGISTER' ? 'bg-black/40 text-cyan-200' : 'bg-slate-800 text-cyan-400'
+                                    activeCrmTab === 'AUTO_REGISTER' ? 'bg-black/30 text-white' : 'bg-slate-800 text-amber-400'
                                 }`}>
                                     {autoRegisterCount}
                                 </span>
@@ -1051,34 +1051,34 @@ export default function WhatsAppCrmClient() {
                     </div>
 
                     {/* Search Bar */}
-                    <div className="p-3 md:p-3.5 border-b border-slate-800 bg-slate-950">
+                    <div className="p-3 md:p-3.5 border-b border-[#202c33] bg-[#111b21]">
                         <div className="relative">
                             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                             <input 
                                 type="text"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                placeholder={activeCrmTab === 'MY_LEADS' ? "Buscar en Mis Leads..." : "Buscar en todo WhatsApp..."}
-                                className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition-colors"
+                                placeholder={activeCrmTab === 'MY_LEADS' ? "Buscar en Mis Contactos..." : activeCrmTab === 'AUTO_REGISTER' ? "Buscar en Empleo..." : "Buscar en Entrantes..."}
+                                className="w-full bg-[#202c33] border border-[#2a3942] rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-[#00a884] transition-colors"
                             />
                         </div>
                     </div>
 
                     {/* Chat List Items */}
-                    <div className="flex-1 overflow-y-auto divide-y divide-slate-800/60">
+                    <div className="flex-1 overflow-y-auto divide-y divide-[#202c33] bg-[#111b21]">
                         {loading && chats.length === 0 ? (
-                            <div className="p-8 text-center text-slate-500 text-xs font-mono">Cargando conversaciones...</div>
+                            <div className="p-8 text-center text-slate-400 text-xs font-mono">Cargando conversaciones...</div>
                         ) : filteredChats.length === 0 ? (
                             <div className="p-8 text-center space-y-2">
-                                <div className="w-10 h-10 rounded-2xl bg-slate-800/80 border border-slate-700/80 flex items-center justify-center mx-auto text-slate-500">
+                                <div className="w-10 h-10 rounded-2xl bg-[#202c33] border border-slate-700/80 flex items-center justify-center mx-auto text-slate-400">
                                     {activeCrmTab === 'MY_LEADS' ? <UserCheck size={20} /> : <MessageSquare size={20} />}
                                 </div>
                                 <p className="text-xs text-slate-300 font-bold">
-                                    {activeCrmTab === 'MY_LEADS' ? 'No tienes leads asignados o respondidos aún' : 'No hay conversaciones registradas'}
+                                    {activeCrmTab === 'MY_LEADS' ? 'No tienes contactos asignados o respondidos aún' : 'No hay conversaciones registradas'}
                                 </p>
                                 {activeCrmTab === 'MY_LEADS' && (
-                                    <p className="text-[10px] text-slate-500 max-w-[200px] mx-auto">
-                                        Ve a la pestaña <strong>WhatsApp</strong> para responder o asignarte una conversación entrante.
+                                    <p className="text-[10px] text-slate-400 max-w-[200px] mx-auto">
+                                        Ve a la pestaña <strong>ENTRANTES</strong> para responder o asignarte una conversación.
                                     </p>
                                 )}
                             </div>
@@ -1147,12 +1147,12 @@ export default function WhatsAppCrmClient() {
                 </div>
 
                 {/* Right Main Chat Area */}
-                <div className={`flex-1 flex flex-col bg-[#080c14] ${!activeChatId ? 'hidden md:flex' : 'flex'}`}>
+                <div className={`flex-1 flex flex-col bg-[#0b141a] ${!activeChatId ? 'hidden md:flex' : 'flex'}`}>
                     
                     {activeChat ? (
                         <>
                             {/* Chat Header */}
-                            <div className="p-3.5 md:p-4 border-b border-slate-800 bg-slate-950 flex items-center justify-between">
+                            <div className="p-3.5 md:p-4 border-b border-[#202c33] bg-[#202c33] flex items-center justify-between">
                                 <div className="flex items-center gap-3">
                                     <button 
                                         onClick={() => setActiveChatId('')} 
@@ -1160,7 +1160,7 @@ export default function WhatsAppCrmClient() {
                                     >
                                         <ChevronLeft size={18} />
                                     </button>
-                                    <div className="w-9 h-9 rounded-full bg-emerald-600/30 border border-emerald-500/40 text-emerald-300 font-bold flex items-center justify-center text-sm">
+                                    <div className="w-9 h-9 rounded-full bg-[#00a884]/20 border border-[#00a884]/40 text-[#00a884] font-bold flex items-center justify-center text-sm">
                                         {activeChat.name.charAt(0).toUpperCase()}
                                     </div>
                                     <div>
@@ -1223,7 +1223,7 @@ export default function WhatsAppCrmClient() {
                             </div>
 
                             {/* Chat Messages */}
-                            <div ref={messagesContainerRef} className="flex-1 p-4 overflow-y-auto space-y-4 scroll-smooth">
+                            <div ref={messagesContainerRef} className="flex-1 p-4 overflow-y-auto space-y-4 scroll-smooth bg-[#0b141a]">
                                 {/* 📢 BANNER DESTACADO DE PAUTA PUBLICITARIA SI EL LEAD PROVIENE DE ANUNCIO */}
                                 {activeChat.isFromAd && (
                                     <div className="p-3.5 bg-gradient-to-r from-blue-950/90 via-indigo-950/90 to-cyan-950/90 border-2 border-blue-500/50 rounded-2xl shadow-xl space-y-2 text-white">
@@ -1258,8 +1258,8 @@ export default function WhatsAppCrmClient() {
                                         >
                                             <div className={`max-w-[85%] sm:max-w-[75%] rounded-2xl p-3.5 text-xs space-y-2.5 ${
                                                 msg.sender === 'me'
-                                                    ? 'bg-emerald-600 text-white rounded-br-none shadow-md shadow-emerald-950/40'
-                                                    : 'bg-slate-800 text-slate-100 border border-slate-700/80 rounded-bl-none shadow-md shadow-black/40'
+                                                    ? 'bg-[#005c4b] text-[#e9edef] rounded-tr-none shadow-md'
+                                                    : 'bg-[#202c33] text-[#e9edef] border border-[#2a3942] rounded-tl-none shadow-md'
                                             }`}>
                                                 
                                                 {/* 📢 PREVIEW CARD: ATRIBUCIÓN DE ANUNCIO FACEBOOK ADS (CLICK TO WHATSAPP) */}

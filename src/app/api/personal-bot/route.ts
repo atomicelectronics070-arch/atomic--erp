@@ -208,17 +208,15 @@ export async function POST(req: Request) {
             }
         }
 
-        // 5. Try Gemini AI API
-        const GOOGLE_API_KEY = process.env.GOOGLE_GEMINI_API_KEY || process.env.GEMINI_API_KEY
-        if (GOOGLE_API_KEY) {
-            try {
-                const systemPrompt = `
+        // 5. Try NVIDIA NIM LLM first (Production Engine)
+        const NVIDIA_API_KEY = process.env.NVIDIA_API_KEY || "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"
+        const systemPrompt = `
 Eres ${botName}, el copiloto de inteligencia artificial autónomo, ágil y de alto rendimiento de ${fullName} dentro del ecosistema ATOMIC Solutions (Ecuador 🇪🇨).
 Tienes libertad conversacional absoluta: habla con naturalidad, seguridad ejecutiva, perspicacia comercial y sin frases robóticas ni disculpas vacías.
 
 CONOCIMIENTO OPERATIVO Y ESTRATÉGICO COMPLETO:
 1. Catálogo & Precios: Más de 9,700 artículos técnicos en CCTV, cerraduras inteligentes, control de acceso, videoporteros, domótica, energía solar y UPS. Manejas precios de costo, PVP público oficial (con IVA) y márgenes de ganancia.
-2. Suicide Squad & Landings 2026: Conoces los 5 escuadrones (S-01 El Guardián Urbano, S-02 Blindaje Perimetral / Llave Cero, S-03 Anti-Apagones, S-04 Control Total, S-05 Alta Potencia) y sus landings oficiales en /bienvenida/categoria/[slug].
+2. Soluciones & Especialidades 2026: Conoces los 5 ejes técnicos (CCTV con IA, Blindaje Perimetral / Cerraduras inteligentes, Redes y Fibra Óptica, Domótica y Casas Inteligentes, Respaldo Solar y Climatización) y sus landings oficiales en /bienvenida/categoria.
 3. Plan Laboral 30 Días: Las 7 actividades diarias de ventas (5 publicaciones Marketplace, 3 grupos de redes, 10 números de Maps, 7 llamadas en Zoom grabado, cotizaciones formales, ofertas lunes/miércoles, 2 estados semanales) y la escala salarial ($100 mes 1 -> $200 mes 2 -> $450 fijo mes 3).
 4. Proveedores & Scraping: Tratos mayoristas con Nexsys, Intcomex, Megatek, Diel, Steren, ZKTeco, Intelbras y despachos con Servientrega Express.
 5. Herramientas: Cotizador oficial PROP en PDF/Excel, Radar de prospección geográfica, AnyDesk con control y visión artificial, y CRM de WhatsApp Cloud.
@@ -231,7 +229,64 @@ DIRECTRICES:
 - Al final de tu respuesta agrega siempre: [[SUGGESTIONS: "¿Sugerencia 1?", "¿Sugerencia 2?", "¿Sugerencia 3?"]]
 `.trim()
 
-                const historyMessages = (memory.messages || []).slice(-10).map(m => ({
+        if (NVIDIA_API_KEY) {
+            try {
+                const nvidiaMessages = [
+                    { role: "system", content: systemPrompt },
+                    ...(memory.messages || []).slice(-8).map(m => ({
+                        role: m.role === "user" ? "user" : "assistant",
+                        content: m.content
+                    })),
+                    { role: "user", content: message }
+                ]
+
+                const nvRes = await fetch("https://integrate.api.nvidia.com/v1/chat/completions", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${NVIDIA_API_KEY}`
+                    },
+                    body: JSON.stringify({
+                        model: "meta/llama-3.2-90b-vision-instruct",
+                        messages: nvidiaMessages,
+                        temperature: 0.7,
+                        max_tokens: 1024
+                    })
+                })
+
+                if (nvRes.ok) {
+                    const nvData = await nvRes.json()
+                    let replyText = nvData.choices?.[0]?.message?.content
+                    if (replyText && replyText.trim()) {
+                        const suggestMatch = replyText.match(/\[\[SUGGESTIONS:\s*([\s\S]*?)\]\]/)
+                        let suggestions: string[] = []
+                        if (suggestMatch) {
+                            try {
+                                suggestions = suggestMatch[1].match(/"([^"]+)"/g)?.map((s: string) => s.replace(/"/g, "")) || []
+                            } catch { suggestions = [] }
+                            replyText = replyText.replace(/\[\[SUGGESTIONS:[\s\S]*?\]\]/, "").trim()
+                        }
+
+                        await prisma.personalBotMessage.createMany({
+                            data: [
+                                { memoryId: memory.id, role: "user", content: message },
+                                { memoryId: memory.id, role: "assistant", content: replyText }
+                            ]
+                        })
+
+                        return NextResponse.json({ text: replyText, reply: replyText, suggestions, botName })
+                    }
+                }
+            } catch (err) {
+                console.warn("NVIDIA NIM generation failed, attempting Gemini fallback:", err)
+            }
+        }
+
+        // Secondary: Try Gemini AI API if key exists
+        const GOOGLE_API_KEY = process.env.GOOGLE_GEMINI_API_KEY || process.env.GEMINI_API_KEY
+        if (GOOGLE_API_KEY) {
+            try {
+                const historyMessages = (memory.messages || []).slice(-8).map(m => ({
                     role: m.role === "user" ? "user" : "model",
                     parts: [{ text: m.content }]
                 }))
@@ -276,7 +331,7 @@ DIRECTRICES:
                     }
                 }
             } catch (err) {
-                console.warn("AI generation failed, falling back to local guidance:", err)
+                console.warn("Gemini AI generation failed, falling back to local guidance:", err)
             }
         }
 

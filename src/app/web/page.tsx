@@ -46,7 +46,7 @@ export default async function PublicWebPage() {
 
         const products = await prisma.product.findMany({
             where: { isDeleted: false, isActive: true },
-            take: 200,
+            take: 400,
             orderBy: { createdAt: 'desc' },
             select: { 
                 id: true, name: true, description: true, price: true, 

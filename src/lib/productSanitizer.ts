@@ -150,6 +150,9 @@ export function sanitizeProductImage(name: string, imagesRaw?: string | null, ca
     if (combined.includes("audio") || combined.includes("parlante") || combined.includes("sonido")) {
         return "https://images.unsplash.com/photo-1545454675-3531b543be5d?auto=format&fit=crop&w=600&q=80"
     }
+    if (combined.includes("encimera") || combined.includes("cocina") || combined.includes("hornilla") || combined.includes("parrilla") || combined.includes("induccion") || combined.includes("estufa")) {
+        return "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=600&q=80"
+    }
 
     return "https://placehold.co/500x380/080d22/06b6d4?text=ATOMIC+EQUIPAMIENTO"
 }

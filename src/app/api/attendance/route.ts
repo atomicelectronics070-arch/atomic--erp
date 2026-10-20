@@ -22,11 +22,25 @@ async function getAuthenticatedUser(session: any) {
     return fallback || { id: "mock-salesperson-id", email: "ventas@atomic.com.ec", name: "Asesor Comercial" }
 }
 
+function getEcuadorDateString(d: Date = new Date()): string {
+    const formatter = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "America/Guayaquil",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+    })
+    return formatter.format(d)
+}
+
 function getDayKey(d: Date = new Date()) {
-    const year = d.getFullYear()
-    const month = String(d.getMonth() + 1).padStart(2, '0')
-    const day = String(d.getDate()).padStart(2, '0')
-    return `${year}-${month}-${day}`
+    return getEcuadorDateString(d)
+}
+
+function getEcuadorDayRange(d: Date = new Date()) {
+    const dateStr = getEcuadorDateString(d)
+    const start = new Date(`${dateStr}T00:00:00-05:00`)
+    const end = new Date(`${dateStr}T23:59:59.999-05:00`)
+    return { dateStr, start, end }
 }
 
 export async function GET(req: Request) {
@@ -71,9 +85,7 @@ export async function GET(req: Request) {
         }
 
         const now = new Date()
-        const todayKey = getDayKey(now)
-        const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0)
-        const todayEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999)
+        const { dateStr: todayKey, start: todayStart, end: todayEnd } = getEcuadorDayRange(now)
 
         // 1. Fetch or compute 30-day evaluation status
         let evaluation = {
@@ -309,9 +321,7 @@ export async function POST(req: Request) {
         const action = body.action
 
         const now = new Date()
-        const todayKey = getDayKey(now)
-        const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0)
-        const todayEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999)
+        const { dateStr: todayKey, start: todayStart, end: todayEnd } = getEcuadorDayRange(now)
 
         // Helper to get active cycle
         const getActiveCycle = async () => {
@@ -328,7 +338,7 @@ export async function POST(req: Request) {
 
         // Helper to load current daily state
         const loadDailyState = async (cycle: any) => {
-            let state = {
+            let state: any = {
                 dailyCounters: {
                     posts: 0,
                     groupPosts: 0,
@@ -339,7 +349,11 @@ export async function POST(req: Request) {
                     personalStatuses: 0
                 },
                 proofs: [] as any[],
-                callsChecklist: [false, false, false, false, false, false, false]
+                callsChecklist: [false, false, false, false, false, false, false],
+                clockInTime: null,
+                clockInDate: null,
+                clockOutTime: null,
+                clockOutDate: null
             }
 
             if (cycle) {

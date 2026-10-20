@@ -24,8 +24,10 @@ interface SocialFeedClientProps {
     session: any
 }
 
+export type SocialMasterMode = "OFICINA VIRTUAL" | "RED SOCIAL INTERNA" | "RANKING DE RENDIMIENTO"
+
 export default function SocialFeedClient({ initialPosts, initialRanking, session }: SocialFeedClientProps) {
-    const [masterMode, setMasterMode] = useState<"area_trabajo" | "publicador" | "feed_interno">("area_trabajo")
+    const [masterMode, setMasterMode] = useState<SocialMasterMode>("OFICINA VIRTUAL")
     const [posts, setPosts] = useState<any[]>(initialPosts)
     const [ranking, setRanking] = useState<any[]>(initialRanking)
     const [loading, setLoading] = useState(false)
@@ -144,77 +146,72 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
     return (
         <div className="w-full min-h-screen bg-[#050505] text-white pb-32 space-y-8">
             
-            {/* MASTER SWITCH: OFICINA VIRTUAL NIVEL 6 (PREDETERMINADA) | RED SOCIAL INTERNA & RANKINGS */}
-            <div className="bg-slate-900/90 backdrop-blur-xl border border-slate-800 p-2.5 rounded-3xl flex flex-col lg:flex-row items-center justify-between gap-4 shadow-2xl sticky top-20 z-40">
-                <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto">
+            {/* MASTER SWITCH: EXACTLY 3 TABS WITHOUT ADORNMENTS */}
+            <div className="bg-slate-900/90 backdrop-blur-xl border border-slate-800 p-2.5 rounded-3xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-2xl sticky top-20 z-40">
+                <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                     <button
-                        onClick={() => setMasterMode("area_trabajo")}
-                        className={`flex-1 sm:flex-initial px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center space-x-2.5 cursor-pointer ${
-                            masterMode === 'area_trabajo' 
-                                ? 'bg-gradient-to-r from-cyan-500 to-indigo-600 text-black shadow-[0_0_25px_rgba(6,182,212,0.5)] font-black' 
-                                : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
+                        type="button"
+                        onClick={() => setMasterMode("OFICINA VIRTUAL")}
+                        className={`flex-1 sm:flex-initial px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-wider transition-all cursor-pointer ${
+                            masterMode === "OFICINA VIRTUAL"
+                                ? "bg-cyan-500 text-black shadow-[0_0_25px_rgba(6,182,212,0.5)] font-black"
+                                : "text-slate-400 hover:text-white hover:bg-slate-800/80"
                         }`}
                     >
-                        <Globe size={16} className={masterMode === 'area_trabajo' ? 'text-black' : 'text-cyan-400'} />
-                        <span>OFICINA VIRTUAL · NIVEL 6 (CENTRO NEURÁLGICO)</span>
+                        OFICINA VIRTUAL
                     </button>
 
                     <button
-                        onClick={() => setMasterMode("feed_interno")}
-                        className={`flex-1 sm:flex-initial px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center space-x-2.5 cursor-pointer ${
-                            masterMode === 'feed_interno' 
-                                ? 'bg-gradient-to-r from-emerald-500 via-teal-600 to-cyan-600 text-white shadow-[0_0_25px_rgba(16,185,129,0.4)]' 
-                                : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
+                        type="button"
+                        onClick={() => setMasterMode("RED SOCIAL INTERNA")}
+                        className={`flex-1 sm:flex-initial px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-wider transition-all cursor-pointer ${
+                            masterMode === "RED SOCIAL INTERNA"
+                                ? "bg-emerald-500 text-black shadow-[0_0_25px_rgba(16,185,129,0.5)] font-black"
+                                : "text-slate-400 hover:text-white hover:bg-slate-800/80"
                         }`}
                     >
-                        <Users size={16} className="text-emerald-400 drop-shadow-[0_0_8px_rgba(16,185,129,0.9)]" />
-                        <span>RED SOCIAL INTERNA & RANKINGS</span>
+                        RED SOCIAL INTERNA
                     </button>
-                </div>
 
-                <div className="hidden xl:flex items-center space-x-3 px-4 py-2 bg-slate-950 rounded-2xl border border-slate-800 text-[10px] font-mono text-slate-400">
-                    <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping"></span>
-                    <span className="text-white font-bold">Oficina Nivel 6 · GPT Astra 2026</span>
+                    <button
+                        type="button"
+                        onClick={() => setMasterMode("RANKING DE RENDIMIENTO")}
+                        className={`flex-1 sm:flex-initial px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-wider transition-all cursor-pointer ${
+                            masterMode === "RANKING DE RENDIMIENTO"
+                                ? "bg-indigo-600 text-white shadow-[0_0_25px_rgba(99,102,241,0.5)] font-black"
+                                : "text-slate-400 hover:text-white hover:bg-slate-800/80"
+                        }`}
+                    >
+                        RANKING DE RENDIMIENTO
+                    </button>
                 </div>
             </div>
 
-            {/* MODE 1: ÁREA DE TRABAJO (OFICINA VIRTUAL NIVEL 6) */}
-            {masterMode === "area_trabajo" && (
+            {/* TAB 1: OFICINA VIRTUAL */}
+            {masterMode === "OFICINA VIRTUAL" && (
                 <div className="space-y-8 animate-in fade-in zoom-in-95 duration-500">
                     <VirtualOfficeWorkspace currentModule="ventas" />
                 </div>
             )}
 
-            {/* MODE 3: RED SOCIAL INTERNA & RANKINGS DE EMPRESA */}
-            {masterMode === "feed_interno" && (
-                <div className="space-y-8 animate-in fade-in zoom-in-95 duration-500">
-                    <div className="bg-slate-900/90 border border-slate-800 px-8 py-6 rounded-3xl flex flex-col md:flex-row justify-between items-center gap-6 shadow-2xl">
+            {/* TAB 2: RED SOCIAL INTERNA */}
+            {masterMode === "RED SOCIAL INTERNA" && (
+                <div className="space-y-8 animate-in fade-in zoom-in-95 duration-500 max-w-4xl mx-auto px-4">
+                    <div className="bg-slate-900/90 border border-slate-800 px-8 py-6 rounded-3xl flex items-center justify-between shadow-2xl">
                         <div className="flex items-center gap-4">
-                            <div className="w-14 h-14 bg-emerald-500/10 border border-emerald-500/40 rounded-2xl flex items-center justify-center text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.3)]">
-                                <Users size={26} />
+                            <div className="w-12 h-12 bg-emerald-500/10 border border-emerald-500/40 rounded-2xl flex items-center justify-center text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.3)]">
+                                <Users size={24} />
                             </div>
                             <div>
-                                <h2 className="text-2xl font-black text-white tracking-tight">Red Social Interna</h2>
-                                <p className="text-sm font-mono font-bold flex items-center gap-2 mt-0.5">
-                                    <span className="text-white font-black tracking-widest uppercase">ATOMIC</span>
-                                    <span className="text-slate-500">•</span>
-                                    <span className="text-emerald-400 font-black tracking-widest uppercase">COMUNIDAD</span>
-                                    <span className="text-slate-500">•</span>
-                                    <span className="text-slate-300 font-medium">Noticias y Ranking de Ventas</span>
-                                </p>
+                                <h2 className="text-xl font-black text-white tracking-tight uppercase">RED SOCIAL INTERNA</h2>
+                                <p className="text-xs font-mono text-slate-400">Comunidad, novedades y publicaciones del equipo ATOMIC</p>
                             </div>
                         </div>
                     </div>
 
-                    {/* LIVE TRADING CHART — Visible for all, admin controls only */}
-                    <div className="px-2">
-                        <LiveTradingChart isAdmin={isAdmin} />
-                    </div>
-
-            <div className="max-w-7xl mx-auto px-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
-                
-                {/* Left Column: Feed & Posts */}
-                <div className="lg:col-span-8 space-y-8">
+            <div className="w-full space-y-8">
+                {/* Feed & Posts */}
+                <div className="space-y-8">
                     
                     {/* Render Old Panels if they exist, wrapping them cleanly */}
                     <div className="hidden">
@@ -344,12 +341,43 @@ export default function SocialFeedClient({ initialPosts, initialRanking, session
                         </AnimatePresence>
                     </div>
                 </div>
+            </div>
+            </div>
+            )}
 
-                {/* Right Column: Sidebar Panels */}
-                <div className="lg:col-span-4 space-y-6">
-                    
-                    {/* Ranking Panel — 2027 Cyberpunk */}
-                    <div className="bg-slate-900/90 border border-slate-800 rounded-3xl shadow-2xl p-6 sticky top-32 space-y-5">
+            {/* TAB 3: RANKING DE RENDIMIENTO */}
+            {masterMode === "RANKING DE RENDIMIENTO" && (
+                <div className="space-y-8 animate-in fade-in zoom-in-95 duration-500 max-w-7xl mx-auto px-4 sm:px-8">
+                    {/* Header */}
+                    <div className="bg-slate-900/90 border border-slate-800 px-8 py-6 rounded-3xl flex items-center justify-between shadow-2xl">
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 bg-indigo-500/10 border border-indigo-500/40 rounded-2xl flex items-center justify-center text-indigo-400 shadow-[0_0_20px_rgba(99,102,241,0.3)]">
+                                <Trophy size={24} />
+                            </div>
+                            <div>
+                                <h2 className="text-xl font-black text-white tracking-tight uppercase">RANKING DE RENDIMIENTO</h2>
+                                <p className="text-xs font-mono text-slate-400">Métricas de conversión, cotizaciones, llamadas y posiciones en vivo</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* LIVE TRADING CHART */}
+                    <div className="px-2">
+                        <LiveTradingChart isAdmin={isAdmin} />
+                    </div>
+
+                    {/* Category Rankings Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <SalesRankingPanel isAdmin={isAdmin} />
+                        <PhoneRankingPanel isAdmin={isAdmin} />
+                        <PublicationRankingPanel isAdmin={isAdmin} />
+                    </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                        <div className="lg:col-span-12 space-y-8">
+                            
+                            {/* Ranking Panel — 2027 Cyberpunk */}
+                            <div className="bg-slate-900/90 border border-slate-800 rounded-3xl shadow-2xl p-6 space-y-5">
                         
                         {/* Header */}
                         <div className="flex items-center justify-between">

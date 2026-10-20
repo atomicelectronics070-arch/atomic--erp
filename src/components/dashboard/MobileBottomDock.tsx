@@ -8,7 +8,7 @@ import {
     MessageSquare, Table, Plus, User, Users, Scan, 
     ShoppingBag, Map, GraduationCap, Grid, Wrench, Shield, 
     Layers, Cpu, ChevronUp, X, Home, Flame, CalendarCheck, Globe, CheckSquare,
-    KeyRound, ShieldAlert, Sparkles, Clock
+    KeyRound, ShieldAlert, Sparkles, Clock, Target, Route
 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import TeamContactsModal from "./TeamContactsModal"
@@ -22,7 +22,7 @@ import GestorCuentasModal from "@/components/coordinacion/GestorCuentasModal"
 function MobileBottomDockInner() {
     const { data: session } = useSession()
     const userRole = String((session?.user as any)?.role || "SALESPERSON").toUpperCase()
-    const isAdministrative = userRole.includes("ADMIN") || userRole.includes("COORDINATOR") || userRole.includes("MANAGEMENT")
+    const isAdministrative = userRole.includes("ADMIN") || userRole.includes("COORDINATOR") || userRole.includes("MANAGEMENT") || userRole.includes("SUPERVISOR")
 
     const pathname = usePathname()
     const searchParams = useSearchParams()
@@ -172,12 +172,9 @@ function MobileBottomDockInner() {
                             {/* Si es administrativo: Asistencias de Equipo y Gestor de Cuentas */}
                             {isAdministrative && (
                                 <>
-                                    <button 
-                                        type="button"
-                                        onClick={() => {
-                                            setShowMoreMenu(false)
-                                            setShowEquipoAsistenciasModal(true)
-                                        }}
+                                    <Link 
+                                        href="/dashboard/coordinacion?tab=ASISTENCIAS"
+                                        onClick={() => setShowMoreMenu(false)}
                                         className="p-3 rounded-2xl bg-gradient-to-b from-cyan-500/25 to-blue-600/25 border-2 border-cyan-400/80 hover:border-cyan-300 flex flex-col items-center gap-1.5 transition-all active:scale-95 cursor-pointer shadow-lg shadow-cyan-950/50"
                                     >
                                         <div className="p-2 rounded-xl bg-cyan-400 text-black shadow-md">
@@ -185,7 +182,7 @@ function MobileBottomDockInner() {
                                         </div>
                                         <span className="text-cyan-200 font-extrabold">Ajustar Asistencias</span>
                                         <span className="text-[8px] font-mono px-1.5 py-0.2 rounded-full bg-cyan-400 text-black font-black uppercase">EQUIPO</span>
-                                    </button>
+                                    </Link>
 
                                     <button 
                                         type="button"
@@ -253,7 +250,7 @@ function MobileBottomDockInner() {
                                 <span className="text-[8px] font-mono px-1.5 py-0.2 rounded-full bg-cyan-400 text-black font-black uppercase">12 PRO</span>
                             </button>
 
-                            {/* 3. Landings ATOMIC 2026 (Acceso Rápido Oficial) */}
+                            {/* 3. landing (Catálogo Oficial de Especialidades) */}
                             <Link 
                                 href="/bienvenida/categoria"
                                 onClick={() => setShowMoreMenu(false)}
@@ -262,8 +259,7 @@ function MobileBottomDockInner() {
                                 <div className="p-2 rounded-xl bg-blue-500 text-white shadow-md">
                                     <Globe size={18} className="stroke-[2.5]" />
                                 </div>
-                                <span className="text-blue-200 font-extrabold">Landings 2026</span>
-                                <span className="text-[8px] font-mono px-1.5 py-0.2 rounded-full bg-blue-500 text-white font-black uppercase">11 CATEGORÍAS</span>
+                                <span className="text-blue-200 font-extrabold lowercase">landing</span>
                             </Link>
 
                             <Link 
@@ -551,6 +547,23 @@ function MobileBottomDockInner() {
                                 Perfil
                             </span>
                         </Link>
+
+                        {/* Botón RUTAS (Exclusivo Perfiles Administrativos) */}
+                        {isAdministrative && (
+                            <button
+                                type="button"
+                                onClick={() => setShowRutaModal(true)}
+                                className="flex flex-col items-center justify-center py-1 transition-all group active:scale-90 cursor-pointer"
+                                title="Rutas del Día (Supervisión e inspección interactiva de todas las cuadrillas)"
+                            >
+                                <div className="p-1.5 rounded-xl transition-colors bg-gradient-to-br from-amber-500/25 to-orange-500/25 text-amber-300 group-hover:text-amber-100 border border-amber-400/40 shadow-[0_0_12px_rgba(245,158,11,0.35)]">
+                                    <Target size={16} className="stroke-[2.2]" />
+                                </div>
+                                <span className="text-[8px] font-black tracking-tight mt-0.5 text-amber-300 group-hover:text-white truncate">
+                                    Rutas
+                                </span>
+                            </button>
+                        )}
 
                         {/* 9. Más Módulos Drawer */}
                         <button

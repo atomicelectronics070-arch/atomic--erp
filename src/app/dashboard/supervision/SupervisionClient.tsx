@@ -14,6 +14,7 @@ import {
     ReferenceLine, Area, AreaChart
 } from "recharts"
 import RutaDelDiaWorkspace from "@/components/tools/RutaDelDiaWorkspace"
+import EquipoAsistenciasView from "@/components/coordinacion/EquipoAsistenciasView"
 
 // ─────────────────────────────────────────────────────────────────────────────
 // TYPES
@@ -168,7 +169,7 @@ export default function SupervisionClient({ session }: { session: any }) {
     const [todayAttendance, setTodayAttendance] = useState<AttendanceRecord | null>(null)
 
     // ── MODAL STATE ──────────────────────────────────────────────────────────
-    const [activeTab, setActiveTab] = useState<"asistencia"|"auditoria"|"ciclos"|"tareas"|"crm"|"ruta_dia">("asistencia")
+    const [activeTab, setActiveTab] = useState<"asistencia"|"asistencia_equipo"|"auditoria"|"ciclos"|"tareas"|"crm"|"ruta_dia">("asistencia")
     const [checkModal, setCheckModal] = useState<"personal"|"empresa"|"marketing"|null>(null)
     const [addCycleOpen, setAddCycleOpen] = useState(false)
     const [sendTaskOpen, setSendTaskOpen] = useState(false)
@@ -494,9 +495,10 @@ export default function SupervisionClient({ session }: { session: any }) {
 
             {/* ── TABS ────────────────────────────────────────────────── */}
             <div className="flex items-center gap-1 bg-slate-900/80 border border-slate-800 rounded-2xl p-1 overflow-x-auto">
-                {(["asistencia", "auditoria", "ciclos", "tareas", "crm", "ruta_dia"] as const).map(tab => {
+                {(["asistencia", "asistencia_equipo", "auditoria", "ciclos", "tareas", "crm", "ruta_dia"] as const).map(tab => {
                     const labels: Record<string, string> = {
                         asistencia: "📊 Asistencia & Plano",
+                        asistencia_equipo: "👥 Asistencias de Equipo (30 Días)",
                         auditoria: "🗂️ Auditoría Diaria",
                         ciclos: "⏱️ Ciclos Laborales",
                         tareas: "📋 Pendientes Dirigidos",
@@ -519,10 +521,45 @@ export default function SupervisionClient({ session }: { session: any }) {
                 })}
             </div>
 
+            {/* ── TAB: ASISTENCIAS DE EQUIPO 30 DÍAS (EN VIVO SIN MODAL NI DOBLE CAPA) ── */}
+            {activeTab === "asistencia_equipo" && (
+                <div className="animate-in fade-in duration-300">
+                    <EquipoAsistenciasView />
+                </div>
+            )}
+
             {/* ── TAB: ASISTENCIA ────────────────────────────────────── */}
             <AnimatePresence mode="wait">
                 {activeTab === "asistencia" && (
                     <motion.div key="asistencia" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-6">
+                        {/* Banner Acceso Rápido: Asistencias del Equipo */}
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-2xl bg-gradient-to-r from-emerald-950/60 via-slate-900 to-teal-950/60 border border-emerald-500/40 shadow-xl">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2.5 rounded-xl bg-emerald-500 text-black shadow-md shrink-0">
+                                    <Users size={20} className="stroke-[2.5]" />
+                                </div>
+                                <div>
+                                    <h4 className="text-sm font-black text-white uppercase tracking-wider flex items-center gap-2">
+                                        <span>Consola de Asistencias & Ciclos del Equipo</span>
+                                        <span className="px-2 py-0.2 rounded-full text-[9px] font-mono font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">
+                                            EN VIVO
+                                        </span>
+                                    </h4>
+                                    <p className="text-xs text-slate-300 mt-0.5">
+                                        Supervisa el cumplimiento de los 30 días, actividades diarias y observaciones de cada asesor.
+                                    </p>
+                                </div>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setActiveTab("asistencia_equipo")}
+                                className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-400 hover:from-emerald-300 hover:to-teal-300 text-black font-black text-xs uppercase tracking-wider flex items-center gap-2 shadow-lg shadow-emerald-950/50 transition-all active:scale-95 cursor-pointer shrink-0"
+                            >
+                                <Calendar size={14} className="stroke-[2.5]" />
+                                <span>Abrir Asistencias de Equipo</span>
+                            </button>
+                        </div>
+
                         {/* Registro de Ingreso */}
                         <div className="flex flex-col md:flex-row gap-6">
                             <motion.div

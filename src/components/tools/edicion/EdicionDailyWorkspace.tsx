@@ -201,7 +201,7 @@ export default function EdicionDailyWorkspace() {
     const handleAddSoftFile = () => {
         const fileNames = ["landing_mockup_soft.png", "video_pitch_multitenant.mp4", "banner_soft_oferta.gif"]
         const randomName = fileNames[Math.floor(Math.random() * fileNames.length)]
-        const type = randomName.endsWith(".png") ? "image" : randomName.endsWith(".mp4") ? "video" : "gif"
+        const type: "image" | "video" | "gif" = randomName.endsWith(".png") ? "image" : randomName.endsWith(".mp4") ? "video" : "gif"
         const next = [...softFiles, { id: `sf-${Date.now()}`, name: randomName, type, date: today }]
         setSoftFiles(next)
     }

@@ -8,7 +8,7 @@ import {
     Trash2, Eye, Download, Info, ZoomIn, ZoomOut, 
     Maximize2, RotateCcw, Smartphone, Monitor, 
     Layers, ChevronRight, ChevronDown, CheckCircle2,
-    Crown, ShieldAlert, Cpu, Wrench, Briefcase, Hand
+    Crown, ShieldAlert, Cpu, Wrench, Briefcase, Hand, Search
 } from "lucide-react"
 
 export interface ProfileNode {
@@ -197,9 +197,30 @@ export default function InteractiveHierarchyMap() {
         try {
             const savedNodes = localStorage.getItem("atomic_hierarchy_nodes")
             const savedConns = localStorage.getItem("atomic_hierarchy_connections")
-            if (savedNodes) setNodes(JSON.parse(savedNodes))
-            if (savedConns) setConnections(JSON.parse(savedConns))
-        } catch (e) {}
+            if (savedNodes) {
+                const parsed = JSON.parse(savedNodes)
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    const sanitized = parsed.map((n: any, idx: number) => ({
+                        id: n.id || `node-${idx}`,
+                        name: n.name || "Colaborador",
+                        role: n.role || "Cargo",
+                        category: n.category || "ventas",
+                        x: Number.isFinite(Number(n.x)) ? Number(n.x) : 100 + (idx % 3) * 200,
+                        y: Number.isFinite(Number(n.y)) ? Number(n.y) : 50 + Math.floor(idx / 3) * 150,
+                        level: [1, 2, 3].includes(n.level) ? n.level : 3,
+                        modules: Array.isArray(n.modules) ? n.modules : [],
+                        superiorId: n.superiorId
+                    }))
+                    setNodes(sanitized)
+                }
+            }
+            if (savedConns) {
+                const parsedConns = JSON.parse(savedConns)
+                if (Array.isArray(parsedConns)) setConnections(parsedConns)
+            }
+        } catch (e) {
+            console.warn("Hierarchy localStorage parse error, falling back to initial", e)
+        }
 
         // In mobile viewports (< 768px), default to 'tree' view and lower zoom on canvas
         if (typeof window !== "undefined") {
@@ -1032,14 +1053,19 @@ export default function InteractiveHierarchyMap() {
                                     const from = nodes.find(n => n.id === c.fromId)
                                     const to = nodes.find(n => n.id === c.toId)
                                     if (!from || !to) return null
-                                    const x1 = from.x + 95
-                                    const y1 = from.y + 45
-                                    const x2 = to.x + 95
-                                    const y2 = to.y + 45
+                                    const fx = Number.isFinite(Number(from.x)) ? Number(from.x) : 0
+                                    const fy = Number.isFinite(Number(from.y)) ? Number(from.y) : 0
+                                    const tx = Number.isFinite(Number(to.x)) ? Number(to.x) : 0
+                                    const ty = Number.isFinite(Number(to.y)) ? Number(to.y) : 0
+                                    const x1 = fx + 95
+                                    const y1 = fy + 45
+                                    const x2 = tx + 95
+                                    const y2 = ty + 45
+                                    const midY = (y1 + y2) / 2
                                     return (
                                         <g key={c.id}>
                                             <path
-                                                d={`M ${x1} ${y1} C ${x1} ${(y1 + y2) / 2}, ${x2} ${(y1 + y2) / 2}, ${x2} ${y2}`}
+                                                d={`M ${x1} ${y1} C ${x1} ${midY}, ${x2} ${midY}, ${x2} ${y2}`}
                                                 stroke="url(#neonConnectionGrad)"
                                                 strokeWidth="3"
                                                 fill="none"
@@ -1056,6 +1082,8 @@ export default function InteractiveHierarchyMap() {
                                 const badge = getCategoryBadge(n.category)
                                 const isDragging = draggingNodeId === n.id
                                 const isSelected = selectedNode?.id === n.id
+                                const safeX = Number.isFinite(Number(n.x)) ? Number(n.x) : 100
+                                const safeY = Number.isFinite(Number(n.y)) ? Number(n.y) : 100
 
                                 return (
                                     <div
@@ -1063,7 +1091,7 @@ export default function InteractiveHierarchyMap() {
                                         onMouseDown={(e) => startDragNode(e, n)}
                                         onTouchStart={(e) => handleTouchStart(e, n.id)}
                                         style={{ 
-                                            transform: `translate(${n.x}px, ${n.y}px)`,
+                                            transform: `translate(${safeX}px, ${safeY}px)`,
                                             position: "absolute"
                                         }}
                                         className={`z-20 w-[190px] p-3 rounded-2xl bg-[#090d1e]/95 border backdrop-blur-xl shadow-[0_15px_30px_rgba(0,0,0,0.8)] transition-shadow duration-150 cursor-grab active:cursor-grabbing ${

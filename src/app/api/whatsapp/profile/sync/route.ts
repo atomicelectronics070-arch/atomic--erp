@@ -8,7 +8,7 @@ import { prisma } from '@/lib/prisma';
 
 const API_VERSION = 'v21.0';
 
-export async function uploadToMeta(token: string, phoneId: string, imageBuffer: Buffer, mimeType: string = 'image/jpeg') {
+async function uploadToMeta(token: string, phoneId: string, imageBuffer: Buffer, mimeType: string = 'image/jpeg') {
     // 1. Resolve Meta App ID
     let appId = process.env.META_APP_ID || process.env.WHATSAPP_APP_ID;
 

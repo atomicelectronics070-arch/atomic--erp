@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import UniversalTimbrado30Dias from "@/components/attendance/UniversalTimbrado30Dias"
+import DirectedTasksPanel from "@/components/attendance/DirectedTasksPanel"
 import { 
     Calendar as CalendarIcon, 
     Clock, 
@@ -87,6 +88,7 @@ interface HistoryDay {
 
 export default function AttendanceClient() {
     const [loading, setLoading] = useState(true)
+    const [activeMainTab, setActiveMainTab] = useState<"asistencia" | "tareas">("asistencia")
     const [currentTime, setCurrentTime] = useState<string>("")
     const [currentDateStr, setCurrentDateStr] = useState<string>("")
     
@@ -427,6 +429,43 @@ export default function AttendanceClient() {
                 </div>
             </div>
 
+            {/* ── SELECTOR PRINCIPAL: ASISTENCIA & METAS vs TAREAS DIRIGIDAS ── */}
+            <div className="flex items-center gap-2 p-1.5 bg-slate-900/90 border border-slate-800 rounded-2xl shadow-xl w-full max-w-md">
+                <button
+                    type="button"
+                    onClick={() => setActiveMainTab("asistencia")}
+                    className={`flex-1 py-2.5 px-4 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                        activeMainTab === "asistencia"
+                            ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-black shadow-lg shadow-emerald-500/25"
+                            : "text-slate-400 hover:text-white"
+                    }`}
+                >
+                    <CalendarIcon size={14} />
+                    <span>ASISTENCIA & METAS</span>
+                </button>
+
+                <button
+                    type="button"
+                    onClick={() => setActiveMainTab("tareas")}
+                    className={`flex-1 py-2.5 px-4 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                        activeMainTab === "tareas"
+                            ? "bg-gradient-to-r from-indigo-500 to-cyan-500 text-black shadow-lg shadow-indigo-500/25"
+                            : "text-slate-400 hover:text-white"
+                    }`}
+                >
+                    <FileText size={14} />
+                    <span>TAREAS</span>
+                </button>
+            </div>
+
+            {/* VISTA 1: TAREAS DIRIGIDAS */}
+            {activeMainTab === "tareas" && (
+                <DirectedTasksPanel />
+            )}
+
+            {/* VISTA 2: ASISTENCIA, TIMBRADO Y METAS DIARIAS */}
+            {activeMainTab === "asistencia" && (
+                <>
             {/* ═══════════════════════════════════════════════════════════════════
                 TIMBRADO OFICIAL DEL DÍA & MATRIZ GRÁFICA 30 DÍAS (UNIVERSAL)
                 Visible para TODOS los perfiles organizacionales sin excepción.
@@ -518,94 +557,6 @@ export default function AttendanceClient() {
                     </div>
                 </div>
             )}
-
-            {/* 3. INTERACTIVE LIVE MONTHLY CALENDAR */}
-            <div className="rounded-2xl bg-slate-900/80 border border-slate-800/80 backdrop-blur-xl p-6 shadow-xl space-y-4">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div className="flex items-center gap-2.5">
-                        <CalendarIcon className="w-5 h-5 text-indigo-400" />
-                        <h3 className="text-lg font-bold text-white">Calendario Mensual de Asistencia</h3>
-                        <span className="text-xs text-slate-400">(Lunes a Sábado Laborales)</span>
-                    </div>
-                    <div className="flex items-center gap-4 text-xs">
-                        <div className="flex items-center gap-1.5">
-                            <span className="w-3 h-3 rounded-md bg-emerald-500/20 border border-emerald-500/50" />
-                            <span className="text-slate-400">Completado</span>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                            <span className="w-3 h-3 rounded-md bg-indigo-500/20 border border-indigo-500/50" />
-                            <span className="text-slate-400">En Curso</span>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                            <span className="w-3 h-3 rounded-md bg-slate-800 border border-slate-700" />
-                            <span className="text-slate-400">Pendiente</span>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                            <span className="w-3 h-3 rounded-md bg-slate-900/40 border border-slate-800 text-slate-400" />
-                            <span className="text-slate-400">Libre (Dom)</span>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Calendar Days Grid */}
-                <div className="grid grid-cols-7 gap-2 pt-2">
-                    {['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'].map((name, i) => (
-                        <div key={name} className={`text-center text-xs font-semibold py-1.5 rounded-lg ${i === 0 ? 'text-slate-400' : 'text-slate-300'}`}>
-                            {name}
-                        </div>
-                    ))}
-
-                    {history.map((dayItem) => {
-                        const isSunday = dayItem.dayOfWeek === 0
-                        const isToday = dayItem.isToday
-
-                        let bgClass = "bg-slate-950/60 border-slate-800/80 text-slate-400"
-                        if (dayItem.status === "COMPLETED") {
-                            bgClass = "bg-emerald-950/40 border-emerald-500/50 text-emerald-300 shadow-[0_0_10px_-3px_rgba(16,185,129,0.3)]"
-                        } else if (dayItem.status === "IN_PROGRESS") {
-                            bgClass = "bg-indigo-950/40 border-indigo-500/50 text-indigo-300"
-                        } else if (isSunday) {
-                            bgClass = "bg-slate-950/30 border-slate-900 text-slate-400 opacity-60"
-                        }
-
-                        return (
-                            <button
-                                key={dayItem.day}
-                                onClick={() => dayItem.isWorkingDay && setSelectedDayLog(dayItem)}
-                                disabled={!dayItem.isWorkingDay}
-                                className={`group relative p-2.5 md:p-3 rounded-xl border flex flex-col items-center justify-between min-h-[68px] transition-all ${bgClass} ${
-                                    isToday ? 'ring-2 ring-emerald-400 ring-offset-2 ring-offset-slate-950 shadow-lg' : ''
-                                } ${dayItem.isWorkingDay ? 'hover:scale-[1.03] hover:border-slate-500 cursor-pointer' : 'cursor-default'}`}
-                            >
-                                <div className="w-full flex items-center justify-between text-[11px]">
-                                    <span className={`font-bold font-mono ${isToday ? 'text-emerald-400 text-sm' : ''}`}>
-                                        {dayItem.day}
-                                    </span>
-                                    {isToday && (
-                                        <span className="text-[9px] font-black uppercase px-1.5 py-0.2 rounded bg-emerald-500 text-slate-950">
-                                            HOY
-                                        </span>
-                                    )}
-                                </div>
-                                <div className="text-[10px] font-medium tracking-tight mt-1">
-                                    {isSunday ? (
-                                        <span className="text-slate-400">Descanso</span>
-                                    ) : dayItem.status === "COMPLETED" ? (
-                                        <span className="flex items-center gap-0.5 text-emerald-400 font-semibold">
-                                            <Check className="w-3 h-3" /> Listo
-                                        </span>
-                                    ) : dayItem.status === "IN_PROGRESS" ? (
-                                        <span className="text-indigo-400">En Curso</span>
-                                    ) : (
-                                        <span className="text-slate-400">Por Iniciar</span>
-                                    )}
-                                </div>
-                            </button>
-                        )
-                    })}
-                </div>
-            </div>
-
             {/* 4. TOP 6 METRIC PROGRESS CARDS */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                 {/* 1. Publicaciones Diarias */}
@@ -1118,6 +1069,8 @@ export default function AttendanceClient() {
                     </table>
                 </div>
             </div>
+            </>
+            )}
 
             {/* MODAL 1: INICIAR EVALUACIÓN (30 DÍAS) */}
             <AnimatePresence>
@@ -1361,71 +1314,6 @@ export default function AttendanceClient() {
                                 <X className="w-5 h-5" />
                             </button>
                             <img src={previewImage} alt="Captura ampliada" className="max-w-full max-h-[85vh] object-contain rounded-xl mx-auto" />
-                        </motion.div>
-                    </div>
-                )}
-            </AnimatePresence>
-
-            {/* MODAL 4: CALENDAR DAY DETAILS */}
-            <AnimatePresence>
-                {selectedDayLog && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-                        <motion.div
-                            initial={{ scale: 0.95, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            exit={{ scale: 0.95, opacity: 0 }}
-                            className="w-full max-w-md rounded-2xl bg-slate-900 border border-slate-800 p-6 shadow-2xl space-y-5 relative"
-                        >
-                            <button
-                                onClick={() => setSelectedDayLog(null)}
-                                className="absolute top-4 right-4 text-slate-400 hover:text-white p-1"
-                            >
-                                <X className="w-5 h-5" />
-                            </button>
-
-                            <div className="flex items-center gap-3">
-                                <div className="p-3 rounded-xl bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
-                                    <CalendarIcon className="w-6 h-6" />
-                                </div>
-                                <div>
-                                    <h3 className="text-lg font-bold text-white">Detalle de Asistencia</h3>
-                                    <p className="text-xs text-slate-400 font-mono">
-                                        Día {selectedDayLog.day} ({selectedDayLog.dayName}) &bull; {selectedDayLog.date}
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div className="space-y-3 bg-slate-950/60 rounded-xl p-4 border border-slate-800/80 text-xs">
-                                <div className="flex justify-between items-center py-1 border-b border-slate-800/60">
-                                    <span className="text-slate-400">Tipo de Jornada:</span>
-                                    <span className="font-semibold text-white">Laboral (Obligatoria)</span>
-                                </div>
-                                <div className="flex justify-between items-center py-1 border-b border-slate-800/60">
-                                    <span className="text-slate-400">Estado Registrado:</span>
-                                    <span className={`font-bold px-2 py-0.5 rounded-full text-[10px] ${
-                                        selectedDayLog.status === 'COMPLETED' 
-                                            ? 'bg-emerald-500/20 text-emerald-300' 
-                                            : 'bg-indigo-500/20 text-indigo-300'
-                                    }`}>
-                                        {selectedDayLog.status === 'COMPLETED' ? 'Cuota Cumplida' : selectedDayLog.isToday ? 'En Curso Hoy' : 'Registro Parcial'}
-                                    </span>
-                                </div>
-                                <div className="flex justify-between items-center py-1">
-                                    <span className="text-slate-400">Puntaje de Asistencia:</span>
-                                    <span className="font-bold text-emerald-400 font-mono">
-                                        {selectedDayLog.status === 'COMPLETED' ? '100% (Presente)' : selectedDayLog.isToday ? 'En desarrollo' : 'Registrado'}
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div className="flex justify-end pt-2">
-                                <button
-                                    onClick={() => setSelectedDayLog(null)}
-                                    className="px-5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold"
-                                >
-                                    Cerrar
-                                </button>
-                            </div>
                         </motion.div>
                     </div>
                 )}

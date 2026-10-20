@@ -300,6 +300,36 @@ export default function AnyDeskRemoteView() {
                         />
                     )}
 
+                    {/* PROMINENT 1-CLICK PC SCREEN SHARE LAUNCHER */}
+                    {!isScreenSharing && (
+                        <div className="mb-3 w-full p-3.5 rounded-2xl bg-gradient-to-r from-emerald-950/90 via-teal-950/90 to-cyan-950/90 border-2 border-emerald-500/60 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-2xl shrink-0">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center shrink-0">
+                                    <Monitor size={22} className="stroke-[2.5]" />
+                                </div>
+                                <div>
+                                    <h4 className="text-sm font-black text-white flex items-center gap-2">
+                                        <span>Transmisión Automática de Pantalla PC</span>
+                                        <span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                                            60 FPS P2P
+                                        </span>
+                                    </h4>
+                                    <p className="text-xs text-slate-300">
+                                        Conecta la visualización de tu PC con total permiso para control y monitoreo en vivo sin bloqueos.
+                                    </p>
+                                </div>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={startScreenShare}
+                                className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-black font-black text-xs uppercase tracking-wider shadow-lg shadow-emerald-500/40 flex items-center gap-2 cursor-pointer transition-all active:scale-95 shrink-0"
+                            >
+                                <Play size={14} className="fill-black" />
+                                <span>Transmitir mi PC Ahora</span>
+                            </button>
+                        </div>
+                    )}
+
                     {/* Screens Layout: Live PC Screen or Dual Monitor Mock */}
                     {isScreenSharing ? (
                         <div className="w-full h-full relative rounded-2xl bg-black border-2 border-emerald-500/60 overflow-hidden flex flex-col shadow-[0_0_50px_rgba(16,185,129,0.3)]">

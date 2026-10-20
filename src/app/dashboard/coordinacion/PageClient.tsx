@@ -1,7 +1,7 @@
 "use client"
 import { useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { 
     Clock, CheckSquare, Save, Users, Calendar, 
@@ -10,6 +10,7 @@ import {
 } from "lucide-react"
 import AdvisorsTabContent from "@/components/coordinacion/AdvisorsTabContent"
 import SalesCopyManager from "@/components/tools/SalesCopyManager"
+import EquipoAsistenciasView from "@/components/coordinacion/EquipoAsistenciasView"
 import EquipoAsistenciasModal from "@/components/coordinacion/EquipoAsistenciasModal"
 import GestorCuentasModal from "@/components/coordinacion/GestorCuentasModal"
 import BajoComisionModal from "@/components/coordinacion/BajoComisionModal"
@@ -17,6 +18,7 @@ import BajoComisionModal from "@/components/coordinacion/BajoComisionModal"
 export default function CoordinacionPage() {
     const { data: session, status } = useSession()
     const router = useRouter()
+    const searchParams = useSearchParams()
     
     const [loading, setLoading] = useState(true)
     const [dailyData, setDailyData] = useState<any>(null)
@@ -26,7 +28,15 @@ export default function CoordinacionPage() {
     const [quotesError, setQuotesError] = useState<string | null>(null)
     const [quoteFilter, setQuoteFilter] = useState<"ALL" | "DRAFT" | "APPROVED" | "REJECTED">("ALL")
     
-    const [activeTab, setActiveTab] = useState<"ASESORES" | "BITACORA" | "COTIZACIONES" | "SCRAPER" | "SCRIPTS">("ASESORES")
+    const initialTab = (searchParams?.get("tab") === "ASISTENCIAS" ? "ASISTENCIAS" : "ASESORES") as any
+    const [activeTab, setActiveTab] = useState<"ASESORES" | "ASISTENCIAS" | "BITACORA" | "COTIZACIONES" | "SCRAPER" | "SCRIPTS">(initialTab)
+
+    useEffect(() => {
+        const tabParam = searchParams?.get("tab")
+        if (tabParam === "ASISTENCIAS") {
+            setActiveTab("ASISTENCIAS")
+        }
+    }, [searchParams])
     
     // Modals for team attendance and account manager
     const [showEquipoAsistenciasModal, setShowEquipoAsistenciasModal] = useState(false)
@@ -345,8 +355,12 @@ export default function CoordinacionPage() {
                     {/* Botón Destacado: Ajustar Asistencias de Equipo */}
                     <button
                         type="button"
-                        onClick={() => setShowEquipoAsistenciasModal(true)}
-                        className="px-4 py-2.5 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-mono text-xs font-black uppercase tracking-wider flex items-center gap-2 shadow-lg shadow-cyan-950/60 transition-all active:scale-95 cursor-pointer border border-cyan-400/50"
+                        onClick={() => setActiveTab("ASISTENCIAS")}
+                        className={`px-4 py-2.5 rounded-2xl font-mono text-xs font-black uppercase tracking-wider flex items-center gap-2 shadow-lg transition-all active:scale-95 cursor-pointer border ${
+                            activeTab === "ASISTENCIAS"
+                                ? "bg-emerald-400 text-slate-950 border-emerald-300 shadow-[0_0_20px_rgba(16,185,129,0.4)] scale-102"
+                                : "bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white border-cyan-400/50 shadow-cyan-950/60"
+                        }`}
                         title="Gestionar asistencias, ciclos laborales y calendario de cada asesor"
                     >
                         <Calendar size={15} className="stroke-[2.5]" />
@@ -409,6 +423,18 @@ export default function CoordinacionPage() {
                 </button>
 
                 <button
+                    onClick={() => setActiveTab("ASISTENCIAS")}
+                    className={`flex-1 sm:flex-initial px-6 py-3 rounded-xl font-mono font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 ${
+                        activeTab === "ASISTENCIAS"
+                            ? "bg-gradient-to-r from-emerald-500 via-teal-600 to-cyan-500 text-slate-950 font-black shadow-[0_0_20px_rgba(16,185,129,0.4)] scale-105"
+                            : "text-slate-400 hover:text-white hover:bg-slate-800/60"
+                    }`}
+                >
+                    <Calendar size={16} />
+                    <span>🗓️ ASISTENCIAS DE EQUIPO</span>
+                </button>
+
+                <button
                     onClick={() => setActiveTab("BITACORA")}
                     className={`flex-1 sm:flex-initial px-6 py-3 rounded-xl font-mono font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 ${
                         activeTab === "BITACORA"
@@ -466,6 +492,13 @@ export default function CoordinacionPage() {
             {activeTab === "SCRIPTS" && (
                 <div className="bg-slate-900 border border-slate-800 p-6 rounded-3xl animate-in fade-in duration-300">
                     <SalesCopyManager />
+                </div>
+            )}
+
+            {/* ── TAB ASISTENCIAS: CONSOLA DE ASISTENCIAS DE EQUIPO EN VIVO (SIN MODAL, SIN DOBLE CAPA) ── */}
+            {activeTab === "ASISTENCIAS" && (
+                <div className="animate-in fade-in duration-300">
+                    <EquipoAsistenciasView />
                 </div>
             )}
 
