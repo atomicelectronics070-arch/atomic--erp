@@ -47,6 +47,10 @@ export default async function BlogsGallery() {
             <Link href="/web/blogs" className="px-6 py-2 rounded-full border border-indigo-500 bg-indigo-500/10 text-indigo-400 text-xs font-bold uppercase tracking-widest whitespace-nowrap">
               Todos los Blogs
             </Link>
+            <Link href="/prompts" className="px-6 py-2 rounded-full border border-cyan-500/60 bg-cyan-500/15 text-cyan-300 hover:text-white hover:bg-cyan-500/25 text-xs font-bold uppercase tracking-widest whitespace-nowrap transition-all shadow-[0_0_15px_rgba(6,182,212,0.25)] flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+              <span>Guía Prompts IA (MrBeast)</span>
+            </Link>
             <Link href="/web/laptops-blog" className="px-6 py-2 rounded-full border border-white/10 hover:border-indigo-500/50 bg-slate-900/50 text-white/70 hover:text-white text-xs font-bold uppercase tracking-widest whitespace-nowrap transition-all">
               Catálogo Laptops
             </Link>
