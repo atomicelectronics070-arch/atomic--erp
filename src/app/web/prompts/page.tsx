@@ -1,6 +1,8 @@
 import { Metadata } from "next"
 import PromptsStudioClient from "@/components/prompts/PromptsStudioClient"
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
     title: "Guía Maestra de Prompts IA para Fotografía | Atomic Systems",
     description: "Colección exclusiva de prompts de inteligencia artificial probados en Atomic Systems para retratos ejecutivos, estilo MrBeast, efectos visuales y fotografía comercial de producto en 8K.",

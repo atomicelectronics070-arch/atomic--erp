@@ -114,28 +114,8 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
-        source: "/blog",
-        destination: "/prompts",
-        permanent: false,
-      },
-      {
         source: "/blogs",
         destination: "/web/blogs",
-        permanent: false,
-      },
-      {
-        source: "/web/blog",
-        destination: "/web/blogs",
-        permanent: false,
-      },
-      {
-        source: "/prompt",
-        destination: "/prompts",
-        permanent: false,
-      },
-      {
-        source: "/web/prompt",
-        destination: "/prompts",
         permanent: false,
       },
       {
