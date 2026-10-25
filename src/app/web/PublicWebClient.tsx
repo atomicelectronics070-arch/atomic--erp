@@ -1362,11 +1362,11 @@ export default function PublicWebClient({
 
             <div className="grid gap-5 sm:grid-cols-2 md:grid-cols-3">
               {[
-                { title: 'Post #1: Introducción a ATOMIC', href: '/post-1', desc: 'Conoce nuestra historia, equipo técnico e infraestructura en Ecuador.' },
-                { title: 'Post #2: Seguridad Inteligente para el Hogar', href: '/post-2', desc: 'Cámaras IP 4K, videoporteros y cerraduras biométricas sin cables.' },
+                { title: 'Guía Maestra: Prompts IA Fotografía (MrBeast)', href: '/prompts', desc: '12 prompts hiperrealistas 8K, retratos ejecutivos, VFX y PDF oficial descargable con botones para copiar.' },
+                { title: '🔥 Mega Catálogo de Laptops', href: '/web/blogs/cmrzaruyu000130xwb1qkupx2', desc: 'Encuentra tu equipo ideal: laptops gamers, ultrabooks corporativas y estaciones de trabajo.' },
                 { title: 'Post #3: Recursos de Aprendizaje', href: '/recursos', desc: 'Cursos gratuitos con certificación de MIT, Stanford y Harvard.' },
                 { title: 'Post #4: 9 Cursos de YouTube Gratuitos', href: '/post-4', desc: 'Ventas de Alto Impacto, Inteligencia Artificial y Liderazgo.' },
-                { title: 'Guía Maquinaria: Bloqueras de Hormigón', href: '/web/blogs/guia-maquinas-de-bloques', desc: 'Plantas industriales de bloques con vibración hidráulica de alta potencia.' },
+                { title: 'Showroom & Catálogo de Laptops', href: '/web/laptops-blog', desc: 'Especificaciones técnicas detalladas, stock físico y comparativa de rendimiento.' },
               ].map(post => (
                 <Link key={post.href} href={post.href} className="p-6 rounded-3xl bg-white border border-slate-200/90 hover:border-blue-400/50 hover:bg-blue-50/20 transition-all group block shadow-sm hover:shadow-xl">
                   <h3 className="text-sm font-bold text-slate-900 group-hover:text-blue-600 transition-colors mb-2 font-heading">{post.title}</h3>

@@ -100,7 +100,69 @@ const nextConfig: NextConfig = {
       {
         source: "/scraper-download/:path*",
         destination: "http://localhost:5005/:path*",
-      }
+      },
+      {
+        source: "/prompts.pdf",
+        destination: "/Prompts.pdf",
+      },
+      {
+        source: "/atomic-studio-prompts.pdf",
+        destination: "/Atomic-Studio-Prompts.pdf",
+      },
+    ]
+  },
+  async redirects() {
+    return [
+      {
+        source: "/blog",
+        destination: "/prompts",
+        permanent: false,
+      },
+      {
+        source: "/blogs",
+        destination: "/web/blogs",
+        permanent: false,
+      },
+      {
+        source: "/web/blog",
+        destination: "/web/blogs",
+        permanent: false,
+      },
+      {
+        source: "/prompt",
+        destination: "/prompts",
+        permanent: false,
+      },
+      {
+        source: "/web/prompt",
+        destination: "/prompts",
+        permanent: false,
+      },
+      {
+        source: "/blog/prompts",
+        destination: "/prompts",
+        permanent: false,
+      },
+      {
+        source: "/blogs/prompts",
+        destination: "/prompts",
+        permanent: false,
+      },
+      {
+        source: "/post-1",
+        destination: "/prompts",
+        permanent: false,
+      },
+      {
+        source: "/post-2",
+        destination: "/web",
+        permanent: false,
+      },
+      {
+        source: "/web/blogs/guia-maquinas-de-bloques",
+        destination: "/web/blogs",
+        permanent: false,
+      },
     ]
   },
   images: {

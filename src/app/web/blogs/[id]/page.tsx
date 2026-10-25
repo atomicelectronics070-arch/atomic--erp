@@ -1,18 +1,29 @@
 export const dynamic = 'force-dynamic';
 import { prisma } from "@/lib/prisma"
-import { notFound } from "next/navigation"
+import { redirect } from "next/navigation"
 import Link from "next/link"
 import { ArrowLeft, Clock, User } from "lucide-react"
 
 export default async function BlogArticlePage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params
+
+    const normalizedId = (id || '').toLowerCase()
+    if (
+        normalizedId.includes('prompt') || 
+        normalizedId.includes('mrbeast') || 
+        normalizedId.includes('ia') ||
+        normalizedId === 'studio'
+    ) {
+        redirect('/prompts')
+    }
+
     const blog = await prisma.blog.findUnique({
         where: { id },
         include: { author: { select: { name: true } } }
     })
 
     if (!blog || !blog.published) {
-        notFound()
+        redirect('/web/blogs')
     }
 
     return (
@@ -97,4 +108,3 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ id
         </div>
     )
 }
-
