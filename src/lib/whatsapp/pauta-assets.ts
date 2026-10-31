@@ -94,16 +94,16 @@ export const PAUTA_CATALOG_REGISTRY: PautaDefinition[] = [
         ]
     },
     {
-        id: 'camaras-cctv',
-        keywords: ['camara', 'camaras', 'cctv', 'imou', 'dahua', 'hikvision', 'seguridad', 'vigilancia'],
-        category: 'Seguridad Electrónica',
-        productName: 'Cámaras de Seguridad HD / 4K con Visión Nocturna y Audio',
-        imagePath: '/images/promociones/cercos-electricos-portada.jpg',
-        defaultPrice: 'Desde $45.40 USD',
+        id: 'camaras-hogar',
+        keywords: ['camara', 'camaras', 'cámara', 'cámaras', 'imou', 'ezviz', 'h6c', 'ranger', 'bebe', 'bebé', 'mascota', 'hogar', 'familia', '10899', '13067', 'doble lente'],
+        category: 'Seguridad para el Hogar',
+        productName: 'Cámaras de Seguridad Inteligentes para Hogar y Familia (IMOU / EZVIZ / Doble Lente)',
+        imagePath: '/images/camaras/camara-ezviz-h6c-3mp-pauta.jpg',
+        defaultPrice: 'Desde $35.80 + IVA',
         bulletPoints: [
-            'Visualización remota en vivo en tu celular 24/7 sin pagos mensuales',
-            'Detección de movimiento y audio bidireccional',
-            'Modelos para interior y exterior con resistencia climática'
+            'Monitoreo en vivo 24/7 en tu celular sin pagos mensuales',
+            'Audio bidireccional (habla y escucha a tus hijos y mascotas)',
+            'Visión nocturna automática y modo de privacidad con 1 toque'
         ]
     },
     {
@@ -128,6 +128,7 @@ export function detectArticleAndCategory(input: {
     headline?: string;
     messagesText?: string;
 }): {
+    id?: string;
     articleName: string;
     category: string;
     imagePath?: string;
@@ -139,6 +140,7 @@ export function detectArticleAndCategory(input: {
         const matches = pauta.keywords.some(kw => rawText.includes(kw));
         if (matches) {
             return {
+                id: pauta.id,
                 articleName: pauta.productName,
                 category: pauta.category,
                 imagePath: pauta.imagePath,
@@ -150,6 +152,7 @@ export function detectArticleAndCategory(input: {
     // Si tiene headline específico de anuncio de Meta
     if (input.headline && input.headline.trim()) {
         return {
+            id: 'meta-ad',
             articleName: input.headline.trim(),
             category: 'Equipos y Soluciones',
             imagePath: undefined
@@ -157,6 +160,7 @@ export function detectArticleAndCategory(input: {
     }
 
     return {
+        id: 'catalogo-general',
         articleName: 'los equipos y soluciones de nuestro catálogo',
         category: 'Tecnología & Seguridad',
         imagePath: undefined

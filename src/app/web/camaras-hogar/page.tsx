@@ -2,13 +2,23 @@ import { Metadata } from "next"
 import CamarasHogarClient from "./CamarasHogarClient"
 
 export const metadata: Metadata = {
-  title: "Cámaras para Hogar 4K, 3K y 3MP con Garantía de 2 Años | ATOMIC Ecuador",
-  description: "Cámaras de seguridad inteligentes 100% Wi-Fi sin cables para el hogar. Modelos Básica 3MP ($44.99), Avanzada 3K ($64.99) y Premium 4K ($78.99) con Garantía de 2 Años y opción de instalación a nivel nacional.",
-  keywords: ["camaras de seguridad", "camaras wifi", "camaras 4k hogar", "ezviz ecuador", "camaras 360", "seguridad residencial", "atomic camaras"],
+  title: "Cámaras de Seguridad para Hogar 360° Wi-Fi | Cuida a tus Hijos y Familia | ATOMIC Ecuador",
+  description: "Cámaras inteligentes 100% Wi-Fi para interiores de casa. IMOU Ranger 3MP ($35.80), IMOU Mini PT Full Color ($39.10), Doble Lente 360° ($42.50) y EZVIZ H6C ($43.99). Monitoreo en vivo desde tu celular, audio bidireccional y visión nocturna sin mensualidades.",
+  keywords: [
+    "camaras para hogar",
+    "camaras para bebes ecuador",
+    "camara wifi interior",
+    "ezviz h6c ecuador",
+    "imou ranger 3mp",
+    "imou mini pt full color",
+    "camara doble lente 360",
+    "seguridad para amas de casa",
+    "atomic ecuador"
+  ],
   openGraph: {
-    title: "Cámaras para Hogar de Alta Calidad 4K con Garantía de 2 Años | ATOMIC",
-    description: "Seguridad inteligente, tranquilidad total. Cámaras Wi-Fi con visión nocturna a color, detección IA y audio bidireccional.",
-    images: [{ url: "/banners/camaras-hogar-portada-4k.jpg" }]
+    title: "Cámaras Inteligentes para el Hogar | Tranquilidad Total para Mamá y Familia",
+    description: "Vigila a tus hijos, mascotas y hogar desde cualquier lugar con audio bidireccional y visión 360° sin costos mensuales.",
+    images: [{ url: "/images/camaras/camara-ezviz-h6c-3mp-pauta.jpg" }]
   }
 }
 

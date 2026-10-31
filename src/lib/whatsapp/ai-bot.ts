@@ -59,10 +59,17 @@ PORTAFOLIO OFICIAL Y LÍNEAS PRINCIPALES DE ATOMIC ECUADOR:
 - AVISO OBLIGATORIO: El precio de materiales (alambrado, postes, aisladores) y mano de obra de instalación NO está incluido en el valor del kit electrificador.
 - VISITA TÉCNICA: Quito (centro, norte, sur) GRATIS. Valles $25-$45. Provincia $50-$100.
 
-4. CÁMARAS DE SEGURIDAD INTELIGENTES (CCTV y Smart Home):
-- Cámara Robótica IMOU 360° WiFi: $45.40 + IVA (Full HD 1080p, audio bidireccional, visión nocturna 24/7, alertas a celular, garantía 3 años).
-- Cámara IMOU PT Ranger 360° Mini 3MP: $95.00 + IVA (Sensor 3MP nítido, infrarrojo inteligente 30m, audio bidireccional, almacenamiento SD y nube, ¡Envío Gratis!).
-- Sistemas CCTV Hikvision y Dahua completos (Kits de 4, 8 y 16 cámaras IP / HD).
+4. CÁMARAS DE SEGURIDAD PARA EL HOGAR Y FAMILIA (100% Wi-Fi Interiores):
+- Catálogo web oficial: https://atomiccotizador.shop/web/camaras-hogar
+- Fotos oficiales disponibles: IMOU Ranger (10899), IMOU Mini PT Color (13067), Doble Lente 360° (21045), EZVIZ H6C.
+- Enfoque: Amas de casa, mamás, cuidado de bebés/niños, mascotas y adultos mayores.
+- Características clave: 100% Wi-Fi, audio bidireccional (habla y escucha desde el celular), visión nocturna, modo privacidad con 1 toque en app, sin mensualidades.
+- 1. IMOU Ranger 360° 3MP (Cód 10899): $35.80 + IVA (La opción más accesible y querida. Cobertura panorámica 360°, detección humana IA, modo privado, audio 2 vías).
+- 2. IMOU Mini PT Ranger 360° 3MP Full Color (Cód 13067): $39.10 + IVA (¡NUEVA! Visión nocturna a todo color con focos cálidos, sirena disuasiva activa, detección humana IA).
+- 3. Cámara Robótica Doble Lente 360° (Cód 21045): $42.50 + IVA (Doble cámara simultánea: un lente fijo a la puerta/cuna + un lente giratorio 360°, sin puntos ciegos).
+- 4. EZVIZ H6C 3MP Panorámica (Cód H6C-3MP): $43.99 + IVA (Seguimiento automático de movimiento, modo suspensión, audio bidireccional, ¡Envío Gratis a todo el país!).
+- Accesorios opcionales: Tarjeta MicroSD Kingston Original 64GB ($11.50) o 128GB ($18.00) para semanas de grabación continua.
+- Facilidad: Plug & Play fácil en 2 minutos (no requiere técnico obligatorio, pero si el cliente desea instalación técnica en pared/techo se puede coordinar).
 
 5. SEGURIDAD COMERCIAL ANTIHURTO Y SALIDAS DE EMERGENCIA:
 - Par de Antenas de Seguridad RF Mono Dahua Mercury (ANT-RS5003TR): $499.96 + IVA (Detección antihurto: 70cm etiquetas / 95cm tags duros. Tubo de alta resistencia. Ideal para boutiques, farmacias y minimarkets).
@@ -422,6 +429,36 @@ METODOLOGÍA DE VENTA CONSULTIVA Y REGLAS DE ORO:
       - Ofrece entrega a domicilio con pago contraentrega o retiro en oficina.
       - Si pide cotización formal: solicita Nombres/RUC, Razón Social y Correo electrónico.
       - Si confirma compra directa: solicita Nombre, Apellido, Dirección exacta, Teléfono y Cédula.
+
+6. PROTOCOLO OBLIGATORIO PARA CÁMARAS DE SEGURIDAD PARA EL HOGAR (ESTRUCTURA DE VENTAS CONSULTIVAS):
+   Siempre que el cliente pregunte por cámaras de seguridad, cámaras para el hogar, cuidar al bebé, niños, mascotas o pauta de cámaras interiores, DEBES seguir estrictamente esta estructura:
+
+   A) SALUDO DE CONEXIÓN OBLIGATORIO:
+      Inicia diciendo: "Hola un gusto, somos Atomic, cuéntame más cómo podemos ayudar." (o "Hola un gusto ${contactName}, somos Atomic, cuéntame más cómo podemos ayudar.").
+
+   B) DESCUBRIMIENTO EMPÁTICO DEL HOGAR:
+      - Pregunta con calidez y cercanía qué espacio o a quién desea cuidar: "¿Para qué espacio de tu casa la necesitas? (¿Para cuidar a tu bebé o niños pequeños, acompañar a un adulto mayor, vigilar a tus mascotas o seguridad general de la casa?)".
+      - Resalta que son cámaras 100% Wi-Fi, muy fáciles de instalar en 2 minutos (Plug & Play enchufándolas a la corriente) y con aplicación gratuita en tu celular en español sin pagos mensuales.
+
+   C) LAS 4 OPCIONES OFICIALES DISPONIBLES:
+      Presenta las 4 alternativas con precios claros y transparentes:
+      1. 💡 *IMOU Ranger 360° 3MP (Cód 10899):* $35.80 + IVA
+         (La opción más económica y querida por familias. Cobertura panorámica 360°, detección humana inteligente que no se activa con sombras, audio bidireccional para hablar y escuchar, y modo privado que oculta la lente).
+      2. 🌟 *IMOU Mini PT Ranger 360° 3MP Full Color (Cód 13067 - ¡NUEVA!):* $39.10 + IVA
+         (Visión nocturna a TODO COLOR en la oscuridad, sirena disuasiva activa integrada, detección humana por IA y rotación 360°).
+      3. 🛡️ *Cámara Robótica Inteligente Doble Lente 360° (Cód 21045):* $42.50 + IVA
+         (Doble cámara en una sola: un lente fijo enfocado a la puerta/cuna y un lente giratorio 360° que sigue el movimiento en pantalla dividida en tu celular).
+      4. 🚚 *EZVIZ H6C 3MP Panorámica 360° (Oficial ATOMIC):* $43.99 + IVA
+         (Seguimiento inteligente automático de personas, modo suspensión de privacidad, audio bidireccional y ¡ENVÍO GRATIS a todo el Ecuador!).
+
+   D) ACLARACIONES IMPORTANTES:
+      - Memoria opcional: Puedes añadir tarjeta MicroSD Kingston Original de 64GB ($11.50) o 128GB ($18.00) para grabar semanas sin pagar nube.
+      - Enlace a la página web:
+        "🌐 Puedes ver las fotos y opciones para cada espacio en nuestra página: https://atomiccotizador.shop/web/camaras-hogar"
+
+   E) CIERRE COMERCIAL:
+      - Pregunta en qué ciudad o sector se encuentra para coordinar el despacho o retiro.
+      - Recuerda ofrecer pago contraentrega a domicilio o retiro en oficina.
 `;
         }
 
@@ -455,8 +492,8 @@ function generateExpertConsultantFallback(messageText: string, contactName: stri
         return `Hola un gusto${namePart}, somos Atomic, cuéntame más cómo podemos ayudar.\n\nDisponemos de los siguientes kits oficiales de cercos eléctricos perimetrales con garantía directa:\n\n⚡ *Kit Plata JFL (Cód 15023):* $89.00 + IVA\n(Electrificador JFL, Control remoto, Batería 12V-4A, Letrero peligro, Sirena 20W).\n\n⚡ *Kit Oro JFL (Cód 11207):* $109.00 + IVA\n(Electrificador JFL, Control, Batería 12V-4A, Letrero, Sirena 20W con caja metálica protectora).\n\n📱 *Kit Platino JFL con App Celular (Cód 11208):* $137.00 + IVA\n(Electrificador JFL, Módulo Ethernet ME-05 para armar/desarmar desde smartphone y recibir notificaciones, Sirena 30W con caja metálica, Batería 12V-4A, Control, Letrero).\n\n⚡ *Kit Platino Hagroy i8 (Cód 15083):* $98.00 + IVA\n(Electrificador Hagroy i8 alto voltaje, Control, Batería 12V-4A, Letrero, Sirena 20W).\n\n⚡ *Kit Yanex (Cód 11258):* $90.00 + IVA\n(Electrificador Hagroy Yanex, Control, Batería 12V-4A, Letrero, Sirena 20W).\n\n⚠️ *NOTA IMPORTANTE:* El precio de materiales (alambrado, postes, aisladores) y mano de obra de instalación NO está incluido en el valor del kit electrificador.\n\n🌐 Puedes ver todas las opciones y especificaciones en nuestra página web:\n👉 https://atomiccotizador.shop/web/cercos-electricos\n\n¿En qué sector o ciudad te encuentras para coordinar tu entrega o verificar la cobertura? 📦`;
     }
 
-    if (textLower.includes('camara') || textLower.includes('cámara') || textLower.includes('imou') || textLower.includes('hikvision') || textLower.includes('dahua')) {
-        return `¡Hola${namePart}! 👋 Te ayudamos con cámaras de seguridad inteligentes de última generación:\n\n📷 *Cámara Robótica IMOU 360° WiFi:* $45.40 + IVA (Full HD 1080p, visión nocturna, audio doble vía y alertas al celular).\n📷 *Cámara IMOU PT Ranger 3MP Mini:* $95.00 USD (Resolución 3MP ultra nítida + ¡Envío Gratis!).\n🏢 *Kits CCTV Hikvision / Dahua:* Disponibles de 4, 8 y 16 canales con grabador e instalación.\n\n¿La requieres para interior de casa/oficina o exterior? 📲`;
+    if (textLower.includes('camara') || textLower.includes('cámara') || textLower.includes('imou') || textLower.includes('ezviz') || textLower.includes('h6c') || textLower.includes('ranger') || textLower.includes('bebe') || textLower.includes('bebé') || textLower.includes('mascota') || textLower.includes('doble lente')) {
+        return `Hola un gusto${namePart}, somos Atomic, cuéntame más cómo podemos ayudar.\n\nDisponemos de 4 opciones oficiales de cámaras inteligentes 100% Wi-Fi para interiores de casa (fáciles de instalar en 2 minutos sin romper paredes y con app en tu celular sin mensualidades):\n\n💡 *1. IMOU Ranger 360° 3MP (Cód 10899):* $35.80 + IVA\n(La opción más económica y querida por familias. Detección humana IA, modo privacidad que cubre la lente, audio 2 vías para hablar y escuchar, visión nocturna).\n\n🌟 *2. IMOU Mini PT Ranger 360° Full Color (Cód 13067 - ¡NUEVA!):* $39.10 + IVA\n(Visión nocturna a TODO COLOR en la oscuridad, sirena disuasiva activa integrada, detección humana IA y rotación 360°).\n\n🛡️ *3. Cámara Robótica Doble Lente 360° (Cód 21045):* $42.50 + IVA\n(Doble cámara simultánea: un lente fijo vigilando la puerta/cuna + un lente giratorio 360° que sigue el movimiento en tu celular).\n\n🚚 *4. EZVIZ H6C 3MP Panorámica 360° (Oficial ATOMIC):* $43.99 + IVA\n(Seguimiento automático de personas, modo suspensión, audio bidireccional y ¡ENVÍO GRATIS a todo el país!).\n\n💾 *Memoria MicroSD opcional:* 64GB ($11.50) o 128GB ($18.00) para semanas de grabación.\n\n🌐 Puedes ver todas las opciones para cada espacio en nuestra página:\n👉 https://atomiccotizador.shop/web/camaras-hogar\n\n¿En qué sector o ciudad te encuentras para coordinar tu entrega o indicarte tiempos de despacho? 📦`;
     }
 
     if (textLower.includes('biometric') || textLower.includes('biométric') || textLower.includes('senseface') || textLower.includes('facial')) {
@@ -538,19 +575,33 @@ function generateExpertConsultantFallback(messageText: string, contactName: stri
         }
 
         if (botReply) {
-            // Detección autónoma: Si el cliente solicita fotos o si es consulta sobre cercos eléctricos (pauta/kits)
+            // Detección autónoma: Si el cliente solicita fotos o si es consulta sobre cercos eléctricos o cámaras de hogar
             const textLowerForDetection = messageText.toLowerCase();
             const isAskingForVisuals = /foto|fotos|imagen|imagenes|imágenes|cat[aá]logo|modelo|ver|mu[eé]strame/i.test(textLowerForDetection);
             const isCercosInquiry = /cerco|cercos|electrificad|hagroy|jfl|yanex|xpower/i.test(textLowerForDetection);
+            const isCamarasInquiry = /camara|c[aá]mara|imou|ezviz|h6c|ranger|bebe|bebé|mascota|doble lente/i.test(textLowerForDetection);
             const detectedAsset = detectArticleAndCategory({ messagesText: messageText });
             
-            // Para cercos eléctricos siempre enviamos la foto oficial de kits
-            const cercosImagePath = '/images/cercos/kits-cercos-electricos-pauta.jpg';
-            const targetImagePath = (isCercosInquiry || detectedAsset.id === 'cercos-electricos')
-                ? cercosImagePath
-                : detectedAsset.imagePath;
+            let targetImagePath: string | null = detectedAsset.imagePath || null;
+            let shortCaption = '';
 
-            const shouldSendImage = (isAskingForVisuals || isCercosInquiry || detectedAsset.id === 'cercos-electricos') && Boolean(targetImagePath);
+            if (isCercosInquiry || detectedAsset.id === 'cercos-electricos') {
+                targetImagePath = '/images/cercos/kits-cercos-electricos-pauta.jpg';
+                shortCaption = `⚡ *Kits Oficiales de Cercos Eléctricos ATOMIC* 🛡️\n🌐 Opciones en: https://atomiccotizador.shop/web/cercos-electricos\n⚠️ *Nota:* Materiales y mano de obra NO incluidos en el kit.`;
+            } else if (isCamarasInquiry || detectedAsset.id === 'camaras-hogar') {
+                if (textLowerForDetection.includes('10899') || textLowerForDetection.includes('ranger 3mp')) {
+                    targetImagePath = '/images/camaras/camara-imou-ranger-3mp-10899.jpg';
+                } else if (textLowerForDetection.includes('13067') || textLowerForDetection.includes('color') || textLowerForDetection.includes('mini pt')) {
+                    targetImagePath = '/images/camaras/camara-imou-mini-pt-fullcolor-13067.jpg';
+                } else if (textLowerForDetection.includes('doble') || textLowerForDetection.includes('lente') || textLowerForDetection.includes('21045')) {
+                    targetImagePath = '/images/camaras/camara-doble-lente-360-interior.jpg';
+                } else {
+                    targetImagePath = '/images/camaras/camara-ezviz-h6c-3mp-pauta.jpg';
+                }
+                shortCaption = `🌸 *Cámaras Inteligentes para el Hogar ATOMIC* 🏡\n🌐 Catálogo y opciones en: https://atomiccotizador.shop/web/camaras-hogar\n📲 Monitoreo en vivo desde tu celular sin cuotas mensuales.`;
+            }
+
+            const shouldSendImage = (isAskingForVisuals || isCercosInquiry || isCamarasInquiry || detectedAsset.id === 'cercos-electricos' || detectedAsset.id === 'camaras-hogar') && Boolean(targetImagePath);
 
             try {
                 let sentType = 'text';
@@ -565,8 +616,8 @@ function generateExpertConsultantFallback(messageText: string, contactName: stri
                         sentType = 'image';
                         sentMediaUrl = targetImagePath;
                     } else {
-                        const shortCaption = `⚡ *Kits Oficiales de Cercos Eléctricos ATOMIC* 🛡️\n🌐 Opciones en: https://atomiccotizador.shop/web/cercos-electricos\n⚠️ *Nota:* Materiales y mano de obra NO incluidos en el kit.`;
-                        await sendWhatsAppMedia(whatsappId, targetImagePath, 'image', shortCaption);
+                        const fallbackCaption = shortCaption || `✨ *Catálogo Oficial ATOMIC*\n🌐 https://atomiccotizador.shop/web`;
+                        await sendWhatsAppMedia(whatsappId, targetImagePath, 'image', fallbackCaption);
                         await sendWhatsAppMessage(whatsappId, botReply);
                         sentType = 'image';
                         sentMediaUrl = targetImagePath;

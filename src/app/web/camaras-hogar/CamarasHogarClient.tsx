@@ -7,843 +7,966 @@ import { motion, AnimatePresence } from "framer-motion"
 import {
   Shield,
   ShieldCheck,
-  Zap,
   CheckCircle2,
-  PhoneCall,
   Camera,
   Eye,
   Wifi,
   Sparkles,
   ChevronDown,
-  HelpCircle,
   Truck,
-  Building,
-  Award,
-  Video,
   Moon,
   Volume2,
   HardDrive,
-  Cpu,
   Lock,
   ArrowRight,
   ChevronRight,
-  Compass,
-  ArrowLeft,
   X,
-  Star
+  Star,
+  Heart,
+  Baby,
+  Home,
+  Smartphone,
+  Check,
+  Users,
+  BellRing,
+  HelpCircle,
+  Award,
+  Video
 } from "lucide-react"
 
 interface CameraProduct {
   id: string
-  sku: string
+  code: string
+  model: string
   name: string
-  tier: "Básica" | "Avanzada" | "Premium"
-  resolution: string
+  brand: "IMOU" | "EZVIZ" | "ATOMIC"
   tagline: string
   badge: string
-  recommended?: boolean
-  priceBase: number
+  badgeColor: string
+  price: number
+  hasFreeShipping?: boolean
   image: string
   description: string
-  fullOverview: string
-  keyFeatures: string[]
-  specsTable: { label: string; value: string }[]
-  nightVisionType: string
-  aiFeatures: string
-  audio: string
-  storage: string
-  warranty: string
+  highlightFeature: string
+  features: string[]
+  specs: { label: string; value: string }[]
+  spacesBestFor: string[]
 }
 
-const CAMERAS_LINEUP: CameraProduct[] = [
+const CAMERAS_HOGAR: CameraProduct[] = [
   {
-    id: "cam-basica-3mp",
-    sku: "CAM-EZVIZ-H6C-3MP",
-    name: "Cámara Wi-Fi EZVIZ H6C 3MP Básica 360°",
-    tier: "Básica",
-    resolution: "3MP HD (2304 × 1296)",
-    tagline: "Vigilancia esencial, nítida y confiable para tu hogar",
-    badge: "⚡ OFERTA LIMITADA",
-    priceBase: 44.99,
-    image: "/images/camaras/camara-ezviz-h6c-3mp-basica-44.jpg",
-    description: "Transforma tu hogar o negocio con la tranquilidad que mereces. Nuestra cámara 100% Wi-Fi ofrece vigilancia avanzada y sin complicaciones. Disfruta de monitoreo en tiempo real directamente desde tu celular, sin importar dónde te encuentres.",
-    fullOverview: "La EZVIZ H6C 3MP es la solución ideal para quienes buscan proteger dormitorios, salas de estar o pequeños comercios sin complicaciones técnicas. Su lente motorizado ofrece una cobertura panorámica completa de 360 grados sin puntos ciegos. Cuenta con visión nocturna infrarroja inteligente que ajusta la intensidad de los LEDs para no sobreexponer los rostros en la oscuridad y seguimiento automático que gira la cámara cuando detecta movimiento.",
-    keyFeatures: [
-      "Visión nocturna infrarroja inteligente hasta 10 metros",
-      "Cobertura panorámica motorizada de 360° (Paneo 340°, Inclinación 55°)",
-      "Detección de movimiento con seguimiento automático de personas",
-      "Comunicación bidireccional en tiempo real (habla y escucha)",
-      "Modo de suspensión para privacidad total con un solo toque en la app",
-      "Compatible con tarjetas MicroSD de hasta 512GB y almacenamiento en nube"
+    id: "imou-ranger-3mp-10899",
+    code: "10899",
+    model: "IPC-K2EN-3H3W",
+    name: "Cámara IMOU Ranger 360° 3MP",
+    brand: "IMOU",
+    tagline: "La opción más económica, confiable y querida por familias",
+    badge: "💡 La Más Accesible",
+    badgeColor: "bg-amber-500/20 text-amber-300 border-amber-500/40",
+    price: 35.80,
+    hasFreeShipping: false,
+    image: "/images/camaras/camara-imou-ranger-3mp-10899.jpg",
+    description: "Cámara inteligente compacta con rotación 360° y resolución 3MP ultra nítida. Cuenta con detección humana por inteligencia artificial para evitar falsas alarmas, audio bidireccional y modo privado que oculta la lente cuando estás en casa.",
+    highlightFeature: "Detección Humana IA + Modo Privacidad que cubre la lente",
+    features: [
+      "Resolución 3MP HD (2304 x 1296) de alta nitidez",
+      "Giro motorizado 360° horizontal e inclinación vertical",
+      "Detección humana inteligente (diferencia personas de sombras o cortinas)",
+      "Audio bidireccional: habla y escucha a tus hijos en tiempo real",
+      "Modo Privacidad: esconde físicamente la lente desde la app",
+      "Visión nocturna infrarroja con alcance de 10 metros",
+      "Ranura para memoria MicroSD de hasta 256GB (sin cuotas mensuales)",
+      "App móvil gratuita en español para iPhone y Android"
     ],
-    specsTable: [
-      { label: "Sensor de Imagen", value: "1/2.8\" Progressive Scan CMOS" },
-      { label: "Resolución Máxima", value: "3MP HD (2304 × 1296 píxeles)" },
-      { label: "Lente y Ángulo", value: "4mm @ F2.4, Ángulo diagonal 85°" },
-      { label: "Rango Panorámico", value: "Paneo 340°, Inclinación vertical 55°" },
-      { label: "Visión Nocturna", value: "Infrarrojo inteligente con alcance de 10m" },
-      { label: "Compresión de Video", value: "H.265 / H.264 inteligente" },
-      { label: "Conectividad", value: "Wi-Fi 2.4 GHz IEEE802.11b/g/n" },
-      { label: "Almacenamiento Local", value: "Ranura MicroSD (hasta 512 GB)" },
-      { label: "Garantía Oficial", value: "2 Años de Garantía Directa ATOMIC" }
+    specs: [
+      { label: "Código de Producto", value: "10899" },
+      { label: "Modelo Oficial", value: "IPC-K2EN-3H3W" },
+      { label: "Resolución", value: "3 Megapíxeles (3MP 2K)" },
+      { label: "Campo de Visión", value: "Panorámica 360° Pan-Tilt" },
+      { label: "Visión Nocturna", value: "Infrarrojo IR 10m inteligente" },
+      { label: "Audio", value: "Micrófono y altavoz integrados (2 vías)" },
+      { label: "Conectividad", value: "Wi-Fi 2.4GHz + Puerto de red" },
+      { label: "Almacenamiento", value: "MicroSD hasta 256GB o Nube opcional" },
+      { label: "Garantía", value: "1 Año de Garantía Directa ATOMIC" }
     ],
-    nightVisionType: "Infrarroja Inteligente (10 metros)",
-    aiFeatures: "Detección de Movimiento + Autotracking",
-    audio: "Audio Bidireccional Integrado",
-    storage: "MicroSD hasta 512GB + CloudPlay",
-    warranty: "2 Años Oficial ATOMIC"
+    spacesBestFor: ["Dormitorio de niños", "Cuna del bebé", "Sala de estar", "Oficina en casa"]
   },
   {
-    id: "cam-avanzada-3k",
-    sku: "CAM-EZVIZ-3K-AVANZADA",
-    name: "Cámara Wi-Fi EZVIZ 3K Avanzada Visión Nocturna Color",
-    tier: "Avanzada",
-    resolution: "3K Ultra Nítida (2880 × 1620)",
-    tagline: "Colores vivos en la noche y máxima nitidez sin cables",
-    badge: "🎨 VISIÓN A COLOR",
-    priceBase: 64.99,
-    image: "/images/camaras/camara-ezviz-3k-avanzada-64.jpg",
-    description: "SOLUCIÓN DE VIGILANCIA COMPLETA: Esta cámara inteligente de alto rendimiento ofrece un monitoreo excepcional del interior de su hogar, oficina o negocio, brindando tranquilidad las 24 horas del día. Acceso remoto total desde su celular.",
-    fullOverview: "La versión Avanzada 3K eleva el estándar de seguridad residencial incorporando sensores ópticos de gran apertura y focos LED de luz cálida integrados que permiten capturar video a todo color incluso en plena oscuridad. Su resolución 3K (5 Megapíxeles) permite hacer zoom digital sin perder la nitidez de placas vehiculares o rasgos faciales. Con su diseño Plug & Play, puedes instalarla en repisas, paredes o techos en cuestión de minutos.",
-    keyFeatures: [
-      "Resolución ultra nítida 3K para capturar hasta el más mínimo detalle",
-      "Visión nocturna a todo color con focos LED inteligentes y sensor de alta sensibilidad",
-      "Visión panorámica 360° con giro e inclinación motorizados",
-      "Detección de movimiento inteligente con reducción de falsas alarmas",
-      "Audio bidireccional con supresión de ruido ambiental",
-      "Configuración sencilla Plug & Play y monitoreo multi-usuario"
+    id: "imou-mini-pt-fullcolor-13067",
+    code: "13067",
+    model: "IPC-K2MN-3R1WE",
+    name: "Cámara IMOU Mini PT Ranger 360° 3MP Full Color",
+    brand: "IMOU",
+    tagline: "¡Nuevo lanzamiento! Vigilancia nocturna a todo color con sirena disuasiva",
+    badge: "🌟 ¡NUEVA! Visión a Todo Color",
+    badgeColor: "bg-emerald-500/20 text-emerald-300 border-emerald-500/40",
+    price: 39.10,
+    hasFreeShipping: false,
+    image: "/images/camaras/camara-imou-mini-pt-fullcolor-13067.jpg",
+    description: "Tecnología de última generación con visión nocturna a todo color incluso en completa oscuridad. Integra una sirena activa para ahuyentar visitantes no deseados y detección humana precisa para mantener tu hogar siempre protegido.",
+    highlightFeature: "Full Color Nocturno + Sirena Activa de Advertencia Integrada",
+    features: [
+      "Visión nocturna a TODO COLOR gracias a sus focos de luz cálida",
+      "Resolución 3MP cristalina y cobertura panorámica 360° Pan-Tilt",
+      "Disuasión activa: sirena incorporada para alertas inmediatas",
+      "Detección humana por IA que envía avisos directos a tu celular",
+      "Modo de Privacidad: oculta la lente para total confidencialidad",
+      "Audio bidireccional claro de alta fidelidad",
+      "Soporte para memoria MicroSD de hasta 256GB",
+      "Conectividad Wi-Fi de largo alcance y gran estabilidad"
     ],
-    specsTable: [
-      { label: "Sensor de Imagen", value: "1/2.7\" Progressive Scan CMOS Ultra Sensible" },
-      { label: "Resolución Máxima", value: "3K (2880 × 1620 píxeles, 5MP)" },
-      { label: "Lente y Apertura", value: "4mm @ F1.6 de gran apertura luminosa" },
-      { label: "Modo Nocturno", value: "Full-Color Nocturno + Infrarrojo B/N" },
-      { label: "Alcance Nocturno", value: "Hasta 15 metros en oscuridad total" },
-      { label: "Audio", value: "Micrófono de alta ganancia + Altavoz HQ" },
-      { label: "Conectividad", value: "Wi-Fi 2.4 GHz + Puerto Ethernet RJ45" },
-      { label: "Almacenamiento Local", value: "MicroSD hasta 512 GB" },
-      { label: "Garantía Oficial", value: "2 Años de Garantía Directa ATOMIC" }
+    specs: [
+      { label: "Código de Producto", value: "13067" },
+      { label: "Modelo Oficial", value: "IPC-K2MN-3R1WE" },
+      { label: "Resolución", value: "3 Megapíxeles (3MP Alta Definición)" },
+      { label: "Modo Nocturno", value: "Full Color (Luz blanca) + Infrarrojo IR 10m" },
+      { label: "Alarma", value: "Sirena disuasiva programable" },
+      { label: "Inteligencia Artificial", value: "Detección precisa de siluetas humanas" },
+      { label: "Audio", value: "Bidireccional con cancelación de ruido" },
+      { label: "Almacenamiento", value: "MicroSD hasta 256GB" },
+      { label: "Garantía", value: "1 Año de Garantía Directa ATOMIC" }
     ],
-    nightVisionType: "Visión Nocturna a Todo Color + IR",
-    aiFeatures: "Detección Inteligente + Enfoque Dinámico",
-    audio: "Audio Bidireccional con Cancelación de Ruido",
-    storage: "MicroSD hasta 512GB + CloudPlay",
-    warranty: "2 Años Oficial ATOMIC"
+    spacesBestFor: ["Entrada principal", "Sala amplia", "Cocina y patio cubierto", "Negocio familiar"]
   },
   {
-    id: "cam-premium-4k",
-    sku: "CAM-EZVIZ-4K-PREMIUM",
-    name: "Cámara Wi-Fi 4K Ultra HD Premium con Inteligencia Artificial",
-    tier: "Premium",
-    resolution: "4K Ultra HD (3840 × 2160)",
-    tagline: "El pináculo de la seguridad: IA humana, 4K UHD y seguimiento 360°",
-    badge: "⭐ RECOMENDADA",
-    recommended: true,
-    priceBase: 78.99,
-    image: "/images/camaras/camara-ezviz-4k-premium-78.jpg",
-    description: "Experience the peace of mind that comes with cutting-edge technology. Our 100% Wi-Fi cameras offer a comprehensive security solution that's easy to use and accessible from anywhere. Forget complicated cables and cumbersome installations.",
-    fullOverview: "La joya de la corona en vigilancia inteligente para el hogar. Diseñada con un potente procesador de Inteligencia Artificial en el chip (Edge AI) capaz de distinguir con exactitud milimétrica entre personas, mascotas y objetos en movimiento, eliminando por completo falsas alarmas provocadas por cortinas o insectos. Su sensor óptico 4K Ultra HD captura cada escena con una riqueza visual cinematográfica. Cuenta con obturador físico de privacidad que oculta el lente cuando deseas intimidad y seguimiento inteligente 360° con zoom dinámico.",
-    keyFeatures: [
-      "Máxima resolución 4K Ultra HD para lectura clara de rostros, billetes y detalles",
-      "Inteligencia Artificial integrada: Detección precisa de humanos y mascotas",
-      "Seguimiento automático inteligente 360° con zoom dinámico automático",
-      "Visión nocturna a color de largo alcance con sensor Starlight y focos auxiliares",
-      "Comunicación bidireccional premium con micrófono dual y altavoz de alta potencia",
-      "Modo de privacidad de obturador físico con un toque en el celular",
-      "Compatibilidad total con ZKTeco Zlink, EZVIZ App y asistentes de voz"
+    id: "camara-doble-lente-360-interior",
+    code: "21045",
+    model: "DUAL-LENS-360-SMART",
+    name: "Cámara Robótica Inteligente Doble Lente 360°",
+    brand: "ATOMIC",
+    tagline: "Doble protección: un lente fijo a la puerta y un lente giratorio 360°",
+    badge: "🛡️ Doble Cámara Sin Puntos Ciegos",
+    badgeColor: "bg-indigo-500/20 text-indigo-300 border-indigo-500/40",
+    price: 42.50,
+    hasFreeShipping: false,
+    image: "/images/camaras/camara-doble-lente-360-interior.jpg",
+    description: "La innovación perfecta para el hogar: dos cámaras en un solo cuerpo. El lente inferior vigila de forma fija un acceso crítico (como la puerta o la cuna), mientras el lente superior gira 360° siguiendo automáticamente el movimiento.",
+    highlightFeature: "Dos lentes simultáneos en tu pantalla: Vista Panorámica + Vista Focal",
+    features: [
+      "Doble Lente: 2 cámaras transmitiendo al mismo tiempo en tu celular",
+      "Cobertura panorámica 360° sin ningún punto ciego",
+      "Monitoreo en tiempo real con pantalla dividida en la aplicación",
+      "Visión nocturna automática de alta definición",
+      "Detección de movimiento inteligente con seguimiento continuo",
+      "Audio bidireccional para comunicarte desde donde estés",
+      "Conexión Wi-Fi rápida y fácil de configurar en 2 minutos",
+      "Soporte para MicroSD y respaldo en la nube"
     ],
-    specsTable: [
-      { label: "Sensor de Imagen", value: "1/1.8\" Starlight Ultra High-Definition CMOS" },
-      { label: "Resolución Máxima", value: "4K UHD (3840 × 2160 píxeles, 8MP)" },
-      { label: "Procesador IA", value: "Chip Neural Edge AI para detección de personas/mascotas" },
-      { label: "Rango Panorámico", value: "Paneo 360° continuo, Inclinación 90°" },
-      { label: "Visión Nocturna", value: "Full-Color Starlight 4K con focos inteligentes" },
-      { label: "Privacidad", value: "Obturador físico motorizado que tapa el lente" },
-      { label: "Audio", value: "Micrófono Dual con IA antirruido + Altavoz" },
-      { label: "Conectividad", value: "Wi-Fi Dual-Band 2.4/5GHz + Ethernet" },
-      { label: "Garantía Oficial", value: "2 Años de Garantía Directa ATOMIC" }
+    specs: [
+      { label: "Código de Producto", value: "21045" },
+      { label: "Configuración", value: "Doble Cámara (Lente Fijo + Lente PTZ 360°)" },
+      { label: "Resolución", value: "HD Dual Stream simultáneo" },
+      { label: "Monitoreo", value: "Pantalla dividida dual en la app" },
+      { label: "Visión Nocturna", value: "Infrarroja automática de alto alcance" },
+      { label: "Seguimiento", value: "Auto-tracking inteligente de personas" },
+      { label: "Audio", value: "Intercomunicador bidireccional integrado" },
+      { label: "Garantía", value: "1 Año de Garantía Directa ATOMIC" }
     ],
-    nightVisionType: "Starlight 4K Full-Color (Hasta 20m)",
-    aiFeatures: "IA Humana + Mascotas + Zoom Dinámico 360°",
-    audio: "Audio Bidireccional Dual HQ",
-    storage: "MicroSD hasta 512GB + CloudPlay",
-    warranty: "2 Años Oficial ATOMIC"
+    spacesBestFor: ["Sala y comedor juntos", "Cuarto de juegos", "Pasillos largos", "Local u oficina"]
+  },
+  {
+    id: "ezviz-h6c-3mp-pauta",
+    code: "H6C-3MP",
+    model: "CS-H6C-R100-1K3WKFL",
+    name: "Cámara Wi-Fi EZVIZ H6C 3MP Panorámica 360°",
+    brand: "EZVIZ",
+    tagline: "Líder mundial en seguridad residencial con ¡Envío Gratis a todo el país!",
+    badge: "🚚 ¡ENVÍO GRATIS NACIONAL!",
+    badgeColor: "bg-cyan-500/20 text-cyan-300 border-cyan-500/40",
+    price: 43.99,
+    hasFreeShipping: true,
+    image: "/images/camaras/camara-ezviz-h6c-3mp-pauta.jpg",
+    description: "La cámara de seguridad para el hogar más vendida y recomendada. Calidad 3MP con seguimiento de movimiento inteligente, visión nocturna infrarroja uniforme de 10 metros y modo suspensión para total intimidad familiar.",
+    highlightFeature: "Seguimiento Automático Inteligente + ¡Envío Gratis a Todo el Ecuador!",
+    features: [
+      "¡Envío Gratis a cualquier rincón del Ecuador!",
+      "Resolución 3MP Alta Definición para ver rostros y detalles nítidos",
+      "Visión panorámica motorizada de 360° sin ángulos muertos",
+      "Seguimiento automático: gira solita cuando tus niños o mascotas se mueven",
+      "Comunicación bidireccional fluida en tiempo real",
+      "Modo suspensión de privacidad con un solo toque en la app",
+      "Visión nocturna infrarroja inteligente que no encandila",
+      "Compatible con MicroSD de hasta 512GB para semanas de grabación"
+    ],
+    specs: [
+      { label: "Código de Producto", value: "H6C-3MP" },
+      { label: "Marca Oficial", value: "EZVIZ (Líder en Smart Home)" },
+      { label: "Resolución", value: "3 Megapíxeles (2K Nítido)" },
+      { label: "Seguimiento", value: "Auto-tracking motorizado 360°" },
+      { label: "Modo Privacidad", value: "Modo suspensión activo desde celular" },
+      { label: "Visión Nocturna", value: "Smart IR hasta 10m sin sombras" },
+      { label: "Beneficio Especial", value: "¡Envío Gratis Incluido a Nivel Nacional!" },
+      { label: "Garantía", value: "1 Año de Garantía Oficial ATOMIC" }
+    ],
+    spacesBestFor: ["Dormitorio principal", "Sala familiar", "Cuidado de adultos mayores", "Bebés"]
   }
 ]
 
-const PROVINCES_DATA = [
-  { id: "quito", name: "Quito / Pichincha", cost: 45, region: "Quito y Valles", icon: "🏙️", badgeColor: "bg-blue-500/20 text-blue-300 border-blue-500/30" },
-  { id: "guayas", name: "Guayas (Guayaquil, Samborondón, Durán)", cost: 65, region: "Costa", icon: "🏖️", badgeColor: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30" },
-  { id: "azuay", name: "Azuay (Cuenca)", cost: 55, region: "Sierra Sur", icon: "🏔️", badgeColor: "bg-indigo-500/20 text-indigo-300 border-indigo-500/30" },
-  { id: "manabi", name: "Manabí (Manta, Portoviejo)", cost: 65, region: "Costa", icon: "🏖️", badgeColor: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30" },
-  { id: "tungurahua", name: "Tungurahua (Ambato, Baños)", cost: 55, region: "Sierra Centro", icon: "🏔️", badgeColor: "bg-indigo-500/20 text-indigo-300 border-indigo-500/30" },
-  { id: "el-oro", name: "El Oro (Machala)", cost: 65, region: "Costa Sur", icon: "🏖️", badgeColor: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30" },
-  { id: "imbabura", name: "Imbabura (Ibarra, Otavalo)", cost: 55, region: "Sierra Norte", icon: "🏔️", badgeColor: "bg-indigo-500/20 text-indigo-300 border-indigo-500/30" },
-  { id: "santo-domingo", name: "Santo Domingo", cost: 55, region: "Sierra / Costa", icon: "🏔️", badgeColor: "bg-indigo-500/20 text-indigo-300 border-indigo-500/30" },
-  { id: "los-rios", name: "Los Ríos (Babahoyo, Quevedo)", cost: 65, region: "Costa Centro", icon: "🏖️", badgeColor: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30" },
-  { id: "chimborazo", name: "Chimborazo (Riobamba)", cost: 55, region: "Sierra Centro", icon: "🏔️", badgeColor: "bg-indigo-500/20 text-indigo-300 border-indigo-500/30" },
-  { id: "loja", name: "Loja", cost: 55, region: "Sierra Sur", icon: "🏔️", badgeColor: "bg-indigo-500/20 text-indigo-300 border-indigo-500/30" },
-  { id: "esmeraldas", name: "Esmeraldas", cost: 65, region: "Costa Norte", icon: "🏖️", badgeColor: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30" },
-  { id: "santa-elena", name: "Santa Elena / Salinas", cost: 65, region: "Costa", icon: "🏖️", badgeColor: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30" },
-  { id: "cotopaxi", name: "Cotopaxi (Latacunga)", cost: 55, region: "Sierra Centro", icon: "🏔️", badgeColor: "bg-indigo-500/20 text-indigo-300 border-indigo-500/30" },
-  { id: "carchi", name: "Carchi (Tulcán)", cost: 55, region: "Sierra Norte", icon: "🏔️", badgeColor: "bg-indigo-500/20 text-indigo-300 border-indigo-500/30" },
-  { id: "oriente", name: "Oriente (Napo, Pastaza, Sucumbíos, Orellana, Morona, Zamora)", cost: 75, region: "Amazonía", icon: "🌳", badgeColor: "bg-amber-500/20 text-amber-300 border-amber-500/30" },
-  { id: "galapagos", name: "Galápagos (Santa Cruz, San Cristóbal, Isabela)", cost: 95, region: "Insular", icon: "🐢", badgeColor: "bg-purple-500/20 text-purple-300 border-purple-500/30" }
+const INTERIOR_SPACES = [
+  {
+    id: "bebe",
+    icon: Baby,
+    title: "Habitación del Bebé / Cuna",
+    subtitle: "Paz mental total mientras duerme",
+    badge: "🍼 Mamá Tranquila",
+    description: "Vigila el sueño de tu pequeño sin tener que levantarte cada 5 minutos. Gracias a su visión nocturna invisible, no emite luces rojas que lo despierten. Si llora o balbucea, recibes una alerta y puedes hablarle con voz dulce desde tu teléfono para arrullarlo.",
+    benefits: [
+      "Visión nocturna invisible (sin luces molestas que lo despierten)",
+      "Micrófono sensible que detecta el llanto del bebé al instante",
+      "Habla con tu voz desde la cama o el trabajo para calmarlo",
+      "Monitorea la temperatura y calma del cuarto"
+    ],
+    recommendedCam: "IMOU Ranger 360° 3MP ($35.80)"
+  },
+  {
+    id: "sala",
+    icon: Home,
+    title: "Sala de Estar y Zona de Tareas",
+    subtitle: "Mira a tus hijos jugar y estudiar",
+    badge: "🛋️ Espacio Familiar",
+    description: "¿Estás cocinando o en el trabajo y quieres saber si tus hijos llegaron bien de la escuela y están haciendo los deberes? La cámara cubre toda la sala en 360° y gira automáticamente siguiéndolos por la habitación sin puntos ciegos.",
+    benefits: [
+      "Rotación panorámica 360° que cubre toda la sala sin esquinas ciegas",
+      "Seguimiento automático de movimiento de los pequeños",
+      "Pregúntales cómo les fue en la escuela con el altavoz en vivo",
+      "Monitorea que no hagan travesuras peligrosas"
+    ],
+    recommendedCam: "EZVIZ H6C 3MP con Auto-Tracking ($43.99)"
+  },
+  {
+    id: "mascotas",
+    icon: Heart,
+    title: "Cuidado de Mascotas",
+    subtitle: "¿Qué hace tu perrito o gatito cuando sales?",
+    badge: "🐾 Amor de 4 Patas",
+    description: "Se acabó la preocupación de dejar a tu peludo solo en casa. Abre la app en cualquier momento, mira qué está haciendo en vivo y llámalo por su nombre para que sienta tu compañía y evite morder muebles o ladrar por ansiedad.",
+    benefits: [
+      "Llama a tu mascota por el altavoz para que sienta tu voz cerca",
+      "Mira si ya comió su alimento o si está descansando",
+      "Detección de movimiento que te avisa si salta al sofá",
+      "Captura fotos y videos tiernos directamente a tu celular"
+    ],
+    recommendedCam: "IMOU Ranger 360° 3MP ($35.80)"
+  },
+  {
+    id: "entrada",
+    icon: Shield,
+    title: "Entrada Principal y Cocina",
+    subtitle: "Protección activa ante cualquier visita",
+    badge: "🚪 Entrada Segura",
+    description: "Ten el control absoluto de quién entra y sale de casa. La cámara cuenta con detección de personas con Inteligencia Artificial que solo te alerta cuando realmente hay alguien en la puerta, ignorando el viento o el paso de mascotas.",
+    benefits: [
+      "Alertas inmediatas en tu celular si alguien llega a la puerta",
+      "Visión nocturna Full Color que muestra rostros y ropa a colores",
+      "Sirena integrada disuasiva para ahuyentar extraños",
+      "Doble cámara disponible para vigilar puerta y pasillo a la vez"
+    ],
+    recommendedCam: "IMOU Mini PT Full Color ($39.10) o Doble Lente ($42.50)"
+  },
+  {
+    id: "privacidad",
+    icon: Lock,
+    title: "Modo Privacidad 100% Seguro",
+    subtitle: "Total intimidad cuando la familia está reunida",
+    badge: "🔒 Privacidad Total",
+    description: "Sabemos que tu privacidad es sagrada. Cuando toda la familia esté reunida en casa, con solo tocar un botón en tu celular la lente de la cámara se ocultará físicamente dentro de su propia carcasa, apagando la transmisión hasta que decidas reactivarla.",
+    benefits: [
+      "Obturador físico que cubre la lente por completo",
+      "Cero transmisión mientras estés compartiendo en familia",
+      "Se activa o desactiva con un solo toque desde la app",
+      "Transmisión encriptada de grado bancario para tu tranquilidad"
+    ],
+    recommendedCam: "Incluido en todos los modelos (IMOU y EZVIZ)"
+  }
+]
+
+const TESTIMONIOS_MAMAS = [
+  {
+    nombre: "Andrea Morales",
+    ciudad: "Quito (Valle de los Chillos)",
+    rol: "Mamá de Mateo (8 meses)",
+    texto: "La compré para la cuna de mi bebé y me cambió la vida. Puedo cocinar o trabajar en la computadora y sé exactamente si se mueve o si despertó. La voz bidireccional es maravillosa, le hablo y se calma enseguida.",
+    estrellas: 5,
+    foto: "👩‍🍼"
+  },
+  {
+    nombre: "Patricia Salazar",
+    ciudad: "Guayaquil (Samborondón)",
+    rol: "Ama de casa y madre de 2 niños",
+    texto: "Compré la cámara doble lente y es espectacular. Un lente se queda apuntando a la puerta y el otro gira por toda la sala viendo a mis hijos hacer tareas. Super fácil de instalar, solo la enchufé a la pared y listo.",
+    estrellas: 5,
+    foto: "👩‍👧‍👦"
+  },
+  {
+    nombre: "Carmen Luzuriaga",
+    ciudad: "Cuenca",
+    rol: "Cuidadora de adultos mayores",
+    texto: "La instalé en el cuarto de mi mamá que tiene 78 años. Desde mi trabajo puedo ver cómo está y recordarle sus pastillas por el parlante de la cámara. Me da una paz mental que no tiene precio.",
+    estrellas: 5,
+    foto: "👵"
+  }
 ]
 
 const FAQS_DATA = [
   {
-    q: "¿En qué consiste la Garantía Oficial de 2 Años?",
-    a: "Todos nuestros modelos de cámaras para hogar cuentan con 2 años completos de garantía directa respaldada por ATOMIC y los fabricantes oficiales (EZVIZ / ZKTeco). Cubre cualquier defecto de fábrica, sensor óptico, motor PTZ o módulo Wi-Fi con reemplazo inmediato o servicio técnico especializado."
+    q: "¿Necesito romper paredes o contratar un técnico para instalarla?",
+    a: "¡Para nada! Todas nuestras cámaras de hogar son 100% 'Plug & Play'. Vienen con su cable y cargador; solo la colocas sobre una mesa, repisa o velador, la enchufas a la corriente y la sincronizas con la app en tu teléfono en 2 minutos. Si deseas anclarla a la pared o techo, incluye su soporte y tornillos listos."
   },
   {
-    q: "¿Necesito pagar mensualidades o suscripciones para ver las grabaciones?",
-    a: "¡No! Todas las cámaras admiten tarjetas de memoria MicroSD de hasta 512GB (que almacenan semanas continuas de video sin cuotas mensuales). Además, cuentas con acceso gratuito en tiempo real 24/7 y notificaciones instantáneas a tu celular sin ningún costo adicional."
+    q: "¿Puedo ver la cámara si salgo a trabajar, de compras o de viaje?",
+    a: "Sí, totalmente. Siempre que la cámara esté conectada al Wi-Fi de tu casa, tú puedes ver y escuchar en vivo desde tu celular en cualquier lugar del mundo usando tu plan de datos 4G/5G o cualquier otra red Wi-Fi."
   },
   {
-    q: "¿Puedo ver la cámara desde varios celulares al mismo tiempo?",
-    a: "Sí. Puedes compartir el acceso de manera segura con todos los integrantes de tu familia o colaboradores a través de la aplicación oficial, asignando permisos de visualización o control según lo desees."
+    q: "¿Tengo que pagar alguna mensualidad para usar la cámara?",
+    a: "¡No pagas ninguna mensualidad! La aplicación móvil es 100% gratuita de por vida. Ver en vivo, escuchar, hablar por el micrófono y recibir alertas no tiene ningún costo recurrente. Solo adquieres una tarjeta de memoria MicroSD (opcional) para guardar semanas de grabaciones."
   },
   {
-    q: "¿Qué sucede si se va el internet en mi casa?",
-    a: "La cámara continuará grabando localmente en la tarjeta MicroSD sin interrupción. En cuanto el internet se restablezca, podrás revisar todo el historial desde tu teléfono sin perder ningún segundo."
+    q: "¿Puede ver la cámara mi esposo y mis familiares también?",
+    a: "Sí. Puedes compartir el acceso de forma segura con hasta 5 familiares para que cada uno pueda ver la cámara desde su propio celular al mismo tiempo."
   },
   {
-    q: "¿Cómo funciona la instalación a domicilio?",
-    a: "Las cámaras son 100% Plug & Play y puedes colocarlas tú mismo sobre cualquier mueble en 3 minutos. Si prefieres instalación profesional en pared/techo con cableado oculto, disponemos de técnicos certificados en las 24 provincias del Ecuador."
+    q: "¿Cómo son los envíos y formas de pago?",
+    a: "Hacemos envíos rápidos y seguros a todo el Ecuador. Puedes pagar mediante transferencia bancaria, tarjeta de crédito o consultar por pago contraentrega en las principales ciudades. La EZVIZ H6C además incluye Envío Gratis a nivel nacional."
   }
 ]
 
 export default function CamarasHogarClient() {
-  const [selectedProvinceId, setSelectedProvinceId] = useState<string>("quito")
-  const [selectedProduct, setSelectedProduct] = useState<CameraProduct | null>(null)
-  const [includeInstallation, setIncludeInstallation] = useState<boolean>(true)
-  const [expandedFaq, setExpandedFaq] = useState<number | null>(null)
+  const [selectedCam, setSelectedCam] = useState<CameraProduct>(CAMERAS_HOGAR[0])
+  const [activeSpaceTab, setActiveSpaceTab] = useState<number>(0)
+  const [detailModalOpen, setDetailModalOpen] = useState<boolean>(false)
+  const [includeMicroSd, setIncludeMicroSd] = useState<boolean>(false)
+  const [selectedSdSize, setSelectedSdSize] = useState<"64GB" | "128GB">("64GB")
+  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null)
 
-  const selectedProvince = useMemo(() => {
-    return PROVINCES_DATA.find((p) => p.id === selectedProvinceId) || PROVINCES_DATA[0]
-  }, [selectedProvinceId])
+  // Cálculo de precio con tarjeta MicroSD opcional
+  const sdPrice = includeMicroSd ? (selectedSdSize === "64GB" ? 11.50 : 18.00) : 0
+  const totalPrice = (selectedCam.price + sdPrice).toFixed(2)
 
-  const calculateRegularPrice = (base: number) => {
-    return (base / 0.70).toFixed(2)
-  }
-
-  const getWhatsAppLink = (cam: CameraProduct) => {
-    const installText = includeInstallation
-      ? ` con Instalación Profesional en ${selectedProvince.name} (Total: $${(cam.priceBase + selectedProvince.cost).toFixed(2)} USD)`
-      : ` con Envío Nacional Sin Recargo ($${cam.priceBase.toFixed(2)} USD)`
-    const text = encodeURIComponent(
-      `Hola ATOMIC! Deseo adquirir la ${cam.name} (${cam.tier} $${cam.priceBase} USD)${installText}. Garantía 2 Años.`
-    )
-    return `https://wa.me/593969043453?text=${text}`
-  }
+  // Enlace de WhatsApp pre-rellenado para compra directa
+  const whatsappUrl = useMemo(() => {
+    let msg = `Hola Atomic, vengo de la página de Cámaras para Hogar. Me interesa cotizar y pedir la *${selectedCam.name}* ($${selectedCam.price.toFixed(2)} + IVA, Cód: ${selectedCam.code}).`
+    if (includeMicroSd) {
+      msg += ` Deseo incluir memoria MicroSD de ${selectedSdSize} ($${sdPrice.toFixed(2)}). Total: $${totalPrice} + IVA.`
+    }
+    msg += ` Por favor indíquenme tiempos de entrega y formas de pago.`
+    return `https://wa.me/593969043453?text=${encodeURIComponent(msg)}`
+  }, [selectedCam, includeMicroSd, selectedSdSize, sdPrice, totalPrice])
 
   return (
-    <div className="w-full bg-[#08080C] min-h-screen text-white font-sans selection:bg-amber-500/30 selection:text-amber-200">
-      
-      {/* ═══════════ TOP BANNER: 2 AÑOS DE GARANTÍA & PRODUCTOS 100% ORIGINALES ═══════════ */}
-      <div className="sticky top-0 z-50 w-full bg-[#060609]/95 backdrop-blur-xl border-b border-amber-500/20 py-2 px-4 shadow-xl">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-3 text-xs">
-          <Link
-            href="/web"
-            className="flex items-center gap-1.5 text-neutral-400 hover:text-white transition-colors font-mono font-bold uppercase tracking-wider text-[11px]"
-          >
-            <ArrowLeft size={14} className="text-amber-400" />
-            <span className="hidden sm:inline">Volver a la Tienda</span>
-            <span className="sm:hidden">Tienda</span>
-          </Link>
-
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse shadow-[0_0_10px_rgba(245,158,11,0.8)]" />
-            <span className="font-extrabold font-heading text-amber-300 uppercase tracking-widest text-[11px] sm:text-xs">
-              🛡️ CÁMARAS PARA HOGAR // GARANTÍA OFICIAL DE 2 AÑOS
-            </span>
-            <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse shadow-[0_0_10px_rgba(245,158,11,0.8)]" />
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Link
-              href="/web/cerraduras-smart"
-              className="text-[10px] sm:text-[11px] text-blue-400 hover:text-blue-300 underline font-mono font-bold uppercase tracking-wider"
-            >
-              Cerraduras Smart →
-            </Link>
-          </div>
-        </div>
+    <div className="min-h-screen bg-[#070b12] text-slate-100 font-sans selection:bg-rose-500/30 selection:text-white">
+      {/* Top Banner Rosado Cálido / Oro */}
+      <div className="bg-gradient-to-r from-rose-950 via-slate-900 to-amber-950 border-b border-rose-500/30 py-2 px-4 text-center text-xs font-semibold text-rose-200 flex items-center justify-center gap-2">
+        <Sparkles size={14} className="text-amber-400 shrink-0" />
+        <span>🌸 Especial Seguridad para el Hogar: Tranquilidad para Mamás y Familias · Envíos a todo el Ecuador</span>
       </div>
 
-      {/* ═══════════ HEADER NAV BAR ═══════════ */}
-      <header className="w-full bg-[#0D0C14] border-b border-white/[0.06] py-3.5 px-4 sm:px-6">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.25)]">
-              <Camera size={18} />
-            </div>
-            <div>
-              <span className="text-base sm:text-lg font-black font-heading tracking-tight text-white uppercase block leading-none">
-                ATOMIC <span className="text-amber-400">SECURITY</span>
-              </span>
-              <span className="text-[10px] text-neutral-400 font-mono tracking-widest uppercase">
-                CÁMARAS WI-FI 4K, 3K & 3MP
-              </span>
-            </div>
+      {/* Navigation Bar */}
+      <header className="sticky top-0 z-40 bg-[#070b12]/90 backdrop-blur-md border-b border-slate-800/80 px-4 md:px-8 py-3.5 flex items-center justify-between">
+        <Link href="/web" className="flex items-center gap-2.5">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-rose-600 to-amber-500 flex items-center justify-center text-white font-black text-base shadow-lg shadow-rose-900/40">
+            ⚛
           </div>
-
-          {/* Quick Province Selector */}
-          <div className="flex items-center gap-2.5">
-            <div className="hidden md:flex items-center gap-2 bg-white/[0.04] border border-white/10 rounded-full px-3 py-1 text-xs">
-              <Compass size={14} className="text-amber-400" />
-              <span className="text-[11px] text-neutral-400 font-mono">Provincia:</span>
-              <select
-                value={selectedProvinceId}
-                onChange={(e) => setSelectedProvinceId(e.target.value)}
-                className="bg-transparent text-white font-bold outline-none cursor-pointer text-xs"
-              >
-                {PROVINCES_DATA.map((prov) => (
-                  <option key={prov.id} value={prov.id} className="bg-[#0e0e14] text-white">
-                    {prov.icon} {prov.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <a
-              href="https://wa.me/593969043453?text=Hola%20ATOMIC!%20Deseo%20informaci%C3%B3n%20sobre%20las%20C%C3%A1maras%20para%20Hogar%20con%20Garant%C3%ADa%20de%202%20A%C3%B1os."
-              target="_blank"
-              rel="noreferrer"
-              className="px-4 py-1.5 rounded-full border border-amber-400/50 hover:border-amber-400 bg-amber-500/[0.12] hover:bg-amber-500/25 text-amber-300 hover:text-amber-200 font-bold font-heading uppercase tracking-wider text-[11px] transition-all flex items-center gap-1.5 shadow-[0_0_15px_rgba(245,158,11,0.2)]"
-            >
-              <PhoneCall size={12} />
-              <span>ASESORÍA WHATSAPP</span>
-            </a>
+          <div>
+            <span className="font-black text-sm tracking-wide text-white uppercase block leading-none">
+              ATOMIC <span className="text-rose-400">HOGAR</span>
+            </span>
+            <span className="text-[10px] text-slate-400 font-medium">Cámaras Inteligentes para la Familia</span>
           </div>
+        </Link>
+
+        <div className="flex items-center gap-3">
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-4 py-2 rounded-xl transition-all shadow-md shadow-emerald-950 flex items-center gap-1.5 cursor-pointer"
+          >
+            <Smartphone size={14} />
+            <span className="hidden sm:inline">Asesoría Inmediata WhatsApp</span>
+            <span className="sm:hidden">WhatsApp</span>
+          </a>
         </div>
       </header>
 
-      {/* ═══════════ HERO SHOWCASE SECTION ═══════════ */}
-      <section className="relative w-full pt-12 pb-16 px-4 sm:px-6 overflow-hidden bg-gradient-to-b from-[#0F0E17] via-[#09080F] to-[#08080C]">
-        {/* Ambient Glows */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[750px] h-[380px] bg-gradient-to-b from-amber-500/15 via-yellow-600/5 to-transparent blur-[130px] pointer-events-none" />
-        <div className="absolute top-20 right-10 w-72 h-72 bg-blue-500/10 rounded-full blur-[100px] pointer-events-none" />
+      {/* Hero Section Cálida y Empática */}
+      <section className="relative overflow-hidden pt-8 pb-16 px-4 md:px-8 max-w-6xl mx-auto">
+        {/* Glow de fondo suave */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-rose-600/10 blur-[120px] rounded-full pointer-events-none" />
 
-        <div className="max-w-6xl mx-auto relative z-10 text-center">
-          
-          {/* Badge */}
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-bold uppercase tracking-wider mb-5 shadow-[0_0_20px_rgba(245,158,11,0.2)]"
-          >
-            <Award size={14} className="text-amber-400" />
-            <span>GARANTÍA OFICIAL DE 2 AÑOS // ATOMIC SECURITY</span>
-            <Sparkles size={14} className="text-amber-300" />
-          </motion.div>
-
-          {/* Heading */}
-          <motion.h1
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-4xl sm:text-6xl lg:text-7xl font-black font-heading uppercase tracking-tight text-white max-w-4xl mx-auto leading-tight"
-          >
-            Cámaras para Hogar <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-yellow-200 to-amber-500">
-              De Alta Calidad 4K, 3K & 3MP
-            </span>
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="mt-4 text-sm sm:text-base text-neutral-300 max-w-3xl mx-auto leading-relaxed"
-          >
-            Seguridad inteligente, tranquilidad total las 24 horas del día. Cámaras 100% Wi-Fi sin cables con visión nocturna a color, detección de movimiento con Inteligencia Artificial, audio bidireccional y monitoreo en tiempo real desde tu celular.
-          </motion.p>
-
-          {/* ═══════════ OFFICIAL CAMPAIGN FLYER DISPLAY (IMAGE 1) ═══════════ */}
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="mt-8 max-w-3xl mx-auto rounded-3xl overflow-hidden border border-amber-400/40 shadow-2xl shadow-amber-500/15 bg-[#0b0a12] p-2"
-          >
-            <img
-              src="/banners/camaras-hogar-portada-4k.jpg"
-              alt="Cámaras para Hogar de Alta Calidad 4K - Portada Oficial ATOMIC"
-              className="w-full h-auto max-h-[560px] object-contain rounded-2xl mx-auto"
-            />
-          </motion.div>
-
-          {/* ═══════════ 2-YEAR WARRANTY TRUST PILLS ═══════════ */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-4xl mx-auto mt-8">
-            {[
-              { icon: "🛡️", title: "Garantía 2 Años", desc: "Respaldo directo ATOMIC" },
-              { icon: "⚡", title: "Plug & Play", desc: "Instalación en 3 minutos" },
-              { icon: "📱", title: "App Sin Costo", desc: "Monitoreo 24/7 en celular" },
-              { icon: "🚚", title: "Envíos Sin Recargo", desc: "A todo el Ecuador" }
-            ].map((pill, idx) => (
-              <div
-                key={idx}
-                className="bg-[#121018] border border-white/[0.08] hover:border-amber-500/40 rounded-2xl p-3.5 text-center transition-all shadow-lg"
-              >
-                <div className="text-xl mb-1">{pill.icon}</div>
-                <div className="text-xs font-black font-heading text-white uppercase">{pill.title}</div>
-                <div className="text-[10px] text-neutral-400 font-mono mt-0.5">{pill.desc}</div>
-              </div>
-            ))}
+        <div className="text-center max-w-3xl mx-auto space-y-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-950/60 border border-rose-500/40 text-rose-300 text-xs font-bold uppercase tracking-wider">
+            <Heart size={13} className="text-rose-400" />
+            <span>Tranquilidad, Amor y Protección en tu Hogar</span>
           </div>
 
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight leading-tight">
+            La paz de saber que tus hijos, tu bebé y tu hogar <span className="bg-gradient-to-r from-rose-400 via-amber-300 to-pink-400 bg-clip-text text-transparent">están bien</span>, estés donde estés.
+          </h1>
+
+          <p className="text-sm md:text-base text-slate-300 leading-relaxed max-w-2xl mx-auto">
+            Cámaras de seguridad inteligentes 100% Wi-Fi diseñadas para el interior de tu casa. Monitorea en vivo desde tu celular, habla y escucha con tu voz, y recibe alertas instantáneas sin romper paredes ni pagar mensualidades.
+          </p>
+
+          {/* Badges de Confianza */}
+          <div className="flex flex-wrap items-center justify-center gap-2.5 pt-2">
+            <span className="bg-slate-900/90 border border-slate-700/70 text-slate-200 text-xs px-3 py-1.5 rounded-xl flex items-center gap-1.5 font-medium">
+              <CheckCircle2 size={13} className="text-emerald-400" /> Fácil en 2 min (Plug & Play)
+            </span>
+            <span className="bg-slate-900/90 border border-slate-700/70 text-slate-200 text-xs px-3 py-1.5 rounded-xl flex items-center gap-1.5 font-medium">
+              <Volume2 size={13} className="text-rose-400" /> Audio Bidireccional (Habla y Escucha)
+            </span>
+            <span className="bg-slate-900/90 border border-slate-700/70 text-slate-200 text-xs px-3 py-1.5 rounded-xl flex items-center gap-1.5 font-medium">
+              <Moon size={13} className="text-indigo-400" /> Visión Nocturna que no despierta al bebé
+            </span>
+            <span className="bg-slate-900/90 border border-slate-700/70 text-slate-200 text-xs px-3 py-1.5 rounded-xl flex items-center gap-1.5 font-medium">
+              <Lock size={13} className="text-amber-400" /> Modo Privacidad con 1 toque
+            </span>
+          </div>
+
+          {/* Botones de Acción Hero */}
+          <div className="flex flex-wrap items-center justify-center gap-3 pt-4">
+            <a
+              href="#catalogo-camaras"
+              className="bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 text-white font-extrabold text-sm px-6 py-3 rounded-xl transition-all shadow-lg shadow-rose-950 flex items-center gap-2 cursor-pointer"
+            >
+              <Eye size={16} /> Ver las 4 Cámaras Oficiales
+            </a>
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-[#1a2332] hover:bg-[#233044] border border-cyan-500/50 text-cyan-300 hover:text-white font-bold text-sm px-6 py-3 rounded-xl transition-all flex items-center gap-2 cursor-pointer"
+            >
+              <Smartphone size={16} className="text-emerald-400" /> Preguntar por WhatsApp
+            </a>
+          </div>
         </div>
       </section>
 
-      {/* ═══════════ 3 PRODUCT CARDS SHOWCASE (GRID COMPARISON) ═══════════ */}
-      <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-16" id="modelos">
-        
-        <div className="text-center max-w-3xl mx-auto mb-12">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.04] border border-white/10 text-xs font-bold text-neutral-300 mb-3 shadow-xl">
-            <Eye size={14} className="text-amber-400" />
-            <span className="font-heading uppercase tracking-wider text-[11px]">ELIGE LA QUE MEJOR SE ADAPTE A TU HOGAR</span>
-          </div>
-          <h2 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-white font-heading mb-3">
-            Nuestros 3 Modelos Disponibles
+      {/* SECCIÓN INTERACTIVA: OPCIONES INTERIORES DEL HOGAR */}
+      <section className="py-12 px-4 md:px-8 max-w-6xl mx-auto border-t border-slate-800/80">
+        <div className="text-center max-w-2xl mx-auto mb-8 space-y-2">
+          <span className="text-xs font-bold text-rose-400 uppercase tracking-wider block">
+            CUIDADO Y PROTECCIÓN INTEGRAL
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-black text-white">
+            Un Ojo Amoroso en Cada Espacio de tu Casa
           </h2>
-          <p className="text-sm text-neutral-400">
-            Compara características, resolución y precios con <strong>Garantía de 2 Años</strong> y opción de instalación a domicilio.
+          <p className="text-xs sm:text-sm text-slate-300">
+            Descubre cómo nuestras cámaras resuelven cada necesidad del día a día para mamás y amas de casa.
           </p>
         </div>
 
-        {/* 3 CARDS GRID */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-stretch">
-          {CAMERAS_LINEUP.map((cam) => {
-            const isRec = cam.recommended
+        {/* Tabs de Espacios */}
+        <div className="flex items-center justify-start sm:justify-center gap-2 overflow-x-auto pb-3 mb-6 scrollbar-none">
+          {INTERIOR_SPACES.map((space, idx) => {
+            const IconComponent = space.icon
+            const isActive = activeSpaceTab === idx
             return (
-              <motion.div
-                key={cam.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className={`relative rounded-3xl p-6 flex flex-col justify-between transition-all duration-300 bg-gradient-to-b from-[#13111B] via-[#0E0C15] to-[#0A0910] border ${
-                  isRec
-                    ? "border-amber-400/80 shadow-[0_0_40px_rgba(245,158,11,0.25)] scale-105 z-20"
-                    : "border-white/10 hover:border-white/25 shadow-xl"
+              <button
+                key={space.id}
+                onClick={() => setActiveSpaceTab(idx)}
+                className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all shrink-0 flex items-center gap-2 border cursor-pointer ${
+                  isActive
+                    ? 'bg-rose-950/80 text-rose-200 border-rose-500/80 shadow-md shadow-rose-950/50'
+                    : 'bg-slate-900/60 text-slate-400 border-slate-800 hover:text-white hover:bg-slate-800/80'
                 }`}
               >
-                {/* Recommended Top Badge */}
-                {isRec && (
-                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-500 to-yellow-400 text-black font-black font-heading text-[10px] uppercase tracking-widest px-4 py-1 rounded-full shadow-lg flex items-center gap-1.5">
-                    <Star size={11} className="fill-black" />
-                    <span>MÁS VENDIDA // RECOMENDADA</span>
-                  </div>
-                )}
-
-                <div>
-                  {/* Card Header */}
-                  <div className="flex items-start justify-between gap-3 mb-4">
-                    <div>
-                      <span className="text-[10px] font-mono font-extrabold uppercase px-2.5 py-0.5 rounded-full bg-white/[0.06] border border-white/10 text-neutral-300">
-                        Nivel {cam.tier}
-                      </span>
-                      <h3 className="text-xl font-black font-heading text-white uppercase mt-2 leading-snug">
-                        {cam.name}
-                      </h3>
-                      <span className="text-xs font-bold text-amber-400 font-mono block mt-1">
-                        {cam.resolution}
-                      </span>
-                    </div>
-
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/15 border border-amber-500/30 text-amber-300 font-bold shrink-0">
-                      {cam.badge}
-                    </span>
-                  </div>
-
-                  {/* Product Image */}
-                  <div
-                    onClick={() => setSelectedProduct(cam)}
-                    className="w-full h-64 rounded-2xl overflow-hidden bg-black/40 border border-white/10 mb-5 relative group cursor-pointer"
-                  >
-                    <img
-                      src={cam.image}
-                      alt={cam.name}
-                      className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center p-3">
-                      <span className="text-[11px] font-bold font-heading text-white uppercase bg-black/70 px-3 py-1 rounded-full border border-white/20">
-                        Ver Ficha Técnica Completa →
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Highlights Bullet List */}
-                  <ul className="space-y-2.5 mb-6 text-xs text-neutral-300">
-                    {cam.keyFeatures.slice(0, 5).map((feat, fIdx) => (
-                      <li key={fIdx} className="flex items-start gap-2">
-                        <CheckCircle2 size={14} className="text-amber-400 shrink-0 mt-0.5" />
-                        <span>{feat}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Card Footer / Pricing */}
-                <div className="pt-4 border-t border-white/10">
-                  <div className="flex items-baseline justify-between mb-3">
-                    <div>
-                      <span className="text-[10px] text-neutral-500 line-through font-mono block">
-                        Precio Regular: ${calculateRegularPrice(cam.priceBase)} USD
-                      </span>
-                      <div className="flex items-baseline gap-1">
-                        <span className="text-3xl font-black font-heading text-amber-300">
-                          ${cam.priceBase.toFixed(2)}
-                        </span>
-                        <span className="text-[10px] text-neutral-400 font-mono">USD</span>
-                      </div>
-                    </div>
-
-                    <span className="text-[10px] font-mono px-2 py-1 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold">
-                      Garantía 2 Años ✓
-                    </span>
-                  </div>
-
-                  {/* Action Buttons */}
-                  <div className="grid grid-cols-2 gap-2">
-                    <button
-                      onClick={() => setSelectedProduct(cam)}
-                      className="w-full py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/15 border border-white/15 text-white text-[11px] font-bold uppercase font-heading transition-all text-center"
-                    >
-                      Detalles
-                    </button>
-
-                    <a
-                      href={getWhatsAppLink(cam)}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-black text-[11px] font-black uppercase font-heading transition-all text-center shadow-lg shadow-amber-500/20 flex items-center justify-center gap-1"
-                    >
-                      <span>Pedir</span>
-                      <ArrowRight size={12} />
-                    </a>
-                  </div>
-                </div>
-
-              </motion.div>
+                <IconComponent size={15} className={isActive ? 'text-rose-400' : 'text-slate-400'} />
+                <span>{space.title.split(' ')[0]} {space.title.split(' ')[1] || ''}</span>
+              </button>
             )
           })}
         </div>
 
+        {/* Card Detalle del Espacio Activo */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeSpaceTab}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+            className="bg-gradient-to-br from-slate-900/90 to-[#0e1624] border border-slate-800 rounded-2xl p-6 sm:p-8 max-w-4xl mx-auto shadow-xl"
+          >
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+              <div className="space-y-4 flex-1">
+                <div className="flex items-center gap-2.5 flex-wrap">
+                  <span className="px-3 py-1 rounded-full text-xs font-bold bg-rose-950/80 text-rose-300 border border-rose-600/40">
+                    {INTERIOR_SPACES[activeSpaceTab].badge}
+                  </span>
+                  <span className="text-xs text-amber-300 font-mono font-medium">
+                    Recomendación: {INTERIOR_SPACES[activeSpaceTab].recommendedCam}
+                  </span>
+                </div>
+
+                <h3 className="text-xl sm:text-2xl font-black text-white">
+                  {INTERIOR_SPACES[activeSpaceTab].title}
+                </h3>
+
+                <p className="text-sm text-slate-300 leading-relaxed">
+                  {INTERIOR_SPACES[activeSpaceTab].description}
+                </p>
+
+                <div className="space-y-2 pt-2">
+                  {INTERIOR_SPACES[activeSpaceTab].benefits.map((b, i) => (
+                    <div key={i} className="flex items-start gap-2 text-xs text-slate-200">
+                      <CheckCircle2 size={14} className="text-emerald-400 shrink-0 mt-0.5" />
+                      <span>{b}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="shrink-0 flex flex-col items-center justify-center p-6 bg-slate-950/70 border border-slate-800/80 rounded-2xl md:w-64 text-center space-y-3">
+                <div className="w-16 h-16 rounded-full bg-rose-950/80 border border-rose-500/40 flex items-center justify-center text-rose-300">
+                  {(() => {
+                    const CurIcon = INTERIOR_SPACES[activeSpaceTab].icon
+                    return <CurIcon size={32} />
+                  })()}
+                </div>
+                <div>
+                  <span className="text-[10px] text-slate-400 uppercase font-mono block">Instalación recomendada</span>
+                  <p className="text-xs font-bold text-white mt-0.5">{INTERIOR_SPACES[activeSpaceTab].subtitle}</p>
+                </div>
+                <a
+                  href="#catalogo-camaras"
+                  className="w-full text-center text-xs font-bold py-2 px-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-white transition-colors"
+                >
+                  Elegir esta cámara
+                </a>
+              </div>
+            </div>
+          </motion.div>
+        </AnimatePresence>
       </section>
 
-      {/* ═══════════ DETAILED COMPARISON TABLE ═══════════ */}
-      <section className="w-full max-w-6xl mx-auto px-4 sm:px-6 py-12">
-        <div className="bg-[#100E17] border border-white/10 rounded-3xl p-6 sm:p-8 shadow-2xl overflow-hidden">
-          
-          <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/10">
-            <div className="w-10 h-10 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400">
-              <Cpu size={20} />
-            </div>
-            <div>
-              <h3 className="text-lg sm:text-xl font-black font-heading uppercase text-white">
-                Tabla Comparativa de Especificaciones Técnicas
-              </h3>
-              <p className="text-xs text-neutral-400">
-                Detalle comparativo entre los modelos Básica 3MP, Avanzada 3K y Premium 4K
-              </p>
-            </div>
-          </div>
+      {/* CATÁLOGO OFICIAL DE LAS 4 CÁMARAS PARA HOGAR */}
+      <section id="catalogo-camaras" className="py-12 px-4 md:px-8 max-w-6xl mx-auto border-t border-slate-800/80">
+        <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
+          <span className="text-xs font-bold text-rose-400 uppercase tracking-wider block">
+            MODELOS 100% ORIGINALES CON GARANTÍA
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-black text-white">
+            Nuestras 4 Cámaras Oficiales para Interiores
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-300">
+            Elige la que mejor se adapte a tu hogar o consulta con nosotros para asesorarte según el tamaño de tu casa.
+          </p>
+        </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead>
-                <tr className="border-b border-white/15 text-neutral-400 font-mono uppercase text-[10px]">
-                  <th className="pb-3 pr-4 font-bold">Característica</th>
-                  <th className="pb-3 px-4 font-bold text-white">BÁSICA (3MP)</th>
-                  <th className="pb-3 px-4 font-bold text-white">AVANZADA (3K)</th>
-                  <th className="pb-3 pl-4 font-bold text-amber-400">PREMIUM (4K) ⭐</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/[0.06] text-neutral-300">
-                <tr>
-                  <td className="py-3.5 pr-4 font-bold text-white">Resolución de Video</td>
-                  <td className="py-3.5 px-4 font-mono">3MP (2304 × 1296)</td>
-                  <td className="py-3.5 px-4 font-mono">3K (2880 × 1620)</td>
-                  <td className="py-3.5 pl-4 font-mono font-bold text-amber-300">4K Ultra HD (3840 × 2160)</td>
-                </tr>
-                <tr>
-                  <td className="py-3.5 pr-4 font-bold text-white">Tipo de Visión Nocturna</td>
-                  <td className="py-3.5 px-4">Infrarroja Inteligente (10m)</td>
-                  <td className="py-3.5 px-4 text-emerald-300">Full-Color Nocturno LED</td>
-                  <td className="py-3.5 pl-4 font-bold text-emerald-400">Starlight 4K a Todo Color</td>
-                </tr>
-                <tr>
-                  <td className="py-3.5 pr-4 font-bold text-white">Inteligencia Artificial</td>
-                  <td className="py-3.5 px-4">Detección de Movimiento</td>
-                  <td className="py-3.5 px-4">Detección Inteligente</td>
-                  <td className="py-3.5 pl-4 font-bold text-amber-300">Chip IA (Humanos + Mascotas)</td>
-                </tr>
-                <tr>
-                  <td className="py-3.5 pr-4 font-bold text-white">Seguimiento Motorizado</td>
-                  <td className="py-3.5 px-4">360° Autotracking</td>
-                  <td className="py-3.5 px-4">360° Suave</td>
-                  <td className="py-3.5 pl-4 font-bold text-white">360° con Zoom Dinámico IA</td>
-                </tr>
-                <tr>
-                  <td className="py-3.5 pr-4 font-bold text-white">Audio Bidireccional</td>
-                  <td className="py-3.5 px-4">Estándar (Habla y Escucha)</td>
-                  <td className="py-3.5 px-4">Con Cancelación de Ruido</td>
-                  <td className="py-3.5 pl-4 font-bold text-white">Micrófono Dual HQ + Altavoz Potente</td>
-                </tr>
-                <tr>
-                  <td className="py-3.5 pr-4 font-bold text-white">Modo de Privacidad</td>
-                  <td className="py-3.5 px-4">Suspensión por App</td>
-                  <td className="py-3.5 px-4">Suspensión por App</td>
-                  <td className="py-3.5 pl-4 font-bold text-amber-300">Obturador Físico Motorizado</td>
-                </tr>
-                <tr>
-                  <td className="py-3.5 pr-4 font-bold text-white">Almacenamiento Local</td>
-                  <td className="py-3.5 px-4">MicroSD hasta 512GB</td>
-                  <td className="py-3.5 px-4">MicroSD hasta 512GB</td>
-                  <td className="py-3.5 pl-4 font-bold text-white">MicroSD hasta 512GB + Cloud</td>
-                </tr>
-                <tr>
-                  <td className="py-3.5 pr-4 font-bold text-white">Garantía Directa</td>
-                  <td className="py-3.5 px-4 text-emerald-400 font-bold">2 Años Oficial</td>
-                  <td className="py-3.5 px-4 text-emerald-400 font-bold">2 Años Oficial</td>
-                  <td className="py-3.5 pl-4 text-emerald-400 font-bold">2 Años Oficial</td>
-                </tr>
-                <tr>
-                  <td className="py-3.5 pr-4 font-bold text-white">Precio Promocional</td>
-                  <td className="py-3.5 px-4 font-heading font-black text-base text-white">$44.99 USD</td>
-                  <td className="py-3.5 px-4 font-heading font-black text-base text-white">$64.99 USD</td>
-                  <td className="py-3.5 pl-4 font-heading font-black text-xl text-amber-300">$78.99 USD</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+        {/* Grid de 4 Cámaras */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {CAMERAS_HOGAR.map((cam) => {
+            const isSelected = selectedCam.id === cam.id
+            return (
+              <div
+                key={cam.id}
+                className={`bg-gradient-to-b from-slate-900/90 to-[#0c121e] border rounded-2xl p-5 sm:p-6 transition-all flex flex-col justify-between relative shadow-lg ${
+                  isSelected ? 'border-rose-500 shadow-rose-950/40 ring-1 ring-rose-500/50' : 'border-slate-800 hover:border-slate-700'
+                }`}
+              >
+                <div>
+                  {/* Badge Superior */}
+                  <div className="flex items-center justify-between gap-2 mb-3">
+                    <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full border ${cam.badgeColor}`}>
+                      {cam.badge}
+                    </span>
+                    <span className="text-xs font-mono text-slate-400 font-bold">
+                      CÓD: {cam.code}
+                    </span>
+                  </div>
 
+                  {/* Imagen Oficial del Flyer */}
+                  <div
+                    onClick={() => {
+                      setSelectedCam(cam)
+                      setDetailModalOpen(true)
+                    }}
+                    className="relative w-full h-56 sm:h-64 rounded-xl overflow-hidden bg-slate-950/80 border border-slate-800/80 mb-4 cursor-pointer group"
+                  >
+                    <Image
+                      src={cam.image}
+                      alt={cam.name}
+                      fill
+                      className="object-contain p-2 group-hover:scale-105 transition-transform duration-300"
+                    />
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5 text-white font-bold text-xs">
+                      <Eye size={16} /> Click para ampliar y ver ficha técnica
+                    </div>
+                  </div>
+
+                  {/* Título y Marca */}
+                  <div className="mb-2">
+                    <span className="text-[10px] uppercase font-bold text-rose-400 tracking-wider">
+                      {cam.brand} OFICIAL
+                    </span>
+                    <h3 className="text-lg sm:text-xl font-black text-white leading-snug">
+                      {cam.name}
+                    </h3>
+                    <p className="text-xs text-slate-300 mt-1">
+                      {cam.tagline}
+                    </p>
+                  </div>
+
+                  {/* Característica Estrella */}
+                  <div className="bg-slate-950/80 border border-slate-800 rounded-xl p-2.5 mb-3 text-xs text-amber-300 font-medium flex items-center gap-2">
+                    <Sparkles size={14} className="text-amber-400 shrink-0" />
+                    <span>{cam.highlightFeature}</span>
+                  </div>
+
+                  {/* Lista de Características Rápidas */}
+                  <div className="space-y-1.5 mb-4">
+                    {cam.features.slice(0, 4).map((f, i) => (
+                      <div key={i} className="flex items-start gap-1.5 text-xs text-slate-300">
+                        <Check size={13} className="text-emerald-400 shrink-0 mt-0.5" />
+                        <span>{f}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Footer de la Card: Precio y Botón de Selección */}
+                <div className="border-t border-slate-800/80 pt-4 mt-2">
+                  <div className="flex items-baseline justify-between mb-3">
+                    <div>
+                      <span className="text-[10px] text-slate-400 font-mono uppercase block">Precio Oficial</span>
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-2xl sm:text-3xl font-black text-white font-mono">
+                          ${cam.price.toFixed(2)}
+                        </span>
+                        <span className="text-xs font-bold text-slate-400 font-mono">+ IVA</span>
+                      </div>
+                    </div>
+                    {cam.hasFreeShipping && (
+                      <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-600/50">
+                        Envío Gratis
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      onClick={() => {
+                        setSelectedCam(cam)
+                        setDetailModalOpen(true)
+                      }}
+                      className="w-full text-xs font-bold py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors cursor-pointer"
+                    >
+                      Ver Detalles
+                    </button>
+                    <button
+                      onClick={() => {
+                        setSelectedCam(cam)
+                        const el = document.getElementById('personalizar-pedido')
+                        if (el) el.scrollIntoView({ behavior: 'smooth' })
+                      }}
+                      className="w-full text-xs font-bold py-2.5 px-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-white transition-colors cursor-pointer flex items-center justify-center gap-1 shadow-md shadow-rose-950"
+                    >
+                      <span>Seleccionar</span> <ArrowRight size={13} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )
+          })}
         </div>
       </section>
 
-      {/* ═══════════ PROVINCE INSTALLATION CALCULATOR ═══════════ */}
-      <section className="w-full max-w-5xl mx-auto px-4 sm:px-6 py-12">
-        <div className="bg-gradient-to-r from-[#12101A] via-[#161422] to-[#12101A] border border-amber-500/30 rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-48 h-48 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+      {/* SECCIÓN INTERACTIVA: PERSONALIZA TU PEDIDO Y PIDE POR WHATSAPP */}
+      <section id="personalizar-pedido" className="py-12 px-4 md:px-8 max-w-4xl mx-auto border-t border-slate-800/80">
+        <div className="bg-gradient-to-br from-slate-900 to-[#121c2d] border border-rose-500/40 rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="text-xs font-bold uppercase tracking-wider text-rose-300">
+                Paso Final: Personaliza tu Compra
+              </span>
+            </div>
 
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-5 border-b border-white/10">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400">
-                <Compass size={20} />
-              </div>
+            <h2 className="text-2xl sm:text-3xl font-black text-white">
+              Cámara Seleccionada: <span className="text-rose-400">{selectedCam.name}</span>
+            </h2>
+
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              Puedes agregar una tarjeta de memoria MicroSD para guardar semanas de grabaciones sin cuotas mensuales. Te la entregamos configurada lista para usar.
+            </p>
+
+            {/* Selector de Memoria MicroSD Opcional */}
+            <div className="bg-slate-950/80 border border-slate-800 rounded-2xl p-4 sm:p-5 space-y-3">
+              <label className="flex items-start sm:items-center gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={includeMicroSd}
+                  onChange={(e) => setIncludeMicroSd(e.target.checked)}
+                  className="w-5 h-5 rounded border-slate-700 text-rose-600 focus:ring-rose-500 cursor-pointer mt-0.5 sm:mt-0"
+                />
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="font-bold text-sm text-white">Incluir Tarjeta MicroSD Original de Alta Velocidad</span>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-600/40">
+                      Recomendado
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    Guarda grabaciones de seguridad las 24 horas y revísalas en cualquier momento desde tu teléfono sin pagar suscripción.
+                  </p>
+                </div>
+              </label>
+
+              {includeMicroSd && (
+                <div className="pt-2 border-t border-slate-800/80 flex items-center gap-3">
+                  <button
+                    onClick={() => setSelectedSdSize("64GB")}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
+                      selectedSdSize === "64GB"
+                        ? "bg-rose-950 border-rose-500 text-white"
+                        : "bg-slate-900 border-slate-800 text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    64GB (Hasta 2 semanas) · +$11.50
+                  </button>
+                  <button
+                    onClick={() => setSelectedSdSize("128GB")}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
+                      selectedSdSize === "128GB"
+                        ? "bg-rose-950 border-rose-500 text-white"
+                        : "bg-slate-900 border-slate-800 text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    128GB (Hasta 4 semanas) · +$18.00
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Resumen Total y Botón de WhatsApp */}
+            <div className="bg-slate-950/90 border border-slate-800/90 rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <h3 className="text-base sm:text-lg font-black font-heading uppercase text-white">
-                  Calculadora de Instalación & Despacho por Provincia
-                </h3>
-                <p className="text-xs text-neutral-400">
-                  Selecciona tu provincia para cotizar con servicio de montaje técnico o envío gratuito
+                <span className="text-[10px] uppercase font-mono text-slate-400 block">Total a Cotizar</span>
+                <div className="flex items-baseline gap-1.5">
+                  <span className="text-3xl font-black text-emerald-400 font-mono">
+                    ${totalPrice}
+                  </span>
+                  <span className="text-xs font-bold text-slate-400 font-mono">+ IVA</span>
+                </div>
+                <p className="text-[11px] text-slate-400 mt-0.5">
+                  {selectedCam.hasFreeShipping ? '🚚 Incluye Envío Gratis a nivel nacional' : '📦 Envíos rápidos y seguros a todo el Ecuador'}
                 </p>
               </div>
-            </div>
 
-            <div className={`px-3 py-1 rounded-full border text-xs font-extrabold uppercase font-mono ${selectedProvince.badgeColor}`}>
-              {selectedProvince.icon} {selectedProvince.region}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mt-6 items-center">
-            <div>
-              <label className="block text-xs font-bold text-neutral-300 uppercase tracking-wider mb-2">
-                📍 Selecciona tu Provincia / Cantón:
-              </label>
-              <select
-                value={selectedProvinceId}
-                onChange={(e) => setSelectedProvinceId(e.target.value)}
-                className="w-full bg-[#0A0910] border border-white/20 hover:border-amber-400 focus:border-amber-400 rounded-xl px-4 py-3 text-xs font-bold text-white outline-none cursor-pointer transition-all shadow-inner"
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-sm px-6 py-3.5 rounded-2xl transition-all shadow-xl shadow-emerald-950 flex items-center justify-center gap-2 cursor-pointer"
               >
-                {PROVINCES_DATA.map((prov) => (
-                  <option key={prov.id} value={prov.id} className="bg-[#0e0d16] text-white">
-                    {prov.icon} {prov.name} — ${prov.cost} USD Instalación
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Mode toggle: With Installation vs Self-Install */}
-            <div className="bg-[#090810] border border-white/10 rounded-2xl p-4 flex flex-col justify-between gap-2">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-white">Opción de Instalación Técnica:</span>
-                <button
-                  onClick={() => setIncludeInstallation(!includeInstallation)}
-                  className={`px-3 py-1 rounded-full text-[10px] font-bold font-heading uppercase transition-all ${
-                    includeInstallation
-                      ? "bg-emerald-500 text-black shadow-md"
-                      : "bg-white/10 text-neutral-300"
-                  }`}
-                >
-                  {includeInstallation ? "✓ Con Instalación" : "Solo Producto"}
-                </button>
-              </div>
-
-              <div className="text-xs text-neutral-400">
-                {includeInstallation ? (
-                  <span className="text-emerald-400 font-bold">
-                    +${selectedProvince.cost}.00 USD (Técnicos locales en {selectedProvince.name.split(" ")[0]})
-                  </span>
-                ) : (
-                  <span className="text-blue-400 font-bold">
-                    +$0.00 USD (Envío Nacional Sin Recargo - Plug & Play)
-                  </span>
-                )}
-              </div>
+                <Smartphone size={18} />
+                <span>Pedir por WhatsApp Ahora</span>
+              </a>
             </div>
           </div>
-
         </div>
       </section>
 
-      {/* ═══════════ FAQS SECTION ═══════════ */}
-      <section className="w-full max-w-4xl mx-auto px-4 sm:px-6 py-12">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/10 text-[11px] font-bold text-neutral-300 mb-2">
-            <HelpCircle size={13} className="text-amber-400" />
-            <span className="font-heading uppercase tracking-wider">PREGUNTAS FRECUENTES</span>
+      {/* FACILIDAD TOTAL: INSTALACIÓN EN 3 PASOS */}
+      <section className="py-12 px-4 md:px-8 max-w-6xl mx-auto border-t border-slate-800/80">
+        <div className="text-center max-w-xl mx-auto mb-8 space-y-1">
+          <span className="text-xs font-bold text-rose-400 uppercase tracking-wider block">CERO COMPLICACIONES</span>
+          <h2 className="text-2xl sm:text-3xl font-black text-white">Fácil de Usar en 3 Simples Pasos</h2>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 space-y-2">
+            <div className="w-10 h-10 rounded-xl bg-rose-950 border border-rose-500/40 text-rose-300 font-black flex items-center justify-center">
+              1
+            </div>
+            <h3 className="font-bold text-sm text-white">Enchúfala a la pared</h3>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Conecta la cámara al tomacorriente con su adaptador incluido. No requiere cables de red ni obras complicadas.
+            </p>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-white font-heading">
-            Dudas Comunes sobre las Cámaras para Hogar
-          </h2>
+
+          <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 space-y-2">
+            <div className="w-10 h-10 rounded-xl bg-amber-950 border border-amber-500/40 text-amber-300 font-black flex items-center justify-center">
+              2
+            </div>
+            <h3 className="font-bold text-sm text-white">Abre la App en tu Celular</h3>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Descarga la aplicación gratuita (EZVIZ o IMOU Life en español) disponible para iPhone y teléfonos Android.
+            </p>
+          </div>
+
+          <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 space-y-2">
+            <div className="w-10 h-10 rounded-xl bg-emerald-950 border border-emerald-500/40 text-emerald-300 font-black flex items-center justify-center">
+              3
+            </div>
+            <h3 className="font-bold text-sm text-white">¡Listo! Mira tu hogar en vivo</h3>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Escanea el código QR de la cámara y en menos de 2 minutos ya estás monitoreando y hablando en tiempo real.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* TESTIMONIOS DE MAMÁS Y CLIENTES */}
+      <section className="py-12 px-4 md:px-8 max-w-6xl mx-auto border-t border-slate-800/80">
+        <div className="text-center max-w-xl mx-auto mb-8 space-y-1">
+          <span className="text-xs font-bold text-rose-400 uppercase tracking-wider block">EXPERIENCIAS REALES</span>
+          <h2 className="text-2xl sm:text-3xl font-black text-white">Mamás y Familias Felices en Ecuador</h2>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {TESTIMONIOS_MAMAS.map((t, i) => (
+            <div key={i} className="bg-slate-900/70 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between space-y-3">
+              <div className="space-y-2">
+                <div className="flex items-center gap-1 text-amber-400 text-sm">
+                  {[...Array(t.estrellas)].map((_, idx) => (
+                    <Star key={idx} size={14} fill="currentColor" />
+                  ))}
+                </div>
+                <p className="text-xs text-slate-300 italic leading-relaxed">
+                  "{t.texto}"
+                </p>
+              </div>
+
+              <div className="flex items-center gap-3 pt-3 border-t border-slate-800">
+                <span className="text-2xl">{t.foto}</span>
+                <div>
+                  <h4 className="text-xs font-bold text-white">{t.nombre}</h4>
+                  <p className="text-[10px] text-slate-400">{t.rol} · {t.ciudad}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* PREGUNTAS FRECUENTES (FAQ) */}
+      <section className="py-12 px-4 md:px-8 max-w-3xl mx-auto border-t border-slate-800/80">
+        <div className="text-center mb-8 space-y-1">
+          <span className="text-xs font-bold text-rose-400 uppercase tracking-wider block">RESUELVE TUS DUDAS</span>
+          <h2 className="text-2xl sm:text-3xl font-black text-white">Preguntas Frecuentes</h2>
         </div>
 
         <div className="space-y-3">
           {FAQS_DATA.map((faq, idx) => {
-            const isOpen = expandedFaq === idx
+            const isOpen = openFaqIndex === idx
             return (
-              <div
-                key={idx}
-                className="bg-[#100E17] border border-white/[0.08] rounded-2xl overflow-hidden transition-all shadow-md"
-              >
+              <div key={idx} className="bg-slate-900/70 border border-slate-800 rounded-2xl overflow-hidden">
                 <button
-                  onClick={() => setExpandedFaq(isOpen ? null : idx)}
-                  className="w-full p-4 text-left flex items-center justify-between gap-4 font-bold text-xs sm:text-sm text-white hover:text-amber-300 transition-colors"
+                  onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
+                  className="w-full p-4 text-left font-bold text-xs sm:text-sm text-white flex items-center justify-between gap-3 cursor-pointer"
                 >
                   <span>{faq.q}</span>
-                  <ChevronDown
-                    size={16}
-                    className={`transition-transform duration-300 text-amber-400 shrink-0 ${
-                      isOpen ? "rotate-180" : ""
-                    }`}
-                  />
+                  <ChevronDown size={16} className={`text-slate-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
                 </button>
-                <AnimatePresence>
-                  {isOpen && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      className="px-4 pb-4 text-xs text-neutral-300 leading-relaxed border-t border-white/[0.06] pt-3"
-                    >
-                      {faq.a}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                {isOpen && (
+                  <div className="px-4 pb-4 text-xs text-slate-300 leading-relaxed border-t border-slate-800/60 pt-3">
+                    {faq.a}
+                  </div>
+                )}
               </div>
             )
           })}
         </div>
       </section>
 
-      {/* ═══════════ MODAL FOR DETAILED PRODUCT VIEW ═══════════ */}
+      {/* FOOTER */}
+      <footer className="border-t border-slate-800/80 py-8 px-4 text-center text-xs text-slate-500 space-y-2">
+        <p className="font-bold text-slate-400">ATOMIC Ecuador · Seguridad Inteligente para el Hogar</p>
+        <p>© {new Date().getFullYear()} ATOMIC. Distribuidores Autorizados de IMOU y EZVIZ en Ecuador. Todos los derechos reservados.</p>
+        <div className="flex items-center justify-center gap-4 pt-2 text-[11px] text-slate-400">
+          <Link href="/web" className="hover:text-rose-400 transition-colors">Inicio</Link>
+          <Link href="/web/cercos-electricos" className="hover:text-rose-400 transition-colors">Cercos Eléctricos</Link>
+          <Link href="/web/videoporteros" className="hover:text-rose-400 transition-colors">Videoporteros</Link>
+          <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="hover:text-emerald-400 transition-colors">WhatsApp Soporte</a>
+        </div>
+      </footer>
+
+      {/* MODAL DETALLES DE CÁMARA */}
       <AnimatePresence>
-        {selectedProduct && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+        {detailModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
             <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-[#121018] border border-amber-500/40 rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 relative shadow-2xl"
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-[#0e1624] border border-slate-700/80 rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 space-y-6 shadow-2xl relative"
             >
               <button
-                onClick={() => setSelectedProduct(null)}
-                className="absolute top-5 right-5 p-2 rounded-full bg-white/10 hover:bg-white/20 text-neutral-300 hover:text-white transition-all"
+                onClick={() => setDetailModalOpen(false)}
+                className="absolute top-5 right-5 w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center transition-colors cursor-pointer"
               >
-                <X size={18} />
+                <X size={16} />
               </button>
 
-              <div className="flex items-center gap-2 mb-2">
-                <span className="px-2.5 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 font-mono font-bold text-[10px] uppercase">
-                  {selectedProduct.badge}
+              <div className="flex items-center gap-2">
+                <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border ${selectedCam.badgeColor}`}>
+                  {selectedCam.badge}
                 </span>
-                <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-mono font-bold text-[10px] uppercase">
-                  Garantía 2 Años
+                <span className="text-xs font-mono text-slate-400 font-bold">
+                  CÓDIGO: {selectedCam.code}
                 </span>
               </div>
 
-              <h2 className="text-2xl font-black font-heading text-white uppercase mb-1">
-                {selectedProduct.name}
-              </h2>
-              <p className="text-xs text-amber-400 font-mono mb-4">{selectedProduct.resolution}</p>
+              <div>
+                <h3 className="text-2xl font-black text-white">{selectedCam.name}</h3>
+                <p className="text-xs text-rose-300 mt-1">{selectedCam.tagline}</p>
+              </div>
 
-              <div className="w-full h-72 rounded-2xl overflow-hidden bg-black/60 border border-white/10 mb-5 flex items-center justify-center">
-                <img
-                  src={selectedProduct.image}
-                  alt={selectedProduct.name}
-                  className="w-full h-full object-contain p-2"
+              {/* Imagen Grande */}
+              <div className="relative w-full h-72 sm:h-80 rounded-2xl overflow-hidden bg-slate-950 border border-slate-800">
+                <Image
+                  src={selectedCam.image}
+                  alt={selectedCam.name}
+                  fill
+                  className="object-contain p-2"
                 />
               </div>
 
-              <p className="text-xs text-neutral-300 leading-relaxed mb-5">
-                {selectedProduct.fullOverview}
+              {/* Descripción */}
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                {selectedCam.description}
               </p>
 
-              <h4 className="text-xs font-black font-heading uppercase text-white mb-3">
-                Especificaciones Técnicas Detalladas:
-              </h4>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-6 text-xs">
-                {selectedProduct.specsTable.map((spec, sIdx) => (
-                  <div
-                    key={sIdx}
-                    className="p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.06] flex flex-col justify-between"
-                  >
-                    <span className="text-[10px] font-mono text-neutral-400 uppercase">{spec.label}</span>
-                    <span className="font-bold text-white mt-0.5">{spec.value}</span>
-                  </div>
-                ))}
+              {/* Ficha Técnica */}
+              <div className="space-y-2">
+                <h4 className="text-xs font-bold text-white uppercase tracking-wider">Ficha Técnica Oficial</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {selectedCam.specs.map((s, idx) => (
+                    <div key={idx} className="bg-slate-950/70 border border-slate-800/80 p-2.5 rounded-xl">
+                      <span className="text-[10px] text-slate-400 font-mono block">{s.label}</span>
+                      <span className="text-xs font-bold text-white">{s.value}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
 
-              <div className="p-4 rounded-2xl bg-amber-500/[0.08] border border-amber-500/25 flex items-center justify-between mb-5">
+              {/* CTA Modal */}
+              <div className="flex items-center justify-between gap-4 pt-4 border-t border-slate-800">
                 <div>
-                  <span className="text-[10px] text-neutral-400 font-mono uppercase block">Precio Promocional:</span>
-                  <span className="text-2xl font-black font-heading text-amber-300">
-                    ${selectedProduct.priceBase.toFixed(2)} USD
-                  </span>
+                  <span className="text-[10px] text-slate-400 font-mono uppercase block">Precio</span>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-2xl font-black text-white font-mono">${selectedCam.price.toFixed(2)}</span>
+                    <span className="text-xs text-slate-400 font-mono">+ IVA</span>
+                  </div>
                 </div>
 
                 <a
-                  href={getWhatsAppLink(selectedProduct)}
+                  href={whatsappUrl}
                   target="_blank"
-                  rel="noreferrer"
-                  className="px-5 py-3 rounded-full bg-gradient-to-r from-amber-500 to-yellow-500 text-black font-black font-heading uppercase tracking-wider text-xs shadow-lg flex items-center gap-1.5"
+                  rel="noopener noreferrer"
+                  className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm px-5 py-3 rounded-xl transition-all shadow-lg shadow-emerald-950 flex items-center gap-1.5 cursor-pointer"
                 >
-                  <span>Pedir por WhatsApp</span>
-                  <ArrowRight size={14} />
+                  <Smartphone size={16} />
+                  <span>Pedir esta Cámara</span>
                 </a>
               </div>
-
             </motion.div>
           </div>
         )}
       </AnimatePresence>
-
-      {/* ═══════════ FOOTER ═══════════ */}
-      <footer className="w-full bg-[#050508] border-t border-white/[0.08] py-8 px-4 sm:px-6 text-center text-xs text-neutral-500">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p>© {new Date().getFullYear()} ATOMIC INDUSTRIAS // División de Seguridad Residencial y Cámaras Wi-Fi.</p>
-          <div className="flex items-center gap-4 text-[11px] font-mono">
-            <Link href="/web/cerraduras-smart" className="hover:text-white transition-colors">Cerraduras Smart</Link>
-            <Link href="/web" className="hover:text-white transition-colors">Tienda Principal</Link>
-            <Link href="/web/cocinas" className="hover:text-white transition-colors">Línea Hogar</Link>
-          </div>
-        </div>
-      </footer>
-
     </div>
   )
 }
