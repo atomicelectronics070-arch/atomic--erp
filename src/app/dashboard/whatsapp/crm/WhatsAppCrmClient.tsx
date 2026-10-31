@@ -237,6 +237,9 @@ export default function WhatsAppCrmClient() {
     const [isRetrying, setIsRetrying] = useState(false)
     const [retrySuccessMsg, setRetrySuccessMsg] = useState<string | null>(null)
     const [copiedPhone, setCopiedPhone] = useState(false)
+    const [autoRetryCountdown, setAutoRetryCountdown] = useState<number>(15)
+    const isRetryingRef = useRef(false)
+    isRetryingRef.current = isRetrying
 
     // Karen Agent Modal & Live State
     const [karenModalOpen, setKarenModalOpen] = useState(false)
@@ -912,35 +915,100 @@ export default function WhatsAppCrmClient() {
         setTimeout(() => setCopiedPhone(false), 2000);
     };
 
-    const handleRetryFailedMessage = async (messageId?: string) => {
+    const handleRetryFailedMessage = async (messageId?: string, isAuto = false) => {
         if (!activeChat) return;
         setIsRetrying(true);
         setRetrySuccessMsg(null);
         try {
-            const res = await fetch('/api/whatsapp/retry', {
+            const res = await fetch('/api/whatsapp/auto-retry', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     conversationId: activeChat.id,
                     messageId: messageId,
-                    action: 'retry_message'
+                    force: true
                 })
             });
             const data = await res.json();
             if (res.ok && data.success) {
                 playOutgoingSound();
-                setRetrySuccessMsg('✅ ¡Mensaje reenviado y entregado exitosamente a Meta WhatsApp!');
-                setTimeout(() => setRetrySuccessMsg(null), 4000);
+                setRetrySuccessMsg('✅ ¡Envío reportado correcto por Meta WhatsApp! Mensaje entregado con éxito.');
+                setTimeout(() => setRetrySuccessMsg(null), 5000);
                 await fetchConversations();
             } else {
-                alert(`⚠️ Error al reintentar: ${data.error || 'No se pudo reenviar el mensaje.'}`);
+                if (!isAuto) {
+                    alert(`⚠️ Error al reintentar: ${data.error || data.data?.errorMessage || 'No se pudo reenviar el mensaje.'}`);
+                }
+                await fetchConversations();
             }
         } catch (e: any) {
-            alert(`⚠️ Error de red al reintentar: ${e.message}`);
+            if (!isAuto) {
+                alert(`⚠️ Error de red al reintentar: ${e.message}`);
+            }
         } finally {
             setIsRetrying(false);
         }
     };
+
+    // ═══════════════════════════════════════════════════════════
+    // MOTOR DE REINTENTO INTELIGENTE EN VIVO (CLIENT-SIDE DAEMON)
+    // ═══════════════════════════════════════════════════════════
+    useEffect(() => {
+        if (!activeChat || !activeChat.hasFailedMessage) {
+            return;
+        }
+
+        const failedMsg: any = activeChat.failedMessage;
+        const meta = failedMsg?.retryMeta;
+        
+        if (meta && typeof meta.remainingSec === 'number' && meta.remainingSec > 0) {
+            setAutoRetryCountdown(meta.remainingSec);
+        } else {
+            setAutoRetryCountdown(15);
+        }
+
+        const timer = setInterval(() => {
+            setAutoRetryCountdown(prev => {
+                if (prev <= 1) {
+                    if (!isRetryingRef.current) {
+                        console.log('[AUTO_RETRY_TICKER] Temporizador cumplido. Reintentando mensaje fallido en Meta...');
+                        handleRetryFailedMessage(failedMsg?.id, true);
+                    }
+                    return 20; // reset mientras procesa
+                }
+                return prev - 1;
+            });
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, [activeChatId, activeChat?.hasFailedMessage, activeChat?.failedMessage?.id]);
+
+    // ═══════════════════════════════════════════════════════════
+    // ESCÁNER GLOBAL DE FONDO: RESCATE INTELIGENTE DE TODOS LOS CHATS
+    // ═══════════════════════════════════════════════════════════
+    useEffect(() => {
+        const globalRescueTimer = setInterval(async () => {
+            const hasAnyFailed = chats.some(c => c.hasFailedMessage);
+            if (!hasAnyFailed) return;
+
+            try {
+                const res = await fetch('/api/whatsapp/auto-retry', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ force: false })
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.succeeded > 0) {
+                        playOutgoingSound();
+                        fetchConversations();
+                    }
+                }
+            } catch (_) {}
+        }, 20000);
+
+        return () => clearInterval(globalRescueTimer);
+    }, [chats, playOutgoingSound, fetchConversations]);
 
     const handleResuscitateChat = async () => {
         if (!activeChat) return;
@@ -1335,8 +1403,8 @@ export default function WhatsAppCrmClient() {
 
                                         <div className="flex items-center gap-1.5 flex-wrap mb-1">
                                             {chat.hasFailedMessage && (
-                                                <span className="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-700/50 flex items-center gap-0.5 shrink-0">
-                                                    ⚠️ Fallo Envío
+                                                <span className="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-600/50 flex items-center gap-0.5 shrink-0" title="Motor de Reintento Inteligente en proceso">
+                                                    🔄 Auto-reintentando
                                                 </span>
                                             )}
                                             {chat.isFromAd && (
@@ -1497,13 +1565,13 @@ export default function WhatsAppCrmClient() {
                                 <div className="flex items-center gap-2">
                                     {activeChat.hasFailedMessage && (
                                         <button
-                                            onClick={() => handleRetryFailedMessage(activeChat.failedMessage?.id)}
+                                            onClick={() => handleRetryFailedMessage(activeChat.failedMessage?.id, false)}
                                             disabled={isRetrying}
-                                            className="bg-amber-600 hover:bg-amber-500 text-black font-black text-xs px-3.5 py-2 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
-                                            title="Reintentar mensaje fallido con Meta WhatsApp"
+                                            className="bg-amber-600 hover:bg-amber-500 text-black font-black text-xs px-3 py-1.5 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                                            title="Motor de reintento inteligente activo"
                                         >
-                                            {isRetrying ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}
-                                            <span>Reintentar Envío</span>
+                                            {isRetrying ? <Loader2 size={13} className="animate-spin" /> : <RefreshCw size={13} />}
+                                            <span>{isRetrying ? 'Reintentando...' : `Auto-reintento en ${autoRetryCountdown}s`}</span>
                                         </button>
                                     )}
 
@@ -1521,39 +1589,52 @@ export default function WhatsAppCrmClient() {
                             {/* Chat Messages */}
                             <div ref={messagesContainerRef} className="flex-1 p-4 overflow-y-auto space-y-4 scroll-smooth bg-[#0b141a]">
                                 
-                                {/* ⚠️ BANNER DE ALERTA DE FALLO EN EL ENVÍO & RECUPERACIÓN INTELIGENTE */}
+                                {/* ⚠️ BANNER DE ALERTA DE FALLO EN EL ENVÍO & MOTOR DE REINTENTO INTELIGENTE */}
                                 {activeChat.hasFailedMessage && (
                                     <div className="p-4 bg-[#1f1610] border border-amber-500/60 rounded-xl space-y-3 text-white">
-                                        <div className="flex items-start justify-between gap-3">
+                                        <div className="flex items-start justify-between gap-3 flex-wrap sm:flex-nowrap">
                                             <div className="flex items-center gap-3">
                                                 <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-300 shrink-0">
-                                                    <AlertCircle size={22} />
+                                                    <RefreshCw size={20} className={isRetrying ? "animate-spin text-amber-300" : "text-amber-400"} />
                                                 </div>
                                                 <div>
-                                                    <h3 className="text-sm md:text-base font-black text-amber-200 uppercase tracking-wide">
-                                                        ⚠️ Fallo en el Envío de Mensaje Detectado
-                                                    </h3>
-                                                    <p className="text-xs text-slate-300 leading-relaxed">
-                                                        Meta rechazó la entrega o se perdió la conexión socket. Puedes reintentar el mensaje anterior o revivir el chat con IA.
+                                                    <div className="flex items-center gap-2 flex-wrap">
+                                                        <h3 className="text-sm md:text-base font-black text-amber-200 uppercase tracking-wide">
+                                                            🤖 Motor de Reintento Inteligente Activo
+                                                        </h3>
+                                                        <span className="text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded-full flex items-center gap-1">
+                                                            {isRetrying ? (
+                                                                <>⚡ Conectando con Meta...</>
+                                                            ) : (
+                                                                <>⏱️ Auto-reintento en {autoRetryCountdown}s</>
+                                                            )}
+                                                        </span>
+                                                    </div>
+                                                    <p className="text-xs text-slate-300 leading-relaxed mt-0.5">
+                                                        Meta rechazó o demoró la entrega. El sistema reintentará automáticamente con pausas inteligentes hasta reportar el envío correcto.
                                                     </p>
                                                 </div>
                                             </div>
                                         </div>
 
                                         {activeChat.failedMessage?.errorMessage && (
-                                            <div className="p-2.5 bg-[#111b21] border border-amber-500/40 rounded-xl text-xs font-mono text-amber-300">
-                                                <strong className="text-amber-200">Motivo del fallo:</strong> {activeChat.failedMessage.errorMessage}
+                                            <div className="p-2.5 bg-[#111b21] border border-amber-500/40 rounded-xl text-xs font-mono text-amber-300 flex items-start justify-between gap-2">
+                                                <div>
+                                                    <strong className="text-amber-200">Motivo reportado:</strong> {activeChat.failedMessage.errorMessage}
+                                                </div>
+                                                <span className="text-[10px] text-slate-400 shrink-0">Bucle Inteligente ON</span>
                                             </div>
                                         )}
 
                                         <div className="flex flex-wrap items-center gap-2 pt-1">
                                             <button
-                                                onClick={() => handleRetryFailedMessage(activeChat.failedMessage?.id)}
+                                                onClick={() => handleRetryFailedMessage(activeChat.failedMessage?.id, false)}
                                                 disabled={isRetrying}
                                                 className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-black text-xs transition-all flex items-center gap-2 shadow-sm cursor-pointer disabled:opacity-50"
+                                                title="Forzar reintento inmediato sin esperar el temporizador"
                                             >
                                                 {isRetrying ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}
-                                                <span>🔄 Reintentar Envío Ahora</span>
+                                                <span>⚡ Reintentar Envío Ahora</span>
                                             </button>
 
                                             <button
@@ -1576,7 +1657,7 @@ export default function WhatsAppCrmClient() {
                                         </div>
 
                                         {retrySuccessMsg && (
-                                            <div className="p-2 rounded-xl bg-[#0f291e] border border-emerald-500/50 text-xs font-bold text-emerald-300">
+                                            <div className="p-2.5 rounded-xl bg-[#0f291e] border border-emerald-500/60 text-xs font-bold text-emerald-300 shadow">
                                                 {retrySuccessMsg}
                                             </div>
                                         )}
@@ -1818,19 +1899,21 @@ export default function WhatsAppCrmClient() {
 
                                                 {/* ⚠️ ALERTA INLINE Y REINTENTO SI EL MENSAJE FALLÓ */}
                                                 {msg.status === 'FAILED' && (
-                                                    <div className="mt-2 p-2.5 bg-rose-950/90 border border-rose-500/60 rounded-xl flex items-center justify-between gap-2 text-rose-200 shadow-sm">
+                                                    <div className="mt-2 p-2.5 bg-[#3b1219] border border-rose-500/60 rounded-xl flex items-center justify-between gap-2 text-rose-200 shadow-sm">
                                                         <div className="flex items-center gap-1.5 text-[11px] font-bold">
                                                             <AlertCircle size={14} className="text-rose-400 shrink-0" />
-                                                            <span>Fallo en entrega de Meta</span>
+                                                            <span>
+                                                                Fallo temporal · Auto-reintentando en {autoRetryCountdown}s
+                                                            </span>
                                                         </div>
                                                         <button
-                                                            onClick={() => handleRetryFailedMessage(msg.id)}
+                                                            onClick={() => handleRetryFailedMessage(msg.id, false)}
                                                             disabled={isRetrying}
-                                                            className="px-2.5 py-1 bg-rose-500 hover:bg-rose-400 text-black text-[10px] font-black rounded-lg transition-colors flex items-center gap-1 cursor-pointer disabled:opacity-50"
+                                                            className="px-2.5 py-1 bg-amber-500 hover:bg-amber-400 text-black text-[10px] font-black rounded-lg transition-colors flex items-center gap-1 cursor-pointer disabled:opacity-50"
                                                             title="Reintentar este mensaje ahora"
                                                         >
                                                             <RefreshCw size={11} className={isRetrying ? 'animate-spin' : ''} />
-                                                            <span>Reintentar</span>
+                                                            <span>Reintentar ya</span>
                                                         </button>
                                                     </div>
                                                 )}

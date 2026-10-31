@@ -1,6 +1,7 @@
 export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { parseRetryMetadata } from '@/lib/whatsapp/auto-retry';
 
 export async function GET(req: Request) {
     try {
@@ -39,9 +40,29 @@ export async function GET(req: Request) {
             const cleanedMessages = rawMessages.map(m => {
                 let cleanBody = m.body || '';
                 let cleanType = m.type || 'text';
+                let retryMeta = null;
                 
                 if (m.status === 'FAILED') {
-                    if (!failedMessage) failedMessage = m;
+                    const parsed = parseRetryMetadata(m.errorMessage);
+                    const remainingSec = parsed.nextRetryAt > Date.now() 
+                        ? Math.ceil((parsed.nextRetryAt - Date.now()) / 1000) 
+                        : 0;
+
+                    retryMeta = {
+                        attempt: parsed.attempt,
+                        maxAttempts: parsed.maxAttempts,
+                        nextRetryAt: parsed.nextRetryAt,
+                        remainingSec,
+                        cleanError: parsed.cleanError
+                    };
+
+                    if (!failedMessage) {
+                        failedMessage = {
+                            ...m,
+                            retryMeta,
+                            errorMessage: parsed.cleanError || m.errorMessage
+                        };
+                    }
                 }
 
                 if (cleanBody.includes('[PAUTA_META:')) {
@@ -66,7 +87,9 @@ export async function GET(req: Request) {
                 return {
                     ...m,
                     body: cleanBody,
-                    type: cleanType
+                    type: cleanType,
+                    retryMeta,
+                    errorMessage: retryMeta ? retryMeta.cleanError : m.errorMessage
                 };
             });
 

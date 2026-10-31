@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { sendWhatsAppMessage, sendWhatsAppMedia, sanitizeToE164 } from '@/lib/whatsapp/service';
+import { formatRetryMetadata } from '@/lib/whatsapp/auto-retry';
 
 export async function POST(req: Request) {
     try {
@@ -37,6 +38,8 @@ export async function POST(req: Request) {
         // 1. Send via Meta API (either rich media or text)
         let waMsgId = `out-${Date.now()}`;
         let metaResponsePayload: any = null;
+        let messageStatus = 'SENT';
+        let messageError: string | null = null;
 
         try {
             if (mediaUrl) {
@@ -46,11 +49,14 @@ export async function POST(req: Request) {
             }
             if (metaResponsePayload?.messages?.[0]?.id) waMsgId = metaResponsePayload.messages[0].id;
         } catch (err: any) {
-            console.error('Failed to send via Meta Cloud API:', err.message);
-            return NextResponse.json({ error: `Error Meta WhatsApp: ${err.message}` }, { status: 400 });
+            console.warn('Initial Meta Cloud API dispatch failed. Queuing for intelligent auto-retry:', err.message);
+            messageStatus = 'FAILED';
+            waMsgId = `fail-${Date.now()}`;
+            const nextAt = Date.now() + 15000; // First auto-retry in 15 seconds
+            messageError = formatRetryMetadata(0, nextAt, err.message || 'Error inicial de entrega');
         }
 
-        // 2. Store in DB
+        // 2. Store in DB (so message is preserved even on transient network/Meta error)
         const message = await prisma.wAMessage.create({
             data: {
                 conversationId,
@@ -60,15 +66,29 @@ export async function POST(req: Request) {
                 body: text || (type === 'image' ? '📷 Imagen' : type === 'audio' ? '🎵 Audio' : type === 'video' ? '🎬 Video' : '📄 Documento'),
                 mediaUrl: mediaUrl || null,
                 senderId: session?.user?.id || null,
-                status: 'SENT'
+                status: messageStatus,
+                errorMessage: messageError
             }
         });
 
         // 3. Update conversation
         await prisma.wAConversation.update({
             where: { id: conversationId },
-            data: { status: 'OPEN', updatedAt: new Date(), lastMessageAt: new Date() }
+            data: { 
+                status: messageStatus === 'FAILED' ? 'URGENT' : 'OPEN', 
+                updatedAt: new Date(), 
+                lastMessageAt: new Date() 
+            }
         });
+
+        if (messageStatus === 'FAILED') {
+            return NextResponse.json({
+                ...message,
+                warning: 'Mensaje encolado en Motor de Reintento Inteligente. Se enviará automáticamente en segundos.',
+                autoRetryQueued: true,
+                nextRetryInSec: 15
+            }, { status: 202 });
+        }
 
         return NextResponse.json({
             ...message,

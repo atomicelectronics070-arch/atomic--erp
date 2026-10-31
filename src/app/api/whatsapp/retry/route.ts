@@ -5,6 +5,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { sendWhatsAppMessage, sendWhatsAppMedia, sendWhatsAppTemplate, sanitizeToE164 } from '@/lib/whatsapp/service';
 import { handleIncomingWhatsAppBot } from '@/lib/whatsapp/ai-bot';
+import { executeSmartRetryForMessage } from '@/lib/whatsapp/auto-retry';
 
 export async function POST(req: Request) {
     try {
@@ -46,7 +47,6 @@ export async function POST(req: Request) {
                 : conversation.messages.find(m => m.direction === 'OUTBOUND' && m.status === 'FAILED');
 
             if (!targetMsg) {
-                // Si no hay un mensaje fallido específico, tomar el último outbound
                 targetMsg = conversation.messages.find(m => m.direction === 'OUTBOUND');
             }
 
@@ -54,49 +54,21 @@ export async function POST(req: Request) {
                 return NextResponse.json({ error: 'No se encontró mensaje para reintentar' }, { status: 404 });
             }
 
-            // Limpiar prefijo de error si existía para enviar el texto limpio al cliente
-            let cleanBody = targetMsg.body || '';
-            if (cleanBody.includes('[ERROR DE ENVÍO META]:')) {
-                cleanBody = cleanBody.replace(/⚠️\s*\[ERROR DE ENVÍO META\]:\s*/g, '');
-                if (cleanBody.includes('\n\nMotivo del fallo:')) {
-                    cleanBody = cleanBody.split('\n\nMotivo del fallo:')[0].trim();
-                }
-            } else if (cleanBody.includes('[FALLO DE IA / PROCESO]')) {
-                cleanBody = '¡Hola! Qué gusto saludarte. Un asesor de ATOMIC Electronics se pondrá en contacto contigo de inmediato para brindarte asesoría personalizada.';
-            }
+            const smartResult = await executeSmartRetryForMessage(targetMsg.id, { force: true });
 
-            let metaResult: any = null;
-            if (targetMsg.mediaUrl) {
-                metaResult = await sendWhatsAppMedia(
-                    cleanPhone, 
-                    targetMsg.mediaUrl, 
-                    (targetMsg.type as any) || 'image', 
-                    cleanBody
-                );
+            if (smartResult.success) {
+                return NextResponse.json({
+                    success: true,
+                    message: '¡Mensaje reenviado y entregado con éxito a Meta WhatsApp!',
+                    data: smartResult
+                });
             } else {
-                metaResult = await sendWhatsAppMessage(cleanPhone, cleanBody);
+                return NextResponse.json({
+                    success: false,
+                    error: smartResult.errorMessage || 'Error al reintentar entrega en Meta WhatsApp',
+                    data: smartResult
+                }, { status: 400 });
             }
-
-            const updatedMsg = await prisma.wAMessage.update({
-                where: { id: targetMsg.id },
-                data: {
-                    body: cleanBody,
-                    status: 'SENT',
-                    errorMessage: null,
-                    whatsappMessageId: metaResult?.messages?.[0]?.id || `retry-${Date.now()}`
-                }
-            });
-
-            await prisma.wAConversation.update({
-                where: { id: conversationId },
-                data: { updatedAt: new Date(), lastMessageAt: new Date() }
-            });
-
-            return NextResponse.json({
-                success: true,
-                message: 'Mensaje reenviado y entregado con éxito a Meta WhatsApp',
-                data: updatedMsg
-            });
         }
 
         // ═══════════════════════════════════════════════════════════

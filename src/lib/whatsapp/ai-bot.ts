@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { prisma } from '@/lib/prisma';
 import { sendWhatsAppMessage } from '@/lib/whatsapp/service';
+import { formatRetryMetadata } from '@/lib/whatsapp/auto-retry';
 import { processConversationalBotMessage } from '@/lib/bot/botBrain';
 import { 
     isJuan, 
@@ -508,7 +509,7 @@ function generateExpertConsultantFallback(messageText: string, contactName: stri
                 const errMsg = sendErr?.response?.data?.error?.message || sendErr.message || 'Error al entregar por WhatsApp';
                 console.error(`[BOT_SEND_FAILED] Recipiente: ${whatsappId}. Detalle:`, errMsg);
 
-                // Registrar en BD con cuerpo limpio para que el asesor pueda reintentarlo con 1 solo clic en el CRM
+                // Registrar en BD con metadatos de reintento inteligente para que el motor de auto-retry lo entregue
                 await prisma.wAMessage.create({
                     data: {
                         conversationId,
@@ -517,7 +518,7 @@ function generateExpertConsultantFallback(messageText: string, contactName: stri
                         type: 'text',
                         body: botReply,
                         status: 'FAILED',
-                        errorMessage: errMsg,
+                        errorMessage: formatRetryMetadata(0, Date.now() + 15000, errMsg),
                         senderId: 'BOT_ATOMIC_RESILIENT'
                     }
                 }).catch(() => {});
