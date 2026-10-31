@@ -93,10 +93,13 @@ export async function GET(req: Request) {
                 };
             });
 
+            const isBotActive = conv.status !== 'MANUAL';
+
             return {
                 ...conv,
                 isFromAd,
                 adHeadline,
+                isBotActive,
                 hasFailedMessage: Boolean(failedMessage),
                 failedMessage,
                 messages: cleanedMessages

@@ -45,6 +45,7 @@ interface Chat {
     status: string
     isFromAd?: boolean
     adHeadline?: string
+    isBotActive?: boolean
     hasFailedMessage?: boolean
     failedMessage?: {
         id: string
@@ -595,6 +596,7 @@ export default function WhatsAppCrmClient() {
                             status: conv.status || 'NEW',
                             isFromAd: isFromAd || conv.status === 'LEAD_PAUTA',
                             adHeadline: adHeadline,
+                            isBotActive: typeof conv.isBotActive === 'boolean' ? conv.isBotActive : conv.status !== 'MANUAL',
                             hasFailedMessage: hasFailedMessage,
                             failedMessage: conv.failedMessage || (hasFailedMessage ? parsedMessages.find(m => m.status === 'FAILED') : null),
                             ownerId: conv.ownerId || conv.owner?.id || null,
@@ -814,6 +816,58 @@ export default function WhatsAppCrmClient() {
             alert(`⚠️ Error de red: ${e.message}`);
         } finally {
             setReengageSending(false);
+        }
+    };
+
+    // ===============================================================
+    // HANDLER: SWITCH ON / OFF DEL BOT POR CHAT INDIVIDUAL
+    // ===============================================================
+    const [togglingBot, setTogglingBot] = useState(false);
+
+    const handleToggleChatBot = async () => {
+        if (!activeChat || togglingBot) return;
+        setTogglingBot(true);
+        const currentActive = activeChat.isBotActive ?? (activeChat.status !== 'MANUAL');
+        const nextActive = !currentActive;
+
+        // Actualización optimista inmediata en la UI
+        setChats(prev => prev.map(c => c.id === activeChat.id ? { 
+            ...c, 
+            isBotActive: nextActive, 
+            status: nextActive ? 'OPEN' : 'MANUAL' 
+        } : c));
+
+        try {
+            const res = await fetch('/api/whatsapp/toggle-bot', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    conversationId: activeChat.id,
+                    botActive: nextActive
+                })
+            });
+
+            const data = await res.json();
+            if (!res.ok) {
+                // Revertir en caso de error
+                setChats(prev => prev.map(c => c.id === activeChat.id ? { 
+                    ...c, 
+                    isBotActive: currentActive, 
+                    status: currentActive ? 'OPEN' : 'MANUAL' 
+                } : c));
+                alert('⚠️ Error: ' + (data.error || 'No se pudo cambiar el estado del bot.'));
+            }
+        } catch (err) {
+            console.error('Error toggling bot:', err);
+            // Revertir
+            setChats(prev => prev.map(c => c.id === activeChat.id ? { 
+                ...c, 
+                isBotActive: currentActive, 
+                status: currentActive ? 'OPEN' : 'MANUAL' 
+            } : c));
+            alert('⚠️ Error de conexión al cambiar estado del bot.');
+        } finally {
+            setTogglingBot(false);
         }
     };
 
@@ -1513,6 +1567,17 @@ export default function WhatsAppCrmClient() {
                                                 </span>
                                             )}
 
+                                            {/* Badge de Estado del Bot por Chat */}
+                                            {(chat.isBotActive ?? chat.status !== 'MANUAL') ? (
+                                                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-950/80 text-emerald-300 border border-emerald-600/40 flex items-center gap-0.5 shrink-0" title="Bot Automático Activo">
+                                                    <Bot size={9} /> Bot ON
+                                                </span>
+                                            ) : (
+                                                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-rose-950/80 text-rose-300 border border-rose-600/40 flex items-center gap-0.5 shrink-0" title="Atención Manual Asesor">
+                                                    🛑 Manual
+                                                </span>
+                                            )}
+
                                             {canAssignLeads && (
                                                 <span
                                                     onClick={(e) => {
@@ -1665,6 +1730,29 @@ export default function WhatsAppCrmClient() {
                                             <span>{isRetrying ? 'Reintentando...' : `Auto-reintento en ${autoRetryCountdown}s`}</span>
                                         </button>
                                     )}
+
+                                    {/* Switch ON / OFF del Bot IA por Chat */}
+                                    <button
+                                        onClick={handleToggleChatBot}
+                                        disabled={togglingBot}
+                                        className={`font-bold text-xs px-3.5 py-2 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-sm border ${
+                                            (activeChat.isBotActive ?? activeChat.status !== 'MANUAL')
+                                                ? 'bg-emerald-950/80 hover:bg-emerald-900 border-emerald-500/60 text-emerald-300'
+                                                : 'bg-rose-950/80 hover:bg-rose-900 border-rose-500/60 text-rose-300'
+                                        }`}
+                                        title={(activeChat.isBotActive ?? activeChat.status !== 'MANUAL')
+                                            ? 'El Bot IA está ACTIVO para este chat. Haz clic para pausarlo y tomar atención manual.'
+                                            : 'El Bot IA está PAUSADO (Atención Manual). Haz clic para reactivar el Bot automático.'}
+                                    >
+                                        {togglingBot ? (
+                                            <Loader2 size={13} className="animate-spin" />
+                                        ) : (
+                                            <Bot size={14} className={(activeChat.isBotActive ?? activeChat.status !== 'MANUAL') ? 'text-emerald-400' : 'text-rose-400'} />
+                                        )}
+                                        <span>
+                                            {(activeChat.isBotActive ?? activeChat.status !== 'MANUAL') ? '🤖 Bot: ON' : '🛑 Bot: OFF (Manual)'}
+                                        </span>
+                                    </button>
 
                                     {/* Botón de Reactivación con Disculpa Inteligente */}
                                     <button

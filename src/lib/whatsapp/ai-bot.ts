@@ -49,11 +49,15 @@ PORTAFOLIO OFICIAL Y LÍNEAS PRINCIPALES DE ATOMIC ECUADOR:
 - Torniquete Swing Speed de Cristal: $2,100.00 (Puertas batientes de vidrio templado de alta velocidad).
 
 3. SEGURIDAD PERIMETRAL Y CERCOS ELÉCTRICOS:
+- Catálogo web oficial: https://atomiccotizador.shop/web/cercos-electricos
+- Foto de pauta oficial: /images/cercos/kits-cercos-electricos-pauta.jpg
 - Kit Plata JFL (Cód 15023): $89.00 + IVA (Electrificador JFL, control remoto, batería 12V 4Ah, sirena 20W, letrero peligro).
 - Kit Oro JFL (Cód 11207): $109.00 + IVA (Electrificador JFL, control, batería, sirena 20W con caja metálica protectora).
-- Kit Platino JFL con App Móvil (Cód 11208): $137.00 + IVA (Electrificador JFL, módulo Ethernet ME-05 para armar/desarmar desde celular, sirena 30W con caja, batería).
-- Kit Platino Hagroy i8: $98.00 + IVA (Electrificador Hagroy i8 alto voltaje, control, batería, sirena 20W).
-- Kit Hagroy Yanex: $90.00 + IVA (Electrificador Yanex, control, batería, sirena 20W).
+- Kit Platino JFL con App Móvil (Cód 11208): $137.00 + IVA (Electrificador JFL, módulo Ethernet ME-05 para armar/desarmar desde celular con notificaciones, sirena 30W con caja, batería 12V 4Ah, control, letrero).
+- Kit Platino Hagroy i8 (Cód 15083): $98.00 + IVA (Electrificador Hagroy i8 alto voltaje, control, batería 12V 4Ah, letrero, sirena 20W).
+- Kit Hagroy Yanex (Cód 11258): $90.00 + IVA (Electrificador Yanex, control, batería 12V 4Ah, letrero, sirena 20W).
+- AVISO OBLIGATORIO: El precio de materiales (alambrado, postes, aisladores) y mano de obra de instalación NO está incluido en el valor del kit electrificador.
+- VISITA TÉCNICA: Quito (centro, norte, sur) GRATIS. Valles $25-$45. Provincia $50-$100.
 
 4. CÁMARAS DE SEGURIDAD INTELIGENTES (CCTV y Smart Home):
 - Cámara Robótica IMOU 360° WiFi: $45.40 + IVA (Full HD 1080p, audio bidireccional, visión nocturna 24/7, alertas a celular, garantía 3 años).
@@ -179,9 +183,19 @@ export async function handleIncomingWhatsAppBot(params: {
         // Registrar timestamp de actividad entrante para control de inactividad de Karen
         karenState.lastIncomingAt = Date.now();
 
-        // B. Verificar si Karen puso el sistema en MODO MANUAL (🔴)
+        // B. Verificar si Karen puso el sistema en MODO MANUAL (🔴) o si este chat específico está en MODO MANUAL por asesor
         if (karenState.mode === "MANUAL") {
-            console.log(`[KAREN_MANUAL_MODE] WhatsApp en modo manual: se omite respuesta automática para ${whatsappId}`);
+            console.log(`[KAREN_MANUAL_MODE] WhatsApp en modo manual global: se omite respuesta automática para ${whatsappId}`);
+            return null;
+        }
+
+        const currentConv = await prisma.wAConversation.findUnique({
+            where: { id: conversationId },
+            include: { tags: true }
+        });
+
+        if (currentConv?.status === 'MANUAL' || currentConv?.tags?.some(t => t.name === 'BOT_OFF')) {
+            console.log(`[BOT_MUTED_CHAT] Chat ${conversationId} silenciado: atención 100% manual por asesor.`);
             return null;
         }
 
@@ -371,7 +385,43 @@ METODOLOGÍA DE VENTA CONSULTIVA Y REGLAS DE ORO:
    - Usa párrafos cortos (2 a 3 líneas), viñetas limpias y emojis sobrios (🏢, 🔒, 📦, 📲, ✅).
    - Precios claros en dólares americanos ($USD).
    - Recuerda que hacemos envíos a todo el Ecuador y brindamos asesoría técnica.
-   - Termina SIEMPRE con una pregunta abierta o un llamado a la acción concreto (ej: "¿Te preparo una cotización formal detallada en PDF o prefieres ver las fotos y ficha técnica?").
+   - Termina SIEMPRE con una pregunta abierta o un llamado a la acción concreto.
+
+5. PROTOCOLO OBLIGATORIO PARA CERCOS ELÉCTRICOS (CUADERNO OFICIAL DE VENTAS ATOMIC):
+   Siempre que el cliente pregunte por cercos eléctricos, electrificadores, o kits de pauta, DEBES seguir estrictamente esta estructura:
+
+   A) SALUDO DE CONEXIÓN OBLIGATORIO:
+      Inicia diciendo: "Hola un gusto, somos Atomic, cuéntame más cómo podemos ayudar." (si se dispone del nombre del cliente: "Hola un gusto ${contactName}, somos Atomic, cuéntame más cómo podemos ayudar.").
+
+   B) DIFERENCIACIÓN OBLIGATORIA: SERVICIO (INSTALACIÓN/OBRA) vs PRODUCTO (KITS ELECTRIFICADORES):
+      - Si el cliente pregunta por INSTALACIÓN, VISITA TÉCNICA, SERVICIO, o CERCO COMPLETO CON MANO DE OBRA:
+        Ofrece la visita técnica con un técnico especialista para evaluar dificultad y cotizar:
+        "Claro, tenemos modelos con instalación. Si gusta podemos enviarle un técnico para que le ayude con una visita técnica para asesoría, precios y ver la dificultad de la instalación.
+        Por favor envíenos su ubicación para verificar la zona de cobertura de nuestra visita técnica:
+        • En Quito (centro, centro norte, centro sur): Sin costo (gratis).
+        • En Valles o alrededores de Quito: Entre $25 y $45 según el sector.
+        • Fuera de provincia: A convenir entre $50 y $100.
+        (Aclarar que también se puede brindar un precio aproximado sin visita si lo prefieren)."
+
+      - Si el cliente pregunta por KITS, PRECIOS, EQUIPOS, FOTOS, o información general de cercos:
+        Detalla los 5 kits oficiales:
+        ⚡ Kit Plata JFL (Cód 15023): $89.00 + IVA (Electrificador JFL, Control remoto, Batería 12V-4A, Letrero peligro, Sirena 20W).
+        ⚡ Kit Oro JFL (Cód 11207): $109.00 + IVA (Electrificador JFL, Control remoto, Batería 12V-4A, Letrero, Sirena 20W, Caja metálica de protección para sirena).
+        📱 Kit Platino JFL con App Celular (Cód 11208): $137.00 + IVA (Electrificador JFL, Módulo Ethernet ME-05 para armar/desarmar desde smartphone con alertas en tiempo real, Sirena 30W con caja metálica, Batería 12V-4A, Control, Letrero).
+        ⚡ Kit Platino Hagroy i8 (Cód 15083): $98.00 + IVA (Electrificador Hagroy i8 alto voltaje, Control, Batería 12V-4A, Letrero, Sirena 20W).
+        ⚡ Kit Yanex (Cód 11258): $90.00 + IVA (Electrificador Hagroy Yanex, Control, Batería 12V-4A, Letrero, Sirena 20W).
+
+        * ADVERTENCIA OBLIGATORIA (MANDATORIA, NUNCA OMITIR):
+        "⚠️ Nota importante: El precio de materiales (alambrado, postes, aisladores) y mano de obra de instalación NO está incluido en el valor del kit electrificador."
+
+        * ENLACE OFICIAL:
+        "🌐 Opciones y especificaciones en nuestra página web: https://atomiccotizador.shop/web/cercos-electricos"
+
+   C) CIERRE COMERCIAL:
+      - Pregunta la ubicación (sector o ciudad) para coordinar entrega o confirmar si aplica visita técnica sin costo.
+      - Ofrece entrega a domicilio con pago contraentrega o retiro en oficina.
+      - Si pide cotización formal: solicita Nombres/RUC, Razón Social y Correo electrónico.
+      - Si confirma compra directa: solicita Nombre, Apellido, Dirección exacta, Teléfono y Cédula.
 `;
         }
 
@@ -395,8 +445,14 @@ function generateExpertConsultantFallback(messageText: string, contactName: stri
         return `¡Hola${namePart}! 👋 Con mucho gusto te asesoramos con nuestros sistemas de videoporteros y citofonía para residencias y edificios:\n\n🏠 *Kit Residencial 2 Pantallas HD:* $285.00 USD (Frente exterior HD + 2 pantallas interiores a color + ¡Envío Gratis!).\n🏢 *Kit Hikvision DS-KIS212:* $92.40 + IVA (Monitor 7", audio nítido y apertura remota).\n🏢 *Centrales Colectivas INTELBRAS (Edificios):* Desde 4 hasta 24 departamentos (desde $104.50 + IVA) con desvío de llamadas a celulares.\n\n¿Para cuántos departamentos o para qué tipo de propiedad lo estás buscando? 📲`;
     }
 
-    if (textLower.includes('cerco') || textLower.includes('jfl') || textLower.includes('hagroy') || textLower.includes('electrificad')) {
-        return `¡Hola${namePart}! 👋 Disponemos de electrificadores y kits completos para cercos eléctricos perimetrales con garantía directa:\n\n⚡ *Kit Plata JFL (Cód 15023):* $89.00 + IVA (Electrificador, batería 12V, sirena 20W, letrero)\n⚡ *Kit Oro JFL (Cód 11207):* $109.00 + IVA (Con caja metálica protectora para sirena)\n📱 *Kit Platino JFL con App Móvil (Cód 11208):* $137.00 + IVA (Arma y desarma desde tu smartphone)\n⚡ *Kit Hagroy i8:* $98.00 + IVA\n\n¿Qué perímetro aproximado en metros deseas proteger? Te podemos armar la cotización con todos los accesorios. 📦`;
+    if (textLower.includes('cerco') || textLower.includes('jfl') || textLower.includes('hagroy') || textLower.includes('electrificad') || textLower.includes('yanex') || textLower.includes('xpower')) {
+        const isAskingInstallation = /instalaci|instalar|servicio|mano de obra|visita|tecnico|t[eé]cnico|obra|puesto/i.test(textLower);
+
+        if (isAskingInstallation) {
+            return `Hola un gusto${namePart}, somos Atomic, cuéntame más cómo podemos ayudar.\n\nClaro, disponemos de modelos con instalación. Si gusta podemos enviarle un técnico para que le ayude con una visita técnica para asesoría, verificar la dificultad de la instalación y brindarle los precios exactos.\n\nPor favor indícanos o envíanos tu ubicación para verificar la zona de cobertura de nuestra visita técnica:\n📍 *Quito (centro, centro norte, centro sur):* Visita técnica SIN COSTO (gratis).\n📍 *Valles o alrededores de Quito:* Entre $25 y $45 según el sector.\n📍 *Fuera de provincia:* A convenir entre $50 y $100.\n\n(También si lo prefieres, podemos brindarte un valor referencial aproximado sin necesidad de visita técnica).\n\n¿En qué sector se encuentra tu propiedad para coordinar? 📲`;
+        }
+
+        return `Hola un gusto${namePart}, somos Atomic, cuéntame más cómo podemos ayudar.\n\nDisponemos de los siguientes kits oficiales de cercos eléctricos perimetrales con garantía directa:\n\n⚡ *Kit Plata JFL (Cód 15023):* $89.00 + IVA\n(Electrificador JFL, Control remoto, Batería 12V-4A, Letrero peligro, Sirena 20W).\n\n⚡ *Kit Oro JFL (Cód 11207):* $109.00 + IVA\n(Electrificador JFL, Control, Batería 12V-4A, Letrero, Sirena 20W con caja metálica protectora).\n\n📱 *Kit Platino JFL con App Celular (Cód 11208):* $137.00 + IVA\n(Electrificador JFL, Módulo Ethernet ME-05 para armar/desarmar desde smartphone y recibir notificaciones, Sirena 30W con caja metálica, Batería 12V-4A, Control, Letrero).\n\n⚡ *Kit Platino Hagroy i8 (Cód 15083):* $98.00 + IVA\n(Electrificador Hagroy i8 alto voltaje, Control, Batería 12V-4A, Letrero, Sirena 20W).\n\n⚡ *Kit Yanex (Cód 11258):* $90.00 + IVA\n(Electrificador Hagroy Yanex, Control, Batería 12V-4A, Letrero, Sirena 20W).\n\n⚠️ *NOTA IMPORTANTE:* El precio de materiales (alambrado, postes, aisladores) y mano de obra de instalación NO está incluido en el valor del kit electrificador.\n\n🌐 Puedes ver todas las opciones y especificaciones en nuestra página web:\n👉 https://atomiccotizador.shop/web/cercos-electricos\n\n¿En qué sector o ciudad te encuentras para coordinar tu entrega o verificar la cobertura? 📦`;
     }
 
     if (textLower.includes('camara') || textLower.includes('cámara') || textLower.includes('imou') || textLower.includes('hikvision') || textLower.includes('dahua')) {
@@ -482,20 +538,39 @@ function generateExpertConsultantFallback(messageText: string, contactName: stri
         }
 
         if (botReply) {
-            // Detección autónoma: Si el cliente solicita fotos o catálogo visual y tenemos la imagen oficial
-            const isAskingForVisuals = /foto|fotos|imagen|imagenes|cat[aá]logo|modelo|ver|mu[eé]strame/i.test(messageText);
+            // Detección autónoma: Si el cliente solicita fotos o si es consulta sobre cercos eléctricos (pauta/kits)
+            const textLowerForDetection = messageText.toLowerCase();
+            const isAskingForVisuals = /foto|fotos|imagen|imagenes|imágenes|cat[aá]logo|modelo|ver|mu[eé]strame/i.test(textLowerForDetection);
+            const isCercosInquiry = /cerco|cercos|electrificad|hagroy|jfl|yanex|xpower/i.test(textLowerForDetection);
             const detectedAsset = detectArticleAndCategory({ messagesText: messageText });
-            const shouldSendImage = isAskingForVisuals && Boolean(detectedAsset.imagePath);
+            
+            // Para cercos eléctricos siempre enviamos la foto oficial de kits
+            const cercosImagePath = '/images/cercos/kits-cercos-electricos-pauta.jpg';
+            const targetImagePath = (isCercosInquiry || detectedAsset.id === 'cercos-electricos')
+                ? cercosImagePath
+                : detectedAsset.imagePath;
+
+            const shouldSendImage = (isAskingForVisuals || isCercosInquiry || detectedAsset.id === 'cercos-electricos') && Boolean(targetImagePath);
 
             try {
                 let sentType = 'text';
                 let sentMediaUrl: string | null = null;
 
-                if (shouldSendImage && detectedAsset.imagePath) {
-                    console.log(`[BOT_AUTONOMOUS_IMAGE] Despachando foto oficial para ${whatsappId}: ${detectedAsset.imagePath}`);
-                    await sendWhatsAppMedia(whatsappId, detectedAsset.imagePath, 'image', botReply);
-                    sentType = 'image';
-                    sentMediaUrl = detectedAsset.imagePath;
+                if (shouldSendImage && targetImagePath) {
+                    console.log(`[BOT_AUTONOMOUS_IMAGE] Despachando foto oficial para ${whatsappId}: ${targetImagePath}`);
+                    
+                    // Meta WhatsApp API restringe captions a 1024 caracteres
+                    if (botReply.length <= 1000) {
+                        await sendWhatsAppMedia(whatsappId, targetImagePath, 'image', botReply);
+                        sentType = 'image';
+                        sentMediaUrl = targetImagePath;
+                    } else {
+                        const shortCaption = `⚡ *Kits Oficiales de Cercos Eléctricos ATOMIC* 🛡️\n🌐 Opciones en: https://atomiccotizador.shop/web/cercos-electricos\n⚠️ *Nota:* Materiales y mano de obra NO incluidos en el kit.`;
+                        await sendWhatsAppMedia(whatsappId, targetImagePath, 'image', shortCaption);
+                        await sendWhatsAppMessage(whatsappId, botReply);
+                        sentType = 'image';
+                        sentMediaUrl = targetImagePath;
+                    }
                 } else {
                     // Enviar mensaje por WhatsApp Cloud API con auto-reintentos
                     await sendWhatsAppMessage(whatsappId, botReply);

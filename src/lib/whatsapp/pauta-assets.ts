@@ -20,7 +20,7 @@ export const PAUTA_CATALOG_REGISTRY: PautaDefinition[] = [
         keywords: ['cerco', 'cercos', 'hagroy', 'jfl', 'perimetro', 'xpower', 'yanex', 'eos', 'electrificador'],
         category: 'Seguridad Perimetral',
         productName: 'Cercos Eléctricos de Alta Seguridad (Hagroy / JFL)',
-        imagePath: '/images/cercos/cerco-hagroy-xpower-i8-15083.jpg',
+        imagePath: '/images/cercos/kits-cercos-electricos-pauta.jpg',
         defaultPrice: 'Desde $89.00 USD',
         bulletPoints: [
             'Disuasión activa con choque de alto voltaje regulado',
