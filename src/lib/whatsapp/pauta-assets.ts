@@ -205,11 +205,11 @@ export function generateIntelligentApologyMessage(params: {
     const messageText = 
 `${greeting}
 
-Te ofrecemos una sincera disculpa por la demora involuntaria en responderte estos días; tuvimos una alta demanda de solicitudes en nuestro sistema de atención.
+Te ofrecemos una sincera disculpa por la demora involuntaria en responderte estos días; tuvimos un inconveniente técnico temporal con nuestra plataforma de mensajería que nos impidió responderte oportunamente. Afortunadamente el sistema ya está 100% restablecido y operativo.
 
-Estuvimos revisando tu consulta sobre *${detected.articleName}*. Nos interesa mucho ayudarte con la mejor asesoría técnica y precio directo:
+Estuvimos revisando tu consulta sobre *${detected.articleName}*. Nos interesa mucho ayudarte con la mejor asesoría técnica y precio directo de fábrica:
 
-¿Cómo podemos ayudarte hoy con tu requerimiento? Cuéntanos qué dudas tienes o si deseas que te enviemos la cotización formal y ficha técnica de inmediato. 🤝`;
+¿Cómo podemos ayudarte hoy con tu requerimiento? Cuéntanos qué dudas o inquietudes tienes, o si deseas que te compartamos la cotización formal y ficha técnica de inmediato. 🤝`;
 
     return {
         messageText,

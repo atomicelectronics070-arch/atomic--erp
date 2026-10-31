@@ -2942,11 +2942,37 @@ export default function WhatsAppCrmClient() {
                                     </label>
                                 )}
 
-                                {/* Editor de Mensaje */}
-                                <div>
-                                    <label className="text-[11px] font-bold text-slate-300 mb-1 block">
-                                        Mensaje inteligente que se enviará por WhatsApp (puedes editarlo):
-                                    </label>
+                                {/* Editor de Mensaje con Variantes Rápidas */}
+                                <div className="space-y-1.5">
+                                    <div className="flex items-center justify-between gap-2 flex-wrap">
+                                        <label className="text-[11px] font-bold text-slate-300 block">
+                                            Mensaje que se enviará por WhatsApp (puedes editarlo):
+                                        </label>
+                                        <div className="flex items-center gap-1.5 flex-wrap">
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    const name = reengageData.clientFirstName === 'amig@' ? '¡Hola! Qué gusto saludarte 👋' : `¡Hola ${reengageData.clientFirstName}! Qué gusto saludarte 👋`;
+                                                    setReengageCustomText(`${name}\n\nTe ofrecemos una sincera disculpa por la demora involuntaria en responderte estos días; tuvimos un inconveniente técnico temporal con nuestra plataforma de mensajería que nos impidió responderte oportunamente. Afortunadamente el sistema ya está 100% restablecido y operativo.\n\nEstuvimos revisando tu consulta sobre *${reengageData.detectedArticle}*. Nos interesa mucho ayudarte con la mejor asesoría técnica y precio directo de fábrica:\n\n¿Cómo podemos ayudarte hoy con tu requerimiento? Cuéntanos qué dudas o inquietudes tienes, o si deseas que te compartamos la cotización formal y ficha técnica de inmediato. 🤝`);
+                                                }}
+                                                className="px-2 py-0.5 rounded-lg bg-cyan-950 border border-cyan-500/40 text-[10px] font-bold text-cyan-300 hover:bg-cyan-900 cursor-pointer"
+                                                title="Variante explicando el problema técnico"
+                                            >
+                                                🛠️ Problema Técnico
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    const name = reengageData.clientFirstName === 'amig@' ? '¡Hola! Qué gusto saludarte 👋' : `¡Hola ${reengageData.clientFirstName}! Qué gusto saludarte 👋`;
+                                                    setReengageCustomText(`${name}\n\nTe pedimos una disculpa por el retraso en responderte estos días, tuvimos un volumen extraordinario de solicitudes en nuestro sistema de atención comercial.\n\nRevisando tu requerimiento sobre *${reengageData.detectedArticle}*, queremos darte prioridad inmediata.\n\n¿Cómo podemos ayudarte hoy? ¿Deseas que te enviemos precios de distribuidor y disponibilidad ahora mismo? 🤝`);
+                                                }}
+                                                className="px-2 py-0.5 rounded-lg bg-[#202c33] border border-[#2a3942] text-[10px] font-bold text-slate-300 hover:text-white cursor-pointer"
+                                                title="Variante por alta demanda comercial"
+                                            >
+                                                📈 Alta Demanda
+                                            </button>
+                                        </div>
+                                    </div>
                                     <textarea
                                         value={reengageCustomText}
                                         onChange={(e) => setReengageCustomText(e.target.value)}
