@@ -71,12 +71,76 @@ PORTAFOLIO OFICIAL Y LÍNEAS PRINCIPALES DE ATOMIC ECUADOR:
 - Accesorios opcionales: Tarjeta MicroSD Kingston Original 64GB ($11.50) o 128GB ($18.00) para semanas de grabación continua.
 - Facilidad: Plug & Play fácil en 2 minutos (no requiere técnico obligatorio, pero si el cliente desea instalación técnica en pared/techo se puede coordinar).
 
-5. SEGURIDAD COMERCIAL ANTIHURTO Y SALIDAS DE EMERGENCIA:
-- Par de Antenas de Seguridad RF Mono Dahua Mercury (ANT-RS5003TR): $499.96 + IVA (Detección antihurto: 70cm etiquetas / 95cm tags duros. Tubo de alta resistencia. Ideal para boutiques, farmacias y minimarkets).
-- Cerradura Barra Antipánico Reforzada Marca Americana: $98.00 + IVA (Acero inoxidable certificado para salidas de emergencia en edificios, centros comerciales, hospitales. 10 años durabilidad, ¡Envío Gratis!).
+5. AUDIO, GAMING Y BARRAS DE SONIDO:
+- Catálogo web oficial: https://atomiccotizador.shop/web/barra-de-sonido
+- Barra de Sonido Gamer Bluetooth 1 HORA BOC241N: ¡Precio de Lanzamiento $28.90 + IVA!
+  * Potencia: 10W RMS con sonido cristalino sin distorsión y bajos profundos.
+  * Iluminación: 8 modos dinámicos de luz LED RGB para setups de PC, gaming y habitaciones.
+  * Batería: 2000 mAh recargable para más de 5 horas continuas de música sin cables.
+  * Conexiones 4 en 1: Bluetooth 5.0, cable AUX 3.5mm (para PC/Laptop/TV), puerto USB y ranura MicroSD/TF.
+  * Control y llamadas: Perilla ergonómica superior para volumen y micrófono manos libres para llamadas o Discord.
+  * 3 AÑOS DE GARANTÍA OFICIAL directa de ATOMIC.
+- Fotos oficiales disponibles: /images/audio/barra-sonido-boc241n-1hora-precio-28.jpg y /images/audio/barra-sonido-boc241n-1hora-futuro.jpg
 
-6. TECNOLOGÍA GLOBAL Y COMPUTACIÓN:
-- Más de 9,000 productos en catálogo: Smartphones de alta gama (Honor Magic 7, etc.), Laptops y repuestos, UPS y respaldo eléctrico Powest/APC, Domótica y cerraduras digitales inteligentes.
+6. CÁMARAS DE SEGURIDAD PARA EXTERIORES E INTEMPERIE IP66 (Wi-Fi & NVR):
+- Catálogo web oficial: https://atomiccotizador.shop/web/camaras-exterior
+- Protección total contra lluvias extremas de la Sierra y humedad de la Costa con certificación IP66/IP67.
+- Modelos oficiales y promociones:
+  * Cámara Exterior Wi-Fi IP66 (Super Oferta): $47.82 + IVA (Instalación opcional por solo $20.99 adicionales).
+  * Cámara Doble Lente Exterior IP81 con Pan-Tilt 360°: $63.77 + IVA c/u (en combo de 3) o $20.99 con instalación. 2 cámaras en 1 sola: lente fijo + lente motorizado con autotracking y sirena.
+  * ATOMIC COMBO Kit NVR Wi-Fi NKS4223WBTH (Cód 10115): $95.00 + IVA. Grabador NVR centralizado inalámbrico + cámaras de intemperie con salida HDMI/VGA.
+  * IMOU Cruiser Triple Lente 11MP Pan-Tilt 360° (Cód 12759): $135.00 + IVA. Buque insignia con 3 lentes independientes, 11MP combinados, visión Full-Color 24/7 y sirena de 110dB.
+  * IMOU Titan Pro Aurora Full-Color: $115 solo equipo / $145 instalado (1 cam); $110 equipo / $130 instalado (2 cam); $105 equipo / $115 instalado (3 cam).
+- Fotos oficiales: /images/camaras-exterior/camara-imou-cruiser-triple-11mp.jpg, /images/camaras-exterior/camara-doble-lente-ip81-exterior.jpg, /images/camaras-exterior/camara-exterior-ip66-wifi.jpg
+
+7. PORTERO ELÉCTRICO MULTIFUNCIÓN ZKTECO CON APP MÓVIL (BIOMETRÍA FACIAL):
+- Catálogo web oficial: https://atomiccotizador.shop/web/portero-multifuncion
+- Precio de Lanzamiento Oficial: $198.99 + IVA
+- Capacidades de ingeniería:
+  * 1,500 Rostros con algoritmo anti-spoofing en luz visible (reconoce en menos de 0.3s).
+  * 3,000 Huellas digitales con sensor de alta precisión SilkID.
+  * 3,000 Tarjetas y llaveros de proximidad RFID 125kHz.
+  * 150,000 Registros de auditoría con fecha, hora y foto.
+  * Conexión Wi-Fi y App ZKBio Zlink oficial 100% GRATIS de por vida (videollamada en celular y apertura de chapa a distancia sin suscripciones).
+  * Salida de relé para cerradura eléctrica, magnética o portón vehicular.
+- Fotos oficiales: /images/porteros/portero-inteligente-app-movil-198.jpg y /images/porteros/portero-zkteco-multifuncion-zkbio.jpg
+
+8. BARRERAS VEHICULARES AUTOMÁTICAS DÍTEC SERIE 2027 (ALTO FLUJO & CORPORATIVO):
+- Catálogo web oficial: https://atomiccotizador.shop/web/barreras-ditec
+- Precio de Lanzamiento Exclusivo: $1,928.90 + IVA
+- Tecnología de punta europea:
+  * Motor Brushless 24V de uso continuo intensivo (100% duty cycle sin sobrecalentamiento).
+  * Mástiles de 3m, 4m y hasta 6 metros de longitud.
+  * Velocidad ultra rápida regulable de 2.0 a 6.0 segundos.
+  * Sistema antiaplastamiento con encoder digital de precisión y fotocélulas de seguridad.
+  * Integrable con TAGs RFID de telepeaje vehicular, cámaras de reconocimiento de placas LPR y tarjetas de proximidad.
+  * Ideal para condominios residenciales, centros comerciales, hospitales y parques logísticos.
+- Fotos oficiales: /images/barreras/barrera-ditec-tecnologia-2027-precio.jpg y /images/barreras/barrera-ditec-serie-2027-futuro.jpg
+
+9. SISTEMAS ANTIHURTO Y ANTENAS EAS PARA RETAIL ("NO DEJES QUE TE ROBEN"):
+- Catálogo web oficial: https://atomiccotizador.shop/web/antenas-antihurto
+- Reduce en más del 98% el robo hormiga en tiendas de ropa, bazares, calzado y farmacias.
+- Modelos disponibles:
+  * Sistema Antihurto RF Dual Estándar (Par de pedestales 8.2MHz): $576.00 + IVA. Cubre pasillos de hasta 1.40m, alarma de 95dB y luz LED estroboscópica roja.
+  * Sistema Antihurto Acrílico Crystal de Lujo (Par de pedestales transparentes): $745.00 + IVA. Cuerpo de acrílico cristalino de alta densidad para centros comerciales y boutiques de lujo, con rango de hasta 1.80m y tecnología DSP sin falsas alarmas.
+  * Accesorios consumibles: Tags rígidos mini/golf desde $0.12 c/u, desactivador magnético de 12,000 Gauss a $45.00, rollos de etiquetas adhesivas 4x4 a $28.00.
+- Fotos oficiales: /images/antihurto/antenas-antihurto-par-576.jpg y /images/antihurto/antenas-antihurto-retail-seguridad.jpg
+
+10. MANTENIMIENTO PREVENTIVO Y REPARACIÓN DE GENERADORES ELÉCTRICOS:
+- Catálogo web oficial: https://atomiccotizador.shop/web/mantenimiento-generadores
+- Soluciones energéticas integrales para plantas eléctricas residenciales, comerciales e industriales a gasolina y diésel.
+- Planes de servicio:
+  * Servicio Básico Preventivo: ¡Precio Promocional $50.00! (Limpieza del equipo, cambio de aceite de motor, limpieza de bujía/inyector básico y prueba de voltaje de salida bajo carga).
+  * Mantenimiento Industrial & Diésel Pesado: Desde $180.00 (Filtros de aceite/combustible/separador de agua, revisión de sistema de refrigeración, diagnóstico de módulo de control y calibración de tablero de transferencia ATS).
+- Recomendaciones técnicas:
+  * Equipos a gasolina: Mantenimiento preventivo cada 50-100 horas de uso o cada 3 meses.
+  * Equipos diésel: Cada 250 horas o cada 6 meses.
+  * Plantas industriales: Cada 500-1000 horas o anual integral con banco de carga.
+  * Arrancar el generador al menos 15 minutos cada 15 días para evitar degradación de combustible en carburador.
+- Fotos oficiales: /images/generadores/mantenimiento-generadores-electricos-50.jpg
+
+11. TECNOLOGÍA GLOBAL Y COMPUTACIÓN:
+- Más de 9,000 productos en catálogo: Smartphones de alta gama, Laptops corporativas, UPS Powest/APC, Domótica y cerraduras digitales inteligentes.
 - Tienda y catálogo completo en línea: https://atomiccotizador.shop/web
 - Envíos a todo el Ecuador con entrega rápida y garantía oficial.
 `;
@@ -459,6 +523,47 @@ METODOLOGÍA DE VENTA CONSULTIVA Y REGLAS DE ORO:
    E) CIERRE COMERCIAL:
       - Pregunta en qué ciudad o sector se encuentra para coordinar el despacho o retiro.
       - Recuerda ofrecer pago contraentrega a domicilio o retiro en oficina.
+7. PROTOCOLO OBLIGATORIO PARA CÁMARAS DE EXTERIOR E INTEMPERIE IP66:
+   Siempre que el cliente pregunte por cámaras para exteriores, intemperie, lluvia, patio, portón, modelos IP66, Doble Lente exterior, Cruiser Triple o Titan Aurora:
+   - Resalta la certificación IP66 resistente a lluvias y climas extremos de Ecuador.
+   - Presenta las opciones destacadas:
+     1. Cámara Exterior Wi-Fi IP66: $47.82 + IVA (Instalación técnica opcional por solo $20.99).
+     2. Cámara Doble Lente IP81 360°: $63.77 + IVA c/u (en paquete de 3) o $20.99 con instalación. 2 cámaras en 1 con autotracking y sirena.
+     3. ATOMIC COMBO Kit NVR Wi-Fi NKS4223WBTH: $95.00 + IVA (Grabador NVR inalámbrico + cámaras con salida HDMI/VGA).
+     4. IMOU Cruiser Triple Lente 11MP: $135.00 + IVA (3 lentes independientes con 11MP combinados y visión Full-Color).
+     5. IMOU Titan Pro Aurora Full-Color: $115 equipo / $145 instalada (escala de descuento al llevar 2 o 3).
+   - Enlace: https://atomiccotizador.shop/web/camaras-exterior
+
+8. PROTOCOLO OBLIGATORIO PARA PORTERO MULTIFUNCIÓN ZKTECO ($198.99):
+   Siempre que el cliente consulte sobre porteros eléctricos, videoporteros con biometría, ZKTeco con app o apertura de puerta:
+   - Destaca que es un sistema todo en uno por solo $198.99 + IVA.
+   - Detalla los 6 métodos de acceso: 1,500 Rostros (reconoce en 0.3s con luz visible anti-spoofing), 3,000 Huellas digitales SilkID, 3,000 Tarjetas RFID, App Móvil ZKBio Zlink, PIN numérico y llave.
+   - Aclara que la App ZKBio Zlink es 100% GRATUITA de por vida (videollamada en celular y apertura de chapa a distancia sin suscripciones).
+   - Enlace: https://atomiccotizador.shop/web/portero-multifuncion
+
+9. PROTOCOLO OBLIGATORIO PARA BARRERAS AUTOMÁTICAS DÍTEC SERIE 2027:
+   Siempre que el cliente consulte por barreras vehiculares, talanqueras de acceso, Dítec, urbanizaciones, hospitales o parqueaderos:
+   - Destaca la ingeniería europea de Dítec y el precio especial de lanzamiento: $1,928.90 + IVA.
+   - Explica que cuenta con motor Brushless de 24V de uso continuo intensivo (100% duty cycle), apertura ultra veloz en 2 segundos, mástiles de hasta 6 metros y sistema antiaplastamiento por encoder digital.
+   - Ofrece visita técnica y proforma formal para condominios o empresas.
+   - Enlace: https://atomiccotizador.shop/web/barreras-ditec
+
+10. PROTOCOLO OBLIGATORIO PARA ANTENAS ANTI-HURTO ("NO DEJES QUE TE ROBEN"):
+   Siempre que el cliente consulte sobre antenas antihurto, alarmas para ropa, tags, sensores o pérdidas en su negocio:
+   - Empatiza con el problema del robo hormiga que afecta tiendas y boutiques.
+   - Presenta las dos alternativas de pedestales:
+     1. Sistema RF Dual Estándar (Par de pedestales 8.2MHz): $576.00 + IVA (ideal para boutiques, bazares y zapaterías).
+     2. Sistema Acrílico Crystal de Lujo (Par transparente): $745.00 + IVA (acrílico de alta densidad y mayor ancho de pasillo de hasta 1.80m sin falsas alarmas, ideal para centros comerciales).
+   - Menciona que disponemos de tags rígidos (desde $0.12 c/u), desactivadores magnéticos y etiquetas adhesivas.
+   - Enlace: https://atomiccotizador.shop/web/antenas-antihurto
+
+11. PROTOCOLO OBLIGATORIO PARA MANTENIMIENTO DE GENERADORES ELÉCTRICOS:
+   Siempre que el cliente pregunte por mantenimiento, reparación, cambio de aceite o revisión de generadores o plantas de luz:
+   - Explica el valor del mantenimiento preventivo para evitar que el equipo falle durante un apagón imprevisto.
+   - Presenta el Servicio Básico Promocional a solo $50.00 (limpieza del equipo, cambio de aceite y revisión eléctrica integral de voltaje y frecuencia).
+   - Para plantas diésel industriales: mantenimiento preventivo desde $180.00 con cambio de filtros, purga, diagnóstico de módulo y revisión de transferencias automáticas ATS.
+   - Da recomendaciones de uso: arrancar el equipo 15 minutos cada 15 días, no apagar con carga conectada y mantener en exteriores ventilados.
+   - Enlace: https://atomiccotizador.shop/web/mantenimiento-generadores
 `;
         }
 
@@ -472,6 +577,32 @@ function generateExpertConsultantFallback(messageText: string, contactName: stri
 
     if (isRecruitment) {
         return `¡Hola${namePart}! 👋 Qué gusto saludarte. Tu postulación para Asesor Comercial en ATOMIC Electronics ha sido recibida con éxito. 🚀\n\nPuedes revisar todos los detalles del Plan Laboral de 30 días aquí:\n👉 ${HR_PAGE_LINK}\n\nY únete de inmediato a nuestro grupo oficial de bienvenida e inducción en WhatsApp:\n📲 ${HR_GROUP_LINK}\n\nUna vez dentro, tu coordinadora asignada se pondrá en contacto contigo para explicarte el paso a paso y resolver cualquier duda. ¡Bienvenido al equipo! 💼✨`;
+    }
+
+    
+    // Fallback: Mantenimiento de Generadores
+    if (textLower.includes('generador') || textLower.includes('planta electrica') || textLower.includes('planta eléctrica') || (textLower.includes('mantenimiento') && (textLower.includes('aceite') || textLower.includes('luz') || textLower.includes('diesel') || textLower.includes('gasolina')))) {
+        return `¡Hola${namePart}! ⚡ En ATOMIC Soluciones Energéticas cuidamos que tu generador esté listo cuando más lo necesites:\n\n🔧 *Mantenimiento Preventivo Básico (Promoción):* $50.00\n(Limpieza del equipo, cambio de aceite de motor, limpieza de bujía/inyector y revisión eléctrica integral de voltaje y frecuencia a 60Hz).\n\n🏭 *Mantenimiento Industrial & Diésel Pesado:* Desde $180.00\n(Cambio de filtros de aceite/combustible/separador de agua, revisión de refrigerante, prueba de tablero ATS y diagnóstico computarizado de módulo).\n\n💡 *Tip de Oro:* Enciende tu equipo al menos 15 minutos cada 15 días para evitar que la gasolina dañe el carburador.\n\n🌐 Revisa todos los detalles y recomendaciones de uso en nuestra web:\n👉 https://atomiccotizador.shop/web/mantenimiento-generadores\n\n¿De qué marca, modelo o capacidad en kVA es tu generador para coordinar la revisión técnica? 📲`;
+    }
+
+    // Fallback: Barreras Automáticas Dítec
+    if (textLower.includes('ditec') || textLower.includes('dítec') || (textLower.includes('barrera') && (textLower.includes('vehicular') || textLower.includes('acceso') || textLower.includes('auto') || textLower.includes('talanquera')))) {
+        return `¡Hola${namePart}! 🚧 Con mucho gusto te asesoramos con nuestras *Barreras Vehiculares Automáticas Dítec Serie 2027* (Tecnología Europea de Vanguardia):\n\n🌟 *Precio Especial de Lanzamiento:* $1,928.90 + IVA\n🔹 *Motor Brushless 24V:* Ciclo continuo 100% de uso intensivo sin calentamiento.\n🔹 *Apertura Ultrarrápida:* Ajustable desde 2.0 segundos con mástiles de 3m a 6m.\n🔹 *Seguridad Antiaplastamiento:* Encoder digital de precisión + fotocélulas.\n🔹 *Compatibilidad:* TAGs RFID de telepeaje, lector de placas LPR y tarjetas de proximidad.\n\n🌐 Conoce todas las aplicaciones y ficha de ingeniería aquí:\n👉 https://atomiccotizador.shop/web/barreras-ditec\n\n¿Para qué tipo de proyecto (urbanización, hospital, centro comercial o empresa) la necesitas? Con gusto coordinamos una visita técnica o te enviamos la proforma. 📄`;
+    }
+
+    // Fallback: Antenas Anti-Hurto
+    if (textLower.includes('antena') || textLower.includes('antihurto') || textLower.includes('anti hurto') || textLower.includes('robo') || textLower.includes('sensor ropa') || textLower.includes('alarma ropa') || textLower.includes('tags')) {
+        return `¡Hola${namePart}! 🚨 ¡No dejes que te roben en tu negocio! En ATOMIC protegemos tu mercadería contra el robo hormiga con sistemas de alta detección:\n\n🔹 *Sistema RF Dual Estándar (Par de Pedestales 8.2MHz):* $576.00 + IVA\n(Detección precisa de tags y etiquetas en pasillos de hasta 1.40m, sirena de 95dB y luz LED estroboscópica roja).\n\n💎 *Sistema Acrílico Crystal de Lujo (Par Transparente):* $745.00 + IVA\n(Elegancia transparente para centros comerciales y boutiques de lujo, mayor alcance de hasta 1.80m y tecnología DSP anti-interferencias).\n\n🏷️ *Accesorios:* Tags rígidos mini/golf desde $0.12 c/u, desactivadores magnéticos de alta potencia ($45.00) y rollos de etiquetas adhesivas 4x4 ($28.00).\n\n🌐 Conoce la comparativa de modelos en nuestra página:\n👉 https://atomiccotizador.shop/web/antenas-antihurto\n\n¿Qué tipo de local comercial tienes (ropa, bazar, farmacia o electrónica) y cuántos metros mide la puerta de entrada? 📲`;
+    }
+
+    // Fallback: Portero Multifunción ZKTeco
+    if (textLower.includes('portero') && (textLower.includes('zkteco') || textLower.includes('multifuncion') || textLower.includes('multifunción') || textLower.includes('198') || textLower.includes('zkbio') || textLower.includes('facial'))) {
+        return `¡Hola${namePart}! 🚪 El equipo estrella todo en uno es el *Portero Eléctrico Multifunción ZKTeco con App ZKBio Zlink* por solo *$198.99 + IVA*:\n\n✨ *6 Métodos de Acceso:* 1,500 Rostros (reconoce en 0.3s) + 3,000 Huellas digitales + 3,000 Tarjetas RFID + PIN + App móvil + Llave.\n📱 *App ZKBio Zlink GRATIS de por vida:* Recibe videollamadas cuando timbren y abre la puerta a distancia sin mensualidades.\n📋 *Auditoría:* Memoria de 150,000 eventos con foto y registro de hora.\n🛡️ *Garantía:* 3 AÑOS oficiales directa en ATOMIC.\n\n🌐 Puedes ver la demostración y fotos en nuestra web:\n👉 https://atomiccotizador.shop/web/portero-multifuncion\n\n¿En qué sector o ciudad te encuentras para coordinar tu envío o verificar la instalación? 📦`;
+    }
+
+    // Fallback: Cámaras de Exterior IP66
+    if ((textLower.includes('camara') || textLower.includes('cámara')) && (textLower.includes('exterior') || textLower.includes('intemperie') || textLower.includes('ip66') || textLower.includes('cruiser') || textLower.includes('titan') || textLower.includes('aurora') || textLower.includes('10115') || textLower.includes('12759') || textLower.includes('lluvia'))) {
+        return `¡Hola${namePart}! 📹 En ATOMIC disponemos de cámaras de seguridad 100% preparadas para exteriores e intemperie IP66 (resistentes a sol y lluvias torrenciales):\n\n🔹 *Cámara Exterior Wi-Fi IP66 (Super Oferta):* $47.82 + IVA (opción con instalación por solo +$20.99).\n🔹 *Cámara Doble Lente Exterior IP81 (360°):* $63.77 + IVA c/u (en paquete de 3) o $20.99 con instalación. ¡2 cámaras en 1 con autotracking!\n🔹 *ATOMIC COMBO Kit NVR Wi-Fi (Cód 10115):* $95.00 + IVA (Grabador NVR inalámbrico + cámaras de intemperie con salida HDMI).\n🔹 *IMOU Cruiser Triple Lente 11MP (Cód 12759):* $135.00 + IVA (3 lentes independientes, 11MP combinados y visión Full-Color 24/7).\n🔹 *IMOU Titan Pro Aurora Full-Color:* Desde $115 equipo / $145 instalado (descuentos especiales llevando 2 o 3).\n\n🛡️ *Garantía:* 3 AÑOS oficiales.\n🌐 Catálogo completo en: https://atomiccotizador.shop/web/camaras-exterior\n\n¿Qué área exterior deseas proteger (patio, portón vehicular, fachada o quinta)? 📲`;
     }
 
     if (textLower.includes('torniquet') || textLower.includes('molinete') || textLower.includes('ts1000') || textLower.includes('fbl4000') || textLower.includes('fht2300')) {
@@ -498,6 +629,10 @@ function generateExpertConsultantFallback(messageText: string, contactName: stri
 
     if (textLower.includes('biometric') || textLower.includes('biométric') || textLower.includes('senseface') || textLower.includes('facial')) {
         return `¡Hola${namePart}! 👋 El equipo estrella para control de asistencia y acceso es el *ZKTeco SenseFace 2A con Videoportero por App* por solo $175.00 USD:\n\n✨ Reconocimiento facial ultra veloz (menos de 0.3s)\n✨ Lector de huella digital + tarjetas RFID + PIN numérico\n✨ Conexión 100% WiFi y llamada directa a la App móvil\n✨ Apertura de puerta remota para oficinas y departamentos\n\n¿Te gustaría ver un video de cómo funciona o la ficha técnica detallada? 🚀`;
+    }
+
+        if (textLower.includes('barra') && (textLower.includes('sonido') || textLower.includes('audio') || textLower.includes('boc241n') || textLower.includes('1hora') || textLower.includes('gamer') || textLower.includes('parlante'))) {
+        return `¡Hola${namePart}! 🎶 Qué gusto saludarte. Disponemos de la espectacular *Barra de Sonido Gamer Bluetooth 1 HORA BOC241N* con precio especial de lanzamiento:\n\n🔥 *Precio de Lanzamiento:* $28.90 + IVA\n🔊 *Sonido Potente:* 10W RMS con bajos reforzados y agudos cristalinos\n🌈 *Iluminación RGB Dinámica:* 8 modos de iluminación sincronizables\n🔋 *Batería Recargable:* 2000 mAh (más de 5 horas continuas de música y juego)\n🔌 *Conectividad Universal:* Bluetooth 5.3 + Aux 3.5mm + USB + Tarjeta TF\n🛡️ *Garantía Oficial:* 3 AÑOS directos en ATOMIC\n\n🌐 Puedes ver las fotos y detalles completos en nuestra página:\n👉 https://atomiccotizador.shop/web/barra-de-sonido\n\n¿En qué ciudad te encuentras para coordinar tu envío hoy mismo? 🚀`;
     }
 
     if (textLower.includes('antena') || textLower.includes('antihurto') || textLower.includes('antipanico') || textLower.includes('antipánico') || textLower.includes('barra')) {
@@ -578,17 +713,39 @@ function generateExpertConsultantFallback(messageText: string, contactName: stri
             // Detección autónoma: Si el cliente solicita fotos o si es consulta sobre cercos eléctricos o cámaras de hogar
             const textLowerForDetection = messageText.toLowerCase();
             const isAskingForVisuals = /foto|fotos|imagen|imagenes|imágenes|cat[aá]logo|modelo|ver|mu[eé]strame/i.test(textLowerForDetection);
+            const isSoundbarInquiry = /barra.*sonido|soundbar|boc241n|1\s*hora|parlante.*gamer/i.test(textLowerForDetection);
             const isCercosInquiry = /cerco|cercos|electrificad|hagroy|jfl|yanex|xpower/i.test(textLowerForDetection);
-            const isCamarasInquiry = /camara|c[aá]mara|imou|ezviz|h6c|ranger|bebe|bebé|mascota|doble lente/i.test(textLowerForDetection);
+            const isCamarasExteriorInquiry = /(camara|c[aá]mara).*(exterior|intemperie|ip66|cruiser|titan|aurora|lluvia)|10115|12759/i.test(textLowerForDetection);
+            const isCamarasHogarInquiry = /camara|c[aá]mara|imou|ezviz|h6c|ranger|bebe|bebé|mascota|doble lente/i.test(textLowerForDetection);
+            const isPorteroInquiry = /portero.*(zkteco|multifunci|facial|huella|198)|zkbio/i.test(textLowerForDetection);
+            const isBarrerasInquiry = /ditec|d[ií]tec|barrera.*(vehicular|acceso|talanquera)|1928/i.test(textLowerForDetection);
+            const isAntenasInquiry = /antena.*(hurto|alarma|ropa|eas)|antihurto|no dejes que te roben|576|745/i.test(textLowerForDetection);
+            const isGeneradoresInquiry = /generador|planta.*el[eé]ctrica|mantenimiento.*(generador|aceite|planta)|50.*(mantenimiento|generador)/i.test(textLowerForDetection);
             const detectedAsset = detectArticleAndCategory({ messagesText: messageText });
             
             let targetImagePath: string | null = detectedAsset.imagePath || null;
             let shortCaption = '';
 
-            if (isCercosInquiry || detectedAsset.id === 'cercos-electricos') {
+            if (isSoundbarInquiry || detectedAsset.id === 'barra-sonido') {
+                targetImagePath = '/images/audio/barra-sonido-boc241n-1hora-precio-28.jpg';
+                shortCaption = `🎶 *Barra de Sonido Gamer 1 HORA BOC241N* 🔥\n💰 *Precio:* $28.90 + IVA | 3 Años de Garantía\n🌐 https://atomiccotizador.shop/web/barra-de-sonido`;
+            } else if (isCercosInquiry || detectedAsset.id === 'cercos-electricos') {
                 targetImagePath = '/images/cercos/kits-cercos-electricos-pauta.jpg';
                 shortCaption = `⚡ *Kits Oficiales de Cercos Eléctricos ATOMIC* 🛡️\n🌐 Opciones en: https://atomiccotizador.shop/web/cercos-electricos\n⚠️ *Nota:* Materiales y mano de obra NO incluidos en el kit.`;
-            } else if (isCamarasInquiry || detectedAsset.id === 'camaras-hogar') {
+            } else if (isCamarasExteriorInquiry || detectedAsset.id === 'camaras-exterior') {
+                if (textLowerForDetection.includes('12759') || textLowerForDetection.includes('cruiser') || textLowerForDetection.includes('triple')) {
+                    targetImagePath = '/images/camaras-exterior/camara-imou-cruiser-triple-11mp.jpg';
+                } else if (textLowerForDetection.includes('doble') || textLowerForDetection.includes('ip81')) {
+                    targetImagePath = '/images/camaras-exterior/camara-doble-lente-ip81-exterior.jpg';
+                } else if (textLowerForDetection.includes('10115') || textLowerForDetection.includes('nvr') || textLowerForDetection.includes('combo')) {
+                    targetImagePath = '/images/camaras-exterior/combo-kit-nks4223wbth.jpg';
+                } else if (textLowerForDetection.includes('titan') || textLowerForDetection.includes('aurora')) {
+                    targetImagePath = '/images/camaras-exterior/camara-imou-titan-pro-aurora.jpg';
+                } else {
+                    targetImagePath = '/images/camaras-exterior/camara-exterior-ip66-wifi.jpg';
+                }
+                shortCaption = `📹 *Cámaras de Seguridad Exterior IP66 ATOMIC* 🌧️\n🌐 Catálogo en: https://atomiccotizador.shop/web/camaras-exterior\n🛡️ 3 Años de Garantía e intemperie total.`;
+            } else if (isCamarasHogarInquiry || detectedAsset.id === 'camaras-hogar') {
                 if (textLowerForDetection.includes('10899') || textLowerForDetection.includes('ranger 3mp')) {
                     targetImagePath = '/images/camaras/camara-imou-ranger-3mp-10899.jpg';
                 } else if (textLowerForDetection.includes('13067') || textLowerForDetection.includes('color') || textLowerForDetection.includes('mini pt')) {
@@ -599,9 +756,21 @@ function generateExpertConsultantFallback(messageText: string, contactName: stri
                     targetImagePath = '/images/camaras/camara-ezviz-h6c-3mp-pauta.jpg';
                 }
                 shortCaption = `🌸 *Cámaras Inteligentes para el Hogar ATOMIC* 🏡\n🌐 Catálogo y opciones en: https://atomiccotizador.shop/web/camaras-hogar\n📲 Monitoreo en vivo desde tu celular sin cuotas mensuales.`;
+            } else if (isPorteroInquiry || detectedAsset.id === 'portero-multifuncion') {
+                targetImagePath = '/images/porteros/portero-inteligente-app-movil-198.jpg';
+                shortCaption = `🚪 *Portero Multifunción ZKTeco con App Móvil* 📲\n💰 *Precio:* $198.99 + IVA | App ZKBio Zlink GRATIS\n🌐 https://atomiccotizador.shop/web/portero-multifuncion`;
+            } else if (isBarrerasInquiry || detectedAsset.id === 'barreras-ditec') {
+                targetImagePath = '/images/barreras/barrera-ditec-tecnologia-2027-precio.jpg';
+                shortCaption = `🚧 *Barrera Automática Dítec Serie 2027* 🇪🇺\n💰 *Lanzamiento:* $1,928.90 + IVA | Motor 24V Uso Continuo\n🌐 https://atomiccotizador.shop/web/barreras-ditec`;
+            } else if (isAntenasInquiry || detectedAsset.id === 'antenas-antihurto') {
+                targetImagePath = '/images/antihurto/antenas-antihurto-par-576.jpg';
+                shortCaption = `🚨 *¡No Dejes Que Te Roben! Antenas Anti-Hurto ATOMIC* 🛡️\n💰 Desde $576.00 + IVA (Kit Acrílico $745.00)\n🌐 https://atomiccotizador.shop/web/antenas-antihurto`;
+            } else if (isGeneradoresInquiry || detectedAsset.id === 'mantenimiento-generadores') {
+                targetImagePath = '/images/generadores/mantenimiento-generadores-electricos-50.jpg';
+                shortCaption = `⚡ *Mantenimiento de Generadores Eléctricos ATOMIC* 🛠️\n💰 *Servicio Básico Promocional:* $50.00\n🌐 https://atomiccotizador.shop/web/mantenimiento-generadores`;
             }
 
-            const shouldSendImage = (isAskingForVisuals || isCercosInquiry || isCamarasInquiry || detectedAsset.id === 'cercos-electricos' || detectedAsset.id === 'camaras-hogar') && Boolean(targetImagePath);
+            const shouldSendImage = (isAskingForVisuals || isSoundbarInquiry || isCercosInquiry || isCamarasExteriorInquiry || isCamarasHogarInquiry || isPorteroInquiry || isBarrerasInquiry || isAntenasInquiry || isGeneradoresInquiry || ['barra-sonido', 'cercos-electricos', 'camaras-hogar', 'camaras-exterior', 'portero-multifuncion', 'barreras-ditec', 'antenas-antihurto', 'mantenimiento-generadores'].includes(detectedAsset.id || '')) && Boolean(targetImagePath);
 
             try {
                 let sentType = 'text';

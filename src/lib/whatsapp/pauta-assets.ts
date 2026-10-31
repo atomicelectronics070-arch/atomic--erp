@@ -82,15 +82,15 @@ export const PAUTA_CATALOG_REGISTRY: PautaDefinition[] = [
     },
     {
         id: 'antenas-antihurto',
-        keywords: ['antena', 'antenas', 'antihurto', 'eas', 'alarma ropa', 'tienda', 'sensor ropa'],
-        category: 'Protección Comercial',
-        productName: 'Sistemas Antihurto y Antenas EAS para Tiendas',
-        imagePath: '/images/promociones/apple-portada.jpg',
-        defaultPrice: 'Desde $499.96 USD',
+        keywords: ['antena', 'antenas', 'antihurto', 'no dejes que te roben', 'eas', 'alarma ropa', 'tienda de ropa', 'sensor ropa', 'tags ropa', 'desactivador', 'antenas 576', 'antenas 745'],
+        category: 'Protección Comercial Retail',
+        productName: 'Sistemas y Antenas Anti-Hurto para Tiendas y Locales Comerciales',
+        imagePath: '/images/antihurto/antenas-antihurto-par-576.jpg',
+        defaultPrice: 'Desde $576.00 + IVA (Kit Acrílico $745.00)',
         bulletPoints: [
-            'Detección precisa de tags rígidos y etiquetas adhesivas',
-            'Alarma sonora y lumínica de alta potencia',
-            'Instalación lista para retail y locales comerciales'
+            'Par de antenas de alta detección RF 8.2MHz con alarma de 95dB',
+            'Reduce más del 98% de pérdidas por robo hormiga en tiendas',
+            '3 Años de Garantía Directa Oficial ATOMIC'
         ]
     },
     {
@@ -107,6 +107,19 @@ export const PAUTA_CATALOG_REGISTRY: PautaDefinition[] = [
         ]
     },
     {
+        id: 'barra-sonido',
+        keywords: ['barra de sonido', 'barra sonido', 'soundbar', 'boc241n', '1 hora', '1hora', 'parlante gamer', 'audio gamer', 'parlante bluetooth', 'altavoz pc'],
+        category: 'Audio & Gaming',
+        productName: 'Barra de Sonido Gamer Bluetooth 1 HORA BOC241N con Luces RGB',
+        imagePath: '/images/audio/barra-sonido-boc241n-1hora-precio-28.jpg',
+        defaultPrice: '$28.90 + IVA',
+        bulletPoints: [
+            '10W de potencia con sonido cristalino y bajos profundos',
+            '8 modos dinámicos de iluminación LED RGB para gaming y setups',
+            'Batería recargable 2000 mAh (+5h de música) y 3 años de garantía oficial'
+        ]
+    },
+    {
         id: 'luminarias-solares',
         keywords: ['luminaria', 'luminarias', 'solar', 'panel solar', 'foco solar', 'alumbrado', 'led'],
         category: 'Energía Solar',
@@ -118,6 +131,42 @@ export const PAUTA_CATALOG_REGISTRY: PautaDefinition[] = [
             'Sensor de movimiento y encendido automático nocturno',
             'Carcasa hermética resistente a lluvias y polvo'
         ]
+    },
+    {
+        id: 'camaras-exterior',
+        keywords: ["camara exterior","cámaras exterior","camaras intemperie","ip66","cruiser","titan pro","aurora","doble lente exterior","ip81","nks4223wbth","10115","12759"],
+        category: 'Seguridad Exterior',
+        productName: 'Cámaras de Seguridad Exterior Wi-Fi e Intemperie IP66 (Doble Lente / IMOU / NVR)',
+        imagePath: '/images/camaras-exterior/camara-imou-cruiser-triple-11mp.jpg',
+        defaultPrice: 'Desde $47.82 + IVA',
+        bulletPoints: ["Protección hermética IP66 contra lluvias torrenciales y calor","Visión nocturna Full-Color a color las 24 horas y audio bidireccional","3 Años de Garantía Directa Oficial ATOMIC"]
+    },
+    {
+        id: 'portero-multifuncion',
+        keywords: ["portero multifuncion","portero zkteco","zkbio","zlink","portero inteligente","portero facial","portero huella","portero 198","videoportero app"],
+        category: 'Control de Acceso & Citofonía',
+        productName: 'Portero Eléctrico Multifunción ZKTeco con App ZKBio Zlink',
+        imagePath: '/images/porteros/portero-inteligente-app-movil-198.jpg',
+        defaultPrice: '$198.99 + IVA',
+        bulletPoints: ["6 métodos de acceso: 1500 rostros, 3000 huellas, 3000 tarjetas, app, PIN y llave","App ZKBio Zlink 100% GRATIS de por vida sin cuotas mensuales","Videollamada en vivo al celular y apertura remota de cerradura"]
+    },
+    {
+        id: 'barreras-ditec',
+        keywords: ["barrera ditec","barreras ditec","ditec 2027","ditec","talanquera ditec","barrera vehicular ditec","1928"],
+        category: 'Automatización Vehicular',
+        productName: 'Barreras Vehiculares Automáticas Dítec Serie 2027 (Ingeniería Europea)',
+        imagePath: '/images/barreras/barrera-ditec-tecnologia-2027-precio.jpg',
+        defaultPrice: '$1,928.90 + IVA',
+        bulletPoints: ["Motor Brushless 24V de uso continuo intensivo (100% duty cycle)","Apertura ultra veloz desde 2.0 segundos con mástiles de hasta 6 metros","3 Años de Garantía Oficial e integración con TAGs RFID y placas LPR"]
+    },
+    {
+        id: 'mantenimiento-generadores',
+        keywords: ["mantenimiento generador","mantenimiento generadores","reparacion generador","generador electrico","planta electrica","cambio de aceite generador","generador 50"],
+        category: 'Servicios Energéticos',
+        productName: 'Mantenimiento Preventivo y Reparación de Generadores Eléctricos',
+        imagePath: '/images/generadores/mantenimiento-generadores-electricos-50.jpg',
+        defaultPrice: 'Desde $50.00 Promocional',
+        bulletPoints: ["Limpieza profunda, cambio de aceite y revisión integral de voltaje","Servicio técnico calificado para generadores a gasolina y plantas diésel","Atención en taller o a domicilio en Quito y valles"]
     }
 ];
 
