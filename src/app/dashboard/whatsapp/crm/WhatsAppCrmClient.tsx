@@ -241,6 +241,19 @@ export default function WhatsAppCrmClient() {
     const isRetryingRef = useRef(false)
     isRetryingRef.current = isRetrying
 
+    // Re-engagement & Apology State
+    const [isReengageModalOpen, setIsReengageModalOpen] = useState(false)
+    const [reengageLoading, setReengageLoading] = useState(false)
+    const [reengageSending, setReengageSending] = useState(false)
+    const [reengageData, setReengageData] = useState<{
+        clientFirstName: string;
+        detectedArticle: string;
+        suggestedImage?: string;
+        messageText: string;
+    } | null>(null)
+    const [reengageCustomText, setReengageCustomText] = useState("")
+    const [reengageIncludeImage, setReengageIncludeImage] = useState(true)
+
     // Karen Agent Modal & Live State
     const [karenModalOpen, setKarenModalOpen] = useState(false)
     const [karenAuditData, setKarenAuditData] = useState<any>(null)
@@ -693,20 +706,35 @@ export default function WhatsAppCrmClient() {
         prevMessagesCountRef.current = currentMsgCount;
     }, [activeChatId, activeChat?.messages?.length, playIncomingSound]);
 
-    // Handle chat selection and conditional advisor assignment prompt
+    // Handle chat selection (Sin bloquear con popups molestos; selección limpia e instantánea)
     const handleSelectChat = (chat: Chat) => {
         setActiveChatId(chat.id);
-        if (!chat.ownerName) {
-            setChatToAssign(chat);
-            setAdvisorInput(session?.user?.name || "");
-            setAssignModalOpen(true);
-        }
     };
 
-    // Confirm advisor assignment in DB
+    // Auto-asignación silenciosa en background al responder sin interrumpir el flujo
+    const handleSilentAutoAssign = async (conversationId: string, advisorName: string) => {
+        if (!advisorName.trim()) return;
+        setChats(prev => prev.map(c => c.id === conversationId ? { ...c, ownerName: advisorName.trim() } : c));
+        try {
+            await fetch('/api/whatsapp/assign', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    conversationId,
+                    action: 'ASSIGN',
+                    advisorName: advisorName.trim()
+                })
+            });
+        } catch (_) {}
+    };
+
+    // Confirm advisor assignment in DB (Actualización síncrona en memoria para evitar dobles peticiones)
     const handleConfirmAssign = async () => {
         if (!chatToAssign || !advisorInput.trim()) return;
+        const finalName = advisorInput.trim();
         setAssigningLoading(true);
+        // Actualizar el estado local inmediatamente
+        setChats(prev => prev.map(c => c.id === chatToAssign.id ? { ...c, ownerName: finalName } : c));
         try {
             const res = await fetch('/api/whatsapp/assign', {
                 method: 'POST',
@@ -714,7 +742,7 @@ export default function WhatsAppCrmClient() {
                 body: JSON.stringify({
                     conversationId: chatToAssign.id,
                     action: 'ASSIGN',
-                    advisorName: advisorInput.trim()
+                    advisorName: finalName
                 })
             });
             if (res.ok) {
@@ -728,6 +756,64 @@ export default function WhatsAppCrmClient() {
             alert(`⚠️ Error de red al asignar: ${e.message}`);
         } finally {
             setAssigningLoading(false);
+        }
+    };
+
+    // ═══════════════════════════════════════════════════════════
+    // HANDLERS: REACTIVACIÓN Y DISCULPA INTELIGENTE POR ARTÍCULO
+    // ═══════════════════════════════════════════════════════════
+    const handleOpenReengageModal = async () => {
+        if (!activeChat) return;
+        setIsReengageModalOpen(true);
+        setReengageLoading(true);
+        setReengageData(null);
+        try {
+            const res = await fetch(`/api/whatsapp/reengage?conversationId=${activeChat.id}`);
+            const data = await res.json();
+            if (res.ok && data.success) {
+                setReengageData(data);
+                setReengageCustomText(data.messageText);
+                setReengageIncludeImage(Boolean(data.suggestedImage));
+            } else {
+                alert(`⚠️ Error al cargar sugerencia: ${data.error || 'No se pudo conectar'}`);
+            }
+        } catch (e: any) {
+            alert(`⚠️ Error: ${e.message}`);
+        } finally {
+            setReengageLoading(false);
+        }
+    };
+
+    const handleSendReengage = async () => {
+        if (!activeChat || !reengageCustomText.trim()) return;
+        setReengageSending(true);
+        try {
+            const res = await fetch('/api/whatsapp/reengage', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    conversationId: activeChat.id,
+                    customMessage: reengageCustomText.trim(),
+                    includeImage: reengageIncludeImage
+                })
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                playOutgoingSound();
+                setIsReengageModalOpen(false);
+                setRetrySuccessMsg(`🎉 ${data.message || 'Mensaje de reactivación enviado con éxito'}`);
+                setTimeout(() => setRetrySuccessMsg(null), 5000);
+                if (!activeChat.ownerName && session?.user?.name) {
+                    setChats(prev => prev.map(c => c.id === activeChat.id ? { ...c, ownerName: session.user?.name || null } : c));
+                }
+                fetchConversations();
+            } else {
+                alert(`⚠️ Error al enviar reactivación: ${data.error || 'Fallo de entrega'}`);
+            }
+        } catch (e: any) {
+            alert(`⚠️ Error de red: ${e.message}`);
+        } finally {
+            setReengageSending(false);
         }
     };
 
@@ -759,6 +845,11 @@ export default function WhatsAppCrmClient() {
         const attachment = pendingAttachment;
         setInputText("");
         setPendingAttachment(null);
+
+        // Auto-asignación silenciosa al enviar mensaje si el chat estaba libre
+        if (!activeChat.ownerName && session?.user?.name) {
+            handleSilentAutoAssign(activeChat.id, session.user.name);
+        }
 
         try {
             const body: any = { conversationId: activeChat.id };
@@ -1575,6 +1666,17 @@ export default function WhatsAppCrmClient() {
                                         </button>
                                     )}
 
+                                    {/* Botón de Reactivación con Disculpa Inteligente */}
+                                    <button
+                                        onClick={handleOpenReengageModal}
+                                        className="bg-[#1a2332] hover:bg-[#233044] border border-cyan-500/50 text-cyan-300 hover:text-white font-bold text-xs px-3.5 py-2 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
+                                        title="Reactivar chat con disculpa personalizada según el artículo consultado"
+                                    >
+                                        <Sparkles size={14} className="text-cyan-400" />
+                                        <span className="hidden sm:inline">Reactivar con Disculpa</span>
+                                        <span className="sm:hidden">Reactivar</span>
+                                    </button>
+
                                     <a
                                         href={`https://wa.me/${activeChat.phone.replace(/\D/g, '')}`}
                                         target="_blank"
@@ -1995,43 +2097,24 @@ export default function WhatsAppCrmClient() {
                                 <input
                                     type="text"
                                     value={inputText}
-                                    onClick={() => {
-                                        if (!activeChat.ownerName) {
-                                            setChatToAssign(activeChat);
-                                            setAdvisorInput(session?.user?.name || "");
-                                            setAssignModalOpen(true);
-                                        }
-                                    }}
                                     onChange={(e) => setInputText(e.target.value)}
                                     onKeyDown={(e) => {
-                                        if (!activeChat.ownerName) {
-                                            e.preventDefault();
-                                            setChatToAssign(activeChat);
-                                            setAdvisorInput(session?.user?.name || "");
-                                            setAssignModalOpen(true);
-                                            return;
-                                        }
                                         if (e.key === 'Enter') handleSendMessage();
                                     }}
                                     placeholder={
-                                        !activeChat.ownerName 
-                                            ? "⚠️ Clic para indicar asesor que atiende y escribir..." 
-                                            : (pendingAttachment ? "Añadir un pie de foto / mensaje..." : "Escribe tu mensaje a través de WhatsApp API...")
+                                        pendingAttachment 
+                                            ? "Añadir un pie de foto / mensaje..." 
+                                            : (!activeChat.ownerName 
+                                                ? "Escribe tu mensaje (se te asignará automáticamente al enviar)..." 
+                                                : "Escribe tu mensaje a través de WhatsApp API...")
                                     }
                                     className="flex-1 bg-[#2a3942] border border-transparent focus:border-[#00a884] rounded-xl px-4 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none"
                                 />
                                 <button
-                                    onClick={() => {
-                                        if (!activeChat.ownerName) {
-                                            setChatToAssign(activeChat);
-                                            setAdvisorInput(session?.user?.name || "");
-                                            setAssignModalOpen(true);
-                                            return;
-                                        }
-                                        handleSendMessage();
-                                    }}
+                                    onClick={handleSendMessage}
                                     disabled={(!inputText.trim() && !pendingAttachment) || isUploadingAttachment}
                                     className="p-2.5 rounded-xl bg-[#00a884] hover:bg-[#02906f] disabled:opacity-40 text-white transition-all shadow-md cursor-pointer"
+                                    title="Enviar mensaje"
                                 >
                                     <Send size={16} />
                                 </button>
@@ -2791,8 +2874,111 @@ export default function WhatsAppCrmClient() {
             )}
 
             {/* ═════════════════════════════════════════════════════════════ */}
-            {/* 👤 MODAL: ASIGNACIÓN DE ASESOR A LA CONVERSACIÓN            */}
+            {/* 🤝 MODAL: REACTIVACIÓN & DISCULPA INTELIGENTE SEGÚN ARTÍCULO  */}
             {/* ═════════════════════════════════════════════════════════════ */}
+            {isReengageModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div 
+                        onClick={() => setIsReengageModalOpen(false)} 
+                        className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+                    />
+                    <div className="relative z-10 bg-[#111b21] border border-[#2a3942] rounded-2xl max-w-xl w-full p-5 shadow-2xl text-white space-y-4">
+                        <div className="flex items-center justify-between border-b border-[#202c33] pb-3">
+                            <div className="flex items-center gap-2.5">
+                                <div className="p-2 rounded-xl bg-cyan-950/80 border border-cyan-500/40 text-cyan-300">
+                                    <Sparkles size={18} />
+                                </div>
+                                <div>
+                                    <h2 className="text-sm md:text-base font-black text-white">
+                                        Reactivar Chat con Disculpa Inteligente
+                                    </h2>
+                                    <p className="text-[11px] text-slate-400">
+                                        Genera una disculpa empática y seguimiento automático según el artículo del cliente
+                                    </p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => setIsReengageModalOpen(false)}
+                                className="p-1 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors cursor-pointer"
+                            >
+                                <X size={18} />
+                            </button>
+                        </div>
+
+                        {reengageLoading ? (
+                            <div className="py-12 flex flex-col items-center justify-center space-y-3">
+                                <Loader2 size={32} className="animate-spin text-cyan-400" />
+                                <p className="text-xs text-slate-400">Analizando historial y detectando artículo de interés...</p>
+                            </div>
+                        ) : reengageData ? (
+                            <div className="space-y-4">
+                                {/* Pills de Datos Detectados */}
+                                <div className="grid grid-cols-2 gap-2 text-xs">
+                                    <div className="p-2.5 rounded-xl bg-[#202c33] border border-[#2a3942]">
+                                        <span className="text-[10px] text-slate-400 font-bold block uppercase">Cliente Detectado</span>
+                                        <span className="font-black text-emerald-400 text-sm truncate block">{reengageData.clientFirstName}</span>
+                                    </div>
+                                    <div className="p-2.5 rounded-xl bg-[#202c33] border border-[#2a3942]">
+                                        <span className="text-[10px] text-slate-400 font-bold block uppercase">Artículo / Interés</span>
+                                        <span className="font-black text-cyan-300 text-xs truncate block" title={reengageData.detectedArticle}>
+                                            {reengageData.detectedArticle}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {/* Checkbox para adjuntar foto oficial si existe */}
+                                {reengageData.suggestedImage && (
+                                    <label className="flex items-center gap-2 p-2.5 rounded-xl bg-[#1a2332] border border-cyan-500/30 cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            checked={reengageIncludeImage}
+                                            onChange={(e) => setReengageIncludeImage(e.target.checked)}
+                                            className="w-4 h-4 rounded text-cyan-500 focus:ring-0"
+                                        />
+                                        <div className="text-xs">
+                                            <span className="font-bold text-cyan-200">Adjuntar foto oficial del producto</span>
+                                            <span className="text-[10px] text-slate-400 block">{reengageData.suggestedImage}</span>
+                                        </div>
+                                    </label>
+                                )}
+
+                                {/* Editor de Mensaje */}
+                                <div>
+                                    <label className="text-[11px] font-bold text-slate-300 mb-1 block">
+                                        Mensaje inteligente que se enviará por WhatsApp (puedes editarlo):
+                                    </label>
+                                    <textarea
+                                        value={reengageCustomText}
+                                        onChange={(e) => setReengageCustomText(e.target.value)}
+                                        rows={6}
+                                        className="w-full bg-[#202c33] border border-[#2a3942] rounded-xl p-3 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 resize-none font-sans leading-relaxed"
+                                    />
+                                </div>
+
+                                {/* Acciones */}
+                                <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#202c33]">
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsReengageModalOpen(false)}
+                                        className="px-4 py-2 rounded-xl bg-[#202c33] hover:bg-[#2a3942] text-slate-300 text-xs font-bold transition-colors cursor-pointer"
+                                    >
+                                        Cancelar
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={handleSendReengage}
+                                        disabled={reengageSending || !reengageCustomText.trim()}
+                                        className="px-5 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-black text-xs transition-all flex items-center gap-2 shadow-lg cursor-pointer disabled:opacity-50"
+                                    >
+                                        {reengageSending ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
+                                        <span>Enviar Disculpa & Reactivar Lead</span>
+                                    </button>
+                                </div>
+                            </div>
+                        ) : null}
+                    </div>
+                </div>
+            )}
             {assignModalOpen && chatToAssign && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                     <div 

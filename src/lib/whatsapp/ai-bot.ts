@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { prisma } from '@/lib/prisma';
-import { sendWhatsAppMessage } from '@/lib/whatsapp/service';
+import { sendWhatsAppMessage, sendWhatsAppMedia } from '@/lib/whatsapp/service';
 import { formatRetryMetadata } from '@/lib/whatsapp/auto-retry';
+import { detectArticleAndCategory } from '@/lib/whatsapp/pauta-assets';
 import { processConversationalBotMessage } from '@/lib/bot/botBrain';
 import { 
     isJuan, 
@@ -481,9 +482,24 @@ function generateExpertConsultantFallback(messageText: string, contactName: stri
         }
 
         if (botReply) {
+            // Detección autónoma: Si el cliente solicita fotos o catálogo visual y tenemos la imagen oficial
+            const isAskingForVisuals = /foto|fotos|imagen|imagenes|cat[aá]logo|modelo|ver|mu[eé]strame/i.test(messageText);
+            const detectedAsset = detectArticleAndCategory({ messagesText: messageText });
+            const shouldSendImage = isAskingForVisuals && Boolean(detectedAsset.imagePath);
+
             try {
-                // 4. Enviar mensaje por WhatsApp Cloud API con auto-reintentos
-                await sendWhatsAppMessage(whatsappId, botReply);
+                let sentType = 'text';
+                let sentMediaUrl: string | null = null;
+
+                if (shouldSendImage && detectedAsset.imagePath) {
+                    console.log(`[BOT_AUTONOMOUS_IMAGE] Despachando foto oficial para ${whatsappId}: ${detectedAsset.imagePath}`);
+                    await sendWhatsAppMedia(whatsappId, detectedAsset.imagePath, 'image', botReply);
+                    sentType = 'image';
+                    sentMediaUrl = detectedAsset.imagePath;
+                } else {
+                    // Enviar mensaje por WhatsApp Cloud API con auto-reintentos
+                    await sendWhatsAppMessage(whatsappId, botReply);
+                }
 
                 // 5. Guardar el mensaje OUTBOUND en la base de datos con status SENT
                 await prisma.wAMessage.create({
@@ -491,7 +507,8 @@ function generateExpertConsultantFallback(messageText: string, contactName: stri
                         conversationId,
                         whatsappMessageId: `bot-${Date.now()}`,
                         direction: 'OUTBOUND',
-                        type: 'text',
+                        type: sentType,
+                        mediaUrl: sentMediaUrl,
                         body: botReply,
                         status: 'SENT',
                         senderId: 'BOT_ATOMIC_RESILIENT'
@@ -504,7 +521,7 @@ function generateExpertConsultantFallback(messageText: string, contactName: stri
                     data: { updatedAt: new Date(), lastMessageAt: new Date() }
                 }).catch(() => {});
 
-                console.log(`[BOT_SUCCESS] Respondió automáticamente y de forma resiliente a ${whatsappId}`);
+                console.log(`[BOT_SUCCESS] Respondió automáticamente (${sentType}) de forma resiliente a ${whatsappId}`);
             } catch (sendErr: any) {
                 const errMsg = sendErr?.response?.data?.error?.message || sendErr.message || 'Error al entregar por WhatsApp';
                 console.error(`[BOT_SEND_FAILED] Recipiente: ${whatsappId}. Detalle:`, errMsg);
@@ -515,7 +532,8 @@ function generateExpertConsultantFallback(messageText: string, contactName: stri
                         conversationId,
                         whatsappMessageId: `bot-failed-${Date.now()}`,
                         direction: 'OUTBOUND',
-                        type: 'text',
+                        type: shouldSendImage ? 'image' : 'text',
+                        mediaUrl: shouldSendImage ? detectedAsset.imagePath : null,
                         body: botReply,
                         status: 'FAILED',
                         errorMessage: formatRetryMetadata(0, Date.now() + 15000, errMsg),
