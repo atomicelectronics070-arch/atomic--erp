@@ -373,37 +373,118 @@ METODOLOGÍA DE VENTA CONSULTIVA Y REGLAS DE ORO:
 `;
         }
 
-        // 3. Consulta a NVIDIA Llama-3.2-90B Vision
-        const completion = await axios.post(
-            "https://integrate.api.nvidia.com/v1/chat/completions",
-            {
-                model: NVIDIA_MODEL,
-                messages: [
-                    { role: "system", content: systemPrompt },
-                    { 
-                        role: "user", 
-                        content: `Historial de la conversación:\n${history}\n\nÚltimo mensaje recibido de ${contactName}:\n"${messageText}"`
-                    }
-                ],
-                temperature: 0.6,
-                max_tokens: 380
-            },
-            {
-                headers: {
-                    "Authorization": `Bearer ${NVIDIA_API_KEY}`,
-                    "Content-Type": "application/json"
+/**
+ * Generador de respuesta de contingencia inteligente de alta fidelidad.
+ * Garantiza que NINGÚN chat quede muerto o sin respuesta si la API de IA externa tiene problemas.
+ */
+function generateExpertConsultantFallback(messageText: string, contactName: string, isRecruitment: boolean): string {
+    const textLower = (messageText || '').toLowerCase();
+    const namePart = contactName && contactName !== 'Cliente WhatsApp' ? ` ${contactName}` : '';
+
+    if (isRecruitment) {
+        return `¡Hola${namePart}! 👋 Qué gusto saludarte. Tu postulación para Asesor Comercial en ATOMIC Electronics ha sido recibida con éxito. 🚀\n\nPuedes revisar todos los detalles del Plan Laboral de 30 días aquí:\n👉 ${HR_PAGE_LINK}\n\nY únete de inmediato a nuestro grupo oficial de bienvenida e inducción en WhatsApp:\n📲 ${HR_GROUP_LINK}\n\nUna vez dentro, tu coordinadora asignada se pondrá en contacto contigo para explicarte el paso a paso y resolver cualquier duda. ¡Bienvenido al equipo! 💼✨`;
+    }
+
+    if (textLower.includes('torniquet') || textLower.includes('molinete') || textLower.includes('ts1000') || textLower.includes('fbl4000') || textLower.includes('fht2300')) {
+        return `¡Hola${namePart}! 👋 En ATOMIC Electronics somos distribuidores autorizados de torniquetes peatonales ZKTeco en Ecuador:\n\n🔹 *Torniquete Trípode TS1000 Pro:* $720 USD (Acero inoxidable 304 de alta durabilidad)\n🔹 *Torniquete Flap Barrier FBL4000 Pro:* $1,850 USD (Aletas retráctiles de lujo)\n🔹 *Molinete Cuerpo Entero FHT2300:* $2,950 USD (Máxima seguridad anti-intrusión)\n\n¿Para qué tipo de espacio o empresa lo necesitas (oficina, gimnasio, industria o edificio corporativo)? Con gusto te comparto la ficha técnica completa. 📋🔒`;
+    }
+
+    if (textLower.includes('portero') || textLower.includes('videoportero') || textLower.includes('citofon') || textLower.includes('collective') || textLower.includes('kocom')) {
+        return `¡Hola${namePart}! 👋 Con mucho gusto te asesoramos con nuestros sistemas de videoporteros y citofonía para residencias y edificios:\n\n🏠 *Kit Residencial 2 Pantallas HD:* $285.00 USD (Frente exterior HD + 2 pantallas interiores a color + ¡Envío Gratis!).\n🏢 *Kit Hikvision DS-KIS212:* $92.40 + IVA (Monitor 7", audio nítido y apertura remota).\n🏢 *Centrales Colectivas INTELBRAS (Edificios):* Desde 4 hasta 24 departamentos (desde $104.50 + IVA) con desvío de llamadas a celulares.\n\n¿Para cuántos departamentos o para qué tipo de propiedad lo estás buscando? 📲`;
+    }
+
+    if (textLower.includes('cerco') || textLower.includes('jfl') || textLower.includes('hagroy') || textLower.includes('electrificad')) {
+        return `¡Hola${namePart}! 👋 Disponemos de electrificadores y kits completos para cercos eléctricos perimetrales con garantía directa:\n\n⚡ *Kit Plata JFL (Cód 15023):* $89.00 + IVA (Electrificador, batería 12V, sirena 20W, letrero)\n⚡ *Kit Oro JFL (Cód 11207):* $109.00 + IVA (Con caja metálica protectora para sirena)\n📱 *Kit Platino JFL con App Móvil (Cód 11208):* $137.00 + IVA (Arma y desarma desde tu smartphone)\n⚡ *Kit Hagroy i8:* $98.00 + IVA\n\n¿Qué perímetro aproximado en metros deseas proteger? Te podemos armar la cotización con todos los accesorios. 📦`;
+    }
+
+    if (textLower.includes('camara') || textLower.includes('cámara') || textLower.includes('imou') || textLower.includes('hikvision') || textLower.includes('dahua')) {
+        return `¡Hola${namePart}! 👋 Te ayudamos con cámaras de seguridad inteligentes de última generación:\n\n📷 *Cámara Robótica IMOU 360° WiFi:* $45.40 + IVA (Full HD 1080p, visión nocturna, audio doble vía y alertas al celular).\n📷 *Cámara IMOU PT Ranger 3MP Mini:* $95.00 USD (Resolución 3MP ultra nítida + ¡Envío Gratis!).\n🏢 *Kits CCTV Hikvision / Dahua:* Disponibles de 4, 8 y 16 canales con grabador e instalación.\n\n¿La requieres para interior de casa/oficina o exterior? 📲`;
+    }
+
+    if (textLower.includes('biometric') || textLower.includes('biométric') || textLower.includes('senseface') || textLower.includes('facial')) {
+        return `¡Hola${namePart}! 👋 El equipo estrella para control de asistencia y acceso es el *ZKTeco SenseFace 2A con Videoportero por App* por solo $175.00 USD:\n\n✨ Reconocimiento facial ultra veloz (menos de 0.3s)\n✨ Lector de huella digital + tarjetas RFID + PIN numérico\n✨ Conexión 100% WiFi y llamada directa a la App móvil\n✨ Apertura de puerta remota para oficinas y departamentos\n\n¿Te gustaría ver un video de cómo funciona o la ficha técnica detallada? 🚀`;
+    }
+
+    if (textLower.includes('antena') || textLower.includes('antihurto') || textLower.includes('antipanico') || textLower.includes('antipánico') || textLower.includes('barra')) {
+        return `¡Hola${namePart}! 👋 Para seguridad comercial y normativas de emergencia disponemos de:\n\n🚨 *Par Antenas Antihurto RF Mono Dahua Mercury:* $499.96 + IVA (Detección de etiquetas y tags duros, alta resistencia para boutiques, farmacias y minimarkets).\n🚪 *Cerradura Barra Antipánico Reforzada:* $98.00 + IVA (Acero inoxidable certificado para salidas de emergencia con 10 años de durabilidad + ¡Envío Gratis!).\n\n¿Para qué tipo de local comercial o proyecto lo requieres? Con gusto te preparamos la proforma. 📄`;
+    }
+
+    return `¡Hola${namePart}! 👋 Qué gusto saludarte. Bienvenido a *ATOMIC Electronics Ecuador*.\n\nSomos especialistas en:\n🔹 Videoporteros y citofonía para casas y edificios\n🔹 Control de acceso y torniquetes peatonales ZKTeco\n🔹 Cercos eléctricos perimetrales JFL y Hagroy\n🔹 Cámaras de seguridad inteligentes IMOU y CCTV\n🔹 Laptops, domótica y más de 9,000 productos con garantía\n\n🛒 Puedes ver todo nuestro catálogo en línea aquí: https://atomiccotizador.shop/web\n\n¿Qué producto o requerimiento te gustaría cotizar hoy? Te respondo de inmediato. 📲`;
+}
+
+        // 3. Consulta de IA con Cascada Resiliente (NVIDIA -> DeepSeek/OpenAI -> Consultor Experto Nativo)
+        let botReply: string | null = null;
+
+        try {
+            // Intento 1 con NVIDIA Llama-3.2-90B Vision
+            const completion = await axios.post(
+                "https://integrate.api.nvidia.com/v1/chat/completions",
+                {
+                    model: NVIDIA_MODEL,
+                    messages: [
+                        { role: "system", content: systemPrompt },
+                        { 
+                            role: "user", 
+                            content: `Historial de la conversación:\n${history}\n\nÚltimo mensaje recibido de ${contactName}:\n"${messageText}"`
+                        }
+                    ],
+                    temperature: 0.6,
+                    max_tokens: 380
+                },
+                {
+                    headers: {
+                        "Authorization": `Bearer ${NVIDIA_API_KEY}`,
+                        "Content-Type": "application/json"
+                    },
+                    timeout: 22000
+                }
+            );
+
+            botReply = completion.data.choices?.[0]?.message?.content?.trim();
+        } catch (nvidiaErr: any) {
+            console.warn('[BOT_NVIDIA_UNAVAILABLE] Falló NVIDIA API, activando motor secundario...', nvidiaErr.message);
+
+            // Fallback secundario si existe DeepSeek u OpenAI en entorno
+            if (process.env.DEEPSEEK_API_KEY) {
+                try {
+                    const deepseekRes = await axios.post(
+                        "https://api.deepseek.com/v1/chat/completions",
+                        {
+                            model: "deepseek-chat",
+                            messages: [
+                                { role: "system", content: systemPrompt },
+                                { role: "user", content: `Último mensaje recibido de ${contactName}:\n"${messageText}"` }
+                            ],
+                            temperature: 0.6,
+                            max_tokens: 350
+                        },
+                        {
+                            headers: {
+                                "Authorization": `Bearer ${process.env.DEEPSEEK_API_KEY}`,
+                                "Content-Type": "application/json"
+                            },
+                            timeout: 15000
+                        }
+                    );
+                    botReply = deepseekRes.data.choices?.[0]?.message?.content?.trim();
+                } catch (dsErr: any) {
+                    console.warn('[BOT_DEEPSEEK_FAILED]', dsErr.message);
                 }
             }
-        );
 
-        const botReply = completion.data.choices?.[0]?.message?.content?.trim();
+            // Fallback Maestro Determinista: Si ninguna API externa responde, NUNCA dejar el chat muerto
+            if (!botReply) {
+                console.log('[BOT_ENGAGING_RESILIENT_CONSULTANT] Empleando respuesta de consultor experto nativo.');
+                botReply = generateExpertConsultantFallback(messageText, contactName, isRecruitment);
+            }
+        }
 
         if (botReply) {
             try {
-                // 4. Enviar mensaje por WhatsApp Cloud API
+                // 4. Enviar mensaje por WhatsApp Cloud API con auto-reintentos
                 await sendWhatsAppMessage(whatsappId, botReply);
 
-                // 5. Guardar el mensaje OUTBOUND en la base de datos
+                // 5. Guardar el mensaje OUTBOUND en la base de datos con status SENT
                 await prisma.wAMessage.create({
                     data: {
                         conversationId,
@@ -412,27 +493,39 @@ METODOLOGÍA DE VENTA CONSULTIVA Y REGLAS DE ORO:
                         type: 'text',
                         body: botReply,
                         status: 'SENT',
-                        senderId: 'BOT_NEMOTRON_90B'
+                        senderId: 'BOT_ATOMIC_RESILIENT'
                     }
                 });
 
-                console.log(`[BOT_SUCCESS] Respondió automáticamente a ${whatsappId}`);
+                // Actualizar timestamp de conversación
+                await prisma.wAConversation.update({
+                    where: { id: conversationId },
+                    data: { updatedAt: new Date(), lastMessageAt: new Date() }
+                }).catch(() => {});
+
+                console.log(`[BOT_SUCCESS] Respondió automáticamente y de forma resiliente a ${whatsappId}`);
             } catch (sendErr: any) {
                 const errMsg = sendErr?.response?.data?.error?.message || sendErr.message || 'Error al entregar por WhatsApp';
                 console.error(`[BOT_SEND_FAILED] Recipiente: ${whatsappId}. Detalle:`, errMsg);
 
-                // Registrar en BD el mensaje fallido con su causa exacta para que el admin lo vea en CRM
+                // Registrar en BD con cuerpo limpio para que el asesor pueda reintentarlo con 1 solo clic en el CRM
                 await prisma.wAMessage.create({
                     data: {
                         conversationId,
                         whatsappMessageId: `bot-failed-${Date.now()}`,
                         direction: 'OUTBOUND',
                         type: 'text',
-                        body: `⚠️ [ERROR DE ENVÍO META]: ${botReply}\n\nMotivo del fallo: ${errMsg}`,
+                        body: botReply,
                         status: 'FAILED',
                         errorMessage: errMsg,
-                        senderId: 'BOT_NEMOTRON_90B'
+                        senderId: 'BOT_ATOMIC_RESILIENT'
                     }
+                }).catch(() => {});
+
+                // Marcar la conversación con alta prioridad y estado de atención
+                await prisma.wAConversation.update({
+                    where: { id: conversationId },
+                    data: { priority: 'URGENT', status: 'LEAD_PAUTA' }
                 }).catch(() => {});
             }
         }
@@ -442,21 +535,27 @@ METODOLOGÍA DE VENTA CONSULTIVA Y REGLAS DE ORO:
         const errorDetail = error.response?.data || error.message;
         console.error('[BOT_PROCESSING_ERROR]', errorDetail);
 
+        // Si ocurre una excepción inesperada, enviar la respuesta de emergencia al cliente
         try {
+            const emergencyReply = generateExpertConsultantFallback(params.messageText, params.contactName, false);
+            await sendWhatsAppMessage(params.whatsappId, emergencyReply);
+
             await prisma.wAMessage.create({
                 data: {
                     conversationId: params.conversationId,
-                    whatsappMessageId: `bot-err-${Date.now()}`,
+                    whatsappMessageId: `bot-emergency-${Date.now()}`,
                     direction: 'OUTBOUND',
                     type: 'text',
-                    body: `⚠️ [FALLO DE IA / PROCESO]: No se pudo procesar la respuesta automática.`,
-                    status: 'FAILED',
-                    errorMessage: String(errorDetail),
-                    senderId: 'BOT_SYSTEM'
+                    body: emergencyReply,
+                    status: 'SENT',
+                    senderId: 'BOT_EMERGENCY_RESCUE'
                 }
             });
-        } catch (_) {}
-
-        return null;
+            console.log(`[BOT_EMERGENCY_SUCCESS] Chat rescatado exitosamente para ${params.whatsappId}`);
+            return emergencyReply;
+        } catch (rescueErr: any) {
+            console.error('[BOT_RESCUE_FAILED]', rescueErr.message);
+            return null;
+        }
     }
 }

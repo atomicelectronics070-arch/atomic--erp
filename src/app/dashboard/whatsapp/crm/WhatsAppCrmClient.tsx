@@ -32,6 +32,7 @@ interface MessageItem {
     mediaUrl?: string | null
     referral?: ReferralData | null
     status?: string
+    errorMessage?: string | null
 }
 
 interface Chat {
@@ -44,9 +45,31 @@ interface Chat {
     status: string
     isFromAd?: boolean
     adHeadline?: string
+    hasFailedMessage?: boolean
+    failedMessage?: {
+        id: string
+        body: string
+        errorMessage?: string | null
+        createdAt?: string
+    } | null
     ownerId?: string | null
     ownerName?: string | null
     messages: MessageItem[]
+}
+
+function formatPhoneNumber(phone: string = ''): string {
+    const clean = phone.replace(/\D/g, '');
+    if (!clean) return phone;
+    if (clean.startsWith('593') && clean.length === 12) {
+        return `+593 ${clean.slice(3, 5)} ${clean.slice(5, 8)} ${clean.slice(8)}`;
+    }
+    if (clean.startsWith('09') && clean.length === 10) {
+        return `+593 ${clean.slice(1, 3)} ${clean.slice(3, 6)} ${clean.slice(6)}`;
+    }
+    if (clean.length > 8) {
+        return `+${clean.slice(0, 3)} ${clean.slice(3, 6)} ${clean.slice(6)}`;
+    }
+    return clean ? `+${clean}` : phone;
 }
 
 function parseMessageBody(rawBody: string = '', rawMediaUrl?: string | null, rawType: string = 'text') {
@@ -71,11 +94,21 @@ function parseMessageBody(rawBody: string = '', rawMediaUrl?: string | null, raw
     if (!referral && cleanText.startsWith('{') && cleanText.endsWith('}')) {
         try {
             const parsed = JSON.parse(cleanText);
-            if (parsed.headline || parsed.sourceUrl || parsed.sourceType || parsed.imageUrl || parsed.thumbnailUrl) {
+            if (parsed.headline || parsed.sourceUrl || parsed.sourceType || parsed.imageUrl || parsed.thumbnailUrl || parsed.source_url) {
                 referral = parsed;
                 cleanText = parsed.body || parsed.headline || '';
             }
         } catch (e) {}
+    }
+
+    // Normalize referral keys (snake_case -> camelCase)
+    if (referral) {
+        if ((referral as any).image_url && !referral.imageUrl) referral.imageUrl = (referral as any).image_url;
+        if ((referral as any).thumbnail_url && !referral.thumbnailUrl) referral.thumbnailUrl = (referral as any).thumbnail_url;
+        if ((referral as any).source_url && !referral.sourceUrl) referral.sourceUrl = (referral as any).source_url;
+        if ((referral as any).source_type && !referral.sourceType) referral.sourceType = (referral as any).source_type;
+        if ((referral as any).source_id && !referral.sourceId) referral.sourceId = (referral as any).source_id;
+        if ((referral as any).ctwa_clid && !referral.ctwaClid) referral.ctwaClid = (referral as any).ctwa_clid;
     }
 
     // 3. Normalize unsupported or empty text
@@ -196,9 +229,14 @@ export default function WhatsAppCrmClient() {
         }
     }, [])
 
-    // CRM Tabs Filter: "MY_LEADS" | "ALL_WHATSAPP" | "AUTO_REGISTER"
-    const [activeCrmTab, setActiveCrmTab] = useState<'MY_LEADS' | 'ALL_WHATSAPP' | 'AUTO_REGISTER'>('MY_LEADS')
+    // CRM Tabs Filter: "MY_LEADS" | "ALL_WHATSAPP" | "PAUTAS" | "FAILED" | "AUTO_REGISTER"
+    const [activeCrmTab, setActiveCrmTab] = useState<'MY_LEADS' | 'ALL_WHATSAPP' | 'PAUTAS' | 'FAILED' | 'AUTO_REGISTER'>('MY_LEADS')
     const [systemAdvisors, setSystemAdvisors] = useState<any[]>([])
+
+    // Intelligent Retry & Resuscitate State
+    const [isRetrying, setIsRetrying] = useState(false)
+    const [retrySuccessMsg, setRetrySuccessMsg] = useState<string | null>(null)
+    const [copiedPhone, setCopiedPhone] = useState(false)
 
     // Karen Agent Modal & Live State
     const [karenModalOpen, setKarenModalOpen] = useState(false)
@@ -494,8 +532,8 @@ export default function WhatsAppCrmClient() {
                         })
                         .map((conv: any) => {
                         const rawMessages = conv.messages || [];
-                        let isFromAd = conv.status === 'LEAD_PAUTA';
-                        let adHeadline = '';
+                        let isFromAd = conv.status === 'LEAD_PAUTA' || Boolean(conv.isFromAd);
+                        let adHeadline = conv.adHeadline || '';
 
                         const parsedMessages: MessageItem[] = rawMessages.map((m: any) => {
                             const { cleanText, referral, mediaUrl, type } = parseMessageBody(m.body, m.mediaUrl, m.type);
@@ -511,7 +549,8 @@ export default function WhatsAppCrmClient() {
                                 type: type || 'text',
                                 mediaUrl: mediaUrl,
                                 referral: referral,
-                                status: m.status
+                                status: m.status,
+                                errorMessage: m.errorMessage || null
                             };
                         }).reverse();
 
@@ -528,6 +567,8 @@ export default function WhatsAppCrmClient() {
                             else lastMessageDisplay = lastParsed.cleanText || 'Mensaje';
                         }
 
+                        const hasFailedMessage = Boolean(conv.hasFailedMessage) || parsedMessages.some(m => m.status === 'FAILED');
+
                         return {
                             id: conv.id,
                             name: conv.contact?.name || conv.contact?.whatsappId || 'Cliente WhatsApp',
@@ -538,6 +579,8 @@ export default function WhatsAppCrmClient() {
                             status: conv.status || 'NEW',
                             isFromAd: isFromAd || conv.status === 'LEAD_PAUTA',
                             adHeadline: adHeadline,
+                            hasFailedMessage: hasFailedMessage,
+                            failedMessage: conv.failedMessage || (hasFailedMessage ? parsedMessages.find(m => m.status === 'FAILED') : null),
                             ownerId: conv.ownerId || conv.owner?.id || null,
                             ownerName: conv.owner?.name || null,
                             messages: parsedMessages
@@ -858,6 +901,105 @@ export default function WhatsAppCrmClient() {
         }
     };
 
+    // ═══════════════════════════════════════════════════════════
+    // INTELLIGENT RETRY & RESUSCITATE CHAT HANDLERS
+    // ═══════════════════════════════════════════════════════════
+    const handleCopyPhone = (phone: string) => {
+        if (!navigator?.clipboard) return;
+        const clean = phone.replace(/\D/g, '');
+        navigator.clipboard.writeText(clean);
+        setCopiedPhone(true);
+        setTimeout(() => setCopiedPhone(false), 2000);
+    };
+
+    const handleRetryFailedMessage = async (messageId?: string) => {
+        if (!activeChat) return;
+        setIsRetrying(true);
+        setRetrySuccessMsg(null);
+        try {
+            const res = await fetch('/api/whatsapp/retry', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    conversationId: activeChat.id,
+                    messageId: messageId,
+                    action: 'retry_message'
+                })
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                playOutgoingSound();
+                setRetrySuccessMsg('✅ ¡Mensaje reenviado y entregado exitosamente a Meta WhatsApp!');
+                setTimeout(() => setRetrySuccessMsg(null), 4000);
+                await fetchConversations();
+            } else {
+                alert(`⚠️ Error al reintentar: ${data.error || 'No se pudo reenviar el mensaje.'}`);
+            }
+        } catch (e: any) {
+            alert(`⚠️ Error de red al reintentar: ${e.message}`);
+        } finally {
+            setIsRetrying(false);
+        }
+    };
+
+    const handleResuscitateChat = async () => {
+        if (!activeChat) return;
+        setIsRetrying(true);
+        setRetrySuccessMsg(null);
+        try {
+            const res = await fetch('/api/whatsapp/retry', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    conversationId: activeChat.id,
+                    action: 'resuscitate_chat'
+                })
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                playOutgoingSound();
+                setRetrySuccessMsg('🤖 ¡Chat resucitado! La IA ha generado y enviado una respuesta inteligente al cliente.');
+                setTimeout(() => setRetrySuccessMsg(null), 4000);
+                await fetchConversations();
+            } else {
+                alert(`⚠️ Error al resucitar chat: ${data.error || 'No se pudo generar respuesta.'}`);
+            }
+        } catch (e: any) {
+            alert(`⚠️ Error de red: ${e.message}`);
+        } finally {
+            setIsRetrying(false);
+        }
+    };
+
+    const handleSendTemplateWindow = async (templateName: string = 'hello_world') => {
+        if (!activeChat) return;
+        if (!confirm(`¿Deseas enviar la plantilla oficial de Meta "${templateName}" para reabrir la ventana de conversación de 24 horas?`)) return;
+        setIsRetrying(true);
+        try {
+            const res = await fetch('/api/whatsapp/retry', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    conversationId: activeChat.id,
+                    action: 'send_template',
+                    templateName
+                })
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                playOutgoingSound();
+                alert(`✅ Plantilla enviada con éxito. La ventana de 24h está activa nuevamente.`);
+                await fetchConversations();
+            } else {
+                alert(`⚠️ Error al enviar plantilla: ${data.error || 'Verifica la plantilla en Meta Business Manager.'}`);
+            }
+        } catch (e: any) {
+            alert(`⚠️ Error: ${e.message}`);
+        } finally {
+            setIsRetrying(false);
+        }
+    };
+
     // Current user identification for "MIS LEADS"
     const currentUserId = (session?.user as any)?.id || ''
     const currentUserName = session?.user?.name || ''
@@ -890,7 +1032,13 @@ export default function WhatsAppCrmClient() {
         )
     }
 
+    const isFailedChat = (chat: Chat) => {
+        return Boolean(chat.hasFailedMessage) || chat.messages.some(m => m.status === 'FAILED')
+    }
+
     const autoRegisterCount = chats.filter(c => isAutoRegister(c)).length
+    const failedCount = chats.filter(c => isFailedChat(c)).length
+    const pautasCount = chats.filter(c => c.isFromAd && !isAutoRegister(c)).length
     const myLeadsCount = chats.filter(c => isMyLead(c) && !isAutoRegister(c)).length
     const allWhatsAppCount = chats.filter(c => !isAutoRegister(c)).length
 
@@ -900,6 +1048,10 @@ export default function WhatsAppCrmClient() {
             if (!isAutoRegister(c)) return false
         } else if (activeCrmTab === 'MY_LEADS') {
             if (!isMyLead(c) || isAutoRegister(c)) return false
+        } else if (activeCrmTab === 'PAUTAS') {
+            if (!c.isFromAd || isAutoRegister(c)) return false
+        } else if (activeCrmTab === 'FAILED') {
+            if (!isFailedChat(c)) return false
         } else if (activeCrmTab === 'ALL_WHATSAPP') {
             if (isAutoRegister(c)) return false
         }
@@ -988,64 +1140,119 @@ export default function WhatsAppCrmClient() {
                 {/* Left Sidebar: Chat List */}
                 <div className={`w-full md:w-80 lg:w-96 border-r border-slate-800 bg-slate-900/90 flex flex-col shrink-0 ${activeChatId ? 'hidden md:flex' : 'flex'}`}>
                     
-                    {/* CRM View Tabs: MIS CONTACTOS vs ENTRANTES vs EMPLEO */}
+                    {/* CRM View Tabs: MIS CONTACTOS vs ENTRANTES vs PAUTAS vs FALLOS vs EMPLEO */}
                     <div className="p-2 bg-[#111b21] border-b border-[#202c33]">
-                        <div className="grid grid-cols-3 gap-1 p-1 bg-[#202c33] rounded-2xl border border-slate-700/50">
+                        <div className="grid grid-cols-5 gap-1 p-1 bg-[#202c33] rounded-2xl border border-slate-700/50">
+                            {/* MIS CONTACTOS */}
                             <button
                                 type="button"
                                 onClick={() => setActiveCrmTab('MY_LEADS')}
-                                className={`py-2 px-1 rounded-xl text-[11px] font-black transition-all flex items-center justify-center gap-1 cursor-pointer truncate ${
+                                className={`py-1.5 px-1 rounded-xl text-[10px] font-black transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer truncate ${
                                     activeCrmTab === 'MY_LEADS'
                                         ? 'bg-[#00a884] text-black shadow-md font-black'
                                         : 'text-slate-400 hover:text-white hover:bg-white/5'
                                 }`}
                                 title="Mis Contactos y asignados"
                             >
-                                <UserCheck size={12} className={activeCrmTab === 'MY_LEADS' ? 'text-black' : 'text-[#00a884]'} />
-                                <span className="truncate">MIS CONTACTOS</span>
-                                <span className={`text-[9px] px-1 py-0.2 rounded-full font-mono font-bold shrink-0 ${
-                                    activeCrmTab === 'MY_LEADS' ? 'bg-black/30 text-white' : 'bg-slate-800 text-slate-400'
-                                }`}>
-                                    {myLeadsCount}
-                                </span>
+                                <div className="flex items-center gap-1">
+                                    <UserCheck size={12} className={activeCrmTab === 'MY_LEADS' ? 'text-black' : 'text-[#00a884]'} />
+                                    <span className={`text-[9px] px-1 py-0.2 rounded-full font-mono font-bold ${
+                                        activeCrmTab === 'MY_LEADS' ? 'bg-black/30 text-white' : 'bg-slate-800 text-slate-400'
+                                    }`}>
+                                        {myLeadsCount}
+                                    </span>
+                                </div>
+                                <span className="truncate text-[8px] md:text-[9px] uppercase font-bold tracking-tight">MIS CHATS</span>
                             </button>
 
+                            {/* ENTRANTES */}
                             <button
                                 type="button"
                                 onClick={() => setActiveCrmTab('ALL_WHATSAPP')}
-                                className={`py-2 px-1 rounded-xl text-[11px] font-black transition-all flex items-center justify-center gap-1 cursor-pointer truncate ${
+                                className={`py-1.5 px-1 rounded-xl text-[10px] font-black transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer truncate ${
                                     activeCrmTab === 'ALL_WHATSAPP'
                                         ? 'bg-[#00a884] text-black shadow-md font-black'
                                         : 'text-slate-400 hover:text-white hover:bg-white/5'
                                 }`}
                                 title="Todos los chats entrantes"
                             >
-                                <MessageSquare size={12} className={activeCrmTab === 'ALL_WHATSAPP' ? 'text-black' : 'text-cyan-400'} />
-                                <span className="truncate">ENTRANTES</span>
-                                <span className={`text-[9px] px-1 py-0.2 rounded-full font-mono font-bold shrink-0 ${
-                                    activeCrmTab === 'ALL_WHATSAPP' ? 'bg-black/30 text-white' : 'bg-slate-800 text-slate-400'
-                                }`}>
-                                    {allWhatsAppCount}
-                                </span>
+                                <div className="flex items-center gap-1">
+                                    <MessageSquare size={12} className={activeCrmTab === 'ALL_WHATSAPP' ? 'text-black' : 'text-cyan-400'} />
+                                    <span className={`text-[9px] px-1 py-0.2 rounded-full font-mono font-bold ${
+                                        activeCrmTab === 'ALL_WHATSAPP' ? 'bg-black/30 text-white' : 'bg-slate-800 text-slate-400'
+                                    }`}>
+                                        {allWhatsAppCount}
+                                    </span>
+                                </div>
+                                <span className="truncate text-[8px] md:text-[9px] uppercase font-bold tracking-tight">ENTRANTES</span>
                             </button>
 
+                            {/* PAUTAS */}
+                            <button
+                                type="button"
+                                onClick={() => setActiveCrmTab('PAUTAS')}
+                                className={`py-1.5 px-1 rounded-xl text-[10px] font-black transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer truncate ${
+                                    activeCrmTab === 'PAUTAS'
+                                        ? 'bg-blue-600 text-white shadow-md font-black'
+                                        : 'text-slate-400 hover:text-white hover:bg-white/5'
+                                }`}
+                                title="Leads de Pautas Publicitarias Meta"
+                            >
+                                <div className="flex items-center gap-1">
+                                    <Megaphone size={12} className={activeCrmTab === 'PAUTAS' ? 'text-white' : 'text-blue-400'} />
+                                    <span className={`text-[9px] px-1 py-0.2 rounded-full font-mono font-bold ${
+                                        activeCrmTab === 'PAUTAS' ? 'bg-black/30 text-white' : 'bg-slate-800 text-blue-300'
+                                    }`}>
+                                        {pautasCount}
+                                    </span>
+                                </div>
+                                <span className="truncate text-[8px] md:text-[9px] uppercase font-bold tracking-tight">PAUTAS</span>
+                            </button>
+
+                            {/* FALLOS */}
+                            <button
+                                type="button"
+                                onClick={() => setActiveCrmTab('FAILED')}
+                                className={`py-1.5 px-1 rounded-xl text-[10px] font-black transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer truncate ${
+                                    activeCrmTab === 'FAILED'
+                                        ? 'bg-rose-500 text-white shadow-md font-black'
+                                        : failedCount > 0
+                                        ? 'text-rose-400 bg-rose-950/40 hover:bg-rose-900/50'
+                                        : 'text-slate-400 hover:text-white hover:bg-white/5'
+                                }`}
+                                title="Chats con mensajes fallidos que necesitan reintento o rescate"
+                            >
+                                <div className="flex items-center gap-1">
+                                    <AlertCircle size={12} className={activeCrmTab === 'FAILED' ? 'text-white' : failedCount > 0 ? 'text-rose-400 animate-pulse' : 'text-slate-400'} />
+                                    <span className={`text-[9px] px-1 py-0.2 rounded-full font-mono font-bold ${
+                                        activeCrmTab === 'FAILED' ? 'bg-black/30 text-white' : failedCount > 0 ? 'bg-rose-600 text-white animate-pulse' : 'bg-slate-800 text-slate-400'
+                                    }`}>
+                                        {failedCount}
+                                    </span>
+                                </div>
+                                <span className="truncate text-[8px] md:text-[9px] uppercase font-bold tracking-tight">FALLOS</span>
+                            </button>
+
+                            {/* EMPLEO */}
                             <button
                                 type="button"
                                 onClick={() => setActiveCrmTab('AUTO_REGISTER')}
-                                className={`py-2 px-1 rounded-xl text-[11px] font-black transition-all flex items-center justify-center gap-1 cursor-pointer truncate ${
+                                className={`py-1.5 px-1 rounded-xl text-[10px] font-black transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer truncate ${
                                     activeCrmTab === 'AUTO_REGISTER'
                                         ? 'bg-[#00a884] text-black shadow-md font-black'
                                         : 'text-slate-400 hover:text-white hover:bg-white/5'
                                 }`}
                                 title="Postulantes a Empleo y Registros"
                             >
-                                <Sparkles size={12} className={activeCrmTab === 'AUTO_REGISTER' ? 'text-black' : 'text-amber-400'} />
-                                <span className="truncate">EMPLEO</span>
-                                <span className={`text-[9px] px-1 py-0.2 rounded-full font-mono font-bold shrink-0 ${
-                                    activeCrmTab === 'AUTO_REGISTER' ? 'bg-black/30 text-white' : 'bg-slate-800 text-amber-400'
-                                }`}>
-                                    {autoRegisterCount}
-                                </span>
+                                <div className="flex items-center gap-1">
+                                    <Sparkles size={12} className={activeCrmTab === 'AUTO_REGISTER' ? 'text-black' : 'text-amber-400'} />
+                                    <span className={`text-[9px] px-1 py-0.2 rounded-full font-mono font-bold ${
+                                        activeCrmTab === 'AUTO_REGISTER' ? 'bg-black/30 text-white' : 'bg-slate-800 text-amber-400'
+                                    }`}>
+                                        {autoRegisterCount}
+                                    </span>
+                                </div>
+                                <span className="truncate text-[8px] md:text-[9px] uppercase font-bold tracking-tight">EMPLEO</span>
                             </button>
                         </div>
                     </div>
@@ -1058,7 +1265,13 @@ export default function WhatsAppCrmClient() {
                                 type="text"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                placeholder={activeCrmTab === 'MY_LEADS' ? "Buscar en Mis Contactos..." : activeCrmTab === 'AUTO_REGISTER' ? "Buscar en Empleo..." : "Buscar en Entrantes..."}
+                                placeholder={
+                                    activeCrmTab === 'MY_LEADS' ? "Buscar en Mis Contactos..." :
+                                    activeCrmTab === 'PAUTAS' ? "Buscar en Pautas publicitarias..." :
+                                    activeCrmTab === 'FAILED' ? "Buscar en chats con fallo..." :
+                                    activeCrmTab === 'AUTO_REGISTER' ? "Buscar en Empleo..." :
+                                    "Buscar en Entrantes..."
+                                }
                                 className="w-full bg-[#202c33] border border-[#2a3942] rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-[#00a884] transition-colors"
                             />
                         </div>
@@ -1087,33 +1300,61 @@ export default function WhatsAppCrmClient() {
                                 <button
                                     key={chat.id}
                                     onClick={() => handleSelectChat(chat)}
-                                    className={`w-full p-3.5 text-left transition-all flex items-start gap-3 hover:bg-slate-800/50 cursor-pointer ${activeChatId === chat.id ? 'bg-slate-800/80 border-l-4 border-emerald-500' : ''}`}
+                                    className={`w-full p-3 md:p-3.5 text-left transition-all flex items-start gap-3 hover:bg-slate-800/60 cursor-pointer border-b border-[#202c33]/70 ${
+                                        activeChatId === chat.id 
+                                            ? 'bg-[#202c33] border-l-4 border-[#00a884] shadow-sm' 
+                                            : chat.hasFailedMessage
+                                            ? 'bg-rose-950/20 hover:bg-rose-950/35'
+                                            : ''
+                                    }`}
                                 >
                                     <div className="relative shrink-0">
-                                        <div className="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-slate-300 text-sm">
+                                        <div className={`w-11 h-11 rounded-2xl flex items-center justify-center font-extrabold text-sm border ${
+                                            chat.hasFailedMessage
+                                                ? 'bg-rose-950 border-rose-500/60 text-rose-300 ring-2 ring-rose-500/40'
+                                                : chat.isFromAd
+                                                ? 'bg-blue-950 border-blue-500/60 text-blue-300'
+                                                : 'bg-slate-800 border-slate-700 text-slate-200'
+                                        }`}>
                                             {chat.name.charAt(0).toUpperCase()}
                                         </div>
-                                        {chat.isFromAd && (
-                                            <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-blue-600 border border-slate-900 flex items-center justify-center text-[8px]" title="Lead de Pauta Facebook Ads">
+                                        {chat.hasFailedMessage ? (
+                                            <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-rose-600 border border-slate-900 flex items-center justify-center text-[9px] animate-pulse" title="Fallo de Envío">
+                                                ⚠️
+                                            </span>
+                                        ) : chat.isFromAd ? (
+                                            <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-blue-600 border border-slate-900 flex items-center justify-center text-[8px]" title="Lead de Pauta">
                                                 📢
                                             </span>
-                                        )}
+                                        ) : null}
                                     </div>
 
                                     <div className="flex-1 min-w-0">
-                                        <div className="flex items-center justify-between mb-1">
-                                            <h3 className="font-bold text-xs text-white truncate">{chat.name}</h3>
-                                            <span className="text-[10px] font-mono text-slate-400 shrink-0">{chat.time}</span>
+                                        <div className="flex items-center justify-between mb-0.5">
+                                            <h3 className="font-extrabold text-sm md:text-[15px] text-white truncate tracking-tight">
+                                                {chat.name}
+                                            </h3>
+                                            <span className="text-[10px] font-mono text-slate-400 shrink-0 ml-1">{chat.time}</span>
                                         </div>
 
+                                        {/* Número de Teléfono Destacado */}
+                                        <p className="text-[11px] font-mono font-bold text-emerald-400/90 truncate mb-1">
+                                            {formatPhoneNumber(chat.phone)}
+                                        </p>
+
                                         <div className="flex items-center gap-1.5 flex-wrap mb-1">
+                                            {chat.hasFailedMessage && (
+                                                <span className="text-[9px] font-black uppercase px-1.5 py-0.2 rounded bg-rose-950 text-rose-300 border border-rose-500/50 flex items-center gap-0.5 animate-pulse shrink-0">
+                                                    ⚠️ Fallo Envío
+                                                </span>
+                                            )}
                                             {chat.isFromAd && (
                                                 <span className="text-[9px] font-black uppercase px-1.5 py-0.2 rounded bg-blue-950 text-blue-300 border border-blue-500/40 truncate max-w-[140px]">
-                                                    📢 {chat.adHeadline || 'Pauta FB Ads'}
+                                                    📢 {chat.adHeadline || 'Pauta Meta'}
                                                 </span>
                                             )}
                                             {chat.ownerName ? (
-                                                <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 flex items-center gap-0.5 truncate max-w-[140px]">
+                                                <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 flex items-center gap-0.5 truncate max-w-[120px]">
                                                     <UserCheck size={9} className="shrink-0" /> {chat.ownerName}
                                                 </span>
                                             ) : (
@@ -1151,30 +1392,85 @@ export default function WhatsAppCrmClient() {
                     
                     {activeChat ? (
                         <>
-                            {/* Chat Header */}
-                            <div className="p-3.5 md:p-4 border-b border-[#202c33] bg-[#202c33] flex items-center justify-between">
-                                <div className="flex items-center gap-3">
+                            {/* Chat Header (MODERNO, NOMBRE Y TELÉFONO DESTACADOS) */}
+                            <div className="px-4 py-3 md:px-6 md:py-3.5 border-b border-[#202c33] bg-[#202c33] flex flex-wrap items-center justify-between gap-3 shadow-md">
+                                <div className="flex items-center gap-3.5 min-w-0">
                                     <button 
                                         onClick={() => setActiveChatId('')} 
-                                        className="md:hidden p-1.5 rounded-lg bg-slate-900 text-slate-400 hover:text-white cursor-pointer"
+                                        className="md:hidden p-2 rounded-xl bg-slate-900 text-slate-300 hover:text-white cursor-pointer border border-slate-800"
+                                        title="Volver a chats"
                                     >
-                                        <ChevronLeft size={18} />
+                                        <ChevronLeft size={20} />
                                     </button>
-                                    <div className="w-9 h-9 rounded-full bg-[#00a884]/20 border border-[#00a884]/40 text-[#00a884] font-bold flex items-center justify-center text-sm">
-                                        {activeChat.name.charAt(0).toUpperCase()}
+                                    
+                                    {/* Avatar */}
+                                    <div className="relative shrink-0">
+                                        <div className={`w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center font-black text-lg md:text-xl shadow-lg border-2 ${
+                                            activeChat.hasFailedMessage 
+                                                ? 'bg-rose-950/90 border-rose-500/70 text-rose-300 ring-2 ring-rose-500/40' 
+                                                : activeChat.isFromAd
+                                                ? 'bg-blue-950/90 border-blue-500/70 text-blue-300 ring-2 ring-blue-500/40'
+                                                : 'bg-emerald-950/80 border-emerald-500/50 text-emerald-300 ring-2 ring-emerald-500/30'
+                                        }`}>
+                                            {activeChat.name.charAt(0).toUpperCase()}
+                                        </div>
+                                        {activeChat.hasFailedMessage ? (
+                                            <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-rose-600 border-2 border-slate-950 flex items-center justify-center text-[10px] animate-pulse" title="Fallo de Envío">
+                                                ⚠️
+                                            </span>
+                                        ) : activeChat.isFromAd ? (
+                                            <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-blue-600 border-2 border-slate-950 flex items-center justify-center text-[10px]" title="Lead de Pauta">
+                                                📢
+                                            </span>
+                                        ) : null}
                                     </div>
-                                    <div>
-                                        <div className="flex items-center gap-2 flex-wrap">
-                                            <h2 className="font-bold text-sm text-white">{activeChat.name}</h2>
-                                            {activeChat.isFromAd && (
-                                                <span className="bg-blue-500/20 text-blue-400 border border-blue-500/40 text-[9px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
-                                                    <Megaphone size={10} /> Lead de Anuncio
+
+                                    {/* Nombre & Teléfono en Formato Grande */}
+                                    <div className="min-w-0">
+                                        <div className="flex items-center gap-2.5 flex-wrap">
+                                            <h2 className="text-lg md:text-2xl font-black text-white tracking-tight truncate">
+                                                {activeChat.name}
+                                            </h2>
+                                            {activeChat.hasFailedMessage && (
+                                                <span className="bg-rose-950/90 text-rose-300 border border-rose-500/60 text-[10px] font-black px-2.5 py-0.5 rounded-full flex items-center gap-1 animate-pulse">
+                                                    <AlertCircle size={11} className="text-rose-400" /> FALLO EN ENVÍO
                                                 </span>
                                             )}
+                                            {activeChat.isFromAd && (
+                                                <span className="bg-blue-950/90 text-cyan-300 border border-blue-500/50 text-[10px] font-black px-2.5 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
+                                                    <Megaphone size={11} className="text-cyan-400" /> LEAD DE PAUTA
+                                                </span>
+                                            )}
+                                        </div>
+
+                                        {/* Teléfono Grande en Pill Verde con Copiar & Llamar */}
+                                        <div className="flex items-center gap-2 mt-1 flex-wrap">
+                                            <div className="inline-flex items-center gap-2 bg-emerald-950/90 border border-emerald-500/40 px-3 py-1 rounded-xl shadow-[0_0_15px_rgba(16,185,129,0.15)] group">
+                                                <Phone size={14} className="text-emerald-400 group-hover:scale-110 transition-transform" />
+                                                <span className="text-sm md:text-base font-mono font-black text-emerald-300 tracking-wider">
+                                                    {formatPhoneNumber(activeChat.phone)}
+                                                </span>
+                                                <button
+                                                    onClick={() => handleCopyPhone(activeChat.phone)}
+                                                    className="p-1 rounded-md hover:bg-emerald-500/20 text-emerald-400 hover:text-emerald-200 transition-colors cursor-pointer"
+                                                    title="Copiar número telefónico"
+                                                >
+                                                    {copiedPhone ? <Check size={14} className="text-emerald-300" /> : <Copy size={14} />}
+                                                </button>
+                                                <a
+                                                    href={`tel:${activeChat.phone.replace(/\D/g, '')}`}
+                                                    className="p-1 rounded-md hover:bg-emerald-500/20 text-emerald-400 hover:text-emerald-200 transition-colors hidden sm:inline-block cursor-pointer text-xs"
+                                                    title="Llamar teléfono"
+                                                >
+                                                    📞
+                                                </a>
+                                            </div>
+
+                                            {/* Estado de Asignación */}
                                             {activeChat.ownerName ? (
                                                 <div className="flex items-center gap-1.5">
-                                                    <span className="bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 text-[9px] font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1">
-                                                        <UserCheck size={10} /> Asignado a: {activeChat.ownerName}
+                                                    <span className="bg-cyan-950/60 text-cyan-300 border border-cyan-500/30 text-xs font-bold px-2.5 py-1 rounded-xl flex items-center gap-1">
+                                                        <UserCheck size={12} /> {activeChat.ownerName}
                                                     </span>
                                                     {canAssignLeads && (
                                                         <button
@@ -1183,47 +1479,118 @@ export default function WhatsAppCrmClient() {
                                                                 setAdvisorInput(activeChat.ownerName || "");
                                                                 setAssignModalOpen(true);
                                                             }}
-                                                            className="text-[10px] text-cyan-400 hover:text-cyan-200 bg-cyan-950/60 hover:bg-cyan-900/80 border border-cyan-500/30 px-2 py-0.5 rounded-lg transition-colors cursor-pointer font-bold flex items-center gap-1"
-                                                            title="Reasignar lead a otro asesor"
+                                                            className="text-[11px] text-cyan-400 hover:text-cyan-200 bg-cyan-950/70 hover:bg-cyan-900/80 border border-cyan-500/30 px-2 py-1 rounded-lg transition-colors cursor-pointer font-bold flex items-center gap-1"
+                                                            title="Reasignar asesor"
                                                         >
-                                                            <Users size={11} /> Reasignar Asesor
+                                                            <Users size={12} /> Reasignar
                                                         </button>
                                                     )}
                                                 </div>
                                             ) : (
-                                                <div className="flex items-center gap-2">
-                                                    <button
-                                                        onClick={() => {
-                                                            setChatToAssign(activeChat);
-                                                            setAdvisorInput(session?.user?.name || "");
-                                                            setAssignModalOpen(true);
-                                                        }}
-                                                        className="bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[9px] font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1 hover:bg-amber-500/30 cursor-pointer animate-pulse"
-                                                    >
-                                                        <UserPlus size={10} /> ⚠️ Sin Asignar - Atender
-                                                    </button>
-                                                    {canAssignLeads && (
-                                                        <button
-                                                            onClick={() => {
-                                                                setChatToAssign(activeChat);
-                                                                setAdvisorInput("");
-                                                                setAssignModalOpen(true);
-                                                            }}
-                                                            className="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white text-[9px] font-black px-2.5 py-1 rounded-lg flex items-center gap-1 cursor-pointer shadow-sm transition-all"
-                                                        >
-                                                            <Users size={11} /> Asignar a Asesor
-                                                        </button>
-                                                    )}
-                                                </div>
+                                                <button
+                                                    onClick={() => {
+                                                        setChatToAssign(activeChat);
+                                                        setAdvisorInput(session?.user?.name || "");
+                                                        setAssignModalOpen(true);
+                                                    }}
+                                                    className="bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-bold px-3 py-1 rounded-xl flex items-center gap-1 hover:bg-amber-500/30 cursor-pointer animate-pulse"
+                                                >
+                                                    <UserPlus size={12} /> ⚡ Sin Asignar - Atender
+                                                </button>
                                             )}
                                         </div>
-                                        <p className="text-[10px] font-mono text-slate-400">{activeChat.phone}</p>
                                     </div>
+                                </div>
+
+                                {/* Acciones del Header: Reintento Rápido y WhatsApp Web */}
+                                <div className="flex items-center gap-2">
+                                    {activeChat.hasFailedMessage && (
+                                        <button
+                                            onClick={() => handleRetryFailedMessage(activeChat.failedMessage?.id)}
+                                            disabled={isRetrying}
+                                            className="bg-gradient-to-r from-amber-600 to-rose-600 hover:from-amber-500 hover:to-rose-500 text-white font-black text-xs px-3.5 py-2 rounded-xl transition-all flex items-center gap-1.5 shadow-[0_0_15px_rgba(245,158,11,0.3)] cursor-pointer disabled:opacity-50"
+                                            title="Reintentar mensaje fallido con Meta WhatsApp"
+                                        >
+                                            {isRetrying ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}
+                                            <span>Reintentar Envío</span>
+                                        </button>
+                                    )}
+
+                                    <a
+                                        href={`https://wa.me/${activeChat.phone.replace(/\D/g, '')}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs px-3.5 py-2 rounded-xl transition-all flex items-center gap-1.5 shadow-[0_0_15px_rgba(16,185,129,0.3)] cursor-pointer"
+                                    >
+                                        <ExternalLink size={14} /> <span className="hidden sm:inline">WhatsApp Web</span>
+                                    </a>
                                 </div>
                             </div>
 
                             {/* Chat Messages */}
                             <div ref={messagesContainerRef} className="flex-1 p-4 overflow-y-auto space-y-4 scroll-smooth bg-[#0b141a]">
+                                
+                                {/* ⚠️ BANNER DE ALERTA DE FALLO EN EL ENVÍO & RECUPERACIÓN INTELIGENTE */}
+                                {(activeChat.hasFailedMessage || activeChat.messages.some(m => m.status === 'FAILED')) && (
+                                    <div className="p-4 bg-gradient-to-r from-amber-950/95 via-rose-950/90 to-amber-950/95 border-2 border-amber-500/60 rounded-2xl shadow-2xl space-y-3 text-white">
+                                        <div className="flex items-start justify-between gap-3">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 rounded-2xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-300 shrink-0">
+                                                    <AlertCircle size={22} className="animate-pulse" />
+                                                </div>
+                                                <div>
+                                                    <h3 className="text-sm md:text-base font-black text-amber-200 uppercase tracking-wide">
+                                                        ⚠️ Fallo en el Envío de Mensaje Detectado
+                                                    </h3>
+                                                    <p className="text-xs text-slate-300 leading-relaxed">
+                                                        Meta rechazó la entrega o se perdió la conexión socket. Puedes reintentar el mensaje anterior o revivir el chat con IA.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {activeChat.failedMessage?.errorMessage && (
+                                            <div className="p-2.5 bg-black/60 border border-amber-500/40 rounded-xl text-xs font-mono text-amber-300">
+                                                <strong className="text-amber-200">Motivo del fallo:</strong> {activeChat.failedMessage.errorMessage}
+                                            </div>
+                                        )}
+
+                                        <div className="flex flex-wrap items-center gap-2 pt-1">
+                                            <button
+                                                onClick={() => handleRetryFailedMessage(activeChat.failedMessage?.id)}
+                                                disabled={isRetrying}
+                                                className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-black text-xs transition-all flex items-center gap-2 shadow-lg cursor-pointer disabled:opacity-50"
+                                            >
+                                                {isRetrying ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}
+                                                <span>🔄 Reintentar Envío Ahora</span>
+                                            </button>
+
+                                            <button
+                                                onClick={handleResuscitateChat}
+                                                disabled={isRetrying}
+                                                className="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-black text-xs transition-all flex items-center gap-2 shadow-lg cursor-pointer disabled:opacity-50"
+                                            >
+                                                {isRetrying ? <Loader2 size={14} className="animate-spin" /> : <Bot size={14} />}
+                                                <span>🤖 Resucitar Chat con IA</span>
+                                            </button>
+
+                                            <button
+                                                onClick={() => handleSendTemplateWindow('hello_world')}
+                                                disabled={isRetrying}
+                                                className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs transition-all flex items-center gap-1.5 border border-slate-700 cursor-pointer"
+                                                title="Si la ventana de 24 horas de Meta expiró, envía una plantilla oficial para reabrirla"
+                                            >
+                                                <span>📲 Reabrir Ventana 24h</span>
+                                            </button>
+                                        </div>
+
+                                        {retrySuccessMsg && (
+                                            <div className="p-2 rounded-xl bg-emerald-950/80 border border-emerald-500/50 text-xs font-bold text-emerald-300 animate-fadeIn">
+                                                {retrySuccessMsg}
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
                                 {/* 📢 BANNER DESTACADO DE PAUTA PUBLICITARIA SI EL LEAD PROVIENE DE ANUNCIO */}
                                 {activeChat.isFromAd && (
                                     <div className="p-3.5 bg-gradient-to-r from-blue-950/90 via-indigo-950/90 to-cyan-950/90 border-2 border-blue-500/50 rounded-2xl shadow-xl space-y-2 text-white">
@@ -1458,10 +1825,37 @@ export default function WhatsAppCrmClient() {
                                                     <p className="leading-relaxed text-slate-300 italic">👋 Cliente inició conversación</p>
                                                 ) : null}
 
+                                                {/* ⚠️ ALERTA INLINE Y REINTENTO SI EL MENSAJE FALLÓ */}
+                                                {msg.status === 'FAILED' && (
+                                                    <div className="mt-2 p-2.5 bg-rose-950/90 border border-rose-500/60 rounded-xl flex items-center justify-between gap-2 text-rose-200 shadow-sm">
+                                                        <div className="flex items-center gap-1.5 text-[11px] font-bold">
+                                                            <AlertCircle size={14} className="text-rose-400 shrink-0" />
+                                                            <span>Fallo en entrega de Meta</span>
+                                                        </div>
+                                                        <button
+                                                            onClick={() => handleRetryFailedMessage(msg.id)}
+                                                            disabled={isRetrying}
+                                                            className="px-2.5 py-1 bg-rose-500 hover:bg-rose-400 text-black text-[10px] font-black rounded-lg transition-colors flex items-center gap-1 cursor-pointer disabled:opacity-50"
+                                                            title="Reintentar este mensaje ahora"
+                                                        >
+                                                            <RefreshCw size={11} className={isRetrying ? 'animate-spin' : ''} />
+                                                            <span>Reintentar</span>
+                                                        </button>
+                                                    </div>
+                                                )}
+
                                                 {/* TIMESTAMP & STATUS */}
-                                                <div className={`text-[9px] font-mono flex items-center justify-end gap-1 ${msg.sender === 'me' ? 'text-emerald-200' : 'text-slate-400'}`}>
+                                                <div className={`text-[9px] font-mono flex items-center justify-end gap-1.5 ${
+                                                    msg.status === 'FAILED' ? 'text-rose-400 font-bold' : msg.sender === 'me' ? 'text-emerald-200' : 'text-slate-400'
+                                                }`}>
                                                     <span>{msg.time}</span>
-                                                    {msg.sender === 'me' && <CheckCheck size={12} />}
+                                                    {msg.status === 'FAILED' ? (
+                                                        <span className="flex items-center gap-0.5 text-rose-400 font-black text-[9px] bg-rose-950/80 px-1.5 py-0.2 rounded border border-rose-500/30">
+                                                            <AlertCircle size={10} /> Falló
+                                                        </span>
+                                                    ) : msg.sender === 'me' ? (
+                                                        <CheckCheck size={12} />
+                                                    ) : null}
                                                 </div>
 
                                             </div>

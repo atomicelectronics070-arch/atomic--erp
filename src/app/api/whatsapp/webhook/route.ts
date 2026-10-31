@@ -43,35 +43,21 @@ export async function POST(req: Request) {
                 let mediaUrl: string | null = null;
 
                 // 1. Check for Facebook/Instagram Ads Referral (Click to WhatsApp Ads)
-                const referral = msg.referral || msg.context?.referral || (msg.context?.referred_product ? {
-                    source_url: '',
-                    source_type: 'product_catalog',
-                    source_id: msg.context.referred_product.catalog_id || '',
-                    headline: 'Producto de Catálogo Meta',
-                    body: `ID de Retailer: ${msg.context.referred_product.product_retailer_id || ''}`,
-                    media_type: 'image',
-                    image_url: '',
-                    thumbnail_url: '',
-                    video_url: '',
-                    ctwa_clid: ''
-                } : null);
-
-                let referralPrefix = '';
-                if (referral) {
-                    const referralData = {
-                        sourceUrl: referral.source_url || '',
-                        sourceType: referral.source_type || 'ad',
-                        sourceId: referral.source_id || '',
-                        headline: referral.headline || '',
-                        body: referral.body || '',
-                        mediaType: referral.media_type || 'image',
-                        imageUrl: referral.image_url || '',
-                        videoUrl: referral.video_url || '',
-                        thumbnailUrl: referral.thumbnail_url || referral.image_url || '',
-                        ctwaClid: referral.ctwa_clid || ''
-                    };
-                    referralPrefix = `[PAUTA_META:${JSON.stringify(referralData)}]\n`;
-                }
+                let referral = msg.referral || 
+                               msg.context?.referral || 
+                               (value as any).referral || 
+                               (msg.context?.referred_product ? {
+                                   source_url: '',
+                                   source_type: 'product_catalog',
+                                   source_id: msg.context.referred_product.catalog_id || '',
+                                   headline: 'Producto de Catálogo Meta',
+                                   body: `ID de Retailer: ${msg.context.referred_product.product_retailer_id || ''}`,
+                                   media_type: 'image',
+                                   image_url: '',
+                                   thumbnail_url: '',
+                                   video_url: '',
+                                   ctwa_clid: ''
+                               } : null);
 
                 // 2. Extract content & media according to message type
                 switch (msgType) {
@@ -113,6 +99,130 @@ export async function POST(req: Request) {
                         msgBody = msg.text?.body || `[Mensaje ${msgType}]`;
                 }
 
+                // 3. Detector Heurístico de Pautas / Campañas Meta
+                // Si Meta no envió el objeto referral explícito pero el mensaje o contexto proviene de un anuncio o campaña
+                if (!referral && msgBody) {
+                    const textLower = msgBody.toLowerCase();
+                    const hasAdMention = textLower.includes('facebook') || 
+                                         textLower.includes('instagram') || 
+                                         textLower.includes('anuncio') || 
+                                         textLower.includes('pauta') || 
+                                         textLower.includes('vi esto') || 
+                                         textLower.includes('vi su') || 
+                                         textLower.includes('publicidad') ||
+                                         textLower.includes('tiktok');
+
+                    if (textLower.includes('empleo') || textLower.includes('vacante') || textLower.includes('trabajo') || textLower.includes('postul') || textLower.includes('contrat') || textLower.includes('laboral')) {
+                        referral = {
+                            source_url: 'https://atomiccotizador.shop/web/contrataciones',
+                            source_type: 'ad',
+                            source_id: 'PAUTA-RECLUTAMIENTO-30D',
+                            headline: 'Pauta Oficial: Convocatoria Asesores Comerciales',
+                            body: 'Plan Laboral de 30 días con dedicación de 2h/día, sueldo $100-$450 + comisiones y grupo de WhatsApp.',
+                            media_type: 'image',
+                            image_url: '/images/contrataciones/empleo-ingeniero-redes.jpg',
+                            thumbnail_url: '/images/contrataciones/empleo-ingeniero-redes.jpg',
+                            video_url: '',
+                            ctwa_clid: ''
+                        };
+                    } else if (textLower.includes('torniquet') || textLower.includes('molinete') || textLower.includes('ts1000') || textLower.includes('fbl4000')) {
+                        referral = {
+                            source_url: 'https://atomiccotizador.shop/web/torniquetes',
+                            source_type: 'ad',
+                            source_id: 'PAUTA-TORNIQUETES-ZKTECO',
+                            headline: 'Campaña: Torniquetes Peatonales ZKTeco Pro',
+                            body: 'Trípodes TS1000 Pro en acero inoxidable 304, aletas flap barrier y molinetes anti-intrusión.',
+                            media_type: 'image',
+                            image_url: '/images/promociones/torniquetes-portada.jpg',
+                            thumbnail_url: '/images/promociones/torniquetes-portada.jpg',
+                            video_url: '',
+                            ctwa_clid: ''
+                        };
+                    } else if (textLower.includes('portero') || textLower.includes('videoportero') || textLower.includes('citofon') || textLower.includes('collective')) {
+                        referral = {
+                            source_url: 'https://atomiccotizador.shop/web/videoporteros',
+                            source_type: 'ad',
+                            source_id: 'PAUTA-VIDEOPORTEROS-RESIDENCIAL',
+                            headline: 'Campaña: Videoportero Residencial 2 Pantallas HD ($285)',
+                            body: 'Frente exterior HD + 2 pantallas a color con envío gratis para casas y centrales Intelbras para edificios.',
+                            media_type: 'image',
+                            image_url: '/images/videoporteros/videoportero-diel-10.jpg',
+                            thumbnail_url: '/images/videoporteros/videoportero-diel-10.jpg',
+                            video_url: '',
+                            ctwa_clid: ''
+                        };
+                    } else if (textLower.includes('biometric') || textLower.includes('biométric') || textLower.includes('senseface')) {
+                        referral = {
+                            source_url: 'https://atomiccotizador.shop/web/cerraduras-smart',
+                            source_type: 'ad',
+                            source_id: 'PAUTA-SENSEFACE-2A',
+                            headline: 'Campaña: Biométrico Facial ZKTeco SenseFace 2A ($175)',
+                            body: 'Reconocimiento facial ultra rápido, huella, tarjetas RFID, WiFi y videollamada a la App móvil.',
+                            media_type: 'image',
+                            image_url: '/images/promociones/senseface-portada.jpg',
+                            thumbnail_url: '/images/promociones/senseface-portada.jpg',
+                            video_url: '',
+                            ctwa_clid: ''
+                        };
+                    } else if (textLower.includes('cerco') || textLower.includes('jfl') || textLower.includes('hagroy')) {
+                        referral = {
+                            source_url: 'https://atomiccotizador.shop/web/cercos-electricos',
+                            source_type: 'ad',
+                            source_id: 'PAUTA-CERCOS-PERIMETRALES',
+                            headline: 'Campaña: Cercos Eléctricos JFL / Hagroy (Desde $89)',
+                            body: 'Electrificadores perimetrales de alto voltaje con batería de respaldo y control por App móvil.',
+                            media_type: 'image',
+                            image_url: '/images/promociones/cercos-electricos-portada.jpg',
+                            thumbnail_url: '/images/promociones/cercos-electricos-portada.jpg',
+                            video_url: '',
+                            ctwa_clid: ''
+                        };
+                    } else if (textLower.includes('camara') || textLower.includes('cámara') || textLower.includes('imou')) {
+                        referral = {
+                            source_url: 'https://atomiccotizador.shop/web/seguridad',
+                            source_type: 'ad',
+                            source_id: 'PAUTA-CAMARAS-IMOU',
+                            headline: 'Campaña: Cámaras Robóticas IMOU 360° WiFi ($45.40)',
+                            body: 'Visión nocturna 24/7, audio bidireccional y alertas inteligentes al celular con 3 años de garantía.',
+                            media_type: 'image',
+                            image_url: '/images/camaras/camara-wifi-bateria.jpg',
+                            thumbnail_url: '/images/camaras/camara-wifi-bateria.jpg',
+                            video_url: '',
+                            ctwa_clid: ''
+                        };
+                    } else if (hasAdMention) {
+                        referral = {
+                            source_url: 'https://atomiccotizador.shop/web',
+                            source_type: 'ad',
+                            source_id: 'PAUTA-META-REDES',
+                            headline: 'Lead de Anuncio Meta / Redes Sociales',
+                            body: 'Cliente interactuó con una pauta activa de ATOMIC Electronics.',
+                            media_type: 'image',
+                            image_url: '',
+                            thumbnail_url: '',
+                            video_url: '',
+                            ctwa_clid: ''
+                        };
+                    }
+                }
+
+                let referralPrefix = '';
+                if (referral) {
+                    const referralData = {
+                        sourceUrl: referral.source_url || referral.sourceUrl || '',
+                        sourceType: referral.source_type || referral.sourceType || 'ad',
+                        sourceId: referral.source_id || referral.sourceId || '',
+                        headline: referral.headline || '',
+                        body: referral.body || '',
+                        mediaType: referral.media_type || referral.mediaType || 'image',
+                        imageUrl: referral.image_url || referral.imageUrl || '',
+                        videoUrl: referral.video_url || referral.videoUrl || '',
+                        thumbnailUrl: referral.thumbnail_url || referral.thumbnailUrl || referral.image_url || referral.imageUrl || '',
+                        ctwaClid: referral.ctwa_clid || referral.ctwaClid || ''
+                    };
+                    referralPrefix = `[PAUTA_META:${JSON.stringify(referralData)}]\n`;
+                }
+
                 // Ensure message body is never blank, especially for pauta leads or media
                 if (!msgBody || msgBody.trim() === '' || msgBody === '[Mensaje unsupported]') {
                     if (referral) {
@@ -126,18 +236,18 @@ export async function POST(req: Request) {
 
                 const finalBody = referralPrefix + msgBody;
 
-                // 3. Find or create contact
+                // 4. Find or create contact
                 const contact = await prisma.wAContact.upsert({
                     where: { whatsappId: from },
                     update: { name: contactName },
                     create: { whatsappId: from, name: contactName }
                 });
 
-                // 4. Find or create/reopen conversation
+                // 5. Find or create/reopen conversation
                 let conversation = await prisma.wAConversation.findFirst({
                     where: {
                         contactId: contact.id,
-                        status: { in: ['NEW', 'OPEN', 'PENDING'] }
+                        status: { in: ['NEW', 'OPEN', 'PENDING', 'LEAD_PAUTA'] }
                     },
                     orderBy: { updatedAt: 'desc' }
                 });
@@ -150,6 +260,15 @@ export async function POST(req: Request) {
                             priority: referral ? 'HIGH' : 'MEDIUM'
                         }
                     });
+                } else if (referral) {
+                    // Actualizar estado a LEAD_PAUTA si el contacto existente interactuó desde un anuncio
+                    await prisma.wAConversation.update({
+                        where: { id: conversation.id },
+                        data: {
+                            status: 'LEAD_PAUTA',
+                            priority: 'HIGH'
+                        }
+                    }).catch(() => {});
                 }
 
                 // 5. Store message safely

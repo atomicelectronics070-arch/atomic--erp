@@ -49,45 +49,79 @@ export async function getWhatsAppCredentials() {
     return { token, phoneId };
 }
 
-export async function sendWhatsAppMessage(to: string, message: string) {
-    try {
-        const { token, phoneId } = await getWhatsAppCredentials();
+/**
+ * Ejecutor inteligente con reintentos exponenciales para Meta WhatsApp Cloud API.
+ * Protege contra micro-caídas de red, rate limits transitorios y demoras de socket.
+ */
+async function withRetry<T>(fn: () => Promise<T>, maxRetries = 3, initialDelayMs = 1200): Promise<T> {
+    let lastError: any;
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+            return await fn();
+        } catch (err: any) {
+            lastError = err;
+            const errMsg = err?.message || '';
+            const isAuthOrFatal = 
+                errMsg.includes('OAuth 190') || 
+                errMsg.includes('Token expirado') || 
+                errMsg.includes('not a valid WhatsApp') ||
+                errMsg.includes('Re-engage message') ||
+                errMsg.includes('24 hours');
 
-        if (!token) {
-            throw new Error('Falta la variable WHATSAPP_TOKEN en Railway o Base de Datos.');
-        }
-
-        // Clean and format phone number to strict international E.164 (e.g. 593969043453)
-        const cleanTo = sanitizeToE164(to);
-
-        console.log(`[WhatsApp Service] Sending message to clean recipient: ${cleanTo} using Phone ID: ${phoneId}`);
-
-        const response = await axios.post(
-            `https://graph.facebook.com/${API_VERSION}/${phoneId}/messages`,
-            {
-                messaging_product: 'whatsapp',
-                recipient_type: 'individual',
-                to: cleanTo,
-                type: 'text',
-                text: { body: message },
-            },
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
+            if (isAuthOrFatal || attempt === maxRetries) {
+                throw err;
             }
-        );
-        return response.data;
-    } catch (error: any) {
-        const metaError = error.response?.data?.error;
-        let errorDetail = metaError?.message || error.message || 'Error al enviar mensaje via Meta WhatsApp';
-        if (metaError?.type === 'OAuthException' || metaError?.code === 190 || errorDetail.toLowerCase().includes('token') || errorDetail.toLowerCase().includes('authenticat') || errorDetail.toLowerCase().includes('session')) {
-            errorDetail = `Error de Autenticación Meta (OAuth 190): ${metaError?.message || 'Token expirado o no autorizado'}. Renueva el Token de WhatsApp en Configuración > Credenciales.`;
+
+            const delay = initialDelayMs * Math.pow(2, attempt - 1);
+            console.warn(`[WhatsApp Service Retry] Intento ${attempt}/${maxRetries} falló (${errMsg}). Reintentando automáticamente en ${delay}ms...`);
+            await new Promise(res => setTimeout(res, delay));
         }
-        console.error('WhatsApp Send Error:', error.response?.data || error.message);
-        throw new Error(errorDetail);
     }
+    throw lastError;
+}
+
+export async function sendWhatsAppMessage(to: string, message: string) {
+    return withRetry(async () => {
+        try {
+            const { token, phoneId } = await getWhatsAppCredentials();
+
+            if (!token) {
+                throw new Error('Falta la variable WHATSAPP_TOKEN en Railway o Base de Datos.');
+            }
+
+            // Clean and format phone number to strict international E.164 (e.g. 593969043453)
+            const cleanTo = sanitizeToE164(to);
+
+            console.log(`[WhatsApp Service] Sending message to clean recipient: ${cleanTo} using Phone ID: ${phoneId}`);
+
+            const response = await axios.post(
+                `https://graph.facebook.com/${API_VERSION}/${phoneId}/messages`,
+                {
+                    messaging_product: 'whatsapp',
+                    recipient_type: 'individual',
+                    to: cleanTo,
+                    type: 'text',
+                    text: { body: message },
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                    timeout: 20000,
+                }
+            );
+            return response.data;
+        } catch (error: any) {
+            const metaError = error.response?.data?.error;
+            let errorDetail = metaError?.message || error.message || 'Error al enviar mensaje via Meta WhatsApp';
+            if (metaError?.type === 'OAuthException' || metaError?.code === 190 || errorDetail.toLowerCase().includes('token') || errorDetail.toLowerCase().includes('authenticat') || errorDetail.toLowerCase().includes('session')) {
+                errorDetail = `Error de Autenticación Meta (OAuth 190): ${metaError?.message || 'Token expirado o no autorizado'}. Renueva el Token de WhatsApp en Configuración > Credenciales.`;
+            }
+            console.error('WhatsApp Send Error:', error.response?.data || error.message);
+            throw new Error(errorDetail);
+        }
+    });
 }
 
 export async function sendWhatsAppTemplate(to: string, templateName: string, languageCode: string = 'es') {
@@ -159,86 +193,90 @@ export async function sendWhatsAppMedia(
     caption?: string,
     filename?: string
 ) {
-    try {
-        const { token, phoneId } = await getWhatsAppCredentials();
+    return withRetry(async () => {
+        try {
+            const { token, phoneId } = await getWhatsAppCredentials();
 
-        if (!token) {
-            throw new Error('Falta la variable WHATSAPP_TOKEN en Railway o Base de Datos.');
-        }
+            if (!token) {
+                throw new Error('Falta la variable WHATSAPP_TOKEN en Railway o Base de Datos.');
+            }
 
-        const cleanTo = sanitizeToE164(to);
-        let mediaPayload: any = {};
+            const cleanTo = sanitizeToE164(to);
+            let mediaPayload: any = {};
 
-        // Case A: Direct internet URL (http:// or https://)
-        if (mediaUrl.startsWith('http://') || mediaUrl.startsWith('https://')) {
-            mediaPayload = {
-                link: mediaUrl,
-                ...(caption && mediaType !== 'audio' ? { caption } : {}),
-                ...(filename && mediaType === 'document' ? { filename } : {})
-            };
-        } else {
-            // Case B: Local relative file path (e.g. /uploads/whatsapp/file.jpg)
-            const cleanRelPath = mediaUrl.startsWith('/') ? mediaUrl.substring(1) : mediaUrl;
-            const localFilePath = path.join(process.cwd(), 'public', cleanRelPath);
-
-            if (fs.existsSync(localFilePath)) {
-                const fileBuffer = fs.readFileSync(localFilePath);
-                const mimeType = getMimeType(localFilePath, mediaType);
-                const fileBaseName = filename || path.basename(localFilePath);
-
-                const formData = new FormData();
-                formData.append('messaging_product', 'whatsapp');
-                formData.append('file', new Blob([fileBuffer], { type: mimeType }), fileBaseName);
-                formData.append('type', mimeType);
-
-                const uploadRes = await axios.post(
-                    `https://graph.facebook.com/${API_VERSION}/${phoneId}/media`,
-                    formData,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        }
-                    }
-                );
-
-                const metaMediaId = uploadRes.data?.id;
-                if (!metaMediaId) {
-                    throw new Error('No se pudo obtener el ID del archivo subido a Meta.');
-                }
-
+            // Case A: Direct internet URL (http:// or https://)
+            if (mediaUrl.startsWith('http://') || mediaUrl.startsWith('https://')) {
                 mediaPayload = {
-                    id: metaMediaId,
+                    link: mediaUrl,
                     ...(caption && mediaType !== 'audio' ? { caption } : {}),
                     ...(filename && mediaType === 'document' ? { filename } : {})
                 };
             } else {
-                throw new Error(`Archivo local no encontrado en el servidor: ${mediaUrl}`);
-            }
-        }
+                // Case B: Local relative file path (e.g. /uploads/whatsapp/file.jpg)
+                const cleanRelPath = mediaUrl.startsWith('/') ? mediaUrl.substring(1) : mediaUrl;
+                const localFilePath = path.join(process.cwd(), 'public', cleanRelPath);
 
-        const response = await axios.post(
-            `https://graph.facebook.com/${API_VERSION}/${phoneId}/messages`,
-            {
-                messaging_product: 'whatsapp',
-                recipient_type: 'individual',
-                to: cleanTo,
-                type: mediaType,
-                [mediaType]: mediaPayload,
-            },
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
+                if (fs.existsSync(localFilePath)) {
+                    const fileBuffer = fs.readFileSync(localFilePath);
+                    const mimeType = getMimeType(localFilePath, mediaType);
+                    const fileBaseName = filename || path.basename(localFilePath);
+
+                    const formData = new FormData();
+                    formData.append('messaging_product', 'whatsapp');
+                    formData.append('file', new Blob([fileBuffer], { type: mimeType }), fileBaseName);
+                    formData.append('type', mimeType);
+
+                    const uploadRes = await axios.post(
+                        `https://graph.facebook.com/${API_VERSION}/${phoneId}/media`,
+                        formData,
+                        {
+                            headers: {
+                                Authorization: `Bearer ${token}`,
+                            },
+                            timeout: 30000,
+                        }
+                    );
+
+                    const metaMediaId = uploadRes.data?.id;
+                    if (!metaMediaId) {
+                        throw new Error('No se pudo obtener el ID del archivo subido a Meta.');
+                    }
+
+                    mediaPayload = {
+                        id: metaMediaId,
+                        ...(caption && mediaType !== 'audio' ? { caption } : {}),
+                        ...(filename && mediaType === 'document' ? { filename } : {})
+                    };
+                } else {
+                    throw new Error(`Archivo local no encontrado en el servidor: ${mediaUrl}`);
+                }
+            }
+
+            const response = await axios.post(
+                `https://graph.facebook.com/${API_VERSION}/${phoneId}/messages`,
+                {
+                    messaging_product: 'whatsapp',
+                    recipient_type: 'individual',
+                    to: cleanTo,
+                    type: mediaType,
+                    [mediaType]: mediaPayload,
                 },
-            }
-        );
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                    timeout: 30000,
+                }
+            );
 
-        return response.data;
-    } catch (error: any) {
-        const errorDetail = error.response?.data?.error?.message || error.message || 'Error al enviar multimedia vía WhatsApp';
-        console.error('WhatsApp Media Send Error:', error.response?.data || error.message);
-        throw new Error(errorDetail);
-    }
+            return response.data;
+        } catch (error: any) {
+            const errorDetail = error.response?.data?.error?.message || error.message || 'Error al enviar multimedia vía WhatsApp';
+            console.error('WhatsApp Media Send Error:', error.response?.data || error.message);
+            throw new Error(errorDetail);
+        }
+    });
 }
 
 export async function sendWhatsAppCatalogMessage(
